@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SetMst;
+using Domain.Models.SuperSetDetail;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.SetMst;
@@ -9,12 +10,16 @@ using EmrCloudApi.Responses.SetMst;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MainMenu.GetOdrSetName;
+using UseCase.MainMenu.SaveOdrSet;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SuperSetDetail.GetConversion;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
+using UseCase.SuperSetDetail.SaveConversion;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
@@ -157,6 +162,79 @@ public class SetController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetConversion)]
+    public ActionResult<Response<GetConversionResponse>> GetConversion([FromBody] GetConversionRequest request)
+    {
+        var input = new GetConversionInputData(HpId, request.ItemCd, request.SinDate, request.ItemName, request.Quantity, request.UnitName);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetConversionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetConversionResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveConversion)]
+    public ActionResult<Response<SaveConversionResponse>> SaveConversion([FromBody] SaveConversionRequest request)
+    {
+        var input = new SaveConversionInputData(HpId, UserId, request.SourceItemCd, request.ConversionItemCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveConversionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveConversionResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetOdrSetName)]
+    public ActionResult<Response<GetOdrSetNameResponse>> GetOdrSetName([FromBody] GetOdrSetNameRequest request)
+    {
+        var setCheckBoxStatus = new SetCheckBoxStatusModel(request.CheckBoxStatus.SetKbnChecked1,
+                                                           request.CheckBoxStatus.SetKbnChecked2,
+                                                           request.CheckBoxStatus.SetKbnChecked3,
+                                                           request.CheckBoxStatus.SetKbnChecked4,
+                                                           request.CheckBoxStatus.SetKbnChecked5,
+                                                           request.CheckBoxStatus.SetKbnChecked6,
+                                                           request.CheckBoxStatus.SetKbnChecked7,
+                                                           request.CheckBoxStatus.SetKbnChecked8,
+                                                           request.CheckBoxStatus.SetKbnChecked9,
+                                                           request.CheckBoxStatus.SetKbnChecked10,
+                                                           request.CheckBoxStatus.JihiChecked,
+                                                           request.CheckBoxStatus.KihonChecked,
+                                                           request.CheckBoxStatus.TokuChecked,
+                                                           request.CheckBoxStatus.YohoChecked,
+                                                           request.CheckBoxStatus.DiffChecked,
+                                                           request.CheckBoxStatus.BuiChecked,
+                                                           request.CheckBoxStatus.FreeCommentChecked);
+        var input = new GetOdrSetNameInputData(HpId, setCheckBoxStatus, request.GenerationId, request.TimeExpired, request.ItemName);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetOdrSetNamePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetOdrSetNameResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveOdrSet)]
+    public ActionResult<Response<SaveOdrSetResponse>> SaveOdrSet([FromBody] SaveOdrSetRequest request)
+    {
+        var odrSetList = request.SetNameModelList.Select(item => new OdrSetNameModel(
+                                                                     item.SetCd,
+                                                                     item.RowNo,
+                                                                     item.ItemCd,
+                                                                     item.CmtOpt,
+                                                                     item.Quantity,
+                                                                     item.SetOrdInfId))
+                                                  .ToList();
+        var input = new SaveOdrSetInputData(HpId, UserId, request.SinDate, odrSetList);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveOdrSetPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveOdrSetResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)

@@ -102,5 +102,12 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _familyRepository.ReleaseResource();
+        _todayOdrRepository.ReleaseResource();
+        _specialNoteRepository.ReleaseResource();
+        _nextOrderRepository.ReleaseResource();
+        _ptDiseaseRepository.ReleaseResource();
+        _flowSheetRepository.ReleaseResource();
+        _monshinInforRepository.ReleaseResource();
     }
 }

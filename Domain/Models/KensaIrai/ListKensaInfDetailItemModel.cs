@@ -37,7 +37,7 @@
         }
 
         public ListKensaInfDetailItemModel(
-            long ptId, long iraiCd, long raiinNo, long iraiDate, long seqNo, string kensaName, string kensaKana, long sortNo, string kensaItemCd, string resultVal,
+            long ptId, long iraiCd, long raiinNo, long iraiDate, long seqNo, long seqParentNo, string kensaName, string kensaKana, long sortNo, string kensaItemCd, string resultVal,
             string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, string cmt1, string cmt2, string std, string stdLow, string stdHigh, string maleStd,
             string femaleStd, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted)
         {
@@ -46,6 +46,7 @@
             RaiinNo = raiinNo;
             IraiDate = iraiDate;
             SeqNo = seqNo;
+            SeqParentNo = seqParentNo;
             KensaName = kensaName;
             KensaKana = kensaKana;
             SortNo = sortNo;
@@ -82,6 +83,8 @@
         public long IraiDate { get; private set; }
 
         public long SeqNo { get; private set; }
+
+        public long SeqParentNo { get; private set; }
 
         public string KensaName { get; private set; }
 

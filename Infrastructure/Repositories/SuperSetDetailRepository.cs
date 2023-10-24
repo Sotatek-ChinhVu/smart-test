@@ -1,12 +1,15 @@
-﻿using Domain.Models.OrdInfDetails;
+﻿using Domain.Constant;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.SuperSetDetail;
 using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.Extensions.Options;
 using System.Text;
 
@@ -1370,6 +1373,630 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                             ).ToList();
         TrackingDataContext.SetKarteImgInf.RemoveRange(listDeletes);
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate)
+    {
+        var conversionItemInfRepo = NoTrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
+                                                                                           && item.SourceItemCd == itemCd
+                                                                                           && item.IsDeleted == 0);
+
+        var tenMstRepo = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                     && item.StartDate <= sinDate
+                                                                     && item.EndDate >= sinDate
+                                                                     && item.IsDeleted == DeleteTypes.None);
+
+        var query = from conversionItemInf in conversionItemInfRepo
+                    join tenMst in tenMstRepo on conversionItemInf.DestItemCd equals tenMst.ItemCd
+                    select new
+                    {
+                        conversionItemInf,
+                        tenMst,
+                    };
+
+        return query.AsEnumerable()
+                    .Select(item => new ConversionItemInfModel(
+                                        item.conversionItemInf.SourceItemCd,
+                                        item.conversionItemInf.DestItemCd,
+                                        item.conversionItemInf.SortNo,
+                                        item.tenMst.ItemCd,
+                                        item.tenMst.Name ?? string.Empty,
+                                        item.tenMst.DefaultVal,
+                                        item.tenMst.Ten,
+                                        item.tenMst.HandanGrpKbn,
+                                        item.tenMst.MasterSbt ?? string.Empty,
+                                        item.tenMst.EndDate,
+                                        item.tenMst.KensaItemCd ?? string.Empty,
+                                        item.tenMst.KensaItemSeqNo,
+                                        item.tenMst.IpnNameCd ?? string.Empty,
+                                        item.tenMst.OdrUnitName ?? string.Empty,
+                                        item.tenMst.CnvUnitName ?? string.Empty))
+                    .OrderBy(item => item.SortNo)
+                    .ToList();
+    }
+
+    public bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd)
+    {
+        var conversionItemInfDBList = TrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
+                                                                                           && item.SourceItemCd == sourceItemCd
+                                                                                           && item.IsDeleted == 0)
+                                                                            .ToList();
+
+        if (!conversionItemInfDBList.Any() || !conversionItemInfDBList.Exists(item => item.DestItemCd == conversionItemCd))
+        {
+            var newConversionItemInf = new ConversionItemInf()
+            {
+                HpId = hpId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+                SourceItemCd = sourceItemCd,
+                DestItemCd = conversionItemCd,
+                IsDeleted = 0,
+                SortNo = 1,
+            };
+            TrackingDataContext.ConversionItemInfs.Add(newConversionItemInf);
+            foreach (var conversionItem in conversionItemInfDBList)
+            {
+                conversionItem.UpdateId = userId;
+                conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                conversionItem.SortNo += 1;
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        return true;
+    }
+
+    public List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, int timeExpired, string itemName)
+    {
+        var listSetKbn = GetListSetKbn(checkBoxStatus);
+
+        if (listSetKbn.Count <= 0 || !CheckTargetSetOdrInfDetail(checkBoxStatus))
+        {
+            return new();
+        }
+
+        // Input expired time and check to free comment only => just ignore all free comment
+        if (CheckFreeCommentOnly(checkBoxStatus) && timeExpired != 0)
+        {
+            return new();
+        }
+
+        var setMstRepo = NoTrackingDataContext.SetMsts
+                        .Where(item => item.HpId == hpId
+                                       && item.IsDeleted == 0
+                                       && item.GenerationId == generationId
+                                       && listSetKbn.Contains(item.SetKbn))
+                        .ToList();
+        var setCdList = setMstRepo.Select(item => item.SetCd).Distinct().ToList();
+
+        var setOdrInfRepo = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
+                                                                          && item.IsDeleted == 0
+                                                                          && setCdList.Contains(item.SetCd))
+                                                           .ToList();
+
+        // Free comment only
+        if (CheckFreeCommentOnly(checkBoxStatus))
+        {
+            var listDetailFreeCommentOnly = GetOdrSetNameFreeComment(hpId, checkBoxStatus, generationId, itemName, timeExpired == 0);
+
+            var listSetMstFreeComment = listDetailFreeCommentOnly.DistinctBy(item => item.SetCd).ToList();
+
+            var querySetFreeComment = (from setMstDetail in listSetMstFreeComment
+                                       from setMst in setMstRepo.Where(item =>
+                                       (item.SetKbn == setMstDetail.SetKbn && item.SetKbnEdaNo == setMstDetail.SetKbnEdaNo && item.Level1 == setMstDetail.Level1 && item.Level2 == 0 && item.Level3 == 0) ||
+                                       (item.SetKbn == setMstDetail.SetKbn && item.SetKbnEdaNo == setMstDetail.SetKbnEdaNo && item.Level1 == setMstDetail.Level1 && item.Level2 == setMstDetail.Level2 && item.Level3 == 0) ||
+                                       (item.SetKbn == setMstDetail.SetKbn && item.SetKbnEdaNo == setMstDetail.SetKbnEdaNo && item.Level1 == setMstDetail.Level1 && item.Level2 == setMstDetail.Level2 && item.Level3 == setMstDetail.Level3))
+                                       join setOdrInf in setOdrInfRepo on
+                                       setMst.SetCd equals setOdrInf.SetCd into setOdrInfList
+                                       from setOdrInfItem in setOdrInfList.DefaultIfEmpty()
+                                       select new
+                                       {
+                                           SetMst = setMst,
+                                           SetOdrInf = setOdrInfItem,
+                                       })
+                                      .ToList();
+
+            var listSetNameFreeComment = querySetFreeComment
+                                        .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0))
+                                        .DistinctBy(item => new { item.SetCd, item.SetOrdInfId });
+
+            return listSetNameFreeComment
+                   .Union(listDetailFreeCommentOnly)
+                   .OrderBy(item => item.SetKbn)
+                   .ThenBy(item => item.SetKbnEdaNo)
+                   .ThenBy(item => item.Level1)
+                   .ThenBy(item => item.Level2)
+                   .ThenBy(item => item.Level3)
+                   .ThenBy(item => item.SetCd)
+                   .ThenBy(item => item.SortNo)
+                   .ThenBy(item => item.RowNo)
+                   .ToList();
+        }
+
+        // For all other case
+        var setOdrInfDetailRepo = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.HpId == hpId
+                                                                                      && item.ItemCd != null
+                                                                                      && item.ItemCd.Replace("　", string.Empty).Replace(" ", string.Empty) != string.Empty
+                                                                                      && setCdList.Contains(item.SetCd));
+
+        if (!string.IsNullOrWhiteSpace(itemName))
+        {
+            setOdrInfDetailRepo = setOdrInfDetailRepo.Where(item => item.ItemName != null && item.ItemName.Contains(itemName));
+        }
+
+        var setOdrInfDetailList = setOdrInfDetailRepo.ToList();
+
+        bool isQueryAll = timeExpired == 0;
+        if (timeExpired == 0)
+        {
+            timeExpired = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
+        }
+
+        var itemCdList = setOdrInfDetailList.Select(item => item.ItemCd).Distinct().ToList();
+        var tenMstRepo = NoTrackingDataContext.TenMsts
+                         .Where(item => item.HpId == hpId
+                                        && item.StartDate <= timeExpired
+                                        && item.EndDate >= timeExpired
+                                        && itemCdList.Contains(item.ItemCd)
+                                        && item.IsDeleted == DeleteTypes.None)
+                         .ToList();
+
+        var detailResult = (from setMst in setMstRepo
+                            join setOdrInf in setOdrInfRepo on
+                                setMst.SetCd equals setOdrInf.SetCd
+                            join setOdrInfDetail in setOdrInfDetailList on
+                                new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo } equals
+                                new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo }
+                            join tenMst in tenMstRepo on
+                                setOdrInfDetail.ItemCd equals tenMst.ItemCd into tenMstList
+                            from tenMstItem in tenMstList.DefaultIfEmpty()
+                            where tenMstItem == null
+                            select new
+                            {
+                                SetMst = setMst,
+                                SetOdrInf = setOdrInf,
+                                SetOdrInfDetail = setOdrInfDetail,
+                            })
+                            .ToList();
+
+        var listItemCd = detailResult.Select(item => item.SetOdrInfDetail.ItemCd).ToList();
+
+        var tenMstRepoResult = NoTrackingDataContext.TenMsts
+                               .Where(item => item.HpId == hpId
+                                              && listItemCd.Contains(item.ItemCd)
+                                              && item.IsDeleted == DeleteTypes.None)
+                               .OrderByDescending(item => item.EndDate)
+                               .GroupBy(item => item.ItemCd)
+                               .Select(item => item.First())
+                               .ToList();
+
+        var listDetail = from detail in detailResult
+                         join tenMst in tenMstRepoResult on
+                           detail.SetOdrInfDetail.ItemCd equals tenMst.ItemCd
+                         select ConvertToOdrSetNameModel(detail.SetMst, detail.SetOdrInf, detail.SetOdrInfDetail, tenMst, 0);
+
+        if (isQueryAll)
+        {
+            var tenMstAllRepo = NoTrackingDataContext.TenMsts
+                                .Where(item => item.HpId == hpId
+                                               && item.IsDeleted == DeleteTypes.None
+                                               && itemCdList.Contains(item.ItemCd))
+                                .ToList();
+
+            var tenMstMaxRepo = (from tenMst in tenMstAllRepo
+                                 group tenMst by tenMst.ItemCd into grp
+                                 select new
+                                 {
+                                     ItemCd = grp.Key,
+                                     EndDate = grp.Max(tenItem => tenItem.EndDate)
+                                 }).ToList();
+
+            var queryDetailAll = (from setMst in setMstRepo
+                                  join setOdrInf in setOdrInfRepo on
+                                      setMst.SetCd equals setOdrInf.SetCd
+                                  join setOdrInfDetail in setOdrInfDetailList on
+                                      new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo } equals
+                                      new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo }
+                                  join tenMst in tenMstRepo on
+                                      setOdrInfDetail.ItemCd equals tenMst.ItemCd
+                                  join tenMstMax in tenMstMaxRepo on
+                                      setOdrInfDetail.ItemCd equals tenMstMax.ItemCd
+                                  select new
+                                  {
+                                      SetMst = setMst,
+                                      SetOdrInf = setOdrInf,
+                                      SetOdrInfDetail = setOdrInfDetail,
+                                      TenMst = tenMst,
+                                      LastEndDate = tenMstMax.EndDate
+                                  })
+                .ToList();
+
+            var listDetailAll = queryDetailAll.Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, item.SetOdrInfDetail, item.TenMst, item.LastEndDate));
+
+            listDetail = listDetail.Union(listDetailAll);
+        }
+
+        IEnumerable<OdrSetNameModel> listDetailResult = null;
+        // Check conditions
+        if (checkBoxStatus.JihiChecked)
+        {
+            var jihi = listDetail.Where(item => item.ItemCd.StartsWith("J"));
+            listDetailResult = jihi;
+        }
+        if (checkBoxStatus.TokuChecked)
+        {
+            var toku = listDetail.Where(item => item.MasterSbt == "T");
+            listDetailResult = listDetailResult == null ? toku : listDetailResult.Union(toku);
+        }
+        if (checkBoxStatus.YohoChecked)
+        {
+            var yoho = listDetail.Where(item => item.YohoKbn > 0);
+            listDetailResult = listDetailResult == null ? yoho : listDetailResult.Union(yoho);
+        }
+        if (checkBoxStatus.BuiChecked)
+        {
+            var bui = listDetail.Where(item => item.BuiKbn > 0);
+            listDetailResult = listDetailResult == null ? bui : listDetailResult.Union(bui);
+        }
+        if (checkBoxStatus.KihonChecked)
+        {
+            var Kihon = listDetail.Where(item => !item.ItemCd.StartsWith("J")
+                                                 && (item.MasterSbt != "T")
+                                                 && (item.YohoKbn <= 0)
+                                                 && (item.BuiKbn <= 0));
+            listDetailResult = listDetailResult == null ? Kihon : listDetailResult.Union(Kihon);
+        }
+
+        if (listDetailResult == null)
+        {
+            // Free comment only, but we cover this case above, just return new list
+            return new List<OdrSetNameModel>();
+        }
+
+        var listDetailFreeComment = GetOdrSetNameFreeComment(hpId, checkBoxStatus, generationId, itemName, isQueryAll);
+
+        var listSetMst = listDetailResult.Union(listDetailFreeComment).DistinctBy(item => item.SetCd).ToList();
+
+        var querySet = (from setMstDetail in listSetMst
+                        from setMst in setMstRepo.Where(item =>
+                        (item.SetKbn == setMstDetail.SetKbn && item.SetKbnEdaNo == setMstDetail.SetKbnEdaNo && item.Level1 == setMstDetail.Level1 && item.Level2 == 0 && item.Level3 == 0) ||
+                        (item.SetKbn == setMstDetail.SetKbn && item.SetKbnEdaNo == setMstDetail.SetKbnEdaNo && item.Level1 == setMstDetail.Level1 && item.Level2 == setMstDetail.Level2 && item.Level3 == 0) ||
+                        (item.SetKbn == setMstDetail.SetKbn && item.SetKbnEdaNo == setMstDetail.SetKbnEdaNo && item.Level1 == setMstDetail.Level1 && item.Level2 == setMstDetail.Level2 && item.Level3 == setMstDetail.Level3))
+                        join setOdrInf in setOdrInfRepo on
+                        setMst.SetCd equals setOdrInf.SetCd into setOdrInfList
+                        from setOdrInfItem in setOdrInfList.DefaultIfEmpty()
+                        select new
+                        {
+                            SetMst = setMst,
+                            SetOdrInf = setOdrInfItem,
+                        })
+                        .ToList();
+
+        var listSetName = querySet
+                          .Select(item => ConvertToOdrSetNameModel(item.SetMst, item.SetOdrInf, null, null, 0))
+                          .DistinctBy(item => new { item.SetCd, item.SetOrdInfId });
+
+        var result = listSetName
+                    .Union(listDetailResult)
+                    .Union(listDetailFreeComment)
+                    .OrderBy(item => item.SetKbn)
+                    .ThenBy(item => item.SetKbnEdaNo)
+                    .ThenBy(item => item.Level1)
+                    .ThenBy(item => item.Level2)
+                    .ThenBy(item => item.Level3)
+                    .ThenBy(item => item.SetCd)
+                    .ThenBy(item => item.SortNo)
+                    .ThenBy(item => item.RowNo)
+                    .ToList();
+        return result;
+    }
+
+    public bool SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList)
+    {
+        var setOdrInfId = setNameModelList.Select(item => item.SetOrdInfId).Distinct().ToList();
+        var rowNoList = setNameModelList.Select(item => item.RowNo).Distinct().ToList();
+        var setCdList = setNameModelList.Select(item => item.SetCd).Distinct().ToList();
+        var itemCdList = setNameModelList.Select(item => item.ItemCd).Distinct().ToList();
+
+        var odrInfDbList = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
+                                                                         && item.IsDeleted == 0
+                                                                         && setOdrInfId.Contains(item.Id))
+                                                          .ToList();
+
+        var tenMstDBList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                       && itemCdList.Contains(item.ItemCd)
+                                                                       && item.StartDate <= sinDate
+                                                                       && sinDate <= item.EndDate)
+                                                        .ToList();
+
+        var rpNoList = odrInfDbList.Select(item => item.RpNo).Distinct().ToList();
+        var rpEdaNoList = odrInfDbList.Select(item => item.RpEdaNo).Distinct().ToList();
+        var ipnNameCdList = tenMstDBList.Select(item => item.IpnNameCd).Distinct().ToList();
+        var odrInfDetailDbList = TrackingDataContext.SetOdrInfDetail.Where(item => item.HpId == hpId
+                                                                                   && setCdList.Contains(item.SetCd)
+                                                                                   && rpNoList.Contains(item.RpNo)
+                                                                                   && rowNoList.Contains(item.RowNo)
+                                                                                   && rpEdaNoList.Contains(item.RpEdaNo))
+                                                                     .ToList();
+        var ipnNameMstDBList = NoTrackingDataContext.IpnNameMsts.Where(item => item.HpId == hpId
+                                                                               && item.StartDate <= sinDate
+                                                                               && item.EndDate >= sinDate
+                                                                               && ipnNameCdList.Contains(item.IpnNameCd))
+                                                                .ToList();
+        foreach (var model in setNameModelList)
+        {
+            var odrInf = odrInfDbList.FirstOrDefault(item => item.Id == model.SetOrdInfId
+                                                             && item.SetCd == model.SetCd);
+            if (odrInf == null)
+            {
+                continue;
+            }
+            var odrInfDetail = odrInfDetailDbList.FirstOrDefault(item => item.SetCd == model.SetCd
+                                                                         && item.RpNo == odrInf.RpNo
+                                                                         && item.RpEdaNo == odrInf.RpEdaNo
+                                                                         && item.RowNo == model.RowNo);
+            if (odrInfDetail == null)
+            {
+                continue;
+            }
+            var tenMst = tenMstDBList.FirstOrDefault(item => item.ItemCd == model.ItemCd
+                                                             && item.StartDate <= sinDate
+                                                             && sinDate <= item.EndDate);
+            if (tenMst == null)
+            {
+                continue;
+            }
+
+            odrInfDetail.ItemCd = model.ItemCd;
+            odrInfDetail.CmtOpt = model.CmtOpt;
+            odrInfDetail.Suryo = model.Quantity;
+            odrInfDetail.IpnName = ipnNameMstDBList.FirstOrDefault(item => item.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
+
+            if (model.IsCommentMaster)
+            {
+                odrInfDetail.CmtName = tenMst.Name;
+            }
+            else
+            {
+                odrInfDetail.CmtName = string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(tenMst.OdrUnitName))
+            {
+                odrInfDetail.UnitSbt = 1;
+                odrInfDetail.UnitName = tenMst.OdrUnitName;
+                odrInfDetail.OdrTermVal = tenMst.OdrTermVal;
+            }
+            else if (!string.IsNullOrEmpty(tenMst.CnvUnitName))
+            {
+                odrInfDetail.UnitSbt = 2;
+                odrInfDetail.UnitName = tenMst.CnvUnitName;
+                odrInfDetail.OdrTermVal = tenMst.CnvTermVal;
+            }
+            else
+            {
+                odrInfDetail.UnitSbt = 0;
+                odrInfDetail.UnitName = string.Empty;
+                odrInfDetail.OdrTermVal = 0;
+                odrInfDetail.Suryo = 0;
+            }
+
+            odrInfDetail.KohatuKbn = tenMst.KohatuKbn;
+            odrInfDetail.YohoKbn = tenMst.YohoKbn;
+            odrInfDetail.IpnCd = tenMst.IpnNameCd;
+            odrInfDetail.DrugKbn = tenMst.DrugKbn;
+            odrInfDetail.ItemName = tenMst.Name;
+
+            if (odrInfDetail.SinKouiKbn == 20 && odrInfDetail.DrugKbn > 0)
+            {
+                switch (odrInfDetail.KohatuKbn)
+                {
+                    case 0:
+                        // 先発品
+                        odrInfDetail.SyohoKbn = 0;
+                        odrInfDetail.SyohoLimitKbn = 0;
+                        break;
+                    // Keep old SyohoKbn and SyohoKbnLimit set from previous step
+                    case 1:
+                    // 後発品
+                    case 2:
+                        // 後発品のある先発品
+                        break;
+                }
+                if (odrInfDetail.SyohoKbn == 3 && string.IsNullOrEmpty(odrInfDetail.IpnName))
+                {
+                    // 一般名マスタに登録がない
+                    odrInfDetail.SyohoKbn = 2;
+                }
+            }
+            else
+            {
+                odrInfDetail.SyohoKbn = 0;
+                odrInfDetail.SyohoLimitKbn = 0;
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    private List<OdrSetNameModel> GetOdrSetNameFreeComment(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, string itemName, bool isQueryAll)
+    {
+        if (!checkBoxStatus.FreeCommentChecked)
+        {
+            return new List<OdrSetNameModel>();
+        }
+        if (!isQueryAll)
+        {
+            // If isn't query all, because free comment has EndDate = 99999999 by default => just ignore all free comment
+            return new();
+        }
+        var listSetKbn = GetListSetKbn(checkBoxStatus);
+
+        if (listSetKbn.Count <= 0 || !CheckTargetSetOdrInfDetail(checkBoxStatus))
+        {
+            return new();
+        }
+
+        var setMstRepo = NoTrackingDataContext.SetMsts
+                         .Where(item => item.HpId == hpId
+                                        && item.IsDeleted == 0
+                                        && item.GenerationId == generationId
+                                        && listSetKbn.Contains(item.SetKbn));
+
+        var setOdrInfRepo = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId && item.IsDeleted == 0);
+
+        var setOdrInfDetailRepo = NoTrackingDataContext.SetOdrInfDetail
+                                 .Where(item => item.HpId == hpId
+                                                && (item.ItemCd == null || item.ItemCd.Replace("　", string.Empty).Replace(" ", string.Empty) == string.Empty));
+
+        if (!string.IsNullOrWhiteSpace(itemName))
+        {
+            setOdrInfDetailRepo = setOdrInfDetailRepo.Where(item => item.ItemName != null && item.ItemName.Contains(itemName));
+        }
+
+        var detailResult = (from setMst in setMstRepo
+                            join setOdrInf in setOdrInfRepo on
+                                setMst.SetCd equals setOdrInf.SetCd
+                            join setOdrInfDetail in setOdrInfDetailRepo on
+                                new { setOdrInf.SetCd, setOdrInf.RpNo, setOdrInf.RpEdaNo } equals
+                                new { setOdrInfDetail.SetCd, setOdrInfDetail.RpNo, setOdrInfDetail.RpEdaNo }
+                            select new
+                            {
+                                SetMst = setMst,
+                                SetOdrInf = setOdrInf,
+                                SetOdrInfDetail = setOdrInfDetail,
+                            })
+                            .ToList();
+        return detailResult
+               .Select(d => ConvertToOdrSetNameModel(d.SetMst, d.SetOdrInf, d.SetOdrInfDetail, null, 0))
+               .ToList();
+    }
+
+    private OdrSetNameModel ConvertToOdrSetNameModel(SetMst setMst, SetOdrInf setOdrInf, SetOdrInfDetail? setOdrInfDetail, TenMst? tenMst, int lastEndDate)
+    {
+        return new OdrSetNameModel(
+               setMst.SetCd,
+               setMst.SetKbn,
+               setMst.SetKbnEdaNo,
+               setMst.GenerationId,
+               setMst.Level1,
+               setMst.Level2,
+               setMst.Level3,
+               setMst.SetName ?? string.Empty,
+               setOdrInfDetail?.RowNo ?? 0,
+               setOdrInf?.SortNo ?? 0,
+               setOdrInf?.RpName ?? string.Empty,
+               setOdrInfDetail?.ItemCd ?? string.Empty,
+               setOdrInfDetail?.ItemName ?? string.Empty,
+               setOdrInfDetail?.CmtName ?? string.Empty,
+               setOdrInfDetail?.CmtOpt ?? string.Empty,
+               setOdrInfDetail?.Suryo ?? 0,
+               setOdrInfDetail?.UnitName ?? string.Empty,
+               setOdrInfDetail?.UnitSbt ?? 0,
+               setOdrInfDetail?.OdrTermVal ?? 0,
+               setOdrInfDetail?.KohatuKbn ?? 0,
+               setOdrInfDetail?.IpnCd ?? string.Empty,
+               setOdrInfDetail?.IpnName ?? string.Empty,
+               setOdrInfDetail?.DrugKbn ?? 0,
+               setOdrInfDetail?.SinKouiKbn ?? 0,
+               setOdrInfDetail?.SyohoKbn ?? 0,
+               setOdrInfDetail?.SyohoLimitKbn ?? 0,
+               tenMst?.Ten ?? 0,
+               tenMst?.HandanGrpKbn ?? 0,
+               tenMst?.MasterSbt ?? string.Empty,
+               tenMst?.StartDate ?? 0,
+               lastEndDate > 0 ? lastEndDate : tenMst?.EndDate ?? 99999999,
+               setOdrInfDetail?.YohoKbn ?? 0,
+               setOdrInf?.OdrKouiKbn ?? 0,
+               tenMst?.BuiKbn ?? 0,
+               setOdrInf?.Id ?? 0
+            );
+    }
+
+    private List<int> GetListSetKbn(SetCheckBoxStatusModel checkBoxStatus)
+    {
+        List<int> listSetKbn = new();
+        if (checkBoxStatus.SetKbnChecked1)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn1);
+        }
+        if (checkBoxStatus.SetKbnChecked2)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn2);
+        }
+        if (checkBoxStatus.SetKbnChecked3)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn3);
+        }
+        if (checkBoxStatus.SetKbnChecked4)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn4);
+        }
+        if (checkBoxStatus.SetKbnChecked5)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn5);
+        }
+        if (checkBoxStatus.SetKbnChecked6)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn6);
+        }
+        if (checkBoxStatus.SetKbnChecked7)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn7);
+        }
+        if (checkBoxStatus.SetKbnChecked8)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn8);
+        }
+        if (checkBoxStatus.SetKbnChecked9)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn9);
+        }
+        if (checkBoxStatus.SetKbnChecked10)
+        {
+            listSetKbn.Add(SetNameConst.SetKbn10);
+        }
+        return listSetKbn;
+    }
+
+    private bool CheckTargetSetOdrInfDetail(SetCheckBoxStatusModel checkBoxStatus)
+    {
+        if (checkBoxStatus.JihiChecked)
+        {
+            return true;
+        }
+        else if (checkBoxStatus.KihonChecked)
+        {
+            return true;
+        }
+        else if (checkBoxStatus.TokuChecked)
+        {
+            return true;
+        }
+        else if (checkBoxStatus.YohoChecked)
+        {
+            return true;
+        }
+        else if (checkBoxStatus.BuiChecked)
+        {
+            return true;
+        }
+        else if (checkBoxStatus.FreeCommentChecked)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool CheckFreeCommentOnly(SetCheckBoxStatusModel checkBoxStatus)
+    {
+        return checkBoxStatus.FreeCommentChecked &&
+               !checkBoxStatus.JihiChecked &&
+               !checkBoxStatus.KihonChecked &&
+               !checkBoxStatus.TokuChecked &&
+               !checkBoxStatus.YohoChecked &&
+               !checkBoxStatus.BuiChecked;
     }
 
     public void ReleaseResource()

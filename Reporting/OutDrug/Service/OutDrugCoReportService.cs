@@ -13,6 +13,8 @@ using System.Text.Json;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using Reporting.OutDrug.Utils;
+using HokenSbtKbn = Reporting.CommonMasters.Constants.HokenSbtKbn;
 
 namespace Reporting.OutDrug.Service;
 
@@ -210,67 +212,22 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// <returns></returns>
     private List<CoOutDrugModel> GetData(CoOutDrugFinder finder, int hpId, long ptId, int sinDate, long raiinNo)
     {
-        #region sub method
-        // オーダー行為区分→剤型区分
-        int _getZaikeiKbn(int odrKouiKbn)
-        {
-            int ret = 0;
-            if (odrKouiKbn == 21)
-            {
-                // 内服
-                ret = 1;
-            }
-            else if (odrKouiKbn == 22)
-            {
-                // 頓服
-                ret = 2;
-            }
-            else if (odrKouiKbn == 23)
-            {
-                // 外用
-                ret = 3;
-            }
-            else if (odrKouiKbn >= 30 && odrKouiKbn <= 39)
-            {
-                // 注射
-                ret = 5;
-            }
-            else
-            {
-                // その他
-                ret = 9;
-            }
-
-            return ret;
-        }
-
-        // 文字結合（追加先が空でない場合は、スペースを入れる）
-        string _appendStr(string source, string addStr)
-        {
-            string ret = source;
-            if (addStr != string.Empty)
-            {
-                if (ret != string.Empty) ret += " ";
-                ret += addStr;
-            }
-
-            return ret;
-        }
-        #endregion
-
         // 戻り値
         List<CoOutDrugModel> outDrugModels = new();
 
-        var odrInfs = finder.FindOdrInfData(hpId, ptId, sinDate, raiinNo);
-        var odrInfDtls = finder.FindOdrInfDetailData(hpId, ptId, sinDate, raiinNo);
-        foreach (var odr in odrInfs.Where(odr => odrInfDtls.Any(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo)).ToList())
+        List<CoOdrInfModel> odrInfs = finder.FindOdrInfData(hpId, ptId, sinDate, raiinNo);
+        List<CoOdrInfDetailModel> odrInfDtls = finder.FindOdrInfDetailData(hpId, ptId, sinDate, raiinNo);
+
+        foreach (CoOdrInfModel odr in odrInfs)
         {
-            var odrInfDetail = odrInfDtls.FirstOrDefault(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo);
-            odr.Refill = (int)(odrInfDetail?.Suryo ?? 0);
+            if (odrInfDtls.Any(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo))
+            {
+                odr.Refill = (int)odrInfDtls.Find(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo).Suryo;
+            }
         }
 
-        List<CoOdrInfModel> filteredOdrInfs;
-        List<CoOdrInfDetailModel> filteredOdrInfDtls;
+        List<CoOdrInfModel> filteredOdrInfs = new();
+        List<CoOdrInfDetailModel> filteredOdrInfDtls = new();
 
         // 医療機関情報取得
         CoHpInfModel hpInf = finder.FindHpInf(hpId, sinDate);
@@ -297,7 +254,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         {
             if (i != 4)
             {
-                List<int> hokenSyu = new List<int>();
+                List<int> hokenSyu = new();
                 switch (i)
                 {
                     case 0: // 健保
@@ -446,12 +403,6 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                         filteredOdrInfs = odrInfs.FindAll(p => _isRefillRp(p.RpNo, p.RpEdaNo));
 
-                        //if (!filteredOdrInfs.Any(p => !(new int[] { 100, 101 }.Contains(p.OdrKouiKbn))))
-                        //{
-                        //    // 処方コメント、備考しかない場合は出力しない
-                        //    continue;
-                        //}
-
                         filteredOdrInfDtls = odrInfDtls.FindAll(p => _isRefillRp(p.RpNo, p.RpEdaNo));
 
                         // 最大分割回数
@@ -512,7 +463,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                     odrInf.Kohi1Futan = futan.kohi1;
                                     odrInf.Kohi2Futan = futan.kohi2;
                                     odrInf.Kohi3Futan = futan.kohi3;
-                                    odrInf.Kohi4Futan = futan.kohi4;
+                                    odrInf.KohiSpFutan = futan.kohi4;
                                 }
                                 else
                                 {
@@ -527,7 +478,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                             {
                                                 if (filteredPtKohis[k].HokenId == odrKohiId)
                                                 {
-                                                    if (new int[] { Helper.Constants.HokenSbtKbn.Seiho, Helper.Constants.HokenSbtKbn.Bunten, Helper.Constants.HokenSbtKbn.Ippan }.Contains(filteredPtKohis[k].HokenMst.HokenSbtKbn))
+                                                    if (new int[] { HokenSbtKbn.Seiho, HokenSbtKbn.Bunten, HokenSbtKbn.Ippan }.Contains(filteredPtKohis[k].HokenMst.HokenSbtKbn))
                                                     {
                                                         // 分点公費の場合は2を設定
                                                         kohis[k] = 2;
@@ -543,7 +494,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                         odrInf.Kohi1Futan = kohis[0];
                                         odrInf.Kohi2Futan = kohis[1];
                                         odrInf.Kohi3Futan = kohis[2];
-                                        odrInf.Kohi4Futan = kohis[3];
+                                        odrInf.KohiSpFutan = kohis[3];
 
                                         futans.Add((odrInf.HokenPid, kohis[0], kohis[1], kohis[2], kohis[3]));
                                     }
@@ -554,14 +505,76 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         }
 
                         // ソート
-                        filteredOdrInfs =
-                            filteredOdrInfs
-                                .OrderBy(p => p.KohiSortKey)
-                                .ThenBy(p => p.SortNo)
-                                .ThenBy(p => p.OdrKouiKbn)
-                                .ThenBy(p => p.RpNo)
-                                .ThenBy(p => p.RpEdaNo)
-                                .ToList();
+                        if (i == 0)
+                        {
+                            // 健保の場合
+                            if (_systemConfig.SyohosenKouiDivide() == 1)
+                            {
+                                // 行為を分けて出力
+                                filteredOdrInfs =
+                                    filteredOdrInfs
+                                        .OrderBy(p => p.KohiSortKey)
+                                        .ThenBy(p => p.OdrKouiKbn)
+                                        .ThenBy(p => p.SyohoSbt)
+                                        .ThenBy(p => p.SikyuKbn)
+                                        .ThenBy(p => p.TosekiKbn)
+                                        .ThenBy(p => p.SanteiKbn)
+                                        .ThenBy(p => p.SortNo)
+                                        .ThenBy(p => p.RpNo)
+                                        .ThenBy(p => p.RpEdaNo)
+                                        .ToList();
+                            }
+                            else
+                            {
+                                filteredOdrInfs =
+                                    filteredOdrInfs
+                                        .OrderBy(p => p.KohiSortKey)
+                                        .ThenBy(p => p.SyohoSbt)
+                                        .ThenBy(p => p.SikyuKbn)
+                                        .ThenBy(p => p.TosekiKbn)
+                                        .ThenBy(p => p.SanteiKbn)
+                                        .ThenBy(p => p.SortNo)
+                                        .ThenBy(p => p.OdrKouiKbn)
+                                        .ThenBy(p => p.RpNo)
+                                        .ThenBy(p => p.RpEdaNo)
+                                        .ToList();
+                            }
+                        }
+                        else
+                        {
+                            // 健保以外の場合
+                            if (_systemConfig.SyohosenKouiDivide() == 1)
+                            {
+                                // 行為を分けて出力
+                                filteredOdrInfs =
+                                    filteredOdrInfs
+                                        .OrderBy(p => p.HokenPid)
+                                        .ThenBy(p => p.OdrKouiKbn)
+                                        .ThenBy(p => p.SyohoSbt)
+                                        .ThenBy(p => p.SikyuKbn)
+                                        .ThenBy(p => p.TosekiKbn)
+                                        .ThenBy(p => p.SanteiKbn)
+                                        .ThenBy(p => p.SortNo)
+                                        .ThenBy(p => p.RpNo)
+                                        .ThenBy(p => p.RpEdaNo)
+                                        .ToList();
+                            }
+                            else
+                            {
+                                filteredOdrInfs =
+                                    filteredOdrInfs
+                                        .OrderBy(p => p.HokenPid)
+                                        .ThenBy(p => p.SyohoSbt)
+                                        .ThenBy(p => p.SikyuKbn)
+                                        .ThenBy(p => p.TosekiKbn)
+                                        .ThenBy(p => p.SanteiKbn)
+                                        .ThenBy(p => p.SortNo)
+                                        .ThenBy(p => p.OdrKouiKbn)
+                                        .ThenBy(p => p.RpNo)
+                                        .ThenBy(p => p.RpEdaNo)
+                                        .ToList();
+                            }
+                        }
 
                         // 来院情報取得
                         CoRaiinInfModel raiinInf = finder.FindRaiinInf(hpId, ptId, sinDate, raiinNo);
@@ -641,14 +654,14 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                             #region 麻薬
                             if (filteredOdrInfDtls.Any(p => p.MadokuKbn == 1))
                             {
-                                biko = _appendStr(biko, $"患者住所：{ptInf.HomeAddress1 + ptInf.HomeAddress2} 麻薬施用者免許証番号：{raiinInf.MayakuLicenseNo}");
+                                biko = OutDrugUtil.AppendStr(biko, $"患者住所：{ptInf.HomeAddress1 + ptInf.HomeAddress2} 麻薬施用者免許証番号：{raiinInf.MayakuLicenseNo}");
                             }
                             #endregion
 
                             #region ニコチネル
                             if (filteredOdrInfDtls.Any(p => ItemCdConst.nicotineruls.Contains(p.ItemCd)))
                             {
-                                biko = _appendStr(biko, "ニコチン依存症管理料の算定に伴う処方");
+                                biko = OutDrugUtil.AppendStr(biko, "ニコチン依存症管理料の算定に伴う処方");
                             }
                             #endregion
 
@@ -667,7 +680,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                                     if (santei)
                                     {
-                                        biko = _appendStr(biko, kigo);
+                                        biko = OutDrugUtil.AppendStr(biko, kigo);
                                     }
                                 }
                                 void _addBikoOdrItem(List<string> itemCds, string kigo)
@@ -678,7 +691,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                                     if (santei)
                                     {
-                                        biko = _appendStr(biko, kigo);
+                                        biko = OutDrugUtil.AppendStr(biko, kigo);
                                     }
                                 }
                                 #endregion
@@ -698,18 +711,18 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                             #region 情報通信
                             if (finder.CheckOdrRaiin(hpId, ptId, raiinNo, new List<string> { ItemCdConst.Con_Jouhou }))
                             {
-                                biko = _appendStr(biko, "情報通信");
+                                biko = OutDrugUtil.AppendStr(biko, "情報通信");
                             }
                             #endregion
 
                             #region 高齢者
-                            if (i == 0 && (CIUtil.AgeChk(ptInf.Birthday, sinDate, 70) || ptHoken.IsKouki) && ptHoken.HokenSbtKbn == Helper.Constants.HokenSbtKbn.Hoken)
+                            if (i == 0 && (CIUtil.AgeChk(ptInf.Birthday, sinDate, 70) || ptHoken.IsKouki) && ptHoken.HokenSbtKbn == HokenSbtKbn.Hoken)
                             {
                                 int hokenRate = printData.GetHokenRate(ptHoken.Rate, ptHoken.HokenSbtKbn, ptHoken.KogakuKbn, ptHoken.Houbetu);
 
                                 if (hokenRate >= 30)
                                 {
-                                    biko = _appendStr(biko, "（高７）");
+                                    biko = OutDrugUtil.AppendStr(biko, "（高７）");
                                 }
                                 else
                                 {
@@ -717,16 +730,16 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                     {
                                         if (ptHoken.KogakuKbn == 41)
                                         {
-                                            biko = _appendStr(biko, "（高８）");
+                                            biko = OutDrugUtil.AppendStr(biko, "（高８）");
                                         }
                                         else
                                         {
-                                            biko = _appendStr(biko, "（高９）");
+                                            biko = OutDrugUtil.AppendStr(biko, "（高９）");
                                         }
                                     }
                                     else
                                     {
-                                        biko = _appendStr(biko, "（高一）");
+                                        biko = OutDrugUtil.AppendStr(biko, "（高一）");
                                     }
                                 }
                             }
@@ -735,7 +748,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                             #region 未就学
                             if (!CIUtil.IsStudent(ptInf.Birthday, sinDate) && i == 0)
                             {
-                                biko = _appendStr(biko, "（６歳就学前）");
+                                biko = OutDrugUtil.AppendStr(biko, "（６歳就学前）");
                             }
                             #endregion
 
@@ -744,47 +757,47 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                             if ((ptKohis.Any(p => p.HokenSbtKbn == 2 && p.HokenEdaNo == 0)) || (marucyo == 1))
                             {
-                                biko = _appendStr(biko, "（長）");
+                                biko = OutDrugUtil.AppendStr(biko, "（長）");
                             }
                             else if ((ptKohis.Any(p => p.HokenSbtKbn == 2 && p.HokenEdaNo == 1)) || (marucyo == 2))
                             {
-                                biko = _appendStr(biko, "（長２）");
+                                biko = OutDrugUtil.AppendStr(biko, "（長２）");
                             }
                             #endregion
 
                             #region 都道府県別処理
 
                             // 作業用
-                            StringBuilder tmp = new();
+                            string tmp = string.Empty;
 
                             switch (hpInf.PrefNo)
                             {
                                 case PrefCode.Gifu:
                                     #region 岐阜
-                                    tmp.Clear();
+                                    tmp = string.Empty;
                                     for (int j = ptKohis.Count - 1; j >= 0; j--)
                                     {
-                                        tmp.Append(ptKohis[j].TokusyuNo);
+                                        tmp += ptKohis[j].TokusyuNo;
                                     }
-                                    if (tmp.Length > 0)
+                                    if (tmp != string.Empty)
                                     {
-                                        biko = _appendStr(biko, tmp.ToString());
+                                        biko = OutDrugUtil.AppendStr(biko, tmp);
                                     }
                                     #endregion
                                     break;
                                 case PrefCode.Shizuoka:
                                     #region 静岡
-                                    tmp.Clear();
+                                    tmp = string.Empty;
                                     for (int j = ptKohis.Count - 1; j >= 0; j--)
                                     {
                                         if (ptKohis[j].TokusyuNo != string.Empty)
                                         {
-                                            tmp.Append(ptKohis[j].TokusyuNo);
+                                            tmp = ptKohis[j].TokusyuNo;
                                         }
                                     }
-                                    if (tmp.Length > 0)
+                                    if (tmp != string.Empty)
                                     {
-                                        biko = _appendStr(biko, tmp.ToString());
+                                        biko = OutDrugUtil.AppendStr(biko, tmp);
                                     }
                                     #endregion
                                     break;
@@ -792,17 +805,17 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                     #region 愛知
                                     if (ptKohis.Any(p => p.FutansyaNo == "99000000"))
                                     {
-                                        biko = _appendStr(biko, "マル特");
+                                        biko = OutDrugUtil.AppendStr(biko, "マル特");
                                     }
 
-                                    tmp.Clear();
+                                    tmp = string.Empty;
                                     for (int j = ptKohis.Count - 1; j >= 0; j--)
                                     {
-                                        tmp.Append(ptKohis[j].TokusyuNo);
+                                        tmp += ptKohis[j].TokusyuNo;
                                     }
-                                    if (tmp.Length > 0)
+                                    if (tmp != string.Empty)
                                     {
-                                        biko = _appendStr(biko, tmp.ToString());
+                                        biko = OutDrugUtil.AppendStr(biko, tmp);
                                     }
                                     #endregion
                                     break;
@@ -811,7 +824,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                     if (ptKohis.Any(p => p.HokenNo == 127 && p.PrefNo == PrefCode.Kyoto))
                                     {
                                         // 京都重障老人
-                                        biko = _appendStr(biko, "(老)重障老人");
+                                        biko = OutDrugUtil.AppendStr(biko, "(老)重障老人");
                                     }
                                     #endregion
                                     break;
@@ -820,7 +833,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                     List<CoPtKohiModel> ptKohi = ptKohis.FindAll(p => new int[] { 198, 298 }.Contains(p.HokenNo));
                                     if (ptKohi.Any())
                                     {
-                                        biko = _appendStr(biko, $"（　）主病{ptKohi.First().TokusyuNo}");
+                                        biko = OutDrugUtil.AppendStr(biko, $"（　）主病{ptKohi.First().TokusyuNo}");
                                     }
                                     #endregion
                                     break;
@@ -836,11 +849,11 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                         {
                                             if (ptKohi.First().DayLimitFutan > 0)
                                             {
-                                                biko = _appendStr(biko, $"{kigo}{ptKohi.First().DayLimitFutan}円");
+                                                biko = OutDrugUtil.AppendStr(biko, $"{kigo}{ptKohi.First().DayLimitFutan}円");
                                             }
                                             else
                                             {
-                                                biko = _appendStr(biko, $"{kigo}{ptKohi.First().MonthLimitFutan}円");
+                                                biko = OutDrugUtil.AppendStr(biko, $"{kigo}{ptKohi.First().MonthLimitFutan}円");
                                             }
                                         }
                                     }
@@ -849,22 +862,21 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                         ptKohi = ptKohis.FindAll(p => houbetus.Contains(CIUtil.Copy(p.FutansyaNo, 1, 2)));
                                         if (ptKohi.Any())
                                         {
-                                            tmp.Clear();
-                                            tmp.Append(kigo);
+                                            tmp = kigo;
 
                                             if (ptKohi.First().FutanRate > 0)
                                             {
-                                                tmp.Append($"{ptKohi.First().FutanRate / 10}割");
+                                                tmp += $"{ptKohi.First().FutanRate / 10}割";
                                             }
                                             if (ptKohi.First().DayLimitFutan > 0)
                                             {
-                                                tmp.Append($"{ptKohi.First().DayLimitFutan}円");
+                                                tmp += $"{ptKohi.First().DayLimitFutan}円";
                                             }
                                             else if (ptKohi.First().MonthLimitFutan > 0)
                                             {
-                                                tmp.Append($"{ptKohi.First().MonthLimitFutan}円");
+                                                tmp += $"{ptKohi.First().MonthLimitFutan}円";
                                             }
-                                            biko = _appendStr(biko, tmp.ToString());
+                                            biko = OutDrugUtil.AppendStr(biko, tmp);
                                         }
                                     }
                                     #endregion
@@ -885,15 +897,15 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                     {
                                         if (ptKohis[j].HokenNo == 141)
                                         {
-                                            biko = _appendStr(biko, $"子ども：{ptKohis[j].JyukyusyaNo}");
+                                            biko = OutDrugUtil.AppendStr(biko, $"子ども：{ptKohis[j].JyukyusyaNo}"); ;
                                         }
                                         else if (ptKohis[j].HokenNo == 142)
                                         {
-                                            biko = _appendStr(biko, $"重障：{ptKohis[j].JyukyusyaNo}");
+                                            biko = OutDrugUtil.AppendStr(biko, $"重障：{ptKohis[j].JyukyusyaNo}"); ;
                                         }
                                         else if (ptKohis[j].HokenNo == 143)
                                         {
-                                            biko = _appendStr(biko, $"ひとり親：{ptKohis[j].JyukyusyaNo}");
+                                            biko = OutDrugUtil.AppendStr(biko, $"ひとり親：{ptKohis[j].JyukyusyaNo}"); ;
                                         }
                                     }
                                     #endregion
@@ -913,17 +925,15 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                 string line = bikoLine;
                                 while (line != string.Empty)
                                 {
-                                    tmp.Clear();
-                                    tmp.Append(line);
+                                    tmp = line;
                                     if (CIUtil.LenB(line) > 100)
                                     {
-                                        tmp.Clear();
-                                        tmp.Append(CIUtil.CiCopyStrWidth(line, 1, 100));
+                                        tmp = CIUtil.CiCopyStrWidth(line, 1, 100);
                                     }
 
-                                    qrData.QR081.Add(tmp.ToString());
+                                    qrData.QR081.Add(tmp);
 
-                                    line = CIUtil.CiCopyStrWidth(line, CIUtil.LenB(tmp.ToString()) + 1, CIUtil.LenB(line) - CIUtil.LenB(tmp.ToString()));
+                                    line = CIUtil.CiCopyStrWidth(line, CIUtil.LenB(tmp) + 1, CIUtil.LenB(line) - CIUtil.LenB(tmp));
                                 }
                             }
 
@@ -950,20 +960,21 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                 }
 
                                 // QRデータ初期化
-                                CoOutDrugQR101 qr101;
-                                CoOutDrugQR102 qr102 = new();
+                                CoOutDrugQR101 qr101 = null;
+                                CoOutDrugQR102 qr102 = null;
 
                                 // 用法
-                                CoOutDrugQR111 qr111 = new(version, rpNo, "　");
+                                CoOutDrugQR111 qr111 = new CoOutDrugQR111(version, rpNo, "　");
 
                                 // 用法補足
                                 CoOutDrugQR181 qr181 = new CoOutDrugQR181(version, rpNo);
-
                                 // 薬剤情報
-                                List<CoOutDrugQRDrug> qrDrugs = new();
+                                List<CoOutDrugQRDrug> qrDrugs = new List<CoOutDrugQRDrug>();
+
+                                // 紙用薬剤情報
 
                                 // 剤型区分
-                                int zaikeiKbn = _getZaikeiKbn(odrInf.OdrKouiKbn);
+                                int zaikeiKbn = GetZaikeiKbn(odrInf.OdrKouiKbn);
                                 // 分割指示有無
                                 bool bunkatu = false;
                                 // 総調剤数量
@@ -997,9 +1008,12 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                 printData.RpInfs.Add(new CoOutDrugPrintDataRpInf(rpNo, odrInf.KohiFutan));
 
                                 // 臨時処方
-                                if (_systemConfig.SyohosenRinjiKisai() == 1 && odrInf.SyohoSbt == 1)
+                                if (_systemConfig.SyohosenRinjiKisai() == 1)
                                 {
-                                    printData.RpInfs.Last().AddDrugInf(ItemTypeConst.NoAstComment, string.Empty, "【臨時処方】", 0, string.Empty);
+                                    if (odrInf.SyohoSbt == 1)
+                                    {
+                                        printData.RpInfs.Last().AddDrugInf(ItemTypeConst.NoAstComment, string.Empty, "【臨時処方】", 0, string.Empty);
+                                    }
                                 }
 
                                 int seqNo = 1;
@@ -1019,9 +1033,9 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                     else if (odrDtl.DrugKbn > 0 || odrDtl.IsTokuzai)
                                     {
                                         // 薬剤または特材
-                                        CoOutDrugQR201 qr201 = new();
-                                        CoOutDrugQR211 qr211 = new();
-                                        CoOutDrugQR231 qr231 = new();
+                                        CoOutDrugQR201 qr201 = null;
+                                        CoOutDrugQR211 qr211 = null;
+                                        CoOutDrugQR231 qr231 = null;
                                         CoOutDrugQR281 qr281 = new CoOutDrugQR281(version, rpNo, seqNo);
 
                                         int infKbn = 0;
@@ -1092,7 +1106,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                                 }
 
                                                 rikika = 1;
-                                                unitName = odrDtl?.TenMst.ReceUnitName ?? string.Empty;
+                                                unitName = odrDtl.TenMst.ReceUnitName;
                                             }
                                             else
                                             {
@@ -1121,28 +1135,28 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                             string yakuhinHosokuInf2 = string.Empty;
                                             string printHosokuInf = string.Empty;
 
-                                            if (odrDtl?.SyohoKbn == 1)
+                                            if (odrDtl.SyohoKbn == 1)
                                             {
                                                 yakuhinHosokuKbn = 3;
                                                 yakuhinHosokuInf = "後発品変更不可";
                                                 henkoMark = "×";
                                             }
-                                            else if (new int[] { 2, 3 }.Contains(odrDtl?.SyohoKbn ?? 0))
+                                            else if (new int[] { 2, 3 }.Contains(odrDtl.SyohoKbn))
                                             {
-                                                if (odrDtl?.SyohoLimitKbn == 1)
+                                                if (odrDtl.SyohoLimitKbn == 1)
                                                 {
                                                     yakuhinHosokuKbn = 4;
                                                     yakuhinHosokuInf = "剤型変更不可";
                                                     printHosokuInf = "（剤型変更不可）";
                                                 }
-                                                else if (odrDtl?.SyohoLimitKbn == 2)
+                                                else if (odrDtl.SyohoLimitKbn == 2)
                                                 {
                                                     yakuhinHosokuKbn = 5;
                                                     yakuhinHosokuInf = "含有規格変更不可";
                                                     printHosokuInf = "（含有規格変更不可）";
 
                                                 }
-                                                else if (odrDtl?.SyohoLimitKbn == 3)
+                                                else if (odrDtl.SyohoLimitKbn == 3)
                                                 {
                                                     yakuhinHosokuKbn = 4;
                                                     yakuhinHosokuInf = "剤型変更不可";
@@ -1179,7 +1193,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                                     (odrInf.Kohi1Futan > 0 ? 1 : 0),
                                                     (odrInf.Kohi2Futan > 0 ? 1 : 0),
                                                     (odrInf.Kohi3Futan > 0 ? 1 : 0),
-                                                    (odrInf.Kohi4Futan > 0 ? 1 : 0));
+                                                    (odrInf.KohiSpFutan > 0 ? 1 : 0));
                                             }
 
                                         }
@@ -1302,32 +1316,28 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                                 filteredOdrInfDtls = odrInfDtls.FindAll(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo);
 
-                                if (!filteredOdrInfDtls.Any())
-                                {
-                                    continue;
-                                }
+                                if (!filteredOdrInfDtls.Any()) continue;
 
-                                StringBuilder syohoComment = new();
+                                string syohoComment = string.Empty;
                                 foreach (CoOdrInfDetailModel odrDtl in filteredOdrInfDtls.FindAll(p => p.ItemCd != ItemCdConst.Con_Refill))
                                 {
-                                    syohoComment.Append(odrDtl.ItemName);
+                                    syohoComment += odrDtl.ItemName;
                                     if (odrDtl.CommentNewLine == 1)
                                     {
                                         // 改行
-                                        printData.RpInfs.Last().AddDrugInf(ItemTypeConst.Comment, string.Empty, syohoComment.ToString(), 0, string.Empty);
-                                        syohoComment.Clear();
+                                        printData.RpInfs.Last().AddDrugInf(ItemTypeConst.Comment, string.Empty, syohoComment, 0, string.Empty);
+                                        syohoComment = string.Empty;
                                     }
                                 }
 
-                                if (syohoComment.Length > 0)
+                                if (!string.IsNullOrEmpty(syohoComment))
                                 {
-                                    printData.RpInfs.Last().AddDrugInf(ItemTypeConst.Comment, string.Empty, syohoComment.ToString(), 0, string.Empty);
-                                    syohoComment.Clear();
+                                    printData.RpInfs.Last().AddDrugInf(ItemTypeConst.Comment, string.Empty, syohoComment, 0, string.Empty);
+                                    syohoComment = string.Empty;
                                 }
                             }
 
                             outDrugModels.Add(new CoOutDrugModel(printData, qrData));
-
                         }
 
                         if (bunkatuMax > 1)
@@ -1336,6 +1346,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                             CoOutDrugPrintData printData = new CoOutDrugPrintData(OutDrugPrintOutType.Bunkatu, sinDate, ptInf, ptHoken, filteredPtKohis, hpInf, raiinInf, bunkatuMax, 0, 0);
                             outDrugModels.Add(new CoOutDrugModel(printData, null));
                         }
+                        // 紙用データ作成
                     }
                 }
             }
@@ -1628,6 +1639,42 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 _dataList.Last().Data = _addHalfSpace("---- 以下余白 ----", _dataCharCount);
             }
         }
+    }/// <summary>
+
+     /// 剤型区分の取得
+     /// </summary>
+     /// <param name="odrKouiKbn">オーダー行為区分</param>
+     /// <returns>剤型区分</returns>
+    private int GetZaikeiKbn(int odrKouiKbn)
+    {
+        int ret = 0;
+        if (odrKouiKbn == 21)
+        {
+            // 内服
+            ret = 1;
+        }
+        else if (odrKouiKbn == 22)
+        {
+            // 頓服
+            ret = 2;
+        }
+        else if (odrKouiKbn == 23)
+        {
+            // 外用
+            ret = 3;
+        }
+        else if (odrKouiKbn >= 30 && odrKouiKbn <= 39)
+        {
+            // 注射
+            ret = 5;
+        }
+        else
+        {
+            // その他
+            ret = 9;
+        }
+
+        return ret;
     }
 
     /// <summary>
@@ -1760,7 +1807,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         // 分割
         string _getBunkatu()
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (_coModel.PrintData?.BunkatuMax > 1)
             {
@@ -1771,7 +1818,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         // 注意
         string _getCyui()
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (_coModel.PrintData?.BunkatuMax <= 1)
             {
@@ -1790,7 +1837,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             }
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -1809,7 +1856,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         // 負担率
         string _getFutanRate()
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (_systemConfig.SyohosenFutanRate() != 0)
             {
@@ -1834,7 +1881,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         // 変更不可の薬剤がある場合、保険医署名
         string _getDoctorName()
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (_coModel.PrintData?.HenkoFuka ?? false)
             {

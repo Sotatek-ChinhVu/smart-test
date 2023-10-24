@@ -1211,6 +1211,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                        p.StartDate <= sTDDate &&
                                                                        p.EndDate >= sTDDate).ToList();
 
+        var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
+                                                                        p.HpId == hpId &&
+                                                                        p.StartDate <= sTDDate &&
+                                                                        p.EndDate > sTDDate).ToList();
         var joinedQuery = from q in queryJoinWithKensa
                           join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
                           from ipnExclude in ipnExcludes.DefaultIfEmpty()
@@ -1220,6 +1224,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           from ipnYakka in ipnYakkas.DefaultIfEmpty()
                           join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
                           from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                          join kasan in ipnKasanMst on q.TenMst.IpnNameCd equals kasan.IpnNameCd into kasans
+                          from ipnKasan in ipnKasanMst.DefaultIfEmpty()
                           select new
                           {
                               q.TenMst,
@@ -1229,7 +1235,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               q.KensaMst,
                               IpnName = ipnNameMst?.IpnName ?? string.Empty,
                               IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
-                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
+                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka,
+                              IpnKasan = ipnKasan
                           };
 
         var tenMstModels = joinedQuery.Select(item => new TenItemModel(
@@ -1286,7 +1293,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                        item.TenMst?.HandanGrpKbn ?? 0,
                                                        item.KensaMst == null,
                                                        item.Yakka == null ? 0 : item.Yakka ?? 0,
-                                                       item.IsGetYakkaPrice
+                                                       item.IsGetYakkaPrice,
+                                                       item.IpnKasan.Kasan1,
+                                                       item.IpnKasan.Kasan2
                                                         )).ToList();
 
         if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
@@ -2671,7 +2680,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
         return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
     }
-
 
     public bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
     {
@@ -5342,6 +5350,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+        var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
+                                                                        p.HpId == hpId &&
+                                                                        p.StartDate <= sTDDate &&
+                                                                        p.EndDate > sTDDate).ToList();
 
         var joinedQuery = from q in queryFinal
                           join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
@@ -5352,6 +5364,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           from ipnYakka in ipnYakkas.DefaultIfEmpty()
                           join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
                           from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                          join kasan in ipnKasanMst on q.TenMst.IpnNameCd equals kasan.IpnNameCd into kasans
+                          from ipnKasan in ipnKasanMst.DefaultIfEmpty()
                           select new
                           {
                               q.TenMst,
@@ -5361,7 +5375,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               KensaMst = q.KensaMst,
                               IpnName = ipnNameMst?.IpnName ?? string.Empty,
                               IsGetYakkaPrice = ipnExcludes.FirstOrDefault() == null && ipnExcludesItems.FirstOrDefault() == null,
-                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka
+                              Yakka = ipnYakkas.FirstOrDefault() == null ? 0 : ipnYakkas.FirstOrDefault()?.Yakka,
+                              IpnKasan = ipnKasan
                           };
 
         var totalCount = joinedQuery.Count();
@@ -5422,7 +5437,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                        item.TenMst?.HandanGrpKbn ?? 0,
                                                        item.KensaMst == null,
                                                        item.Yakka == null ? 0 : item.Yakka ?? 0,
-                                                       item.IsGetYakkaPrice
+                                                       item.IsGetYakkaPrice,
+                                                       item.IpnKasan.Kasan1,
+                                                       item.IpnKasan.Kasan2
                                                         )).ToList();
 
         return (tenMstModels, totalCount);
@@ -6705,6 +6722,33 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
+    public TenItemModel GetTenMst(int hpId, string itemCd, int sinDate)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                          && item.StartDate <= sinDate
+                                                                          && item.EndDate >= sinDate
+                                                                          && item.ItemCd == itemCd);
+
+        if (tenMst == null)
+        {
+            tenMst = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                 && item.StartDate < sinDate
+                                                                 && item.EndDate < sinDate
+                                                                 && item.ItemCd == itemCd)
+                                                  .OrderByDescending(item => item.EndDate)
+                                                  .FirstOrDefault();
+        }
+
+        return new TenItemModel(
+                   tenMst?.ItemCd ?? string.Empty,
+                   tenMst?.Ten ?? 0,
+                   tenMst?.HandanGrpKbn ?? 0,
+                   tenMst?.EndDate ?? 0,
+                   tenMst?.KensaItemCd ?? string.Empty,
+                   tenMst?.KensaItemSeqNo ?? 0,
+                   tenMst?.IpnNameCd ?? string.Empty);
+    }
+
     public List<KensaIjiSettingModel> GetListKensaIjiSettingModel(int hpId, string keyWords, bool isValid, bool isExpired, bool? isPayment)
     {
         List<KensaIjiSettingModel> result = null;
@@ -7657,6 +7701,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     continue;
                 }
                 renkeiEntity.Param = renkeiModel.Param;
+                renkeiEntity.RenkeiId = renkeiModel.RenkeiId;
                 renkeiEntity.PtNumLength = renkeiModel.PtNumLength;
                 renkeiEntity.TemplateId = renkeiModel.TemplateId;
                 renkeiEntity.IsInvalid = renkeiModel.IsInvalid;
@@ -7696,6 +7741,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     pathEntity.Machine = pathModel.Machine;
                     pathEntity.CharCd = pathModel.CharCd;
                     pathEntity.IsInvalid = pathModel.IsInvalid;
+                    pathEntity.Param = pathModel.Param;
                     pathEntity.Biko = pathModel.Biko;
                     pathEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     pathEntity.UpdateId = userId;
@@ -7796,6 +7842,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
             from res in joinedData.DefaultIfEmpty()
+            join kensaStd in NoTrackingDataContext.KensaStdMsts
+                             on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
+            from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
             select new KensaMstModel(
                kensaMst.KensaItemCd,
                kensaMst.KensaItemSeqNo,
@@ -7806,11 +7855,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 kensaMst.MaterialCd,
                 kensaMst.ContainerCd,
                 kensaMst.MaleStd ?? string.Empty,
-                kensaMst.MaleStdLow ?? string.Empty,
-                kensaMst.MaleStdHigh ?? string.Empty,
-                kensaMst.FemaleStd ?? string.Empty,
-                kensaMst.FemaleStdLow ?? string.Empty,
-                kensaMst.FemaleStdHigh ?? string.Empty,
+                kensaStd.MaleStdLow ?? string.Empty,
+                kensaStd.MaleStdHigh ?? string.Empty,
+                kensaStd.FemaleStd ?? string.Empty,
+                kensaStd.FemaleStdLow ?? string.Empty,
+                kensaStd.FemaleStdHigh ?? string.Empty,
                 kensaMst.Formula ?? string.Empty,
                 kensaMst.Digit,
                 kensaMst.OyaItemCd ?? string.Empty,
@@ -7917,7 +7966,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       new(),
                       new(),
                       new(),
-                      new(),
+                      entity,
                       x.CenterName
                     )).OrderBy(x => x.SortNo).ToList();
 

@@ -61,6 +61,7 @@ namespace Reporting.Kensalrai.Model
         public long RaiinNo { get; private set; }
 
         public long IraiCd { get; set; } = 0;
+
         public long PtId { get; private set; }
 
         public long PtNum { get; private set; }

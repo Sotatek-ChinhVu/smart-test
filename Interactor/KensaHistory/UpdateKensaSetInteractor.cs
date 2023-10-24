@@ -24,10 +24,6 @@ namespace Interactor.KensaHistory
                 return new UpdateKensaSetOuputData(false, UpdateKensaSetStatus.InValidUserId);
             }
 
-            if (inputData.KensaSetDetails.Count <= 0)
-            {
-                return new UpdateKensaSetOuputData(false, UpdateKensaSetStatus.InvalidDataUpdate);
-            }
             try
             {
                 var data = _kensaSetRepository.UpdateKensaSet(inputData.HpId, inputData.UserId, inputData.SetId, inputData.SetName, inputData.SortNo, inputData.IsDeleted, inputData.KensaSetDetails);

@@ -15,14 +15,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        
+
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 変換元診療行為コード
         /// </summary>
-        
+
         [Column("SOURCE_ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string SourceItemCd { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 変換先診療行為コード
         /// </summary>
-        
+
         [Column("DEST_ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string DestItemCd { get; set; } = string.Empty;
@@ -40,6 +40,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SORT_NO")]
         public int SortNo { get; set; }
+
+        /// <summary>
+        /// 削除区分
+        ///		1:削除		
+        /// </summary>
+        [Column(name: "IS_DELETED")]
+        [CustomAttribute.DefaultValue(0)]
+        public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時

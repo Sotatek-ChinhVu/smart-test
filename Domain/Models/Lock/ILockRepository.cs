@@ -39,5 +39,7 @@ namespace Domain.Models.Lock
         List<ResponseLockModel> GetResponseLockModel(int hpId, List<long> raiinNoList);
 
         List<LockModel> CheckLockOpenAccounting(int hpId, long ptId, long raiinNo, int userId);
+
+        LockModel CheckIsExistedOQLockInfo(int hpId, int userId, long ptId, string functionCd, long raiinNo, int sinDate);
     }
 }

@@ -3,6 +3,7 @@ using Domain.Models.RaiinListSetting;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,18 @@ namespace Infrastructure.Repositories
 {
     public class RaiinListSettingRepository : RepositoryBase, IRaiinListSettingRepository
     {
-        public RaiinListSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider) { }
+        private readonly StackExchange.Redis.IDatabase _cache;
+        private string key;
+        private string RaiinListMstCacheKey
+        {
+            get => $"{key}-RaiinListMstCacheKey";
+        }
+
+        public RaiinListSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        {
+            key = GetCacheKey().Replace(this.GetType().Name, typeof(FlowSheetRepository).Name);
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
 
         public List<FilingCategoryModel> GetFilingcategoryCollection(int hpId)
         {
@@ -1786,6 +1798,12 @@ namespace Infrastructure.Repositories
                     }
                 }
             });
+
+            // Clear RaiinListMstCache
+            if (resultSave)
+            {
+                _cache.KeyDelete(RaiinListMstCacheKey);
+            }
 
             return resultSave;
         }
