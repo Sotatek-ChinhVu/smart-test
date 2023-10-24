@@ -52,25 +52,7 @@ namespace Infrastructure.CommonDB
         public string GetAdminConnectionString()
         {
             string dbSample = _configuration["AdminDatabase"] ?? string.Empty;
-            string clientDomain = GetDomainFromHeader();
-            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
-            if (string.IsNullOrEmpty(clientDomain))
-            {
-                return dbSample;
-            }
-            var domainList = _configuration.GetSection("DomainList").Path;
-            if (string.IsNullOrEmpty(domainList))
-            {
-                return dbSample;
-            }
-            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
-            if (string.IsNullOrEmpty(clientDomainInConfig))
-            {
-                return dbSample;
-            }
-            string result = clientDomainInConfig ?? string.Empty;
-
-            return result;
+            return dbSample;
         }
 
         public string GetClinicID()
