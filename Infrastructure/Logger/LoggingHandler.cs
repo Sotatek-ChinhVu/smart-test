@@ -47,23 +47,9 @@ namespace Infrastructure.Logger
 
         public async Task<AuditLog> GenerateAuditLog(int type, string eventCd, long ptId, long raiinNo, int sinDay, string description)
         {
-            var domain = _tenantProvider.GetDomain();
-            if (domain.Contains("uat-tenant.smartkarte.org"))
-            {
-                domain = "UAT";
-            }
-            else if (domain.Contains("smartkarte-api.sotatek.works"))
-            {
-                domain = "SMARTKARTE";
-            }
-            else
-            {
-                domain = string.Empty;
-            }
-
             AuditLog audit = new AuditLog()
             {
-                Domain = domain,
+                Domain = _tenantProvider.GetDomain(),
                 ClientIP = _tenantProvider.GetClientIp(),
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
@@ -102,27 +88,13 @@ namespace Infrastructure.Logger
 
         public bool WriteAuditLog(string path, string requestInfo, string eventCd, long ptId, long raiinNo, int sinDay, string description, string logType)
         {
-            var domain = _tenantProvider.GetDomainFromHeader();
-            if (domain.Contains("uat-tenant.smartkarte.org"))
-            {
-                domain = "UAT";
-            }
-            else if (domain.Contains("smartkarte-api.sotatek.works"))
-            {
-                domain = "SMARTKARTE";
-            }
-            else
-            {
-                domain = string.Empty;
-            }
-
             AuditLog audit = new AuditLog()
             {
-                Domain = domain,
+                Domain = _tenantProvider.GetDomainFromHeader(),
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
-                TenantId = domain,
+                TenantId = _tenantProvider.GetClinicID(),
                 Path = path,
                 RequestInfo = requestInfo,
                 LogDate = CIUtil.GetJapanDateTimeNow(),
@@ -142,24 +114,11 @@ namespace Infrastructure.Logger
 
         public bool WriteAuditLog(List<AuditLogModel> auditLogList)
         {
-            string domain = _tenantProvider.GetDomainFromHeader().Replace(".org", "").Replace(".works", "");
+            string domain = _tenantProvider.GetDomain();
             int hpId = _tenantProvider.GetHpId();
             int departmentId = _tenantProvider.GetDepartmentId();
             int userId = _tenantProvider.GetUserId();
-            string tenantId = _tenantProvider.GetDomainFromHeader().Replace(".org", "").Replace(".works", "");
-
-            if (domain.Contains("uat-tenant.smartkarte.org"))
-            {
-                domain = "UAT";
-            }
-            else if (domain.Contains("smartkarte-api.sotatek.works"))
-            {
-                domain = "SMARTKARTE";
-            }
-            else
-            {
-                domain = string.Empty;
-            }
+            string tenantId = _tenantProvider.GetClinicID();
 
             foreach (var item in auditLogList)
             {
@@ -169,7 +128,7 @@ namespace Infrastructure.Logger
                     HpId = hpId,
                     DepartmentId = departmentId,
                     UserId = userId,
-                    TenantId = domain,
+                    TenantId = tenantId,
                     Path = item.Path,
                     RequestInfo = item.RequestInfo,
                     LogDate = CIUtil.GetJapanDateTimeNow(),
