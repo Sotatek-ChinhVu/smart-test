@@ -784,6 +784,7 @@ using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 using UseCase.MainMenu.GetOdrSetName;
+using UseCase.Lock.CheckIsExistedOQLockInfo;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1745,6 +1746,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
             busBuilder.RegisterUseCase<GetLockInfInputData, GetLockInfInteractor>();
             busBuilder.RegisterUseCase<UnlockInputData, UnlockInteractor>();
+            busBuilder.RegisterUseCase<CheckIsExistedOQLockInfoInputData, CheckIsExistedOQLockInfoInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
