@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.SuperSetDetail;
+﻿using Helper.Constants;
+
+namespace Domain.Models.SuperSetDetail;
 
 public class OdrSetNameModel
 {
@@ -39,6 +41,24 @@ public class OdrSetNameModel
         OdrKouiKbn = odrKouiKbn;
         BuiKbn = buiKbn;
         SetOrdInfId = setOrdInfId;
+    }
+
+    public OdrSetNameModel(int setCd, int rowNo, string itemCd, string cmtOpt, double quantity, long setOrdInfId)
+    {
+        SetCd = setCd;
+        RowNo = rowNo;
+        ItemCd = itemCd;
+        CmtOpt = cmtOpt;
+        Quantity = quantity;
+        SetOrdInfId = setOrdInfId;
+        IpnName = string.Empty;
+        IpnCd = string.Empty;
+        SetName = string.Empty;
+        RpName = string.Empty;
+        ItemName = string.Empty;
+        CmtName = string.Empty;
+        UnitName = string.Empty;
+        MasterSbt = string.Empty;
     }
 
     public int SetCd { get; private set; }
@@ -110,4 +130,26 @@ public class OdrSetNameModel
     public int BuiKbn { get; private set; }
 
     public long SetOrdInfId { get; private set; }
+
+    #region extend param
+    public bool Is830Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment830Pattern);
+
+    public bool Is831Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment831Pattern);
+
+    public bool Is840Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && ItemCd != ItemCdConst.GazoDensibaitaiHozon;
+
+    public bool Is842Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment842Pattern);
+
+    public bool Is850Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment850Pattern);
+
+    public bool Is851Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment851Pattern);
+
+    public bool Is852Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment852Pattern);
+
+    public bool Is853Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment853Pattern);
+
+    public bool Is880Cmt => !string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith(ItemCdConst.Comment880Pattern);
+
+    public bool IsCommentMaster => Is830Cmt || Is831Cmt || Is840Cmt || Is842Cmt || Is850Cmt || Is851Cmt || Is852Cmt || Is853Cmt || Is880Cmt;
+    #endregion
 }

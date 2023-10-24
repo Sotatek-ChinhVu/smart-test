@@ -783,6 +783,7 @@ using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 using UseCase.MainMenu.GetOdrSetName;
+using UseCase.MainMenu.SaveOdrSet;
 using UseCase.Lock.CheckIsExistedOQLockInfo;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1335,6 +1336,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
             busBuilder.RegisterUseCase<SaveConversionInputData, SaveConversionInteractor>();
             busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
+            busBuilder.RegisterUseCase<SaveOdrSetInputData, SaveOdrSetInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
