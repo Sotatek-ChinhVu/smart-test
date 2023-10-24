@@ -393,6 +393,7 @@
         public static readonly string InvalidMemo = "Invalid Memo";
         public static readonly string InvalidSourceItemCd = "Invalid SourceItemCd.";
         public static readonly string InvalidConversionItemCd = "Invalid ConversionItemCd.";
+        public static readonly string InvalidQuanlity = "Invalid Quanlity.";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
