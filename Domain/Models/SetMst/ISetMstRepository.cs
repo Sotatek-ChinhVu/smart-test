@@ -13,5 +13,7 @@ public interface ISetMstRepository : IRepositoryBase
 
     bool CheckExistSetMstBySetCd(int setCd);
 
+    bool CheckExistSetMstBySetCd(int hpId, List<int> setCdList);
+
     SetMstTooltipModel GetToolTip(int hpId, int setCd);
 }

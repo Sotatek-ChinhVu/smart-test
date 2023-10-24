@@ -790,6 +790,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return NoTrackingDataContext.SetMsts.Any(item => item.SetCd == setCd);
     }
 
+    public bool CheckExistSetMstBySetCd(int hpId, List<int> setCdList)
+    {
+        setCdList = setCdList.Distinct().ToList();
+        return NoTrackingDataContext.SetMsts.Count(item => item.HpId == hpId && setCdList.Contains(item.SetCd)) == setCdList.Count;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

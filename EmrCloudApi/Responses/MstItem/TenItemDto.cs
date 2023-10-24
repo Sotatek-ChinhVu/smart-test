@@ -62,6 +62,8 @@ namespace EmrCloudApi.Responses.MstItem
             HandanGrpKbn = model.HandanGrpKbn;
             Yakka = model.Yakka;
             IsGetPriceInYakka = model.IsGetPriceInYakka;
+            Kasan1 = model.Kasan1;
+            Kasan2 = model.Kasan2;
         }
 
         [JsonConstructor]
@@ -232,5 +234,9 @@ namespace EmrCloudApi.Responses.MstItem
         public double Yakka { get; private set; }
 
         public bool IsGetPriceInYakka { get; private set; }
+
+        public int Kasan1 { get; private set; }
+
+        public int Kasan2 { get; private set; }
     }
 }
