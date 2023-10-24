@@ -1,7 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Interfaces;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReceiptCheck.DB;
 using Reporting.ReceiptCheck.Mapper;
@@ -50,6 +49,18 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
             }
 
             return new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
+        }
+    }
+
+    public bool CheckOpenReceiptCheck(int hpId, List<long> ptIds, int seikyuYm)
+    {
+        using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
+        {
+            var finder = new CoReceiptCheckFinder(_tenantProvider);
+
+            // データ取得
+            _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
+            return _coModels != null && _coModels.Any();
         }
     }
 

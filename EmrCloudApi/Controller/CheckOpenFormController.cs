@@ -1,6 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
+using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.ReportServices;
@@ -18,7 +19,7 @@ public class CheckOpenFormController : AuthorizeControllerBase
     {
         _checkOpenReportingService = checkOpenReportingService;
     }
-   
+
     [HttpPost(ApiPath.AccountingReport)]
     public IActionResult CheckOpenReportingForm([FromForm] AccountingReportRequest requestStringJson)
     {
@@ -34,6 +35,13 @@ public class CheckOpenFormController : AuthorizeControllerBase
     public IActionResult GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
         var data = _checkOpenReportingService.CheckOpenAccountingForm(HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
+        return Ok(data);
+    }
+
+    [HttpGet(ApiPath.ReceiptCheck)]
+    public IActionResult CheckOpenReceiptCheck([FromQuery] ReceiptCheckRequest request)
+    {
+        var data = _checkOpenReportingService.CheckOpenReceiptCheck(request.HpId, request.PtIds, request.SeikyuYm);
         return Ok(data);
     }
 
