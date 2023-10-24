@@ -2,7 +2,7 @@
 {
     public class KensaSetDetailModel
     {
-        public KensaSetDetailModel(int hpId, int setId, int setEdaNo, int setEdaParentNo, string kensaItemCd, string oyaItemCd, string kensaName, int kensaItemSeqNo, int sortNo, List<KensaSetDetailModel> childrens, int isDeleted, string uniqId, string uniqIdParent)
+        public KensaSetDetailModel(int hpId, int setId, int setEdaNo, int setEdaParentNo, string kensaItemCd, string oyaItemCd, string kensaName, int kensaItemSeqNo, int sortNo, List<KensaSetDetailModel> childrens, int isDeleted, string uniqId, string uniqIdParent, string maleStd, string femaleStd)
         {
             HpId = hpId;
             SetId = setId;
@@ -17,6 +17,8 @@
             IsDeleted = isDeleted;
             UniqId = uniqId;
             UniqIdParent = uniqIdParent;
+            MaleStd = maleStd;
+            FemaleStd = femaleStd;
         }
 
         public int HpId { get; private set; }
@@ -43,5 +45,9 @@
         public string? UniqId { get; private set; }
 
         public string? UniqIdParent { get; private set; }
+
+        public string MaleStd { get; private set; }
+
+        public string FemaleStd { get; private set; }
     }
 }

@@ -90,7 +90,7 @@ namespace Infrastructure.Logger
         {
             AuditLog audit = new AuditLog()
             {
-                Domain = _tenantProvider.GetDomain(),
+                Domain = _tenantProvider.GetDomainFromHeader(),
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
