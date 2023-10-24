@@ -1,8 +1,6 @@
-﻿using Domain.Models.SetMst;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using static Helper.Constants.TenMstConst;
 
@@ -505,7 +503,7 @@ namespace Domain.Models.MstItem
             ListGenDate = new();
         }
 
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, string name, string receName, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka, bool isGetPriceInYakka)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, string name, string receName, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, string ipnName, int isDeleted, int handanGrpKbn, bool isKensaMstEmpty, double yakka, bool isGetPriceInYakka, int kasan1, int kasan2)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -560,6 +558,8 @@ namespace Domain.Models.MstItem
             KanaName5 = kanaName5;
             KanaName6 = kanaName6;
             KanaName7 = kanaName7;
+            Kasan1 = kasan1;
+            Kasan2 = kasan2;
             KensaItemCd = string.Empty;
             ReceName = receName;
             CdKbn = string.Empty;
@@ -617,7 +617,7 @@ namespace Domain.Models.MstItem
             CdKbn = string.Empty;
         }
 
-        public TenItemModel(string itemCd,double ten, int handanGrpKbn, int endDate, string kensaItemCd, int kensaItemSeqNo, string ipnNameCd)
+        public TenItemModel(string itemCd, double ten, int handanGrpKbn, int endDate, string kensaItemCd, int kensaItemSeqNo, string ipnNameCd)
         {
             Ten = ten;
             HandanGrpKbn = handanGrpKbn;
@@ -635,7 +635,7 @@ namespace Domain.Models.MstItem
             KanaName7 = string.Empty;
             ReceName = string.Empty;
             Name = string.Empty;
-            OdrUnitName =string.Empty;
+            OdrUnitName = string.Empty;
             MasterSbt = string.Empty;
             YjCd = string.Empty;
             CnvUnitName = string.Empty;
@@ -778,6 +778,10 @@ namespace Domain.Models.MstItem
         public bool IsGetPriceInYakka { get; private set; }
 
         public List<string> ListGenDate { get; private set; }
+
+        public int Kasan1 { get; private set; }
+
+        public int Kasan2 { get; private set; }
 
         public string RousaiKbnDisplay
         {

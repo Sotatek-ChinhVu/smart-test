@@ -82,7 +82,6 @@ using Domain.Models.UserToken;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
 using EmrCloudApi.Realtime;
-using EmrCloudApi.ScheduleTask;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
 using EventProcessor.Service;
@@ -784,6 +783,8 @@ using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 using UseCase.MainMenu.GetOdrSetName;
+using UseCase.MainMenu.SaveOdrSet;
+using UseCase.Lock.CheckIsExistedOQLockInfo;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1335,6 +1336,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
             busBuilder.RegisterUseCase<SaveConversionInputData, SaveConversionInteractor>();
             busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
+            busBuilder.RegisterUseCase<SaveOdrSetInputData, SaveOdrSetInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
@@ -1745,6 +1747,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckExistFunctionCodeInputData, CheckExistFunctionCodeInteractor>();
             busBuilder.RegisterUseCase<GetLockInfInputData, GetLockInfInteractor>();
             busBuilder.RegisterUseCase<UnlockInputData, UnlockInteractor>();
+            busBuilder.RegisterUseCase<CheckIsExistedOQLockInfoInputData, CheckIsExistedOQLockInfoInteractor>();
 
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();

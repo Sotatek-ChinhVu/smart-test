@@ -11,6 +11,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MainMenu.GetOdrSetName;
+using UseCase.MainMenu.SaveOdrSet;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
@@ -214,6 +215,26 @@ public class SetController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetOdrSetNameResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveOdrSet)]
+    public ActionResult<Response<SaveOdrSetResponse>> SaveOdrSet([FromBody] SaveOdrSetRequest request)
+    {
+        var odrSetList = request.SetNameModelList.Select(item => new OdrSetNameModel(
+                                                                     item.SetCd,
+                                                                     item.RowNo,
+                                                                     item.ItemCd,
+                                                                     item.CmtOpt,
+                                                                     item.Quantity,
+                                                                     item.SetOrdInfId))
+                                                  .ToList();
+        var input = new SaveOdrSetInputData(HpId, UserId, request.SinDate, odrSetList);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveOdrSetPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveOdrSetResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)

@@ -28,6 +28,7 @@
         public const string GetConversion = "GetConversion";
         public const string SaveConversion = "SaveConversion";
         public const string GetOdrSetName = "GetOdrSetName";
+        public const string SaveOdrSet = "SaveOdrSet";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -435,6 +436,7 @@
         public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
         public const string GetLockInf = "GetLockInf"; 
         public const string Unlock = "Unlock";
+        public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
