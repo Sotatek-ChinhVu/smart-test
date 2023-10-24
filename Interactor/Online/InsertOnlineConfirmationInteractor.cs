@@ -30,7 +30,7 @@ namespace Interactor.Online
                                             string.Empty
                                             );
 
-            if (!_onlineRepository.SaveOnlineConfirmation(inputData.UserId, qualificationInf, ModelStatus.Added))
+            if (_onlineRepository.SaveOnlineConfirmation(inputData.UserId, qualificationInf, ModelStatus.Added))
             {
                 message = "確認対象患者選択";
                 return new InsertOnlineConfirmationOutputData(message, InsertOnlineConfirmationStatus.Successed); ;
