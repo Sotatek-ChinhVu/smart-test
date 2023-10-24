@@ -1,6 +1,5 @@
 ﻿using Domain.Constant;
 using Domain.Converter;
-using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.Online;
 using Domain.Models.Online.QualificationConfirmation;
@@ -593,7 +592,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         {
             var onlConfirm = new OnlineConfirmation();
             onlConfirm.ReceptionNo = qualificationInf.ReceptionNo;
-            onlConfirm.ReceptionDateTime = qualificationInf.ReceptionDateTime;
+            onlConfirm.ReceptionDateTime = CIUtil.SetKindUtc(qualificationInf.ReceptionDateTime);
             onlConfirm.YoyakuDate = qualificationInf.YoyakuDate;
             onlConfirm.SegmentOfResult = qualificationInf.SegmentOfResult;
             onlConfirm.ErrorMessage = qualificationInf.ErrorMessage;
