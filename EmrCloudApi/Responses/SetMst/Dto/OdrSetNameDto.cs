@@ -40,6 +40,7 @@ public class OdrSetNameDto
         YohoKbn = model.YohoKbn;
         OdrKouiKbn = model.OdrKouiKbn;
         BuiKbn = model.BuiKbn;
+        SetOrdInfId = model.SetOrdInfId;
     }
 
     public int SetCd { get; private set; }
@@ -109,4 +110,6 @@ public class OdrSetNameDto
     public int OdrKouiKbn { get; private set; }
 
     public int BuiKbn { get; private set; }
+
+    public long SetOrdInfId { get; private set; }
 }
