@@ -13,6 +13,7 @@ using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.CheckExistFunctionCode;
+using UseCase.Lock.CheckIsExistedOQLockInfo;
 using UseCase.Lock.Get;
 using UseCase.Lock.GetLockInf;
 using UseCase.Lock.Remove;
@@ -204,6 +205,18 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetLockInfResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.CheckIsExistedOQLockInfo)]
+        public ActionResult<Response<CheckIsExistedOQLockInfoResponse>> CheckIsExistedOQLockInfo(CheckIsExistedOQLockInfoRequest request)
+        {
+            var input = new CheckIsExistedOQLockInfoInputData(HpId, UserId, request.PtId, request.FunctionCd, request.RaiinNo, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckIsExistedOQLockInfoPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckIsExistedOQLockInfoResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.Unlock)]
         public ActionResult<Response<UnlockResponse>> Unlock(UnlockRequest request)
         {
@@ -236,8 +249,8 @@ namespace EmrCloudApi.Controller
                                             lockInfInputItem.CalcStatusModels.PtNum,
                                             lockInfInputItem.CalcStatusModels.SinDate,
                                             lockInfInputItem.CalcStatusModels.CreateDate,
-                                            lockInfInputItem.CalcStatusModels.CreateMachine, 
-                                            lockInfInputItem.CalcStatusModels.CreateId), 
+                                            lockInfInputItem.CalcStatusModels.CreateMachine,
+                                            lockInfInputItem.CalcStatusModels.CreateId),
                     new LockDocInfModel(lockInfInputItem.DocInfModels.PtId,
                                         lockInfInputItem.DocInfModels.PtNum,
                                         lockInfInputItem.DocInfModels.SinDate,
@@ -250,7 +263,7 @@ namespace EmrCloudApi.Controller
                                         lockInfInputItem.DocInfModels.LockDate,
                                         lockInfInputItem.DocInfModels.LockId,
                                         lockInfInputItem.DocInfModels.LockMachine,
-                                        lockInfInputItem.DocInfModels.IsDeleted) 
+                                        lockInfInputItem.DocInfModels.IsDeleted)
                 );
         }
     }

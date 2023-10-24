@@ -436,6 +436,7 @@
         public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
         public const string GetLockInf = "GetLockInf"; 
         public const string Unlock = "Unlock";
+        public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
