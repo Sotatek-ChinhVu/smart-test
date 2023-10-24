@@ -147,7 +147,7 @@ namespace CalculateUnitTest
             //Assert.AreEqual(87300, receFutanVM.ReceInfs[0].HokenReceTensu);
             //Assert.AreEqual(252910, receFutanVM.ReceInfs[0].HokenReceFutan);
             //Assert.AreEqual(true, receFutanVM.ReceInfs[0].Tokki.Contains("26"));
-            //Assert.AreEqual("1110", receFutanVM.ReceInfs[0].ReceSbt);
+            //Assert.AreEqual("1110", receFutanVM.ReceInfs[0].ReceSbt); 
         }
     }
 }
