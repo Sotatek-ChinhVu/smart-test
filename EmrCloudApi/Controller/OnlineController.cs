@@ -262,7 +262,7 @@ public class OnlineController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpdateOnlineConfirmation)]
     public ActionResult<Response<UpdateOnlineConfirmationResponse>> UpdateOnlineConfirmation([FromBody] UpdateOnlineConfirmationRequest request)
     {
-        var input = new UpdateOnlineConfirmationInputData(HpId, UserId, request.ReceptionNumber, request.QCBIDXmlMsgResponse);
+        var input = new UpdateOnlineConfirmationInputData(HpId, UserId, request.ReceptionNumber, request.YokakuDate, request.QCBIDXmlMsgResponse);
         var output = _bus.Handle(input);
 
         var presenter = new UpdateOnlineConfirmationPresenter();

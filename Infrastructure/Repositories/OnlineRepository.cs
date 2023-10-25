@@ -725,7 +725,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         {
             return (null, 0);
         }
-        var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
+        var listRaiinInf = TrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
                                                                    u.PtId == ptId &&
                                                                    u.SinDate == sinDate &&
                                                                    u.Status == RaiinState.Reservation &&

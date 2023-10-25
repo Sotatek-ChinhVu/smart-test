@@ -54,7 +54,7 @@ namespace Interactor.Online
                         {
                             listResultModel = listDataInf.Select(u => new ConfirmResultModel(
                                                                             GetPtIdFromArbitraryIdentifier(u.QualificationConfirmSearchInfo.ArbitraryIdentifier),
-                                                                            onlConfirmModel.YoyakuDate,
+                                                                            inputData.YokakuDate,
                                                                             u.ResultOfQualificationConfirmation?.Birthdate ?? string.Empty,
                                                                             u.ResultOfQualificationConfirmation?.Sex1 ?? string.Empty,
                                                                             u.ResultOfQualificationConfirmation?.Sex2 ?? string.Empty,

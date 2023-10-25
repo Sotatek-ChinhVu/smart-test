@@ -6,11 +6,12 @@ namespace UseCase.Online.SaveOnlineConfirmation
 {
     public class UpdateOnlineConfirmationInputData : IInputData<UpdateOnlineConfirmationOutputData>
     {
-        public UpdateOnlineConfirmationInputData(int hpId, int userId, string receptionNumber, string qCBIDXmlMsgResponse)
+        public UpdateOnlineConfirmationInputData(int hpId, int userId, string receptionNumber, int yokakuDate, string qCBIDXmlMsgResponse)
         {
             HpId = hpId;
             UserId = userId;
             ReceptionNumber = receptionNumber;
+            YokakuDate = yokakuDate;
             QCBIDXmlMsgResponse = qCBIDXmlMsgResponse;
         }
 
@@ -19,6 +20,8 @@ namespace UseCase.Online.SaveOnlineConfirmation
         public int UserId { get; private set; }
 
         public string ReceptionNumber { get; private set; }
+
+        public int YokakuDate { get; private set; }
 
         public string QCBIDXmlMsgResponse { get; private set; }
 
