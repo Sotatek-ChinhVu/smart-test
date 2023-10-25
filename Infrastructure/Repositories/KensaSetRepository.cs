@@ -317,6 +317,7 @@ namespace Infrastructure.Repositories
         {
             bool successed = false;
             long iraiCdId = iraiCd;
+            int iraiDateId = iraiDate;
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
             executionStrategy.Execute(
                 () =>
@@ -351,6 +352,15 @@ namespace Infrastructure.Repositories
                             TrackingDataContext.SaveChanges();
                             iraiCdId = kensaInf.Entity.IraiCd;
                         }
+                        else
+                        {
+                            var kensaInf = NoTrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
+                            if (kensaInf == null)
+                            {
+                                transaction.Rollback();
+                            }
+                            iraiDateId = kensaInf.IraiDate;
+                        }
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
 
@@ -366,7 +376,7 @@ namespace Infrastructure.Repositories
                                     HpId = hpId,
                                     PtId = item.PtId,
                                     IraiCd = iraiCdId,
-                                    IraiDate = item.IraiDate,
+                                    IraiDate = iraiDateId,
                                     RaiinNo = maxRaiinNo + 1,
                                     KensaItemCd = item.KensaItemCd,
                                     ResultVal = CIUtil.ToHalfsize(item.ResultVal),
@@ -395,7 +405,7 @@ namespace Infrastructure.Repositories
                                     HpId = hpId,
                                     PtId = child.PtId,
                                     IraiCd = iraiCdId,
-                                    IraiDate = child.IraiDate,
+                                    IraiDate = iraiDateId,
                                     RaiinNo = child.RaiinNo == 0 ? maxRaiinNo + 1 : child.RaiinNo,
                                     KensaItemCd = child.KensaItemCd,
                                     ResultVal = CIUtil.ToHalfsize(child.ResultVal),
@@ -422,7 +432,7 @@ namespace Infrastructure.Repositories
                                 HpId = hpId,
                                 PtId = item.PtId,
                                 IraiCd = iraiCdId,
-                                IraiDate = item.IraiDate,
+                                IraiDate = iraiDateId,
                                 RaiinNo = item.RaiinNo == 0 ? maxRaiinNo + 1 : item.RaiinNo,
                                 KensaItemCd = item.KensaItemCd,
                                 ResultVal = CIUtil.ToHalfsize(item.ResultVal),
