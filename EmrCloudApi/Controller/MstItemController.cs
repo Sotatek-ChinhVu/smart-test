@@ -985,7 +985,7 @@ namespace EmrCloudApi.Controller
                         conf.Biko,
                         conf.SortNo,
                         conf.IsDeleted,
-                        conf.RenkeiPathConfList.Select(path =>
+                        conf.RenkeiPathConfModelList.Select(path =>
                             new RenkeiPathConfModel(
                                 path.Id,
                                 conf.RenkeiId,
