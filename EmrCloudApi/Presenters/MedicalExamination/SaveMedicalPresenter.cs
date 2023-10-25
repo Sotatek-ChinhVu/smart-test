@@ -330,7 +330,8 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
         // Validate disease
         var validationDisease = new UpsertPtDiseaseListMedicalResponse(outputData.ValidationPtDiseaseListStatus, GetMessageDisease(outputData.ValidationPtDiseaseListStatus));
 
-        Result.Data = new SaveMedicalResponse(outputData.Status, new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKarte, validationFamily, validationFlowsheet, validationDisease);
+        var kensaIraiResponse = new SaveKensaIraiResponse(outputData.KensaIraiOutputData.Message, outputData.KensaIraiOutputData.KensaIraiReportItemList);
+        Result.Data = new SaveMedicalResponse(outputData.Status, new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKarte, validationFamily, validationFlowsheet, validationDisease, kensaIraiResponse);
     }
 
     private static string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfTodayOdrValidationStatus status)
