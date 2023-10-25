@@ -94,10 +94,6 @@ namespace Infrastructure.Repositories
         {
             var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
-            if (itemData == null)
-            {
-                return new();
-            }
 
             // Raiin Count
             // status = RaiinState Receptionist
@@ -106,6 +102,10 @@ namespace Infrastructure.Repositories
                                                                         u.RaiinNo != raiinNo &&
                                                                         u.IsDeleted == DeleteTypes.None &&
                                                                         u.Status == 1);
+            if (itemData == null)
+            {
+                return new PatientInforModel(raiinCount);
+            }
 
             //Get ptMemo
             string memo = string.Empty;
@@ -140,7 +140,6 @@ namespace Infrastructure.Repositories
                     isKyuSeiName = true;
                 }
             }
-
             return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,

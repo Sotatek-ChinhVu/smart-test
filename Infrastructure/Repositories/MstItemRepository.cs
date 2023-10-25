@@ -7554,7 +7554,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
         }
 
-        return result.OrderBy(x => x.RenkeiId).ThenBy(x => x.Biko).ToList();
+        return result.OrderBy(x => x.SortNo).ThenBy(x => x.RenkeiId).ThenBy(x => x.Biko).ToList();
     }
 
     public bool UpdateYohoSetMst(int hpId, int userId, List<YohoSetMstModel> listYohoSetMstModels)
@@ -7645,20 +7645,36 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList)
     {
-        List<int> renkeiIdList = new();
-        foreach (var renkei in renkeiTabList.Select(item => item.renkeiConfList))
+        List<long> idRenkeiList = new();
+        List<long> idRenkeiPathList = new();
+        List<long> idRenkeiTimingList = new();
+        foreach (var item in renkeiTabList)
         {
-            renkeiIdList.AddRange(renkei.Select(item => item.RenkeiId).Distinct().ToList());
+            foreach (var renkeiConf in item.renkeiConfList)
+            {
+                idRenkeiList.Add(renkeiConf.Id);
+                foreach (var path in renkeiConf.RenkeiPathConfModelList)
+                {
+                    idRenkeiPathList.Add(path.Id);
+                }
+                foreach (var timing in renkeiConf.RenkeiTimingModelList)
+                {
+                    idRenkeiTimingList.Add(timing.Id);
+                }
+            }
         }
 
-        renkeiIdList = renkeiIdList.Distinct().ToList();
-        var renkeiConfDBList = TrackingDataContext.RenkeiConfs.Where(item => renkeiIdList.Contains(item.RenkeiId)).ToList();
+        idRenkeiList = idRenkeiList.Distinct().ToList();
+        var renkeiConfDBList = TrackingDataContext.RenkeiConfs.Where(item => idRenkeiList.Contains(item.Id)).ToList();
 
+        var renkeiIdList = renkeiConfDBList.Select(item => item.RenkeiId).Distinct().ToList();
         var seqNoList = renkeiConfDBList.Select(item => item.SeqNo).Distinct().ToList();
-        var renkeiPathConfDBList = TrackingDataContext.RenkeiPathConfs.Where(item => renkeiIdList.Contains(item.RenkeiId)
+        var renkeiPathConfDBList = TrackingDataContext.RenkeiPathConfs.Where(item => (idRenkeiPathList.Contains(item.Id)
+                                                                                      || renkeiIdList.Contains(item.RenkeiId))
                                                                                      && seqNoList.Contains(item.SeqNo))
                                                                       .ToList();
-        var renkeiTimingDBList = TrackingDataContext.RenkeiTimingConfs.Where(item => renkeiIdList.Contains(item.RenkeiId)
+        var renkeiTimingDBList = TrackingDataContext.RenkeiTimingConfs.Where(item => (idRenkeiTimingList.Contains(item.Id)
+                                                                                      || renkeiIdList.Contains(item.RenkeiId))
                                                                                      && seqNoList.Contains(item.SeqNo))
                                                                       .ToList();
 
@@ -7678,8 +7694,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     renkeiEntity.HpId = hpId;
                     renkeiEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                     renkeiEntity.CreateId = userId;
-                    renkeiEntity.RenkeiId = renkeiModel.RenkeiId;
-                    renkeiEntity.SeqNo = GetSeqNo(renkeiConfDBList, renkeiModel.RenkeiId);
+                    renkeiEntity.SeqNo = GetSeqNo(renkeiModel.RenkeiId);
                 }
                 if (renkeiModel.IsDeleted)
                 {
@@ -7729,7 +7744,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         pathEntity.HpId = hpId;
                         pathEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                         pathEntity.CreateId = userId;
-                        pathEntity.RenkeiId = renkeiEntity.RenkeiId;
                         pathEntity.SeqNo = renkeiEntity.SeqNo;
                     }
                     if (pathModel.IsDeleted)
@@ -7737,6 +7751,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         TrackingDataContext.RenkeiPathConfs.Remove(pathEntity);
                         continue;
                     }
+                    pathEntity.RenkeiId = renkeiEntity.RenkeiId;
                     pathEntity.Path = pathModel.Path;
                     pathEntity.Machine = pathModel.Machine;
                     pathEntity.CharCd = pathModel.CharCd;
@@ -7766,7 +7781,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         timingEntity.HpId = hpId;
                         timingEntity.CreateDate = CIUtil.GetJapanDateTimeNow();
                         timingEntity.CreateId = userId;
-                        timingEntity.RenkeiId = renkeiEntity.RenkeiId;
                         timingEntity.SeqNo = renkeiEntity.SeqNo;
                     }
                     if (timingModel.IsDeleted)
@@ -7774,6 +7788,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                         TrackingDataContext.RenkeiTimingConfs.Remove(timingEntity);
                         continue;
                     }
+                    timingEntity.RenkeiId = renkeiEntity.RenkeiId;
                     timingEntity.IsInvalid = timingModel.IsInvalid;
                     timingEntity.EventCd = timingModel.EventCd;
                     timingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -7808,26 +7823,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
-    private int GetSeqNo(List<RenkeiConf> renkeiConfList, int renkeiId)
+    private int GetSeqNo(int renkeiId)
     {
-        renkeiConfList = renkeiConfList.Where(item => item.RenkeiId == renkeiId).ToList();
-        if (renkeiConfList.Any())
+        var renkeiConfByRenkeiIdList = NoTrackingDataContext.RenkeiConfs.Where(item => item.RenkeiId == renkeiId).ToList();
+        if (renkeiConfByRenkeiIdList.Any())
         {
-            var seqNoList = renkeiConfList.Select(item => item.SeqNo).OrderBy(item => item).ToList();
-            for (int i = 0; i < seqNoList.Count; i++)
-            {
-                int seqNo = seqNoList[i];
-                if (seqNoList.Count == (i + 1))
-                {
-                    return seqNo + 1;
-                }
-                int nextSeqNo = seqNoList[i + 1];
-                if (seqNo + 1 == nextSeqNo)
-                {
-                    continue;
-                }
-                return seqNo + 1;
-            }
+            var seqNo = renkeiConfByRenkeiIdList.Max(item => item.SeqNo) + 1;
+            return seqNo;
         }
         return 1;
     }
@@ -8192,7 +8194,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     select new
                     {
                         renkeiTimingMst,
-                        eventName =  eventMstTiming.EventName
+                        eventName = eventMstTiming.EventName
                     };
         var result = query.AsEnumerable()
                           .Select(item => new RenkeiTimingModel(
