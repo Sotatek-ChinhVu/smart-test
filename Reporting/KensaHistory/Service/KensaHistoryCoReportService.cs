@@ -51,17 +51,15 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiCd, int seikyuYm, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
+        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int seikyuYm, int startDate, int endDate, bool showAbnormalKbn)
         {
             this.hpId = hpId;
             this.userId = userId;
             this.ptId = ptId;
             this.setId = setId;
-            this.iraiCd = iraiCd;
             this.seikyuYm = seikyuYm;
             this.startDate = startDate;
             this.showAbnormalKbn = showAbnormalKbn;
-            this.itemQuantity = itemQuantity;
             var getData = GetData();
 
             if (getData)
@@ -148,6 +146,7 @@ namespace Reporting.KensaHistory.Service
                 }
 
                 rowNo = 0;
+                int count = listKensaInfDetailItemModels.Count;
 
                 foreach (var item in listKensaInfDetailItemModels)
                 {
@@ -163,7 +162,14 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
 
-                hasNextPage = false;
+                if (count > maxRow)
+                {
+                    listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                }
+                else
+                {
+                    hasNextPage = false;
+                }
                 _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
@@ -183,8 +189,8 @@ namespace Reporting.KensaHistory.Service
         {
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
-            kensaInfDetailModel = _kokhoFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, 0, false, showAbnormalKbn, itemQuantity, startDate);
-            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray);
+            kensaInfDetailModel = _coKensaHistoryFinder.GetListKensaInf(hpId, userId, ptId, setId, 0, false, showAbnormalKbn, startDate);
+            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray).ToList();
 
             foreach (var item in kensaInfDetails)
             {
