@@ -905,5 +905,6 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _insuranceRepository.ReleaseResource();
     }
 }
