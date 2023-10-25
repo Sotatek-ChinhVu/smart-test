@@ -333,11 +333,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     {
                         listFileItems = new List<string> { string.Empty };
                     }
-                    SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
+                    SaveFileKarte(hpId, inputDatas.UserId, ptId, raiinNo, listFileItems, true);
                 }
                 else
                 {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                    SaveFileKarte(hpId, inputDatas.UserId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
                 }
             }
 
@@ -413,7 +413,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
     }
 
-    private void SaveFileKarte(int hpId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
+    private void SaveFileKarte(int hpId, int userId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
     {
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         List<string> listFolders = new();
@@ -437,7 +437,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 }
             }
 
-            _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, fileList, false);
+            _karteInfRepository.SaveListFileKarte(hpId, userId, ptId, raiinNo, host, fileList, false);
         }
         else
         {

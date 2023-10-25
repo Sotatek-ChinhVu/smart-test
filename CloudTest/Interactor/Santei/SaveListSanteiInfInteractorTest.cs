@@ -3,6 +3,7 @@ using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Santei;
 using Domain.Models.User;
+using Infrastructure.Interfaces;
 using Interactor.Santei;
 using Moq;
 using System.Linq;
@@ -126,7 +127,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         mockMstItemRepo.Setup(repo => repo.GetListSanteiByomeis(hpId, ptId, sinDate, hokenPid))
         .Returns(new List<string>() { });
         #endregion
-
         var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
@@ -1002,7 +1002,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                 )
         };
 
-        var listByomeis = new List<string> { "byomei", "byomei1", "byomei2" };
         #endregion
 
         #region Mock Data
@@ -1016,7 +1015,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
 
         // Assert
         Assert.True(output == SaveListSanteiInfStatus.InvalidByomei);
@@ -1069,7 +1068,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
 
         // Assert
         Assert.True(output == SaveListSanteiInfStatus.InvalidHosokuComment);
