@@ -3,6 +3,8 @@ using Domain.Models.Online;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using System.Xml;
 using System.Xml.Serialization;
 using UseCase.Online.SaveOnlineConfirmation;
@@ -14,10 +16,14 @@ namespace Interactor.Online
     public class UpdateOnlineConfirmationInteractor : IUpdateOnlineConfirmationInputPort
     {
         private readonly IOnlineRepository _onlineRepository;
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
-        public UpdateOnlineConfirmationInteractor(IOnlineRepository onlineRepository)
+        public UpdateOnlineConfirmationInteractor(ITenantProvider tenantProvider, IOnlineRepository onlineRepository)
         {
             _onlineRepository = onlineRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpdateOnlineConfirmationOutputData Handle(UpdateOnlineConfirmationInputData inputData)
@@ -108,6 +114,11 @@ namespace Interactor.Online
                 }
 
                 return new UpdateOnlineConfirmationOutputData(UpdateOnlineConfirmationStatus.Successed, message);
+            }
+            catch (Exception e)
+            {
+                _loggingHandler.WriteLogExceptionAsync(e);
+                throw;
             }
             finally
             {
