@@ -377,7 +377,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
         /// <returns></returns>
         public List<CalcStatusModel> GetSameCalcStatus(CalcStatusModel calcStatus, string preFix)
         {
-            string computerName = (preFix + Hardcode.ComputerName).ToUpper();
+            //string computerName = (preFix + Hardcode.ComputerName).ToUpper();
+            string computerName = preFix;
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryable(p =>
                 p.CreateMachine == computerName &&
