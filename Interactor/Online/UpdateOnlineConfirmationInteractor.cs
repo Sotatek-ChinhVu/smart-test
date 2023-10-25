@@ -40,7 +40,7 @@ namespace Interactor.Online
                 bool isUpdateRaiinInfSuccess = true;
                 if (segmentOfResult == "1" || segmentOfResult == "2" || segmentOfResult == "9")
                 {
-                    var onlConfirmModel = new QualificationInfModel(inputData.RaiinNo.ToString(),
+                    var onlConfirmModel = new QualificationInfModel(inputData.ReceptionNumber,
                                                                     inputData.QCBIDResponse.MessageHeader.SegmentOfResult,
                                                                     inputData.QCBIDResponse.MessageHeader.ErrorMessage
                                                                     );
