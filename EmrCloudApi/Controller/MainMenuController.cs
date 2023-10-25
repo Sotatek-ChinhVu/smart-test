@@ -23,10 +23,12 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.MainMenu.GetListQualification;
 using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
 using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.RsvInfToConfirm;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
 
@@ -241,6 +243,26 @@ public class MainMenuController : AuthorizeControllerBase
             _messenger.Deregister<KensaInfMessageStatus>(this, UpdateKensaInfMessageStatus);
             HttpContext.Response.Body.Close();
         }
+    }
+
+    [HttpGet(ApiPath.GetRsvInfToConfirm)]
+    public ActionResult<Response<GetRsvInfToConfirmResponse>> GetRsvInfToConfirm([FromQuery] GetRsvInfToConfirmRequest request)
+    {
+        var input = new GetRsvInfToConfirmInputData(HpId, request.SinDate);
+        var output = _bus.Handle(input);
+        var presenter = new GetRsvInfToConfirmPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetRsvInfToConfirmResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListQualificationInf)]
+    public ActionResult<Response<GetListQualificationInfResponse>> GetListQualificationInf()
+    {
+        var input = new GetListQualificationInfInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetListQualificationInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetListQualificationInfResponse>>(presenter.Result);
     }
 
     #region private function

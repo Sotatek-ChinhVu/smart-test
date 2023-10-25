@@ -1,5 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.Online.QualificationConfirmation;
+using Domain.Models.MainMenu;
+using Helper.Constants;
 
 namespace Domain.Models.Online;
 
@@ -34,4 +36,12 @@ public interface IOnlineRepository : IRepositoryBase
     List<OnlineConsentModel> GetOnlineConsentModel(long ptId);
 
     bool UpdateOnlineConsents(int userId, long ptId, List<QCXmlMsgResponse> responseList);
+
+    List<QualificationInfModel> GetListQualificationInf();
+
+    bool SaveOnlineConfirmation(int userId, QualificationInfModel qualificationInf, ModelStatus status);
+
+    bool InsertListOnlConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> listOnlineConfirmationHistoryModel);
+
+    bool UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult);
 }

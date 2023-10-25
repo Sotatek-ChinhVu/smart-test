@@ -463,6 +463,8 @@
         public const string KensaIraiReport = "KensaIraiReport";
         public const string SaveStaCsvMst = "SaveStaCsvMst";
         public const string ImportKensaIrai = "ImportKensaIrai";
+        public const string GetRsvInfToConfirm = "GetRsvInfToConfirm";
+        public const string GetListQualificationInf = "GetListQualificationInf";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -491,6 +493,8 @@
         public const string ConvertXmlToQCXmlMsg = "ConvertXmlToQCXmlMsg";
         public const string GetOnlineConsent = "GetOnlineConsent";
         public const string UpdateOnlineConsents = "UpdateOnlineConsents";
+        public const string UpdateOnlineConfirmation = "UpdateOnlineConfirmation";
+        public const string InsertOnlineConfirmation = "InsertOnlineConfirmation";
 
         //AccountingFormMst
         public const string GetAccountingFormMst = "GetAccountingFormMstResponse";
