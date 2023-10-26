@@ -922,7 +922,7 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
                 };
 
-            var raiins = raiinQuery.ToList();
+            var raiins = raiinQuery.ToList().DistinctBy(r => r.raiinInf.RaiinNo).ToList();
             var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
