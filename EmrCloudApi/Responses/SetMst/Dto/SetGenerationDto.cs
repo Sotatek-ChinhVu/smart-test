@@ -9,7 +9,7 @@ public class SetGenerationDto
     {
         GenerationId = model.GenerationId;
         StartDate = model.StartDate;
-        IsDeleted = model.IsDeleted == 0;
+        IsDeleted = model.IsDeleted == 1;
     }
 
     public int GenerationId { get; private set; }
