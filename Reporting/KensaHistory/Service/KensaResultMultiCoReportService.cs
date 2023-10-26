@@ -2,6 +2,7 @@
 using Domain.Models.KensaSet;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Extension;
 using Reporting.KensaHistory.DB;
 using Reporting.KensaHistory.Mapper;
 using Reporting.KensaHistory.Models;
@@ -24,6 +25,8 @@ namespace Reporting.KensaHistory.Service
         private bool showAbnormalKbn;
         private int itemQuantity;
         private long iraiDate;
+        private long iraiStart;
+        private long iraiEnd;
         private int row;
         private PtInf ptInf;
         private (List<CoKensaResultMultiModel>, List<long>) data = new();
@@ -54,18 +57,16 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int iraiCd, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
+        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn)
         {
 
             this.hpId = hpId;
             this.userId = userId;
             this.ptId = ptId;
             this.setId = setId;
-            this.iraiCd = iraiCd;
             this.startDate = startDate;
             this.endDate = endDate;
             this.showAbnormalKbn = showAbnormalKbn;
-            this.itemQuantity = itemQuantity;
             var getData = GetData();
 
             if (getData)
@@ -97,8 +98,8 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("hpName", hpInf.HpName);
                 SetFieldData("ptNum", ptInf.PtNum.ToString());
                 SetFieldData("name", ptInf.Name ?? string.Empty);
-                SetFieldData("iraiStartDate", CIUtil.SDateToShowSDate(startDate));
-                SetFieldData("iraiEndDate", CIUtil.SDateToShowSDate(endDate));
+                SetFieldData("iraiStartDate", CIUtil.SDateToShowSDate(iraiStart.AsInteger()));
+                SetFieldData("iraiEndDate", CIUtil.SDateToShowSDate(endDate.AsInteger()));
                 SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
@@ -119,12 +120,20 @@ namespace Reporting.KensaHistory.Service
                 short maxRow = 23;
                 int rowNo = 0;
                 int k = 0;
+                short maxColDate = 9;
+                short colDate = 1;
 
                 if (currentPage == 1)
                 {
-                    foreach (var date in date.OrderBy(x => x))
+                    foreach (var item in date.OrderBy(x => x))
                     {
-                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)date)));
+                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                        date.Remove(item);
+                        colDate++;
+                        if (colDate > maxColDate)
+                        {
+                            break;
+                        }
                         k++;
                     }
 
@@ -147,7 +156,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (kensaInfDetails.Count < maxRow)
+                    if (kensaInfDetails.Count < maxRow && date.Count == 0)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -156,7 +165,16 @@ namespace Reporting.KensaHistory.Service
                     else
                     {
                         hasNextPage = true;
-                        kensaInfDetails.RemoveRange(0, maxRow);
+                        int z = 0;
+                        foreach (var item in kensaInfDetails)
+                        {
+                            item.KensaResultMultiItems.RemoveRange(0, item.KensaResultMultiItems.Count - 1);
+                            z++;
+                            if (z == kensaInfDetails.Count - 1)
+                            {
+                                break;
+                            }
+                        }
                         _listTextData.Add(pageIndex, listDataPerPage);
                         return 1;
                     }
@@ -164,9 +182,17 @@ namespace Reporting.KensaHistory.Service
 
                 rowNo = 0;
 
-                foreach (var date in date.OrderBy(x => x))
+                int counts = kensaInfDetails.Count;
+
+                foreach (var item in date.OrderBy(x => x))
                 {
-                    listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)date)));
+                    listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                    date.Remove(item);
+                    colDate++;
+                    if (colDate > maxColDate)
+                    {
+                        break;
+                    }
                     k++;
                 }
 
@@ -190,7 +216,15 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
 
-                hasNextPage = false;
+                if (counts > maxRow)
+                {
+                    kensaInfDetails.RemoveRange(0, maxRow);
+                }
+                else
+                {
+                    hasNextPage = false;
+                }
+
                 _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
@@ -210,10 +244,13 @@ namespace Reporting.KensaHistory.Service
         {
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
-            data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, startDate, showAbnormalKbn, itemQuantity);
+            data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
             kensaInfDetails = data.Item1;
             date = data.Item2;
-            totalPage = (kensaInfDetails.Count / 23) + 1;
+            date = date.OrderBy(x => x).ToList();
+            iraiStart = date.First();
+            iraiEnd = date.Last();
+            totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
             return kensaInfDetails.Count > 0;
         }
 
