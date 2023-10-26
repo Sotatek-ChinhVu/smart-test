@@ -138,6 +138,24 @@ namespace Domain.Models.Insurance
             HokensyaMst = new();
         }
 
+        public HokenInfModel(long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenKbn, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int kogakuKbn)
+        {
+            PtId = ptId;
+            HokenId = hokenId;
+            SeqNo = seqNo;
+            HokenNo = hokenNo;
+            HokenEdaNo = hokenEdaNo;
+            HokenKbn = hokenKbn;
+            HokensyaNo = hokensyaNo;
+            Kigo = kigo;
+            Bango = bango;
+            EdaNo = edaNo;
+            HonkeKbn = honkeKbn;
+            KogakuKbn = kogakuKbn;
+            HokenMst = new();
+            HokensyaMst = new();
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
         public int HpId { get; private set; }

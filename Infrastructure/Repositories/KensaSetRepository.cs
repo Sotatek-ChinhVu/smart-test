@@ -313,10 +313,11 @@ namespace Infrastructure.Repositories
             return kensaInKensaMst.ToList();
         }
 
-        public bool UpdateKensaInfDetail(int hpId, int userId, int ptId, long iraiCd, int iraiDate, List<KensaInfDetailUpdateModel> kensaInfDetails)
+        public bool UpdateKensaInfDetail(int hpId, int userId, int ptId, long inputDataIraiCd, int inputDataIraiDate, List<KensaInfDetailUpdateModel> kensaInfDetails)
         {
             bool successed = false;
-            long iraiCdId = iraiCd;
+            long iraiCd = inputDataIraiCd;
+            int iraiDate = inputDataIraiDate;
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
             executionStrategy.Execute(
                 () =>
@@ -326,7 +327,7 @@ namespace Infrastructure.Repositories
                     {
                         long maxRaiinNo = NoTrackingDataContext.KensaInfs.Where(c => c.HpId == hpId).AsEnumerable().Select(c => c.RaiinNo).DefaultIfEmpty(0).Max();
                         // Create KensaInf
-                        if (iraiCdId == 0)
+                        if (iraiCd == 0)
                         {
                             var kensaInf = TrackingDataContext.KensaInfs.Add(new KensaInf()
                             {
@@ -349,7 +350,16 @@ namespace Infrastructure.Repositories
                                 IsDeleted = 0
                             });
                             TrackingDataContext.SaveChanges();
-                            iraiCdId = kensaInf.Entity.IraiCd;
+                            iraiCd = kensaInf.Entity.IraiCd;
+                        }
+                        else
+                        {
+                            var kensaInf = NoTrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
+                            if (kensaInf == null)
+                            {
+                                transaction.Rollback();
+                            }
+                            iraiDate = kensaInf.IraiDate;
                         }
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
@@ -365,8 +375,8 @@ namespace Infrastructure.Repositories
                                 {
                                     HpId = hpId,
                                     PtId = item.PtId,
-                                    IraiCd = iraiCdId,
-                                    IraiDate = item.IraiDate,
+                                    IraiCd = iraiCd,
+                                    IraiDate = iraiDate,
                                     RaiinNo = maxRaiinNo + 1,
                                     KensaItemCd = item.KensaItemCd,
                                     ResultVal = CIUtil.ToHalfsize(item.ResultVal),
@@ -394,8 +404,8 @@ namespace Infrastructure.Repositories
                                 {
                                     HpId = hpId,
                                     PtId = child.PtId,
-                                    IraiCd = iraiCdId,
-                                    IraiDate = child.IraiDate,
+                                    IraiCd = iraiCd,
+                                    IraiDate = iraiDate,
                                     RaiinNo = child.RaiinNo == 0 ? maxRaiinNo + 1 : child.RaiinNo,
                                     KensaItemCd = child.KensaItemCd,
                                     ResultVal = CIUtil.ToHalfsize(child.ResultVal),
@@ -421,8 +431,8 @@ namespace Infrastructure.Repositories
                             {
                                 HpId = hpId,
                                 PtId = item.PtId,
-                                IraiCd = iraiCdId,
-                                IraiDate = item.IraiDate,
+                                IraiCd = iraiCd,
+                                IraiDate = iraiDate,
                                 RaiinNo = item.RaiinNo == 0 ? maxRaiinNo + 1 : item.RaiinNo,
                                 KensaItemCd = item.KensaItemCd,
                                 ResultVal = CIUtil.ToHalfsize(item.ResultVal),

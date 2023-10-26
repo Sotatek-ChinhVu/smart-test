@@ -25,6 +25,31 @@ namespace Helper.Common
             return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
         }
 
+        //convert yyyyMMddHHmmss to yyyy/MM/dd HH:mm:ss
+        public static DateTime StrDateToDate(string sDate, string format = "yyyyMMddHHmmss")
+        {
+            var dateTimeResult = CIUtil.GetJapanDateTimeNow();
+
+            format = "yyyyMMddHHmmss";
+            DateTime.TryParseExact(sDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult);
+
+            return dateTimeResult;
+        }
+
+        public static bool IsNumberic(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return false;
+            foreach (char c in str)
+            {
+                if (!char.IsDigit(c) && c != '.')
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static string CalcChkDgtM10W2(string code)
         {
             int weight = 2;
@@ -3762,22 +3787,6 @@ namespace Helper.Common
         public static String GetComputerName()
         {
             return Environment.MachineName;
-        }
-
-        //convert yyyyMMddHHmmss to yyyy/MM/dd HH:mm:ss
-        public static DateTime StrDateToDate(string sDate, string format = "yyyyMMddHHmmss")
-        {
-            DateTime dateTimeResult = DateTime.Now;
-            try
-            {
-                format = "yyyyMMddHHmmss";
-                DateTime.TryParseExact(sDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            return dateTimeResult;
         }
     }
 }
