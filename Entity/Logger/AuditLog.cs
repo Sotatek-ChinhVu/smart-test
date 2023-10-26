@@ -26,6 +26,8 @@ namespace Entity.Logger
 
         public int DepartmentId { get; set; }
 
+        public int Date { get; set; }
+
         public DateTime LogDate { get; set; }
 
         [MaxLength(11)]
