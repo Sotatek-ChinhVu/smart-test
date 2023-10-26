@@ -1193,7 +1193,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                      LastEndDate = q.LastEndDate
                                  };
 
-        var ipnCdList = queryJoinWithKensa.Where(q => !string.IsNullOrEmpty(q.TenMst.IpnNameCd)).Select(q => q.TenMst.IpnNameCd).Distinct().ToList();
+        var ipnCdList = queryJoinWithKensa.Where(q => q.TenMst.IpnNameCd != null && q.TenMst.IpnNameCd != string.Empty).Select(q => q.TenMst.IpnNameCd).Distinct().ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
         var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u =>
@@ -5349,7 +5349,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               TenKN = tenKN
                           }).ToList();
 
-        var ipnCdList = queryFinal.Where(q => !string.IsNullOrEmpty(q.TenMst.IpnNameCd)).Select(q => q.TenMst.IpnNameCd).Distinct().ToList();
+        var ipnCdList = queryFinal.Where(q => q.TenMst.IpnNameCd != null && q.TenMst.IpnNameCd != string.Empty).Select(q => q.TenMst.IpnNameCd).Distinct().ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
         var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
                                                                         p.HpId == hpId &&
