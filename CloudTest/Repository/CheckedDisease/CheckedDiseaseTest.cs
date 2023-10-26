@@ -2,7 +2,9 @@
 using Domain.Models.Diseases;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Microsoft.Extensions.Configuration;
 using Infrastructure.Repositories;
+using Moq;
 
 namespace CloudUnitTest.Repository.CheckedDisease;
 
@@ -42,7 +44,8 @@ public class CheckedDiseaseTest : BaseUT
                 ordInfDetailModels
                 ),
         };
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        var mockConfiguration = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
@@ -84,16 +87,17 @@ public class CheckedDiseaseTest : BaseUT
                 ordInfDetailModels
                 ),
         };
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        var mockConfiguration = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CheckedDiseaseData.ReadTenMst("0020020020");
-        //var byomeiMsts = CheckedDiseaseData.ReadByomeiMst("0020020");
+        var byomeiMsts = CheckedDiseaseData.ReadByomeiMst("0020020");
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.SaveChanges();
-        //tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
+        tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
         // Act
         var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
         // Assert
@@ -134,7 +138,8 @@ public class CheckedDiseaseTest : BaseUT
                 ordInfDetailModels
                 ),
         };
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        var mockConfiguration = new Mock<IConfiguration>();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
