@@ -11,7 +11,7 @@ namespace Reporting.KensaHistory.DB
 
         PtInf GetPtInf(int hpId, long ptId);
 
-        (List<CoKensaResultMultiModel>, List<long>) GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int startDate, bool showAbnormalKbn);
+        (List<CoKensaResultMultiModel>, List<long>) GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn);
 
         ListKensaInfDetailModel GetListKensaInf(int hpId, int userId, long ptId, int setId, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int startDate = 0);
     }

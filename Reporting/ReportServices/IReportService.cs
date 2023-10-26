@@ -72,7 +72,7 @@ public interface IReportService
     CommonReportingRequestModel GetReceTargetPrint(int hpId, int seikyuYm);
 
     CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo);
-    CommonReportingRequestModel GetKensaHistoryPrint(int hpId, int userId, long ptId, int setId, int seikyuYm, int startDate, int endDate, bool showAbnormalKbn);
+    CommonReportingRequestModel GetKensaHistoryPrint(int hpId, int userId, long ptId, int setId, int iraiDate, int startDate, int endDate, bool showAbnormalKbn);
     CommonReportingRequestModel GetKensaResultMultiPrint(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn);
     CommonReportingRequestModel GetInDrugPrintData(int hpId, long ptId, int sinDate, long raiinNo);
     CommonReportingRequestModel GetGrowthCurveA4PrintData(int hpId, GrowthCurveConfig growthCurveConfig);
