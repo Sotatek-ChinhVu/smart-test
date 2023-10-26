@@ -425,10 +425,12 @@ using UseCase.MainMenu.GetKensaCenterMstList;
 using UseCase.MainMenu.GetKensaInf;
 using UseCase.MainMenu.GetKensaIrai;
 using UseCase.MainMenu.GetKensaIraiLog;
+using UseCase.MainMenu.GetListQualification;
 using UseCase.MainMenu.GetStaCsvMstModel;
 using UseCase.MainMenu.GetStatisticMenu;
 using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.MainMenu.KensaIraiReport;
+using UseCase.MainMenu.RsvInfToConfirm;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.MaxMoney.GetMaxMoney;
@@ -543,8 +545,10 @@ using UseCase.NextOrder.Validation;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
+using UseCase.Online.InsertOnlineConfirmation;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOnlineConfirmation;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineConsents;
@@ -783,6 +787,7 @@ using UseCase.Reception.GetNextUketukeNoBySetting;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 using UseCase.MainMenu.GetOdrSetName;
+using UseCase.MainMenu.SaveOdrSet;
 using UseCase.Lock.CheckIsExistedOQLockInfo;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1335,6 +1340,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetConversionInputData, GetConversionInteractor>();
             busBuilder.RegisterUseCase<SaveConversionInputData, SaveConversionInteractor>();
             busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
+            busBuilder.RegisterUseCase<SaveOdrSetInputData, SaveOdrSetInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
@@ -1762,6 +1768,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetStaCsvMstInputData, GetStaCsvMstInteractor>();
             busBuilder.RegisterUseCase<SaveStaCsvMstInputData, SaveStaCsvMstInteractor>();
             busBuilder.RegisterUseCase<ImportKensaIraiInputData, ImportKensaIraiInteractor>();
+            busBuilder.RegisterUseCase<GetRsvInfToConfirmInputData, GetRsvInfToConfirmInteractor>();
+            busBuilder.RegisterUseCase<GetListQualificationInfInputData, GetListQualificationInfInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
@@ -1802,6 +1810,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListOnlineConfirmationHistoryModelInputData, GetListOnlineConfirmationHistoryModelInteractor>();
             busBuilder.RegisterUseCase<GetOnlineConsentInputData, GetOnlineConsentInteractor>();
             busBuilder.RegisterUseCase<UpdateOnlineConsentsInputData, UpdateOnlineConsentsInteractor>();
+            busBuilder.RegisterUseCase<UpdateOnlineConfirmationInputData, UpdateOnlineConfirmationInteractor>();
+            busBuilder.RegisterUseCase<InsertOnlineConfirmationInputData, InsertOnlineConfirmationInteractor>();
 
             //AccountingFormMst
             busBuilder.RegisterUseCase<GetAccountingFormMstInputData, GetAccountingFormMstInteractor>();

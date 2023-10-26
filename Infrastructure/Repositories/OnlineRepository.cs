@@ -1,5 +1,9 @@
-﻿using Domain.Models.Online;
+﻿using Domain.Constant;
+using Domain.Converter;
+using Domain.Models.Insurance;
+using Domain.Models.Online;
 using Domain.Models.Online.QualificationConfirmation;
+using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -14,8 +18,10 @@ namespace Infrastructure.Repositories;
 
 public class OnlineRepository : RepositoryBase, IOnlineRepository
 {
-    public OnlineRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly IInsuranceRepository _insuranceRepository;
+    public OnlineRepository(ITenantProvider tenantProvider, IInsuranceRepository insuranceRepository) : base(tenantProvider)
     {
+        _insuranceRepository = insuranceRepository;
     }
 
     public List<long> InsertOnlineConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> onlineList)
@@ -563,6 +569,231 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         return successed;
     }
 
+
+    public List<QualificationInfModel> GetListQualificationInf()
+    {
+        var listOnlineConfirmation = NoTrackingDataContext.OnlineConfirmations
+                                        .OrderByDescending(u => u.CreateDate)
+                                        .Select(x => new QualificationInfModel(
+                                                        x.ReceptionNo,
+                                                        x.ReceptionDateTime,
+                                                        x.YoyakuDate,
+                                                        x.SegmentOfResult ?? string.Empty,
+                                                        x.ErrorMessage ?? string.Empty
+                                            ))
+                                        .Take(50)
+                                        .ToList();
+        return listOnlineConfirmation;
+    }
+
+    public bool SaveOnlineConfirmation(int userId, QualificationInfModel qualificationInf, ModelStatus status)
+    {
+        if (status == ModelStatus.Added)
+        {
+            var onlConfirm = new OnlineConfirmation();
+            onlConfirm.ReceptionNo = qualificationInf.ReceptionNo;
+            onlConfirm.ReceptionDateTime = CIUtil.SetKindUtc(qualificationInf.ReceptionDateTime);
+            onlConfirm.YoyakuDate = qualificationInf.YoyakuDate;
+            onlConfirm.SegmentOfResult = qualificationInf.SegmentOfResult;
+            onlConfirm.ErrorMessage = qualificationInf.ErrorMessage;
+            onlConfirm.CreateDate = CIUtil.GetJapanDateTimeNow();
+            onlConfirm.CreateId = userId;
+            onlConfirm.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            onlConfirm.UpdateId = userId;
+
+            TrackingDataContext.OnlineConfirmations.Add(onlConfirm);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        else if (status == ModelStatus.Modified)
+        {
+            var onlConfirm = TrackingDataContext.OnlineConfirmations.FirstOrDefault(x => x.ReceptionNo == qualificationInf.ReceptionNo);
+
+            if (onlConfirm != null)
+            {
+                onlConfirm.SegmentOfResult = qualificationInf.SegmentOfResult;
+                onlConfirm.ErrorMessage = qualificationInf.ErrorMessage;
+                onlConfirm.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                onlConfirm.UpdateId = userId;
+
+                return TrackingDataContext.SaveChanges() > 0;
+            }
+        }
+
+        return true;
+    }
+
+    public bool InsertListOnlConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> listOnlineConfirmationHistoryModel)
+    {
+        foreach (var item in listOnlineConfirmationHistoryModel)
+        {
+            TrackingDataContext.Add(new OnlineConfirmationHistory()
+            {
+                PtId = item.PtId,
+                OnlineConfirmationDate = item.OnlineConfirmationDate,
+                InfoConsFlg = item.InfoConsFlg,
+                ConfirmationType = item.ConfirmationType,
+                PrescriptionIssueType = item.PrescriptionIssueType,
+                ConfirmationResult = item.ConfirmationResult,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UketukeStatus = item.UketukeStatus,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId,
+            });
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+
+    }
+
+    public bool UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult)
+    {
+        listResResult = listResResult.Where(u => u.PtId > 0).ToList();
+        if (listResResult.Count == 0)
+        {
+            return true;
+        }
+        foreach (var resResult in listResResult)
+        {
+            var raiinInfToUpdate = GetRaiinInfToUpdateByPtId(hpId, resResult.PtId, resResult.SinDate);
+            if (raiinInfToUpdate.raiinInfs == null)
+            {
+                continue;
+            }
+
+            if (raiinInfToUpdate.referenceNo != resResult.ReferenceNo && resResult.ReferenceNo != 0)
+            {
+                resResult.ChangeConfirmationStatus(97);
+                resResult.ChangeConfirmationResult("照会番号不一致");
+            }
+            else
+            {
+                if (resResult.ConfirmationStatus != 4)
+                {
+                    var ptHokenCheckModel = TrackingDataContext.PtHokenChecks.FirstOrDefault(u => u.HpId == hpId &&
+                                                                                                    u.PtID == resResult.PtId &&
+                                                                                                    u.HokenId == resResult.HokenId &&
+                                                                                                    u.HokenGrp == resResult.HokenGrp &&
+                                                                                                    u.CheckDate == CIUtil.IntToDate(resResult.CheckDate) &&
+                                                                                                    u.IsDeleted == DeleteStatus.None);
+                    if (ptHokenCheckModel != null)
+                    {
+                        ptHokenCheckModel.CheckCmt = resResult.PtHokenCheckModel.CheckComment;
+                        ptHokenCheckModel.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        ptHokenCheckModel.UpdateId = userId;
+                    }
+                    else
+                    {
+                        TrackingDataContext.PtHokenChecks.Add(new PtHokenCheck()
+                        {
+                            HpId = hpId,
+                            PtID = resResult.PtHokenCheckModel.PtId,
+                            HokenGrp = resResult.PtHokenCheckModel.HokenGrp,
+                            HokenId = resResult.PtHokenCheckModel.HokenId,
+                            CheckDate = CIUtil.IntToDate(resResult.PtHokenCheckModel.ConfirmDate),
+                            CheckId = resResult.PtHokenCheckModel.CheckId,
+                            CheckCmt = resResult.PtHokenCheckModel.CheckComment,
+                            IsDeleted = 0,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                        });
+                    }
+                }
+            }
+
+            foreach (var raiinInf in raiinInfToUpdate.raiinInfs)
+            {
+                raiinInf.ConfirmationResult = GetConfirmationResult(hpId, resResult, raiinInf.SinDate);
+                raiinInf.ConfirmationState = resResult.ConfirmationStatus;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    private (List<RaiinInf>? raiinInfs, long referenceNo) GetRaiinInfToUpdateByPtId(int hpId, long ptId, int sinDate)
+    {
+        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId &&
+                                                                           u.PtId == ptId &&
+                                                                           u.IsDelete == DeleteStatus.None &&
+                                                                           u.IsTester == 0);
+        if (ptInf == null)
+        {
+            return (null, 0);
+        }
+        var listRaiinInf = TrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
+                                                                   u.PtId == ptId &&
+                                                                   u.SinDate == sinDate &&
+                                                                   u.Status == RaiinState.Reservation &&
+                                                                   u.IsDeleted == DeleteStatus.None).ToList();
+        if (listRaiinInf.Count > 0)
+        {
+            return (listRaiinInf, ptInf.ReferenceNo);
+        }
+        return (null, 0);
+    }
+
+    private string GetConfirmationResult(int hpId, ConfirmResultModel resResult, int sinDate)
+    {
+        var hokenInfs = _insuranceRepository.FindHokenInfByPtId(hpId, resResult.PtId);
+        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == resResult.PtId && p.IsDelete != 1);
+        var matchPtInf = new List<PtInfConfirmationModel>();
+        var resultOfQC = new ResultOfQualificationConfirmation()
+        {
+            NameKana = resResult.NameKana,
+            Name = resResult.Name,
+            Sex1 = resResult.Sex1,
+            Sex2 = resResult.Sex2,
+            PostNumber = resResult.PostNumber,
+            Birthdate = resResult.Birthday,
+            Address = resResult.Address,
+            InsuredName = resResult.InsuredName,
+            InsurerNumber = resResult.InsurerNumber,
+            InsuredCardSymbol = resResult.InsuredCardSymbol,
+            InsuredBranchNumber = resResult.InsuredBranchNumber,
+            PersonalFamilyClassification = resResult.PersonalFamilyClassification,
+            InsuredCertificateIssuanceDate = resResult.InsuredCertificateIssuanceDate,
+            InsuredCardValidDate = resResult.InsuredCardValidDate,
+            InsuredCardExpirationDate = resResult.InsuredCardExpirationDate,
+        };
+        var matchHokenInfs = hokenInfs.FindAll(p => PatientInfoConverter.GetHokenConfirmationModels(p, resultOfQC, resResult.Birthday.AsInteger(), sinDate).All(x => x.IsReflect));
+
+        if (ptInf != null)
+        {
+            matchPtInf = PatientInfoConverter.GetPtInfConfirmationModels(ConvertToPatientInfoModel(ptInf), resultOfQC).Where(x => x.IsVisible).ToList();
+        }
+        if (matchPtInf.Any(x => !x.IsReflect) && matchHokenInfs.Count <= 0)
+        {
+            return "[基本・保険差異あり] " + resResult.ProcessingResultMessage;
+        }
+        else if (!matchPtInf.Any(x => !x.IsReflect) && matchHokenInfs.Count <= 0)
+        {
+            return "[保険差異あり] " + resResult.ProcessingResultMessage;
+        }
+        else if (matchPtInf.Any(x => !x.IsReflect) && matchHokenInfs.Count > 0)
+        {
+            return "[基本差異あり] " + resResult.ProcessingResultMessage;
+        }
+        return resResult.ProcessingResultMessage;
+    }
+
+    private static PatientInforModel ConvertToPatientInfoModel(PtInf ptInf)
+    {
+        return new PatientInforModel(
+                    ptInf.KanaName ?? string.Empty,
+                    ptInf.Name ?? string.Empty,
+                    ptInf.Sex,
+                    ptInf.Birthday,
+                    ptInf.HomePost ?? string.Empty,
+                    ptInf.HomeAddress1 ?? string.Empty,
+                    ptInf.Setanusi ?? string.Empty
+                );
+    }
+
     #region private function
     private OnlineConfirmationHistoryModel ConvertToModel(OnlineConfirmationHistory entity)
     {
@@ -674,5 +905,6 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _insuranceRepository.ReleaseResource();
     }
 }

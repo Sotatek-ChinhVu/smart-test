@@ -1693,6 +1693,133 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return result;
     }
 
+    public bool SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList)
+    {
+        var setOdrInfId = setNameModelList.Select(item => item.SetOrdInfId).Distinct().ToList();
+        var rowNoList = setNameModelList.Select(item => item.RowNo).Distinct().ToList();
+        var setCdList = setNameModelList.Select(item => item.SetCd).Distinct().ToList();
+        var itemCdList = setNameModelList.Select(item => item.ItemCd).Distinct().ToList();
+
+        var odrInfDbList = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
+                                                                         && item.IsDeleted == 0
+                                                                         && setOdrInfId.Contains(item.Id))
+                                                          .ToList();
+
+        var tenMstDBList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                       && itemCdList.Contains(item.ItemCd)
+                                                                       && item.StartDate <= sinDate
+                                                                       && sinDate <= item.EndDate)
+                                                        .ToList();
+
+        var rpNoList = odrInfDbList.Select(item => item.RpNo).Distinct().ToList();
+        var rpEdaNoList = odrInfDbList.Select(item => item.RpEdaNo).Distinct().ToList();
+        var ipnNameCdList = tenMstDBList.Select(item => item.IpnNameCd).Distinct().ToList();
+        var odrInfDetailDbList = TrackingDataContext.SetOdrInfDetail.Where(item => item.HpId == hpId
+                                                                                   && setCdList.Contains(item.SetCd)
+                                                                                   && rpNoList.Contains(item.RpNo)
+                                                                                   && rowNoList.Contains(item.RowNo)
+                                                                                   && rpEdaNoList.Contains(item.RpEdaNo))
+                                                                     .ToList();
+        var ipnNameMstDBList = NoTrackingDataContext.IpnNameMsts.Where(item => item.HpId == hpId
+                                                                               && item.StartDate <= sinDate
+                                                                               && item.EndDate >= sinDate
+                                                                               && ipnNameCdList.Contains(item.IpnNameCd))
+                                                                .ToList();
+        foreach (var model in setNameModelList)
+        {
+            var odrInf = odrInfDbList.FirstOrDefault(item => item.Id == model.SetOrdInfId
+                                                             && item.SetCd == model.SetCd);
+            if (odrInf == null)
+            {
+                continue;
+            }
+            var odrInfDetail = odrInfDetailDbList.FirstOrDefault(item => item.SetCd == model.SetCd
+                                                                         && item.RpNo == odrInf.RpNo
+                                                                         && item.RpEdaNo == odrInf.RpEdaNo
+                                                                         && item.RowNo == model.RowNo);
+            if (odrInfDetail == null)
+            {
+                continue;
+            }
+            var tenMst = tenMstDBList.FirstOrDefault(item => item.ItemCd == model.ItemCd
+                                                             && item.StartDate <= sinDate
+                                                             && sinDate <= item.EndDate);
+            if (tenMst == null)
+            {
+                continue;
+            }
+
+            odrInfDetail.ItemCd = model.ItemCd;
+            odrInfDetail.CmtOpt = model.CmtOpt;
+            odrInfDetail.Suryo = model.Quantity;
+            odrInfDetail.IpnName = ipnNameMstDBList.FirstOrDefault(item => item.IpnNameCd == tenMst.IpnNameCd)?.IpnName ?? string.Empty;
+
+            if (model.IsCommentMaster)
+            {
+                odrInfDetail.CmtName = tenMst.Name;
+            }
+            else
+            {
+                odrInfDetail.CmtName = string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(tenMst.OdrUnitName))
+            {
+                odrInfDetail.UnitSbt = 1;
+                odrInfDetail.UnitName = tenMst.OdrUnitName;
+                odrInfDetail.OdrTermVal = tenMst.OdrTermVal;
+            }
+            else if (!string.IsNullOrEmpty(tenMst.CnvUnitName))
+            {
+                odrInfDetail.UnitSbt = 2;
+                odrInfDetail.UnitName = tenMst.CnvUnitName;
+                odrInfDetail.OdrTermVal = tenMst.CnvTermVal;
+            }
+            else
+            {
+                odrInfDetail.UnitSbt = 0;
+                odrInfDetail.UnitName = string.Empty;
+                odrInfDetail.OdrTermVal = 0;
+                odrInfDetail.Suryo = 0;
+            }
+
+            odrInfDetail.KohatuKbn = tenMst.KohatuKbn;
+            odrInfDetail.YohoKbn = tenMst.YohoKbn;
+            odrInfDetail.IpnCd = tenMst.IpnNameCd;
+            odrInfDetail.DrugKbn = tenMst.DrugKbn;
+            odrInfDetail.ItemName = tenMst.Name;
+
+            if (odrInfDetail.SinKouiKbn == 20 && odrInfDetail.DrugKbn > 0)
+            {
+                switch (odrInfDetail.KohatuKbn)
+                {
+                    case 0:
+                        // 先発品
+                        odrInfDetail.SyohoKbn = 0;
+                        odrInfDetail.SyohoLimitKbn = 0;
+                        break;
+                    // Keep old SyohoKbn and SyohoKbnLimit set from previous step
+                    case 1:
+                    // 後発品
+                    case 2:
+                        // 後発品のある先発品
+                        break;
+                }
+                if (odrInfDetail.SyohoKbn == 3 && string.IsNullOrEmpty(odrInfDetail.IpnName))
+                {
+                    // 一般名マスタに登録がない
+                    odrInfDetail.SyohoKbn = 2;
+                }
+            }
+            else
+            {
+                odrInfDetail.SyohoKbn = 0;
+                odrInfDetail.SyohoLimitKbn = 0;
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
     private List<OdrSetNameModel> GetOdrSetNameFreeComment(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, string itemName, bool isQueryAll)
     {
         if (!checkBoxStatus.FreeCommentChecked)
