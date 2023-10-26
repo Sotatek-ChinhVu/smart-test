@@ -7758,6 +7758,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     pathEntity.IsInvalid = pathModel.IsInvalid;
                     pathEntity.Param = pathModel.Param;
                     pathEntity.Biko = pathModel.Biko;
+                    pathEntity.WorkPath = pathModel.WorkPath;
+                    pathEntity.Interval = pathModel.Interval;
+                    pathEntity.User = pathModel.User;
+                    pathEntity.PassWord = pathModel.PassWord;
                     pathEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     pathEntity.UpdateId = userId;
                     if (pathEntity.Id == 0)
