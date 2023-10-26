@@ -29,6 +29,7 @@
         public const string SaveConversion = "SaveConversion";
         public const string GetOdrSetName = "GetOdrSetName";
         public const string SaveOdrSet = "SaveOdrSet";
+        public const string GetSetGenerationMstList = "GetSetGenerationMstList";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";

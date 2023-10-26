@@ -14,6 +14,7 @@ using UseCase.MainMenu.GetOdrSetName;
 using UseCase.MainMenu.SaveOdrSet;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
+using UseCase.SetMst.GetListSetGenerationMst;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
@@ -235,6 +236,18 @@ public class SetController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveOdrSetResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetSetGenerationMstList)]
+    public ActionResult<Response<GetSetGenerationMstListResponse>> GetSetGenerationMstList()
+    {
+        var input = new GetSetGenerationMstListInputData(HpId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSetGenerationMstListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetSetGenerationMstListResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)

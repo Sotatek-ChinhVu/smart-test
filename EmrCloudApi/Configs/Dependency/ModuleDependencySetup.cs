@@ -28,7 +28,6 @@ using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
-using Domain.Models.ListSetGenerationMst;
 using Domain.Models.ListSetMst;
 using Domain.Models.Lock;
 using Domain.Models.MainMenu;
@@ -69,7 +68,6 @@ using Domain.Models.SuperSetDetail;
 using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
-using Domain.Models.SystemStartDb;
 using Domain.Models.TimeZone;
 using Domain.Models.TodayOdr;
 using Domain.Models.Todo;
@@ -125,7 +123,6 @@ using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KensaHistory;
 using Interactor.KohiHokenMst;
-using Interactor.ListSetGenerationMst;
 using Interactor.ListSetMst;
 using Interactor.Lock;
 using Interactor.Logger;
@@ -167,7 +164,6 @@ using Interactor.SuperSetDetail;
 using Interactor.SwapHoken;
 using Interactor.SystemConf;
 using Interactor.SystemGenerationConf;
-using Interactor.SystemStartDbs;
 using Interactor.TimeZoneConf;
 using Interactor.Todo;
 using Interactor.UketukeSbtMst;
@@ -718,7 +714,6 @@ using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf.Get;
 using UseCase.SystemGenerationConf.GetList;
-using UseCase.SystemStartDbs;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
 using UseCase.Todo.GetListTodoKbn;
@@ -772,23 +767,17 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.KensaHistory.UpdateKensaInfDetail;
-using UseCase.Logger.WriteListLog;
-using UseCase.KensaHistory.GetListKensaInfDetail;
 using UseCase.SuperSetDetail.GetConversion;
-using UseCase.MainMenu.ImportKensaIrai;
 using UseCase.SuperSetDetail.SaveConversion;
 using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
-using UseCase.Online.GetOnlineConsent;
-using UseCase.Online.UpdateOnlineConsents;
 using Reporting.KensaHistory.DB;
 using Reporting.KensaHistory.Service;
 using UseCase.Reception.GetNextUketukeNoBySetting;
-using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 using UseCase.MainMenu.GetOdrSetName;
 using UseCase.MainMenu.SaveOdrSet;
 using UseCase.Lock.CheckIsExistedOQLockInfo;
+using UseCase.SetMst.GetListSetGenerationMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1201,7 +1190,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
             services.AddTransient<IKensaSetRepository, KensaSetRepository>();
-            services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
             //services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
@@ -1341,6 +1329,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveConversionInputData, SaveConversionInteractor>();
             busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
             busBuilder.RegisterUseCase<SaveOdrSetInputData, SaveOdrSetInteractor>();
+            busBuilder.RegisterUseCase<GetSetGenerationMstListInputData, GetSetGenerationMstListInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
