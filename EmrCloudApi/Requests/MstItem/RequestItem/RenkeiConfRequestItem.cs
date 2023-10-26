@@ -22,7 +22,7 @@ public class RenkeiConfRequestItem
 
     public bool IsDeleted { get; set; }
 
-    public List<RenkeiPathConfRequestItem> RenkeiPathConfList { get; set; } = new();
+    public List<RenkeiPathConfRequestItem> RenkeiPathConfModelList { get; set; } = new();
 
     public List<RenkeiTimingRequestItem> RenkeiTimingModelList { get; set; } = new();
 }

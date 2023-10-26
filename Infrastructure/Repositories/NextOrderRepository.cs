@@ -104,6 +104,7 @@ namespace Infrastructure.Repositories
             long rsvkrtNo = 0;
             long ptNum = GetPtNum(hpId, ptId);
             var odrInfs = new List<RsvkrtOrderInfModel>();
+            var isDeletedRsvKrtDate = nextOrderModels.Where(n => n.IsDeleted == DeleteTypes.Deleted).Select(n => n.RsvDate).ToList();
             foreach (var nextOrderModel in nextOrderModels)
             {
                 odrInfs.AddRange(nextOrderModel.RsvkrtOrderInfs);
@@ -154,7 +155,7 @@ namespace Infrastructure.Repositories
                                                                                     x.RsvDate == nextOrderModel.RsvDate &&
                                                                                     x.IsDeleted == DeleteTypes.None);
 
-                        if (checkExistRsvkrtOrder) continue;
+                        if (checkExistRsvkrtOrder && !isDeletedRsvKrtDate.Contains(nextOrderModel.RsvDate)) continue;
 
                         var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
                         TrackingDataContext.RsvkrtMsts.Add(nextOrderEntity);
@@ -1067,13 +1068,14 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                UpdateSeqNoNextOrderFile(hpId, ptId, rsvkrtNo, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
+                UpdateSeqNoNextOrderFile(hpId, ptId, rsvkrtNo, listFiles.Select(item => new NextOrderFileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        private void UpdateSeqNoNextOrderFile(int hpId, long ptId, long rsvkrtNo, List<string> listFileName)
+        private void UpdateSeqNoNextOrderFile(int hpId, long ptId, long rsvkrtNo, List<NextOrderFileInfModel> fileInfModelList)
         {
+            var listFileName = fileInfModelList.Select(item => item.LinkFile).Distinct().ToList();
             int position = 1;
             var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId);
             var listOldFile = TrackingDataContext.RsvkrtKarteImgInfs.Where(item =>
@@ -1094,23 +1096,48 @@ namespace Infrastructure.Repositories
                                                && item.FileName != null
                                                && listFileName.Contains(item.FileName)
                                                ).ToList();
-            foreach (var item in listOldFile)
+
+            foreach (var fileItem in fileInfModelList)
             {
-                RsvkrtKarteImgInf newFile = item;
+                var oldItemConvert = listOldFile.FirstOrDefault(item => item.SeqNo == lastSeqNo
+                                                                        && item.FileName != null
+                                                                        && item.FileName == fileItem.LinkFile);
+
+                if (oldItemConvert != null)
+                {
+                    RsvkrtKarteImgInf newFileConvert = oldItemConvert;
+                    newFileConvert.Id = 0;
+                    newFileConvert.RsvkrtNo = rsvkrtNo;
+                    newFileConvert.SeqNo = lastSeqNo + 1;
+                    newFileConvert.Position = position;
+                    TrackingDataContext.RsvkrtKarteImgInfs.Add(newFileConvert);
+                    position++;
+                    continue;
+                }
+
+                var oldItemUpdateSeqNo = listUpdateFiles.FirstOrDefault(item => item.SeqNo == 0
+                                                                                && item.FileName != null
+                                                                                && item.FileName == fileItem.LinkFile);
+                if (oldItemUpdateSeqNo != null)
+                {
+                    oldItemUpdateSeqNo.RsvkrtNo = rsvkrtNo;
+                    oldItemUpdateSeqNo.SeqNo = lastSeqNo + 1;
+                    oldItemUpdateSeqNo.RsvkrtNo = rsvkrtNo;
+                    oldItemUpdateSeqNo.Position = position;
+                    position++;
+                    continue;
+                }
+
+                RsvkrtKarteImgInf newFile = new();
+                newFile.FileName = fileItem.LinkFile;
                 newFile.Id = 0;
-                newFile.RsvkrtNo = rsvkrtNo;
                 newFile.SeqNo = lastSeqNo + 1;
                 newFile.Position = position;
+                newFile.KarteKbn = fileItem.IsSchema ? 1 : 0;
+                newFile.PtId = ptId;
+                newFile.HpId = hpId;
+                newFile.RsvkrtNo = rsvkrtNo;
                 TrackingDataContext.RsvkrtKarteImgInfs.Add(newFile);
-                position++;
-            }
-
-            foreach (var item in listUpdateFiles)
-            {
-                item.RsvkrtNo = rsvkrtNo;
-                item.SeqNo = lastSeqNo + 1;
-                item.RsvkrtNo = rsvkrtNo;
-                item.Position = position;
                 position++;
             }
 
@@ -1245,6 +1272,7 @@ namespace Infrastructure.Repositories
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
             return ptInf != null ? ptInf.PtNum : 0;
         }
+
         private void SaveFileNextOrder(int hpId, long ptId, long ptNum, long rsvkrtNo, NextOrderModel nextOrderModel)
         {
             if (nextOrderModel.FileItem.IsUpdateFile)
@@ -1277,11 +1305,27 @@ namespace Infrastructure.Repositories
             var listUpdates = listFileItems.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                if (!listUpdates.Any())
+                List<NextOrderFileInfModel> nextOrderFileInfModelList = new();
+                var fileInfUpdateTemp = CopyFileFromKarteToNextOrder(ptNum, path, listFileItems);
+                if (fileInfUpdateTemp.Any())
                 {
-                    listUpdates = new List<string> { string.Empty };
+                    foreach (var item in fileInfUpdateTemp)
+                    {
+                        if (item.Key == item.Value)
+                        {
+                            nextOrderFileInfModelList.Add(new NextOrderFileInfModel(false, item.Value));
+                        }
+                        else
+                        {
+                            nextOrderFileInfModelList.Add(new NextOrderFileInfModel(true, item.Value));
+                        }
+                    }
+                    if (!nextOrderFileInfModelList.Any())
+                    {
+                        nextOrderFileInfModelList.Add(new NextOrderFileInfModel(true, string.Empty));
+                    }
                 }
-                SaveListFileNextOrder(hpId, ptId, rsvkrtNo, host, listUpdates.Select(item => new NextOrderFileInfModel(false, item)).ToList(), false);
+                SaveListFileNextOrder(hpId, ptId, rsvkrtNo, host, nextOrderFileInfModelList, false);
             }
             else
             {
@@ -1291,6 +1335,37 @@ namespace Infrastructure.Repositories
                     _amazonS3Service.DeleteObjectAsync(path + item);
                 }
             }
+        }
+
+        private Dictionary<string, string> CopyFileFromKarteToNextOrder(long ptNum, string pathSaveSet, List<string> listFileFromKarte)
+        {
+            Dictionary<string, string> fileInfUpdateTemp = new();
+
+            var listFolderPath = new List<string>(){
+                                            CommonConstants.Store,
+                                            CommonConstants.Karte
+                                        };
+            string baseAccessUrl = _options.BaseAccessUrl;
+            string karteHost = baseAccessUrl + "/" + _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
+
+            foreach (var oldFileLink in listFileFromKarte)
+            {
+                string oldFileName = Path.GetFileName(oldFileLink);
+                if (oldFileLink.Contains(karteHost))
+                {
+                    string newFile = baseAccessUrl + "/" + pathSaveSet + _amazonS3Service.GetUniqueFileNameKey(oldFileName.Trim());
+                    var copySuccess = _amazonS3Service.CopyObjectAsync(oldFileLink.Replace(baseAccessUrl, string.Empty), newFile.Replace(baseAccessUrl, string.Empty)).Result;
+                    if (copySuccess)
+                    {
+                        fileInfUpdateTemp.Add(oldFileName, newFile);
+                    }
+                }
+                else
+                {
+                    fileInfUpdateTemp.Add(oldFileName, oldFileName);
+                }
+            }
+            return fileInfUpdateTemp;
         }
 
         public bool CheckNextOrdHaveOdr(int hpId, long ptId, int sinDate)
