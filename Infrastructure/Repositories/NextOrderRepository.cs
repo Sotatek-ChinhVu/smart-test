@@ -104,6 +104,7 @@ namespace Infrastructure.Repositories
             long rsvkrtNo = 0;
             long ptNum = GetPtNum(hpId, ptId);
             var odrInfs = new List<RsvkrtOrderInfModel>();
+            var isDeletedRsvKrtDate = nextOrderModels.Where(n => n.IsDeleted == DeleteTypes.Deleted).Select(n => n.RsvDate).ToList();
             foreach (var nextOrderModel in nextOrderModels)
             {
                 odrInfs.AddRange(nextOrderModel.RsvkrtOrderInfs);
@@ -154,7 +155,7 @@ namespace Infrastructure.Repositories
                                                                                     x.RsvDate == nextOrderModel.RsvDate &&
                                                                                     x.IsDeleted == DeleteTypes.None);
 
-                        if (checkExistRsvkrtOrder) continue;
+                        if (checkExistRsvkrtOrder && !isDeletedRsvKrtDate.Contains(nextOrderModel.RsvDate)) continue;
 
                         var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
                         TrackingDataContext.RsvkrtMsts.Add(nextOrderEntity);
