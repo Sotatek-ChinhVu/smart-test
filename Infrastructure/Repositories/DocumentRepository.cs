@@ -95,7 +95,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
                                                                     && item.CategoryCd == categoryCd
                                                                     && item.PtId == ptId)
                                                      .OrderByDescending(x => x.GetDate)
-                                                     .ThenBy(x => x.UpdateDate)
+                                                     .ThenByDescending(x => x.UpdateDate)
                                                      .ToList();
         return listDocDB.Select(item => ConvertToDocInfModel(item, new List<DocCategoryModel> { docCategory })).ToList();
     }
