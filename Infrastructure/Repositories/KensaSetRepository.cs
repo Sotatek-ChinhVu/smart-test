@@ -516,16 +516,15 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                // Fllter data with KensaSet
+                // Flter data with KensaSet
                 kensaInfDetails = (from t1 in NoTrackingDataContext.KensaInfDetails
                                    join t2 in NoTrackingDataContext.KensaSetDetails on t1.KensaItemCd equals t2.KensaItemCd
                                    where t1.HpId == hpId && t1.PtId == ptId
                                    select new
                                    {
-                                       Result = t1,
-                                       SortNo = t2.SortNo,
+                                       Result = t1
                                    }
-                            ).OrderBy(x => x.SortNo).Select(x => x.Result);
+                            ).Select(x => x.Result);
             }
 
             if (iraiCd != 0)
@@ -588,9 +587,9 @@ namespace Infrastructure.Repositories
                 data = data.Where(x => x.AbnormalKbn.Equals(AbnormalKbnType.High) || x.AbnormalKbn.Equals(AbnormalKbnType.Low));
             }
 
+            #region Get Col dynamic
 
-            // Sort by IraiDate
-
+            // Sort col by IraiDate
             var sortedData = SortIraiDateAsc
                 ? data.OrderBy(x => x.IraiDate)
                 : data.OrderByDescending(x => x.IraiDate);
@@ -655,17 +654,19 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
+            #endregion
 
-
+            #region Get Row dynamic
+            // Filter data with col
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
 
             var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std, x.IraiCd }).SelectMany(group => group.Skip(1))
                 .Select(x => x);
             var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
-            var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std, x.KensaKana, x.SortNo }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std, x.Key.KensaKana, x.Key.SortNo });
 
-            //kensaItemCds = kensaItemCds.Concat(kensaItemDuplicate);
+            var kensaItemWithOutDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std, x.KensaKana, x.SortNo }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std, x.Key.KensaKana, x.Key.SortNo });
+
 
             var groupRowData = data
                 .GroupBy(x => new { x.KensaItemCd })
@@ -676,17 +677,17 @@ namespace Infrastructure.Repositories
 
             var kensaInfDetailData = new List<KensaInfDetailDataModel>();
 
-            foreach (var kensaMstItem in kensaItemCds)
+            foreach (var item in kensaItemWithOutDuplicate)
             {
-                if (groupRowData.TryGetValue(kensaMstItem.KensaItemCd, out var dynamicArray))
+                if (groupRowData.TryGetValue(item.KensaItemCd, out var dynamicArray))
                 {
                     kensaInfDetailData.Add(new KensaInfDetailDataModel(
-                        kensaMstItem.KensaItemCd,
-                        kensaMstItem.KensaName,
-                        kensaMstItem.Unit,
-                        kensaMstItem.Std,
-                        kensaMstItem.KensaKana,
-                        kensaMstItem.SortNo,
+                        item.KensaItemCd,
+                        item.KensaName,
+                        item.Unit,
+                        item.Std,
+                        item.KensaKana,
+                        item.SortNo,
                         dynamicArray
                     ));
                 }
@@ -694,8 +695,6 @@ namespace Infrastructure.Repositories
 
             foreach (var item in kensaItemDuplicate)
             {
-                var dynamicArrayd = new List<ListKensaInfDetailItemModel>();
-                dynamicArrayd.Add(item);
                 kensaInfDetailData.Add(new KensaInfDetailDataModel(
                     item.KensaItemCd,
                     item.KensaName,
@@ -703,16 +702,15 @@ namespace Infrastructure.Repositories
                     item.Std,
                     item.KensaKana,
                     item.SortNo,
-                    dynamicArrayd
+                    new List<ListKensaInfDetailItemModel> { item }
                 ));
             }
 
-            // Sort data by user setting
+            // Sort row by user config
             if (setId == 0)
             {
-                var confSort = userConf.Where(x => x.GrpItemCd == 1).FirstOrDefault();
-                var sortType = confSort?.Val;
-                var sortCoulum = confSort?.GrpItemEdaNo;
+                var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
+                var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
 
                 switch (sortCoulum)
                 {
@@ -729,26 +727,39 @@ namespace Infrastructure.Repositories
                     case SortKensaMstColumn.KensaKana:
                         if (sortType == 1)
                         {
-                            data = data.OrderByDescending(x => x.KensaKana);
+                            kensaInfDetailData = kensaInfDetailData.OrderByDescending(x => x.KensaKana).ToList();
                         }
                         else
                         {
-                            data = data.OrderBy(x => x.KensaKana);
+                            kensaInfDetailData = kensaInfDetailData.OrderBy(x => x.KensaKana).ToList();
                         }
                         break;
                     default:
                         if (sortType == 1)
                         {
-                            data = data.OrderByDescending(x => x.SortNo);
+                            kensaInfDetailData = kensaInfDetailData.OrderByDescending(x => x.SortNo).ToList();
                         }
                         else
                         {
-                            data = data.OrderBy(x => x.SortNo);
+                            kensaInfDetailData = kensaInfDetailData.OrderBy(x => x.SortNo).ToList();
                         }
                         break;
                 }
             }
+            // Sort row by KensaSet SortNo
+            else
+            {
 
+                kensaInfDetailData = (from t1 in kensaInfDetailData
+                                      join t2 in NoTrackingDataContext.KensaSetDetails on t1.KensaItemCd equals t2.KensaItemCd
+                                      select new
+                                      {
+                                          Result = t1,
+                                          SortNo = t2.SortNo,
+                                      }
+                           ).OrderBy(x => x.SortNo).Select(x => x.Result).ToList();
+            }
+            #endregion
 
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData, totalCol);
             return result;
