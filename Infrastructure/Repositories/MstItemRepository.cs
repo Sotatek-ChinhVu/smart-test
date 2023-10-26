@@ -20,7 +20,6 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -1194,7 +1193,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                      LastEndDate = q.LastEndDate
                                  };
 
-        var ipnCdList = queryJoinWithKensa.Select(q => q.TenMst.IpnNameCd).ToList();
+        var ipnCdList = queryJoinWithKensa.Where(q => q.TenMst.IpnNameCd != null && q.TenMst.IpnNameCd != string.Empty).Select(q => q.TenMst.IpnNameCd).Distinct().ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
         var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u =>
@@ -1214,7 +1213,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
                                                                         p.HpId == hpId &&
                                                                         p.StartDate <= sTDDate &&
-                                                                        p.EndDate > sTDDate).ToList();
+                                                                        p.EndDate > sTDDate &&
+                                                                        ipnCdList.Contains(p.IpnNameCd)
+                                                                        ).ToList();
         var joinedQuery = from q in queryJoinWithKensa
                           join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
                           from ipnExclude in ipnExcludes.DefaultIfEmpty()
@@ -1225,7 +1226,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
                           from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
                           join kasan in ipnKasanMst on q.TenMst.IpnNameCd equals kasan.IpnNameCd into kasans
-                          from ipnKasan in ipnKasanMst.DefaultIfEmpty()
+                          from ipnKasan in kasans.DefaultIfEmpty()
                           select new
                           {
                               q.TenMst,
@@ -1294,8 +1295,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                        item.KensaMst == null,
                                                        item.Yakka == null ? 0 : item.Yakka ?? 0,
                                                        item.IsGetYakkaPrice,
-                                                       item.IpnKasan.Kasan1,
-                                                       item.IpnKasan.Kasan2
+                                                       item.IpnKasan?.Kasan1 ?? 0,
+                                                       item.IpnKasan?.Kasan2 ?? 0
                                                         )).ToList();
 
         if (itemFilter.Any() && itemFilter.Contains(ItemTypeEnums.Kogai))
@@ -5348,12 +5349,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               TenKN = tenKN
                           }).ToList();
 
-        var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+        var ipnCdList = queryFinal.Where(q => q.TenMst.IpnNameCd != null && q.TenMst.IpnNameCd != string.Empty).Select(q => q.TenMst.IpnNameCd).Distinct().ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
         var ipnKasanMst = NoTrackingDataContext.IpnKasanMsts.Where(p =>
                                                                         p.HpId == hpId &&
                                                                         p.StartDate <= sTDDate &&
-                                                                        p.EndDate > sTDDate).ToList();
+                                                                        p.EndDate > sTDDate &&
+                                                                        ipnCdList.Contains(p.IpnNameCd)
+                                                                        ).ToList();
 
         var joinedQuery = from q in queryFinal
                           join i in ipnKasanExclude on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnExcludes
@@ -5365,7 +5368,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           join i in ipnNameMstList on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
                           from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
                           join kasan in ipnKasanMst on q.TenMst.IpnNameCd equals kasan.IpnNameCd into kasans
-                          from ipnKasan in ipnKasanMst.DefaultIfEmpty()
+                          from ipnKasan in kasans.DefaultIfEmpty()
                           select new
                           {
                               q.TenMst,
@@ -5438,8 +5441,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                        item.KensaMst == null,
                                                        item.Yakka == null ? 0 : item.Yakka ?? 0,
                                                        item.IsGetYakkaPrice,
-                                                       item.IpnKasan.Kasan1,
-                                                       item.IpnKasan.Kasan2
+                                                       item.IpnKasan?.Kasan1 ?? 0,
+                                                       item.IpnKasan?.Kasan2 ?? 0
                                                         )).ToList();
 
         return (tenMstModels, totalCount);
@@ -7758,6 +7761,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     pathEntity.IsInvalid = pathModel.IsInvalid;
                     pathEntity.Param = pathModel.Param;
                     pathEntity.Biko = pathModel.Biko;
+                    pathEntity.WorkPath = pathModel.WorkPath;
+                    pathEntity.Interval = pathModel.Interval;
+                    pathEntity.User = pathModel.User;
+                    pathEntity.PassWord = pathModel.PassWord;
                     pathEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     pathEntity.UpdateId = userId;
                     if (pathEntity.Id == 0)
