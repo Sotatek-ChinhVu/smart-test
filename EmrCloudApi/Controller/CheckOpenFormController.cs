@@ -1,7 +1,6 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
-using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
 using Reporting.ReportServices;
