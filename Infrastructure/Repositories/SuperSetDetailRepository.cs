@@ -1448,8 +1448,13 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return true;
     }
 
-    public List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, int timeExpired, string itemName)
+    public List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int timeExpired, string itemName)
     {
+        int generationId = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0)
+                                                                  .OrderByDescending(x => x.StartDate)
+                                                                  .FirstOrDefault()?
+                                                                  .GenerationId ?? 0;
+
         var listSetKbn = GetListSetKbn(checkBoxStatus);
 
         if (listSetKbn.Count <= 0 || !CheckTargetSetOdrInfDetail(checkBoxStatus))

@@ -17,7 +17,7 @@ public class GetOdrSetNameInteractor : IGetOdrSetNameInputPort
     {
         try
         {
-            var result = _superSetDetailRepository.GetOdrSetName(inputData.HpId, inputData.CheckBoxStatus, inputData.GenerationId, inputData.TimeExpired, inputData.ItemName);
+            var result = _superSetDetailRepository.GetOdrSetName(inputData.HpId, inputData.CheckBoxStatus, inputData.TimeExpired, inputData.ItemName);
             return new GetOdrSetNameOutputData(result, GetOdrSetNameStatus.Successed);
         }
         finally
