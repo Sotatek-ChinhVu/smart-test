@@ -588,47 +588,6 @@ namespace Infrastructure.Repositories
                 data = data.Where(x => x.AbnormalKbn.Equals(AbnormalKbnType.High) || x.AbnormalKbn.Equals(AbnormalKbnType.Low));
             }
 
-            // Sort data by user setting
-            if (setId == 0)
-            {
-                var confSort = userConf.Where(x => x.GrpItemCd == 1).FirstOrDefault();
-                var sortType = confSort?.Val;
-                var sortCoulum = confSort?.GrpItemEdaNo;
-
-                switch (sortCoulum)
-                {
-                    case SortKensaMstColumn.KensaItemCd:
-                        if (sortType == 1)
-                        {
-                            data = data.OrderByDescending(x => x.KensaItemCd);
-                        }
-                        else
-                        {
-                            data = data.OrderBy(x => x.KensaItemCd);
-                        }
-                        break;
-                    case SortKensaMstColumn.KensaKana:
-                        if (sortType == 1)
-                        {
-                            data = data.OrderByDescending(x => x.KensaKana);
-                        }
-                        else
-                        {
-                            data = data.OrderBy(x => x.KensaKana);
-                        }
-                        break;
-                    default:
-                        if (sortType == 1)
-                        {
-                            data = data.OrderByDescending(x => x.SortNo);
-                        }
-                        else
-                        {
-                            data = data.OrderBy(x => x.KensaItemCd);
-                        }
-                        break;
-                }
-            }
 
             // Sort by IraiDate
 
@@ -700,13 +659,19 @@ namespace Infrastructure.Repositories
 
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
-            var kensaItemCds = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd)).GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std });
+
+            var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std, x.IraiCd }).SelectMany(group => group.Skip(1))
+                .Select(x => x);
+            var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
+            var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std, x.KensaKana, x.SortNo }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std, x.Key.KensaKana, x.Key.SortNo });
+
+            //kensaItemCds = kensaItemCds.Concat(kensaItemDuplicate);
 
             var groupRowData = data
-                .GroupBy(x => x.KensaItemCd)
+                .GroupBy(x => new { x.KensaItemCd })
                 .ToDictionary(
-                    group => group.Key,
-                    group => group.ToList());
+                    group => group.Key.KensaItemCd,
+                    group => group.Where(x => !seqNos.Contains(x.SeqNo)).ToList());
 
 
             var kensaInfDetailData = new List<KensaInfDetailDataModel>();
@@ -720,10 +685,70 @@ namespace Infrastructure.Repositories
                         kensaMstItem.KensaName,
                         kensaMstItem.Unit,
                         kensaMstItem.Std,
+                        kensaMstItem.KensaKana,
+                        kensaMstItem.SortNo,
                         dynamicArray
                     ));
                 }
             }
+
+            foreach (var item in kensaItemDuplicate)
+            {
+                var dynamicArrayd = new List<ListKensaInfDetailItemModel>();
+                dynamicArrayd.Add(item);
+                kensaInfDetailData.Add(new KensaInfDetailDataModel(
+                    item.KensaItemCd,
+                    item.KensaName,
+                    item.Unit,
+                    item.Std,
+                    item.KensaKana,
+                    item.SortNo,
+                    dynamicArrayd
+                ));
+            }
+
+            // Sort data by user setting
+            if (setId == 0)
+            {
+                var confSort = userConf.Where(x => x.GrpItemCd == 1).FirstOrDefault();
+                var sortType = confSort?.Val;
+                var sortCoulum = confSort?.GrpItemEdaNo;
+
+                switch (sortCoulum)
+                {
+                    case SortKensaMstColumn.KensaItemCd:
+                        if (sortType == 1)
+                        {
+                            kensaInfDetailData = kensaInfDetailData.OrderByDescending(x => x.KensaItemCd).ToList();
+                        }
+                        else
+                        {
+                            kensaInfDetailData = kensaInfDetailData.OrderBy(x => x.KensaItemCd).ToList();
+                        }
+                        break;
+                    case SortKensaMstColumn.KensaKana:
+                        if (sortType == 1)
+                        {
+                            data = data.OrderByDescending(x => x.KensaKana);
+                        }
+                        else
+                        {
+                            data = data.OrderBy(x => x.KensaKana);
+                        }
+                        break;
+                    default:
+                        if (sortType == 1)
+                        {
+                            data = data.OrderByDescending(x => x.SortNo);
+                        }
+                        else
+                        {
+                            data = data.OrderBy(x => x.SortNo);
+                        }
+                        break;
+                }
+            }
+
 
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData, totalCol);
             return result;
