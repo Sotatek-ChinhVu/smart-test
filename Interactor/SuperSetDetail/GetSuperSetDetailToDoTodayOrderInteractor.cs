@@ -1,6 +1,7 @@
 ﻿using Domain.Models.SuperSetDetail;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using System.Text;
@@ -12,13 +13,17 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
     private readonly IAmazonS3Service _amazonS3Service;
+    private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
     private readonly AmazonS3Options _options;
 
-    public GetSuperSetDetailToDoTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, ISuperSetDetailRepository superSetDetailRepository, IAmazonS3Service amazonS3Service)
+    public GetSuperSetDetailToDoTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider, ISuperSetDetailRepository superSetDetailRepository, IAmazonS3Service amazonS3Service)
     {
         _superSetDetailRepository = superSetDetailRepository;
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public GetSuperSetDetailToDoTodayOrderOutputData Handle(GetSuperSetDetailToDoTodayOrderInputData inputData)
@@ -54,15 +59,17 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                 setFiles.AddRange(ConvertToListSetKarteFileItem(setFileInfModel.setCd, setFileInfModel.setFiles).ToList());
             }
 
-            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.byomeis), result.karteInfs, ConvertSetOrderInfToItem(result.orderInfModels), setFiles, GetSuperSetDetailToDoTodayOrderStatus.Successed);
+            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.byomeis ?? new()), result.karteInfs, ConvertSetOrderInfToItem(result.orderInfModels), setFiles, GetSuperSetDetailToDoTodayOrderStatus.Successed);
         }
-        catch
+        catch (Exception ex)
         {
+            _loggingHandler.WriteLogExceptionAsync(ex);
             return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.Failed);
         }
         finally
         {
             _superSetDetailRepository.ReleaseResource();
+            _loggingHandler.Dispose();
         }
     }
 

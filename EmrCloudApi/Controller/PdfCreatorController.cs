@@ -119,7 +119,11 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
     {
         var data = _reportService.GetReceiptCheckCoReportService(request.HpId, request.PtIds, request.SeikyuYm);
-        return await RenderPdf(data, ReportType.Common, data.JobName);
+        if (string.IsNullOrEmpty(data.DataJsonConverted))
+        {
+            return await RenderPdf(data, ReportType.Common, data.JobName);
+        }
+        return await RenderPdf(data.DataJsonConverted, ReportType.Common, data.JobName);
     }
 
     [HttpPost(ApiPath.ReceiptList)]
@@ -245,14 +249,14 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.KensaHistoryReport)]
     public async Task<IActionResult> KensaHistoryReport([FromQuery] KensaHistoryReportRequest request)
     {
-        if (request.SeikyuYm != 0)
+        if (request.IraiDate != 0)
         {
-            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.SeikyuYm, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.EndDate, request.ShowAbnormalKbn);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
         else
         {
-            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.StartDate, request.EndDate, request.ShowAbnormalKbn);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
     }
@@ -490,6 +494,40 @@ public class PdfCreatorController : ControllerBase
             returnNoData = true;
         }
         return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(string data, ReportType reportType, string fileName)
+    {
+        StringContent jsonContent = new StringContent(data, Encoding.UTF8, "application/json");
+
+        string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
+
+        string functionName = reportType switch
+        {
+            ReportType.DrugInfo => "reporting-fm-drugInfo",
+            ReportType.Common => "common-reporting",
+            ReportType.OutDug => "reporting-out-drug",
+            ReportType.Accounting => "reporting-accounting",
+            _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
+        } ?? string.Empty;
+
+        using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}{functionName}", jsonContent))
+        {
+            response.EnsureSuccessStatusCode();
+            fileName = fileName.Replace(".rse", "").Replace(".pdf", "") + ".pdf";
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = HttpUtility.UrlEncode(fileName),
+                Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+            using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+            {
+                var byteData = streamingData.ToArray();
+
+                return File(byteData, "application/pdf");
+            }
+        }
     }
 
     private async Task<IActionResult> RenderPdf(DrugInfoData data, ReportType reportType, string fileName)
