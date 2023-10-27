@@ -2,7 +2,7 @@
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Service;
 using Reporting.CommonMasters.Enums;
-using Reporting.OrderLabel.Service;
+using Reporting.ReceiptCheck.Service;
 
 namespace Reporting.ReportServices;
 
@@ -11,12 +11,14 @@ public class CheckOpenReportingService : ICheckOpenReportingService
     private readonly ICoAccountingFinder _coAccountingFinder;
     private readonly IAccountingCoReportService _accountingCoReportService;
     private readonly IReportService _reportService;
+    private readonly IReceiptCheckCoReportService _receiptCheckCoReportService;
 
-    public CheckOpenReportingService(ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService)
+    public CheckOpenReportingService(ICoAccountingFinder coAccountingFinder, IAccountingCoReportService accountingCoReportService, IReportService reportService, IReceiptCheckCoReportService receiptCheckCoReportService)
     {
         _coAccountingFinder = coAccountingFinder;
         _accountingCoReportService = accountingCoReportService;
         _reportService = reportService;
+        _receiptCheckCoReportService = receiptCheckCoReportService;
     }
 
     public bool CheckOpenAccountingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
@@ -55,5 +57,10 @@ public class CheckOpenReportingService : ICheckOpenReportingService
             }
         }
         return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
+    }
+
+    public bool CheckOpenReceiptCheck(int hpId, List<long> ptIds, int seikyuYm)
+    {
+        return _receiptCheckCoReportService.CheckOpenReceiptCheck(hpId, ptIds, seikyuYm);
     }
 }
