@@ -219,7 +219,7 @@ public class SetController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.SaveOdrSet)]
-    public ActionResult<Response<SaveOdrSetResponse>> SaveOdrSet([FromBody] SaveOdrSetRequest request)
+    public async Task<ActionResult<Response<SaveOdrSetResponse>>> SaveOdrSet([FromBody] SaveOdrSetRequest request)
     {
         var odrSetList = request.SetNameModelList.Select(item => new OdrSetNameModel(
                                                                      item.SetCd,
@@ -229,9 +229,14 @@ public class SetController : AuthorizeControllerBase
                                                                      item.Quantity,
                                                                      item.SetOrdInfId))
                                                   .ToList();
-        var input = new SaveOdrSetInputData(HpId, UserId, request.SinDate, odrSetList);
+        var input = new SaveOdrSetInputData(HpId, UserId, request.SinDate, odrSetList, request.UpdateSetNameList.Select(item => new OdrSetNameModel(item.SetCd, item.SetName)).ToList());
         var output = _bus.Handle(input);
 
+        //if (output.Status == SaveOdrSetStatus.Successed && output.SetMstModels.Any())
+        //{
+        //    await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
+        //        new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
+        //}
         var presenter = new SaveOdrSetPresenter();
         presenter.Complete(output);
 

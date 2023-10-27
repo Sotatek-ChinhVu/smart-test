@@ -43,7 +43,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
     }
 
-    private IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)
+    public IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId)
     {
         var finalKey = key + "_" + generationId;
         var setMstModelList =
