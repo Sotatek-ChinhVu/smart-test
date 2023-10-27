@@ -271,6 +271,13 @@ namespace Reporting.KensaHistory.DB
                 }
             }
 
+            List<long> date = new();
+
+            if (itemName.Count == 0)
+            {
+                return (result, date);
+            }
+
             int count = kensaResultMultiItems.Count / itemName.Count;
             int j = 0;
 
@@ -281,8 +288,6 @@ namespace Reporting.KensaHistory.DB
                     result[i].KensaResultMultiItems.Add(kensaResultMultiItems[j++]);
                 }
             }
-
-            List<long> date = new();
 
             foreach (var item in kensaInfDetailData)
             {

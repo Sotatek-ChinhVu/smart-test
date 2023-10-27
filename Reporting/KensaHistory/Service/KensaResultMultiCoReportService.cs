@@ -248,9 +248,14 @@ namespace Reporting.KensaHistory.Service
             kensaInfDetails = data.Item1;
             date = data.Item2;
             date = date.OrderBy(x => x).ToList();
-            iraiStart = date.First();
-            iraiEnd = date.Last();
-            totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
+
+            if (kensaInfDetails.Count > 0 && date.Count > 0)
+            {
+                iraiStart = date.First();
+                iraiEnd = date.Last();
+                totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
+            }
+
             return kensaInfDetails.Count > 0;
         }
 
