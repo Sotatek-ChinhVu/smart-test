@@ -8,6 +8,8 @@
 
         public int RaiinNo { get; set; }
 
+        public  List<int> ListStatus { get; set; } = new List<int>();
+
         public bool IsShowKyuSeiName { get; set; } = false;
     }
 }

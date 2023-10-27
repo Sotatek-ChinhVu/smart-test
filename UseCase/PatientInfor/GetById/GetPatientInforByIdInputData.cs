@@ -19,13 +19,16 @@ namespace UseCase.PatientInformation.GetById
 
         public bool IsShowKyuSeiName { get; private set; }
 
-        public GetPatientInforByIdInputData(int hpId, long ptId, int sinDate, int raiinNo, bool isShowKyuSeiName)
+        public  List<int> ListStatus { get; private set; }
+
+        public GetPatientInforByIdInputData(int hpId, long ptId, int sinDate, int raiinNo, bool isShowKyuSeiName, List<int> listStatus)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
             RaiinNo = raiinNo;
             IsShowKyuSeiName = isShowKyuSeiName;
+            ListStatus = listStatus;
         }
     }
 }

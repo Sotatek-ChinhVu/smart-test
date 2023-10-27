@@ -302,7 +302,9 @@ namespace Infrastructure.Repositories
 
             // Get kensa in KensaMst
             var kensaInKensaMst = from t1 in NoTrackingDataContext.KensaCmtMsts
-                                  join t2 in NoTrackingDataContext.KensaCenterMsts on t1.CenterCd equals t2.CenterCd
+                                  join t2 in NoTrackingDataContext.KensaCenterMsts
+                                  on t1.CenterCd equals t2.CenterCd into leftJoinT2
+                                  from t2 in leftJoinT2.DefaultIfEmpty()
                                   where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CMT ?? "").ToUpper().Contains(bigKeyWord)
                                   select new KensaCmtMstModel(
                                       t1.CmtCd,
