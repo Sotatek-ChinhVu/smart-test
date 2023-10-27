@@ -168,7 +168,7 @@ namespace Reporting.KensaHistory.Service
                         int z = 0;
                         foreach (var item in kensaInfDetails)
                         {
-                            item.KensaResultMultiItems.RemoveRange(0, item.KensaResultMultiItems.Count - 1);
+                            item.KensaResultMultiItems.RemoveRange(0, 9);
                             z++;
                             if (z == kensaInfDetails.Count - 1)
                             {
