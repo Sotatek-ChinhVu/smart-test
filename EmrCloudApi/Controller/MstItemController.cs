@@ -92,6 +92,7 @@ using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
 using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetRenkeiTiming;
+using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -1085,6 +1086,16 @@ namespace EmrCloudApi.Controller
                                                              item.SetKbnEdaNo))
                                          .ToList();
             return result;
+        }
+
+        [HttpGet(ApiPath.CheckJihiSbtExistsInTenMst)]
+        public ActionResult<Response<CheckJihiSbtExistsInTenMstResponse>> CheckJihiSbtExistsInTenMst([FromQuery] int jihiSbt)
+        {
+            var input = new CheckJihiSbtExistsInTenMstInputData(jihiSbt);
+            var output = _bus.Handle(input);
+            var presenter = new CheckJihiSbtExistsInTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckJihiSbtExistsInTenMstResponse>>(presenter.Result);
         }
     }
 }
