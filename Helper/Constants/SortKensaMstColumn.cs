@@ -4,6 +4,6 @@
     {
         public const int SortNo = 0;
         public const int KensaItemCd = 1;
-        public const int KensaKana = 3;
+        public const int KensaKana = 2;
     }
 }

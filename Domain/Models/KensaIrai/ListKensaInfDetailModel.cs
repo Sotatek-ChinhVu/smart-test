@@ -60,6 +60,18 @@
                 DynamicArray = dynamicArray;
             }
 
+            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string std, string kensaKana, long sortNo, List<ListKensaInfDetailItemModel> dynamicArray)
+            {
+                KensaItemCd = kensaItemCd;
+                KensaName = kensaName;
+                Unit = unit;
+                Std = std;
+                KensaKana = kensaKana;
+                SortNo = sortNo;
+                DynamicArray = dynamicArray;
+            }
+
+
             public string KensaItemCd { get; private set; }
 
             public string KensaName { get; private set; }
@@ -67,6 +79,10 @@
             public string Unit { get; private set; }
 
             public string Std { get; private set; }
+
+            public string KensaKana { get; private set; }
+
+            public long SortNo { get; private set; }
 
             public List<ListKensaInfDetailItemModel> DynamicArray { get; private set; }
         }

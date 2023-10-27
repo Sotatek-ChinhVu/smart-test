@@ -11,18 +11,15 @@ namespace Reporting.KensaHistory.Service
 {
     public class KensaHistoryCoReportService : IKensaHistoryCoReportService
     {
-        private IKensaSetRepository _kokhoFinder;
         private ICoKensaHistoryFinder _coKensaHistoryFinder;
         private HpInfModel hpInf;
         private int hpId;
         private int userId;
         private long ptId;
         private int setId;
-        private int iraiCd;
-        private int seikyuYm;
+        private int iraiDate;
         private int startDate;
         private bool showAbnormalKbn;
-        private int itemQuantity;
         private PtInf ptInf;
         private ListKensaInfDetailModel kensaInfDetailModel;
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModels = new();
@@ -39,9 +36,8 @@ namespace Reporting.KensaHistory.Service
         private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
         private readonly Dictionary<string, bool> _visibleAtPrint;
 
-        public KensaHistoryCoReportService(IKensaSetRepository kokhoFinder, ICoKensaHistoryFinder coKensaHistoryFinder)
+        public KensaHistoryCoReportService(ICoKensaHistoryFinder coKensaHistoryFinder)
         {
-            _kokhoFinder = kokhoFinder;
             _setFieldData = new();
             _singleFieldData = new();
             _extralData = new();
@@ -51,17 +47,15 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiCd, int seikyuYm, int startDate, int endDate, bool showAbnormalKbn, int itemQuantity)
+        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiDate, int startDate, int endDate, bool showAbnormalKbn)
         {
             this.hpId = hpId;
             this.userId = userId;
             this.ptId = ptId;
             this.setId = setId;
-            this.iraiCd = iraiCd;
-            this.seikyuYm = seikyuYm;
-            this.startDate = startDate;
+            this.iraiDate = iraiDate;
+            this.startDate = iraiDate;
             this.showAbnormalKbn = showAbnormalKbn;
-            this.itemQuantity = itemQuantity;
             var getData = GetData();
 
             if (getData)
@@ -94,7 +88,7 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("hpName", hpInf.HpName);
                 SetFieldData("ptNum", ptInf.PtNum.ToString());
                 SetFieldData("name", ptInf.Name ?? string.Empty);
-                SetFieldData("iraiDate", CIUtil.SDateToShowSDate(seikyuYm));
+                SetFieldData("iraiDate", CIUtil.SDateToShowSDate(iraiDate));
                 SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
@@ -148,6 +142,7 @@ namespace Reporting.KensaHistory.Service
                 }
 
                 rowNo = 0;
+                int count = listKensaInfDetailItemModels.Count;
 
                 foreach (var item in listKensaInfDetailItemModels)
                 {
@@ -163,7 +158,14 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
 
-                hasNextPage = false;
+                if (count > maxRow)
+                {
+                    listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                }
+                else
+                {
+                    hasNextPage = false;
+                }
                 _listTextData.Add(pageIndex, listDataPerPage);
 
                 return 1;
@@ -183,14 +185,14 @@ namespace Reporting.KensaHistory.Service
         {
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
-            kensaInfDetailModel = _kokhoFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, iraiCd, 0, false, showAbnormalKbn, itemQuantity, startDate);
-            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray);
+            kensaInfDetailModel = _coKensaHistoryFinder.GetListKensaInf(hpId, userId, ptId, setId, 0, false, showAbnormalKbn, startDate);
+            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray).ToList();
 
             foreach (var item in kensaInfDetails)
             {
                 foreach (var index in item)
                 {
-                    if (index.IraiDate == seikyuYm)
+                    if (index.IraiDate == iraiDate)
                     {
                         listKensaInfDetailItemModels.Add(index);
                     }
