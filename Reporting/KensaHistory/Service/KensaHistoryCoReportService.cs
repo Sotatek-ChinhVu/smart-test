@@ -1,6 +1,5 @@
 ﻿using Domain.Models.HpInf;
 using Domain.Models.KensaIrai;
-using Domain.Models.KensaSet;
 using Entity.Tenant;
 using Helper.Common;
 using Reporting.KensaHistory.DB;
@@ -19,6 +18,7 @@ namespace Reporting.KensaHistory.Service
         private int setId;
         private int iraiDate;
         private int startDate;
+        private int sinDate;
         private bool showAbnormalKbn;
         private PtInf ptInf;
         private ListKensaInfDetailModel kensaInfDetailModel;
@@ -47,7 +47,7 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiDate, int startDate, int endDate, bool showAbnormalKbn)
+        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiDate, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
             this.hpId = hpId;
             this.userId = userId;
@@ -56,6 +56,7 @@ namespace Reporting.KensaHistory.Service
             this.iraiDate = iraiDate;
             this.startDate = iraiDate;
             this.showAbnormalKbn = showAbnormalKbn;
+            this.sinDate = sinDate;
             var getData = GetData();
 
             if (getData)
@@ -114,6 +115,14 @@ namespace Reporting.KensaHistory.Service
                 {
                     foreach (var item in listKensaInfDetailItemModels)
                     {
+                        switch (item.ResultType)
+                        {
+                            case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
+                            case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
+                            case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
+                            default: break;
+                        }
+
                         listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                         listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                         listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
@@ -146,6 +155,14 @@ namespace Reporting.KensaHistory.Service
 
                 foreach (var item in listKensaInfDetailItemModels)
                 {
+                    switch (item.ResultType)
+                    {
+                        case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
+                        case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
+                        case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
+                        default: break;
+                    }
+
                     listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                     listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                     listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
@@ -183,7 +200,7 @@ namespace Reporting.KensaHistory.Service
 
         private bool GetData()
         {
-            hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
+            hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             kensaInfDetailModel = _coKensaHistoryFinder.GetListKensaInf(hpId, userId, ptId, setId, 0, false, showAbnormalKbn, startDate);
             var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray).ToList();
