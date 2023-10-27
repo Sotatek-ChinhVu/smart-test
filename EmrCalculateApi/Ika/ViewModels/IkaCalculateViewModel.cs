@@ -328,7 +328,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     {
                         // チェック
                         // 他端末で当該患者の当該診療日が属する月の計算中の場合、待機する
-                        while (CheckCalcStatusOther(calcStatus) && i < 300)
+                        while (CheckCalcStatusOther(calcStatus, CalcKeyID) && i < 300)
                         {
                             i++;
                             _emrLogger.WriteLogMsg(this, conFncName,
@@ -344,7 +344,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                         // 自端末で当該患者の当該診療日が属する月の計算中の場合、待機する
                         i = 0;
-                        while (CheckCalcStatusSelf(calcStatus) && i < 30)
+                        while (CheckCalcStatusSelf(calcStatus, CalcKeyID) && i < 30)
                         {
                             i++;
                             _emrLogger.WriteLogMsg(this, conFncName,
@@ -797,18 +797,18 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             return _ikaCalculateFinder.CheckCalcStatus(calcStatus);
         }
-        public bool CheckCalcStatusOther(CalcStatusModel calcStatus)
+        public bool CheckCalcStatusOther(CalcStatusModel calcStatus, string calcKeyId)
         {
-            return _ikaCalculateFinder.CheckCalcStatusOther(calcStatus);
+            return _ikaCalculateFinder.CheckCalcStatusOther(calcStatus, calcKeyId);
         }
         /// <summary>
         /// 指定の計算要求が自端末で処理中ではないかチェック
         /// </summary>
         /// <param name="calcStatus">計算要求情報</param>
         /// <returns>true: 他端末で処理中</returns>
-        public bool CheckCalcStatusSelf(CalcStatusModel calcStatus)
+        public bool CheckCalcStatusSelf(CalcStatusModel calcStatus, string calcKeyId)
         {
-            return _ikaCalculateFinder.CheckCalcStatusSelf(calcStatus);
+            return _ikaCalculateFinder.CheckCalcStatusSelf(calcStatus, calcKeyId);
         }
         public int GetCalcStatus(long calcId)
         {

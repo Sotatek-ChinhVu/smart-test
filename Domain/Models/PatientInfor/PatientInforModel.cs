@@ -275,6 +275,37 @@ namespace Domain.Models.PatientInfor
             LastVisitDate = lastVisitDate;
         }
 
+        public PatientInforModel(string kanaName, string name, int sex, int birthday, string homePost, string homeAddress1, string setanusi)
+        {
+            KanaName = kanaName;
+            Name = name;
+            Sex = sex;
+            Birthday = birthday;
+            HomePost = homePost;
+            HomeAddress1 = homeAddress1;
+            Setanusi = setanusi;
+            HomeAddress2 = string.Empty;
+            Tel1 = string.Empty;
+            Tel2 = string.Empty;
+            Mail = string.Empty;
+            Zokugara = string.Empty;
+            Job = string.Empty;
+            RenrakuName = string.Empty;
+            RenrakuPost = string.Empty;
+            RenrakuAddress1 = string.Empty;
+            RenrakuAddress2 = string.Empty;
+            RenrakuTel = string.Empty;
+            RenrakuMemo = string.Empty;
+            OfficeName = string.Empty;
+            OfficePost = string.Empty;
+            OfficeAddress1 = string.Empty;
+            OfficeAddress2 = string.Empty;
+            OfficeTel = string.Empty;
+            OfficeMemo = string.Empty;
+            Memo = string.Empty;
+            Comment = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
