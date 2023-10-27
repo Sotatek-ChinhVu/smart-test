@@ -180,7 +180,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveConversion)]
     public ActionResult<Response<SaveConversionResponse>> SaveConversion([FromBody] SaveConversionRequest request)
     {
-        var input = new SaveConversionInputData(HpId, UserId, request.SourceItemCd, request.ConversionItemCd);
+        var input = new SaveConversionInputData(HpId, UserId, request.SourceItemCd, request.ConversionItemCd, request.DeleteConversionItemCdList);
         var output = _bus.Handle(input);
 
         var presenter = new SaveConversionPresenter();
@@ -232,11 +232,11 @@ public class SetController : AuthorizeControllerBase
         var input = new SaveOdrSetInputData(HpId, UserId, request.SinDate, odrSetList, request.UpdateSetNameList.Select(item => new OdrSetNameModel(item.SetCd, item.SetName)).ToList());
         var output = _bus.Handle(input);
 
-        //if (output.Status == SaveOdrSetStatus.Successed && output.SetMstModels.Any())
-        //{
-        //    await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
-        //        new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
-        //}
+        if (output.Status == SaveOdrSetStatus.Successed && output.SetMstModels.Any())
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
+                new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
+        }
         var presenter = new SaveOdrSetPresenter();
         presenter.Complete(output);
 

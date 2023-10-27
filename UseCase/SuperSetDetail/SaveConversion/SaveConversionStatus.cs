@@ -6,4 +6,5 @@ public enum SaveConversionStatus : byte
     Failed = 2,
     InvalidConversionItemCd = 3,
     InvalidSourceItemCd = 4,
+    InvalidDeleteConversionItemCd = 5,
 }

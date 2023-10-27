@@ -13,6 +13,7 @@ using Infrastructure.Options;
 using Infrastructure.Services;
 using Microsoft.Extensions.Options;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
@@ -1419,37 +1420,58 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                     .ToList();
     }
 
-    public bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd)
+    public bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd, List<string> deleteConversionItemCdList)
     {
         var conversionItemInfDBList = TrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
                                                                                            && item.SourceItemCd == sourceItemCd
                                                                                            && item.IsDeleted == 0)
                                                                             .ToList();
-
-        if (!conversionItemInfDBList.Any() || !conversionItemInfDBList.Exists(item => item.DestItemCd == conversionItemCd))
+        // Delete Item
+        foreach (var itemCd in deleteConversionItemCdList)
         {
-            var newConversionItemInf = new ConversionItemInf()
+            var conversionItem = conversionItemInfDBList.FirstOrDefault(item => item.DestItemCd == itemCd);
+            if (conversionItem == null)
+            {
+                continue;
+            }
+            conversionItem.IsDeleted = 1;
+            conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            conversionItem.UpdateId = userId;
+        }
+        conversionItemInfDBList = conversionItemInfDBList.Where(item => !deleteConversionItemCdList.Contains(item.DestItemCd)).ToList();
+
+        int sortNo = 1;
+        var updateItem = conversionItemInfDBList.FirstOrDefault(item => item.DestItemCd == conversionItemCd);
+        bool isAddNew = false;
+        if (updateItem == null)
+        {
+            updateItem = new ConversionItemInf()
             {
                 HpId = hpId,
                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId,
-                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                UpdateId = userId,
                 SourceItemCd = sourceItemCd,
                 DestItemCd = conversionItemCd,
                 IsDeleted = 0,
-                SortNo = 1,
             };
-            TrackingDataContext.ConversionItemInfs.Add(newConversionItemInf);
-            foreach (var conversionItem in conversionItemInfDBList)
-            {
-                conversionItem.UpdateId = userId;
-                conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                conversionItem.SortNo += 1;
-            }
-            return TrackingDataContext.SaveChanges() > 0;
+            isAddNew = true;
         }
-        return true;
+        updateItem.SortNo = sortNo;
+        updateItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        updateItem.UpdateId = userId;
+        conversionItemInfDBList = conversionItemInfDBList.Where(item => !deleteConversionItemCdList.Contains(item.DestItemCd) && updateItem.DestItemCd != item.DestItemCd).ToList();
+        foreach (var conversionItem in conversionItemInfDBList)
+        {
+            sortNo += 1;
+            conversionItem.UpdateId = userId;
+            conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            conversionItem.SortNo = sortNo;
+        }
+        if (isAddNew)
+        {
+            TrackingDataContext.ConversionItemInfs.Add(updateItem);
+        }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, int timeExpired, string itemName)
