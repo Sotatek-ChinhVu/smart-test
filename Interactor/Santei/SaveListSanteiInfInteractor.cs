@@ -62,7 +62,10 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             _patientInforRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
         }
     }
 

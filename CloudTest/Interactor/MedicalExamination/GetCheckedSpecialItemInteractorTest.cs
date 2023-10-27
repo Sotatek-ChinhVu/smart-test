@@ -270,7 +270,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail = new OrdInfDetailModel(
             1,
-            "140037030",
+            "140064650",
             20221111
             );
         odrDetails.Add(odrDetail);
@@ -310,7 +310,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail = new OrdInfDetailModel(
             1,
-            "140037030",
+            "140064650",
             20221111
             );
         odrDetails.Add(odrDetail);

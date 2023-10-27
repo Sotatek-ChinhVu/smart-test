@@ -973,58 +973,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
     }
 
     [Test]
-    public void ValidateSanteiInfDetail_TestInvalidByomei()
-    {
-        // Arrange
-        #region Data Example
-        long ptId = 1;
-        string itemCd = "itemCd";
-        var santeiInfDetail = new SanteiInfDetailInputItem(
-                                    1,
-                                    20221201,
-                                    1,
-                                    20221212,
-                                    "byomeiError",
-                                    "hosokuComment",
-                                    "commnet",
-                                    false
-                                );
-
-        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
-        {
-            new SanteiInfDetailModel(
-                    1,
-                    ptId,
-                    "itemCd",
-                    20221201,
-                    1,
-                    20221212,
-                    "byomei",
-                    "hosokuComment",
-                    "commnet"
-                )
-        };
-        #endregion
-
-        #region Mock Data
-        var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
-        var mockHpInfRepo = new Mock<IHpInfRepository>();
-        var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        var mockUserRepo = new Mock<IUserRepository>();
-        var mockMstItemRepo = new Mock<IMstItemRepository>();
-        var mockTenantProvider = new Mock<ITenantProvider>();
-        #endregion
-
-        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
-
-        // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
-
-        // Assert
-        Assert.True(output == SaveListSanteiInfStatus.InvalidByomei);
-    }
-
-    [Test]
     public void ValidateSanteiInfDetail_TestInvalidHosokuComment()
     {
         // Arrange

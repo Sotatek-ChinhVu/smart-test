@@ -33,19 +33,19 @@ public class SanteiInfRepositoryTest : BaseUT
         // TenMst
         var tenMsts = ReadDataSanteiInf.ReadTenMst();
         tenant.TenMsts.AddRange(tenMsts);
-        tenant.SaveChanges();
         #endregion
 
         // Arrange
         SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
 
-        // Act
-        long ptId = 123456789;
-        var resultQuery = santeiInfRepository.GetListSanteiInf(1, ptId, 20221212);
-
         // Assert
         try
         {
+            tenant.SaveChanges();
+
+            // Act
+            long ptId = 123456789;
+            var resultQuery = santeiInfRepository.GetListSanteiInf(1, ptId, 20221212);
             Assert.True(CompareListSanteiInf(ptId, resultQuery, santeiInfs, santeiInfDetails, orderInfs, orderInfDetails, tenMsts));
         }
         finally
