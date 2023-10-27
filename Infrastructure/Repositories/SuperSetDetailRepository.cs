@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.OrdInfDetails;
+using Domain.Models.SetMst;
 using Domain.Models.SuperSetDetail;
 using Domain.Types;
 using Entity.Tenant;
@@ -18,12 +19,15 @@ namespace Infrastructure.Repositories;
 public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepository
 {
     private readonly AmazonS3Options _options;
+    private readonly ISetMstRepository _setMstRepository;
     private const string SUSPECTED = "の疑い";
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
-    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider) : base(tenantProvider)
+
+    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider, ISetMstRepository setMstRepository) : base(tenantProvider)
     {
         _options = optionsAccessor.Value;
+        _setMstRepository = setMstRepository;
     }
 
     public SuperSetDetailModel GetSuperSetDetail(int hpId, int userId, int setCd, int sindate)
@@ -1693,7 +1697,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return result;
     }
 
-    public bool SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList)
+    public (bool SaveSuccess, List<SetMstModel> SetMstUpdateList) SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList, List<OdrSetNameModel> updateSetNameList)
     {
         var setOdrInfId = setNameModelList.Select(item => item.SetOrdInfId).Distinct().ToList();
         var rowNoList = setNameModelList.Select(item => item.RowNo).Distinct().ToList();
@@ -1725,6 +1729,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                                                && item.EndDate >= sinDate
                                                                                && ipnNameCdList.Contains(item.IpnNameCd))
                                                                 .ToList();
+        #region update setNameOdr
         foreach (var model in setNameModelList)
         {
             var odrInf = odrInfDbList.FirstOrDefault(item => item.Id == model.SetOrdInfId
@@ -1817,7 +1822,49 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 odrInfDetail.SyohoLimitKbn = 0;
             }
         }
-        return TrackingDataContext.SaveChanges() > 0;
+        #endregion
+
+        #region update setName
+        List<SetMstModel> setMstUpdateList = new();
+        setCdList = updateSetNameList.Select(item => item.SetCd).Distinct().ToList();
+        var setMstDBList = TrackingDataContext.SetMsts.Where(item => item.HpId == hpId
+                                                                     && item.IsDeleted == 0
+                                                                     && setCdList.Contains(item.SetCd))
+                                                      .ToList();
+        List<int> generationIdList = new();
+        foreach (var model in updateSetNameList)
+        {
+            var setMst = setMstDBList.FirstOrDefault(item => item.SetCd == model.SetCd);
+            if (setMst == null)
+            {
+                continue;
+            }
+            setMst.SetName = model.SetName;
+            setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            setMst.UpdateId = userId;
+            generationIdList.Add(setMst.GenerationId);
+        }
+        #endregion
+        var saveSuccess = TrackingDataContext.SaveChanges() > 0;
+        if (saveSuccess)
+        {
+            foreach (var generationId in generationIdList)
+            {
+                var setMstByGenarationId = _setMstRepository.ReloadCache(hpId, generationId).ToList();
+                foreach (var model in updateSetNameList)
+                {
+                    var rootSet = setMstDBList.FirstOrDefault(item => item.SetCd == model.SetCd);
+                    if (rootSet == null)
+                    {
+                        continue;
+                    }
+                    var itemSetList = setMstByGenarationId.Where(item => item.SetKbn == rootSet.SetKbn && item.SetKbnEdaNo == rootSet.SetKbnEdaNo && item.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && item.Level1 == rootSet.Level1))).ToList();
+                    setMstUpdateList.AddRange(itemSetList);
+                }
+            }
+        }
+        setMstUpdateList = setMstUpdateList.Distinct().ToList();
+        return (saveSuccess, setMstUpdateList);
     }
 
     private List<OdrSetNameModel> GetOdrSetNameFreeComment(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, string itemName, bool isQueryAll)
