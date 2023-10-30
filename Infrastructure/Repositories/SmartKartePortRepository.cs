@@ -42,7 +42,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                return new SmartKarteAppSignalRPortModel();
+                return null;
             }
         }
 
