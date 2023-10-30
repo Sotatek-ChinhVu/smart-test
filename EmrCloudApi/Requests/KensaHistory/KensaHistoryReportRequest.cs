@@ -10,5 +10,6 @@
         public int StartDate { get; set; } = 0;
         public int EndDate { get; set; } = 0;
         public bool ShowAbnormalKbn { get; set; } = false;
+        public int SinDate { get; set; }
     }
 }

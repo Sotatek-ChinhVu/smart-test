@@ -243,7 +243,8 @@ namespace CloudUnitTest.SampleData
                                     tenMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    tenMst.ItemCd = text + itemCd;
+                                    var newItemCd = (text + itemCd);
+                                    tenMst.ItemCd = newItemCd.Length > 10 ? newItemCd.Substring(0, 10) : newItemCd;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int startDate);
@@ -460,7 +461,8 @@ namespace CloudUnitTest.SampleData
                                     tenMst.MoniterKasan = MoniterKasan;
                                     break;
                                 case "DX":
-                                    tenMst.YjCd = text + yjCd;
+                                    var newYjcd = text + yjCd;
+                                    tenMst.YjCd = newYjcd.Length > 12 ? newYjcd.Substring(0, 12) : newYjcd;
                                     break;
                                 default:
                                     break;

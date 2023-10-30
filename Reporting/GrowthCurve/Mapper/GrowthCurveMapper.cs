@@ -14,10 +14,12 @@ namespace Reporting.GrowthCurve.Mapper
         private readonly Dictionary<string, string> _extralData;
         private readonly string _formFileName;
         private readonly Dictionary<string, bool> _visibleFieldData;
+        private readonly string _jobName;
 
         public GrowthCurveMapper(Dictionary<int, Dictionary<string, string>> setFieldData, Dictionary<int, List<ListTextObject>> listTextData, Dictionary<string, string> extralData, string formFileName, Dictionary<string, string> singleFieldData, Dictionary<string, bool> visibleFieldData, Dictionary<int, Dictionary<int, List<ListDrawLineObject>>> listDrawLineData, Dictionary<int, Dictionary<int, List<ListDrawTextObject>>> listDrawTextData,
         Dictionary<int, Dictionary<int, List<ListDrawBoxObject>>> listDrawBoxData,
-        Dictionary<int, Dictionary<int, List<ListDrawCircleObject>>> listDrawCircleData)
+        Dictionary<int, Dictionary<int, List<ListDrawCircleObject>>> listDrawCircleData,
+        string jobName)
         {
             _setFieldData = setFieldData;
             _listTextData = listTextData;
@@ -29,6 +31,7 @@ namespace Reporting.GrowthCurve.Mapper
             _listDrawTextData = listDrawTextData;
             _listDrawBoxData = listDrawBoxData;
             _listDrawCircleData = listDrawCircleData;
+            _jobName = jobName;
         }
 
         public override int GetReportType()
@@ -53,7 +56,7 @@ namespace Reporting.GrowthCurve.Mapper
 
         public override string GetJobName()
         {
-            return string.Empty;
+            return  _jobName; 
         }
 
         public override Dictionary<string, string> GetSingleFieldData()

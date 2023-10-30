@@ -7,7 +7,7 @@ namespace EmrCloudApi.Responses.MedicalExamination;
 
 public class SaveMedicalResponse
 {
-    public SaveMedicalResponse(SaveMedicalStatus status, RaiinInfItemResponse validationRaiinInf, List<ValidationTodayOrdItemResponse> validationOdrInfs, ValidationKarteInfResponse validationKarte, ValidateFamilyListResponse validateFamily, UpsertFlowSheetMedicalResponse validationFlowSheet, UpsertPtDiseaseListMedicalResponse validationDisease)
+    public SaveMedicalResponse(SaveMedicalStatus status, RaiinInfItemResponse validationRaiinInf, List<ValidationTodayOrdItemResponse> validationOdrInfs, ValidationKarteInfResponse validationKarte, ValidateFamilyListResponse validateFamily, UpsertFlowSheetMedicalResponse validationFlowSheet, UpsertPtDiseaseListMedicalResponse validationDisease, SaveKensaIraiResponse kensaIraiResponse)
     {
         Status = status;
         ValidationRaiinInf = validationRaiinInf;
@@ -16,6 +16,7 @@ public class SaveMedicalResponse
         ValidateFamily = validateFamily;
         ValidationFlowSheet = validationFlowSheet;
         ValidationDisease = validationDisease;
+        KensaIraiResponse = kensaIraiResponse;
     }
     public SaveMedicalStatus Status { get; private set; }
 
@@ -30,4 +31,6 @@ public class SaveMedicalResponse
     public UpsertFlowSheetMedicalResponse ValidationFlowSheet { get; private set; }
 
     public UpsertPtDiseaseListMedicalResponse ValidationDisease { get; private set; }
+
+    public SaveKensaIraiResponse KensaIraiResponse { get; private set; }
 }

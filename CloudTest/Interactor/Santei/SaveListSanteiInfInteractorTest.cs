@@ -3,9 +3,9 @@ using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Santei;
 using Domain.Models.User;
+using Infrastructure.Interfaces;
 using Interactor.Santei;
 using Moq;
-using System.Linq;
 using System.Text.Json;
 using UseCase.Santei.SaveListSanteiInf;
 
@@ -74,6 +74,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
         #region Mock Data
         var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         var listItemCds = listSanteiInfs.Select(item => item.ItemCd).ToList();
         mockSanteiInfRepo.Setup(repo => repo.CheckExistItemCd(hpId, listItemCds))
         .Returns(true);
@@ -127,7 +128,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(new List<string>() { });
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var output = interactor.ValidateInput(input);
@@ -153,6 +154,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
         #region Mock Data
         var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
 
         var mockHpInfRepo = new Mock<IHpInfRepository>();
         mockHpInfRepo.Setup(repo => repo.CheckHpId(hpId))
@@ -163,7 +165,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockMstItemRepo = new Mock<IMstItemRepository>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var outputHpEqual0 = interactor.ValidateInput(inputHpEqual0);
@@ -201,9 +203,10 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var outputPtIdEqual0 = interactor.ValidateInput(inputDataPtIdEqual0);
@@ -244,9 +247,10 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(false);
 
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var outputUserIdEqual0 = interactor.ValidateInput(inputDataUserIdEqual0);
@@ -316,6 +320,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         #region Mock Data
         // Mock Repository To CheckExistItemCd
         var mockSanteiInfRepoCheckExistItemCd = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         var listItemCdCheckExistItemCd = listSanteiInfs.Select(item => item.ItemCd).ToList();
         mockSanteiInfRepoCheckExistItemCd.Setup(repo => repo.CheckExistItemCd(hpId, listItemCdCheckExistItemCd))
         .Returns(false);
@@ -373,9 +378,9 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(new List<string>() { });
         #endregion
 
-        var interactorCheckExistItemCd = new SaveListSanteiInfInteractor(mockSanteiInfRepoCheckExistItemCd.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
-        var interactorCheckDuplicateIdEqual0 = new SaveListSanteiInfInteractor(mockSanteiInfRepoCheckDuplicateIdEqual0.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
-        var interactorCheckDuplicateIdNotEqual0 = new SaveListSanteiInfInteractor(mockSanteiInfRepoCheckDuplicateIdNotEqual0.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactorCheckExistItemCd = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepoCheckExistItemCd.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactorCheckDuplicateIdEqual0 = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepoCheckDuplicateIdEqual0.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactorCheckDuplicateIdNotEqual0 = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepoCheckDuplicateIdNotEqual0.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var outputDataCheckDuplicateIdEqual0 = interactorCheckDuplicateIdEqual0.ValidateInput(inputDataCheckDuplicateIdEqual0);
@@ -431,6 +436,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         #region Mock Data
         // AlertTermGreaterThan6
         var mockSanteiInfRepoAlertTermGreaterThan6 = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         var listItemCdAlertTermGreaterThan6 = listSanteiInfAlertTermGreaterThan6.Select(item => item.ItemCd).ToList();
         mockSanteiInfRepoAlertTermGreaterThan6.Setup(repo => repo.CheckExistItemCd(hpId, listItemCdAlertTermGreaterThan6))
         .Returns(true);
@@ -482,8 +488,8 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(new List<string>() { });
         #endregion
 
-        var interactorAlertTermGreaterThan6 = new SaveListSanteiInfInteractor(mockSanteiInfRepoAlertTermGreaterThan6.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
-        var interactorAlertTermLessThan2 = new SaveListSanteiInfInteractor(mockSanteiInfRepoAlertTermLessThan2.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactorAlertTermGreaterThan6 = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepoAlertTermGreaterThan6.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactorAlertTermLessThan2 = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepoAlertTermLessThan2.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var outputAlertTermGreaterThan6 = interactorAlertTermGreaterThan6.ValidateInput(inputAlertTermGreaterThan6);
@@ -521,6 +527,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
         #region Mock Data
         var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         var listItemCds = listSanteiInfAlertDaysLessThan0.Select(item => item.ItemCd).ToList();
         mockSanteiInfRepo.Setup(repo => repo.CheckExistItemCd(hpId, listItemCds))
         .Returns(true);
@@ -554,7 +561,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(new List<string>() { });
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var output = interactor.ValidateInput(input);
@@ -629,6 +636,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         #region Mock Data
         // StartKN
         var mockSanteiInfRepoStartKN = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         var listItemCdStartKN = listSanteiInfStartKN.Select(item => item.ItemCd).ToList();
         mockSanteiInfRepoStartKN.Setup(repo => repo.CheckExistItemCd(hpId, listItemCdStartKN))
         .Returns(true);
@@ -680,8 +688,8 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(new List<string>() { });
         #endregion
 
-        var interactorStartKN = new SaveListSanteiInfInteractor(mockSanteiInfRepoStartKN.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
-        var interactorStartIGE = new SaveListSanteiInfInteractor(mockSanteiInfRepoStartIGE.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactorStartKN = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepoStartKN.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactorStartIGE = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepoStartIGE.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var outputStartKN = interactorStartKN.ValidateInput(inputStartKN);
@@ -725,8 +733,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         };
-
-        var listByomeis = new List<string> { "byomei", "byomei1", "byomei2" };
         #endregion
 
         #region Mock Data
@@ -735,12 +741,13 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
 
         // Assert
         Assert.True(output == SaveListSanteiInfStatus.ValidateSuccess);
@@ -788,8 +795,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         };
-
-        var listByomeis = new List<string> { };
         #endregion
 
         #region Mock Data
@@ -798,13 +803,14 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var outputKisanSbtGreaterThan6 = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetailKisanSbtGreaterThan6, listSanteiInfDetails, listByomeis);
-        var outputKisanSbtLessThan1 = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetailKisanSbtLessThan1, listSanteiInfDetails, listByomeis);
+        var outputKisanSbtGreaterThan6 = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetailKisanSbtGreaterThan6, listSanteiInfDetails);
+        var outputKisanSbtLessThan1 = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetailKisanSbtLessThan1, listSanteiInfDetails);
 
         // Assert
         Assert.True(outputKisanSbtGreaterThan6 == SaveListSanteiInfStatus.InvalidKisanSbt && outputKisanSbtLessThan1 == SaveListSanteiInfStatus.InvalidKisanSbt);
@@ -842,8 +848,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         };
-
-        var listByomeis = new List<string> { };
         #endregion
 
         #region Mock Data
@@ -852,12 +856,13 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
 
         // Assert
         Assert.True(output == SaveListSanteiInfStatus.InvalidSanteiInfDetail);
@@ -895,8 +900,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         };
-
-        var listByomeis = new List<string> { };
         #endregion
 
         #region Mock Data
@@ -905,12 +908,13 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
 
         // Assert
         Assert.True(output == SaveListSanteiInfStatus.InvalidEndDate);
@@ -948,8 +952,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         };
-
-        var listByomeis = new List<string> { };
         #endregion
 
         #region Mock Data
@@ -958,68 +960,16 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
 
         // Assert
         Assert.True(output == SaveListSanteiInfStatus.InvalidKisanDate);
-    }
-
-    [Test]
-    public void ValidateSanteiInfDetail_TestInvalidByomei()
-    {
-        // Arrange
-        #region Data Example
-        long ptId = 1;
-        string itemCd = "itemCd";
-        var santeiInfDetail = new SanteiInfDetailInputItem(
-                                    1,
-                                    20221201,
-                                    1,
-                                    20221212,
-                                    "byomeiError",
-                                    "hosokuComment",
-                                    "commnet",
-                                    false
-                                );
-
-        var listSanteiInfDetails = new List<SanteiInfDetailModel>()
-        {
-            new SanteiInfDetailModel(
-                    1,
-                    ptId,
-                    "itemCd",
-                    20221201,
-                    1,
-                    20221212,
-                    "byomei",
-                    "hosokuComment",
-                    "commnet"
-                )
-        };
-
-        var listByomeis = new List<string> { "byomei", "byomei1", "byomei2" };
-        #endregion
-
-        #region Mock Data
-        var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
-        var mockHpInfRepo = new Mock<IHpInfRepository>();
-        var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        var mockUserRepo = new Mock<IUserRepository>();
-        var mockMstItemRepo = new Mock<IMstItemRepository>();
-        #endregion
-
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
-
-        // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
-
-        // Assert
-        Assert.True(output == SaveListSanteiInfStatus.InvalidByomei);
     }
 
     [Test]
@@ -1054,8 +1004,6 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         };
-
-        var listByomeis = new List<string> { "byomei", "byomei1", "byomei2" };
         #endregion
 
         #region Mock Data
@@ -1064,12 +1012,13 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
-        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+        var output = interactor.ValidateSanteiInfDetail(itemCd, santeiInfDetail, listSanteiInfDetails);
 
         // Assert
         Assert.True(output == SaveListSanteiInfStatus.InvalidHosokuComment);
@@ -1115,9 +1064,10 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
         var mockUserRepo = new Mock<IUserRepository>();
         var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var output = interactor.ConvertToSanteiInfModel(ptId, listSanteiInfs);
@@ -1196,6 +1146,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
         #region Mock Data
         var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         var listItemCds = listSanteiInfs.Select(item => item.ItemCd).ToList();
         mockSanteiInfRepo.Setup(repo => repo.CheckExistItemCd(hpId, listItemCds))
         .Returns(true);
@@ -1244,7 +1195,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(new List<string>() { "byomei", "byomei1", "byomei2" });
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var output = interactor.Handle(input);
@@ -1292,6 +1243,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
         #region Mock Data
         var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
+        var mockTenantProvider = new Mock<ITenantProvider>();
         var listItemCds = listSanteiInfs.Select(item => item.ItemCd).ToList();
         mockSanteiInfRepo.Setup(repo => repo.CheckExistItemCd(hpId, listItemCds))
         .Returns(true);
@@ -1340,7 +1292,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(new List<string>() { "byomei", "byomei1", "byomei2" });
         #endregion
 
-        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+        var interactor = new SaveListSanteiInfInteractor(mockTenantProvider.Object, mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
 
         // Act
         var output = interactor.Handle(input);
