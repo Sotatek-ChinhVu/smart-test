@@ -77,7 +77,14 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             }
         );
 
-        var ptDatas = joinPtInfs.AsEnumerable().Select(
+        var timeout = TimeSpan.FromMinutes(60);
+
+        var cancellationTokenSource = new CancellationTokenSource(timeout);
+        var cancellationToken = cancellationTokenSource.Token;
+
+        var queryTask = Task.Run(() =>
+        {
+            return joinPtInfs.AsEnumerable().Select(
             d =>
                 new CoPtInfModel
                 (
@@ -87,6 +94,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     d.ptCmt
                 )
         ).ToList();
+        }, cancellationToken);
+
+        var ptDatas = queryTask.Result;
 
         //検査条件で絞りこみ
         ptDatas = GetPtInfKensaFilter(hpId, kensaConf, ptDatas);
@@ -1449,15 +1459,17 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     searchWords.AddRange(values);
                 }
 
+                var keywordConditions = searchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
+
                 if (sinConf?.WordOpt == 0)
                 {
                     //or条件
-                    sinJoins = sinJoins.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
+                    sinJoins = sinJoins.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.ItemName ?? string.Empty, condition)));
                 }
                 else
                 {
                     //and条件
-                    sinJoins = sinJoins.Where(p => searchWords.All(key => p.ItemName.Contains(key)));
+                    sinJoins = sinJoins.Where(item => keywordConditions.All(condition => EF.Functions.Like(item.ItemName ?? string.Empty, condition)));
                 }
             }
             //検索項目

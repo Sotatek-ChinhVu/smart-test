@@ -90,7 +90,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo , bool isShowKyuSeiName = false, List<int>? listStatus = null)
         {
             var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
@@ -101,7 +101,7 @@ namespace Infrastructure.Repositories
                                                                         u.SinDate == sinDate &&
                                                                         u.RaiinNo != raiinNo &&
                                                                         u.IsDeleted == DeleteTypes.None &&
-                                                                        u.Status == 1);
+                                                                        (listStatus != null ? listStatus.Contains(u.Status) : u.Status == 1));
             if (itemData == null)
             {
                 return new PatientInforModel(raiinCount);
