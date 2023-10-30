@@ -11,7 +11,7 @@ namespace Domain.Models.PatientInfor
 {
     public interface IPatientInforRepository : IRepositoryBase
     {
-        PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false);
+        PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false, List<int>? listStatus = null);
 
         (PatientInforModel ptInfModel, bool isFound) SearchExactlyPtNum(long ptNum, int hpId, int sinDate);
 

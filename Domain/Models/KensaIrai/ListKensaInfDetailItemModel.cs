@@ -74,6 +74,12 @@
             IsDeleted = isDeleted;
         }
 
+        public ListKensaInfDetailItemModel ChangeResultVal(string resultVal)
+        {
+            ResultVal = resultVal;
+            return this;
+        }
+
         public long PtId { get; private set; }
 
         public long IraiCd { get; private set; }

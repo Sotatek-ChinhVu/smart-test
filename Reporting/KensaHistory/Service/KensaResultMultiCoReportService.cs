@@ -27,6 +27,7 @@ namespace Reporting.KensaHistory.Service
         private long iraiDate;
         private long iraiStart;
         private long iraiEnd;
+        private int sinDate;
         private int row;
         private PtInf ptInf;
         private (List<CoKensaResultMultiModel>, List<long>) data = new();
@@ -57,7 +58,7 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn)
+        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
 
             this.hpId = hpId;
@@ -67,6 +68,7 @@ namespace Reporting.KensaHistory.Service
             this.startDate = startDate;
             this.endDate = endDate;
             this.showAbnormalKbn = showAbnormalKbn;
+            this.sinDate = sinDate;
             var getData = GetData();
 
             if (getData)
@@ -145,6 +147,13 @@ namespace Reporting.KensaHistory.Service
                         int count = 0;
                         foreach (var itemKensa in item.KensaResultMultiItems)
                         {
+                            switch (itemKensa.ResultType)
+                            {
+                                case "E": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以下"); break;
+                                case "L": itemKensa.ChangeResultVal(itemKensa.ResultValue + "未満"); break;
+                                case "U": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以上"); break;
+                                default: break;
+                            }
                             listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
                             listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
                             count++;
@@ -205,6 +214,13 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var itemKensa in item.KensaResultMultiItems)
                     {
+                        switch (itemKensa.ResultType)
+                        {
+                            case "E": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以下"); break;
+                            case "L": itemKensa.ChangeResultVal(itemKensa.ResultValue + "未満"); break;
+                            case "U": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以上"); break;
+                            default: break;
+                        }
                         listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
                         listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
                         count++;
@@ -242,15 +258,20 @@ namespace Reporting.KensaHistory.Service
 
         private bool GetData()
         {
-            hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
+            hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
             kensaInfDetails = data.Item1;
             date = data.Item2;
             date = date.OrderBy(x => x).ToList();
-            iraiStart = date.First();
-            iraiEnd = date.Last();
-            totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
+
+            if (kensaInfDetails.Count > 0 && date.Count > 0)
+            {
+                iraiStart = date.First();
+                iraiEnd = date.Last();
+                totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
+            }
+
             return kensaInfDetails.Count > 0;
         }
 

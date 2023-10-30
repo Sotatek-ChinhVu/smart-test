@@ -38,6 +38,8 @@ public class SaveMedicalRequest
 
     public bool IsSagaku { get; set; }
 
+    public bool AutoSaveKensaIrai { get; set; } = true;
+
     public List<OdrInfItem> OdrInfs { get; set; } = new();
 
     public KarteItem KarteItem { get; set; } = new();

@@ -86,6 +86,7 @@
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
         public const string GetTenMstByCode = "GetTenMstByCode";
         public const string GetByomeiByCode = "GetByomeiByCode";
+        public const string CheckJihiSbtExistsInTenMst = "CheckJihiSbtExistsInTenMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

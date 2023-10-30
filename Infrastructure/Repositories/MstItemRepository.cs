@@ -8215,4 +8215,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           .ToList();
         return result;
     }
+
+    public bool CheckJihiSbtExistsInTenMst(int jihiSbt)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts
+            .Where(item => item.JihiSbt == jihiSbt && item.IsDeleted == DeleteTypes.None)
+            .FirstOrDefault();
+
+        return tenMst != null;
+    }
 }

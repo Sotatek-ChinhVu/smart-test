@@ -91,8 +91,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
-        var result = GetData(hpId);
-        var data = result.FirstOrDefault(s => s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
+        var data = NoTrackingDataContext.SystemConfs.FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
         if (data == null) return new SystemConfModel();
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? string.Empty);
     }
