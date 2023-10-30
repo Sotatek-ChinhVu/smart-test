@@ -442,6 +442,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<LockInf>()
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
+            modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -1182,5 +1183,7 @@ namespace PostgreDataContext
         public DbSet<KensaCmtMst> KensaCmtMsts { get; set; } = default!;
 
         public DbSet<KensaResultLog> KensaResultLogs { get; set; } = default!;
+
+        public DbSet<SmartKarteAppSignalRPort> SmartKarteAppSignalRPorts { get; set; } = default!;
     }
 }
