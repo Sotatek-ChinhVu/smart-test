@@ -77,26 +77,14 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             }
         );
 
-        //var timeout = TimeSpan.FromMinutes(5);
+        var timeout = TimeSpan.FromMinutes(5);
 
-        //var cancellationTokenSource = new CancellationTokenSource(timeout);
-        //var cancellationToken = cancellationTokenSource.Token;
+        var cancellationTokenSource = new CancellationTokenSource(timeout);
+        var cancellationToken = cancellationTokenSource.Token;
 
-        //var queryTask = Task.Run(() =>
-        //{
-        //    return joinPtInfs.AsEnumerable().Select(
-        //    d =>
-        //        new CoPtInfModel
-        //        (
-        //            d.ptInf,
-        //            d.ptFirstVisitJoin?.SinDate ?? 0,
-        //            d.ptVisitJoin?.LastVisitDate ?? 0,
-        //            d.ptCmt
-        //        )
-        //).ToList();
-        //}, cancellationToken);
-
-        var ptDatas = joinPtInfs.AsEnumerable().Select(
+        var queryTask = Task.Run(() =>
+        {
+            return joinPtInfs.AsEnumerable().Select(
             d =>
                 new CoPtInfModel
                 (
@@ -106,6 +94,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     d.ptCmt
                 )
         ).ToList();
+        }, cancellationToken);
+        queryTask.Wait();
+        var ptDatas = queryTask.Result;
 
         //検査条件で絞りこみ
         ptDatas = GetPtInfKensaFilter(hpId, kensaConf, ptDatas);
