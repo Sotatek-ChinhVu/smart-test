@@ -44,9 +44,11 @@ public class HistoryCommon : IHistoryCommon
         var listUserIds = historyList.historyOrderModelList?.Select(d => d.UketukeId).ToList();
         var listUsers = listUserIds == null ? new List<UserMstModel>() : _userRepository.GetListAnyUser(listUserIds)?.ToList();
         var insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
-        List<string> listFolders = new();
-        listFolders.Add(CommonConstants.Store);
-        listFolders.Add(CommonConstants.Karte);
+        List<string> listFolders = new()
+        {
+            CommonConstants.Store,
+            CommonConstants.Karte
+        };
         string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
 
         var host = new StringBuilder();

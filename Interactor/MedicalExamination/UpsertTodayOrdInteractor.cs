@@ -162,11 +162,11 @@ namespace Interactor.MedicalExamination
                         {
                             listFileItems = new List<string> { string.Empty };
                         }
-                        SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
+                        SaveFileKarte(hpId, inputDatas.UserId, ptId, raiinNo, listFileItems, true);
                     }
                     else
                     {
-                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                        SaveFileKarte(hpId, inputDatas.UserId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
                     }
                 }
 
@@ -228,7 +228,7 @@ namespace Interactor.MedicalExamination
             }
         }
 
-        private void SaveFileKarte(int hpId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
+        private void SaveFileKarte(int hpId, int userId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
         {
             var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
             List<string> listFolders = new();
@@ -240,7 +240,7 @@ namespace Interactor.MedicalExamination
             var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
+                _karteInfRepository.SaveListFileKarte(hpId, userId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
             }
             else
             {
