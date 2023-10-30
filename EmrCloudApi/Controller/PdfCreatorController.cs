@@ -245,14 +245,14 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.KensaHistoryReport)]
     public async Task<IActionResult> KensaHistoryReport([FromQuery] KensaHistoryReportRequest request)
     {
-        if (request.SeikyuYm != 0)
+        if (request.IraiDate != 0)
         {
-            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.SeikyuYm, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.EndDate, request.ShowAbnormalKbn);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
         else
         {
-            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiCd, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.ItemQuantity);
+            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.StartDate, request.EndDate, request.ShowAbnormalKbn);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
     }

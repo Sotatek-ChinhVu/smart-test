@@ -13,8 +13,10 @@ using UseCase.Online;
 using UseCase.Online.GetListOnlineConfirmationHistoryModel;
 using UseCase.Online.GetOnlineConsent;
 using UseCase.Online.GetRegisterdPatientsFromOnline;
+using UseCase.Online.InsertOnlineConfirmation;
 using UseCase.Online.InsertOnlineConfirmHistory;
 using UseCase.Online.SaveAllOQConfirmation;
+using UseCase.Online.SaveOnlineConfirmation;
 using UseCase.Online.SaveOQConfirmation;
 using UseCase.Online.UpdateOnlineConfirmationHistory;
 using UseCase.Online.UpdateOnlineConsents;
@@ -255,5 +257,29 @@ public class OnlineController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateOnlineConsentsResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateOnlineConfirmation)]
+    public ActionResult<Response<UpdateOnlineConfirmationResponse>> UpdateOnlineConfirmation([FromBody] UpdateOnlineConfirmationRequest request)
+    {
+        var input = new UpdateOnlineConfirmationInputData(HpId, UserId, request.ReceptionNumber, request.YokakuDate, request.QCBIDXmlMsgResponse);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateOnlineConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateOnlineConfirmationResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.InsertOnlineConfirmation)]
+    public ActionResult<Response<InsertOnlineConfirmationResponse>> InsertOnlineConfirmation([FromBody] InsertOnlineConfirmationRequest request)
+    {
+        var input = new InsertOnlineConfirmationInputData(UserId, request.SinDate, request.ArbitraryFileIdentifier, request.QCBIXmlMsgResponse);
+        var output = _bus.Handle(input);
+
+        var presenter = new InsertOnlineConfirmationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<InsertOnlineConfirmationResponse>>(presenter.Result);
     }
 }

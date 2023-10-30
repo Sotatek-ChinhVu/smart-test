@@ -375,10 +375,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
         /// </summary>
         /// <param name="calcStatus"></param>
         /// <returns></returns>
-        public List<CalcStatusModel> GetSameCalcStatus(CalcStatusModel calcStatus, string preFix)
+        public List<CalcStatusModel> GetSameCalcStatus(CalcStatusModel calcStatus, string calcKeyId)
         {
-            //string computerName = (preFix + Hardcode.ComputerName).ToUpper();
-            string computerName = preFix;
+            string computerName = calcKeyId;
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryable(p =>
                 p.CreateMachine == computerName &&
@@ -434,7 +433,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         /// <returns>true: 処理中</returns>
         public bool CheckCalcStatus(CalcStatusModel calcStatus)
         {
-            string computerName = Hardcode.ComputerName.ToUpper();
+            //string computerName = Hardcode.ComputerName.ToUpper();
             DateTime dtCheck = CIUtil.GetJapanDateTimeNow().AddMinutes(-5);
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
@@ -454,9 +453,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
         /// </summary>
         /// <param name="calcStatus"></param>
         /// <returns></returns>
-        public bool CheckCalcStatusOther(CalcStatusModel calcStatus)
+        public bool CheckCalcStatusOther(CalcStatusModel calcStatus, string calcKeyId)
         {
-            string computerName = Hardcode.ComputerName.ToUpper();
+            string computerName = calcKeyId;
             DateTime dtCheck = CIUtil.GetJapanDateTimeNow().AddMinutes(-5);
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
@@ -477,9 +476,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
         /// </summary>
         /// <param name="calcStatus"></param>
         /// <returns>true: 処理中</returns>
-        public bool CheckCalcStatusSelf(CalcStatusModel calcStatus)
+        public bool CheckCalcStatusSelf(CalcStatusModel calcStatus, string calcKeyId)
         {
-            string computerName = Hardcode.ComputerName.ToUpper();
+            string computerName = calcKeyId;
             DateTime dtCheck = CIUtil.GetJapanDateTimeNow().AddMinutes(-5);
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
