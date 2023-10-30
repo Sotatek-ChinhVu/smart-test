@@ -1096,7 +1096,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             foreach (var odrInfDetail in odrInfDetails)
             {
                 odrInfDetail.JissiKbn = 0;
-                odrInfDetail.JissiDate = DateTime.MinValue;
+                odrInfDetail.JissiDate = null;
                 odrInfDetail.JissiId = 0;
                 odrInfDetail.JissiMachine = string.Empty;
                 odrInfDetail.ReqCd = string.Empty;

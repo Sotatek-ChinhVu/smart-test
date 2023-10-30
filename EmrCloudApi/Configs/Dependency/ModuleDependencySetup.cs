@@ -778,6 +778,7 @@ using UseCase.MainMenu.GetOdrSetName;
 using UseCase.MainMenu.SaveOdrSet;
 using UseCase.Lock.CheckIsExistedOQLockInfo;
 using UseCase.SetMst.GetListSetGenerationMst;
+using Interactor.MedicalExamination.KensaIraiCommon;
 using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1192,6 +1193,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
             services.AddTransient<IKensaSetRepository, KensaSetRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
+            services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
             //services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 

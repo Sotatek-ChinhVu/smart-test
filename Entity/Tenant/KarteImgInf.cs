@@ -76,5 +76,31 @@ namespace Entity.Tenant
         [Column("MESSAGE")]
         [MaxLength(2000)]
         public string? Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 作成日時
+        /// </summary>
+        [Column("CREATE_DATE")]
+        public DateTime CreateDate { get; set; }
+
+        /// <summary>
+        /// 作成者
+        /// </summary>
+        [Column("CREATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int CreateId { get; set; }
+
+        /// <summary>
+        /// 更新日時
+        /// </summary>
+        [Column("UPDATE_DATE")]
+        public DateTime UpdateDate { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        [Column("UPDATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int UpdateId { get; set; }
     }
 }
