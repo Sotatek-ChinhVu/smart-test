@@ -7,7 +7,7 @@ namespace Reporting.KensaHistory.DB
 {
     public interface ICoKensaHistoryFinder
     {
-        HpInfModel GetHpInf(int hpId);
+        HpInfModel GetHpInf(int hpId, int sinDate);
 
         PtInf GetPtInf(int hpId, long ptId);
 
