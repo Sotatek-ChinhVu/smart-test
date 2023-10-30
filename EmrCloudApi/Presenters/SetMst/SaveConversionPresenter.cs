@@ -22,6 +22,7 @@ public class SaveConversionPresenter : ISaveConversionOutputPort
         SaveConversionStatus.Failed => ResponseMessage.Failed,
         SaveConversionStatus.InvalidConversionItemCd => ResponseMessage.InvalidConversionItemCd,
         SaveConversionStatus.InvalidSourceItemCd => ResponseMessage.InvalidSourceItemCd,
+        SaveConversionStatus.InvalidDeleteConversionItemCd => ResponseMessage.InvalidDeleteConversionItemCd,
         _ => string.Empty
     };
 }
