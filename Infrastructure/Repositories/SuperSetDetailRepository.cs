@@ -248,6 +248,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     {
         var codeLists = new List<string>()
             {
+                mst.ByomeiCd ?? string.Empty,
                 mst.SyusyokuCd1 ?? string.Empty,
                 mst.SyusyokuCd2 ?? string.Empty,
                 mst.SyusyokuCd3 ?? string.Empty,
