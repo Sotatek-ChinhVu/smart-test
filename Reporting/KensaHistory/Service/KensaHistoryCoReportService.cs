@@ -108,7 +108,7 @@ namespace Reporting.KensaHistory.Service
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 30;
+                short maxRow = 33;
                 int rowNo = 0;
 
                 if (currentPage == 1)
