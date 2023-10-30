@@ -77,7 +77,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             }
         );
 
-        var timeout = TimeSpan.FromMinutes(60);
+        var timeout = TimeSpan.FromMinutes(5);
 
         var cancellationTokenSource = new CancellationTokenSource(timeout);
         var cancellationToken = cancellationTokenSource.Token;
