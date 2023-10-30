@@ -1755,7 +1755,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             while (address.Length > 3)
             {
-                address = address.Substring(0, address.Length - 3);
+                address = address.Substring(0, address.Length - 1);
 
                 listPostCode = GetPostCodeMsts(hpId, postCode1, postCode2, address, pageIndex, pageSize);
                 if (listPostCode.Item1 > 0)
@@ -1791,27 +1791,29 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         if (!string.IsNullOrEmpty(address))
         {
+            // PrefName + CityName + Banti
             entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
-                                            || (e.PrefName + e.CityName).Contains(address)
-                                            || (e.PrefName != null && e.PrefName.Contains(address)));
+                                            && !string.IsNullOrEmpty(e.CityName));
+
+            // PrefName + CityName
+            if (entities.Count() == 0)
+            {
+                entities = entities.Where(e => (e.PrefName + e.CityName).Contains(address));
+            }
+
+            // PrefName
+            if (entities.Count() == 0)
+            {
+                entities = entities.Where(e => (e.PrefName ?? string.Empty).Contains(address));
+            }
         }
 
-        var query = entities;
-
-        if (!string.IsNullOrEmpty(address))
-        {
-            query = entities.Where(e =>
-                (e.PrefName + e.CityName + e.Banti).Contains(address) ||
-                (e.PrefName + e.CityName).Contains(address) ||
-                (e.PrefName != null && e.PrefName.Contains(address)));
-        }
-
-        var totalCount = query.Count();
+        var totalCount = entities.Count();
 
         var result = new List<PostCodeMstModel>();
         if (pageIndex == -1 && pageSize == -1)
         {
-            result = query.OrderBy(x => x.PostCd)
+            result = entities.OrderBy(x => x.PostCd)
                               .ThenBy(x => x.PrefName)
                               .ThenBy(x => x.CityName)
                               .ThenBy(x => x.Banti)
@@ -1829,7 +1831,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
         else
         {
-            result = query.OrderBy(x => x.PostCd)
+            result = entities.OrderBy(x => x.PostCd)
                              .ThenBy(x => x.PrefName)
                              .ThenBy(x => x.CityName)
                              .ThenBy(x => x.Banti)
