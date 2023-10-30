@@ -27,7 +27,11 @@ public class SaveConversionInteractor : ISaveConversionInputPort
             {
                 return new SaveConversionOutputData(SaveConversionStatus.InvalidSourceItemCd);
             }
-            if (_superSetDetailRepository.SaveConversionItemInf(inputData.HpId, inputData.UserId, inputData.ConversionItemCd, inputData.SourceItemCd))
+            else if (_mstItemRepository.GetCheckItemCds(inputData.DeleteConversionItemCdList).Count != inputData.DeleteConversionItemCdList.Distinct().Count())
+            {
+                return new SaveConversionOutputData(SaveConversionStatus.InvalidDeleteConversionItemCd);
+            }
+            if (_superSetDetailRepository.SaveConversionItemInf(inputData.HpId, inputData.UserId, inputData.ConversionItemCd, inputData.SourceItemCd, inputData.DeleteConversionItemCdList))
             {
                 return new SaveConversionOutputData(SaveConversionStatus.Successed);
             }

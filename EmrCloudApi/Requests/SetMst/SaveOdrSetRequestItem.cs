@@ -14,3 +14,10 @@ public class SaveOdrSetRequestItem
 
     public long SetOrdInfId { get; set; }
 }
+
+public class SaveSetNameRequestItem
+{
+    public int SetCd { get; set; }
+
+    public string SetName { get; set; } = string.Empty;
+}

@@ -16,4 +16,6 @@ public interface ISetMstRepository : IRepositoryBase
     bool CheckExistSetMstBySetCd(int hpId, List<int> setCdList);
 
     SetMstTooltipModel GetToolTip(int hpId, int setCd);
+
+    IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId);
 }

@@ -28,7 +28,10 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         _userRepository = userRepository;
         _mstItemRepository = mstItemRepository;
         _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        if (_tenantProvider.CreateNewTrackingAdminDbContextOption() != null)
+        {
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        }
     }
 
     public SaveListSanteiInfOutputData Handle(SaveListSanteiInfInputData inputData)
@@ -59,7 +62,10 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             _patientInforRepository.ReleaseResource();
             _userRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
-            _loggingHandler.Dispose();
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.Dispose();
+            }
         }
     }
 

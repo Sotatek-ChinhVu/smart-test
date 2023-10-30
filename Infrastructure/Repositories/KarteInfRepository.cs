@@ -136,13 +136,13 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public bool SaveListFileKarte(int hpId, long ptId, long raiinNo, string host, List<FileInfModel> listFiles, bool saveTempFile)
+        public bool SaveListFileKarte(int hpId, int userId, long ptId, long raiinNo, string host, List<FileInfModel> listFiles, bool saveTempFile)
         {
             try
             {
                 if (saveTempFile)
                 {
-                    var listFileInsert = ConvertListInsertTempKarteFile(hpId, ptId, host, listFiles);
+                    var listFileInsert = ConvertListInsertTempKarteFile(hpId, userId, ptId, host, listFiles);
                     if (listFileInsert.Any())
                     {
                         TrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
@@ -150,7 +150,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
+                    UpdateSeqNoKarteFile(hpId, userId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
                 }
                 return TrackingDataContext.SaveChanges() > 0;
             }
@@ -174,7 +174,7 @@ namespace Infrastructure.Repositories
             return lastItem != null ? lastItem.SeqNo : 0;
         }
 
-        private List<KarteImgInf> ConvertListInsertTempKarteFile(int hpId, long ptId, string host, List<FileInfModel> listFileNames)
+        private List<KarteImgInf> ConvertListInsertTempKarteFile(int hpId, int userId, long ptId, string host, List<FileInfModel> listFileNames)
         {
             List<KarteImgInf> result = new();
             int position = 1;
@@ -194,13 +194,17 @@ namespace Infrastructure.Repositories
                     entity.KarteKbn = 1;
                 }
                 entity.FileName = item.LinkFile.Replace(host, string.Empty);
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.CreateId = userId;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
                 result.Add(entity);
                 position += 1;
             }
             return result;
         }
 
-        private void UpdateSeqNoKarteFile(int hpId, long ptId, long raiinNo, List<FileInfModel> fileInfModelList)
+        private void UpdateSeqNoKarteFile(int hpId, int userId, long ptId, long raiinNo, List<FileInfModel> fileInfModelList)
         {
             var fileNameList = fileInfModelList.Select(item => item.LinkFile).Distinct().ToList();
             int position = 1;
@@ -216,6 +220,15 @@ namespace Infrastructure.Repositories
                                                ).OrderBy(item => item.Position)
                                                .ToList();
 
+            var listUpdateDateFile = TrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId
+                                                                                    && item.PtId == ptId
+                                                                                    && item.RaiinNo == raiinNo
+                                                                                    && item.SeqNo == lastSeqNo
+                                                                                    && item.FileName != null
+                                                                                    && !fileNameList.Contains(item.FileName))
+                                                                     .OrderBy(item => item.Position)
+                                                                     .ToList();
+
             var listUpdateFiles = TrackingDataContext.KarteImgInfs.Where(item =>
                                                item.HpId == hpId
                                                && item.PtId == ptId
@@ -225,6 +238,11 @@ namespace Infrastructure.Repositories
                                                && fileNameList.Contains(item.FileName)
                                                ).ToList();
 
+            foreach (var item in listUpdateDateFile)
+            {
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                item.UpdateId = userId;
+            }
 
             foreach (var fileInf in fileInfModelList)
             {
@@ -241,6 +259,9 @@ namespace Infrastructure.Repositories
                     convertItem.SeqNo = lastSeqNo + 1;
                     convertItem.Position = position;
                     convertItem.KarteKbn = oldItemConvert.KarteKbn;
+                    convertItem.CreateDate = DateTime.SpecifyKind(oldItemConvert.CreateDate, DateTimeKind.Utc);
+                    convertItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    convertItem.UpdateId = userId;
                     TrackingDataContext.KarteImgInfs.Add(convertItem);
                     position++;
                     continue;
@@ -268,6 +289,10 @@ namespace Infrastructure.Repositories
                 newItem.SeqNo = lastSeqNo + 1;
                 newItem.Position = position;
                 newItem.KarteKbn = fileInf.IsSchema ? 1 : 0;
+                newItem.CreateDate = CIUtil.GetJapanDateTimeNow();
+                newItem.CreateId = userId;
+                newItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newItem.UpdateId = userId;
                 TrackingDataContext.KarteImgInfs.Add(newItem);
                 position++;
             }
@@ -304,8 +329,7 @@ namespace Infrastructure.Repositories
                                                                             item.RaiinNo,
                                                                             item.SeqNo,
                                                                             item.KarteKbn > 0,
-                                                                            item.FileName ?? string.Empty,
-                                                                            false
+                                                                            item.FileName ?? string.Empty
                                                                         )
                                                             ).ToList();
             return result;
@@ -313,13 +337,19 @@ namespace Infrastructure.Repositories
 
         public List<FileInfModel> GetListKarteFile(int hpId, long ptId, List<long> listRaiinNo, bool isGetAll)
         {
-            var listFileKarte = NoTrackingDataContext.KarteImgInfs.Where(item =>
-                                                                                item.HpId == hpId
-                                                                                && item.PtId == ptId
-                                                                                && listRaiinNo.Contains(item.RaiinNo)
-                                                                                )
+            var listFileKarte = NoTrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId
+                                                                                 && item.PtId == ptId
+                                                                                 && listRaiinNo.Contains(item.RaiinNo))
                                                                     .OrderBy(item => item.Position)
                                                                     .ToList();
+
+            var userIdList = listFileKarte.Select(item => item.CreateId).ToList();
+            userIdList.AddRange(listFileKarte.Select(item => item.UpdateId));
+            userIdList = userIdList.Distinct().ToList();
+            var userMstList = NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId
+                                                                           && userIdList.Contains(item.UserId))
+                                                            .ToList();
+
             if (listFileKarte.Any())
             {
                 List<FileInfModel> result = new();
@@ -334,22 +364,30 @@ namespace Infrastructure.Repositories
                             if (karte.SeqNo == lastSeqNo)
                             {
                                 result.Add(new FileInfModel(
-                                            karte.RaiinNo,
-                                            karte.SeqNo,
-                                            karte.KarteKbn > 0,
-                                            karte.FileName ?? string.Empty,
-                                            karte.SeqNo != lastSeqNo
+                                               karte.RaiinNo,
+                                               karte.SeqNo,
+                                               karte.KarteKbn > 0,
+                                               karte.FileName ?? string.Empty,
+                                               karte.SeqNo != lastSeqNo,
+                                               karte.CreateDate,
+                                               karte.UpdateDate,
+                                               userMstList.FirstOrDefault(item => item.UserId == karte.CreateId)?.Name ?? string.Empty,
+                                               userMstList.FirstOrDefault(item => item.UserId == karte.UpdateId)?.Name ?? string.Empty
                                         ));
                             }
                         }
                         else
                         {
                             result.Add(new FileInfModel(
-                                            karte.RaiinNo,
-                                            karte.SeqNo,
-                                            karte.KarteKbn > 0,
-                                            karte.FileName ?? string.Empty,
-                                            karte.SeqNo != lastSeqNo
+                                           karte.RaiinNo,
+                                           karte.SeqNo,
+                                           karte.KarteKbn > 0,
+                                           karte.FileName ?? string.Empty,
+                                           karte.SeqNo != lastSeqNo,
+                                           karte.CreateDate,
+                                           karte.UpdateDate,
+                                           userMstList.FirstOrDefault(item => item.UserId == karte.CreateId)?.Name ?? string.Empty,
+                                           userMstList.FirstOrDefault(item => item.UserId == karte.UpdateId)?.Name ?? string.Empty
                                         ));
                         }
                     }

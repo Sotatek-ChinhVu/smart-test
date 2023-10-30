@@ -33,9 +33,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private IEnumerable<SetGenerationMstModel> ReloadCache()
+        private IEnumerable<SetGenerationMstModel> ReloadCache(int hpId)
         {
-            var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0).Select(s =>
+            var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).Select(s =>
                     new SetGenerationMstModel(
                         s.HpId,
                         s.GenerationId,
@@ -52,12 +52,10 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
         {
-            IEnumerable<SetGenerationMstModel>? setGenerationMstList =
-
-Enumerable.Empty<SetGenerationMstModel>();
+            var setGenerationMstList = Enumerable.Empty<SetGenerationMstModel>();
             if (!_cache.KeyExists(key))
             {
-                setGenerationMstList = ReloadCache();
+                setGenerationMstList = ReloadCache(hpId);
             }
             else
             {
@@ -65,6 +63,12 @@ Enumerable.Empty<SetGenerationMstModel>();
             }
 
             return setGenerationMstList!.Where(s => s.StartDate <= sinDate).OrderByDescending(x => x.StartDate).ToList();
+        }
+
+        public List<SetGenerationMstModel> GetSetGenerationMstList(int hpId)
+        {
+            var setGenerationMstList = ReloadCache(hpId).OrderByDescending(x => x.StartDate).ToList();
+            return setGenerationMstList;
         }
 
         private List<SetGenerationMstModel> ReadCache()
@@ -136,7 +140,7 @@ Enumerable.Empty<SetGenerationMstModel>();
             return date.Year.ToString() + "/" + (date.Month > 9 ? date.Month.ToString() : "0" + date.Month.ToString()) + "/" + (date.Day > 9 ? date.Day.ToString() : "0" + date.Day.ToString());
         }
 
-        public bool DeleteSetSenDaiGeneration(int generationId, int userId)
+        public bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId)
         {
             var ListDataUpdate = new List<SetGenerationMst>();
             var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.GenerationId == generationId);
@@ -162,7 +166,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                 if (ListDataUpdate.Count > 0)
                 {
                     TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
-                    ReloadCache();
+                    ReloadCache(hpId);
                     return TrackingDataContext.SaveChanges() > 0;
                 }
                 return false;
@@ -190,7 +194,7 @@ Enumerable.Empty<SetGenerationMstModel>();
             itemAdd.UpdateMachine = "SmartKarte";
             TrackingDataContext.SetGenerationMsts.Add(itemAdd);
             var checkAdd = TrackingDataContext.SaveChanges();
-            ReloadCache();
+            ReloadCache(hpId);
             if (checkAdd == 0)
             {
                 return null;
@@ -322,7 +326,6 @@ Enumerable.Empty<SetGenerationMstModel>();
                 throw;
             }
         }
-
 
         public bool SaveCloneKbnMst(int targetGenerationId, int sourceGenerationId, int hpId, int userId)
         {
@@ -681,7 +684,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                     TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
                     TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
                     TrackingDataContext.SaveChanges();
-                    ReloadCache();
+                    ReloadCache(hpId);
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
@@ -693,6 +696,19 @@ Enumerable.Empty<SetGenerationMstModel>();
 
 
             return null;
+        }
+
+        public List<ListSetGenerationMstModel> GetAll(int hpId)
+        {
+            var listSetGenerationMstList = NoTrackingDataContext.ListSetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).OrderByDescending(s => s.StartDate).Select(s =>
+                    new ListSetGenerationMstModel(
+                        s.HpId,
+                        s.GenerationId,
+                        s.StartDate,
+                        s.IsDeleted
+                    )
+                  ).ToList();
+            return listSetGenerationMstList;
         }
 
         public void ReleaseResource()

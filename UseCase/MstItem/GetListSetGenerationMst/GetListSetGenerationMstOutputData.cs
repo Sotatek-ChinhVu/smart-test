@@ -1,4 +1,4 @@
-﻿using Domain.Models.ListSetGenerationMst;
+﻿using Domain.Models.SetGenerationMst;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.MstItem.GetListSetGenerationMst

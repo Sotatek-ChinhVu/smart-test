@@ -121,7 +121,7 @@ namespace CloudUnitTest.SampleData
                                     break;
                                 case "V":
                                     int.TryParse(text, out int jikanKbn);
-                                    raiinInf.SyosaisinKbn = jikanKbn;
+                                    raiinInf.JikanKbn = jikanKbn;
                                     break;
                                 case "W":
                                     int.TryParse(text, out int isDeleted);
