@@ -789,6 +789,7 @@ using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
 using UseCase.MainMenu.GetOdrSetName;
 using UseCase.MainMenu.SaveOdrSet;
 using UseCase.Lock.CheckIsExistedOQLockInfo;
+using Interactor.MedicalExamination.KensaIraiCommon;
 using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1204,6 +1205,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaSetRepository, KensaSetRepository>();
             services.AddTransient<IListSetGenerationMstRepository, ListSetGenerationMstRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
+            services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
             //services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 

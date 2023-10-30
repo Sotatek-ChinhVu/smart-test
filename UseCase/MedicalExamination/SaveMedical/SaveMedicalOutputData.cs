@@ -3,6 +3,7 @@ using UseCase.Core.Sync.Core;
 using UseCase.Diseases.Upsert;
 using UseCase.Family;
 using UseCase.FlowSheet.Upsert;
+using UseCase.MedicalExamination.SaveKensaIrai;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
 using static Helper.Constants.RaiinInfConst;
@@ -37,6 +38,37 @@ public class SaveMedicalOutputData : IOutputData
         ValidationPtDiseaseListStatus = validationPtDiseaseListStatus;
         ReceptionInfos = receptionInfos;
         SameVisitList = sameVisitList;
+        KensaIraiOutputData = new SaveKensaIraiOutputData();
+    }
+
+    public SaveMedicalOutputData(
+           SaveMedicalStatus status,
+           RaiinInfTodayOdrValidationStatus validationRaiinInf,
+           Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validationOdrs,
+           KarteValidationStatus validationKarte,
+           ValidateFamilyListStatus validateFamily,
+           UpsertFlowSheetStatus validationFlowSheetStatus,
+           UpsertPtDiseaseListStatus validationPtDiseaseListStatus,
+           int sinDate,
+           long raiinNo,
+           long ptId,
+           List<ReceptionRowModel> receptionInfos,
+           List<SameVisitModel> sameVisitList,
+           SaveKensaIraiOutputData kensaIraiOutputData)
+    {
+        Status = status;
+        ValidationRaiinInf = validationRaiinInf;
+        ValidationOdrs = validationOdrs;
+        ValidationKarte = validationKarte;
+        ValidateFamily = validateFamily;
+        SinDate = sinDate;
+        RaiinNo = raiinNo;
+        PtId = ptId;
+        ValidationFlowSheetStatus = validationFlowSheetStatus;
+        ValidationPtDiseaseListStatus = validationPtDiseaseListStatus;
+        ReceptionInfos = receptionInfos;
+        SameVisitList = sameVisitList;
+        KensaIraiOutputData = kensaIraiOutputData;
     }
 
     public int SinDate { get; private set; }
@@ -62,4 +94,6 @@ public class SaveMedicalOutputData : IOutputData
     public List<ReceptionRowModel> ReceptionInfos { get; private set; }
 
     public List<SameVisitModel> SameVisitList { get; private set; }
+
+    public SaveKensaIraiOutputData KensaIraiOutputData { get; private set; }
 }
