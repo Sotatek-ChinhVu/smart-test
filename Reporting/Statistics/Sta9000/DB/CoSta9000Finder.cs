@@ -77,7 +77,14 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             }
         );
 
-        var ptDatas = joinPtInfs.AsEnumerable().Select(
+        var timeout = TimeSpan.FromMinutes(5);
+
+        var cancellationTokenSource = new CancellationTokenSource(timeout);
+        var cancellationToken = cancellationTokenSource.Token;
+
+        var queryTask = Task.Run(() =>
+        {
+            return joinPtInfs.AsEnumerable().Select(
             d =>
                 new CoPtInfModel
                 (
@@ -87,6 +94,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     d.ptCmt
                 )
         ).ToList();
+        }, cancellationToken);
+
+        var ptDatas = queryTask.Result;
 
         //検査条件で絞りこみ
         ptDatas = GetPtInfKensaFilter(hpId, kensaConf, ptDatas);
