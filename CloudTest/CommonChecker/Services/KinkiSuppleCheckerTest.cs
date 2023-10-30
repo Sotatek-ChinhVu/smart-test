@@ -1,6 +1,5 @@
 ﻿using CloudUnitTest.SampleData;
 using CommonChecker.Caches;
-using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -40,6 +39,10 @@ public class KinkiSuppleCheckerTest : BaseUT
         kinkiSuppleChecker.HpID = 1;
         kinkiSuppleChecker.PtID = 111;
         kinkiSuppleChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
 
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;

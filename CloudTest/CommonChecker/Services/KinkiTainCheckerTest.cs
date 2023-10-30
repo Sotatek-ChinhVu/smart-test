@@ -95,7 +95,7 @@ public class KinkiTainCheckerTest : BaseUT
     [Test]
     public void Test_003_HandleCheckOrderList_KinkiTainCheck_WhenExisitingOtherDrug_ExistingM01Kinki()
     {
-        ///Setup
+        //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
         var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug();
@@ -150,6 +150,10 @@ public class KinkiTainCheckerTest : BaseUT
         kinkiTainChecker.HpID = 999;
         kinkiTainChecker.PtID = 1231;
         kinkiTainChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try
         {

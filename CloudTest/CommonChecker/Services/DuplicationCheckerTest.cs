@@ -1,4 +1,5 @@
 ﻿using CloudUnitTest.SampleData;
+using CommonChecker.Caches;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -64,14 +65,24 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.HpID = 999;
         duplicationChecker.PtID = 1231;
         duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //// Act
-        var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //// Assert
-        Assert.True(result.ErrorOrderList is null);
+            // Assert
+            Assert.True(result.ErrorOrderList is null);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -133,20 +144,30 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.HpID = 999;
         duplicationChecker.PtID = 1231;
         duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //// Act
-        var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
+        // Act
+        try
+        {
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //// Assert
-        Assert.True(result.ErrorInfo != null && result.IsError);
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
     public void DuplicationCheck_003_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
     {
-        ////Setup
+        //Setup
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -237,14 +258,24 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.HpID = 999;
         duplicationChecker.PtID = 1231;
         duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //// Act
-        var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //// Assert
-        Assert.True(result.ErrorInfo != null && result.IsError);
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -340,14 +371,24 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.HpID = 999;
         duplicationChecker.PtID = 1231;
         duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //// Act
-        var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //// Assert
-        Assert.True(result.ErrorInfo != null && result.IsError);
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -439,7 +480,7 @@ public class DuplicationCheckerTest : BaseUT
         };
 
         var currentOdrDetailList = duplicationChecker.GetOdrDetailListByCondition(currentList);
-        //// Act
+        // Act
         var result = duplicationChecker.CheckDuplicatedIppanCode(checkingOrder, currentOdrDetailList);
 
         //Assert
@@ -534,7 +575,7 @@ public class DuplicationCheckerTest : BaseUT
         var checkingOrder = unitCheckerResult.CheckingData;
         var currentOdrDetailList = duplicationChecker.GetOdrDetailListByCondition(currentList);
 
-        //// Act
+        // Act
         var result = duplicationChecker.CheckDuplicatedItemCode(checkingOrder, currentOdrDetailList.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList());
 
         //Assert

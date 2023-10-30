@@ -41,6 +41,10 @@ public class KinkiOTCCheckerTest : BaseUT
         kinkiOTCChecker.HpID = 1;
         kinkiOTCChecker.PtID = 111;
         kinkiOTCChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        kinkiOTCChecker.InitFinder(tenantNoTracking, cache);
 
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
@@ -68,9 +72,9 @@ public class KinkiOTCCheckerTest : BaseUT
         if (systemConf != null) systemConf.Val = temp;
         tenantTracking.SaveChanges();
 
-        //// Act
+        // Act
         var result = kinkiOTCChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
-        //// Assert
+        // Assert
         Assert.True(result.ErrorOrderList.Count == 0);
     }
 

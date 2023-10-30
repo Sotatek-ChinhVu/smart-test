@@ -69,15 +69,25 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.HpID = 999;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            drugAllergy.InitFinder(tenantNoTracking, cache);
 
-            //// Act
-            var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
+            try
+            {
+                // Act
+                var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
 
-            tenantTracking.PtInfs.RemoveRange(ptInfs);
-            tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
-            tenantTracking.SaveChanges();
-            //// Assert
-            Assert.True(result.ErrorOrderList.Count > 0 && result.ErrorOrderList[0].OrdInfDetails[0].ItemCd == "613110017");
+                // Assert
+                Assert.True(result.ErrorOrderList.Count > 0 && result.ErrorOrderList[0].OrdInfDetails[0].ItemCd == "613110017");
+            }
+            finally
+            {
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
+                tenantTracking.SaveChanges();
+            }
         }
 
         [Test]
@@ -136,14 +146,24 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.HpID = 999;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            drugAllergy.InitFinder(tenantNoTracking, cache);
 
-            // Act
-            var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
+            try
+            {
+                // Act
+                var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
 
-            tenantTracking.PtInfs.RemoveRange(ptInfs);
-            tenantTracking.SaveChanges();
-            // Assert
-            Assert.True(result.ErrorOrderList.Count == 0);
+                // Assert
+                Assert.True(result.ErrorOrderList.Count == 0);
+            }
+            finally
+            {
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.SaveChanges();
+            }
         }
 
         [Test]
@@ -165,15 +185,20 @@ namespace CloudUnitTest.CommonChecker.Services
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
 
-            // Act
-            var result = realTimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinDate, new(), true);
+            try
+            {
+                // Act
+                var result = realTimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinDate, new(), true);
 
-            tenantTracking.PtInfs.RemoveRange(ptInfs);
-            tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
-            tenantTracking.SaveChanges();
-
-            /// Assert
-            Assert.True(result.Count == 1);
+                /// Assert
+                Assert.True(result.Count == 1);
+            }
+            finally
+            {
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
+                tenantTracking.SaveChanges();
+            }
         }
 
         [Test]
@@ -268,15 +293,25 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.HpID = 999;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            drugAllergy.InitFinder(tenantNoTracking, cache);
 
-            //// Act
-            var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
+            try
+            {
+                // Act
+                var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
 
-            tenantTracking.PtInfs.RemoveRange(ptInfs);
-            tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
-            tenantTracking.SaveChanges();
-            //// Assert
-            Assert.True(result.ErrorOrderList.Count > 0);
+                // Assert
+                Assert.True(result.ErrorOrderList.Count > 0);
+            }
+            finally
+            {
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
+                tenantTracking.SaveChanges();
+            }
         }
 
         [Test]
@@ -371,16 +406,24 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.HpID = 999;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            drugAllergy.InitFinder(tenantNoTracking, cache);
+            try
+            {
+                // Act
+                var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
 
-            // Act
-            var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
-
-            tenantTracking.PtInfs.RemoveRange(ptInfs);
-            tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
-            tenantTracking.SaveChanges();
-
-            // Assert
-            Assert.True(result.ErrorOrderList.Count > 0);
+                // Assert
+                Assert.True(result.ErrorOrderList.Count > 0);
+            }
+            finally
+            {
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
+                tenantTracking.SaveChanges();
+            }
         }
     }
 }

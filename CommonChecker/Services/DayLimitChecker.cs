@@ -1,8 +1,6 @@
-﻿using CommonChecker.Caches.Interface;
-using CommonChecker.Models;
+﻿using CommonChecker.Models;
 using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.Models;
-using PostgreDataContext;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {

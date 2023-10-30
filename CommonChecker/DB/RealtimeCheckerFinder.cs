@@ -1024,7 +1024,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, long ptID, int level, int sinDate, List<ItemCodeModel> listItemCodeModel, List<PtDiseaseModel> ptDiseaseModels, bool isDataOfDb)
+        public List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, long ptID, int level, int sinDate, List<ItemCodeModel> listItemCode, List<PtDiseaseModel> ptDiseaseModels, bool isDataOfDb)
         {
             var listDiseaseCode = new List<string>();
             if (isDataOfDb)
@@ -1055,7 +1055,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .Select(m => m.ByotaiCd)
                 .ToList();
 
-            var itemCodeList = listItemCodeModel.Select(i => i.ItemCd).Distinct().ToList();
+            var itemCodeList = listItemCode.Select(i => i.ItemCd).Distinct().ToList();
             var tenMstList = _tenMstCacheService.GetTenMstList(itemCodeList)
                 .Select(t => new { t.ItemCd, t.YjCd })
                 .ToList();
@@ -1069,7 +1069,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 (from itemMst in tenMstList
                  join contraindication in contraindicationList
                  on itemMst.YjCd equals contraindication.YjCd
-                 join itemCodeModel in listItemCodeModel
+                 join itemCodeModel in listItemCode
                  on itemMst.ItemCd equals itemCodeModel.ItemCd
                  select new DiseaseResultModel()
                  {

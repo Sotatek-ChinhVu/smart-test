@@ -39,6 +39,10 @@ public class DiseaseCheckerTest : BaseUT
         diseaseChecker.HpID = 1;
         diseaseChecker.PtID = 111;
         diseaseChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        diseaseChecker.InitFinder(tenantNoTracking, cache);
 
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
@@ -68,6 +72,7 @@ public class DiseaseCheckerTest : BaseUT
 
         // Act
         var result = diseaseChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+
         // Assert
         Assert.True(result.ErrorOrderList.Count == 0);
     }
@@ -128,19 +133,23 @@ public class DiseaseCheckerTest : BaseUT
         cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
-        ///Act
-        var result = realTimeCheckerFinder.CheckContraindicationForCurrentDisease(hpId, ptId, settingLevel, sinDate, listItemCode, new(), true);
+        try
+        {
+            //Act
+            var result = realTimeCheckerFinder.CheckContraindicationForCurrentDisease(hpId, ptId, settingLevel, sinDate, listItemCode, new(), true);
 
-        if (systemConf != null) systemConf.Val = temp;
-
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
-        tenantTracking.M42ContraindiDisCon.RemoveRange(m42DisCon);
-        tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42DrugMainEx);
-        tenantTracking.PtByomeis.RemoveRange(ptByomei);
-        tenantTracking.SaveChanges();
-
-        //Assert
-        Assert.True(result.Any());
+            //Assert
+            Assert.True(result.Any());
+            if (systemConf != null) systemConf.Val = temp;
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M42ContraindiDisCon.RemoveRange(m42DisCon);
+            tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42DrugMainEx);
+            tenantTracking.PtByomeis.RemoveRange(ptByomei);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -204,18 +213,27 @@ public class DiseaseCheckerTest : BaseUT
         diseaseChecker.HpID = 999;
         diseaseChecker.PtID = 1231;
         diseaseChecker.Sinday = 20230505;
-        // Act
-        var result = diseaseChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        diseaseChecker.InitFinder(tenantNoTracking, cache);
 
-        if (systemConf != null) systemConf.Val = temp;
+        try
+        {
+            // Act
+            var result = diseaseChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
-        tenantTracking.M42ContraindiDisCon.RemoveRange(m42DisCon);
-        tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42DrugMainEx);
-        tenantTracking.PtByomeis.RemoveRange(ptByomei);
-        tenantTracking.SaveChanges();
-
-        // Assert
-        Assert.True(result.ErrorOrderList.Any());
+            // Assert
+            Assert.True(result.ErrorOrderList.Any());
+            if (systemConf != null) systemConf.Val = temp;
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M42ContraindiDisCon.RemoveRange(m42DisCon);
+            tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42DrugMainEx);
+            tenantTracking.PtByomeis.RemoveRange(ptByomei);
+            tenantTracking.SaveChanges();
+        }
     }
 }

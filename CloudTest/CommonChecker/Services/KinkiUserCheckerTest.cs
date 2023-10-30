@@ -9,6 +9,7 @@ using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Entity.Tenant;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,10 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.HpID = 999;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -119,15 +124,20 @@ public class KinkiUserCheckerTest : BaseUT
 
         var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                 RealtimeCheckerType.KinkiUser, odrInfoModel, 20230101, 1231);
+        try
+        {
+            // Act
+            var result = kinkiUserChecker.HandleCheckOrder(unitCheckerResult);
 
-        //// Act
-        var result = kinkiUserChecker.HandleCheckOrder(unitCheckerResult);
-
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
-        tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
-        tenantTracking.SaveChanges();
-        //// Assert
-        Assert.True(result.ErrorInfo != null && result.IsError);
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError);
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -145,6 +155,10 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.HpID = 999;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -227,14 +241,20 @@ public class KinkiUserCheckerTest : BaseUT
         var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                 RealtimeCheckerType.KinkiUser, odrInfoModel, 20230101, 1231);
 
-        //// Act
-        var result = kinkiUserChecker.HandleCheckOrder(unitCheckerResult);
+        try
+        {
+            // Act
+            var result = kinkiUserChecker.HandleCheckOrder(unitCheckerResult);
 
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
-        tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
-        tenantTracking.SaveChanges();
-        //// Assert
-        Assert.True(result.ErrorInfo != null && result.IsError);
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError);
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -277,6 +297,10 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.HpID = 999;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -359,16 +383,21 @@ public class KinkiUserCheckerTest : BaseUT
         var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                 RealtimeCheckerType.KinkiUser, odrInfoModel, 20230101, 1231);
 
-        //// Act
-        var result = kinkiUserChecker.HandleCheckOrder(unitCheckerResult);
+        try
+        {
+            // Act
+            var result = kinkiUserChecker.HandleCheckOrder(unitCheckerResult);
+            systemConf.Val = temp;
 
-        systemConf.Val = temp;
-
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
-        tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
-        tenantTracking.SaveChanges();
-        //// Assert
-        Assert.True(!result.IsError);
+            //// Assert
+            Assert.True(!result.IsError);
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -399,15 +428,19 @@ public class KinkiUserCheckerTest : BaseUT
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+        try
+        {
+            //Act
+            var result = realTimeCheckerFinder.CheckKinkiUser(hpId, settingLevel, sinDay, listCurrentOrderCode, listAddedOrderCode);
 
-        //Act
-        var result = realTimeCheckerFinder.CheckKinkiUser(hpId, settingLevel, sinDay, listCurrentOrderCode, listAddedOrderCode);
-
-        tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
-        tenantTracking.SaveChanges();
-
-        //Assert
-        Assert.True(result.Count == 1);
+            //Assert
+            Assert.True(result.Count == 1);
+        }
+        finally
+        {
+            tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.SaveChanges();
+        }
     }
 }
