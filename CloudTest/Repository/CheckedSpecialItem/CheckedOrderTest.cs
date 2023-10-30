@@ -288,7 +288,7 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(iagkutokusitu1.Count == 0);
-        if (systemConf != null) systemConf.Val = temp;
+        systemConf.Val = temp;
         tenantTracking.SaveChanges();
     }
 
@@ -523,17 +523,26 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+            Assert.True(iagkutokusitu1.Count == 0);
+            systemGenerationConf.Val = temp;
+
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -611,21 +620,31 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn2, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu3 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn3, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu4 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn4, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu5 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn5, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count == 0 && iagkutokusitu2.Count == 0 && iagkutokusitu3.Count == 0 && iagkutokusitu4.Count == 0 && iagkutokusitu5.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn2, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu3 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn3, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu4 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn4, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu5 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn5, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+            Assert.True(iagkutokusitu1.Count == 0 && iagkutokusitu2.Count == 0 && iagkutokusitu3.Count == 0 && iagkutokusitu4.Count == 0 && iagkutokusitu5.Count == 0);
+            systemGenerationConf.Val = temp;
+
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        } 
     }
 
     /// <summary>
@@ -703,20 +722,30 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
-        var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count > 0);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）（情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）\"を算定できる可能性があります。"));
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
+            var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou2);
+            Assert.True(iagkutokusitu1.Count > 0);
+            Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）（情報通信機器）\"を算定できる可能性があります。"));
+            Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）\"を算定できる可能性があります。"));
+            systemGenerationConf.Val = temp;
+
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        } 
     }
 
     /// <summary>
@@ -898,6 +927,8 @@ public class CheckedOrderTest : BaseUT
         var odrInfInputs = new List<int> { 1, 2, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
@@ -990,6 +1021,8 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput2s = new List<int> { 1, 23, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
@@ -1083,6 +1116,8 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput2s = new List<int> { 1, 23, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
@@ -1173,6 +1208,8 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput1s = new List<int> { 1, 2, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
@@ -1266,6 +1303,8 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput1s = new List<int> { 1, 2, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
@@ -1395,21 +1434,29 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn2, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu3 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn3, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu4 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn4, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu5 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn5, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count == 0 && iagkutokusitu2.Count == 0 && iagkutokusitu3.Count == 0 && iagkutokusitu4.Count == 0 && iagkutokusitu5.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn2, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu3 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn3, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu4 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn4, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu5 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn5, byomeiModelList, ordInfDetailModels, isJouhou);
+            Assert.True(iagkutokusitu1.Count == 0 && iagkutokusitu2.Count == 0 && iagkutokusitu3.Count == 0 && iagkutokusitu4.Count == 0 && iagkutokusitu5.Count == 0);
+            systemGenerationConf.Val = temp;
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -1486,19 +1533,27 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
-        var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
+            var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
+            Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
+            Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
+            systemGenerationConf.Val = temp;
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -1575,19 +1630,28 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
-        var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
+            var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
+            Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
+            Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
+            systemGenerationConf.Val = temp;
+
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -1709,21 +1773,30 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu2 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn2, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu3 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn3, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu4 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn4, byomeiModelList, ordInfDetailModels, isJouhou);
-        var iagkutokusitu5 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn5, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count == 0 && iagkutokusitu2.Count == 0 && iagkutokusitu3.Count == 0 && iagkutokusitu4.Count == 0 && iagkutokusitu5.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+
+        try
+        {
+            //  Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu2 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn2, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu3 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn3, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu4 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn4, byomeiModelList, ordInfDetailModels, isJouhou);
+            var iagkutokusitu5 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn5, byomeiModelList, ordInfDetailModels, isJouhou);
+            Assert.True(iagkutokusitu1.Count == 0 && iagkutokusitu2.Count == 0 && iagkutokusitu3.Count == 0 && iagkutokusitu4.Count == 0 && iagkutokusitu5.Count == 0);
+            systemGenerationConf.Val = temp;
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -1800,17 +1873,25 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
+            Assert.True(iagkutokusitu1.Count == 0);
+            systemGenerationConf.Val = temp;
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -1891,19 +1972,28 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
-        var iagkutokusitu2 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"難病外来指導管理料（情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"難病外来指導管理料\"を算定できる可能性があります。"));
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
+            var iagkutokusitu2 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
+            Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"難病外来指導管理料（情報通信機器）\"を算定できる可能性があります。"));
+            Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"難病外来指導管理料\"を算定できる可能性があります。"));
+            systemGenerationConf.Val = temp;
+
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -1980,17 +2070,25 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-        // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count == 0);
-        systemGenerationConf.Val = temp;
-        tenant.RaiinInfs.RemoveRange(raiinInfs);
-        tenant.OdrInfs.RemoveRange(odrInfs);
-        tenant.OdrInfDetails.RemoveRange(odrInfDetails);
-        tenant.SaveChanges();
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
+            Assert.True(iagkutokusitu1.Count == 0);
+            systemGenerationConf.Val = temp;
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(raiinInfs);
+            tenant.OdrInfs.RemoveRange(odrInfs);
+            tenant.OdrInfDetails.RemoveRange(odrInfDetails);
+            tenant.SaveChanges();
+            tenantTracking.SaveChanges();
+        }
     }
 
     /// <summary>
@@ -3140,6 +3238,8 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
@@ -3675,6 +3775,8 @@ public class CheckedOrderTest : BaseUT
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -3700,15 +3802,21 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
-        // Act
-        var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
-        var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
+        try
+        {
+            // Act
+            var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
+            var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
 
-        //Assert
-        Assert.True(checkModel1.CheckingType > 0 && checkModel2.CheckingType > 0);
-        tenant.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
-        tenant.SaveChanges();
+            //Assert
+            Assert.True(checkModel1.CheckingType > 0 && checkModel2.CheckingType > 0);
+        }
+        finally
+        {
+            tenant.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
+            tenant.SaveChanges();
+        }
     }
 
     [Test]
@@ -3753,6 +3861,8 @@ public class CheckedOrderTest : BaseUT
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -3778,15 +3888,22 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
-        // Act
-        var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
-        var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
+        try
+        {
+            // Act
+            var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
+            var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
 
-        //Assert
-        Assert.True(checkModel1.CheckingType > 0 && checkModel2.CheckingType > 0 && !checkModel1.Santei && !checkModel2.Santei);
-        tenant.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
-        tenant.SaveChanges();
+            //Assert
+            Assert.True(checkModel1.CheckingType > 0 && checkModel2.CheckingType > 0 && !checkModel1.Santei && !checkModel2.Santei);
+
+        }
+        finally
+        {
+            tenant.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
+            tenant.SaveChanges();
+        }
     }
 
     [Test]
@@ -3831,6 +3948,8 @@ public class CheckedOrderTest : BaseUT
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -3856,15 +3975,21 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
-        // Act
-        var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
-        var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
+        try
+        {
+            // Act
+            var checkModel1 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
+            var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
 
-        //Assert
-        Assert.True(checkModel1.CheckingType == 0 && checkModel2.CheckingType == 0);
-        tenant.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
-        tenant.SaveChanges();
+            //Assert
+            Assert.True(checkModel1.CheckingType == 0 && checkModel2.CheckingType == 0);
+        }
+        finally
+        {
+            tenant.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
+            tenant.SaveChanges();
+        }
     }
 
     #region TouyakuTokusyoSyoho Special
@@ -3877,6 +4002,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -3966,6 +4093,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4063,6 +4192,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4160,6 +4291,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4250,6 +4383,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4340,6 +4475,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4430,6 +4567,8 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         string byomeiCd = "0670670", itemCd = "0670670670";
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4535,6 +4674,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4628,6 +4769,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4729,6 +4872,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4831,6 +4976,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -4925,6 +5072,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5018,6 +5167,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5112,6 +5263,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         string byomeiCd = "0740740", itemCd = "0740740740";
@@ -5221,6 +5374,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5310,6 +5465,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5407,6 +5564,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5497,6 +5656,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5587,6 +5748,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5677,6 +5840,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5767,6 +5932,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         string byomeiCd = "0810810", itemCd = "0810810810";
@@ -5869,6 +6036,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -5964,6 +6133,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -6065,6 +6236,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -6167,6 +6340,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -6261,6 +6436,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -6357,6 +6534,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
@@ -6450,6 +6629,8 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         string byomeiCd = "0880880", itemCd = "0880880880";

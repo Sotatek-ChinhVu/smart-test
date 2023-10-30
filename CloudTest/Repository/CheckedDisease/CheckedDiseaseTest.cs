@@ -5,6 +5,8 @@ using Domain.Models.OrdInfs;
 using Microsoft.Extensions.Configuration;
 using Infrastructure.Repositories;
 using Moq;
+using CommonChecker.Caches;
+using CommonCheckers.OrderRealtimeChecker.Services;
 
 namespace CloudUnitTest.Repository.CheckedDisease;
 
@@ -45,12 +47,17 @@ public class CheckedDiseaseTest : BaseUT
                 ),
         };
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
+
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
+
         // Act
         var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
+
         // Assert
         Assert.True(iagkutokusitu.Count == 0);
     }
@@ -88,6 +95,8 @@ public class CheckedDiseaseTest : BaseUT
                 ),
         };
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
@@ -96,14 +105,23 @@ public class CheckedDiseaseTest : BaseUT
         var tenMsts = CheckedDiseaseData.ReadTenMst("0020020020");
         var byomeiMsts = CheckedDiseaseData.ReadByomeiMst("0020020");
         tenantTracking.TenMsts.AddRange(tenMsts);
-        tenantTracking.SaveChanges();
         tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
-        // Act
-        var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
-        // Assert
-        Assert.True(iagkutokusitu.Count == 0);
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
         tenantTracking.SaveChanges();
+
+        try
+        {
+            // Act
+            var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
+
+            // Assert
+            Assert.True(iagkutokusitu.Count == 0);
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -139,6 +157,8 @@ public class CheckedDiseaseTest : BaseUT
                 ),
         };
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
@@ -151,13 +171,19 @@ public class CheckedDiseaseTest : BaseUT
         tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
         tenantTracking.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
         tenantTracking.SaveChanges();
-        // Act
-        var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
-        // Assert
-        Assert.True(iagkutokusitu.Count == 1);
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
-        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
-        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var iagkutokusitu = todayOdrRepository.GetCheckDiseases(hpId, sinDate, byomeiModelList, ordInfs);
+            // Assert
+            Assert.True(iagkutokusitu.Count == 1);
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+            tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+            tenantTracking.SaveChanges();
+        }
     }
 }

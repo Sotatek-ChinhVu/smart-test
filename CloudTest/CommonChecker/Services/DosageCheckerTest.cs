@@ -69,13 +69,20 @@ public class DosageCheckerTest : BaseUT
         var cache = new MasterDataCacheService(TenantProvider);
         cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
-        //// Act
-        var result = dosageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
-        //// Assert
-        Assert.True(result.ErrorOrderList.Count > 0);
+        try
+        {
+            // Act
+            var result = dosageChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+
+            // Assert
+            Assert.True(result.ErrorOrderList.Count > 0);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -110,14 +117,19 @@ public class DosageCheckerTest : BaseUT
         cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
         var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
-        //// Act
-        var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, 0, 0, new(), true);
+        try
+        {
+            // Act
+            var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, 0, 0, new(), true);
 
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
-
-        //// Assert
-        Assert.True(result.Any() && result[0].ItemCd == "620160501");
+            // Assert
+            Assert.True(result.Any() && result[0].ItemCd == "620160501");
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -154,15 +166,19 @@ public class DosageCheckerTest : BaseUT
         cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
         var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
-        //// Act
+        try
+        {
+            // Act
+            var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
-        var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
-
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
-
-        //// Assert
-        Assert.True(result.Any() && result[0].ItemCd == "620160501");
+            // Assert
+            Assert.True(result.Any() && result[0].ItemCd == "620160501");
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]
@@ -199,14 +215,18 @@ public class DosageCheckerTest : BaseUT
         cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
         var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
-        //// Act
+        try
+        {
+            // Act
+            var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
-        var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
-
-        tenantTracking.PtInfs.RemoveRange(ptInfs);
-        tenantTracking.SaveChanges();
-
-        //// Assert
-        Assert.True(result.Any());
+            // Assert
+            Assert.True(result.Any());
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
     }
 }

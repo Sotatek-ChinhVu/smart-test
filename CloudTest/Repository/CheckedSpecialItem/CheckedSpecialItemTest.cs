@@ -22,17 +22,23 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.SaveChanges();
         var mockOptions = new Mock<IOptions<AmazonS3Options>>();
         MstItemRepository mstItemRepository = new MstItemRepository(TenantProvider, mockOptions.Object);
-        // Act
-        var tenMsts = mstItemRepository.FindTenMst(1, new List<string>{
+        try
+        {
+            // Act
+            var tenMsts = mstItemRepository.FindTenMst(1, new List<string>{
             "6412100651",
             "6412100672",
             "6412100783"
             }, 20201212, 20221212);
-        // Assert
-        Assert.True(tenMsts.Count == 3);
 
-        tenant.TenMsts.RemoveRange(sampleData);
-        tenant.SaveChanges();
+            // Assert
+            Assert.True(tenMsts.Count == 3);
+        }
+        finally
+        {
+            tenant.TenMsts.RemoveRange(sampleData);
+            tenant.SaveChanges();
+        }
     }
 
     [Test]
@@ -44,18 +50,27 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.DensiSanteiKaisus.AddRange(sampleData);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
-        // Act
-        var densiSanteis = todayOdrRepository.FindDensiSanteiKaisuList(1, new List<string>{
+
+        try
+        {
+            // Act
+            var densiSanteis = todayOdrRepository.FindDensiSanteiKaisuList(1, new List<string>{
             "W12334"
             }, 20220101, 20221212);
-        // Assert
-        Assert.True(densiSanteis.Count == 1);
-        tenant.DensiSanteiKaisus.RemoveRange(sampleData);
-        tenant.SaveChanges();
+            // Assert
+            Assert.True(densiSanteis.Count == 1);
+        }
+        finally
+        {
+            tenant.DensiSanteiKaisus.RemoveRange(sampleData);
+            tenant.SaveChanges();
+        }
     }
 
     [Test]
@@ -63,6 +78,8 @@ public class CheckedSpecialItemTest : BaseUT
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         var tenanant = TenantProvider.GetTrackingTenantDataContext();
         var system = tenanant.SystemConfs.FirstOrDefault(s => s.HpId == 1 && s.GrpCd == 3013 && s.GrpEdaNo == 0);
@@ -87,14 +104,22 @@ public class CheckedSpecialItemTest : BaseUT
         var sampleData = CheckedSpecialItemData.ReadRainInf();
         tenant.RaiinInfs.AddRange(sampleData);
         tenant.SaveChanges();
+
         // Arrange
         ReceptionRepository receptionRepository = new ReceptionRepository(TenantProvider);
-        // Act
-        var value = receptionRepository.GetFirstVisitWithSyosin(1, 56025, 20140331);
-        // Assert
-        Assert.True(value > 0);
-        tenant.RaiinInfs.RemoveRange(sampleData);
-        tenant.SaveChanges();
+
+        try
+        {
+            // Act
+            var value = receptionRepository.GetFirstVisitWithSyosin(1, 602, 20220915);
+            // Assert
+            Assert.True(value > 0);
+        }
+        finally
+        {
+            tenant.RaiinInfs.RemoveRange(sampleData);
+            tenant.SaveChanges();
+        }
     }
 
     [Test]
@@ -124,23 +149,29 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.PtHokenPatterns.AddRange(ptHokenPatterns);
         tenant.SaveChanges();
         InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider);
-        // Act
-        var hokenInf = insuranceRepository.GetPtHokenInf(1, 99999, 999999, 20220325);
-        // Assert
-        Assert.True(hokenInf.HpId != 0 && hokenInf.PtId != 0 && hokenInf.HokenPid != 0 && hokenInf.Kohi1.HokenId != 0 && hokenInf.Kohi3.HokenId != 0 && hokenInf.Kohi2.HokenId != 0 && hokenInf.Kohi4.HokenId != 0);
 
-        tenant.HokenMsts.RemoveRange(hokenMsts);
-        tenant.PtHokenInfs.RemoveRange(ptHokenInfs);
-        tenant.PtKohis.RemoveRange(ptKohis);
-        tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
-        tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
-        tenant.PtInfs.RemoveRange(ptInfs);
-        tenant.UserMsts.RemoveRange(userMsts);
-        tenant.HokensyaMsts.RemoveRange(hokenSyaMsts);
-        tenant.RoudouMsts.RemoveRange(roudous);
-        tenant.PtRousaiTenkis.RemoveRange(ptRouSaiTenkis);
-        tenant.PtHokenPatterns.RemoveRange(ptHokenPatterns);
-        tenant.SaveChanges();
+        try
+        {
+            // Act
+            var hokenInf = insuranceRepository.GetPtHokenInf(1, 99999, 999999, 20220325);
+            // Assert
+            Assert.True(hokenInf.HpId != 0 && hokenInf.PtId != 0 && hokenInf.HokenPid != 0 && hokenInf.Kohi1.HokenId != 0 && hokenInf.Kohi3.HokenId != 0 && hokenInf.Kohi2.HokenId != 0 && hokenInf.Kohi4.HokenId != 0);
+        }
+        finally
+        {
+            tenant.HokenMsts.RemoveRange(hokenMsts);
+            tenant.PtHokenInfs.RemoveRange(ptHokenInfs);
+            tenant.PtKohis.RemoveRange(ptKohis);
+            tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
+            tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
+            tenant.PtInfs.RemoveRange(ptInfs);
+            tenant.UserMsts.RemoveRange(userMsts);
+            tenant.HokensyaMsts.RemoveRange(hokenSyaMsts);
+            tenant.RoudouMsts.RemoveRange(roudous);
+            tenant.PtRousaiTenkis.RemoveRange(ptRouSaiTenkis);
+            tenant.PtHokenPatterns.RemoveRange(ptHokenPatterns);
+            tenant.SaveChanges();
+        }
     }
 
     [Test]
@@ -156,17 +187,24 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.SinKouiDetails.AddRange(sinKouiDetails);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
+        mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConf = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         UserRepository userRepository = new UserRepository(TenantProvider);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository); TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider, systemConf, approvalinfRepository);
-        // Act
-        var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> { 1 }, new List<int> { 10 });
-        // Assert
-        Assert.True(santeiCount == 1);
-
-        tenant.SinRpInfs.RemoveRange(sinRpInfs);
-        tenant.SinKouiCounts.RemoveRange(sinKouiCounts);
-        tenant.SinKouiDetails.RemoveRange(sinKouiDetails);
-        tenant.SaveChanges();
+        try
+        {
+            // Act
+            var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> { 1 }, new List<int> { 10 });
+            // Assert
+            Assert.True(santeiCount == 1);
+        }
+        finally
+        {
+            tenant.SinRpInfs.RemoveRange(sinRpInfs);
+            tenant.SinKouiCounts.RemoveRange(sinKouiCounts);
+            tenant.SinKouiDetails.RemoveRange(sinKouiDetails);
+            tenant.SaveChanges();
+        }
     }
 }
