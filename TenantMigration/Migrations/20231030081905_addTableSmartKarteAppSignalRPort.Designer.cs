@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231030081905_addTableSmartKarteAppSignalRPort")]
+    partial class addTableSmartKarteAppSignalRPort
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5843,14 +5846,6 @@ namespace TenantMigration.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
                     b.Property<string>("FileName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -5884,14 +5879,6 @@ namespace TenantMigration.Migrations
                     b.Property<long>("SeqNo")
                         .HasColumnType("bigint")
                         .HasColumnName("SEQ_NO");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
 
                     b.HasKey("Id");
 
