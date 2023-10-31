@@ -66,7 +66,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetTodoInfFinderResponse>> GetList([FromQuery] GetTodoInfFinderRequest request)
         {
-            var input = new GetTodoInfFinderInputData(HpId, request.TodoNo, request.TodoEdaNo, request.IncDone);
+            var input = new GetTodoInfFinderInputData(HpId, request.TodoNo, request.TodoEdaNo, request.IncDone, request.SortByPtNum);
             var output = _bus.Handle(input);
 
             var presenter = new GetTodoInfFinderPresenter();
