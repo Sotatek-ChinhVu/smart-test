@@ -29,7 +29,6 @@ namespace Infrastructure.Repositories
                 _CreateSignalRPort(userId, smartKarteAppSignalRPort);
                 TrackingDataContext.SmartKarteAppSignalRPorts.Add(smartKarteAppSignalRPort);
             }
-            TrackingDataContext.SaveChanges();
             return TrackingDataContext.SaveChanges() > 0;
         }
 
@@ -42,7 +41,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                return null;
+                return new SmartKarteAppSignalRPortModel();
             }
         }
 

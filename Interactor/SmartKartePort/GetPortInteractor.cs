@@ -22,7 +22,7 @@ namespace Interactor.SmartKartePort
             try
             {
                 var data = _smartKartePortRepository.GetSignalRPort(input.MachineName, input.Ip);
-                if (data != null)
+                if (data?.PortNumber > 0)
                 {
                     return new GetPortOutputData(data, GetPortStatus.Success);
                 }
