@@ -1034,7 +1034,7 @@ namespace CloudUnitTest.SampleData
             return kinkiMsts;
         }
 
-        public static List<PtOtherDrug> ReadPtOtherDrug()
+        public static List<PtOtherDrug> ReadPtOtherDrug(int ptId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1061,15 +1061,12 @@ namespace CloudUnitTest.SampleData
                             }
                             var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
 
+                            ptOtherDrug.PtId = ptId;
                             switch (columnName)
                             {
                                 case "A":
                                     int.TryParse(text, out int hpId);
                                     ptOtherDrug.HpId = hpId;
-                                    break;
-                                case "B":
-                                    int.TryParse(text, out int ptId);
-                                    ptOtherDrug.PtId = ptId;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int seqNo);
