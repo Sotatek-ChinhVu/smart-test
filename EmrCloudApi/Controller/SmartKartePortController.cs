@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.SmartKartePort;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.SmartKartePort.GetPort;
 using UseCase.SmartKartePort.UpdatePort;
 
 namespace EmrCloudApi.Controller
@@ -29,6 +30,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UpdatePortPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UpdatePortResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetPort")]
+        public ActionResult<Response<GetPortResponse>> GetPort([FromQuery] GetPortRequest request)
+        {
+            var input = new GetPortInputData(request.MachineName.Trim(), request.Ip.Trim());
+            var output = _bus.Handle(input);
+            var presenter = new GetPortPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPortResponse>>(presenter.Result);
         }
     }
 }

@@ -1,36 +1,35 @@
 ﻿using Domain.Models.SmartKartePort;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
-using UseCase.SmartKartePort.UpdatePort;
+using UseCase.SmartKartePort.GetPort;
 
 namespace Interactor.SmartKartePort
 {
-    public class UpdatePortInteractor : IUpdatePortInputPort
+    public class GetPortInteractor : IGetPortInputPort
     {
         private readonly ISmartKartePortRepository _smartKartePortRepository;
         private readonly ILoggingHandler _loggingHandler;
         private readonly ITenantProvider _tenantProvider;
-        public UpdatePortInteractor(ISmartKartePortRepository smartKartePortRepository, ITenantProvider tenantProvider)
+        public GetPortInteractor(ISmartKartePortRepository smartKartePortRepository, ITenantProvider tenantProvider)
         {
             _smartKartePortRepository = smartKartePortRepository;
             _tenantProvider = tenantProvider;
             _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
-        public UpdatePortOutputData Handle(UpdatePortInputData input)
+        public GetPortOutputData Handle(GetPortInputData input)
         {
             try
             {
-                var update = _smartKartePortRepository.UpdateSignalRPort(input.UserId, input.SignalRPortModel);
-                if (update)
+                var data = _smartKartePortRepository.GetSignalRPort(input.MachineName, input.Ip);
+                if (data?.PortNumber > 0)
                 {
-                    return new UpdatePortOutputData(UpdatePortStatus.Success);
+                    return new GetPortOutputData(data, GetPortStatus.Success);
                 }
                 else
                 {
-                    return new UpdatePortOutputData(UpdatePortStatus.Faild);
+                    return new GetPortOutputData(new SmartKarteAppSignalRPortModel(), GetPortStatus.Nodata);
                 }
-
             }
             catch (Exception ex)
             {
