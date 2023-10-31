@@ -71,7 +71,7 @@ public class GrowthCurveA5CoReportService : GrowthCurveService, IGrowthCurveA5Co
         _listDrawCircleData.Add(2, _listDrawLegendLabelCircleData);
 
         _extralData.Add("totalPage", "1");
-        return new GrowthCurveMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData, _listDrawLineData, _listDrawTextData, _listDrawBoxData, _listDrawCircleData).GetData();
+        return new GrowthCurveMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData, _listDrawLineData, _listDrawTextData, _listDrawBoxData, _listDrawCircleData, "成長曲線_A5").GetData();
     }
 
     private void UpdateDrawForm()

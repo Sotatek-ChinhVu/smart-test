@@ -780,6 +780,10 @@ using UseCase.Lock.CheckIsExistedOQLockInfo;
 using UseCase.SetMst.GetListSetGenerationMst;
 using Interactor.MedicalExamination.KensaIraiCommon;
 using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
+using UseCase.SmartKartePort.UpdatePort;
+using Interactor.SmartKartePort;
+using Domain.Models.SmartKartePort;
+using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1193,6 +1197,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IListSetMstRepository, ListSetMstRepository>();
             services.AddTransient<IKensaSetRepository, KensaSetRepository>();
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
+            services.AddTransient<ISmartKartePortRepository, SmartKartePortRepository>();
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
             //services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
@@ -1333,6 +1338,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
             busBuilder.RegisterUseCase<SaveOdrSetInputData, SaveOdrSetInteractor>();
             busBuilder.RegisterUseCase<GetSetGenerationMstListInputData, GetSetGenerationMstListInteractor>();
+            busBuilder.RegisterUseCase<GetSetKbnMstListByGenerationIdInputData, GetSetKbnMstListByGenerationIdInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
@@ -1854,6 +1860,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CompareTenMstInputData, CompareTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveCompareTenMstInputData, SaveCompareTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetNameMntInputData, SaveSetNameMntInteractor>();
+
+            //SmartKartePort
+            busBuilder.RegisterUseCase<UpdatePortInputData, UpdatePortInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
