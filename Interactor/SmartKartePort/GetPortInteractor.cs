@@ -1,4 +1,6 @@
 ﻿using Domain.Models.SmartKartePort;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using UseCase.SmartKartePort.GetPort;
 
 namespace Interactor.SmartKartePort
@@ -6,16 +8,20 @@ namespace Interactor.SmartKartePort
     public class GetPortInteractor : IGetPortInputPort
     {
         private readonly ISmartKartePortRepository _smartKartePortRepository;
-        public GetPortInteractor(ISmartKartePortRepository smartKartePortRepository)
+        private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
+        public GetPortInteractor(ISmartKartePortRepository smartKartePortRepository, ITenantProvider tenantProvider)
         {
             _smartKartePortRepository = smartKartePortRepository;
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public GetPortOutputData Handle(GetPortInputData input)
         {
             try
             {
-                var data = _smartKartePortRepository.GetSignalPort(input.MachineName, input.Ip);
+                var data = _smartKartePortRepository.GetSignalRPort(input.MachineName, input.Ip);
                 if (data != null)
                 {
                     return new GetPortOutputData(data, GetPortStatus.Success);
@@ -25,13 +31,15 @@ namespace Interactor.SmartKartePort
                     return new GetPortOutputData(new SmartKarteAppSignalRPortModel(), GetPortStatus.Nodata);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return new GetPortOutputData(new SmartKarteAppSignalRPortModel(), GetPortStatus.Faild);
+                _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
             }
             finally
             {
                 _smartKartePortRepository.ReleaseResource();
+                _loggingHandler.Dispose();
             }
         }
     }

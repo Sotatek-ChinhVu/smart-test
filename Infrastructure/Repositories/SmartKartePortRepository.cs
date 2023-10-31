@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public SmartKarteAppSignalRPortModel GetSignalPort(string machineName, string ip)
+        public SmartKarteAppSignalRPortModel GetSignalRPort(string machineName, string ip)
         {
             var signalRPort = TrackingDataContext.SmartKarteAppSignalRPorts.FirstOrDefault(i => i.Ip == ip && i.MachineName == machineName);
             if (signalRPort != null)

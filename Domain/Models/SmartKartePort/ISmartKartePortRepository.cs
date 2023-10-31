@@ -10,6 +10,6 @@ namespace Domain.Models.SmartKartePort
     public interface ISmartKartePortRepository : IRepositoryBase
     {
         bool UpdateSignalRPort(int userId, SmartKarteAppSignalRPortModel signalRPortModel);
-        SmartKarteAppSignalRPortModel GetSignalPort(string machineName, string ip);
+        SmartKarteAppSignalRPortModel GetSignalRPort(string machineName, string ip);
     }
 }
