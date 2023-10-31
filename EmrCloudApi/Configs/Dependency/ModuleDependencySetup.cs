@@ -784,6 +784,7 @@ using UseCase.SmartKartePort.UpdatePort;
 using Interactor.SmartKartePort;
 using Domain.Models.SmartKartePort;
 using UseCase.SmartKartePort.GetPort;
+using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1338,6 +1339,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetOdrSetNameInputData, GetOdrSetNameInteractor>();
             busBuilder.RegisterUseCase<SaveOdrSetInputData, SaveOdrSetInteractor>();
             busBuilder.RegisterUseCase<GetSetGenerationMstListInputData, GetSetGenerationMstListInteractor>();
+            busBuilder.RegisterUseCase<GetSetKbnMstListByGenerationIdInputData, GetSetKbnMstListByGenerationIdInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
