@@ -17,8 +17,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMstItemRepository _mstItemRepository;
-    private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
+    private readonly ILoggingHandler? _loggingHandler;
 
     public SaveListSanteiInfInteractor(ITenantProvider tenantProvider, ISanteiInfRepository santeiInfRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
     {
@@ -27,7 +26,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         _patientInforRepository = patientInforRepository;
         _userRepository = userRepository;
         _mstItemRepository = mstItemRepository;
-        _tenantProvider = tenantProvider;
+        var _tenantProvider = tenantProvider;
         if (_tenantProvider.CreateNewTrackingAdminDbContextOption() != null)
         {
             _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);

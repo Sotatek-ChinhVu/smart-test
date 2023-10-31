@@ -135,7 +135,7 @@ namespace Interactor.ReceSeikyu
                 {
                     foreach (ReceSeikyuModel model in listSourceSeikyu)
                     {
-                        if (model.IsChecked == true && model.SeikyuYm == 999999)
+                        if (model.IsChecked && model.SeikyuYm == 999999)
                         {
                             model.SetSeikyuYm(inputData.SinYm);
                         }
@@ -343,7 +343,7 @@ namespace Interactor.ReceSeikyu
             int successCount = 1;
             foreach (var recalculationItem in receRecalculationList)
             {
-                var statusCallBack = _messenger.SendAsync(new RecalculateInSeikyuPendingStop());
+                var statusCallBack = _messenger!.SendAsync(new RecalculateInSeikyuPendingStop());
                 isStopCalc = statusCallBack.Result.Result;
                 if (isStopCalc)
                 {

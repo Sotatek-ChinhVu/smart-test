@@ -8,7 +8,7 @@ namespace Helper.Extension
     {
         public static TValue GetPropertyValueOrDefault<TObject, TValue>(this TObject obj, string propertyName, TValue defaultValue = default)
         {
-            var propertyInfo = obj.GetType().GetProperty(propertyName);
+            var propertyInfo = obj!.GetType().GetProperty(propertyName);
             if (propertyInfo != null)
             {
                 var value = propertyInfo.GetValue(obj);
@@ -85,6 +85,18 @@ namespace Helper.Extension
         {
             if (inputObject == null || inputObject == DBNull.Value) return defaultValue;
             return inputObject.ToString() ?? string.Empty;
+        }
+
+        public static string AsString(this System.Drawing.Color color)
+        {
+            try
+            {
+                return color.ToString();
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         public static float AsFloat(this Object inputObject)
@@ -248,17 +260,6 @@ namespace Helper.Extension
             catch
             {
                 return System.Drawing.Color.Transparent;
-            }
-        }
-        public static string AsString(this System.Drawing.Color color)
-        {
-            try
-            {
-                return color.ToString();
-            }
-            catch
-            {
-                return string.Empty;
             }
         }
 

@@ -17,16 +17,16 @@ namespace UseCase.XmlDTD.QCBIXmlMsgResponse
     public class MessageHeader
     {
         [XmlElement(ElementName = "ProcessExecutionTime")]
-        public string ProcessExecutionTime { get; set; }
+        public string ProcessExecutionTime { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "MedicalInstitutionCode")]
-        public string MedicalInstitutionCode { get; set; }
+        public string MedicalInstitutionCode { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "ArbitraryFileIdentifier")]
-        public string ArbitraryFileIdentifier { get; set; }
+        public string ArbitraryFileIdentifier { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "CharacterCodeIdentifier")]
-        public string CharacterCodeIdentifier { get; set; }
+        public string CharacterCodeIdentifier { get; set; } = string.Empty;
     }
 
     [Serializable]
@@ -34,9 +34,9 @@ namespace UseCase.XmlDTD.QCBIXmlMsgResponse
     public class MessageBody
     {
         [XmlElement(ElementName = "ReceptionNumber")]
-        public string ReceptionNumber { get; set; }
+        public string ReceptionNumber { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "ReceptionDateTime")]
-        public string ReceptionDateTime { get; set; }
+        public string ReceptionDateTime { get; set; } = string.Empty;
     }
 }

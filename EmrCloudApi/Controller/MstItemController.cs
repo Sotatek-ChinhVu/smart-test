@@ -90,7 +90,6 @@ using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
-using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 

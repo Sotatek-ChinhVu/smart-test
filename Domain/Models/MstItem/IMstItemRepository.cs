@@ -39,7 +39,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
 
-        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts, List<KensaMstModel> childKensaMsts);
+        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd);
 
@@ -173,7 +173,7 @@ namespace Domain.Models.MstItem
 
         (int, List<PostCodeMstModel>) SearchAddress(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
-        (List<KensaMstModel>, int) GetListKensaMst(int hpId, string searchValue, int pageIndex, int pageSize);
+        (List<KensaMstModel>, int) GetListKensaMst(int hpId, string keyWord, int pageIndex, int pageSize);
 
         string GetDrugAction(string yjCd);
 

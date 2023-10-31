@@ -18,10 +18,12 @@ namespace UseCase.MstItem.GetTreeByomeiSet
             IsTitle = model.IsTitle;
             SelectType = model.SelectType;
         }
+
         public ByomeiSetMstItem(string setName)
         {
             SetName = setName;
         }
+
         public int GenerationId { get; private set; }
 
         public int SeqNo { get; private set; }
