@@ -783,6 +783,7 @@ using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 using UseCase.SmartKartePort.UpdatePort;
 using Interactor.SmartKartePort;
 using Domain.Models.SmartKartePort;
+using UseCase.SmartKartePort.GetPort;
 using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -1863,6 +1864,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SmartKartePort
             busBuilder.RegisterUseCase<UpdatePortInputData, UpdatePortInteractor>();
+            busBuilder.RegisterUseCase<GetPortInputData, GetPortInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
