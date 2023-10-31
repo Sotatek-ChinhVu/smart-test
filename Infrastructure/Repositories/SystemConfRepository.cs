@@ -23,6 +23,10 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     public SystemConfRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
         key = GetCacheKey() + "SystemConf";
+        if (key.StartsWith("-"))
+        {
+            key = "ClinicID-SystemConfRepository" + "SystemConf";
+        }
         _configuration = configuration;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
