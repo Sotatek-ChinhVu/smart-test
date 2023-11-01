@@ -101,6 +101,7 @@ public class KinkiTainCheckerTest : BaseUT
 
         //Setup KinkiLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
             systemConf.Val = 4;
@@ -208,6 +209,7 @@ public class KinkiTainCheckerTest : BaseUT
         }
         finally
         {
+            systemConf.Val = temp;
             tenantTracking.TenMsts.RemoveRange(tenMsts);
             tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
             if(m01 == null)
