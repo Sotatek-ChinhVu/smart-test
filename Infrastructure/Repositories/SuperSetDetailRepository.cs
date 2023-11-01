@@ -216,7 +216,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         bool isDspKarte = mst.IsNodspKarte == 0;
         string byomeiCmt = mst.HosokuCmt ?? string.Empty;
         string byomeiCd = mst.ByomeiCd ?? string.Empty;
-        var codeLists = GetCodeLists(mst);
+        var codeLists = GetCodeLists(mst, true);
         //prefix and suffix
         var prefixSuffixList = codeLists?.Select(code => new PrefixSuffixModel(code, byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(code))?.Byomei ?? string.Empty)).ToList();
         bool isSuspected = false;
@@ -225,7 +225,6 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             isSuspected = codeLists.Any(c => c == "8002");
         }
         var byomeiMst = byomeiMstList.FirstOrDefault(b => codeLists?.Contains(b.ByomeiCd) == true) ?? new();
-        var byomeiMain = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(b => b.ByomeiCd == mst.ByomeiCd);
         return new SetByomeiModel(
                 mst.Id,
                 isSyobyoKbn,
@@ -237,16 +236,17 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 isDspKarte,
                 byomeiCmt,
                 byomeiCd,
-                byomeiMain?.Icd101 ?? string.Empty,
-                byomeiMain?.Icd1012013 ?? string.Empty,
-                byomeiMain?.Icd1012013 ?? string.Empty,
-                byomeiMain?.Icd1022013 ?? string.Empty,
+                byomeiMst?.Icd101 ?? string.Empty,
+                byomeiMst?.Icd1012013 ?? string.Empty,
+                byomeiMst?.Icd1012013 ?? string.Empty,
+                byomeiMst?.Icd1022013 ?? string.Empty,
                 prefixSuffixList ?? new List<PrefixSuffixModel>()
             );
     }
 
-    private List<string> GetCodeLists(SetByomei mst)
+    private List<string> GetCodeLists(SetByomei mst, bool flag = false)
     {
+
         var codeLists = new List<string>()
             {
                 mst.SyusyokuCd1 ?? string.Empty,
@@ -271,6 +271,10 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
+        if (flag)
+        {
+            codeLists.Add(mst.ByomeiCd ?? string.Empty);
+        }
         return codeLists?.Where(c => c != string.Empty).Distinct().ToList() ?? new List<string>();
     }
 
