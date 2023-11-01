@@ -249,7 +249,6 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     {
         var codeLists = new List<string>()
             {
-                mst.ByomeiCd ?? string.Empty,
                 mst.SyusyokuCd1 ?? string.Empty,
                 mst.SyusyokuCd2 ?? string.Empty,
                 mst.SyusyokuCd3 ?? string.Empty,
@@ -272,7 +271,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-        return codeLists?.Where(c => c != string.Empty).ToList() ?? new List<string>();
+        return codeLists?.Where(c => c != string.Empty).Distinct().ToList() ?? new List<string>();
     }
 
     #endregion
