@@ -531,14 +531,13 @@ namespace Infrastructure.Repositories
                 // Flter data with KensaSet
                 kensaInfDetails = (from t1 in NoTrackingDataContext.KensaInfDetails
                                    join t2 in NoTrackingDataContext.KensaSetDetails on t1.KensaItemCd equals t2.KensaItemCd
-                                   where t1.HpId == hpId && t1.PtId == ptId
+                                   where t1.HpId == hpId && t1.PtId == ptId && t2.SetId == setId
                                    select new
                                    {
                                        Result = t1
                                    }
                             ).Select(x => x.Result);
             }
-
             if (iraiCd != 0)
             {
                 kensaInfDetails = kensaInfDetails.Where(x => x.IraiCd == iraiCd);
@@ -770,6 +769,7 @@ namespace Infrastructure.Repositories
 
                 kensaInfDetailData = (from t1 in kensaInfDetailData
                                       join t2 in NoTrackingDataContext.KensaSetDetails on t1.KensaItemCd equals t2.KensaItemCd
+                                      where t2.SetId == setId
                                       select new
                                       {
                                           Result = t1,
