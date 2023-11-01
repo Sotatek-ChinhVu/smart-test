@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.Online.QualificationConfirmation;
-using Domain.Models.MainMenu;
+using Domain.Models.Reception;
 using Helper.Constants;
 
 namespace Domain.Models.Online;
@@ -43,5 +43,5 @@ public interface IOnlineRepository : IRepositoryBase
 
     bool InsertListOnlConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> listOnlineConfirmationHistoryModel);
 
-    bool UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult);
+    (bool, List<ReceptionRowModel> receptions) UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult);
 }

@@ -260,10 +260,15 @@ public class OnlineController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.UpdateOnlineConfirmation)]
-    public ActionResult<Response<UpdateOnlineConfirmationResponse>> UpdateOnlineConfirmation([FromBody] UpdateOnlineConfirmationRequest request)
+    public async Task<ActionResult<Response<UpdateOnlineConfirmationResponse>>> UpdateOnlineConfirmation([FromBody] UpdateOnlineConfirmationRequest request)
     {
         var input = new UpdateOnlineConfirmationInputData(HpId, UserId, request.ReceptionNumber, request.YokakuDate, request.QCBIDXmlMsgResponse);
         var output = _bus.Handle(input);
+
+        if (output.Status == UpdateOnlineConfirmationStatus.Successed)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged, new ReceptionChangedMessage(output.Receptions, new()));
+        }
 
         var presenter = new UpdateOnlineConfirmationPresenter();
         presenter.Complete(output);
