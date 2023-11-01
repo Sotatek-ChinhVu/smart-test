@@ -67,6 +67,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         foreach (var item in allSetByomeis)
         {
             codeLists.AddRange(GetCodeLists(item));
+            codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
         var allByomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
         var allKarteInfs = NoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.KarteKbn == 1 && k.IsDeleted == DeleteTypes.None).ToList();
@@ -135,8 +136,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         foreach (var item in currentSetByomeis)
         {
             currentCodeLists.AddRange(GetCodeLists(item));
+            currentCodeLists.Add(item.ByomeiCd ?? string.Empty);
         }
-
         var byomeiMstList = allByomeiMstList.Where(b => currentCodeLists.Contains(b.ByomeiCd)).ToList();
         lock (byomeiObj)
         {
@@ -199,6 +200,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         foreach (var item in listByomeis)
         {
             codeLists.AddRange(GetCodeLists(item));
+            codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
         var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
 
@@ -216,14 +218,16 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         bool isDspKarte = mst.IsNodspKarte == 0;
         string byomeiCmt = mst.HosokuCmt ?? string.Empty;
         string byomeiCd = mst.ByomeiCd ?? string.Empty;
-        var codeLists = GetCodeLists(mst, true);
+        var codeLists = GetCodeLists(mst);
         //prefix and suffix
         var prefixSuffixList = codeLists?.Select(code => new PrefixSuffixModel(code, byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(code))?.Byomei ?? string.Empty)).ToList();
         bool isSuspected = false;
         if (codeLists != null)
         {
             isSuspected = codeLists.Any(c => c == "8002");
+            codeLists.Add(mst.ByomeiCd ?? string.Empty);
         }
+        codeLists = codeLists?.Distinct().ToList();
         var byomeiMst = byomeiMstList.FirstOrDefault(b => codeLists?.Contains(b.ByomeiCd) == true) ?? new();
         return new SetByomeiModel(
                 mst.Id,
@@ -244,7 +248,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             );
     }
 
-    private List<string> GetCodeLists(SetByomei mst, bool flag = false)
+    private List<string> GetCodeLists(SetByomei mst)
     {
 
         var codeLists = new List<string>()
@@ -271,10 +275,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-        if (flag)
-        {
-            codeLists.Add(mst.ByomeiCd ?? string.Empty);
-        }
+    
         return codeLists?.Where(c => c != string.Empty).Distinct().ToList() ?? new List<string>();
     }
 
