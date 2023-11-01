@@ -715,8 +715,6 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 raiinInf.ConfirmationState = resResult.ConfirmationStatus;
                 raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 raiinInf.UpdateId = userId;
-
-                receptionInfos.AddRange(_receptionRepository.GetList(raiinInf.HpId, raiinInf.SinDate, CommonConstants.InvalidId, raiinInf.PtId, isDeleted: 0));
             }
 
             var saveChange = TrackingDataContext.SaveChanges();
