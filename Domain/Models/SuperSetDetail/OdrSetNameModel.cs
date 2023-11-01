@@ -61,6 +61,21 @@ public class OdrSetNameModel
         MasterSbt = string.Empty;
     }
 
+    public OdrSetNameModel(int setCd, string setName)
+    {
+        SetCd = setCd;
+        SetName = setName;
+        ItemCd = string.Empty;
+        CmtOpt = string.Empty;
+        IpnName = string.Empty;
+        IpnCd = string.Empty;
+        RpName = string.Empty;
+        ItemName = string.Empty;
+        CmtName = string.Empty;
+        UnitName = string.Empty;
+        MasterSbt = string.Empty;
+    }
+
     public int SetCd { get; private set; }
 
     public int SetKbn { get; private set; }

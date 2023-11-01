@@ -327,7 +327,6 @@ namespace Infrastructure.Repositories
                     using var transaction = TrackingDataContext.Database.BeginTransaction();
                     try
                     {
-                        long maxRaiinNo = NoTrackingDataContext.KensaInfs.Where(c => c.HpId == hpId).AsEnumerable().Select(c => c.RaiinNo).DefaultIfEmpty(0).Max();
                         // Create KensaInf
                         if (iraiCd == 0)
                         {
@@ -337,7 +336,6 @@ namespace Infrastructure.Repositories
                                 PtId = ptId,
                                 IraiCd = 0,
                                 IraiDate = iraiDate,
-                                RaiinNo = maxRaiinNo + 1,
                                 InoutKbn = 0,
                                 Status = 0,
                                 TosekiKbn = 0,
@@ -379,7 +377,6 @@ namespace Infrastructure.Repositories
                                     PtId = item.PtId,
                                     IraiCd = iraiCd,
                                     IraiDate = iraiDate,
-                                    RaiinNo = maxRaiinNo + 1,
                                     KensaItemCd = item.KensaItemCd,
                                     ResultVal = CIUtil.ToHalfsize(item.ResultVal),
                                     ResultType = item.ResultType,
@@ -408,7 +405,6 @@ namespace Infrastructure.Repositories
                                     PtId = child.PtId,
                                     IraiCd = iraiCd,
                                     IraiDate = iraiDate,
-                                    RaiinNo = child.RaiinNo == 0 ? maxRaiinNo + 1 : child.RaiinNo,
                                     KensaItemCd = child.KensaItemCd,
                                     ResultVal = CIUtil.ToHalfsize(child.ResultVal),
                                     ResultType = child.ResultType,
@@ -435,7 +431,6 @@ namespace Infrastructure.Repositories
                                 PtId = item.PtId,
                                 IraiCd = iraiCd,
                                 IraiDate = iraiDate,
-                                RaiinNo = item.RaiinNo == 0 ? maxRaiinNo + 1 : item.RaiinNo,
                                 KensaItemCd = item.KensaItemCd,
                                 ResultVal = CIUtil.ToHalfsize(item.ResultVal),
                                 ResultType = item.ResultType,
@@ -549,6 +544,8 @@ namespace Infrastructure.Repositories
                         from t7 in leftJoinT7.DefaultIfEmpty()
                         where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
                         && t3.IsDeleted == DeleteTypes.None && t1.IsDeleted == DeleteTypes.None
+                        where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd).Min(m => m.CmtSeqNo)
+                        where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd).Min(m => m.CmtSeqNo)
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
@@ -806,6 +803,8 @@ namespace Infrastructure.Repositories
                         from t7 in leftJoinT7.DefaultIfEmpty()
                         where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
                         && t3.IsDeleted == DeleteTypes.None
+                        where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd).Min(m => m.CmtSeqNo)
+                        where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd).Min(m => m.CmtSeqNo)
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,

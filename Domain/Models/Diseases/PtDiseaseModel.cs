@@ -57,7 +57,7 @@ namespace Domain.Models.Diseases
             UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
+        public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn, string icd10, string icd102013, string icd1012013, string icd1022013)
         {
             HpId = 0;
             PtId = 0;
@@ -79,10 +79,10 @@ namespace Domain.Models.Diseases
             Id = 0;
             IsImportant = 0;
             SinDate = 0;
-            Icd10 = string.Empty;
-            Icd102013 = string.Empty;
-            Icd1012013 = string.Empty;
-            Icd1022013 = string.Empty;
+            Icd10 = icd10;
+            Icd102013 = icd102013;
+            Icd1012013 = icd1012013;
+            Icd1022013 = icd1022013;
             HokenPid = 0;
             HosokuCmt = string.Empty;
             ItemCd = string.Empty;

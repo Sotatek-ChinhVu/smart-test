@@ -1,4 +1,5 @@
-﻿using Domain.Models.SetKbnMst;
+﻿using Domain.Constant;
+using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -129,6 +130,27 @@ namespace Infrastructure.Repositories
                 ReloadCache();
             }
             return check;
+        }
+
+        public List<SetKbnMstModel> GetSetKbnMstListByGenerationId(int hpId, int generationId)
+        {
+            var listSetKbnMst = NoTrackingDataContext.SetKbnMsts.Where(item => item.HpId == hpId
+                                                                               && item.IsDeleted == 0
+                                                                               && item.GenerationId == generationId
+                                                                               && (item.SetKbn >= SetNameConst.SetKbn1 && item.SetKbn <= SetNameConst.SetKbn9
+                                                                                   || item.SetKbn == SetNameConst.SetKbn10))
+                                                                .ToList();
+            return listSetKbnMst.Select(item => new SetKbnMstModel(
+                                                    item.HpId,
+                                                    item.SetKbn,
+                                                    item.SetKbnEdaNo,
+                                                    item.SetKbnName ?? string.Empty,
+                                                    item.KaCd,
+                                                    item.DocCd,
+                                                    item.IsDeleted,
+                                                    item.GenerationId))
+                                .OrderBy(s => s.SetKbn)
+                                .ToList();
         }
 
         public void ReleaseResource()

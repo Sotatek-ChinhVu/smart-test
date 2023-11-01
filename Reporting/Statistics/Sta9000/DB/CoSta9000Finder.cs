@@ -76,27 +76,18 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 ptCmt = ptCmtJoin.Text
             }
         );
+        NoTrackingDataContext.Database.SetCommandTimeout(360);
 
-        var timeout = TimeSpan.FromMinutes(5);
-
-        var cancellationTokenSource = new CancellationTokenSource(timeout);
-        var cancellationToken = cancellationTokenSource.Token;
-
-        var queryTask = Task.Run(() =>
-        {
-            return joinPtInfs.AsEnumerable().Select(
-            d =>
-                new CoPtInfModel
-                (
-                    d.ptInf,
-                    d.ptFirstVisitJoin?.SinDate ?? 0,
-                    d.ptVisitJoin?.LastVisitDate ?? 0,
-                    d.ptCmt
-                )
-        ).ToList();
-        }, cancellationToken);
-        queryTask.Wait();
-        var ptDatas = queryTask.Result;
+        var ptDatas = joinPtInfs.AsEnumerable().Select(
+              d =>
+                  new CoPtInfModel
+                  (
+                      d.ptInf,
+                      d.ptFirstVisitJoin?.SinDate ?? 0,
+                      d.ptVisitJoin?.LastVisitDate ?? 0,
+                      d.ptCmt
+                  )
+          ).ToList();
 
         //検査条件で絞りこみ
         ptDatas = GetPtInfKensaFilter(hpId, kensaConf, ptDatas);

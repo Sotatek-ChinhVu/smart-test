@@ -62,7 +62,7 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
         extendKey.Append("_");
         foreach (var item in ptIds)
         {
-            extendKey.Append(ptIds + "_");
+            extendKey.Append(item + "_");
         }
         var finalKey = key + "_" + extendKey.ToString();
         if (_cache.KeyExists(finalKey))
@@ -105,7 +105,7 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
         extendKey.Append("_");
         foreach (var item in ptIds)
         {
-            extendKey.Append(ptIds + "_");
+            extendKey.Append(item + "_");
         }
         var finalKey = key + "_" + extendKey.ToString();
 

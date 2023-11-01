@@ -28,7 +28,7 @@ public class GetTodoInfFinderInteractor : IGetTodoInfFinderInputPort
                 return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.InvalidTodoEdaNo, new());
             }
 
-            var todoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.IncDone);
+            var todoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.IncDone, input.SortByPtNum);
 
             return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.Success, todoInf);
         }
@@ -38,9 +38,9 @@ public class GetTodoInfFinderInteractor : IGetTodoInfFinderInputPort
         }
     }
 
-    private List<GetListTodoInfFinderOutputItem> GetListTodoInfos(int hpId, int todoNo, int todoEdaNo, bool incDone)
+    private List<GetListTodoInfFinderOutputItem> GetListTodoInfos(int hpId, int todoNo, int todoEdaNo, bool incDone, bool sortByPtNum)
     {
-        List<GetListTodoInfFinderOutputItem> result = new(_todoInfRepository.GetList(hpId, todoNo, todoEdaNo, incDone).Select(x => new GetListTodoInfFinderOutputItem(
+        List<GetListTodoInfFinderOutputItem> result = new(_todoInfRepository.GetList(hpId, todoNo, todoEdaNo, incDone, sortByPtNum: sortByPtNum).Select(x => new GetListTodoInfFinderOutputItem(
                                                                         hpId,
                                                                         x.PtId,
                                                                         x.PtNum,
