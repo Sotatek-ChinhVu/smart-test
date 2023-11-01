@@ -238,15 +238,15 @@ namespace Infrastructure.Repositories
                         t1.SortNo,
                         new(),
                         t1.IsDeleted,
-                        string.Empty,
-                        string.Empty,
                         t3.MaleStd ?? string.Empty,
                         t3.FemaleStd ?? string.Empty,
                         t3.MaleStdLow ?? string.Empty,
                         t3.FemaleStdLow ?? string.Empty,
                         t3.MaleStdHigh ?? string.Empty,
                         t3.FemaleStdHigh ?? string.Empty,
-                        t2.Unit ?? string.Empty
+                        t2.Unit ?? string.Empty,
+                        string.Empty,
+                        string.Empty
                         )).ToList();
 
             var parents = data.Where(x => x.SetEdaParentNo == 0).ToList();
