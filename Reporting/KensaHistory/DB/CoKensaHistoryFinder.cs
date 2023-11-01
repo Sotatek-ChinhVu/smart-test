@@ -215,11 +215,11 @@ namespace Reporting.KensaHistory.DB
             var kensaInfDetailCol = SortIraiDateAsc ? data
                                 .OrderBy(x => x.IraiDate)
                                 .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
-                                .Select((group, index) => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.TosekiKbn, group.Key.SikyuKbn, group.Key.TosekiKbn, index))
+                                .Select((group, index) => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.Bilirubin, group.Key.SikyuKbn, group.Key.TosekiKbn, index))
 
                             : data.OrderByDescending(x => x.IraiDate)
                                 .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
-                                 .Select((group, index) => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.TosekiKbn, group.Key.SikyuKbn, group.Key.TosekiKbn, index));
+                                 .Select((group, index) => new KensaInfDetailColModel(group.Key.IraiCd, group.Key.IraiDate, group.Key.Nyubi, group.Key.Yoketu, group.Key.Bilirubin, group.Key.SikyuKbn, group.Key.TosekiKbn, index));
 
             var kensaInfDetailData = new List<KensaInfDetailDataModel>();
 
@@ -431,7 +431,7 @@ namespace Reporting.KensaHistory.DB
                     group.Key.IraiDate,
                     group.Key.Nyubi,
                     group.Key.Yoketu,
-                    group.Key.TosekiKbn,
+                    group.Key.Bilirubin,
                     group.Key.SikyuKbn,
                     group.Key.TosekiKbn,
                     index

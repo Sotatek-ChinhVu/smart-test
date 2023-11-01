@@ -21,7 +21,7 @@
 
         public class KensaInfDetailColModel
         {
-            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, int bilirubin, int sikyuKbn, int tosekiKbn, int index)
+            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int index)
             {
                 IraiCd = iraiCd;
                 IraiDate = iraiDate;
@@ -41,11 +41,12 @@
 
             public string Yoketu { get; private set; }
 
-            public int Bilirubin { get; private set; }
+            public string Bilirubin { get; private set; }
 
             public int SikyuKbn { get; private set; }
 
             public int TosekiKbn { get; private set; }
+
             public int Index { get; private set; }
         }
 

@@ -618,7 +618,7 @@ namespace Infrastructure.Repositories
                     group.Key.IraiDate,
                     group.Key.Nyubi,
                     group.Key.Yoketu,
-                    group.Key.TosekiKbn,
+                    group.Key.Bilirubin,
                     group.Key.SikyuKbn,
                     group.Key.TosekiKbn,
                     index
