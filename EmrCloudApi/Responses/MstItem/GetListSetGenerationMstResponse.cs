@@ -1,4 +1,4 @@
-﻿using Domain.Models.ListSetGenerationMst;
+﻿using Domain.Models.SetGenerationMst;
 
 namespace EmrCloudApi.Responses.MstItem
 {
@@ -9,6 +9,6 @@ namespace EmrCloudApi.Responses.MstItem
             Data = data;
         }
 
-        public List<ListSetGenerationMstModel> Data { get; private set; } = new List<ListSetGenerationMstModel>();
+        public List<ListSetGenerationMstModel> Data { get; private set; }
     }
 }

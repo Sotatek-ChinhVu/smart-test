@@ -15,6 +15,7 @@ using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
@@ -26,12 +27,14 @@ using Infrastructure.Logger;
 using Infrastructure.Options;
 using Interactor.CalculateService;
 using Interactor.Family.ValidateFamilyList;
+using Interactor.MedicalExamination.KensaIraiCommon;
 using Interactor.NextOrder;
 using Microsoft.Extensions.Options;
 using UseCase.Accounting.Recaculate;
 using UseCase.Diseases.Upsert;
 using UseCase.Family;
 using UseCase.FlowSheet.Upsert;
+using UseCase.MedicalExamination.SaveKensaIrai;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
@@ -61,9 +64,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly ISummaryInfRepository _summaryInfRepository;
     private readonly ILoggingHandler _loggingHandler;
     private readonly ITenantProvider _tenantProvider;
+    private readonly IKensaIraiCommon _kensaIraiCommon;
+    private readonly ISystemConfRepository _systemConfRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository, IKensaIraiCommon kensaIraiCommon, ISystemConfRepository systemConfRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -84,6 +89,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _summaryInfRepository = summaryInfRepository;
         _tenantProvider = tenantProvider;
         _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _kensaIraiCommon = kensaIraiCommon;
+        _systemConfRepository = systemConfRepository;
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -324,25 +331,25 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             false
                    )).ToList() ?? new List<FlowSheetModel>();
 
-            var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab, ptDiseaseModels, flowSheetData, inputDatas.Monshins);
+            var saveMedicalSuccess = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab, ptDiseaseModels, flowSheetData, inputDatas.Monshins);
             if (inputDatas.FileItem.IsUpdateFile)
             {
-                if (check)
+                if (saveMedicalSuccess)
                 {
                     var listFileItems = inputDatas.FileItem.ListFileItems;
                     if (!listFileItems.Any())
                     {
                         listFileItems = new List<string> { string.Empty };
                     }
-                    SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
+                    SaveFileKarte(hpId, inputDatas.UserId, ptId, raiinNo, listFileItems, true);
                 }
                 else
                 {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                    SaveFileKarte(hpId, inputDatas.UserId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
                 }
             }
 
-            if (check)
+            if (saveMedicalSuccess)
             {
                 Task.Run(() =>{
                _calculateService.RunCalculate(new RecaculationInputDto(
@@ -356,10 +363,37 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                    });
             }
 
-            if (check)
+            if (saveMedicalSuccess)
             {
                 var receptionInfos = _receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, isDeleted: 0);
                 var sameVisitList = _receptionRepository.GetListSameVisit(hpId, ptId, sinDate);
+                SaveKensaIraiOutputData kensaInfResult = new();
+                if (allOdrInfs.Any() && inputDatas.AutoSaveKensaIrai)
+                {
+                    int configVal = 0;
+                    switch (inputDatas.Status)
+                    {
+                        case (byte)ModeSaveData.TempSave:
+                            {
+                                configVal = (int)_systemConfRepository.GetByGrpCd(hpId, 100019, 5).Val;
+                                break;
+                            }
+                        case (byte)ModeSaveData.KeisanSave:
+                            {
+                                configVal = (int)_systemConfRepository.GetByGrpCd(hpId, 100019, 4).Val;
+                                break;
+                            }
+                        case (byte)ModeSaveData.KaikeiSave:
+                            {
+                                configVal = (int)_systemConfRepository.GetByGrpCd(hpId, 100019, 3).Val;
+                                break;
+                            }
+                    }
+                    if (configVal == 1)
+                    {
+                        kensaInfResult = _kensaIraiCommon.SaveKensaIraiAction(hpId, inputDatas.UserId, ptId, sinDate, raiinNo);
+                    }
+                }
                 return new SaveMedicalOutputData(
                          SaveMedicalStatus.Successed,
                          RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
@@ -372,7 +406,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                          raiinNo,
                          ptId,
                          receptionInfos,
-                         sameVisitList
+                         sameVisitList,
+                         kensaInfResult
                          );
             }
             return new SaveMedicalOutputData(
@@ -416,7 +451,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
     }
 
-    private void SaveFileKarte(int hpId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
+    private void SaveFileKarte(int hpId, int userId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
     {
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         List<string> listFolders = new();
@@ -440,7 +475,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 }
             }
 
-            _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, fileList, false);
+            _karteInfRepository.SaveListFileKarte(hpId, userId, ptId, raiinNo, host, fileList, false);
         }
         else
         {

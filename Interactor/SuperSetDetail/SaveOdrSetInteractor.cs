@@ -1,6 +1,7 @@
 ﻿using Domain.Models.MstItem;
 using Domain.Models.SetMst;
 using Domain.Models.SuperSetDetail;
+using Interactor.SetMst.CommonSuperSet;
 using UseCase.MainMenu.SaveOdrSet;
 
 namespace Interactor.SuperSetDetail;
@@ -10,25 +11,32 @@ public class SaveOdrSetInteractor : ISaveOdrSetInputPort
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
     private readonly IMstItemRepository _mstItemRepository;
     private readonly ISetMstRepository _setMstRepository;
+    private readonly ICommonSuperSet _commonSuperSet;
 
-    public SaveOdrSetInteractor(ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository)
+    public SaveOdrSetInteractor(ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository, ICommonSuperSet commonSuperSet)
     {
         _superSetDetailRepository = superSetDetailRepository;
         _mstItemRepository = mstItemRepository;
         _setMstRepository = setMstRepository;
+        _commonSuperSet = commonSuperSet;
     }
 
     public SaveOdrSetOutputData Handle(SaveOdrSetInputData inputData)
     {
         try
         {
-            var resultValidate = ValidateData(inputData.HpId, inputData.SetNameModelList);
+            var resultValidate = ValidateData(inputData.HpId, inputData.SetNameModelList, inputData.UpdateSetNameList);
             if (resultValidate != SaveOdrSetStatus.ValidateSuccessd)
             {
                 return new SaveOdrSetOutputData(resultValidate);
             }
-            if (_superSetDetailRepository.SaveOdrSet(inputData.HpId, inputData.UserId, inputData.SinDate, inputData.SetNameModelList))
+            var result = _superSetDetailRepository.SaveOdrSet(inputData.HpId, inputData.UserId, inputData.SinDate, inputData.SetNameModelList, inputData.UpdateSetNameList);
+            if (result.SaveSuccess)
             {
+                if (result.SetMstUpdateList.Any())
+                {
+                    return new SaveOdrSetOutputData(SaveOdrSetStatus.Successed, _commonSuperSet.BuildTreeSetKbn(result.SetMstUpdateList));
+                }
                 return new SaveOdrSetOutputData(SaveOdrSetStatus.Successed);
             }
             return new SaveOdrSetOutputData(SaveOdrSetStatus.Failed);
@@ -40,10 +48,13 @@ public class SaveOdrSetInteractor : ISaveOdrSetInputPort
         }
     }
 
-    private SaveOdrSetStatus ValidateData(int hpId, List<OdrSetNameModel> setNameModelList)
+    private SaveOdrSetStatus ValidateData(int hpId, List<OdrSetNameModel> setNameModelList, List<OdrSetNameModel> updateSetNameList)
     {
         var itemCdList = setNameModelList.Select(item => item.ItemCd).Distinct().ToList();
-        var setCdList = setNameModelList.Select(item => item.SetCd).Distinct().ToList();
+        var setCdList = setNameModelList.Select(item => item.SetCd).ToList();
+        setCdList.AddRange(updateSetNameList.Select(item => item.SetCd));
+        setCdList = setCdList.Distinct().ToList();
+
         if (_mstItemRepository.GetCheckItemCds(itemCdList).Count != itemCdList.Count)
         {
             return SaveOdrSetStatus.InvalidItemCd;

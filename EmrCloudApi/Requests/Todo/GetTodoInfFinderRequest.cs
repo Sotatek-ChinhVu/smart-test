@@ -7,5 +7,7 @@
         public int TodoEdaNo { get; set; }
 
         public bool IncDone { get; set; }
+
+        public bool SortByPtNum { get; set; }
     }
 }

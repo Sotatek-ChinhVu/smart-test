@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.SetMst;
 
 namespace Domain.Models.SuperSetDetail;
 
@@ -22,9 +23,9 @@ public interface ISuperSetDetailRepository : IRepositoryBase
 
     List<ConversionItemInfModel> GetConversionItem(int hpId, string itemCd, int sinDate);
 
-    bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd);
+    bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd, List<string> deleteConversionItemCdList);
 
     List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, int timeExpired, string itemName);
 
-    bool SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList);
+    (bool SaveSuccess, List<SetMstModel> SetMstUpdateList) SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList, List<OdrSetNameModel> updateSetNameList);
 }

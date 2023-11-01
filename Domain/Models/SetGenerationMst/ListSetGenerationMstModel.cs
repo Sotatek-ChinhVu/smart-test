@@ -1,6 +1,6 @@
 ﻿using Helper.Common;
 
-namespace Domain.Models.ListSetGenerationMst
+namespace Domain.Models.SetGenerationMst
 {
     public class ListSetGenerationMstModel
     {
@@ -13,11 +13,15 @@ namespace Domain.Models.ListSetGenerationMst
         }
 
         public int HpId { get; private set; }
+
         public int GenerationId { get; private set; }
+
         public int StartDate { get; private set; }
+
         public int IsDeleted { get; private set; }
 
-        public int SinDate { get {  return StartDate; } }
+        public int SinDate { get { return StartDate; } }
+
         public string Text
         {
             get

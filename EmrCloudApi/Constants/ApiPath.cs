@@ -29,6 +29,8 @@
         public const string SaveConversion = "SaveConversion";
         public const string GetOdrSetName = "GetOdrSetName";
         public const string SaveOdrSet = "SaveOdrSet";
+        public const string GetSetGenerationMstList = "GetSetGenerationMstList";
+        public const string GetSetKbnMstListByGenerationId = "GetSetKbnMstListByGenerationId";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -86,6 +88,7 @@
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
         public const string GetTenMstByCode = "GetTenMstByCode";
         public const string GetByomeiByCode = "GetByomeiByCode";
+        public const string CheckJihiSbtExistsInTenMst = "CheckJihiSbtExistsInTenMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

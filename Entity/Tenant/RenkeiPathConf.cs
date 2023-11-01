@@ -44,6 +44,7 @@ namespace Entity.Tenant
         [Column("ID", Order = 5)]
         public long Id { get; set; }
 
+
         /// <summary>
         /// パス
         /// 
