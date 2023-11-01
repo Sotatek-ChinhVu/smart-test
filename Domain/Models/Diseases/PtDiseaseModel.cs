@@ -20,7 +20,7 @@ namespace Domain.Models.Diseases
             SeqNo = seqNo;
             ByomeiCd = byomeiCd;
             SortNo = sortNo;
-            PrefixSuffixList = prefixSuffixList;
+            this.PrefixSuffixList = prefixSuffixList;
             Byomei = byomei;
             IsSuspect = 0;
             foreach (var item in prefixSuffixList.Select(e => e.Code))
@@ -462,15 +462,6 @@ namespace Domain.Models.Diseases
             UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel ChangeCreateUserUpdateDate(string createUser, string updateUser, DateTime createDate, DateTime updateDate)
-        {
-            CreateUser = createUser;
-            UpdateUser = updateUser;
-            CreateDate = createDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(createDate);
-            UpdateDate = updateDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(updateDate);
-            return this;
-        }
-
         public PtDiseaseModel(int hokenId, string byomeiCd, string byomei, int startDate, int tenkiDate, int syubyoKbn, long id, int delDate, int tenkiKbn, List<PrefixSuffixModel> prefixSuffixList)
         {
             HokenId = hokenId;
@@ -482,7 +473,26 @@ namespace Domain.Models.Diseases
             Id = id;
             DelDate = delDate;
             TenkiKbn = tenkiKbn;
-            PrefixSuffixList = prefixSuffixList;
+            this.PrefixSuffixList = prefixSuffixList;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            HosokuCmt = string.Empty;
+            CreateUser = string.Empty;
+            UpdateUser = string.Empty;
+            CreateDate = string.Empty;
+            UpdateDate = string.Empty;
+            ItemCd = string.Empty;
+        }
+
+        public PtDiseaseModel ChangeCreateUserUpdateDate(string createUser, string updateUser, DateTime createDate, DateTime updateDate)
+        {
+            CreateUser = createUser;
+            UpdateUser = updateUser;
+            CreateDate = createDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(createDate);
+            UpdateDate = updateDate == DateTime.MinValue ? string.Empty : CIUtil.GetCIDateTimeStr(updateDate);
+            return this;
         }
 
         public ValidationStatus Validation()
@@ -569,10 +579,6 @@ namespace Domain.Models.Diseases
             #endregion
 
             #region advance
-            //if (ByomeiCd.Length > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
-            //{
-            //    return ValidationStatus.InvalidFreeWord;
-            //}
             if (TenkiKbn == TenkiKbnConst.Continued && TenkiDate > 0)
             {
                 return ValidationStatus.InvalidTenkiDateContinue;
@@ -729,20 +735,9 @@ namespace Domain.Models.Diseases
 
         public List<string> GetAllSyusyokuCds()
         {
-            var syusyokuCds = new List<string>();
-
-            foreach (var item in PrefixSuffixList)
-            {
-                if (string.IsNullOrEmpty(item.Name))
-                {
-                    continue;
-                }
-                syusyokuCds.Add(item.Name);
-            }
-
+            List<string> syusyokuCds = PrefixSuffixList.Where(item => !string.IsNullOrEmpty(item.Name)).Select(item => item.Name).ToList();
             syusyokuCds.Sort();
             return syusyokuCds;
         }
-
     }
 }

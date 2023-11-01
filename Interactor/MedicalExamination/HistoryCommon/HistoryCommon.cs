@@ -558,7 +558,7 @@ public class HistoryCommon : IHistoryCommon
     public void ReleaseResources()
     {
         _historyOrderRepository.ReleaseResource();
-        _historyOrderRepository.Dispose();
+        _historyOrderRepository.DisposeSource();
         _insuranceRepository.ReleaseResource();
         _patientInforRepository.ReleaseResource();
         _userRepository.ReleaseResource();

@@ -121,7 +121,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         searchValue = searchValue.Trim();
 
         var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
-        var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.Where(u => string.IsNullOrEmpty(searchValue.Trim()) ? true : u.IndexWord.Contains(searchValue.Trim())).OrderBy(u => u.SeibunCd).ThenBy(u => u.IndexWord).ThenBy(u => u.TokuhoFlg);
+        var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.Where(u => string.IsNullOrEmpty(searchValue.Trim()) || (u.IndexWord ?? string.Empty).Contains(searchValue.Trim())).OrderBy(u => u.SeibunCd).ThenBy(u => u.IndexWord).ThenBy(u => u.TokuhoFlg);
         var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
         var indexDefJoinIngreQueryList = from indexCode in listSuppleIndexCode
                                          join ingre in listSuppleIngre on indexCode.SeibunCd equals ingre.SeibunCd into suppleIngreList
@@ -1113,16 +1113,16 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             else
             {
                 // In case search item teikyo byomei in tenmst screen
-                queryResult = queryResult.Where(t => (itemFilter.Contains(ItemTypeEnums.Tokuzai) ? (t.ItemCd.StartsWith("7") && t.ItemCd.Length == 9) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.Yakuzai) ? (t.ItemCd.StartsWith("6") && t.ItemCd.Length == 9) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.ShinryoKoi) ? (t.ItemCd.StartsWith("1") && t.ItemCd.Length == 9) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.JihiItem) ? (t.ItemCd.StartsWith("J")) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.SpecificMedicalMeterialItem) ? (t.ItemCd.StartsWith("Z")) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.CommentItem) ? (t.ItemCd.StartsWith("8") && t.ItemCd.Length == 9) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.COCommentItem) ? (t.ItemCd.StartsWith("CO")) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.Bui) ? (t.ItemCd.Length == 4) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.KensaItem) ? (t.ItemCd.StartsWith("KN")) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.Kogai) ? (t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K")) : false));
+                queryResult = queryResult.Where(t => (itemFilter.Contains(ItemTypeEnums.Tokuzai) && t.ItemCd.StartsWith("7") && t.ItemCd.Length == 9) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.Yakuzai) && t.ItemCd.StartsWith("6") && t.ItemCd.Length == 9) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.ShinryoKoi) && t.ItemCd.StartsWith("1") && t.ItemCd.Length == 9) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.JihiItem) && t.ItemCd.StartsWith("J")) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.SpecificMedicalMeterialItem) && (t.ItemCd.StartsWith("Z"))) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.CommentItem) && (t.ItemCd.StartsWith("8") && t.ItemCd.Length == 9)) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.COCommentItem) && (t.ItemCd.StartsWith("CO"))) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.Bui) && t.ItemCd.Length == 4) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.KensaItem) && t.ItemCd.StartsWith("KN")) ||
+                                                     (itemFilter.Contains(ItemTypeEnums.Kogai) && t.ItemCd.Length >= 2 && t.ItemCd.StartsWith("K")));
             }
         }
 
@@ -1834,7 +1834,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var totalCount = entities.Count();
 
-        List<PostCodeMstModel> result = new();
+        List<PostCodeMstModel> result;
         if (pageIndex == -1 && pageSize == -1)
         {
             result = entities.OrderBy(x => x.PostCd)
@@ -3968,7 +3968,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
             updatedDrugInfModel.ForEach(x =>
             {
-                var drDb = TrackingDataContext.DrugInfs.FirstOrDefault(d => d.HpId == x.HpId && d.InfKbn == x.InfKbn && d.SeqNo == x.SeqNo && x.ItemCd == x.ItemCd);
+                var drDb = TrackingDataContext.DrugInfs.FirstOrDefault(d => d.HpId == x.HpId && d.InfKbn == x.InfKbn && d.SeqNo == x.SeqNo && x.ItemCd == d.ItemCd);
                 if (drDb != null)
                     Mapper.Map(x, drDb, (src, dest) =>
                     {
@@ -5052,7 +5052,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         return result;
     }
 
-    public (List<TenItemModel> tenItemModels, int totalCount) SearchSuggestionTenMstItem(int hpId, int pageIndex, int pageCount, string keyword, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeMisai, bool includeRosai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool isDeleted, List<int> drugKbns, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly)
+    public (List<TenItemModel> tenItemModels, int totalCount) SearchSuggestionTenMstItem(int hpId, int pageIndex, int pageCount, string keyword, int kouiKbn, int oriKouiKbn, List<int> kouiKbns, bool includeMisai, bool includeRousai, int sTDDate, string itemCodeStartWith, bool isIncludeUsage, bool isDeleted, List<int> drugKbns, List<ItemTypeEnums> itemFilter, bool isSearch831SuffixOnly)
     {
         if (string.IsNullOrEmpty(keyword))
         {
@@ -5321,8 +5321,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         if (itemFilter.Any())
         {
-            queryResult = queryResult.Where(t => (itemFilter.Contains(ItemTypeEnums.CommentItem) ? (t.ItemCd.StartsWith("8") && t.ItemCd.Length == 9) : false) ||
-                                                     (itemFilter.Contains(ItemTypeEnums.COCommentItem) ? (t.ItemCd.StartsWith("CO")) : false));
+            queryResult = queryResult.Where(t => (itemFilter.Contains(ItemTypeEnums.CommentItem) && t.ItemCd.StartsWith("8") && t.ItemCd.Length == 9) ||
+                                                 (itemFilter.Contains(ItemTypeEnums.COCommentItem) && t.ItemCd.StartsWith("CO")));
         }
 
         if (!includeMisai)
@@ -5330,7 +5330,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             queryResult = queryResult.Where(t => t.IsAdopted == 1);
         }
 
-        if (!includeRosai)
+        if (!includeRousai)
         {
             queryResult = queryResult.Where(t => t.RousaiKbn != 1);
         }
@@ -5371,7 +5371,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           from tenKN in tenKNLeft.DefaultIfEmpty()
                           select new
                           {
-                              TenMst = ten.TenMst,
+                              ten.TenMst,
                               KouiName = tenKouiKbn.SinkouiName,
                               ten.YakkaSyusaiItem,
                               KensaMst = kensaMst,
@@ -6113,7 +6113,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         foreach (var entity in query)
         {
-            var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault()).OrderByDescending(x => x.StartDate);
+            var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault()).OrderByDescending(x => x?.StartDate ?? 0).ToList();
             result.Add(new KensaMstModel(
                 entity.ParrentKensaMst.KensaItemCd,
                 entity.ParrentKensaMst.KensaItemSeqNo,
@@ -6137,28 +6137,28 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 entity.ParrentKensaMst.CenterItemCd1 ?? string.Empty,
                 entity.ParrentKensaMst.CenterItemCd2 ?? string.Empty,
                 tenmst.Select(x => new TenItemModel(
-                              x.SinKouiKbn,
-                              x.MasterSbt ?? string.Empty,
-                              x.ItemCd,
-                              x.KensaItemCd ?? string.Empty,
-                              x.KensaItemSeqNo,
-                              x.Ten,
-                              x.Name ?? string.Empty,
-                              x.ReceName ?? string.Empty,
-                              x.KanaName1 ?? string.Empty,
-                              x.KanaName2 ?? string.Empty,
-                              x.KanaName3 ?? string.Empty,
-                              x.KanaName4 ?? string.Empty,
-                              x.KanaName5 ?? string.Empty,
-                              x.KanaName6 ?? string.Empty,
-                              x.KanaName7 ?? string.Empty,
-                              x.StartDate,
-                              x.EndDate,
-                              x.DefaultVal,
-                              x.OdrUnitName ?? string.Empty,
-                              x.SanteiItemCd ?? string.Empty,
-                              x.SanteigaiKbn,
-                              x.IsNosearch,
+                              x?.SinKouiKbn ?? 0,
+                              x?.MasterSbt ?? string.Empty,
+                              x?.ItemCd ?? string.Empty,
+                              x?.KensaItemCd ?? string.Empty,
+                              x?.KensaItemSeqNo ?? 0,
+                              x?.Ten ?? 0,
+                              x?.Name ?? string.Empty,
+                              x?.ReceName ?? string.Empty,
+                              x?.KanaName1 ?? string.Empty,
+                              x?.KanaName2 ?? string.Empty,
+                              x?.KanaName3 ?? string.Empty,
+                              x?.KanaName4 ?? string.Empty,
+                              x?.KanaName5 ?? string.Empty,
+                              x?.KanaName6 ?? string.Empty,
+                              x?.KanaName7 ?? string.Empty,
+                              x?.StartDate ?? 0,
+                              x?.EndDate ?? 0,
+                              x?.DefaultVal ?? 0,
+                              x?.OdrUnitName ?? string.Empty,
+                              x?.SanteiItemCd ?? string.Empty,
+                              x?.SanteigaiKbn ?? 0,
+                              x?.IsNosearch ?? 0,
                               entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),
                 entity.TenMsts.Select(y => new TenItemModel(
                                                             y.SinKouiKbn,
@@ -6397,39 +6397,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
 
         return TrackingDataContext.SaveChanges() >= 1;
-    }
-
-    private KensaMst ConvertChildKensaMstList(KensaMstModel u, int userId, int hpId)
-    {
-        return new KensaMst
-        {
-            HpId = hpId,
-            KensaItemCd = u.KensaItemCd,
-            KensaItemSeqNo = u.KensaItemSeqNo,
-            CenterCd = u.CenterCd,
-            KensaName = u.KensaName,
-            KensaKana = u.KensaKana,
-            Unit = u.Unit,
-            MaterialCd = u.MaterialCd,
-            MaleStd = u.MaleStd,
-            MaleStdLow = u.MaleStdLow,
-            MaleStdHigh = u.MaleStdHigh,
-            FemaleStd = u.FemaleStd,
-            FemaleStdLow = u.FemaleStdLow,
-            FemaleStdHigh = u.FemaleStdHigh,
-            Formula = u.Formula,
-            OyaItemCd = u.OyaItemCd,
-            OyaItemSeqNo = u.OyaItemSeqNo,
-            SortNo = u.SortNo,
-            CenterItemCd1 = u.CenterItemCd1,
-            CenterItemCd2 = u.CenterItemCd2,
-            Digit = u.Digit,
-            IsDelete = u.IsDeleted,
-            CreateId = userId,
-            UpdateId = userId,
-            CreateDate = CIUtil.GetJapanDateTimeNow(),
-            UpdateDate = CIUtil.GetJapanDateTimeNow()
-        };
     }
 
     private TenMst ConvertTenMasterList(TenItemModel u, int userId, int hpId)
@@ -6962,14 +6929,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                          SetMst = setMst,
                                          SetOdrInfDetail = setOdrInfDetail,
                                          ItemNameTenMst = tenMst.Name,
-                                         CmtCol1 = tenMst.CmtCol1,
-                                         CmtColKeta1 = tenMst.CmtColKeta1,
-                                         CmtCol2 = tenMst.CmtCol2,
-                                         CmtColKeta2 = tenMst.CmtColKeta2,
-                                         CmtCol3 = tenMst.CmtCol3,
-                                         CmtColKeta3 = tenMst.CmtColKeta3,
-                                         CmtCol4 = tenMst.CmtCol4,
-                                         CmtColKeta4 = tenMst.CmtColKeta4
+                                         tenMst.CmtCol1,
+                                         tenMst.CmtColKeta1,
+                                         tenMst.CmtCol2,
+                                         tenMst.CmtColKeta2,
+                                         tenMst.CmtCol3,
+                                         tenMst.CmtColKeta3,
+                                         tenMst.CmtCol4,
+                                         tenMst.CmtColKeta4
                                      };
 
                 var queryDetailNotCmt = from setMst in setMstRepo
@@ -6991,14 +6958,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                             SetMst = setMst,
                                             SetOdrInfDetail = setOdrInfDetail,
                                             ItemNameTenMst = tenMst.Name,
-                                            CmtCol1 = tenMst.CmtCol1,
-                                            CmtColKeta1 = tenMst.CmtColKeta1,
-                                            CmtCol2 = tenMst.CmtCol2,
-                                            CmtColKeta2 = tenMst.CmtColKeta2,
-                                            CmtCol3 = tenMst.CmtCol3,
-                                            CmtColKeta3 = tenMst.CmtColKeta3,
-                                            CmtCol4 = tenMst.CmtCol4,
-                                            CmtColKeta4 = tenMst.CmtColKeta4
+                                            tenMst.CmtCol1,
+                                            tenMst.CmtColKeta1,
+                                            tenMst.CmtCol2,
+                                            tenMst.CmtColKeta2,
+                                            tenMst.CmtCol3,
+                                            tenMst.CmtColKeta3,
+                                            tenMst.CmtCol4,
+                                            tenMst.CmtColKeta4
                                         };
 
                 var queryDetail = queryDetailCmt.Union(queryDetailNotCmt);
@@ -7047,14 +7014,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                       SetMst = setMst,
                                       SetOdrInfDetail = setOdrInfDetail,
                                       ItemNameTenMst = tenMst.Name,
-                                      CmtCol1 = tenMst.CmtCol1,
-                                      CmtColKeta1 = tenMst.CmtColKeta1,
-                                      CmtCol2 = tenMst.CmtCol2,
-                                      CmtColKeta2 = tenMst.CmtColKeta2,
-                                      CmtCol3 = tenMst.CmtCol3,
-                                      CmtColKeta3 = tenMst.CmtColKeta3,
-                                      CmtCol4 = tenMst.CmtCol4,
-                                      CmtColKeta4 = tenMst.CmtColKeta4
+                                      tenMst.CmtCol1,
+                                      tenMst.CmtColKeta1,
+                                      tenMst.CmtCol2,
+                                      tenMst.CmtColKeta2,
+                                      tenMst.CmtCol3,
+                                      tenMst.CmtColKeta3,
+                                      tenMst.CmtCol4,
+                                      tenMst.CmtColKeta4
                                   };
 
                 var querySet = from detail in queryDetail
@@ -7072,7 +7039,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
                 var listSetNameMntSetMst = querySet.AsEnumerable()
                     .Distinct()
-                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName,
+                    .Select(item => new SetNameMntModel(false, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName ?? string.Empty,
                     string.Empty, 0, 0, 0, 0, 0, 0, 0, 0));
 
                 return listSetNameMntSetMst
@@ -7106,9 +7073,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     {
                         Yoho = yoho,
                         ItemName = ten.Name,
-                        ItemCd = ten.ItemCd,
+                        ten.ItemCd,
                     };
-        result = query.AsEnumerable().Select(u => new YohoSetMstModel(u.Yoho.HpId, u.Yoho.SetId, u.Yoho.UserId, u.Yoho.SortNo, u.ItemCd, u.Yoho.IsDeleted, u.Yoho.CreateDate, u.Yoho.CreateId, u.Yoho.CreateMachine, u.Yoho.UpdateDate, u.Yoho.UpdateId, u.Yoho.UpdateMachine, u.ItemName, false)).OrderBy(y => y.SortNo).ToList();
+        result = query.AsEnumerable().Select(u => new YohoSetMstModel(u.Yoho.HpId, u.Yoho.SetId, u.Yoho.UserId, u.Yoho.SortNo, u.ItemCd, u.Yoho.IsDeleted, u.Yoho.CreateDate, u.Yoho.CreateId, u.Yoho.CreateMachine ?? string.Empty, u.Yoho.UpdateDate, u.Yoho.UpdateId, u.Yoho.UpdateMachine ?? string.Empty, u.ItemName, false)).OrderBy(y => y.SortNo).ToList();
         return result;
     }
 
@@ -7125,7 +7092,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             .Where(item => item.HpId == hpId && item.IsDeleted == 0 && item.GenerationId == generationId &&
             (item.SetKbn >= SetNameConst.SetKbn1 && item.SetKbn <= SetNameConst.SetKbn9 || item.SetKbn == SetNameConst.SetKbn10));
 
-        return listSetKbnMst.AsEnumerable().Select(item => new SetKbnMstModel(item.HpId, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.SetKbnName, item.KaCd, item.DocCd)).ToList();
+        return listSetKbnMst.AsEnumerable().Select(item => new SetKbnMstModel(item.HpId, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.SetKbnName ?? string.Empty, item.KaCd, item.DocCd)).ToList();
     }
 
     public int GetGenerationId(int hpId)
@@ -7182,85 +7149,76 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public List<CompareTenMstModel> SearchCompareTenMst(int hpId, int sinDate, List<ActionCompareSearchModel> actions, ComparisonSearchModel comparison)
     {
-        var result = new List<CompareTenMstModel>();
-
         IQueryable<TenMst> tenMstRepos = GetTenMstActionCondition(actions, sinDate, hpId);
         IQueryable<TenMstMother> tenMstMotherRepos = GetTenMstMotherActionCondition(actions, sinDate, hpId);
-        try
+        var tenMstCommparsons = from tenMstMother in tenMstMotherRepos
+                                join tenMst in tenMstRepos
+                                on new { tenMstMother.ItemCd, tenMstMother.StartDate } equals new { tenMst.ItemCd, tenMst.StartDate }
+                                select new
+                                {
+                                    TenMstMother = tenMstMother,
+                                    TenMst = tenMst
+                                };
+        switch (comparison)
         {
-            var tenMstCommparsons = from tenMstMother in tenMstMotherRepos
-                                    join tenMst in tenMstRepos
-                                    on new { tenMstMother.ItemCd, tenMstMother.StartDate } equals new { tenMst.ItemCd, tenMst.StartDate }
-                                    select new
-                                    {
-                                        TenMstMother = tenMstMother,
-                                        TenMst = tenMst
-                                    };
-            switch (comparison)
-            {
-                case ComparisonSearchModel.Name:
-                    tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                        where (tenMstCompar.TenMstMother.Name == null && tenMstCompar.TenMst.Name != null) ||
-                                               (tenMstCompar.TenMstMother.Name != null && tenMstCompar.TenMst.Name == null) ||
-                                               (tenMstCompar.TenMstMother.Name != null && tenMstCompar.TenMst.Name != null && tenMstCompar.TenMstMother.Name.Trim() != tenMstCompar.TenMst.Name.Trim())
-                                        select tenMstCompar;
+            case ComparisonSearchModel.Name:
+                tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                    where (tenMstCompar.TenMstMother.Name == null && tenMstCompar.TenMst.Name != null) ||
+                                           (tenMstCompar.TenMstMother.Name != null && tenMstCompar.TenMst.Name == null) ||
+                                           (tenMstCompar.TenMstMother.Name != null && tenMstCompar.TenMst.Name != null && tenMstCompar.TenMstMother.Name.Trim() != tenMstCompar.TenMst.Name.Trim())
+                                    select tenMstCompar;
 
-                    break;
-                case ComparisonSearchModel.ReceName:
-                    tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                        where (tenMstCompar.TenMstMother.ReceName == null && tenMstCompar.TenMst.ReceName != null) ||
-                                               (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName == null) ||
-                                               (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName != null && tenMstCompar.TenMstMother.ReceName.Trim() != tenMstCompar.TenMst.ReceName.Trim())
-                                        select tenMstCompar;
-                    break;
-                case ComparisonSearchModel.OdrUnitName:
-                    tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                        where (tenMstCompar.TenMstMother.OdrUnitName == null && tenMstCompar.TenMst.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName.Trim() != "") ||
-                                               (tenMstCompar.TenMstMother.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName == null && tenMstCompar.TenMstMother.OdrUnitName.Trim() != "") ||
-                                               (tenMstCompar.TenMstMother.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName != null && tenMstCompar.TenMstMother.OdrUnitName.Trim() != tenMstCompar.TenMst.OdrUnitName.Trim())
-                                        select tenMstCompar;
-                    break;
-                case ComparisonSearchModel.ReceUnitName:
-                    tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                        where (tenMstCompar.TenMstMother.ReceUnitName == null && tenMstCompar.TenMst.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName.Trim() != "") ||
-                                               (tenMstCompar.TenMstMother.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName == null && tenMstCompar.TenMstMother.ReceUnitName.Trim() != "") ||
-                                               (tenMstCompar.TenMstMother.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName != null && tenMstCompar.TenMstMother.ReceUnitName.Trim() != tenMstCompar.TenMst.ReceUnitName.Trim())
-                                        select tenMstCompar;
-                    break;
-                case ComparisonSearchModel.SaiketuKbn:
-                    tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                        where tenMstCompar.TenMstMother.SaiketuKbn != tenMstCompar.TenMst.SaiketuKbn
-                                        select tenMstCompar;
-                    break;
-                case ComparisonSearchModel.CmtKbn:
-                    tenMstCommparsons = from tenMstCompar in tenMstCommparsons
-                                        where tenMstCompar.TenMstMother.CmtKbn != tenMstCompar.TenMst.CmtKbn
-                                        select tenMstCompar;
-                    break;
-            }
+                break;
+            case ComparisonSearchModel.ReceName:
+                tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                    where (tenMstCompar.TenMstMother.ReceName == null && tenMstCompar.TenMst.ReceName != null) ||
+                                           (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName == null) ||
+                                           (tenMstCompar.TenMstMother.ReceName != null && tenMstCompar.TenMst.ReceName != null && tenMstCompar.TenMstMother.ReceName.Trim() != tenMstCompar.TenMst.ReceName.Trim())
+                                    select tenMstCompar;
+                break;
+            case ComparisonSearchModel.OdrUnitName:
+                tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                    where (tenMstCompar.TenMstMother.OdrUnitName == null && tenMstCompar.TenMst.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName.Trim() != "") ||
+                                           (tenMstCompar.TenMstMother.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName == null && tenMstCompar.TenMstMother.OdrUnitName.Trim() != "") ||
+                                           (tenMstCompar.TenMstMother.OdrUnitName != null && tenMstCompar.TenMst.OdrUnitName != null && tenMstCompar.TenMstMother.OdrUnitName.Trim() != tenMstCompar.TenMst.OdrUnitName.Trim())
+                                    select tenMstCompar;
+                break;
+            case ComparisonSearchModel.ReceUnitName:
+                tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                    where (tenMstCompar.TenMstMother.ReceUnitName == null && tenMstCompar.TenMst.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName.Trim() != "") ||
+                                           (tenMstCompar.TenMstMother.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName == null && tenMstCompar.TenMstMother.ReceUnitName.Trim() != "") ||
+                                           (tenMstCompar.TenMstMother.ReceUnitName != null && tenMstCompar.TenMst.ReceUnitName != null && tenMstCompar.TenMstMother.ReceUnitName.Trim() != tenMstCompar.TenMst.ReceUnitName.Trim())
+                                    select tenMstCompar;
+                break;
+            case ComparisonSearchModel.SaiketuKbn:
+                tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                    where tenMstCompar.TenMstMother.SaiketuKbn != tenMstCompar.TenMst.SaiketuKbn
+                                    select tenMstCompar;
+                break;
+            case ComparisonSearchModel.CmtKbn:
+                tenMstCommparsons = from tenMstCompar in tenMstCommparsons
+                                    where tenMstCompar.TenMstMother.CmtKbn != tenMstCompar.TenMst.CmtKbn
+                                    select tenMstCompar;
+                break;
+        }
 
-            result = tenMstCommparsons.AsEnumerable().Select(u =>
-                                new CompareTenMstModel(
-                                    u != null && u.TenMst != null ? u.TenMst.ItemCd : string.Empty, hpId,
-                                    u != null && u.TenMst != null ? u.TenMst.StartDate : 0,
-                                    u?.TenMst?.Name ?? string.Empty,
-                                    u?.TenMst?.ReceName ?? string.Empty,
-                                    u?.TenMst?.OdrUnitName ?? string.Empty,
-                                    u?.TenMst?.ReceUnitName ?? string.Empty,
-                                    u?.TenMst?.SaiketuKbn ?? 0,
-                                    u?.TenMstMother?.Name ?? string.Empty,
-                                    u?.TenMstMother?.ReceName ?? string.Empty,
-                                    u?.TenMstMother?.OdrUnitName ?? string.Empty,
-                                    u?.TenMstMother?.ReceUnitName ?? string.Empty,
-                                    u?.TenMstMother?.SaiketuKbn ?? 0
-                                    )
-                                )
-                     .OrderBy(u => u.ItemCd).ToList();
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        var result = tenMstCommparsons.AsEnumerable().Select(u =>
+                              new CompareTenMstModel(
+                                  u != null && u.TenMst != null ? u.TenMst.ItemCd : string.Empty, hpId,
+                                  u != null && u.TenMst != null ? u.TenMst.StartDate : 0,
+                                  u?.TenMst?.Name ?? string.Empty,
+                                  u?.TenMst?.ReceName ?? string.Empty,
+                                  u?.TenMst?.OdrUnitName ?? string.Empty,
+                                  u?.TenMst?.ReceUnitName ?? string.Empty,
+                                  u?.TenMst?.SaiketuKbn ?? 0,
+                                  u?.TenMstMother?.Name ?? string.Empty,
+                                  u?.TenMstMother?.ReceName ?? string.Empty,
+                                  u?.TenMstMother?.OdrUnitName ?? string.Empty,
+                                  u?.TenMstMother?.ReceUnitName ?? string.Empty,
+                                  u?.TenMstMother?.SaiketuKbn ?? 0
+                                  )
+                              )
+                   .OrderBy(u => u.ItemCd).ToList();
 
         return result;
     }
@@ -7406,50 +7364,43 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public bool SaveCompareTenMst(List<SaveCompareTenMstModel> ListData, ComparisonSearchModel comparison, int userId)
     {
-        try
+        var listAdd = new List<TenMst>();
+        foreach (var item in ListData)
         {
-            var listAdd = new List<TenMst>();
-            foreach (var item in ListData)
+            var itemAdd = TrackingDataContext.TenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+            if (itemAdd != null)
             {
-                var itemAdd = TrackingDataContext.TenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
-                if (itemAdd != null)
+                switch (comparison)
                 {
-                    switch (comparison)
-                    {
-                        case ComparisonSearchModel.Name:
-                            itemAdd.Name = item.NameNew;
-                            break;
-                        case ComparisonSearchModel.ReceName:
-                            itemAdd.ReceName = item.NameNew;
-                            break;
-                        case ComparisonSearchModel.OdrUnitName:
-                            itemAdd.OdrUnitName = item.NameNew;
-                            break;
-                        case ComparisonSearchModel.ReceUnitName:
-                            itemAdd.ReceUnitName = item.NameNew;
-                            break;
-                        case ComparisonSearchModel.SaiketuKbn:
-                            itemAdd.SaiketuKbn = item.TenSaiketuKbnNew;
-                            break;
-                    }
-                    itemAdd.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    itemAdd.UpdateId = userId;
-                    itemAdd.CreateDate = TimeZoneInfo.ConvertTimeToUtc(itemAdd.CreateDate);
-                    listAdd.Add(itemAdd);
+                    case ComparisonSearchModel.Name:
+                        itemAdd.Name = item.NameNew;
+                        break;
+                    case ComparisonSearchModel.ReceName:
+                        itemAdd.ReceName = item.NameNew;
+                        break;
+                    case ComparisonSearchModel.OdrUnitName:
+                        itemAdd.OdrUnitName = item.NameNew;
+                        break;
+                    case ComparisonSearchModel.ReceUnitName:
+                        itemAdd.ReceUnitName = item.NameNew;
+                        break;
+                    case ComparisonSearchModel.SaiketuKbn:
+                        itemAdd.SaiketuKbn = item.TenSaiketuKbnNew;
+                        break;
                 }
+                itemAdd.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                itemAdd.UpdateId = userId;
+                itemAdd.CreateDate = TimeZoneInfo.ConvertTimeToUtc(itemAdd.CreateDate);
+                listAdd.Add(itemAdd);
             }
-            if (listAdd.Any())
-            {
-                TrackingDataContext.UpdateRange(listAdd);
-                TrackingDataContext.SaveChanges();
-                return true;
-            }
-            return false;
         }
-        catch (Exception)
+        if (listAdd.Any())
         {
-            throw;
+            TrackingDataContext.UpdateRange(listAdd);
+            TrackingDataContext.SaveChanges();
+            return true;
         }
+        return false;
     }
 
     public List<RenkeiConfModel> GetRenkeiConfModels(int hpId, int renkeiSbt)
@@ -7906,7 +7857,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               .Replace("ｭ", "ﾕ")
                               .Replace("ｮ", "ﾖ")
                               .Replace("ｯ", "ﾂ")
-                              .StartsWith(bigKeyWord)))))).ToList(); ;
+                              .StartsWith(bigKeyWord)))))).ToList();
 
 
         foreach (var entity in kensaInKensaMst)
@@ -8007,46 +7958,39 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate)
     {
-        try
+        foreach (var setNameMnt in lstModel)
         {
-            foreach (var setNameMnt in lstModel)
+            if (setNameMnt.SetFlag == "●")
             {
-                if (setNameMnt.SetFlag == "●")
+                if (!setNameMnt.IsSet)
                 {
-                    if (!setNameMnt.IsSet)
+                    var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd && x.RpNo == setNameMnt.RpNo && x.RpEdaNo == setNameMnt.RpEdaNo && x.RowNo == setNameMnt.RowNo);
+                    if (getItem != null)
                     {
-                        var getItem = TrackingDataContext.SetOdrInfDetail.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == setNameMnt.ItemCd && x.SetCd == setNameMnt.SetCd && x.RpNo == setNameMnt.RpNo && x.RpEdaNo == setNameMnt.RpEdaNo && x.RowNo == setNameMnt.RowNo);
-                        if (getItem != null)
+                        if (setNameMnt.IsCommentMaster)
                         {
-                            if (setNameMnt.IsCommentMaster)
-                            {
-                                getItem.ItemName = GetNewItemName(setNameMnt, sinDate, hpId);
-                                getItem.CmtName = setNameMnt.ItemNameTenMst;
-                            }
-                            else
-                            {
-                                getItem.ItemName = setNameMnt.ItemNameTenMst;
-                            }
+                            getItem.ItemName = GetNewItemName(setNameMnt, sinDate, hpId);
+                            getItem.CmtName = setNameMnt.ItemNameTenMst;
                         }
-                    }
-                    else if (!string.IsNullOrWhiteSpace(setNameMnt.ItemNameTenMstBinding))
-                    {
-                        var setItem = TrackingDataContext.SetMsts.FirstOrDefault(x => x.HpId == hpId && x.SetCd == setNameMnt.SetCd && x.SetKbn == setNameMnt.SetKbn && x.SetKbnEdaNo == setNameMnt.SetKbnEdaNo);
-                        if (setItem != null)
+                        else
                         {
-                            setItem.SetName = setNameMnt.ItemNameTenMstBinding;
-                            setItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            setItem.UpdateId = userId;
+                            getItem.ItemName = setNameMnt.ItemNameTenMst;
                         }
                     }
                 }
+                else if (!string.IsNullOrWhiteSpace(setNameMnt.ItemNameTenMstBinding))
+                {
+                    var setItem = TrackingDataContext.SetMsts.FirstOrDefault(x => x.HpId == hpId && x.SetCd == setNameMnt.SetCd && x.SetKbn == setNameMnt.SetKbn && x.SetKbnEdaNo == setNameMnt.SetKbnEdaNo);
+                    if (setItem != null)
+                    {
+                        setItem.SetName = setNameMnt.ItemNameTenMstBinding;
+                        setItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        setItem.UpdateId = userId;
+                    }
+                }
             }
-            return TrackingDataContext.SaveChanges() > 0;
         }
-        catch (Exception)
-        {
-            throw;
-        }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public string GetNewItemName(SetNameMntModel setNameMnt, int sinDate, int hpId)
@@ -8142,9 +8086,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public TenItemModel GetTenMstByCode(string itemCd, int setKbn, int sinDate)
     {
-        List<int> setKbns = new List<int>();
-        // Alway search comment master
-        setKbns.Add(99);
+        List<int> setKbns = new()
+        {
+            99 // Alway search comment master
+        };
         if (usageDrugs.Contains(setKbn))
         {
             setKbns.AddRange(usageDrugs);
@@ -8168,7 +8113,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 tenMst.OdrUnitName ?? string.Empty, tenMst.CnvUnitName ?? string.Empty, tenMst.IsNodspRece, tenMst.YohoKbn, tenMst.OdrTermVal, tenMst.CnvTermVal, tenMst.YjCd ?? string.Empty, tenMst.KensaItemCd ?? string.Empty, tenMst.KensaItemSeqNo, tenMst.KohatuKbn, tenMst.Ten, tenMst.HandanGrpKbn, tenMst.IpnNameCd ?? string.Empty, tenMst.IsAdopted,
                 tenMst.DrugKbn, tenMst.CmtCol1, tenMst.CmtCol2, tenMst.CmtCol3, tenMst.CmtCol4, tenMst.CmtColKeta1, tenMst.CmtColKeta2, tenMst.CmtColKeta3, tenMst.CmtColKeta4, tenMst.MasterSbt ?? string.Empty, tenMst.DefaultVal)
                 ).FirstOrDefault();
-        return item;
+        return item ?? new();
     }
 
     public ByomeiMstModel GetByomeiByCode(string byomeiCd)

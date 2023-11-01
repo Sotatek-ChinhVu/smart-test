@@ -9,7 +9,6 @@ using EmrCloudApi.Responses.Todo;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Reception.RevertDeleteNoRecept;
 using UseCase.Todo;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoInf;
@@ -48,14 +47,16 @@ namespace EmrCloudApi.Tenant.Controllers
                                                         UserId,
                                                         HpId
                                                         );
-            
+
             var output = _bus.Handle(input);
 
             if (output.Status == UpsertTodoInfStatus.Success)
             {
                 var first = request.UpsertTodoInf.FirstOrDefault();
-                var type = (first?.TodoNo > 0 && first?.IsDeleted == 1) ? 0 : first?.TodoNo > 0 ? 1 : 2;
-                await _webSocketService.SendMessageAsync(type == 0 ? FunctionCodes.TodoInfIsDeleted : type == 1 ? FunctionCodes.TodoInfUpdated : FunctionCodes.TodoInfInserted, new TodoInfMessage(output.OutputItems));
+                int firstType = first?.TodoNo > 0 ? 1 : 2;
+                var type = (first?.TodoNo > 0 && first?.IsDeleted == 1) ? 0 : firstType;
+                var functionCode = type == 1 ? FunctionCodes.TodoInfUpdated : FunctionCodes.TodoInfInserted;
+                await _webSocketService.SendMessageAsync(type == 0 ? FunctionCodes.TodoInfIsDeleted : functionCode, new TodoInfMessage(output.OutputItems));
             }
 
             var presenter = new UpsertTodoInfPresenter();

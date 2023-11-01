@@ -18,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddMemoryCache();
-//builder.Services.AddResponseCaching();
+///builder.Services.AddResponseCaching();
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
@@ -28,7 +28,7 @@ int minWorker, minIOC;
 ThreadPool.GetMinThreads(out minWorker, out minIOC);
 if (ThreadPool.SetMinThreads(3000, minIOC))
 {
-    Console.WriteLine("Set Min thread");    
+    Console.WriteLine("Set Min thread");
 }
 else
 {
@@ -47,8 +47,8 @@ builder.Services.AddSignalR().AddMessagePackProtocol()
                     AbortOnConnectFail = false
                 };
 
-                string redisHost = builder.Configuration["RedisHostLocal"];
-                string redisPort = builder.Configuration["RedisPort"];
+                string redisHost = builder.Configuration["RedisHostLocal"] ?? string.Empty;
+                string redisPort = builder.Configuration["RedisPort"] ?? string.Empty;
                 config.EndPoints.Add(redisHost, int.Parse(redisPort));
 
                 var connection = await ConnectionMultiplexer.ConnectAsync(config, writer);
@@ -227,12 +227,12 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Method == "OPTIONS")
     {
-        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { (string)context.Request.Headers["Origin"] });
+        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { (string)context.Request.Headers["Origin"] ?? string.Empty });
         context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" });
         context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
         context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
         context.Response.Headers.Add("Access-Control-Max-Age", "7200");
-        context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] });
+        context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] ?? string.Empty });
         context.Response.StatusCode = 200;
         await next(context);
     }
@@ -246,7 +246,7 @@ app.Use(async (context, next) =>
             {
                 await loggingHandler!.WriteLogStartAsync("Start request");
 
-                context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] });
+                context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] ?? string.Empty });
                 await next(context);
             }
             catch (Exception ex)
@@ -269,7 +269,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//app.UseResponseCaching();
+///app.UseResponseCaching();
 
 app.UseResponseCompression();
 

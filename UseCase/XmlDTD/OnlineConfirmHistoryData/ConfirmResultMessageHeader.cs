@@ -16,7 +16,7 @@ public class ConfirmResultMessageHeader
     public string MedicalInstitutionCode { get; set; } = string.Empty;
 
     [XmlElement(ElementName = "ArbitraryFileIdentifier")]
-    public string ArbitraryFileIdentifier { get; set;  = string.Empty;
+    public string ArbitraryFileIdentifier { get; set; } = string.Empty;
 
     [XmlElement(ElementName = "ReceptionNumber")]
     public string ReceptionNumber { get; set; } = string.Empty;
@@ -25,7 +25,7 @@ public class ConfirmResultMessageHeader
     public string SegmentOfResult { get; set; } = string.Empty;
 
     [XmlElement(ElementName = "ErrorCode")]
-    public string ErrorCode { get; set;  = string.Empty;
+    public string ErrorCode { get; set; } = string.Empty;
 
     [XmlElement(ElementName = "ErrorMessage")]
     public string ErrorMessage { get; set; } = string.Empty;

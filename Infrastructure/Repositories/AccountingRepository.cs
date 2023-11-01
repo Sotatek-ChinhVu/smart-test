@@ -16,6 +16,7 @@ using Infrastructure.Services;
 using System.Linq.Expressions;
 using System.Net.WebSockets;
 using System.Linq;
+using System.Text;
 
 namespace Infrastructure.Repositories
 {
@@ -28,12 +29,15 @@ namespace Infrastructure.Repositories
 
         public List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false, bool getAll = true)
         {
-            var listRaiinInf = new List<RaiinInf>();
+            List<RaiinInf> listRaiinInf;
             if (getAll)
             {
                 var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0);
 
-                if (oyaRaiinNo == null) return new();
+                if (oyaRaiinNo == null)
+                {
+                    return new();
+                }
 
                 listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
                   item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0 && item.Status > RaiinState.TempSave).ToList();
@@ -78,7 +82,7 @@ namespace Infrastructure.Repositories
                 {
                     if (listRaiinInf.Count > 1)
                     {
-                        countAcc = countAcc - listRaiinInf.Count();
+                        countAcc = countAcc - listRaiinInf.Count;
                     }
                     else
                     {
@@ -274,38 +278,11 @@ namespace Infrastructure.Repositories
                 : null;
         }
 
-        private HokenInfModel CreateHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
+        private HokenInfModel CreateHokenInfModel(PtHokenInf ePtHokenInf, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
         {
             HokenInfModel hokenInfModel = new();
             if (ePtHokenInf != null)
             {
-                HokenMst? hokenMst;
-                var hokMstMapped = hokenMstLists
-                   .FindAll(hk =>
-                   hk.HokenNo == ePtHokenInf.HokenNo
-                   && hk.HokenEdaNo == ePtHokenInf.HokenEdaNo)
-                   .OrderByDescending(hk => hk.StartDate);
-
-                if (hokMstMapped.Count() > 1)
-                {
-                    // pick one newest within startDate <= sinday
-                    var firstMapped = hokMstMapped.FirstOrDefault(hokMst => hokMst.StartDate <= sinDay);
-                    if (firstMapped == null)
-                    {
-                        // does not exist any hoken master with startDate <= sinday, pick lastest hoken mst (with min start date)
-                        // pick last cause by all hoken master is order by start date descending
-                        hokenMst = hokMstMapped?.LastOrDefault();
-                    }
-                    else
-                    {
-                        hokenMst = firstMapped;
-                    }
-                }
-                else
-                {
-                    // have just one hoken mst with HokenNo and HokenEdaNo
-                    hokenMst = hokMstMapped.FirstOrDefault();
-                }
                 hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu ?? string.Empty, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.SeqNo, p.CheckId, p.CheckMachine, p.CheckComment, p.ConfirmDate)).ToList());
             }
             return hokenInfModel;
@@ -647,6 +624,8 @@ namespace Infrastructure.Repositories
 
             foreach (var PtDiseaseModel in PtDiseaseModels)
             {
+                StringBuilder icd10 = new();
+                StringBuilder icd102013 = new();
 
                 if (PtDiseaseModel.IsFreeWord)
                 {
@@ -658,16 +637,18 @@ namespace Infrastructure.Repositories
                 if (byomeiMst != null)
                 {
                     PtDiseaseModel.Byomei = byomeiMst.Sbyomei;
-                    PtDiseaseModel.Icd10 = byomeiMst.Icd101;
+                    icd10.Append(byomeiMst.Icd101);
                     PtDiseaseModel.ChangeSikkanCd(byomeiMst.SikkanCd);
                     if (!string.IsNullOrEmpty(byomeiMst.Icd102))
                     {
-                        PtDiseaseModel.Icd10 += "/" + byomeiMst.Icd102;
+                        icd10.Append("/");
+                        icd10.Append(byomeiMst.Icd102);
                     }
-                    PtDiseaseModel.Icd102013 = byomeiMst.Icd1012013;
+                    icd102013.Append(byomeiMst.Icd1012013);
                     if (!string.IsNullOrEmpty(byomeiMst.Icd1022013))
                     {
-                        PtDiseaseModel.Icd102013 += "/" + byomeiMst.Icd1022013;
+                        icd102013.Append("/");
+                        icd102013.Append(byomeiMst.Icd1022013);
                     }
 
                     PtDiseaseModel.Icd1012013 = byomeiMst.Icd1012013;
@@ -678,7 +659,8 @@ namespace Infrastructure.Repositories
                     PtDiseaseModel.Icd1012013 = string.Empty;
                     PtDiseaseModel.Icd1022013 = string.Empty;
                 }
-
+                PtDiseaseModel.Icd10 = icd10.ToString();
+                PtDiseaseModel.Icd102013 = icd102013.ToString();
             }
 
             return PtDiseaseModels;
@@ -840,11 +822,10 @@ namespace Infrastructure.Repositories
                 int thisSeikyuGaku = item.SeikyuGaku - (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku)) -
                                  (item.SyunoNyukinModels.Count == 0 ? 0 : item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
 
-                bool isLastRecord = i == syunoSeikyuModels.Count - 1;
                 if (!isDisCharged)
                 {
                     ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
-                out outNyukinKbn, isLastRecord);
+                                     out outNyukinKbn);
                     allSeikyuGaku -= thisSeikyuGaku;
                 }
                 else
@@ -1031,21 +1012,13 @@ namespace Infrastructure.Repositories
         }
 
         private void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
-            out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
+            out int outNyukinGaku, out int outNyukinKbn)
         {
             int credit = adjustFutan + nyukinGaku;
 
             if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
             {
-                if (isLastRecord)
-                {
-                    outAdjustFutan = adjustFutan;
-                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
-
-                    adjustFutan -= outAdjustFutan;
-                    nyukinGaku -= outNyukinGaku;
-                }
-                else if (adjustFutan >= thisSeikyuGaku)
+                if (adjustFutan >= thisSeikyuGaku)
                 {
                     outAdjustFutan = thisSeikyuGaku;
                     outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
@@ -1609,11 +1582,7 @@ namespace Infrastructure.Repositories
                 ptHokenPattern.PtId, ptHokenPattern.HokenPid, ptHokenPattern.HokenId, ptHokenPattern.StartDate, ptHokenPattern.EndDate, ptHokenPattern.HokenSbtCd, ptHokenPattern.HokenKbn, ptHokenPattern.Kohi1Id, ptHokenPattern.Kohi2Id, ptHokenPattern.Kohi3Id, ptHokenPattern.Kohi4Id,
                 ptHokenInf == null
                     ? new()
-                    : CreateHokenInfModel(ptHokenInf,
-                        hokenMstList.Where(item =>
-                            item.HokenNo == ptHokenInf.HokenNo &&
-                            item.HokenEdaNo == ptHokenInf.HokenEdaNo).ToList(),
-                        new(), sinDay),
+                    : CreateHokenInfModel(ptHokenInf, new(), sinDay),
                 ptKohi1 == null
                     ? new()
                     : CreatePtKohiModel(ptKohi1,
@@ -1733,9 +1702,6 @@ namespace Infrastructure.Repositories
                     ptHokenInf == null
                         ? new()
                         : CreateHokenInfModel(ptHokenInf,
-                            hokenMstList.Where(item =>
-                                item.HokenNo == ptHokenInf.HokenNo &&
-                                item.HokenEdaNo == ptHokenInf.HokenEdaNo).ToList(),
                             ptHokenCheckList.Where(item =>
                                 item.HokenGrp == 1 &&
                                 item.HokenId == ptHokenInf.HokenId)
