@@ -240,8 +240,13 @@ namespace Infrastructure.Repositories
                         t1.IsDeleted,
                         string.Empty,
                         string.Empty,
-                        t3.MaleStd,
-                        t3.FemaleStd
+                        t3.MaleStd ?? string.Empty,
+                        t3.FemaleStd ?? string.Empty,
+                        t3.MaleStdLow ?? string.Empty,
+                        t3.FemaleStdLow ?? string.Empty,
+                        t3.MaleStdHigh ?? string.Empty,
+                        t3.FemaleStdHigh ?? string.Empty,
+                        t2.Unit ?? string.Empty
                         )).ToList();
 
             var parents = data.Where(x => x.SetEdaParentNo == 0).ToList();
@@ -260,10 +265,15 @@ namespace Infrastructure.Repositories
                        x.SortNo,
                        new(),
                        x.IsDeleted,
+                       x.MaleStd,
+                       x.FemaleStd,
+                       x.MaleStdLow,
+                       x.FemaleStdLow,
+                       x.MaleStdHigh,
+                       x.FemaleStdHigh,
+                       x.Unit,
                        string.Empty,
-                       string.Empty,
-                        x.MaleStd,
-                        x.FemaleStd
+                       string.Empty
                        )).ToList();
                 res.Add(new KensaSetDetailModel(
                        item.HpId,
@@ -277,10 +287,15 @@ namespace Infrastructure.Repositories
                        item.SortNo,
                        childrens,
                        item.IsDeleted,
-                       string.Empty,
-                       string.Empty,
                        item.MaleStd,
-                       item.FemaleStd
+                       item.FemaleStd,
+                       item.MaleStdLow,
+                       item.FemaleStdLow,
+                       item.MaleStdHigh,
+                       item.FemaleStdHigh,
+                       item.Unit,
+                       string.Empty,
+                       string.Empty
                        ));
             }
 
@@ -565,11 +580,12 @@ namespace Infrastructure.Repositories
                             t1.CmtCd2 ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
-                            t4.Sex == 1 ? t7.MaleStd ?? string.Empty : t7.FemaleStd ?? string.Empty,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item1 : GetValueLowHigSdt(t7.FemaleStd).Item1,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item2 : GetValueLowHigSdt(t7.FemaleStd).Item2,
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
+                            t7.MaleStdLow ?? string.Empty,
+                            t7.FemaleStdLow ?? string.Empty,
+                            t7.MaleStdHigh ?? string.Empty,
+                            t7.FemaleStdHigh ?? string.Empty,
                             t2.Unit ?? string.Empty,
                             t3.Nyubi ?? string.Empty,
                             t3.Yoketu ?? string.Empty,
@@ -660,11 +676,11 @@ namespace Infrastructure.Repositories
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
 
-            var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std, x.IraiCd }).SelectMany(group => group.Skip(1))
+            var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.IraiCd }).SelectMany(group => group.Skip(1))
                 .Select(x => x);
             var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
 
-            var kensaItemWithOutDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.Std, x.KensaKana, x.SortNo }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.Std, x.Key.KensaKana, x.Key.SortNo });
+            var kensaItemWithOutDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.KensaKana, x.SortNo }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.MaleStd, x.Key.FemaleStd, x.Key.KensaKana, x.Key.SortNo });
 
 
             var groupRowData = data
@@ -684,7 +700,8 @@ namespace Infrastructure.Repositories
                         item.KensaItemCd,
                         item.KensaName,
                         item.Unit,
-                        item.Std,
+                        item.MaleStd,
+                        item.FemaleStd,
                         item.KensaKana,
                         item.SortNo,
                         dynamicArray
@@ -698,7 +715,8 @@ namespace Infrastructure.Repositories
                     item.KensaItemCd,
                     item.KensaName,
                     item.Unit,
-                    item.Std,
+                    item.MaleStd,
+                    item.FemaleStd,
                     item.KensaKana,
                     item.SortNo,
                     new List<ListKensaInfDetailItemModel> { item }
@@ -707,6 +725,7 @@ namespace Infrastructure.Repositories
 
             // Sort row by user config
             if (setId == 0)
+
             {
                 var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
                 var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
@@ -764,27 +783,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private static (string, string) GetValueLowHigSdt(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                return (string.Empty, string.Empty);
-            }
-            else
-            {
-                string[] values = input.Split("-");
-
-                if (values.Length == 2)
-                {
-                    return (values[0], values[1]);
-                }
-                else
-                {
-                    return (string.Empty, string.Empty);
-                }
-            }
-        }
-
         public List<ListKensaInfDetailItemModel> GetKensaInfDetailByIraiCd(int hpId, int iraiCd)
         {
             var data = (from t1 in NoTrackingDataContext.KensaInfDetails.Where(x => x.IraiCd == iraiCd && x.HpId == hpId && x.IsDeleted == DeleteTypes.None)
@@ -824,11 +822,12 @@ namespace Infrastructure.Repositories
                             t1.CmtCd2 ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
                             (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
-                            t4.Sex == 1 ? t7.MaleStd ?? string.Empty : t7.FemaleStd ?? string.Empty,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item1 : GetValueLowHigSdt(t7.FemaleStd).Item1,
-                            t4.Sex == 1 ? GetValueLowHigSdt(t7.MaleStd).Item2 : GetValueLowHigSdt(t7.FemaleStd).Item2,
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
+                            t7.MaleStdLow ?? string.Empty,
+                            t7.FemaleStdLow ?? string.Empty,
+                            t7.MaleStdHigh ?? string.Empty,
+                            t7.FemaleStdHigh ?? string.Empty,
                             t2.Unit ?? string.Empty,
                             t3.Nyubi ?? string.Empty,
                             t3.Yoketu ?? string.Empty,
