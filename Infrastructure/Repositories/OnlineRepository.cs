@@ -718,6 +718,20 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
                 receptionInfos.AddRange(_receptionRepository.GetList(raiinInf.HpId, raiinInf.SinDate, CommonConstants.InvalidId, raiinInf.PtId, isDeleted: 0));
             }
+
+            var saveChange = TrackingDataContext.SaveChanges();
+
+            if (saveChange > 0)
+            {
+                foreach (var raiinInf in raiinInfToUpdate.raiinInfs)
+                {
+                    receptionInfos.AddRange(_receptionRepository.GetList(raiinInf.HpId, raiinInf.SinDate, CommonConstants.InvalidId, raiinInf.PtId, isDeleted: 0));
+                }
+            }
+            else
+            {
+                return (false, receptionInfos);
+            }
         }
 
         return (TrackingDataContext.SaveChanges() > 0, receptionInfos);
