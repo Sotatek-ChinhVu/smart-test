@@ -226,6 +226,7 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
             }
+
             totalPage = (listKensaInfDetailItemModels.Count / 30) + 1;
 
             return listKensaInfDetailItemModels.Count > 0;

@@ -84,6 +84,12 @@ namespace Reporting.KensaHistory.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
+            var z = _extralData.Values;
+            /*foreach(var item in _setFieldData)
+            {
+                item.Value = _extralData.Values;
+            }*/
+
             return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
@@ -119,7 +125,7 @@ namespace Reporting.KensaHistory.Service
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 23;
+                short maxRow = 20;
                 int rowNo = 0;
                 int k = 0;
                 short maxColDate = 9;
@@ -165,7 +171,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (kensaInfDetails.Count < maxRow && date.Count == 0)
+                    if (kensaInfDetails.Count <= maxRow && date.Count == 0)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -269,7 +275,7 @@ namespace Reporting.KensaHistory.Service
             {
                 iraiStart = date.First();
                 iraiEnd = date.Last();
-                totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
+                totalPage = (kensaInfDetails.Count / 20) + 1 + (date.Count / 9);
             }
 
             return kensaInfDetails.Count > 0;
