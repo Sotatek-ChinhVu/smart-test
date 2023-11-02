@@ -835,7 +835,7 @@ namespace Infrastructure.Repositories
                 ptByomei.SyusyokuCd20 ?? string.Empty,
                 ptByomei.SyusyokuCd21 ?? string.Empty
             };
-            codeList = codeList.Where(c => c != string.Empty).ToList();
+            codeList = codeList.Where(c => c != string.Empty).Distinct().ToList();
 
             if (codeList.Count == 0)
             {

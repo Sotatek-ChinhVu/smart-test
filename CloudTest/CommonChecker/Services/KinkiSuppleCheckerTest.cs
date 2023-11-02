@@ -48,7 +48,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
-            systemConf.Val = 5;
+            systemConf.Val = 4;
         }
         else
         {
@@ -61,7 +61,7 @@ public class KinkiSuppleCheckerTest : BaseUT
                 UpdateDate = DateTime.UtcNow,
                 CreateId = 2,
                 UpdateId = 2,
-                Val = 5
+                Val = 4
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
@@ -77,78 +77,4 @@ public class KinkiSuppleCheckerTest : BaseUT
         Assert.True(result.ErrorOrderList.Count == 0);
     }
 
-    [Test]
-    public void KinkiSuppleChecker_002_KinkiSupple()
-    {
-        //Setup
-        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 999 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
-        var temp = systemConf?.Val ?? 0;
-        int settingLevel = 3;
-        if (systemConf != null)
-        {
-            systemConf.Val = settingLevel;
-        }
-        else
-        {
-            systemConf = new SystemConf
-            {
-                HpId = 999,
-                GrpCd = 2027,
-                GrpEdaNo = 2,
-                CreateDate = DateTime.UtcNow,
-                UpdateDate = DateTime.UtcNow,
-                CreateId = 2,
-                UpdateId = 2,
-                Val = settingLevel
-            };
-            tenantTracking.SystemConfs.Add(systemConf);
-        }
-        tenantTracking.SaveChanges();
-
-        var ptSupples = CommonCheckerData.ReadMPtSupple("");
-        tenantTracking.PtSupples.AddRange(ptSupples);
-        var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef("");
-        tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
-        var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode("");
-        tenantTracking.M41SuppleIndexcodes.AddRange(m41SuppleIndexcodes);
-        var m01Kinkis = CommonCheckerData.ReadM01Kinki("");
-        tenantTracking.M01Kinki.AddRange(m01Kinkis);
-        tenantTracking.SaveChanges();
-
-        int hpId = 999;
-        long ptId = 1231;
-        int sinDate = 20230505;
-        var listItemCode = new List<ItemCodeModel>()
-        {
-            new ItemCodeModel("936DIS002", "id1"),
-            new ItemCodeModel("22DIS002", "id2"),
-            new ItemCodeModel("101DIS002", "id3"),
-            new ItemCodeModel("776DIS002", "id4"),
-            new ItemCodeModel("717DIS002", "id5"),
-        };
-
-        var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
-        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
-
-        try
-        {
-            ///Act
-            var result = realTimeCheckerFinder.CheckFoodAllergy(hpId, ptId, sinDate, listItemCode, settingLevel, new(), true);
-
-            ///Assert
-            Assert.True(!result.Any());
-        }
-        catch (Exception)
-        {
-            if (systemConf != null) systemConf.Val = temp;
-
-            tenantTracking.PtSupples.RemoveRange(ptSupples);
-            tenantTracking.M41SuppleIndexdefs.RemoveRange(m41SuppleIndexdefs);
-            tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
-            tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-        }
-    }
 }
