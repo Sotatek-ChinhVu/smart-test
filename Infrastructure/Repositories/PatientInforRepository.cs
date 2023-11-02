@@ -77,7 +77,6 @@ namespace Infrastructure.Repositories
                         select r.SinDate
                     ).FirstOrDefault()
                 };
-
             bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
             result = sortGroup
                          ?
@@ -86,7 +85,7 @@ namespace Infrastructure.Repositories
                          .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                          .ToList()
                          :
-                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+                         SortData(ptInfWithLastVisitDate, sortData, pageIndex, pageSize);
             return result;
         }
 
@@ -496,8 +495,8 @@ namespace Infrastructure.Repositories
                                                                                                              && x.RaiinNo == odr.RaiinNo
                                                                                                              && x.RpNo == odr.RpNo
                                                                                                              && x.RpEdaNo == odr.RpEdaNo
-                                                                                                             && (isComment ? string.IsNullOrEmpty(odr.ItemCd) && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
-                                                                                                                            : odr.ItemCd != null && odr.ItemCd.Trim() == item.ItemCd.Trim())))
+                                                                                                             && (isComment ? odr.ItemCd != null && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
+                                                                                                                            : odr.ItemCd != null && odr.ItemCd == item.ItemCd)))
                                                                            .Select(x => x.PtId).Distinct();
                     if (index == 0)
                     {
@@ -507,8 +506,8 @@ namespace Infrastructure.Repositories
                                                                                                              && x.RaiinNo == odr.RaiinNo
                                                                                                              && x.RpNo == odr.RpNo
                                                                                                              && x.RpEdaNo == odr.RpEdaNo
-                                                                                                             && (isComment ? string.IsNullOrEmpty(odr.ItemCd) && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
-                                                                                                                            : odr.ItemCd != null && odr.ItemCd.Trim() == item.ItemCd.Trim())))
+                                                                                                             && (isComment ? odr.ItemCd != null && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
+                                                                                                                            : odr.ItemCd != null && odr.ItemCd == item.ItemCd)))
                                                                           .Select(x => x.PtId).Distinct();
                     }
                     else
@@ -634,7 +633,7 @@ namespace Infrastructure.Repositories
                          .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                          .ToList()
                          :
-                         SortData(ptInfWithLastVisitDateQuery.AsEnumerable(), sortData, pageIndex, pageSize);
+                         SortData(ptInfWithLastVisitDateQuery, sortData, pageIndex, pageSize);
             return result;
 
             #region Helper methods
@@ -841,7 +840,7 @@ namespace Infrastructure.Repositories
                          orderby r.SinDate descending
                          select r.SinDate
                      ).FirstOrDefault()
-                 }).ToList();
+                 });
 
             bool sortGroup = sortData.Select(item => item.Key).ToList().Exists(item => item.StartsWith(startGroupOrderKey));
             var result = sortGroup
@@ -851,7 +850,7 @@ namespace Infrastructure.Repositories
                          .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                          .ToList()
                          :
-                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+                         SortData(ptInfWithLastVisitDate, sortData, pageIndex, pageSize);
             return result;
         }
 
@@ -890,7 +889,7 @@ namespace Infrastructure.Repositories
                          .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                          .ToList()
                          :
-                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+                         SortData(ptInfWithLastVisitDate, sortData, pageIndex, pageSize);
             return result;
         }
 
@@ -958,7 +957,7 @@ namespace Infrastructure.Repositories
                          .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                          .ToList()
                          :
-                         SortData(ptInfWithLastVisitDate.AsEnumerable(), sortData, pageIndex, pageSize);
+                         SortData(ptInfWithLastVisitDate, sortData, pageIndex, pageSize);
             return result;
         }
 
@@ -2325,13 +2324,14 @@ namespace Infrastructure.Repositories
             public int LastVisitDate { get; set; }
         }
 
-        private List<PatientInforModel> SortData(IEnumerable<PatientInfQueryModel> ptInfWithLastVisitDate, Dictionary<string, string> sortData, int pageIndex, int pageSize)
+        private List<PatientInforModel> SortData(IQueryable<PatientInfQueryModel> ptInfWithLastVisitDate, Dictionary<string, string> sortData, int pageIndex, int pageSize)
         {
             if (!sortData.Any())
             {
                 return ptInfWithLastVisitDate
                        .Skip((pageIndex - 1) * pageSize)
                        .Take(pageSize)
+                       .AsEnumerable()
                        .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                        .ToList();
             }
@@ -2353,12 +2353,13 @@ namespace Infrastructure.Repositories
             var result = sortQuery
                          .Skip((pageIndex - 1) * pageSize)
                          .Take(pageSize)
+                         .AsEnumerable()
                          .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                          .ToList();
             return result;
         }
 
-        private IOrderedEnumerable<PatientInfQueryModel> OrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedEnumerable<PatientInfQueryModel> sortQuery)
+        private IOrderedQueryable<PatientInfQueryModel> OrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedQueryable<PatientInfQueryModel> sortQuery)
         {
             switch (field)
             {
@@ -2496,7 +2497,7 @@ namespace Infrastructure.Repositories
             return sortQuery;
         }
 
-        private IOrderedEnumerable<PatientInfQueryModel> ThenOrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedEnumerable<PatientInfQueryModel> sortQuery)
+        private IOrderedQueryable<PatientInfQueryModel> ThenOrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedQueryable<PatientInfQueryModel> sortQuery)
         {
             switch (field)
             {
