@@ -21,7 +21,7 @@
 
         public class KensaInfDetailColModel
         {
-            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, int bilirubin, int sikyuKbn, int tosekiKbn, int index)
+            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int index)
             {
                 IraiCd = iraiCd;
                 IraiDate = iraiDate;
@@ -41,31 +41,34 @@
 
             public string Yoketu { get; private set; }
 
-            public int Bilirubin { get; private set; }
+            public string Bilirubin { get; private set; }
 
             public int SikyuKbn { get; private set; }
 
             public int TosekiKbn { get; private set; }
+
             public int Index { get; private set; }
         }
 
         public class KensaInfDetailDataModel
         {
-            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string std, List<ListKensaInfDetailItemModel> dynamicArray)
+            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string maleStd, string femaleStd, List<ListKensaInfDetailItemModel> dynamicArray)
             {
                 KensaItemCd = kensaItemCd;
                 KensaName = kensaName;
                 Unit = unit;
-                Std = std;
+                MaleStd = maleStd;
+                FeMaleStd = femaleStd;
                 DynamicArray = dynamicArray;
             }
 
-            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string std, string kensaKana, long sortNo, List<ListKensaInfDetailItemModel> dynamicArray)
+            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string maleStd, string femaleStd, string kensaKana, long sortNo, List<ListKensaInfDetailItemModel> dynamicArray)
             {
                 KensaItemCd = kensaItemCd;
                 KensaName = kensaName;
                 Unit = unit;
-                Std = std;
+                MaleStd = maleStd;
+                FeMaleStd = femaleStd;
                 KensaKana = kensaKana;
                 SortNo = sortNo;
                 DynamicArray = dynamicArray;
@@ -78,7 +81,9 @@
 
             public string Unit { get; private set; }
 
-            public string Std { get; private set; }
+            public string MaleStd { get; private set; }
+
+            public string FeMaleStd { get; private set; }
 
             public string KensaKana { get; private set; }
 

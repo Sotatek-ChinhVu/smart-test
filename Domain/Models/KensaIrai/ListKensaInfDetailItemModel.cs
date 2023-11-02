@@ -20,11 +20,12 @@
             CmtCd2 = string.Empty;
             Cmt1 = string.Empty;
             Cmt2 = string.Empty;
-            Std = string.Empty;
-            StdLow = string.Empty;
-            StdHigh = string.Empty;
             MaleStd = string.Empty;
             FemaleStd = string.Empty;
+            MaleStdLow = string.Empty;
+            FemalStdLow = string.Empty;
+            MaleStdHigh = string.Empty;
+            FemalStdHigh = string.Empty;
             Unit = string.Empty;
             Nyubi = string.Empty;
             Yoketu = string.Empty;
@@ -38,8 +39,8 @@
 
         public ListKensaInfDetailItemModel(
             long ptId, long iraiCd, long raiinNo, long iraiDate, long seqNo, long seqParentNo, string kensaName, string kensaKana, long sortNo, string kensaItemCd, string resultVal,
-            string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, string cmt1, string cmt2, string std, string stdLow, string stdHigh, string maleStd,
-            string femaleStd, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted)
+            string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, string cmt1, string cmt2, string maleStd, string femaleStd, string maleStdLow, string femaleStdLow,
+            string maleStdHigh, string femaleStdHigh, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted)
         {
             PtId = ptId;
             IraiCd = iraiCd;
@@ -58,11 +59,12 @@
             CmtCd2 = cmtCd2;
             Cmt1 = cmt1;
             Cmt2 = cmt2;
-            Std = std;
-            StdLow = stdLow;
-            StdHigh = stdHigh;
             MaleStd = maleStd;
             FemaleStd = femaleStd;
+            MaleStdLow = maleStdLow;
+            FemalStdLow = femaleStdLow;
+            MaleStdHigh = maleStdHigh;
+            FemalStdHigh = femaleStdHigh;
             Unit = unit;
             Nyubi = nyubi;
             Yoketu = yoketu;
@@ -114,15 +116,17 @@
 
         public string Cmt2 { get; private set; }
 
-        public string Std { get; private set; }
-
-        public string StdLow { get; private set; }
-
-        public string StdHigh { get; private set; }
-
         public string MaleStd { get; private set; }
 
         public string FemaleStd { get; private set; }
+
+        public string MaleStdLow { get; private set; }
+
+        public string FemalStdLow { get; private set; }
+
+        public string MaleStdHigh { get; private set; }
+
+        public string FemalStdHigh { get; private set; }
 
         public string Unit { get; private set; }
 
