@@ -108,7 +108,7 @@ namespace Reporting.KensaHistory.Service
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 33;
+                short maxRow = 20;
                 int rowNo = 0;
 
                 if (currentPage == 1)
@@ -127,7 +127,12 @@ namespace Reporting.KensaHistory.Service
                         listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                         listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
-                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
+
+                        switch (ptInf.Sex)
+                        {
+                            case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
+                            case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
+                        }
                         rowNo++;
                         if (rowNo == maxRow)
                         {
@@ -167,7 +172,13 @@ namespace Reporting.KensaHistory.Service
                     listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                     listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
                     listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
-                    listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
+
+                    switch (ptInf.Sex)
+                    {
+                        case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
+                        case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
+                    }
+                    
                     rowNo++;
                     if (rowNo == maxRow)
                     {

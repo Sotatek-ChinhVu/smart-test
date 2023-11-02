@@ -141,7 +141,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -207,7 +207,7 @@ namespace Reporting.KensaHistory.Service
 
                 foreach (var item in kensaInfDetails)
                 {
-                    listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName));
+                    listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
                     listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                     listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                     int count = 0;
