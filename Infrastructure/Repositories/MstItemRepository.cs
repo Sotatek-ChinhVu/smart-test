@@ -7940,18 +7940,18 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         // Fillter remove duplicate item
         kensaInKensaMst = kensaInKensaMst.Where(x => x.KensaItemSeqNo == allkensaKensaMst.Where(m => m.KensaItemCd == x.KensaItemCd).Min(m => m.KensaItemSeqNo)).ToList();
 
-        var CenterNameDictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
-        var CenterItemCd1Dictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
+        var centerNameDictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
+        var centerItemCd1Dictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
 
         // Update  centerName, centerItemCd1
         foreach (var entity in kensaInKensaMst)
         {
-            if (CenterNameDictionary.TryGetValue(entity.KensaItemCd, out var newCenterName))
+            if (centerNameDictionary.TryGetValue(entity.KensaItemCd, out var newCenterName))
             {
                 entity.SetCenterName(newCenterName);
             }
 
-            if (CenterItemCd1Dictionary.TryGetValue(entity.KensaItemCd, out var newCenterItemCd1))
+            if (centerItemCd1Dictionary.TryGetValue(entity.KensaItemCd, out var newCenterItemCd1))
             {
                 entity.SetCenterItemCd1(newCenterItemCd1);
             }
