@@ -6,6 +6,7 @@ using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
+using Entity.Tenant;
 
 namespace CloudUnitTest.CommonChecker.Services;
 
@@ -281,6 +282,31 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_004_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
     {
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+        //Setup CheckDupicatedSetting
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 4);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null)
+        {
+            systemConf.Val = 1;
+        }
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2027,
+                GrpEdaNo = 4,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 2,
+                UpdateId = 2,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -355,7 +381,6 @@ public class DuplicationCheckerTest : BaseUT
         var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                 RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
 
-        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
         tenantTracking.SaveChanges();
@@ -382,10 +407,13 @@ public class DuplicationCheckerTest : BaseUT
             var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
             // Assert
-            Assert.True(result.ErrorInfo != null && result.IsError);
+            Assert.True(result.ErrorInfo != null && result.IsError && result.CheckerType == RealtimeCheckerType.Duplication);
         }
         finally
         {
+
+            if (systemConf != null) systemConf.Val = temp;
+
             tenantTracking.PtInfs.RemoveRange(ptInfs);
             tenantTracking.SaveChanges();
         }

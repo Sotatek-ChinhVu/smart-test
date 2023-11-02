@@ -2217,7 +2217,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 ptByomei.SyusyokuCd20 ?? string.Empty,
                 ptByomei.SyusyokuCd21 ?? string.Empty
             };
-        codeList.Add(ptByomei.ByomeiCd ?? string.Empty);
         codeList = codeList.Where(c => c != string.Empty).Distinct().ToList();
         if (codeList.Count == 0)
         {
