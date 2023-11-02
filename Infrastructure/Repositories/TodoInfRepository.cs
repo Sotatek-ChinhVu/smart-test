@@ -107,7 +107,7 @@ namespace Infrastructure.Repositories
             return inputs.Count == countptIds;
         }
 
-        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone, bool isDeleted = false)
+        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone, bool isDeleted = false, bool sortByPtNum = false)
         {
             List<TodoInfModel> result;
             var todoInfRes = NoTrackingDataContext.TodoInfs.Where(inf => inf.HpId == hpId && (isDeleted || inf.IsDeleted == 0));
@@ -252,9 +252,14 @@ namespace Infrastructure.Repositories
                                 x.Gender,
                                 x.TodoGrpColor,
                                 x.TodoInf.CreateId
-                                )).OrderByDescending(model => model.UpdateDate)
-                                .ThenBy(model => model.PtId)
+                                ))
                                 .ToList();
+            result = sortByPtNum ? result.OrderBy(item => item.PtNum)
+                                         .ThenByDescending(model => model.UpdateDate)
+                                         .ToList()
+                                 : result.OrderByDescending(model => model.UpdateDate)
+                                       .ThenBy(model => model.PtId)
+                                       .ToList();
             return result;
         }
     }

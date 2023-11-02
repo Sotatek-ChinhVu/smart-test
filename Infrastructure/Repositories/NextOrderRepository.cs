@@ -519,6 +519,8 @@ namespace Infrastructure.Repositories
             //prefix and suffix
             var codeList = prefixSuffixModels.Select(p => p.Code);
             var byomeiMst = byomeiMsts.FirstOrDefault(item => codeList.Contains(item.ByomeiCd)) ?? new ByomeiMst();
+            var byomeiMstMain = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(item => byomei.ByomeiCd == item.ByomeiCd) ?? new ByomeiMst();
+
             return new RsvkrtByomeiModel(
                     byomei.Id,
                     byomei.HpId,
@@ -535,10 +537,10 @@ namespace Infrastructure.Repositories
                     byomei.IsNodspKarte,
                     byomei.IsDeleted,
                     SyusyokuCdToList(byomei),
-                    byomeiMst.Icd101 ?? string.Empty,
-                    byomeiMst.Icd1012013 ?? string.Empty,
-                    byomeiMst.Icd1012013 ?? string.Empty,
-                    byomeiMst.Icd1022013 ?? string.Empty
+                    byomeiMstMain?.Icd101 ?? string.Empty,
+                    byomeiMstMain?.Icd1012013 ?? string.Empty,
+                    byomeiMstMain?.Icd1012013 ?? string.Empty,
+                    byomeiMstMain?.Icd1022013 ?? string.Empty
                 );
         }
 
@@ -809,8 +811,7 @@ namespace Infrastructure.Repositories
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-            codeList = codeList.Where(c => c != string.Empty).ToList();
-
+            codeList = codeList.Where(c => c != string.Empty).Distinct().ToList();
             if (codeList.Count == 0)
             {
                 return new List<PrefixSuffixModel>();

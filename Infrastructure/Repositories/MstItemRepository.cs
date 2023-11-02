@@ -7804,7 +7804,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 kensaMst.Unit ?? string.Empty,
                 kensaMst.MaterialCd,
                 kensaMst.ContainerCd,
-                kensaMst.MaleStd ?? string.Empty,
+                kensaStd.MaleStd ?? string.Empty,
                 kensaStd.MaleStdLow ?? string.Empty,
                 kensaStd.MaleStdHigh ?? string.Empty,
                 kensaStd.FemaleStd ?? string.Empty,

@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.Online;
+using Domain.Models.Reception;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
@@ -53,9 +54,29 @@ public class UpdateOnlineConfirmationInteractor : IUpdateOnlineConfirmationInput
 
                 if (segmentOfResult != "9" && inputData.QCBIDResponse.MessageBody != null)
                 {
+<<<<<<< HEAD
                     var listDataInf = inputData.QCBIDResponse.MessageBody.QCBIDXmlMsgResponseInfo?.ToList();
                     var listResultModel = new List<ConfirmResultModel>();
                     if (listDataInf?.Count > 0)
+=======
+                    return new UpdateOnlineConfirmationOutputData(new(), UpdateOnlineConfirmationStatus.InvalidReceptionNumber, message);
+                }
+
+                string segmentOfResult = inputData.QCBIDResponse.MessageHeader.SegmentOfResult;
+
+                ConvertToListOnlConfirmHistoryModel(inputData.UserId, inputData.QCBIDResponse);
+
+                var updateRaiinInf = (true, new List<ReceptionRowModel>());
+                if (segmentOfResult == "1" || segmentOfResult == "2" || segmentOfResult == "9")
+                {
+                    var onlConfirmModel = new QualificationInfModel(inputData.ReceptionNumber,
+                                                                    inputData.QCBIDResponse.MessageHeader.SegmentOfResult,
+                                                                    inputData.QCBIDResponse.MessageHeader.ErrorMessage
+                                                                    );
+                    bool isUpdateOnlineConfrimSuccess = _onlineRepository.SaveOnlineConfirmation(inputData.UserId, onlConfirmModel, ModelStatus.Modified);
+
+                    if (segmentOfResult != "9" && inputData.QCBIDResponse.MessageBody != null)
+>>>>>>> develop
                     {
                         listResultModel = listDataInf.Select(u => new ConfirmResultModel(
                                                                         GetPtIdFromArbitraryIdentifier(u.QualificationConfirmSearchInfo.ArbitraryIdentifier),
@@ -90,10 +111,27 @@ public class UpdateOnlineConfirmationInteractor : IUpdateOnlineConfirmationInput
                                                                                     "オンライン資格確認一括照会"
                                                                             )
 
+<<<<<<< HEAD
                             )).ToList();
+=======
+                                )).ToList();
+                        }
+                        updateRaiinInf = _onlineRepository.UpdateRaiinInfByResResult(inputData.HpId, inputData.UserId, listResultModel);
+
+                        if (updateRaiinInf.Item1)
+                        {
+                            string statistical = String.Format("{0}件(正常{1}件 異常{2}件)", inputData.QCBIDResponse.MessageHeader.NumberOfProcessingResult, inputData.QCBIDResponse.MessageHeader.NumberOfNormalProcessing, inputData.QCBIDResponse.MessageHeader.NumberOfError);
+                            message = String.Format("一括照会結果を受信しました。" + Environment.NewLine +
+                                                SegmentOfResultDisplay(inputData.QCBIDResponse.MessageHeader.SegmentOfResult) + Environment.NewLine +
+                                                (string.IsNullOrEmpty(inputData.QCBIDResponse.MessageHeader.ErrorMessage) ? string.Empty : (inputData.QCBIDResponse.MessageHeader.ErrorMessage + Environment.NewLine)) +
+                                                statistical);
+                            return new UpdateOnlineConfirmationOutputData(updateRaiinInf.Item2, UpdateOnlineConfirmationStatus.Successed, message);
+                        }
+>>>>>>> develop
                     }
                     isUpdateRaiinInfSuccess = _onlineRepository.UpdateRaiinInfByResResult(inputData.HpId, inputData.UserId, listResultModel);
 
+<<<<<<< HEAD
                     if (isUpdateRaiinInfSuccess)
                     {
                         string statistical = String.Format("{0}件(正常{1}件 異常{2}件)", inputData.QCBIDResponse.MessageHeader.NumberOfProcessingResult, inputData.QCBIDResponse.MessageHeader.NumberOfNormalProcessing, inputData.QCBIDResponse.MessageHeader.NumberOfError);
@@ -106,6 +144,61 @@ public class UpdateOnlineConfirmationInteractor : IUpdateOnlineConfirmationInput
                 }
 
                 if (!isUpdateOnlineConfrimSuccess || !isUpdateRaiinInfSuccess)
+=======
+                    if (!isUpdateOnlineConfrimSuccess || !updateRaiinInf.Item1)
+                    {
+                        message = "オンライン資格確認一括照会";
+                        return new UpdateOnlineConfirmationOutputData(new(), UpdateOnlineConfirmationStatus.Failed, message);
+                    }
+                }
+
+                return new UpdateOnlineConfirmationOutputData(updateRaiinInf.Item2, UpdateOnlineConfirmationStatus.Successed, message);
+            }
+            catch (Exception e)
+            {
+                _loggingHandler.WriteLogExceptionAsync(e);
+                throw;
+            }
+            finally
+            {
+                _onlineRepository.ReleaseResource();
+            }
+        }
+
+        private void ConvertToListOnlConfirmHistoryModel(int userId, QCBIDXmlMsgResponse responseFile)
+        {
+            var listOnlineConfirmationHistoryModel = new List<OnlineConfirmationHistoryModel>();
+
+            // Message Header Convert
+            var messageHeaderRes = responseFile.MessageHeader;
+            var msgResponseInfoHeader = new ConfirmResultMessageHeader()
+            {
+                ProcessExecutionTime = messageHeaderRes.ProcessExecutionTime,
+                QualificationConfirmationDate = messageHeaderRes.QualificationConfirmationDate,
+                MedicalInstitutionCode = messageHeaderRes.MedicalInstitutionCode,
+                ArbitraryFileIdentifier = messageHeaderRes.ArbitraryFileIdentifier,
+                SegmentOfResult = messageHeaderRes.SegmentOfResult,
+                ErrorCode = messageHeaderRes.ErrorCode,
+                ErrorMessage = messageHeaderRes.ErrorMessage,
+                CharacterCodeIdentifier = messageHeaderRes.CharacterCodeIdentifier,
+                NumberOfError = messageHeaderRes.NumberOfError,
+                NumberOfNormalProcessing = messageHeaderRes.NumberOfNormalProcessing,
+                NumberOfProcessingResult = messageHeaderRes.NumberOfProcessingResult,
+                ReceptionNumber = messageHeaderRes.ReceptionNumber,
+            };
+            var confrimResultRes = new ConfirmResultResponse
+            {
+                MessageHeader = msgResponseInfoHeader
+            };
+            // Message Body Convert
+            var messageBodyRes = responseFile.MessageBody;
+            ConfirmResultMessageBody msgResponseInfoBody;
+            if (messageBodyRes == null) return;
+            foreach (var qCBIDMsgResponseInfo in messageBodyRes.QCBIDXmlMsgResponseInfo)
+            {
+                // その他
+                msgResponseInfoBody = new ConfirmResultMessageBody()
+>>>>>>> develop
                 {
                     message = "オンライン資格確認一括照会";
                     return new UpdateOnlineConfirmationOutputData(UpdateOnlineConfirmationStatus.Failed, message);

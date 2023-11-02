@@ -364,8 +364,8 @@ namespace Infrastructure.Repositories
                                                karte.SeqNo != lastSeqNo,
                                                karte.CreateDate,
                                                karte.UpdateDate,
-                                               userMstList.FirstOrDefault(item => item.UserId == karte.CreateId)?.Name ?? string.Empty,
-                                               userMstList.FirstOrDefault(item => item.UserId == karte.UpdateId)?.Name ?? string.Empty
+                                               userMstList.FirstOrDefault(item => item.UserId == karte.CreateId)?.Sname ?? string.Empty,
+                                               userMstList.FirstOrDefault(item => item.UserId == karte.UpdateId)?.Sname ?? string.Empty
                                         ));
                             }
                         }
@@ -379,8 +379,8 @@ namespace Infrastructure.Repositories
                                            karte.SeqNo != lastSeqNo,
                                            karte.CreateDate,
                                            karte.UpdateDate,
-                                           userMstList.FirstOrDefault(item => item.UserId == karte.CreateId)?.Name ?? string.Empty,
-                                           userMstList.FirstOrDefault(item => item.UserId == karte.UpdateId)?.Name ?? string.Empty
+                                           userMstList.FirstOrDefault(item => item.UserId == karte.CreateId)?.Sname ?? string.Empty,
+                                           userMstList.FirstOrDefault(item => item.UserId == karte.UpdateId)?.Sname ?? string.Empty
                                         ));
                         }
                     }
