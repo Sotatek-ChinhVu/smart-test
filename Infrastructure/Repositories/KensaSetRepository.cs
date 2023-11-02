@@ -321,6 +321,7 @@ namespace Infrastructure.Repositories
                                   on t1.CenterCd equals t2.CenterCd into leftJoinT2
                                   from t2 in leftJoinT2.DefaultIfEmpty()
                                   where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CMT ?? "").ToUpper().Contains(bigKeyWord)
+                                  where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd).Min(m => m.CmtSeqNo)
                                   select new KensaCmtMstModel(
                                       t1.CmtCd,
                                       t1.CMT ?? string.Empty,
