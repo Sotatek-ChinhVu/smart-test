@@ -259,7 +259,7 @@ public class ReceiptController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetInsuranceInf)]
-    public ActionResult<Response<GetInsuranceInfResponse>> GetDiseaseReceList([FromQuery] GetInsuranceInfRequest request)
+    public ActionResult<Response<GetInsuranceInfResponse>> GetInsuranceInf([FromQuery] GetInsuranceInfRequest request)
     {
         var input = new GetInsuranceInfInputData(HpId, request.PtId, request.SinYm);
         var output = _bus.Handle(input);

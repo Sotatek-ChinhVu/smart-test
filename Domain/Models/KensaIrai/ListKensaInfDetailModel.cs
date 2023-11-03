@@ -60,6 +60,7 @@
                 MaleStd = maleStd;
                 FeMaleStd = femaleStd;
                 DynamicArray = dynamicArray;
+                KensaKana = string.Empty;
             }
 
             public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string maleStd, string femaleStd, string kensaKana, long sortNo, long seqNo, long seqParentNo, List<ListKensaInfDetailItemModel> dynamicArray)

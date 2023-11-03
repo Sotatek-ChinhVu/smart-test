@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
         public void GetRedis()
         {
             string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
-            if (RedisConnectorHelper.RedisHost != connection)
+            if (RedisConnectorHelper.RedisHost != null && RedisConnectorHelper.RedisHost != connection)
             {
                 RedisConnectorHelper.RedisHost = connection;
             }
@@ -65,7 +65,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
-            var setKbnMstList = Enumerable.Empty<SetKbnMstModel>();
+            IEnumerable<SetKbnMstModel> setKbnMstList;
             if (!_cache.KeyExists(key))
             {
                 setKbnMstList = ReloadCache();
@@ -80,7 +80,7 @@ namespace Infrastructure.Repositories
 
         public bool Upsert(int hpId, int userId, int generationId, List<SetKbnMstModel> setKbnMstModels)
         {
-            int maxSetKbn = NoTrackingDataContext.SetKbnMsts.Where(s => s.GenerationId == s.GenerationId && s.HpId == hpId).Select(s => s.SetKbn).ToList().DefaultIfEmpty(0).Max();
+            int maxSetKbn = NoTrackingDataContext.SetKbnMsts.Where(s => s.GenerationId == generationId && s.HpId == hpId).Select(s => s.SetKbn).DefaultIfEmpty(0).Max();
             foreach (var model in setKbnMstModels)
             {
                 maxSetKbn++;

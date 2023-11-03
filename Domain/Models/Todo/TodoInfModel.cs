@@ -28,9 +28,10 @@ public class TodoInfModel
         Houbetu = string.Empty;
         HokensyaNo = string.Empty;
         Sex = string.Empty;
+        GroupColor = string.Empty;
     }
 
-    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo, long raiinNo, int todoKbnNo, int todoGrpNo, int isDone, int status, string sex, string groupColor, int createId)
+    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo, long raiinNo, int todoKbnNo, int todoGrpNo, int isDone, int status, int gender, string groupColor, int createId)
     {
         HpId = hpId;
         PtId = ptId;
@@ -62,7 +63,16 @@ public class TodoInfModel
         TodoGrpNo = todoGrpNo;
         IsDone = isDone;
         Status = status;
-        Sex = sex;
+        Sex = string.Empty;
+        switch (gender)
+        {
+            case 1:
+                Sex = "男";
+                break;
+            case 2:
+                Sex = "女";
+                break;
+        }
         GroupColor = groupColor;
         CreateId = createId;
     }

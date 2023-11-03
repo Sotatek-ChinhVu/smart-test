@@ -72,13 +72,6 @@ namespace Domain.Models.InsuranceMst
             ExcepHokenSyas = new List<ExceptHokensyaModel>();
         }
 
-        public HokenMstModel ChangePropertiesNoAutoMap(string hokenSName)
-        {
-            HokenSName = hokenSName;
-            return this;
-        }
-
-
         public HokenMstModel(int isLimitList, int monthLimitCount)
         {
             IsLimitList = isLimitList;
@@ -104,6 +97,12 @@ namespace Domain.Models.InsuranceMst
             HokenNameCd = string.Empty;
             PrefactureName = string.Empty;
             ExcepHokenSyas = new List<ExceptHokensyaModel>();
+        }
+
+        public HokenMstModel ChangePropertiesNoAutoMap(string hokenSName)
+        {
+            HokenSName = hokenSName;
+            return this;
         }
 
         public int FutanKbn { get; private set; }

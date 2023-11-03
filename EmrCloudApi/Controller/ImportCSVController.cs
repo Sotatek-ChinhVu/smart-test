@@ -18,10 +18,8 @@ public class ImportCSVController : AuthorizeControllerBase
 {
     private readonly IReportService _reportService;
 
-    private readonly UseCaseBus _bus;
-    public ImportCSVController(UseCaseBus bus, IUserService userService, IReportService reportService) : base(userService)
+    public ImportCSVController(IUserService userService, IReportService reportService) : base(userService)
     {
-        _bus = bus;
         _reportService = reportService;
     }
 
@@ -109,7 +107,7 @@ public class ImportCSVController : AuthorizeControllerBase
         var dataList = dataModel.Data;
         if (!dataList.Any())
         {
-            return Content(@"", "text/html"); ;
+            return Content(@"", "text/html");
         }
         var csv = new StringBuilder();
 

@@ -1,6 +1,6 @@
 ﻿namespace UseCase.Online.QualificationConfirmation
 {
-    public class KogakuKbnToLimitConsFlgConverter
+    public static class KogakuKbnToLimitConsFlgConverter
     {
         public static string ConvertToClassification(int kogakuKbn, int age, string hokenSyaNo)
         {
@@ -60,8 +60,6 @@
                         return "B05";
                     case 5:
                         return "B06";
-                        //case 41:
-                        //    return "B09";
                 }
             }
             else
@@ -164,8 +162,6 @@
                     case "B07":
                     case "B08":
                         return "5 低所Ⅰ";
-                    //case "B09":
-                    //    return "41 一般Ⅱ";
                     case "B10":
                     case "B04":
                         return "0 一般";
@@ -213,8 +209,6 @@
                         return "4 低所Ⅱ";
                     case 5:
                         return "5 低所Ⅰ";
-                        //case 41:
-                        //    return "41 一般Ⅱ";
                 }
             }
             else

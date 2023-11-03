@@ -30,7 +30,24 @@ public class VisitTimesManagementDto
 
     public bool IsOutHospital { get; private set; }
 
-    public string DisplaySinDate => IsOutHospital ? string.Empty : (SinDate > 0 ? CIUtil.SDateToShowSDate(SinDate) : string.Empty);
+    public string DisplaySinDate
+    {
+        get
+        {
+            if (IsOutHospital)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                if (SinDate > 0)
+                {
+                    return CIUtil.SDateToShowSDate(SinDate);
+                }
+            }
+            return string.Empty;
+        }
+    }
 
     public string InOrOutHospital => IsOutHospital ? "他院" : "自院";
 }

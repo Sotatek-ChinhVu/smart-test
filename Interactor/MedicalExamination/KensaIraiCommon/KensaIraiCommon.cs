@@ -24,7 +24,6 @@ public class KensaIraiCommon : IKensaIraiCommon
     private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
     private readonly IGroupInfRepository _groupInfRepository;
     private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
     public KensaIraiCommon(ITenantProvider tenantProvider, IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository, IKensaIraiCoReportService kensaIraiCoReportService, IGroupInfRepository groupInfRepository)
     {
@@ -35,7 +34,7 @@ public class KensaIraiCommon : IKensaIraiCommon
         _ordInfRepository = ordInfRepository;
         _kensaIraiCoReportService = kensaIraiCoReportService;
         _groupInfRepository = groupInfRepository;
-        _tenantProvider = tenantProvider;
+        var _tenantProvider = tenantProvider;
         _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         kensaCenterMst = new();
         odrInfModels = new();
@@ -208,7 +207,7 @@ public class KensaIraiCommon : IKensaIraiCommon
                 {
                     if (odrInfModels != null && odrInfModels.Any(p => p.TosekiKbn == toseki))
                     {
-                        int firstOdrId = odrInfModels.Find(p => p.TosekiKbn == toseki).CreateId;
+                        int firstOdrId = odrInfModels.Find(p => p.TosekiKbn == toseki)?.CreateId ?? 0;
 
                         // 至急区分を取得する
                         int sikyu = GetSikyuKbn(toseki);
@@ -346,7 +345,7 @@ public class KensaIraiCommon : IKensaIraiCommon
         else if (kensaInfModels.Count(p => p.TosekiKbn == toseki) == 1)
         {
             // 条件に合う検査依頼情報が1件の場合は、依頼コードをそのまま使用する
-            iraiCd = kensaInfModels.Find(p => p.TosekiKbn == toseki).IraiCd;
+            iraiCd = kensaInfModels.Find(p => p.TosekiKbn == toseki)?.IraiCd ?? 0;
         }
         else
         {
@@ -413,14 +412,14 @@ public class KensaIraiCommon : IKensaIraiCommon
 
             // detail生成
             List<Reporting.Kensalrai.Model.KensaIraiDetailModel> addKensaIraiDtls = new();
-            foreach (var kensaDtl in kensaInfDetailModels.FindAll(p => p.KeyNo == kensaInf.KeyNo))
+            foreach (var kensaDtl in kensaInfDetailModels.FindAll(p => p.KeyNo == kensaInf.KeyNo).Select(item => item.KensaMstModel).ToList())
             {
                 KensaMst kensaMst = new();
-                kensaMst.KensaItemCd = kensaDtl.KensaMstModel.KensaItemCd;
-                kensaMst.CenterItemCd1 = kensaDtl.KensaMstModel.CenterItemCd;
-                kensaMst.KensaKana = kensaDtl.KensaMstModel.KensaKana;
-                kensaMst.KensaName = kensaDtl.KensaMstModel.KensaName;
-                kensaMst.ContainerCd = kensaDtl.KensaMstModel.ContainerCd;
+                kensaMst.KensaItemCd = kensaDtl.KensaItemCd;
+                kensaMst.CenterItemCd1 = kensaDtl.CenterItemCd;
+                kensaMst.KensaKana = kensaDtl.KensaKana;
+                kensaMst.KensaName = kensaDtl.KensaName;
+                kensaMst.ContainerCd = kensaDtl.ContainerCd;
                 addKensaIraiDtls.Add(new Reporting.Kensalrai.Model.KensaIraiDetailModel(true, 0, 0, 0, seqNo, kensaMst));
             }
 

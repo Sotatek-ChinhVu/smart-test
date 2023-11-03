@@ -2,42 +2,42 @@
 
 namespace Helper.Util
 {
-    public class PtManagementUtil
+    public static class PtManagementUtil
     {
-        public static List<(bool isSelected, string outputColumnName, string saveName)> GetStaCsvTemplate(int dataSbt)
+        public static List<ConfigObject> GetStaCsvTemplate(int dataSbt)
         {
-            List<(bool isSelected, string outputColumnName, string saveName)> result = new List<(bool isSelected, string outputColumnName, string saveName)>();
+            List<ConfigObject> result = new();
             if (dataSbt == 1)
             {
-                result = StaCsvConfigTemplate.PtInfConfig;
+                result = StaCsvConfigTemplate.PtInfConfig.ToList();
             }
             else if (dataSbt == 2)
             {
-                result = StaCsvConfigTemplate.HokenInfConfig;
+                result = StaCsvConfigTemplate.HokenInfConfig.ToList();
             }
             else if (dataSbt == 3)
             {
-                result = StaCsvConfigTemplate.ByomeiInfConfig;
+                result = StaCsvConfigTemplate.ByomeiInfConfig.ToList();
             }
             else if (dataSbt == 4)
             {
-                result = StaCsvConfigTemplate.RaiinInfConfig;
+                result = StaCsvConfigTemplate.RaiinInfConfig.ToList();
             }
             else if (dataSbt == 5)
             {
-                result = StaCsvConfigTemplate.MedicalInfOrderConfig;
+                result = StaCsvConfigTemplate.MedicalInfOrderConfig.ToList();
             }
             else if (dataSbt == 6)
             {
-                result = StaCsvConfigTemplate.MedicalInfCalConfig;
+                result = StaCsvConfigTemplate.MedicalInfCalConfig.ToList();
             }
             else if (dataSbt == 7)
             {
-                result = StaCsvConfigTemplate.MedicalRecordInfConfig;
+                result = StaCsvConfigTemplate.MedicalRecordInfConfig.ToList();
             }
             else if (dataSbt == 8)
             {
-                result = StaCsvConfigTemplate.KensaInfConfig;
+                result = StaCsvConfigTemplate.KensaInfConfig.ToList();
             }
             return result;
         }

@@ -19,6 +19,13 @@
             IsDeleted = isDeleted;
         }
 
+        public LockDocInfModel()
+        {
+            FileName = string.Empty;
+            DspFileName = string.Empty;
+            LockMachine = string.Empty;
+        }
+
         public long PtId { get; private set; }
 
         public long PtNum { get; private set; }

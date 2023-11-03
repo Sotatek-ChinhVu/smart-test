@@ -138,26 +138,19 @@ namespace Infrastructure.Repositories
 
         public bool SaveListFileKarte(int hpId, int userId, long ptId, long raiinNo, string host, List<FileInfModel> listFiles, bool saveTempFile)
         {
-            try
+            if (saveTempFile)
             {
-                if (saveTempFile)
+                var listFileInsert = ConvertListInsertTempKarteFile(hpId, userId, ptId, host, listFiles);
+                if (listFileInsert.Any())
                 {
-                    var listFileInsert = ConvertListInsertTempKarteFile(hpId, userId, ptId, host, listFiles);
-                    if (listFileInsert.Any())
-                    {
-                        TrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
-                    }
+                    TrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
                 }
-                else
-                {
-                    UpdateSeqNoKarteFile(hpId, userId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
-                }
-                return TrackingDataContext.SaveChanges() > 0;
             }
-            catch (Exception)
+            else
             {
-                throw;
+                UpdateSeqNoKarteFile(hpId, userId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
             }
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText)
