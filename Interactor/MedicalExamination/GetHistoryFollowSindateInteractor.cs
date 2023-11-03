@@ -140,7 +140,7 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _historyOrderRepository.ReleaseResource();
-                _historyOrderRepository.Dispose();
+                _historyOrderRepository.DisposeSource();
             }
         }
 

@@ -534,7 +534,6 @@ public static class ReadDataInitKbnSetting
     private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
     {
         var workbookPart = spreadsheetDocument.WorkbookPart;
-        var temp = workbookPart?.Workbook.Descendants<Sheet>();
         StringValue relationshipId = workbookPart?.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name != null && s.Name.Equals(sheetName))?.Id ?? string.Empty;
 
         var worksheet = (workbookPart != null && !string.IsNullOrEmpty(relationshipId.ToString())) ? ((WorksheetPart)workbookPart.GetPartById(relationshipId?.Value ?? string.Empty)).Worksheet : new();

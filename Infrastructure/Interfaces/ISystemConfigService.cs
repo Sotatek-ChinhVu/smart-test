@@ -6,6 +6,6 @@
 
         double GetConfigValue(int grpCd, int grpEdaNo);
 
-        void Dispose();
+        void DisposeSource();
     }
 }

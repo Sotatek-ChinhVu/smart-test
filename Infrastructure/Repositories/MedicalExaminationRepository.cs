@@ -22,15 +22,15 @@ namespace Infrastructure.Repositories
     public class MedicalExaminationRepository : RepositoryBase, IMedicalExaminationRepository
     {
         private readonly ISystemConfRepository _systemConf;
-        private readonly ITodayOdrRepository _todayOdrRepository;
 
         public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
         {
             _systemConf = systemConf;
         }
+
         public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
         {
-            var checkedOrderModelList = new List<CheckedOrderModel>();
+            List<CheckedOrderModel> checkedOrderModelList = new();
             var igakuTokusituItem = allOdrInfDetail.FirstOrDefault(detail => detail.ItemCd == ItemCdConst.IgakuTokusitu || detail.ItemCd == ItemCdConst.IgakuTokusitu1);
 
             // 既に入力されている場合は不要
@@ -85,7 +85,7 @@ namespace Infrastructure.Repositories
             var byomeiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 4)?.Val ?? 0;
             // 対象疾病の有無
             bool existByoMeiSpecial = ByomeiModelList
-                                .Any(b => (byomeiCondition == 1 ? b.SyubyoKbn == 1 : true) &&
+                                .Any(b => (byomeiCondition != 1 || b.SyubyoKbn == 1) &&
                                     b.SikkanKbn == SikkanKbnConst.Special &&
                                     (b.HokenPid == hokenId || b.HokenPid == 0) &&
                                     b.StartDate <= sinDate &&
@@ -112,7 +112,7 @@ namespace Infrastructure.Repositories
             }
 
             bool existByoMeiOther = ByomeiModelList
-                            .Any(b => (byomeiCondition == 1 ? b.SyubyoKbn == 1 : true) &&
+                            .Any(b => (byomeiCondition != 1 || b.SyubyoKbn == 1) &&
                                 b.SikkanKbn == SikkanKbnConst.Other &&
                                 (b.HokenPid == hokenId || b.HokenPid == 0) &&
                                 b.StartDate <= sinDate &&
@@ -154,7 +154,7 @@ namespace Infrastructure.Repositories
                         }
                     }
                 }
-                if (igakuTokusituItems != null && igakuTokusituItems.Count() > 0)
+                if (igakuTokusituItems != null && igakuTokusituItems.Any())
                 {
                     var igaku = igakuTokusituItems.FirstOrDefault();
                     if (igaku != null)
@@ -527,13 +527,9 @@ namespace Infrastructure.Repositories
             // 14  脳神経外科
             // 33  心療内科
             bool existReceKaCd = false;
-            foreach (var kaMst in kaMstList)
+            if (kaMstList.Any(kaMst => new List<string> { "09", "03", "04", "02", "14", "33" }.Contains(kaMst.ReceKaCd)))
             {
-                if (new List<string> { "09", "03", "04", "02", "14", "33" }.Contains(kaMst.ReceKaCd))
-                {
-                    existReceKaCd = true;
-                    break;
-                }
+                existReceKaCd = true;
             }
             if (!existReceKaCd)
             {
@@ -606,7 +602,7 @@ namespace Infrastructure.Repositories
         private List<KaMstModel> GetKaMsts(int hpId)
         {
             var entities = NoTrackingDataContext.KaMsts.Where(k => k.HpId == hpId && k.IsDeleted == 0).OrderBy(u => u.SortNo).ThenBy(u => u.KaId).ToList();
-            List<KaMstModel> results = new List<KaMstModel>();
+            List<KaMstModel> results = new();
 
             entities?.ForEach(entity =>
             {
@@ -618,7 +614,7 @@ namespace Infrastructure.Repositories
 
         public List<CheckedOrderModel> IgakuNanbyo(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
         {
-            var checkedOrderModelList = new List<CheckedOrderModel>();
+            List<CheckedOrderModel> checkedOrderModelList = new();
             var igakuNanbyoItem = allOdrInfDetail.FirstOrDefault(detail => detail.ItemCd == ItemCdConst.IgakuNanbyo || detail.ItemCd == ItemCdConst.IgakuNanbyoJyohoTusin);
 
             // 既に入力されている場合は不要
@@ -774,9 +770,8 @@ namespace Infrastructure.Repositories
             string itemTokusyoCd1;
             int inoutKbn;
 
-            var checkedDetail = new List<OrdInfDetailModel>();
             var outDrug = allOdrInf.Where(o => o.IsDrug && o.InoutKbn == 1);
-            if (outDrug.Count() > 0)
+            if (outDrug.Any())
             {
                 // Contains OutDrug
                 checkedOdrList = allOdrInf.Where(o => o.IsDrug).ToList();
@@ -788,7 +783,7 @@ namespace Infrastructure.Repositories
             {
                 // Contains InDrug only
                 checkedOdrList = allOdrInf.Where(o => o.IsDrug && o.InoutKbn == 0).ToList();
-                if (checkedOdrList.Count() == 0)
+                if (!checkedOdrList.Any())
                 {
                     return checkedOrderModelList;
                 }
@@ -803,10 +798,10 @@ namespace Infrastructure.Repositories
             bool isCheckShuByomeiOnly1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 0)?.Val == 1;
             bool isCheckTeikyoByomei1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 1)?.Val == 1;
 
-            foreach (var odrInf in checkedOdrList)
+            foreach (var odrInfDetail in checkedOdrList.Select(item => item.OrdInfDetails).ToList())
             {
-                var usageItem = odrInf.OrdInfDetails.FirstOrDefault(d => d.SinKouiKbn == 21);
-                var drugItems = odrInf.OrdInfDetails.Where(d => d.IsDrug);
+                var usageItem = odrInfDetail.FirstOrDefault(d => d.SinKouiKbn == 21);
+                var drugItems = odrInfDetail.Where(d => d.IsDrug);
                 if (usageItem != null && usageItem.Suryo >= 28)
                 {
                     foreach (var drug in drugItems)
@@ -848,7 +843,7 @@ namespace Infrastructure.Repositories
             var tenMstModel = FindTenMst(hpId, itemTokusyoCd, sinDate);
 
             var byoMeiSpecialList = ByomeiModelList
-                            .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
+                            .Where(b => (!isCheckShuByomeiOnly || b.SyubyoKbn == 1) &&
                                 b.SikkanKbn == SikkanKbnConst.Special &&
                                 (b.HokenPid == hokenId || b.HokenPid == 0) &&
                                 b.StartDate <= sinDate &&
@@ -861,14 +856,7 @@ namespace Infrastructure.Repositories
                 {
                     var byomeiCdList = byoMeiSpecialList.Select(b => b.ByomeiCd);
                     var byomeiCdTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
-                    foreach (var byomeiCd in byomeiCdTenkiouList)
-                    {
-                        if (byomeiCdList.Contains(byomeiCd))
-                        {
-                            isSantei = true;
-                            break;
-                        }
-                    }
+                    isSantei = byomeiCdTenkiouList.Any(byomeiCd => byomeiCdList.Contains(byomeiCd));
                 }
                 else
                 {
@@ -890,7 +878,7 @@ namespace Infrastructure.Repositories
             }
 
             var byoMeiOtherList = ByomeiModelList
-                            .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
+                            .Where(b => (!isCheckShuByomeiOnly || b.SyubyoKbn == 1) &&
                                 b.SikkanKbn == SikkanKbnConst.Other &&
                                 (b.HokenPid == hokenId || b.HokenPid == 0) &&
                                 b.StartDate <= sinDate &&
@@ -903,14 +891,7 @@ namespace Infrastructure.Repositories
                 {
                     var byomeiCdList = byoMeiOtherList.Select(b => b.ByomeiCd);
                     var byomeiCdFromTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
-                    foreach (var byomeiCdFromTenkiou in byomeiCdFromTenkiouList)
-                    {
-                        if (byomeiCdList.Contains(byomeiCdFromTenkiou))
-                        {
-                            isSantei = true;
-                            break;
-                        }
-                    }
+                    isSantei = byomeiCdFromTenkiouList.Any(byomeiCdFromTenkiou => byomeiCdList.Contains(byomeiCdFromTenkiou));
                 }
                 else
                 {
@@ -1066,7 +1047,6 @@ namespace Infrastructure.Repositories
 
             return checkedOrderModelList;
         }
-
 
         private List<Tuple<int, int>> GetPtCalculationInfById(int hpId, long ptId, int sinDate)
         {
@@ -1410,7 +1390,7 @@ namespace Infrastructure.Repositories
                 }
 
                 // 外来リハビリテーション診療料１
-                int lastDaySanteiRiha1 = _todayOdrRepository.GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha1);
+                int lastDaySanteiRiha1 = GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha1);
                 if (lastDaySanteiRiha1 != 0)
                 {
                     int tgtDay = CIUtil.SDateInc(lastDaySanteiRiha1, 6);
@@ -1421,7 +1401,7 @@ namespace Infrastructure.Repositories
                 }
 
                 // 外来リハビリテーション診療料２
-                int lastDaySanteiRiha2 = _todayOdrRepository.GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha2);
+                int lastDaySanteiRiha2 = GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha2);
                 if (lastDaySanteiRiha2 != 0)
                 {
                     int tgtDay = CIUtil.SDateInc(lastDaySanteiRiha2, 13);
@@ -1526,7 +1506,7 @@ namespace Infrastructure.Repositories
                 if (lastSanteiInMonth.Count > 0)
                 {
                     var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
-                    if (touyakuTokuSyo2Syohosen != null && touyakuTokuSyo2Syohosen != null)
+                    if (touyakuTokuSyo1Syohosen != null && touyakuTokuSyo2Syohosen != null)
                     {
                         msgs[2] = BuildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth));
                     }
@@ -1670,6 +1650,48 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
+        private int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
+        {
+            int result = 0;
+            var sinKouiCountDiffDayQuery = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId && s.PtId == ptId && (s.SinYm * 100 + s.SinDay) < sinDate);
+            var sinKouiDetailQuery = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && s.PtId == ptId && s.ItemCd == itemCd);
+            var resultDiffDayQuery = from sinKouiCount in sinKouiCountDiffDayQuery
+                                     join sinKouiDetail in sinKouiDetailQuery
+                                     on new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SinYm }
+                                     equals new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SinYm }
+                                     select new
+                                     {
+                                         SinKouiCount = sinKouiCount,
+                                     };
+            var resultCountList = resultDiffDayQuery.ToList();
+            if (resultCountList.Count > 0)
+            {
+                //当日を含めない
+                result = resultCountList.Max(d => d.SinKouiCount.SinYm * 100 + d.SinKouiCount.SinDay);
+            }
+            else
+            {
+                //当日を含める
+                var sinKouiCountSameDayQuery = NoTrackingDataContext.SinKouiCounts
+                    .Where(s => s.HpId == hpId && s.PtId == ptId && (s.SinYm * 100 + s.SinDay) <= sinDate && s.RaiinNo != raiinNo);
+                var resultSameDayQuery = from sinKouiCount in sinKouiCountSameDayQuery
+                                         join sinKouiDetail in sinKouiDetailQuery
+                                         on new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SinYm }
+                                         equals new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SinYm }
+                                         select new
+                                         {
+                                             SinKouiCount = sinKouiCount,
+                                         };
+                resultCountList = resultSameDayQuery.ToList();
+                if (resultCountList.Count > 0)
+                {
+                    result = resultCountList.Max(d => d.SinKouiCount.SinYm * 100 + d.SinKouiCount.SinDay);
+                }
+            }
+
+            return result;
+        }
+
         public List<AuditTrailLogModel> GetKensaAuditTrailLogs(int hpId, string eventCd, long ptID, int sinDate, long raiinNo)
         {
             var trailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
@@ -1703,13 +1725,14 @@ namespace Infrastructure.Repositories
                                                                                                                    (detail.Item1.StartsWith("J") ||
                                                                                                                    detail.Item1.StartsWith("Z") ||
                                                                                                                    detail.Item2 == "S"))).ToList();
-                return (kensaLabelCheckInHospital == 0 && !(orderKensaLabels.Where(o => o.Item3 == 0 && (o.Item1 == 0 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
-                       (kensaLabelCheckInHospital == 1 && !(orderKensaLabels.Where(o => o.Item3 == 0 && (o.Item1 == 1 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
-                       (!(orderKensaLabels.Where(o => o.Item3 == 0 && !(o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
+                return (kensaLabelCheckInHospital == 0 && !(!orderKensaLabels.Any(o => o.Item3 == 0 && (o.Item1 == 0 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)))) ||
+                       (kensaLabelCheckInHospital == 1 && !(!orderKensaLabels.Any(o => o.Item3 == 0 && (o.Item1 == 1 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)))) ||
+                       (!(!orderKensaLabels.Any(o => o.Item3 == 0 && !(o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)))) ||
                        kensaLabelCheckInHospital == 2;
             }
-            List<string> itemcds = new List<string>();
-            List<KensaPrinterItemModel> kensaItems = new List<KensaPrinterItemModel>();
+
+            List<string> itemcds = new();
+            List<KensaPrinterItemModel> kensaItems = new();
             foreach (var order in orderInfs)
             {
                 if (order.Item3 != 0) continue;
@@ -1743,11 +1766,11 @@ namespace Infrastructure.Repositories
                              from tenMstKensaContainer in tenMstKensaContainers.DefaultIfEmpty()
                              select new
                              {
-                                 ItemCd = tenmst.ItemCd,
+                                 tenmst.ItemCd,
                                  Name = tenMstKensaContainer == null ? tenmst.Name ?? string.Empty : tenMstKensaContainer.ContainerName,
-                                 ContainerName = tenMstKensaContainer == null ? "" : tenMstKensaContainer.ContainerName,
+                                 ContainerName = tenMstKensaContainer == null ? string.Empty : tenMstKensaContainer.ContainerName,
                                  ContainerCd = tenMstKensaContainer == null ? 0 : tenMstKensaContainer.ContainerCd,
-                                 KensaLabel = tenmst.KensaLabel
+                                 tenmst.KensaLabel
                              }).ToList();
                 allItems.AddRange(query.Select(x => new KensaPrinterItemModel(x.ItemCd, x.Name, x.ContainerName, x.KensaLabel, x.ContainerCd, defaultChecked)));
             }
@@ -1755,7 +1778,7 @@ namespace Infrastructure.Repositories
             var groupKensaExistContainerCds = allItems.Where(x => x.ContainerCd != 0).GroupBy(x => new { x.ContainerCd });
             foreach (var group in groupKensaExistContainerCds)
             {
-                int maxKensaLabel = group.ToList().Max(x => x.KensaLabel);
+                int maxKensaLabel = group.AsEnumerable().Max(x => x.KensaLabel);
                 var item = group.FirstOrDefault();
                 item?.ChangeKensaLabel(maxKensaLabel);
                 if (item != null)

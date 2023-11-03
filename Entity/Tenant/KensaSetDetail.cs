@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_ITEM_CD")]
         [MaxLength(10)]
-        public string KensaItemCd { get; set; }
+        public string? KensaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査項目コード

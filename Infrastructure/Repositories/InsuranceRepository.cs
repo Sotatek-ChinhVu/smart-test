@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, bool flag, bool isDeletedPtHokenInf)
+        public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, bool flag = true, bool isDeletedPtHokenInf = false)
         {
             int prefCd = 0;
             var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
@@ -460,16 +460,6 @@ namespace Infrastructure.Repositories
             {
                 return dest;
             });
-        }
-
-        private string NenkinBango(string? rousaiKofuNo)
-        {
-            string nenkinBango = "";
-            if (rousaiKofuNo != null && rousaiKofuNo.Length == 9)
-            {
-                nenkinBango = rousaiKofuNo.Substring(0, 2);
-            }
-            return nenkinBango;
         }
 
         private int GetConfirmDate(PtHokenCheck? ptHokenCheck)
@@ -1023,18 +1013,10 @@ namespace Infrastructure.Repositories
                                 foreach (var hokenPattern in sameHokenPatternDiffHoubetu)
                                 {
                                     int houbetuPoint = hokenPattern.HoubetuPoint(historyHoubetuList);
-                                    if (houbetuPoint > maxPoint)
+                                    if ((houbetuPoint > maxPoint) || (houbetuPoint == maxPoint && foundPattern != null && hokenPattern.KohiCount < foundPattern.KohiCount))
                                     {
                                         maxPoint = houbetuPoint;
                                         foundPattern = hokenPattern;
-                                    }
-                                    else if (houbetuPoint == maxPoint)
-                                    {
-                                        if (foundPattern != null && hokenPattern.KohiCount < foundPattern.KohiCount)
-                                        {
-                                            maxPoint = houbetuPoint;
-                                            foundPattern = hokenPattern;
-                                        }
                                     }
                                 }
                                 if (foundPattern != null)
@@ -1307,7 +1289,7 @@ namespace Infrastructure.Repositories
                                         item.HokenInfIsDeleted,
                                         Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
                                         {
-                                            dest.ChangePropertiesNoAutoMap(src.HokenSname);
+                                            dest.ChangePropertiesNoAutoMap(src.HokenSname ?? string.Empty);
                                             return dest;
                                         }),
                                         new HokensyaMstModel(),

@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.MstItem
         {
             Result.Data = new CheckJihiSbtExistsInTenMstResponse(output.Status);
             Result.Message = GetMessage(output.Status);
-            Result.Status = output.Status == true ? 1 : 0;
+            Result.Status = output.Status ? 1 : 0;
         }
 
         private string GetMessage(bool status) => status switch

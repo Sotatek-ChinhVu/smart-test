@@ -703,6 +703,16 @@ namespace Domain.Models.InsuranceInfor
             return !CIUtil.IsStudent(birthday, SinDate);
         }
 
+        private bool IsPreSchool(int birthDay, int sinDate)
+        {
+            return !CIUtil.IsStudent(birthDay, sinDate);
+        }
+
+        private bool IsElder(int birthDay, int sinDate)
+        {
+            return CIUtil.AgeChk(birthDay, sinDate, 70);
+        }
+
         private bool IsElder(int birthday)
         {
             return CIUtil.AgeChk(birthday, SinDate, 70);
@@ -835,16 +845,6 @@ namespace Domain.Models.InsuranceInfor
 
             name += " " + rate + "%";
             return name;
-        }
-
-        private bool IsPreSchool(int birthDay, int sinDate)
-        {
-            return !CIUtil.IsStudent(birthDay, sinDate);
-        }
-
-        private bool IsElder(int birthDay, int sinDate)
-        {
-            return CIUtil.AgeChk(birthDay, sinDate, 70);
         }
 
         public bool CheckPatternDuplicate(InsuranceModel pattern)

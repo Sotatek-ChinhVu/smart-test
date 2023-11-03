@@ -14,5 +14,5 @@ public class GetDataPrintDrugInfoRequest
 
     public string YJCode { get; set; } = string.Empty;
 
-    public TypeHTMLEnum Type { get; set; }
+    public TypeHTMLObject Type { get; set; }
 }
