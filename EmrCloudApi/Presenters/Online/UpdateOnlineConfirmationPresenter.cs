@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.Online
         public Response<UpdateOnlineConfirmationResponse> Result { get; private set; } = new();
         public void Complete(UpdateOnlineConfirmationOutputData outputData)
         {
-            Result.Data = new UpdateOnlineConfirmationResponse(outputData.Status);
+            Result.Data = new UpdateOnlineConfirmationResponse(outputData.Message, outputData.Status);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
