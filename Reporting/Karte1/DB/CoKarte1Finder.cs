@@ -15,6 +15,11 @@ public class CoKarte1Finder : RepositoryBase, ICoKarte1Finder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public CoPtInfModel FindPtInf(int hpId, long ptId, int sinDate)
     {
 

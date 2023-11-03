@@ -26,6 +26,11 @@ namespace Reporting.Receipt.DB
             _emrLogger = emrLogger;
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public HpInfModel FindHpInf(int hpId, int sinDate)
         {
             return new HpInfModel(

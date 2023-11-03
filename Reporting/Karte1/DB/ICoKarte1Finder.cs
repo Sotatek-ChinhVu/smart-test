@@ -1,8 +1,9 @@
-﻿using Reporting.Karte1.Model;
+﻿using Domain.Common;
+using Reporting.Karte1.Model;
 
 namespace Reporting.Karte1.DB;
 
-public interface ICoKarte1Finder
+public interface ICoKarte1Finder : IRepositoryBase
 {
     CoPtInfModel FindPtInf(int hpId, long ptId, int sinDate);
 

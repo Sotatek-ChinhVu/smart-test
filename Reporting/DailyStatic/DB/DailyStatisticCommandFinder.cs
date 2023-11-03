@@ -11,6 +11,11 @@ public class DailyStatisticCommandFinder : RepositoryBase, IDailyStatisticComman
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public ConfigStatisticModel GetDailyConfigStatisticMenu(int hpId, int menuId)
     {
         var staMenu = NoTrackingDataContext.StaMenus.Where(x => x.HpId == hpId && x.MenuId == menuId)

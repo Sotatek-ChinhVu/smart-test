@@ -11,6 +11,11 @@ public class CoOrderLabelFinder : RepositoryBase, ICoOrderLabelFinder
     public CoOrderLabelFinder(ITenantProvider tenantProvider) : base(tenantProvider)
     {
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
     /// <summary>
     /// オーダー情報取得
     /// </summary>

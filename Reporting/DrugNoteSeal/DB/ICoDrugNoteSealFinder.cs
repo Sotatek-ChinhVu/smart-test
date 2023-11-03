@@ -1,8 +1,9 @@
-﻿using Reporting.DrugNoteSeal.Model;
+﻿using Domain.Common;
+using Reporting.DrugNoteSeal.Model;
 
 namespace Reporting.DrugNoteSeal.DB;
 
-public interface ICoDrugNoteSealFinder
+public interface ICoDrugNoteSealFinder : IRepositoryBase
 {
     /// <summary>
     /// 医療機関情報を取得する

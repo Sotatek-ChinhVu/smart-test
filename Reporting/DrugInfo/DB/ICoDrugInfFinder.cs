@@ -1,9 +1,10 @@
-﻿using Entity.Tenant;
+﻿using Domain.Common;
+using Entity.Tenant;
 using Reporting.DrugInfo.Model;
 
 namespace Reporting.DrugInfo.DB;
 
-public interface ICoDrugInfFinder
+public interface ICoDrugInfFinder : IRepositoryBase
 {
     PathConf GetPathConf(int grpCode);
 

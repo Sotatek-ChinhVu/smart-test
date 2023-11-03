@@ -17,6 +17,11 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
         _systemConfig = systemConfig;
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public List<ReceiptListModel> AdvancedSearchReceList(int hpId, int sinym)
     {
         int fromDay = sinym * 100 + 1;

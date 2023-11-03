@@ -1,8 +1,9 @@
-﻿using Reporting.Statistics.Model;
+﻿using Domain.Common;
+using Reporting.Statistics.Model;
 
 namespace Reporting.Statistics.DB;
 
-public interface ICoHpInfFinder
+public interface ICoHpInfFinder : IRepositoryBase
 {
     CoHpInfModel GetHpInf(int hpId, int sinDate);
 }
