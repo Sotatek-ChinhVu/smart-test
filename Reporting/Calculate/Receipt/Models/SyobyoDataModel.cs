@@ -9,6 +9,7 @@ using Helper.Extension;
 using Helper.Common;
 using Domain.Constant;
 using Reporting.Calculate.Interface;
+using Reporting.Calculate.Ika.Constants;
 
 namespace Reporting.Calculate.Receipt.Models
 {
