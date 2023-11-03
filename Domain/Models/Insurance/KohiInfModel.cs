@@ -120,6 +120,12 @@ namespace Domain.Models.Insurance
         {
             StartDate = startDate;
             EndDate = endDate;
+            ConfirmDateList = new();
+            FutansyaNo = string.Empty;
+            JyukyusyaNo = string.Empty;
+            TokusyuNo = string.Empty;
+            Houbetu = string.Empty;
+            HokenMstModel = new();
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }

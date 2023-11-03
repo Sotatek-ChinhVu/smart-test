@@ -71,14 +71,11 @@ namespace Infrastructure.Repositories
             foreach (var item in maxMoneyDatabases)
             {
                 var exist = dataInputs.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
-                if (exist == null)
+                if (exist == null && CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
                 {
-                    if (CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
-                    {
-                        item.IsDeleted = 1;
-                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        item.UpdateId = userId;
-                    }
+                    item.IsDeleted = 1;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    item.UpdateId = userId;
                 }
             }
 
@@ -120,7 +117,7 @@ namespace Infrastructure.Repositories
                         update.UpdateId = userId;
                     }
                 }
-            };
+            }
 
             return TrackingDataContext.SaveChanges() > 0;
         }

@@ -9,7 +9,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrDetail : class, IOdrInfoDetailModel
     {
 
-        public List<TOdrInf> CurrentListOrder = new();
+        public List<TOdrInf> CurrentListOrder { get; set; } = new();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {

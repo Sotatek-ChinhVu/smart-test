@@ -26,7 +26,7 @@ namespace Entity.Tenant
 
         [MaxLength(3)]
         [Column("CMT_CD", Order = 2)]
-        public string CmtCd { get; set; }
+        public string? CmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番

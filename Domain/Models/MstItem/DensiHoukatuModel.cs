@@ -149,9 +149,22 @@ namespace Domain.Models.MstItem
 
         public string EndDateBinding
         {
-            get => EndDate == 99999999 ? (CheckDefaultValue() ? "" : "9999/99/99") : CIUtil.SDateToShowSDate(EndDate);
+            get
+            {
+                if (EndDate == 99999999)
+                {
+                    if (!CheckDefaultValue())
+                    {
+                        return "9999/99/99";
+                    }
+                }
+                else
+                {
+                    return CIUtil.SDateToShowSDate(EndDate);
+                }
+                return string.Empty;
+            }
         }
-
 
         public bool IsModified { get; private set; }
 
