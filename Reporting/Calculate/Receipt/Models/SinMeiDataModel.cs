@@ -1,7 +1,6 @@
 ﻿using Reporting.Calculate.Interface;
 using Helper.Common;
 using Helper.Constants;
-using Reporting.Calculate.Ika.Constants;
 
 namespace Reporting.Calculate.Receipt.Models
 {

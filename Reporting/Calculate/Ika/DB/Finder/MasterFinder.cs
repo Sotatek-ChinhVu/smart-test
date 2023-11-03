@@ -6,7 +6,8 @@ using Helper.Constants;
 using Reporting.Calculate.Ika.Models;
 using Helper.Common;
 using Domain.Constant;
-using Reporting.Calculate.Ika.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Reporting.Calculate.Ika.DB.Finder
 {

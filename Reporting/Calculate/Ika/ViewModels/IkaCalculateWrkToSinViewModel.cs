@@ -254,7 +254,7 @@ namespace Reporting.Calculate.Ika.ViewModels
             // 薬剤逓減情報
             YakuzaiTeigen yakuzaiTeigen = new YakuzaiTeigen();
 
-            if (_common.IsRosai && _common.hokenKbn != HokenSyuConst.After && SyosaiConst.Saisin == _common.syosai)
+            if (_common.IsRosai && _common.hokenKbn != HokenSyu.After && SyosaiConst.Saisin == _common.syosai)
             {
                 // 労災で再診の場合、読み替え加算が可能かどうかチェックする
                 yomikaeDtl = CheckRosaiGairaiKanriYomikae();
