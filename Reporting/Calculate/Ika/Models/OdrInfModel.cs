@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Reporting.Calculate.Ika.Constants;
 
 namespace Reporting.Calculate.Ika.Models
 {
@@ -200,25 +199,25 @@ namespace Reporting.Calculate.Ika.Models
         {
             get
             {
-                if (new List<int> { 1, 2 }.Contains(PtHokenPattern.HokenKbn))
+                if(new List<int> { 1, 2 }.Contains(PtHokenPattern.HokenKbn))
                 {
-                    return HokenSyuConst.Kenpo;
+                    return Domain.Constant.HokenSyu.Kenpo;
                 }
-                else if (new List<int> { 11, 12 }.Contains(PtHokenPattern.HokenKbn))
+                else if(new List<int> { 11,12}.Contains(PtHokenPattern.HokenKbn))
                 {
-                    return HokenSyuConst.Rosai;
+                    return Domain.Constant.HokenSyu.Rosai;
                 }
-                else if (new List<int> { 13 }.Contains(PtHokenPattern.HokenKbn))
+                else if(new List<int> { 13 }.Contains(PtHokenPattern.HokenKbn))
                 {
-                    return HokenSyuConst.After;
+                    return Domain.Constant.HokenSyu.After;
                 }
                 else if (new List<int> { 14 }.Contains(PtHokenPattern.HokenKbn))
                 {
-                    return HokenSyuConst.Jibai;
+                    return Domain.Constant.HokenSyu.Jibai;
                 }
                 else
                 {
-                    return HokenSyuConst.Jihi;
+                    return Domain.Constant.HokenSyu.Jihi;
                 }
             }
         }

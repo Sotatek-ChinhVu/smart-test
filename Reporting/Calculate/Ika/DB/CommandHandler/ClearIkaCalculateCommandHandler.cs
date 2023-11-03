@@ -7,6 +7,7 @@ namespace Reporting.Calculate.Ika.DB.CommandHandler
 {
     public class ClearIkaCalculateCommandHandler
     {
+        private readonly string _moduleName = ModuleNameConst.EmrCalculateIka;
         private readonly TenantDataContext _tenantDataContext;
         private readonly IEmrLogger _emrLogger;
         public ClearIkaCalculateCommandHandler(TenantDataContext tenantDataContext, IEmrLogger emrLogger)

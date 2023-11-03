@@ -1734,7 +1734,7 @@ namespace Reporting.Calculate.Ika.ViewModels
             //    _common.Wrk.AppendNewWrkSinKoui(_common.syosaiPid, _common.syosaiHokenId, ReceSyukeisaki.Saisin, cdKbn: _common.GetCdKbn(_common.syosaiSanteiKbn, "A"));
             //}
             string syukeisaki = ReceSyukeisaki.Saisin;
-            if (_common.hokenKbn == HokenSyuConst.Jibai)
+            if (_common.hokenKbn == HokenSyu.Jibai)
             {
                 syukeisaki = ReceSyukeisaki.SyosaiSonota;
             }
@@ -3041,7 +3041,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                 }
 
                 // 集計先を調整
-                if (_common.hokenKbn == HokenSyuConst.After)
+                if (_common.hokenKbn == HokenSyu.After)
                 {
                     // アフターケアの場合は、再診欄に集計
                     syukeiSaki = ReceSyukeisaki.Saisin;
@@ -3153,7 +3153,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                 bool bSantei = true;
 
                 // 労災アフターケアのときは算定不可
-                if (_common.hokenKbn == HokenSyuConst.After)
+                if (_common.hokenKbn == HokenSyu.After)
                 {
                     bSantei = false;
                 }

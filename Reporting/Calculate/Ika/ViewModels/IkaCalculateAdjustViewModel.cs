@@ -5795,7 +5795,7 @@ namespace Reporting.Calculate.Ika.ViewModels
 
         private void Marume()
         {
-            if (_common.hokenKbn == HokenSyuConst.Kenpo && _common.syosaiHokenKbn == HokenKbn.Kokho)
+            if (_common.hokenKbn == HokenSyu.Kenpo && _common.syosaiHokenKbn == HokenKbn.Kokho)
             {
                 // 国保
                 if (_systemConfigProvider.GetKensaMarumeBuntenKokuho() == 1)
