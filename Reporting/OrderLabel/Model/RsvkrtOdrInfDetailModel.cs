@@ -1,4 +1,5 @@
-﻿using Domain.Models.OrdInf;
+﻿using Domain.Constant;
+using Domain.Models.OrdInf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -759,7 +760,7 @@ namespace Reporting.OrderLabel.Model
             {
                 if (string.IsNullOrEmpty(FontColor))
                 {
-                    return "#" + FontColorConst.Black;
+                    return "#" + FontColorConst.BLACK;
                 }
                 return "#" + FontColor;
             }

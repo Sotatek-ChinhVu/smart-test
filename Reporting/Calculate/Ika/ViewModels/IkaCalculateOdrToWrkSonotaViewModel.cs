@@ -250,7 +250,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                                             // 救急医療管理加算
                                             _common.Wrk.wrkSinKouis.Last().SyukeiSaki = ReceSyukeisaki.EnKyukyu;
                                         }
-                                        else if (_common.IsRosai && _common.hokenKbn != HokenSyu.After &&
+                                        else if (_common.IsRosai && _common.hokenKbn != HokenSyuConst.After &&
                                             (odrDtl.IsEnKoumoku || odrDtl.IsRosaiEnKoumoku || odrDtl.SyukeiSaki == "A18"))
                                         {
                                             _common.Wrk.wrkSinKouis.Last().SyukeiSaki = ReceSyukeisaki.EnSonota;
@@ -370,7 +370,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                         commentSkipFlg = (firstItem != 1);
 
                         syukeisaki = ReceSyukeisaki.SonotaYakuzai;
-                        if (_common.hokenKbn == HokenSyu.After || _common.IsJibaiRosai)
+                        if (_common.hokenKbn == HokenSyuConst.After || _common.IsJibaiRosai)
                         {
                             // アフターケア、自賠労災準拠の場合はその他
                             syukeisaki = ReceSyukeisaki.Sonota;
@@ -401,7 +401,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                         commentSkipFlg = (firstItem != 2);
 
                         syukeisaki = ReceSyukeisaki.SonotaYakuzai;
-                        if (_common.hokenKbn == HokenSyu.After || _common.IsJibaiRosai)
+                        if (_common.hokenKbn == HokenSyuConst.After || _common.IsJibaiRosai)
                         {
                             // アフターケア、自賠労災準拠の場合はその他
                             syukeisaki = ReceSyukeisaki.Sonota;
@@ -418,7 +418,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                             else if (odrDtl.IsTorCommentItem(commentSkipFlg))
                             {
                                 // 特材・コメント
-                                if (_common.IsRosai && _common.hokenKbn != HokenSyu.After && (odrDtl.IsEnKoumoku || odrDtl.IsRosaiEnKoumoku))
+                                if (_common.IsRosai && _common.hokenKbn != HokenSyuConst.After && (odrDtl.IsEnKoumoku || odrDtl.IsRosaiEnKoumoku))
                                 {
                                     _common.Wrk.AppendOrUpdateKoui(odrInf.HokenPid, odrInf.HokenId, ReceSyukeisaki.EnSonota, cdKbn, ref firstSinryoKoui);
                                 }
@@ -451,10 +451,10 @@ namespace Reporting.Calculate.Ika.ViewModels
                     ItemCdConst.SonotaRosaiDensikaCancel
                 };
 
-            if ((_common.hokenKbn == HokenSyu.Rosai &&
+            if ((_common.hokenKbn == HokenSyuConst.Rosai &&
                     _systemConfigProvider.GetRousaiRecedenLicense() == 1 &&
                     CIUtil.StrToIntDef(_systemConfigProvider.GetRousaiRecedenStartYm(), 999999) <= (_common.sinDate / 100)) ||
-                (_common.hokenKbn == HokenSyu.After &&
+                (_common.hokenKbn == HokenSyuConst.After &&
                     _systemConfigProvider.GetAfterCareRecedenLicense() == 1 &&
                     CIUtil.StrToIntDef(_systemConfigProvider.GetAfterCareRecedenStartYm(), 999999) <= (_common.sinDate / 100)))
             {
@@ -471,7 +471,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                             int checkFrom = _common.SinFirstDateOfMonth;
                             int checkTo = _common.SinLastDateOfMonth;
 
-                            if (_common.hokenKbn == HokenSyu.After)
+                            if (_common.hokenKbn == HokenSyuConst.After)
                             {
                                 // アフターケアの場合、1日1回
                                 checkFrom = _common.sinDate;
