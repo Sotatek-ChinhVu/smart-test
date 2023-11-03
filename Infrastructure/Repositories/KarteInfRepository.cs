@@ -206,6 +206,7 @@ namespace Infrastructure.Repositories
 
         private void UpdateSeqNoKarteFile(int hpId, int userId, long ptId, long raiinNo, List<FileInfModel> fileInfModelList)
         {
+            var dateTimeUpdate = CIUtil.GetJapanDateTimeNow();
             var fileNameList = fileInfModelList.Select(item => item.LinkFile).Distinct().ToList();
             int position = 1;
             var lastSeqNo = GetLastSeqNo(hpId, ptId, raiinNo);
@@ -259,8 +260,8 @@ namespace Infrastructure.Repositories
                     convertItem.SeqNo = lastSeqNo + 1;
                     convertItem.Position = position;
                     convertItem.KarteKbn = oldItemConvert.KarteKbn;
-                    convertItem.CreateDate = DateTime.SpecifyKind(oldItemConvert.CreateDate, DateTimeKind.Utc);
-                    convertItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    convertItem.CreateDate = dateTimeUpdate;
+                    convertItem.UpdateDate = dateTimeUpdate;
                     convertItem.UpdateId = userId;
                     TrackingDataContext.KarteImgInfs.Add(convertItem);
                     position++;
@@ -289,9 +290,9 @@ namespace Infrastructure.Repositories
                 newItem.SeqNo = lastSeqNo + 1;
                 newItem.Position = position;
                 newItem.KarteKbn = fileInf.IsSchema ? 1 : 0;
-                newItem.CreateDate = CIUtil.GetJapanDateTimeNow();
+                newItem.CreateDate = dateTimeUpdate;
                 newItem.CreateId = userId;
-                newItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newItem.UpdateDate = dateTimeUpdate;
                 newItem.UpdateId = userId;
                 TrackingDataContext.KarteImgInfs.Add(newItem);
                 position++;
