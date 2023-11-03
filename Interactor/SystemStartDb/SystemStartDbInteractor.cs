@@ -20,7 +20,8 @@ namespace Interactor.SystemStartDbs
                 _systemStartDbRepository.DeleteAndUpdateData(inputData.DelDate);
 
                 return new SystemStartDbOutputData(true);
-            } catch(Exception ex)
+            }
+            catch (Exception)
             {
                 return new SystemStartDbOutputData(false);
             }

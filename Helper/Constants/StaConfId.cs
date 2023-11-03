@@ -1,6 +1,6 @@
 ﻿namespace Helper.Constants
 {
-    public class StaConfId
+    public static class StaConfId
     {
         #region 患者情報
         /// <summary>

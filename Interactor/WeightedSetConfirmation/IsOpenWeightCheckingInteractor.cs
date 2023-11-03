@@ -31,12 +31,9 @@ namespace Interactor.WeightedSetConfirmation
                         return new IsOpenWeightCheckingOutputData(IsOpenWeightCheckingStatus.Successful, true);
                     }
                 }
-                else if (weightCheckType == 2)
+                else if (weightCheckType == 2 && inputData.SinDate / 100 >= CIUtil.DateTimeToInt(CIUtil.IntToDate(inputData.LastDate).AddMonths(weightConfirmDays)) / 100)
                 {
-                    if (inputData.SinDate / 100 >= CIUtil.DateTimeToInt(CIUtil.IntToDate(inputData.LastDate).AddMonths(weightConfirmDays)) / 100)
-                    {
-                        return new IsOpenWeightCheckingOutputData(IsOpenWeightCheckingStatus.Successful, true);
-                    }
+                    return new IsOpenWeightCheckingOutputData(IsOpenWeightCheckingStatus.Successful, true);
                 }
                 return new IsOpenWeightCheckingOutputData(IsOpenWeightCheckingStatus.Successful, false);
             }

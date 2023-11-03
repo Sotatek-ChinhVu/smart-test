@@ -35,6 +35,7 @@ public class KensaMstModel
         ChildKensaMsts = new();
         TenItemModels = new();
         ParentKensaMst = new();
+        CenterName = string.Empty;
     }
 
     public KensaMstModel()
@@ -58,6 +59,7 @@ public class KensaMstModel
         ChildKensaMsts = new();
         TenItemModels = new();
         ParentKensaMst = new();
+        CenterName = string.Empty;
     }
 
     public KensaMstModel(string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, int digit, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, List<TenItemModel> tenMsts, List<TenItemModel> tenItemModels, List<KensaMstModel> kensaMstModels, object parentKensaMst, string centerName )
@@ -118,6 +120,7 @@ public class KensaMstModel
         ChildKensaMsts = new();
         TenItemModels = new();
         ParentKensaMst = new();
+        CenterName = string.Empty;
     }
 
     public void SetCenterName(string newCenterName)

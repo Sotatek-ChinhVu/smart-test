@@ -28,20 +28,19 @@ namespace Entity
             }
         }
 
-        //public class DefaultValueAttributeConvention : PrimitivePropertyAttributeConfigurationConvention<DefaultValueAttribute>
-        //{
-        //    public override void Apply(ConventionPrimitivePropertyConfiguration configuration, DefaultValueAttribute attribute)
-        //    {
-        //        configuration.HasColumnAnnotation("DefaultValue", attribute.DefaultValue);
-        //    }
-        //}
-
-        //public class DefaultValueSqlAttributeConvention : PrimitivePropertyAttributeConfigurationConvention<DefaultValueSqlAttribute>
-        //{
-        //    public override void Apply(ConventionPrimitivePropertyConfiguration configuration, DefaultValueSqlAttribute attribute)
-        //    {
-        //        configuration.HasColumnAnnotation("DefaultValueSql", attribute.DefaultValue);
-        //    }
-        //}
+        ///public class DefaultValueAttributeConvention : PrimitivePropertyAttributeConfigurationConvention<DefaultValueAttribute>
+        ///{
+        ///    public override void Apply(ConventionPrimitivePropertyConfiguration configuration, DefaultValueAttribute attribute)
+        ///    {
+        ///        configuration.HasColumnAnnotation("DefaultValue", attribute.DefaultValue);
+        ///    }
+        ///}
+        ///public class DefaultValueSqlAttributeConvention : PrimitivePropertyAttributeConfigurationConvention<DefaultValueSqlAttribute>
+        ///{
+        ///    public override void Apply(ConventionPrimitivePropertyConfiguration configuration, DefaultValueSqlAttribute attribute)
+        ///    {
+        ///        configuration.HasColumnAnnotation("DefaultValueSql", attribute.DefaultValue);
+        ///    }
+        ///}
     }
 }
