@@ -3,6 +3,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.StickyNote;
 using UseCase.StickyNote;
 
+namespace EmrCloudApi.Presenters.StickyNote;
 public class GetStickyNotePresenter : IGetStickyNoteOutputPort
 {
     public Response<GetStickyNoteResponse> Result { get; private set; } = default!;

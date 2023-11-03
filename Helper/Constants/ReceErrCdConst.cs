@@ -1,4 +1,6 @@
-﻿namespace Helper.Constants;
+﻿using System.Collections.Immutable;
+
+namespace Helper.Constants;
 
 public static class ReceErrCdConst
 {
@@ -92,7 +94,7 @@ public static class ReceErrCdConst
     public const string BuiOrderByomeiErrCd = "E2011";
     public const string BuiOrderByomeiErrMsg = "部位が一致する病名がありません。";
 
-    public static string TokuzaiItemCd = "777770000";
+    public const string TokuzaiItemCd = "777770000";
 
     public const string ByomeiBuiOrderByomeiChekkuErrCd = "E2010";
     public const string ByomeiBuiOrderByomeiChekkuErrMsg = "オーダー部位と一致する病名がありません。";
@@ -102,7 +104,7 @@ public static class ReceErrCdConst
 
     public const string DuplicateSyusyokuByomeiCheckErrCd = "E2013";
 
-    public static List<string> IsFirstVisitCd = new List<string>()
+    public static readonly ImmutableList<string> IsFirstVisitCd = new List<string>()
         {
             "101110010",   //初診料
             //"101110040", //初診（同一日２科目）
@@ -112,9 +114,9 @@ public static class ReceErrCdConst
             "113003710",   //小児科外来診療料（処方箋を交付しない）初診時
             "113019710",   //小児かかりつけ診療料（処方箋を交付）初診時
             "113019910"    //小児かかりつけ診療料（処方箋を交付しない）初診時
-        };
+        }.ToImmutableList();
 
-    public static List<string> IsReVisitCd = new List<string>()
+    public static readonly ImmutableList<string> IsReVisitCd = new List<string>()
         {
             "101120010",   //再診料
             "101120040",   //再診料（同一日２科目）
@@ -135,5 +137,5 @@ public static class ReceErrCdConst
             "113003810",   //小児科外来診療料（処方箋を交付しない）再診時
             "113019810",   //小児かかりつけ診療料（処方箋を交付）再診時
             "113020010"    //小児かかりつけ診療料（処方箋を交付しない）再診時
-        };
+        }.ToImmutableList();
 }

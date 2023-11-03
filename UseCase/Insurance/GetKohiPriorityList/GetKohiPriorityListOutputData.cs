@@ -5,7 +5,7 @@ namespace UseCase.Insurance.GetKohiPriorityList
 {
     public class GetKohiPriorityListOutputData : IOutputData
     {
-        public List<KohiPriorityModel> Data { get; private set; } = new List<KohiPriorityModel>();
+        public List<KohiPriorityModel> Data { get; private set; }
 
         public GetKohiPriorityListStatus Status { get; private set; }
 

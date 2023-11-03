@@ -20,13 +20,13 @@ public class GetDataPrintDrugInfoInteractor : IGetDataPrintDrugInfoInputPort
             string htmlData = string.Empty;
             switch (inputData.Type)
             {
-                case TypeHTMLEnum.ShowProductInf:
+                case TypeHTMLObject.ShowProductInf:
                     htmlData = _getCommonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                     break;
-                case TypeHTMLEnum.ShowKanjaMuke:
+                case TypeHTMLObject.ShowKanjaMuke:
                     htmlData = _getCommonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                     break;
-                case TypeHTMLEnum.ShowMdbByomei:
+                case TypeHTMLObject.ShowMdbByomei:
                     htmlData = _getCommonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                     break;
             }

@@ -36,7 +36,7 @@ namespace Infrastructure.Services
             //_memoryCache.Set(_cacheKey, _userInfoList);
         }
 
-        public void Dispose()
+        public void DisposeSource()
         {
             _tenantProvider.DisposeDataContext();
         }

@@ -6,49 +6,48 @@ using Domain.Models.MstItem;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
 
-namespace Domain.Models.Accounting
+namespace Domain.Models.Accounting;
+
+public interface IAccountingRepository : IRepositoryBase
 {
-    public interface IAccountingRepository : IRepositoryBase
-    {
-        List<SyunoSeikyuModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> raiinNo, bool getAll = false);
+    List<SyunoSeikyuModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> listRaiinNo, bool getAll = false);
 
-        List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false, bool getAll = true);
+    List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false, bool getAll = true);
 
-        List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, List<int> listPatternId);
+    List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, List<int> listPatternId);
 
-        List<CalcLogModel> GetCalcLog(int hpId, long ptId, int sinDate, List<long> raiinNoList);
+    List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, bool isGetDeleted = false);
 
-        List<PtDiseaseModel> GetPtByoMeiList(int hpId, long ptId, int sinDate = 0);
+    List<CalcLogModel> GetCalcLog(int hpId, long ptId, int sinDate, List<long> raiinNoList);
 
-        List<PaymentMethodMstModel> GetListPaymentMethodMst(int hpId);
+    List<PtDiseaseModel> GetPtByoMeiList(int hpId, long ptId, int sinDate = 0);
 
-        List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> listKohiId);
+    List<PaymentMethodMstModel> GetListPaymentMethodMst(int hpId);
 
-        bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
-                                   int payType, string comment, bool isDisCharged, string kaikeiTime);
+    List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> kohiIds);
 
-        bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
+    bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
+                               int payType, string comment, bool isDisCharged, string kaikeiTime);
 
-        List<long> GetRaiinNos(int hpId, long ptId, long raiinNo, bool getAll = true);
+    bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
 
-        void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist);
+    List<long> GetRaiinNos(int hpId, long ptId, long raiinNo, bool getAll = true);
 
-        List<JihiSbtMstModel> GetListJihiSbtMst(int hpId);
+    void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist);
 
-        int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
+    List<JihiSbtMstModel> GetListJihiSbtMst(int hpId);
 
-        byte CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo);
+    int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
 
-        bool CheckSyunoStatus(int hpId, long raiinNo, long ptId);
+    byte CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo);
 
-        ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis);
+    bool CheckSyunoStatus(int hpId, long raiinNo, long ptId);
 
-        List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, bool isGetDeleted = false);
+    ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis);
 
-        List<AccountingFormMstModel> GetAccountingFormMstModels(int hpId);
+    List<AccountingFormMstModel> GetAccountingFormMstModels(int hpId);
 
-        void UpdateAccountingFormMst(int userId, List<AccountingFormMstModel> models);
+    void UpdateAccountingFormMst(int userId, List<AccountingFormMstModel> models);
 
-        List<HokenInfModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId);
-    }
+    List<HokenInfModel> GetListHokenSelect(int hpId, List<KaikeiInfModel> listKaikeiInf, long ptId);
 }

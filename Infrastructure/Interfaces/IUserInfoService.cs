@@ -8,6 +8,6 @@
 
         string GetFullNameById(int id);
 
-        void Dispose();
+        void DisposeSource();
     }
 }

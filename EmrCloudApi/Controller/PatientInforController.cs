@@ -127,7 +127,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
-        public ActionResult<Response<GetPatientCommentResponse>> GetList([FromQuery] GetPatientCommentRequest request)
+        public ActionResult<Response<GetPatientCommentResponse>> GetListPatientComment([FromQuery] GetPatientCommentRequest request)
         {
             var input = new GetPatientCommentInputData(HpId, request.PtId);
             var output = _bus.Handle(input);
@@ -185,7 +185,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost("SearchAdvanced")]
-        public ActionResult<Response<SearchPatientInfoAdvancedResponse>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
+        public ActionResult<Response<SearchPatientInfoAdvancedResponse>> SearchAdvanced([FromBody] SearchPatientInfoAdvancedRequest request)
         {
             var input = new SearchPatientInfoAdvancedInputData(ConvertToPatientAdvancedSearchInput(request), HpId, request.PageIndex, request.PageSize, request.SortData);
             var output = _bus.Handle(input);
@@ -1005,7 +1005,6 @@ namespace EmrCloudApi.Controller
                 _messenger.Register<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
                 _messenger.Register<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
                 HttpContext.Response.ContentType = "application/json";
-                HttpResponse response = HttpContext.Response;
 
                 var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError, _messenger);
                 var output = _bus.Handle(input);

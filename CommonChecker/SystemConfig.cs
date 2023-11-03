@@ -6,7 +6,7 @@ namespace CommonCheckers
 {
     public class SystemConfig : ISystemConfig
     {
-        private List<SystemConf> _systemConfigs = new List<SystemConf>();
+        private List<SystemConf> _systemConfigs = new();
         private static readonly object _threadsafelock = new object();
         private const int HpId = 1;
 
@@ -20,22 +20,22 @@ namespace CommonCheckers
 
         public void RefreshData()
         {
-            _systemConfigs = (List<SystemConf>)NoTrackingDataContext.SystemConfs.Where(p => p.HpId == 1).ToList();
+            _systemConfigs = NoTrackingDataContext.SystemConfs.Where(p => p.HpId == 1).ToList();
         }
 
         public double GetSettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
         {
             lock (_threadsafelock)
             {
-                SystemConf systemConf = new SystemConf();
+                SystemConf? systemConf;
                 if (!fromLastestDb)
                 {
-                    systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new SystemConf();
+                    systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
                 }
                 else
                 {
                     systemConf = NoTrackingDataContext.SystemConfs.Where(p =>
-                        p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
+                        p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault();
                 }
                 return systemConf != null ? systemConf.Val : defaultValue;
             }
@@ -45,15 +45,15 @@ namespace CommonCheckers
         {
             lock (_threadsafelock)
             {
-                SystemConf systemConf = new SystemConf();
+                SystemConf? systemConf;
                 if (!fromLastestDb)
                 {
-                    systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new SystemConf();
+                    systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
                 }
                 else
                 {
                     systemConf = NoTrackingDataContext.SystemConfs.Where(p =>
-                        p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
+                        p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault();
                 }
                 //Fix comment 894 (duong.vu)
                 //Return value in DB if and only if Param is not null or white space
@@ -70,7 +70,7 @@ namespace CommonCheckers
         {
             lock (_threadsafelock)
             {
-                List<SystemConf> systemConfs = new List<SystemConf>();
+                List<SystemConf> systemConfs;
                 if (!fromLastestDb)
                 {
                     systemConfs = _systemConfigs.FindAll(p => p.GrpCd == groupCd);
