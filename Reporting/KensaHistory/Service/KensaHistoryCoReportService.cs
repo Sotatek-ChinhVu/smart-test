@@ -72,6 +72,19 @@ namespace Reporting.KensaHistory.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
+            int i = 1;
+
+            foreach (var item in _setFieldData)
+            {
+                item.Value.Clear();
+                item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
+                i++;
+                if (i > pageIndex)
+                {
+                    break;
+                }
+            }
+
             return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
@@ -140,7 +153,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (listKensaInfDetailItemModels.Count < maxRow)
+                    if (listKensaInfDetailItemModels.Count <= maxRow)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -227,7 +240,7 @@ namespace Reporting.KensaHistory.Service
                 }
             }
 
-            totalPage = (listKensaInfDetailItemModels.Count / 30) + 1;
+            //totalPage = (listKensaInfDetailItemModels.Count / 30) + 1;
 
             return listKensaInfDetailItemModels.Count > 0;
         }
