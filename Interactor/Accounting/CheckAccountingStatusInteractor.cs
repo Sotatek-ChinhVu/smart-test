@@ -22,6 +22,7 @@ namespace Interactor.Accounting
             try
             {
                 var billUpdate = "今回請求額が更新されています。\n窓口精算画面を開きなおしてください。";
+                var validCredit = "今回入金額\nを入力してください。";
                 var verifyDate = "請求金額が変更されているため、以下の請求日の領収証を印刷できません";
                 var validAmount = "入金額が正しくありません。・入金額を確認し、再実行してください。";
                 var mbOk = "mbOk";
@@ -84,6 +85,7 @@ namespace Interactor.Accounting
                     }
 
                     var accDue = 0;
+                    var setting = _systemConfRepository.GetSettingValue(3020, 0, inputData.HpId) == 1;
                     if (!CheckCredit(accDue, inputData.SumAdjust, inputData.Credit, inputData.Wari))
                     {
                         return new CheckAccountingStatusOutputData(mbClose, validAmount, CheckAccountingStatus.ValidPaymentAmount);
@@ -158,7 +160,7 @@ namespace Interactor.Accounting
         private bool CheckCredit(int accDue, int sumAdjust, int credit, int wari, bool isDisCharge = false)
         {
             bool result = false;
-            if (isDisCharge)
+            if (isDisCharge == true)
             {
                 if (accDue == 0 || credit == 0)
                 {
@@ -217,16 +219,17 @@ namespace Interactor.Accounting
             int outNyukinGaku = 0;
             int outNyukinKbn = 0;
 
-            if (!isDisCharge)
+            if (isDisCharge == false)
             {
                 for (int i = 0; i < listSyunoSeikyu.Count; i++)
                 {
                     var item = listSyunoSeikyu[i];
                     int thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
                                      item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                    bool isLastRecord = i == listSyunoSeikyu.Count - 1;
 
                     ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
-                        out outNyukinKbn);
+                        out outNyukinKbn, isLastRecord);
 
                     allSeikyuGaku -= thisSeikyuGaku;
                 }
@@ -279,13 +282,21 @@ namespace Interactor.Accounting
         }
 
         private void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
-            out int outNyukinGaku, out int outNyukinKbn)
+            out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
         {
             int credit = adjustFutan + nyukinGaku;
 
             if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
             {
-                if (adjustFutan >= thisSeikyuGaku)
+                if (isLastRecord == true)
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else if (adjustFutan >= thisSeikyuGaku)
                 {
                     outAdjustFutan = thisSeikyuGaku;
                     outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
@@ -318,7 +329,7 @@ namespace Interactor.Accounting
         private void ParseEarmarkedValueUpdate(int thisSeikyuGaku, ref int nyukinGaku, out int outNyukinGaku,
             out int outNyukinKbn, bool isSettled = false)
         {
-            if (isSettled)
+            if (isSettled == true)
             {
                 outNyukinGaku = thisSeikyuGaku;
                 nyukinGaku -= outNyukinGaku;

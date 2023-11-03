@@ -2,7 +2,7 @@
 {
     public class RecedenCmtSelectModel
     {
-        private readonly List<int> cmtSbts = new List<int> { 20, 21, 22 };
+        private List<int> cmtSbts = new List<int> { 20, 21, 22 };
 
         public RecedenCmtSelectModel(int cmtSbt, string itemCd, string cmtCd, string commentName, int itemNo, int edaNo, string content, int sortNo, int condKbn, TenItemModel tenMst)
         {

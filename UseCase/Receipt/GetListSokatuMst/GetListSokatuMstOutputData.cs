@@ -13,6 +13,6 @@ namespace UseCase.Receipt.GetListSokatuMst
 
         public GetListSokatuMstStatus Status { get; private set; }
 
-        public List<SokatuMstModel> SokatuMstModels { get; private set; }
+        public List<SokatuMstModel> SokatuMstModels { get; private set; } = new List<SokatuMstModel>();
     }
 }

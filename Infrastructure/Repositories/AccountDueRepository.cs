@@ -143,41 +143,47 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                                                    && item.IsDeleted == 0
                                                    && listRaiinNo.Contains(item.RaiinNo))
                                .ToList();
-
-        var dateTimeNow = CIUtil.GetJapanDateTimeNow();
-
-        var originalList = listAccountDues;
-
-        List<long> raiinUpdateList = new();
-
-        foreach (var model in listAccountDues)
+        try
         {
-            // Update raiin status
-            var raiinInf = UpdateStatusRaiin(userId, dateTimeNow, model, raiinLists, kaikeiTime);
-            if (raiinInf != null)
-            {
-                raiinUpdateList.Add(raiinInf.RaiinNo);
-            }
+            var dateTimeNow = CIUtil.GetJapanDateTimeNow();
 
-            // Update left table SyunoSeikyu
-            var syunoSeikyu = UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
-            if (syunoSeikyu != null)
-            {
-                raiinUpdateList.Add(syunoSeikyu.RaiinNo);
-            }
+            var originalList = listAccountDues;
 
-            // Update right table SyunoNyukin
-            var syunoNyukin = UpdateSyunoNyukin(hpId, ptId, userId, dateTimeNow, model, nyukinLists);
-            if (syunoNyukin != null)
+            List<long> raiinUpdateList = new();
+
+            foreach (var model in listAccountDues)
             {
-                raiinUpdateList.Add(syunoNyukin.RaiinNo);
+                // Update raiin status
+                var raiinInf = UpdateStatusRaiin(userId, dateTimeNow, model, raiinLists, kaikeiTime);
+                if (raiinInf != null)
+                {
+                    raiinUpdateList.Add(raiinInf.RaiinNo);
+                }
+
+                // Update left table SyunoSeikyu
+                var syunoSeikyu = UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
+                if (syunoSeikyu != null)
+                {
+                    raiinUpdateList.Add(syunoSeikyu.RaiinNo);
+                }
+
+                // Update right table SyunoNyukin
+                var syunoNyukin = UpdateSyunoNyukin(hpId, ptId, userId, dateTimeNow, model, nyukinLists);
+                if (syunoNyukin != null)
+                {
+                    raiinUpdateList.Add(syunoNyukin.RaiinNo);
+                }
             }
+            raiinUpdateList = raiinUpdateList.Distinct().ToList();
+            TrackingDataContext.SaveChanges();
+
+            var result = CompareResultList(originalList, raiinUpdateList);
+            return result;
         }
-        raiinUpdateList = raiinUpdateList.Distinct().ToList();
-        TrackingDataContext.SaveChanges();
-
-        var result = CompareResultList(originalList, raiinUpdateList);
-        return result;
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     private List<AccountDueModel> CompareResultList(List<AccountDueModel> originalList, List<long> raiinNoUpdateList)

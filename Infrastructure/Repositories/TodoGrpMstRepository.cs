@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
         {
             var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Where(x => todoGrpNos.Distinct().Contains(x.TodoGrpNo)).ToList();
             var countTodoGrpNoIsDeleteds = countTodoGrpNos.Where(x => x.IsDeleted == 1);
-            return countTodoGrpNoIsDeleteds.Any();
+            return countTodoGrpNoIsDeleteds.Count() != 0;
         }
 
         public void Upsert(List<TodoGrpMstModel> upsertTodoGrpMstList, int userId, int hpId)

@@ -156,6 +156,19 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<UpdateVisitingLockResponse>>(presenter.Result);
         }
 
+        //[HttpGet(ApiPath.ExtendTtl)]
+        //public ActionResult<Response> ExtendTtl([FromQuery] LockRequest request)
+        //{
+        //    var input = new ExtendTtlLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+        //    var output = _bus.Handle(input);
+
+        //    var presenter = new ExtentTtlPresenter();
+        //    presenter.Complete(output);
+
+        //    return new ActionResult<Response>(presenter.Result);
+        //}
+
+
         [HttpPost(ApiPath.GetLockInfo)]
         public ActionResult<Response<GetLockInfoResponse>> GetList([FromBody] GetLockInfoRequest request)
         {

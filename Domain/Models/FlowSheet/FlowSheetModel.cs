@@ -11,13 +11,12 @@
             SyosaisinKbn = syosaisinKbn;
             Comment = comment;
             Status = status;
-            IsContainsFile = raiinListInfs.Any(r => r.RaiinListKbn == 4);
+            IsContainsFile = raiinListInfs.Any(r => r.RaiinListKbn == 4); ;
             IsNextOrder = isNextOrder;
             IsToDayOdr = isToDayOdr;
             RaiinListInfs = raiinListInfs;
             PtId = ptId;
             IsNotSaved = isNotSaved;
-            UketukeTime = string.Empty;
         }
 
         public FlowSheetModel(int sinDate, long ptId, long raiinNo, string uketukeTime, int syosaisinKbn, int status, bool isNextOrder)
@@ -30,7 +29,7 @@
             Status = status;
             FullLineOfKarte = string.Empty;
             Comment = string.Empty;
-            RaiinListInfs = new();
+            RaiinListInfs = new List<RaiinListInfModel>();
             IsNextOrder = isNextOrder;
             IsToDayOdr = !isNextOrder;
         }
@@ -45,7 +44,7 @@
             SyosaisinKbn = syosaisinKbn;
             Comment = comment;
             Status = status;
-            IsContainsFile = raiinListInfs.Any(r => r.RaiinListKbn == 4);
+            IsContainsFile = raiinListInfs.Any(r => r.RaiinListKbn == 4); ;
             IsNextOrder = isNextOrder;
             IsToDayOdr = isToDayOdr;
             RaiinListInfs = raiinListInfs;

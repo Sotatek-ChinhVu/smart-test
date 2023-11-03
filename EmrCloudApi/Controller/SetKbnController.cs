@@ -46,7 +46,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertSetKbnMstResponse>> Upsert([FromBody] UpsertSetKbnMstRequest request)
+        public ActionResult<Response<UpsertSetKbnMstResponse>> GetList([FromBody] UpsertSetKbnMstRequest request)
         {
             var input = new UpsertSetKbnMstInputData(request.SinDate, UserId, request.SetKbnMstItems);
             var output = _bus.Handle(input);

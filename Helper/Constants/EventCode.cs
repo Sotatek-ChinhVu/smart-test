@@ -1,6 +1,6 @@
 ﻿namespace Helper.Constants;
 
-public static class EventCode
+public class EventCode
 {
     public static string Madoguchi_Seisan { get; } = "03000000001";
     public static string Syuno_Seisan { get; } = "99004000001";
@@ -411,6 +411,10 @@ public static class EventCode
     /// 診療項目月別集計一覧表（ファイル出力）
     /// </summary>
     public const string SinItemMonthlyReportFileOutput = "97207000001";
+    /// <summary>
+    /// 行為項目別使用患者一覧
+    /// </summary>
+    //public const string ReportPtListByActionItem = "97301000000";
     /// <summary>
     /// 採用薬一覧（印刷）
     /// </summary>

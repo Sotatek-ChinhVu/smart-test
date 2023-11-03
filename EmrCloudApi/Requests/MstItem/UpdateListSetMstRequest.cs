@@ -1,8 +1,9 @@
 ﻿using Domain.Models.ListSetMst;
 
-namespace EmrCloudApi.Requests.ListSetMst;
-
-public class UpdateListSetMstRequest
+namespace EmrCloudApi.Requests.ListSetMst
 {
-    public List<ListSetMstUpdateModel> ListSetMsts { get; set; } = new();
+    public class UpdateListSetMstRequest
+    {
+        public List<ListSetMstUpdateModel> ListSetMsts { get; set; }
+    }
 }

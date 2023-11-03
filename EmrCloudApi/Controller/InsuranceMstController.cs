@@ -136,7 +136,7 @@ namespace EmrCloudApi.Controller
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost(ApiPath.Save + "OrderInsuranceMstList")]
-        public ActionResult<Response<SaveOrdInsuranceMstResponse>> SaveOrderInsuranceMstList([FromBody] SaveOrdInsuranceMstRequest request)
+        public ActionResult<Response<SaveOrdInsuranceMstResponse>> GetInfoCloneInsuranceMst([FromBody] SaveOrdInsuranceMstRequest request)
         {
             var input = new SaveOrdInsuranceMstInputData(request.Insurances.Select(x => new HokenMstModel(x.HokenNo, x.HokenEdaNo, x.StartDate, x.PrefNo, x.Sort)).ToList(),
                                                             HpId,

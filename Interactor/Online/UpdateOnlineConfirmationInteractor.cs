@@ -18,11 +18,12 @@ namespace Interactor.Online
     {
         private readonly IOnlineRepository _onlineRepository;
         private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
         public UpdateOnlineConfirmationInteractor(ITenantProvider tenantProvider, IOnlineRepository onlineRepository)
         {
             _onlineRepository = onlineRepository;
-            var _tenantProvider = tenantProvider;
+            _tenantProvider = tenantProvider;
             _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
@@ -131,7 +132,7 @@ namespace Interactor.Online
             var listOnlineConfirmationHistoryModel = new List<OnlineConfirmationHistoryModel>();
 
             // Message Header Convert
-            var messageHeaderRes = responseFile.MessageHeader ?? new();
+            var messageHeaderRes = responseFile.MessageHeader;
             var msgResponseInfoHeader = new ConfirmResultMessageHeader()
             {
                 ProcessExecutionTime = messageHeaderRes.ProcessExecutionTime,
@@ -167,7 +168,7 @@ namespace Interactor.Online
                 };
 
                 // 資格確認照会用情報
-                msgResponseInfoBody.QualificationConfirmSearchInfo = qCBIDMsgResponseInfo.QualificationConfirmSearchInfo == null ? new() : new ConfirmResultQualificationConfirmSearchInfo()
+                msgResponseInfoBody.QualificationConfirmSearchInfo = qCBIDMsgResponseInfo.QualificationConfirmSearchInfo == null ? null : new ConfirmResultQualificationConfirmSearchInfo()
                 {
                     InsurerNumber = qCBIDMsgResponseInfo.QualificationConfirmSearchInfo.InsurerNumber,
                     InsuredCardSymbol = qCBIDMsgResponseInfo.QualificationConfirmSearchInfo.InsuredCardSymbol,
@@ -207,12 +208,12 @@ namespace Interactor.Online
                         PreschoolClassification = resultOfQualificationConfirmationRes.PreschoolClassification,
                         ReasonOfLoss = resultOfQualificationConfirmationRes.ReasonOfLoss,
                         InsurerName = resultOfQualificationConfirmationRes.InsurerName,
-                        ElderlyRecipientCertificateInfo = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo == null ? new() : new ConfirmResultElderlyRecipientCertificateInfo()
+                        ElderlyRecipientCertificateInfo = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo == null ? null : new ConfirmResultElderlyRecipientCertificateInfo()
                         {
-                            ElderlyRecipientCertificateDate = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo?.ElderlyRecipientCertificateDate ?? string.Empty,
-                            ElderlyRecipientContributionRatio = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo?.ElderlyRecipientContributionRatio ?? string.Empty,
-                            ElderlyRecipientValidStartDate = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo?.ElderlyRecipientValidStartDate ?? string.Empty,
-                            ElderlyRecipientValidEndDate = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo?.ElderlyRecipientValidEndDate ?? string.Empty,
+                            ElderlyRecipientCertificateDate = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo?.ElderlyRecipientCertificateDate,
+                            ElderlyRecipientContributionRatio = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo.ElderlyRecipientContributionRatio,
+                            ElderlyRecipientValidStartDate = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo.ElderlyRecipientValidStartDate,
+                            ElderlyRecipientValidEndDate = resultOfQualificationConfirmationRes.ElderlyRecipientCertificateInfo.ElderlyRecipientValidEndDate,
                         },
                         LimitApplicationCertificateChanged = resultOfQualificationConfirmationRes.LimitApplicationCertificateChanged,
                         ReferenceNumber = qCBIDMsgResponseInfo.ReferenceNumber,

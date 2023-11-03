@@ -7,6 +7,6 @@
             ColumnNames = columnNames;
         }
 
-        public List<GetColumnNameItem> ColumnNames { get; private set; }
+        public List<GetColumnNameItem> ColumnNames { get; private set; } = new();
     }
 }

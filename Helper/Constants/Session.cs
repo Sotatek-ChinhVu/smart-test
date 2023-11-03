@@ -1,7 +1,7 @@
 ﻿namespace Helper.Constants;
 
-public static class Session
+public class Session
 {
-    public const int HospitalID = 1;
-    public const int UserID = 1;
+    public static int HospitalID = 1;
+    public static int UserID = 1;
 }

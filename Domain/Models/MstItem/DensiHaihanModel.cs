@@ -61,7 +61,7 @@ namespace Domain.Models.MstItem
 
         public bool IsAddNew
         {
-            get => Id == 0 && !IsDeleted;
+            get => Id == 0 && IsDeleted == false;
         }
 
         public string ItemCd2 { get; private set; }
@@ -81,7 +81,7 @@ namespace Domain.Models.MstItem
         /// </summary>
         public int HaihanKbn { get; private set; }
 
-
+        
         public int SpJyoken { get; private set; }
 
         /// <summary>
@@ -104,21 +104,7 @@ namespace Domain.Models.MstItem
 
         public string EndDateBinding
         {
-            get
-            {
-                if (EndDate == 99999999)
-                {
-                    if (!CheckDefaultValue())
-                    {
-                        return "9999/99/99";
-                    }
-                }
-                else
-                {
-                    return CIUtil.SDateToShowSDate(EndDate);
-                }
-                return string.Empty;
-            }
+            get => EndDate == 99999999 ? (CheckDefaultValue() ? "" : "9999/99/99") : CIUtil.SDateToShowSDate(EndDate);
         }
 
         public void SetEndDate(int value)
@@ -169,7 +155,7 @@ namespace Domain.Models.MstItem
             get => _termSbtDict[TermSbt];
         }
 
-        private readonly Dictionary<int, string> _termSbtDict = new Dictionary<int, string>()
+        private Dictionary<int, string> _termSbtDict = new Dictionary<int, string>()
         {
             { 0, "未指定" },
             { 1, "来院" },
@@ -220,7 +206,7 @@ namespace Domain.Models.MstItem
         /// </summary>
         public bool IsModified { get; private set; }
 
-
+        
         public bool IsDeleted { get; private set; }
 
         public bool CheckDefaultValue()

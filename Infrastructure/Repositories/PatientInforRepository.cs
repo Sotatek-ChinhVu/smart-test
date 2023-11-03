@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false, List<int>? listStatus = null)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo , bool isShowKyuSeiName = false, List<int>? listStatus = null)
         {
             var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
@@ -1003,35 +1003,42 @@ namespace Infrastructure.Repositories
 
         public List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo)
         {
-            string digit1 = futansyaNo.Substring(0, 1);
-            string digit2 = futansyaNo.Substring(1, 1);
-            var listDefHoken = NoTrackingDataContext.DefHokenNos
-            .Where(x => x.HpId == hpId
-                        && x.Digit1.Equals(digit1)
-                        && x.Digit2.Equals(digit2)
-                        && x.IsDeleted == 0)
-            .OrderBy(entity => entity.HpId)
-            .ThenBy(entity => entity.HokenNo)
-            .ThenBy(entity => entity.HokenEdaNo)
-            .ThenBy(entity => entity.SortNo)
-            .Select(x => new DefHokenNoModel(
-                             x.Digit1,
-                             x.Digit2,
-                             x.Digit3 ?? string.Empty,
-                             x.Digit4 ?? string.Empty,
-                             x.Digit5 ?? string.Empty,
-                             x.Digit6 ?? string.Empty,
-                             x.Digit7 ?? string.Empty,
-                             x.Digit8 ?? string.Empty,
-                             x.SeqNo,
-                             x.HokenNo,
-                             x.HokenEdaNo,
-                             x.SortNo,
-                             x.IsDeleted
-                ))
-            .ToList();
+            try
+            {
+                string digit1 = futansyaNo.Substring(0, 1);
+                string digit2 = futansyaNo.Substring(1, 1);
+                var listDefHoken = NoTrackingDataContext.DefHokenNos
+                .Where(x => x.HpId == hpId
+                            && x.Digit1.Equals(digit1)
+                            && x.Digit2.Equals(digit2)
+                            && x.IsDeleted == 0)
+                .OrderBy(entity => entity.HpId)
+                .ThenBy(entity => entity.HokenNo)
+                .ThenBy(entity => entity.HokenEdaNo)
+                .ThenBy(entity => entity.SortNo)
+                .Select(x => new DefHokenNoModel(
+                                 x.Digit1,
+                                 x.Digit2,
+                                 x.Digit3 ?? string.Empty,
+                                 x.Digit4 ?? string.Empty,
+                                 x.Digit5 ?? string.Empty,
+                                 x.Digit6 ?? string.Empty,
+                                 x.Digit7 ?? string.Empty,
+                                 x.Digit8 ?? string.Empty,
+                                 x.SeqNo,
+                                 x.HokenNo,
+                                 x.HokenEdaNo,
+                                 x.SortNo,
+                                 x.IsDeleted
+                    ))
+                .ToList();
 
-            return listDefHoken;
+                return listDefHoken;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted)
@@ -1072,70 +1079,77 @@ namespace Infrastructure.Repositories
 
         public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId)
         {
-            int sortNo = 1;
-            foreach (var item in defHokenNoModels)
+            try
             {
-                var checkExistDefHoken = NoTrackingDataContext.DefHokenNos
-                    .FirstOrDefault(x => x.SeqNo == item.SeqNo && x.IsDeleted == 0);
-
-                //Add new if data does not exist
-                if (checkExistDefHoken == null)
+                int sortNo = 1;
+                foreach (var item in defHokenNoModels)
                 {
-                    TrackingDataContext.DefHokenNos.Add(new DefHokenNo()
+                    var checkExistDefHoken = NoTrackingDataContext.DefHokenNos
+                        .FirstOrDefault(x => x.SeqNo == item.SeqNo && x.IsDeleted == 0);
+
+                    //Add new if data does not exist
+                    if (checkExistDefHoken == null)
                     {
-                        HpId = hpId,
-                        Digit1 = item.Digit1,
-                        Digit2 = item.Digit2,
-                        Digit3 = item.Digit3,
-                        Digit4 = item.Digit4,
-                        Digit5 = item.Digit5,
-                        Digit6 = item.Digit6,
-                        Digit7 = item.Digit7,
-                        Digit8 = item.Digit8,
-                        HokenNo = item.HokenNo,
-                        HokenEdaNo = item.HokenEdaNo,
-                        IsDeleted = 0,
-                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        CreateId = userId,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId,
-                        SortNo = sortNo
-                    });
-                }
-                else if (checkExistDefHoken.Digit1 == item.Digit1 && checkExistDefHoken.Digit2 == item.Digit2
-                    && (checkExistDefHoken.Digit3 != item.Digit3 || checkExistDefHoken.Digit4 != item.Digit4 || checkExistDefHoken.Digit5 != item.Digit5
-                    || checkExistDefHoken.Digit6 != item.Digit6 || checkExistDefHoken.Digit7 != item.Digit7 || checkExistDefHoken.Digit8 != item.Digit8
-                    || checkExistDefHoken.SortNo != item.SortNo || item.IsDeleted == 1))
-                {
-                    TrackingDataContext.DefHokenNos.Update(new DefHokenNo()
+                        TrackingDataContext.DefHokenNos.Add(new DefHokenNo()
+                        {
+                            HpId = hpId,
+                            Digit1 = item.Digit1,
+                            Digit2 = item.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = 0,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                            SortNo = sortNo
+                        });
+                    }
+                    else if (checkExistDefHoken.Digit1 == item.Digit1 && checkExistDefHoken.Digit2 == item.Digit2
+                        && (checkExistDefHoken.Digit3 != item.Digit3 || checkExistDefHoken.Digit4 != item.Digit4 || checkExistDefHoken.Digit5 != item.Digit5
+                        || checkExistDefHoken.Digit6 != item.Digit6 || checkExistDefHoken.Digit7 != item.Digit7 || checkExistDefHoken.Digit8 != item.Digit8
+                        || checkExistDefHoken.SortNo != item.SortNo || item.IsDeleted == 1))
                     {
-                        HpId = hpId,
-                        Digit1 = checkExistDefHoken.Digit1,
-                        Digit2 = checkExistDefHoken.Digit2,
-                        Digit3 = item.Digit3,
-                        Digit4 = item.Digit4,
-                        Digit5 = item.Digit5,
-                        Digit6 = item.Digit6,
-                        Digit7 = item.Digit7,
-                        Digit8 = item.Digit8,
-                        SeqNo = checkExistDefHoken.SeqNo,
-                        HokenNo = item.HokenNo,
-                        HokenEdaNo = item.HokenEdaNo,
-                        IsDeleted = item.IsDeleted,
-                        CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
-                        CreateId = checkExistDefHoken.CreateId,
-                        CreateMachine = checkExistDefHoken.CreateMachine,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId,
-                        SortNo = sortNo
-                    });
+                        TrackingDataContext.DefHokenNos.Update(new DefHokenNo()
+                        {
+                            HpId = hpId,
+                            Digit1 = checkExistDefHoken.Digit1,
+                            Digit2 = checkExistDefHoken.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            SeqNo = checkExistDefHoken.SeqNo,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = item.IsDeleted,
+                            CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
+                            CreateId = checkExistDefHoken.CreateId,
+                            CreateMachine = checkExistDefHoken.CreateMachine,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                            SortNo = sortNo
+                        });
+                    }
+
+                    sortNo++;
                 }
 
-                sortNo++;
+                TrackingDataContext.SaveChanges();
+                return true;
             }
-
-            TrackingDataContext.SaveChanges();
-            return true;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public (bool resultSave, long ptId) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
@@ -1169,6 +1183,7 @@ namespace Infrastructure.Repositories
             patientInsert.HpId = hpId;
 
             string querySql = $"INSERT INTO public.\"PT_INF\"\r\n(\"HP_ID\", \"PT_NUM\", \"KANA_NAME\", \"NAME\", \"SEX\", \"BIRTHDAY\", \"IS_DEAD\", \"DEATH_DATE\", \"HOME_POST\", \"HOME_ADDRESS1\", \"HOME_ADDRESS2\", \"TEL1\", \"TEL2\", \"MAIL\", \"SETAINUSI\", \"ZOKUGARA\", \"JOB\", \"RENRAKU_NAME\", \"RENRAKU_POST\", \"RENRAKU_ADDRESS1\", \"RENRAKU_ADDRESS2\", \"RENRAKU_TEL\", \"RENRAKU_MEMO\", \"OFFICE_NAME\", \"OFFICE_POST\", \"OFFICE_ADDRESS1\", \"OFFICE_ADDRESS2\", \"OFFICE_TEL\", \"OFFICE_MEMO\", \"IS_RYOSYO_DETAIL\", \"PRIMARY_DOCTOR\", \"IS_TESTER\", \"IS_DELETE\", \"CREATE_DATE\", \"CREATE_ID\", \"CREATE_MACHINE\", \"UPDATE_DATE\", \"UPDATE_ID\", \"UPDATE_MACHINE\", \"MAIN_HOKEN_PID\", \"LIMIT_CONS_FLG\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
+            //TrackingDataContext.PtInfs.Add(patientInsert);
             TrackingDataContext.Database.SetCommandTimeout(1200);
             bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
 
@@ -1394,7 +1409,7 @@ namespace Infrastructure.Repositories
             {
                 if (ptList != null && ptList.Any())
                 {
-                    var ptListDropNumberUnit = ptList.Select(pt => (pt / 10));
+                    var ptListDropNumberUnit = ptList.Select(pt => (long)(pt / 10));
                     var ptInfNoNext = ptList?.Where(pt => !ptListDropNumberUnit.Distinct().Contains(((pt / 10) + 1))).Select(pt => pt / 10).OrderBy(pt => pt).ToList();
 
                     if (ptInfNoNext != null && ptInfNoNext.Any())
@@ -1406,7 +1421,8 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
+                var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault
+                    (ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
                 if (ptNumExisting == null)
                 {
                     return startValue;
@@ -2291,9 +2307,12 @@ namespace Infrastructure.Repositories
         public bool IsRyosyoFuyou(int hpId, long ptId)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
-            if (ptInf != null && ptInf.IsRyosyoDetail == 0)
+            if (ptInf != null)
             {
-                return true;
+                if (ptInf.IsRyosyoDetail == 0)
+                {
+                    return true;
+                }
             }
             return false;
         }

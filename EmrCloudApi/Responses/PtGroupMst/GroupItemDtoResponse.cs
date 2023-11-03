@@ -15,11 +15,11 @@ namespace EmrCloudApi.Responses.PtGroupMst
 
         public int GrpId { get; private set; }
 
-        public string GrpCode { get; private set; }
+        public string GrpCode { get; private set; } = string.Empty;
 
         public long SeqNo { get; private set; }
 
-        public string GrpCodeName { get; private set; }
+        public string GrpCodeName { get; private set; } = string.Empty;
 
         public int SortNo { get; private set; }
     }

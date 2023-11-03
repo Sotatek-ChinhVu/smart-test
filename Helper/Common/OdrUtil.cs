@@ -744,6 +744,7 @@ namespace Helper.Common
             {
                 return string.Empty;
             }
+            cmtOpt.PadLeft(4, '0');
             string hours = CIUtil.Copy(cmtOpt, 1, 2);
             string min = CIUtil.Copy(cmtOpt, 3, 2);
             //Set _inputName with mark comment and raise this changed
@@ -769,6 +770,7 @@ namespace Helper.Common
                 return string.Empty;
             }
 
+            cmtOpt.PadLeft(6, '0');
             string day = CIUtil.Copy(cmtOpt, 1, 2);
             string hours = CIUtil.Copy(cmtOpt, 3, 2);
             string min = CIUtil.Copy(cmtOpt, 5, 2);

@@ -12,6 +12,6 @@ namespace UseCase.XmlDTD.OnlineConfirmHistoryData
     public class ConfirmResultResultList
     {
         [XmlElement(ElementName = "ResultOfQualificationConfirmation")]
-        public ConfirmResultResultOfQualificationConfirmation ResultOfQualificationConfirmation { get; set; } = new();
+        public ConfirmResultResultOfQualificationConfirmation ResultOfQualificationConfirmation { get; set; }
     }
 }
