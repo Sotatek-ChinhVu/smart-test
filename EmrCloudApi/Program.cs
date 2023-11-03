@@ -227,12 +227,12 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Method == "OPTIONS")
     {
-        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { (string)context.Request.Headers["Origin"] ?? string.Empty });
+        context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { context.Request?.Headers?["Origin"].ToString() ?? string.Empty });
         context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" });
         context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
         context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
         context.Response.Headers.Add("Access-Control-Max-Age", "7200");
-        context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] ?? string.Empty });
+        context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { context.Request?.Headers?["Login-Key"].ToString() ?? string.Empty });
         context.Response.StatusCode = 200;
         await next(context);
     }
@@ -245,8 +245,7 @@ app.Use(async (context, next) =>
             try
             {
                 await loggingHandler!.WriteLogStartAsync("Start request");
-
-                context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { (string)context.Request.Headers["Login-Key"] ?? string.Empty });
+                context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { context.Request?.Headers?["Login-Key"].ToString() ?? string.Empty });
                 await next(context);
             }
             catch (Exception ex)

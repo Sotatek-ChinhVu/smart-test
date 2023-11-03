@@ -7,8 +7,8 @@ namespace Helper.Messaging
     {
         private readonly List<MessageRegistration> _actions = new List<MessageRegistration>();
         
-        //private static Messenger? _instance;
-        //public static Messenger Instance => _instance ?? (_instance = new Messenger());
+        ///private static Messenger? _instance;
+        ///public static Messenger Instance => _instance ?? (_instance = new Messenger());
 
         public Messenger()
         {

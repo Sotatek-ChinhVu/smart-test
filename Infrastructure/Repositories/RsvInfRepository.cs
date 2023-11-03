@@ -31,7 +31,6 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
 
     private List<RsvInfModel> GetRsvInfoByRsvInf(int hpId, long ptId, int sinDate)
     {
-        List<RsvInfModel> result = new List<RsvInfModel>();
         var rsvInfs = NoTrackingDataContext.RsvInfs.Where(u => u.HpId == hpId &&
                                                                          u.PtId == ptId &&
                                                                          u.SinDate >= sinDate);
@@ -54,15 +53,13 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                         RsvInf = rsvInfItem,
                         Detail = listDetail.FirstOrDefault(),
                     };
-        result = query.Select(u => new RsvInfModel(u.RsvInf.HpId, u.RsvInf.RsvFrameId, u.RsvInf.SinDate, u.RsvInf.StartTime, u.RsvInf.RaiinNo, u.RsvInf.PtId, u.RsvInf.RsvSbt, u.RsvInf.TantoId, u.RsvInf.KaId, u.Detail?.RsvFrmMst.RsvFrameName ?? string.Empty, u.Detail?.RsvGrpMst.RsvGrpName ?? string.Empty)).OrderBy(r => r.SinDate).ToList();
+        var result = query.Select(u => new RsvInfModel(u.RsvInf.HpId, u.RsvInf.RsvFrameId, u.RsvInf.SinDate, u.RsvInf.StartTime, u.RsvInf.RaiinNo, u.RsvInf.PtId, u.RsvInf.RsvSbt, u.RsvInf.TantoId, u.RsvInf.KaId, u.Detail?.RsvFrmMst.RsvFrameName ?? string.Empty, u.Detail?.RsvGrpMst.RsvGrpName ?? string.Empty)).OrderBy(r => r.SinDate).ToList();
         return result;
     }
 
 
     public List<Tuple<long, int, string, string, string, string, string>> GetRsvInfoByRaiinInf(int hpId, long ptId, int sinDate)
     {
-        List<Tuple<long, int, string, string, string, string, string>> result = new();
-
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
                                                                                   u.PtId == ptId &&
                                                                                   u.SinDate >= sinDate &&
@@ -89,7 +86,7 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                         UserMst = listTanto.FirstOrDefault(),
                         raiinCmtInf = listRaiinCmt.FirstOrDefault()
                     };
-        result = query.Select(u => new Tuple<long, int, string, string, string, string, string>(u.RaiinInf.RaiinNo, u.RaiinInf.SinDate, u.RaiinInf.UketukeTime ?? string.Empty, u.KaMst?.KaSname ?? string.Empty, u.RaiinInf.YoyakuTime ?? string.Empty, u.UserMst?.Sname ?? string.Empty, u.raiinCmtInf?.Text ?? string.Empty)).OrderBy(r => r.Item2).ToList();
+        var result = query.Select(u => new Tuple<long, int, string, string, string, string, string>(u.RaiinInf.RaiinNo, u.RaiinInf.SinDate, u.RaiinInf.UketukeTime ?? string.Empty, u.KaMst?.KaSname ?? string.Empty, u.RaiinInf.YoyakuTime ?? string.Empty, u.UserMst?.Sname ?? string.Empty, u.raiinCmtInf?.Text ?? string.Empty)).OrderBy(r => r.Item2).ToList();
         return result;
     }
 

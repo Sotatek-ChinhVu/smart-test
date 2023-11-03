@@ -15,11 +15,9 @@ public class CheckExistFileNameInteractor : ICheckExistFileNameInputPort
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IHpInfRepository _hpInfRepository;
     private readonly IPatientInforRepository _patientInforRepository;
-    private readonly AmazonS3Options _options;
 
-    public CheckExistFileNameInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository)
+    public CheckExistFileNameInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository)
     {
-        _options = optionsAccessor.Value;
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _hpInfRepository = hpInfRepository;

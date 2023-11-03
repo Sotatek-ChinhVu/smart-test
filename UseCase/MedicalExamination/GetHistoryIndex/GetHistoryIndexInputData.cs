@@ -27,6 +27,6 @@ namespace UseCase.MedicalExamination.GetHistoryIndex
 
         public long RaiinNo { get; private set; }
 
-        public List<Tuple<long, bool>> RaiinNos { get; private set; } = new();
+        public List<Tuple<long, bool>> RaiinNos { get; private set; }
     }
 }

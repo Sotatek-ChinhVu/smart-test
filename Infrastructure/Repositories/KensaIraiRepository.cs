@@ -1047,10 +1047,10 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         List<long> ptIdList = new();
         List<long> seqNoList = new();
 
-        foreach (var item in kensaInfList)
+        foreach (var item in kensaInfList.Select(item => item.KensaInfDetailModelList).ToList())
         {
-            ptIdList.AddRange(item.KensaInfDetailModelList.Select(detail => detail.PtId).ToList());
-            seqNoList.AddRange(item.KensaInfDetailModelList.Select(detail => detail.SeqNo).ToList());
+            ptIdList.AddRange(item.Select(detail => detail.PtId).ToList());
+            seqNoList.AddRange(item.Select(detail => detail.SeqNo).ToList());
         }
         ptIdList = ptIdList.Distinct().ToList();
         seqNoList = seqNoList.Distinct().ToList();

@@ -551,8 +551,8 @@ namespace Infrastructure.Repositories
 
         public void DisposeSource()
         {
-            _userInfoService.Dispose();
-            _kaService.Dispose();
+            _userInfoService.DisposeSource();
+            _kaService.DisposeSource();
         }
 
         #region private method

@@ -1060,10 +1060,10 @@ namespace Infrastructure.Repositories
             {
                 if (!ptByomeiModels.Any(p => p.ByomeiMst.ByomeiCd == entity.ByomeiCd))
                 {
-                    ptByomeiModels.Add(new CheckedDiseaseModel(entity.ByomeiMst.SikkanCd, entity.ByomeiMst.NanbyoCd, entity.ByomeiMst.Byomei ?? string.Empty, 0, new PtDiseaseModel(
-                        entity.ByomeiMst.ByomeiCd, entity.ByomeiMst.Byomei ?? string.Empty, entity.ByomeiMst.SikkanCd, entity.ByomeiMst.Icd101 ?? string.Empty, entity.ByomeiMst.Icd1012013 ?? string.Empty,
-                        entity.ByomeiMst.Icd1012013 ?? string.Empty, entity.ByomeiMst.Icd1022013 ?? string.Empty
-                        ), new ByomeiMstModel(entity.ByomeiMst.ByomeiCd, string.Empty, entity.ByomeiMst.Sbyomei ?? string.Empty, entity.ByomeiMst.KanaName1 ?? string.Empty, string.Empty, entity.ByomeiMst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty, string.Empty, string.Empty, entity.ByomeiMst.IsAdopted == 1, entity.ByomeiMst.KanaName2 ?? string.Empty, entity.ByomeiMst.KanaName3 ?? string.Empty, entity.ByomeiMst.KanaName4 ?? string.Empty, entity.ByomeiMst.KanaName5 ?? string.Empty, entity.ByomeiMst.KanaName6 ?? string.Empty, entity.ByomeiMst.KanaName7 ?? string.Empty)));
+                    ptByomeiModels.Add(new CheckedDiseaseModel(entity.SikkanCd, entity.NanbyoCd, entity.Byomei ?? string.Empty, 0, new PtDiseaseModel(
+                        entity.ByomeiCd, entity.Byomei ?? string.Empty, entity.SikkanCd, entity.Icd101 ?? string.Empty, entity.Icd1012013 ?? string.Empty,
+                        entity.Icd1012013 ?? string.Empty, entity.Icd1022013 ?? string.Empty
+                        ), new ByomeiMstModel(entity.ByomeiCd, string.Empty, entity.Sbyomei ?? string.Empty, entity.KanaName1 ?? string.Empty, string.Empty, entity.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty, string.Empty, string.Empty, entity.IsAdopted == 1, entity.KanaName2 ?? string.Empty, entity.KanaName3 ?? string.Empty, entity.KanaName4 ?? string.Empty, entity.KanaName5 ?? string.Empty, entity.KanaName6 ?? string.Empty, entity.KanaName7 ?? string.Empty)));
                 }
             }
             return ptByomeiModels;
@@ -1071,8 +1071,8 @@ namespace Infrastructure.Repositories
 
         public List<(int, int, List<Tuple<string, string, long>>)> GetAutoAddOrders(int hpId, long ptId, int sinDate, List<Tuple<int, int, string>> addingOdrList, List<Tuple<int, int, string, double, int>> currentOdrList)
         {
-            var itemCds = new List<string>();
-            var autoItems = new List<(int, int, List<Tuple<string, string, long>>)>();
+            List<string> itemCds = new();
+            List<(int, int, List<Tuple<string, string, long>>)> autoItems = new();
 
             foreach (var itemCd in addingOdrList.Select(o => o.Item3))
             {
@@ -1080,7 +1080,8 @@ namespace Infrastructure.Repositories
             }
 
             var allSanteiGrpDetail = NoTrackingDataContext.SanteiGrpDetails
-                                    .Where(s => itemCds.Contains(s.ItemCd)).ToList();
+                                    .Where(s => itemCds.Contains(s.ItemCd))
+                                    .ToList();
             foreach (var addingOrd in addingOdrList)
             {
                 if (string.IsNullOrEmpty(addingOrd.Item3))

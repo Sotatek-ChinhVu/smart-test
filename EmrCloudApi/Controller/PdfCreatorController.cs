@@ -391,13 +391,13 @@ public class PdfCreatorController : ControllerBase
         string htmlData = string.Empty;
         switch (inputData.Type)
         {
-            case TypeHTMLEnum.ShowProductInf:
+            case TypeHTMLObject.ShowProductInf:
                 htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
-            case TypeHTMLEnum.ShowKanjaMuke:
+            case TypeHTMLObject.ShowKanjaMuke:
                 htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
-            case TypeHTMLEnum.ShowMdbByomei:
+            case TypeHTMLObject.ShowMdbByomei:
                 htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
         }

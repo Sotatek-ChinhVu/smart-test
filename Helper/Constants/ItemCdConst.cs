@@ -1,4 +1,6 @@
-﻿namespace Helper.Constants
+﻿using System.Collections.Immutable;
+
+namespace Helper.Constants
 {
     public static class ItemCdConst
     {
@@ -488,7 +490,7 @@
         public const string SaisinSurveillance = "112024570";
         #endregion
 
-        public static List<string> IryoJyohoKibanList = new List<string>()
+        public static readonly ImmutableList<string> IryoJyohoKibanList = new List<string>()
         {
             SyosinIryoJyohoKiban1,
             SyosinIryoJyohoKiban2,
@@ -496,7 +498,7 @@
             IgakuIryoJyohoKiban2,
             SaisinIryoJyohoKiban3,
             IgakuIryoJyohoKiban3
-        };
+        }.ToImmutableList();
 
         public const string IgakuIryoJyohoKiban1 = "113045070";
 
@@ -1375,8 +1377,8 @@
         #endregion
 
         #region ZAN
-        public static string ZanGigi = "@ZANGIGI";
-        public static string ZanTeiKyo = "@ZANTEIKYO";
+        public const string ZanGigi = "@ZANGIGI";
+        public const string ZanTeiKyo = "@ZANTEIKYO";
         #endregion
 
         #region 乳幼児育児栄養指導料
@@ -2184,7 +2186,7 @@
         /// </summary>
         public const string GazoSyoniTinseiMRI = "170036170";
 
-        public static List<string> GazoTaisatuei = new List<string>()
+        public static readonly ImmutableList<string> GazoTaisatuei = new List<string>()
         {
             // 他医撮影の写真診断（乳房撮影）
             GazoTaiNyu,
@@ -2204,8 +2206,9 @@
             GazoTaiKansetuZouei,
             // 他医撮影のコンピューター断層診断
             GazoTaiComputer
-        };
-        public static List<string> ZaitakuTokushu = new List<string>()
+        }.ToImmutableList();
+
+        public static readonly ImmutableList<string> ZaitakuTokushu = new List<string>()
         {
             ZaiOusin,
             ZaiOusinTokubetu,
@@ -2215,7 +2218,7 @@
             ZaiHoumon1_2DouIgai,
             ZaiHoumon2i,
             ZaiHoumon2ro
-        };
+        }.ToImmutableList();
         #endregion
 
         #region 投薬関連
@@ -3137,92 +3140,10 @@
 
         #endregion
 
-        /// <summary>
-        /// 妊婦加算
-        /// </summary>
-        public static List<string> ninpuKasanls =
-        new List<string>
-            {
-                ItemCdConst.SyosinNinpu,
-                ItemCdConst.SyosinNinpuJikangai,
-                ItemCdConst.SyosinNinpuKyujitu,
-                ItemCdConst.SyosinNinpuSinya,
-                ItemCdConst.SyosinNinpuJikangaiToku,
-                ItemCdConst.SyosinNinpuKyujituToku,
-                ItemCdConst.SyosinNinpuSinyaToku,
-                ItemCdConst.SyosinNinpuYakanToku,
-
-                ItemCdConst.SaisinNinpu,
-                ItemCdConst.SaisinNinpuJikangai,
-                ItemCdConst.SaisinNinpuKyujitu,
-                ItemCdConst.SaisinNinpuSinya,
-                ItemCdConst.SaisinNinpuJikangaiToku,
-                ItemCdConst.SaisinNinpuKyujituToku,
-                ItemCdConst.SaisinNinpuSinyaToku,
-                ItemCdConst.SaisinNinpuYakanToku,
-
-                ItemCdConst.IgakuTiikiHoukatuNinpuJikangai,
-                ItemCdConst.IgakuTiikiHoukatuNinpuJikangaiToku,
-                ItemCdConst.IgakuTiikiHoukatuNinpuKyujitu,
-                ItemCdConst.IgakuTiikiHoukatuNinpuSinya,
-                ItemCdConst.IgakuTiikiHoukatuNinpuSankaKyujitu,
-                ItemCdConst.IgakuTiikiHoukatuNinpuSankaSinya,
-                ItemCdConst.IgakuTiikiHoukatuNinpuSankaYakan,
-
-                ItemCdConst.IgakuNintiTiikiHoukatuNinpuJikangai,
-                ItemCdConst.IgakuNintiTiikiHoukatuNinpuJikangaiToku,
-                ItemCdConst.IgakuNintiTiikiHoukatuNinpuKyujitu,
-                ItemCdConst.IgakuNintiTiikiHoukatuNinpuSinya,
-                ItemCdConst.IgakuNintiTiikiHoukatuNinpuSankaKyujitu,
-                ItemCdConst.IgakuNintiTiikiHoukatuNinpuSankaSinya,
-                ItemCdConst.IgakuNintiTiikiHoukatuNinpuSankaYakan,
-            };
-
         public const string NicotineruTTS10 = "620003490";
         public const string NicotineruTTS20 = "620003491";
         public const string NicotineruTTS30 = "620003492";
         public const string Cyanpics0_5 = "620006776";
         public const string Cyanpics1 = "620006777";
-
-        /// <summary>
-        /// ニコチネル系薬剤
-        /// </summary>
-        public static List<string> nicotineruls =
-            new List<string>
-            {
-                ItemCdConst.NicotineruTTS10,
-                ItemCdConst.NicotineruTTS20,
-                ItemCdConst.NicotineruTTS30,
-                ItemCdConst.Cyanpics0_5,
-                ItemCdConst.Cyanpics1
-            };
-        /// <summary>
-        /// 同日再診チェック項目
-        /// </summary>
-        public static List<string> doujituSaisinCheckitemCds = new List<string>
-                    {
-                        ItemCdConst.Syosin,
-                        ItemCdConst.SyosinCorona,
-                        ItemCdConst.SyosinJouhou,
-                        ItemCdConst.Saisin,
-                        ItemCdConst.SaisinDenwa,
-                        ItemCdConst.SaisinDojitu,
-                        ItemCdConst.SaisinDenwaDojitu,
-                        ItemCdConst.SaisinDenwaKeizoku,
-                        ItemCdConst.ZaiHoumon1_1Dou,
-                        ItemCdConst.ZaiHoumon1_1DouIgai,
-                        ItemCdConst.ZaiHoumon1_2Dou,
-                        ItemCdConst.ZaiHoumon1_2DouIgai,
-                        ItemCdConst.ZaiHoumon2i,
-                        ItemCdConst.ZaiHoumon2ro,
-                        ItemCdConst.ZaiKaihouSido1,
-                        ItemCdConst.SyosinRousai,
-                        ItemCdConst.SaisinRousai,
-                        ItemCdConst.SaisinDenwaRousai,
-                        ItemCdConst.SaisinDojituRousai,
-                        ItemCdConst.SaisinDenwaDojituRousai,
-                        ItemCdConst.SaisinJouhou,
-                        ItemCdConst.SaisinJouhouDojitu
-                    };
     }
 }

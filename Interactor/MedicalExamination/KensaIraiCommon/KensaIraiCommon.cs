@@ -412,14 +412,14 @@ public class KensaIraiCommon : IKensaIraiCommon
 
             // detail生成
             List<Reporting.Kensalrai.Model.KensaIraiDetailModel> addKensaIraiDtls = new();
-            foreach (var kensaDtl in kensaInfDetailModels.FindAll(p => p.KeyNo == kensaInf.KeyNo))
+            foreach (var kensaDtl in kensaInfDetailModels.FindAll(p => p.KeyNo == kensaInf.KeyNo).Select(item => item.KensaMstModel).ToList())
             {
                 KensaMst kensaMst = new();
-                kensaMst.KensaItemCd = kensaDtl.KensaMstModel.KensaItemCd;
-                kensaMst.CenterItemCd1 = kensaDtl.KensaMstModel.CenterItemCd;
-                kensaMst.KensaKana = kensaDtl.KensaMstModel.KensaKana;
-                kensaMst.KensaName = kensaDtl.KensaMstModel.KensaName;
-                kensaMst.ContainerCd = kensaDtl.KensaMstModel.ContainerCd;
+                kensaMst.KensaItemCd = kensaDtl.KensaItemCd;
+                kensaMst.CenterItemCd1 = kensaDtl.CenterItemCd;
+                kensaMst.KensaKana = kensaDtl.KensaKana;
+                kensaMst.KensaName = kensaDtl.KensaName;
+                kensaMst.ContainerCd = kensaDtl.ContainerCd;
                 addKensaIraiDtls.Add(new Reporting.Kensalrai.Model.KensaIraiDetailModel(true, 0, 0, 0, seqNo, kensaMst));
             }
 

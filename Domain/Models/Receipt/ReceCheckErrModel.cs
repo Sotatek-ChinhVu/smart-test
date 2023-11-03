@@ -27,13 +27,6 @@ public class ReceCheckErrModel
         IsChecked = isChecked;
     }
 
-    public ReceCheckErrModel ChangeMessage(string message1, string message2)
-    {
-        Message1 = message1;
-        Message2 = message2;
-        return this;
-    }
-
     public ReceCheckErrModel(int hpId, long ptId, int sinYm, int hokenId, string errCd, int sinDate, string aCd, string bCd, string message1, string message2, int isChecked)
     {
         HpId = hpId;
@@ -47,6 +40,13 @@ public class ReceCheckErrModel
         Message1 = message1;
         Message2 = message2;
         IsChecked = isChecked;
+    }
+
+    public ReceCheckErrModel ChangeMessage(string message1, string message2)
+    {
+        Message1 = message1;
+        Message2 = message2;
+        return this;
     }
 
     public int HpId { get; private set; }

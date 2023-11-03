@@ -55,7 +55,7 @@
         /// </summary>
         public bool IsDeleted { get; private set; }
 
-        
+
         public string Name { get; private set; }
 
 
@@ -64,7 +64,7 @@
 
         public bool IsUpdated { get; private set; }
 
-        public string OriginBCd { get; set; } = string.Empty;
+        public string OriginBCd { get; private set; }
 
         public bool CheckDefaultValue()
         {

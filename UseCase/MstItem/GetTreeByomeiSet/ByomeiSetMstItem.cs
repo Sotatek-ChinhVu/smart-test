@@ -22,6 +22,7 @@ namespace UseCase.MstItem.GetTreeByomeiSet
         public ByomeiSetMstItem(string setName)
         {
             SetName = setName;
+            ByomeiCd = string.Empty;
         }
 
         public int GenerationId { get; private set; }

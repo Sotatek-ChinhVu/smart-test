@@ -11,12 +11,10 @@ namespace Interactor.User
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
         public SaveListUserMstInteractor(ITenantProvider tenantProvider, IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveListUserMstOutputData Handle(SaveListUserMstInputData inputData)
@@ -94,12 +92,12 @@ namespace Interactor.User
                     msg = "パスワード";
                     break;
                 }
-                else if (listJobValid.Count(job => job == user.JobCd) == 0)
+                else if (!listJobValid.Any(job => job == user.JobCd))
                 {
                     msg = "職種区分";
                     break;
                 }
-                else if (listKaId.Count(per => per == user.KaId) == 0)
+                else if (!listKaId.Any(per => per == user.KaId))
                 {
                     msg = "診療科コード";
                     break;
@@ -109,19 +107,16 @@ namespace Interactor.User
                     msg = "DateTime";
                     break;
                 }
-                else if (currentInfo.ManagerKbn != UserPermissionConst.AdminSystem)
+                else if (currentInfo.ManagerKbn != UserPermissionConst.AdminSystem && user.ManagerKbn == UserPermissionConst.AdminSystem)
                 {
-                    if (user.ManagerKbn == UserPermissionConst.AdminSystem)
-                    {
-                        msg = "権限がないのため、権限を'システム管理者'に更新できません。";
-                        break;
-                    }
+                    msg = "権限がないのため、権限を'システム管理者'に更新できません。";
+                    break;
                 }
             }
 
             if (msg.Contains(","))
             {
-                msgResult = string.Format(ErrorMessage.MessageType_mInp00060, msg.Substring(0, msg.IndexOf(",")));
+                msgResult = string.Format(ErrorMessage.MessageType_mInp00060, msg.Substring(0, msg.IndexOf(",")), string.Empty);
             }
             else if (msg.Contains("DateTime"))
             {

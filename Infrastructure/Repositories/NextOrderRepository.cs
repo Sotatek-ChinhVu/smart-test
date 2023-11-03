@@ -42,10 +42,7 @@ namespace Infrastructure.Repositories
                 prefixSuffixModels.AddRange(SyusyokuCdToList(item));
             }
 
-            var codeList = prefixSuffixModels.Select(c => c.Code);
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
-
-            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b, byomeiMstList)).ToList();
+            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b)).ToList();
 
             return byomeiModels;
         }
@@ -513,12 +510,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
+        private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei)
         {
-            var prefixSuffixModels = SyusyokuCdToList(byomei);
             //prefix and suffix
-            var codeList = prefixSuffixModels.Select(p => p.Code);
-            var byomeiMst = byomeiMsts.FirstOrDefault(item => codeList.Contains(item.ByomeiCd)) ?? new ByomeiMst();
             var byomeiMstMain = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(item => byomei.ByomeiCd == item.ByomeiCd) ?? new ByomeiMst();
 
             return new RsvkrtByomeiModel(

@@ -99,6 +99,12 @@ namespace Helper.Extension
             }
         }
 
+        public static string AsString(this String inputString)
+        {
+            if (string.IsNullOrEmpty(inputString)) return "";
+            return inputString;
+        }
+
         public static float AsFloat(this Object inputObject)
         {
             float result;
@@ -271,12 +277,6 @@ namespace Helper.Extension
         public static T CreateInstance<T>()
         {
             return (T)FormatterServices.GetUninitializedObject(typeof(T));
-        }
-
-        public static string AsString(this String inputString)
-        {
-            if (string.IsNullOrEmpty(inputString)) return "";
-            return inputString;
         }
     }
 

@@ -18,6 +18,13 @@ namespace Domain.Models.Lock
             UserId = userId;
         }
 
+        public LockPtInfModel()
+        {
+            FunctionName = string.Empty;
+            FunctionCd = string.Empty;
+            Machine = string.Empty;
+        }
+
         public long PtId { get; private set; }
 
         public string FunctionName { get; private set; }
@@ -44,6 +51,6 @@ namespace Domain.Models.Lock
             }
         }
 
-        public int UserId {  get; private set; }
+        public int UserId { get; private set; }
     }
 }
