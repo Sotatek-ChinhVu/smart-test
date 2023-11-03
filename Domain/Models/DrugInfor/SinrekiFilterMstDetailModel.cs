@@ -2,10 +2,11 @@
 
 public class SinrekiFilterMstDetailModel
 {
-    public SinrekiFilterMstDetailModel(int grpCd, string itemCd, int sortNo, bool isExclude)
+    public SinrekiFilterMstDetailModel(int grpCd, string itemCd, string itemName, int sortNo, bool isExclude)
     {
         GrpCd = grpCd;
         ItemCd = itemCd;
+        ItemName = itemName;
         SortNo = sortNo;
         IsExclude = isExclude;
     }
@@ -13,6 +14,8 @@ public class SinrekiFilterMstDetailModel
     public int GrpCd { get; private set; }
 
     public string ItemCd { get; private set; }
+
+    public string ItemName { get; private set; }
 
     public int SortNo { get; private set; }
 
