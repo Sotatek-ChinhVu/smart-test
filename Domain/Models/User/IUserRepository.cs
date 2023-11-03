@@ -34,7 +34,7 @@ namespace Domain.Models.User
 
         bool CheckExistedId(List<long> ids);
 
-        void Upsert(List<UserMstModel> upsertUserList, int userId);
+        bool Upsert(List<UserMstModel> upsertUserList, int userId);
 
         bool CheckExistedUserId(int userId);
 
