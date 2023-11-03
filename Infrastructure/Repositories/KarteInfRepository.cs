@@ -241,7 +241,7 @@ namespace Infrastructure.Repositories
 
             foreach (var item in listUpdateDateFile)
             {
-                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                item.UpdateDate = dateTimeUpdate;
                 item.UpdateId = userId;
             }
 
@@ -277,6 +277,8 @@ namespace Infrastructure.Repositories
                     oldItemUpdateSeqNo.RaiinNo = raiinNo;
                     oldItemUpdateSeqNo.SeqNo = lastSeqNo + 1;
                     oldItemUpdateSeqNo.Position = position;
+                    oldItemUpdateSeqNo.UpdateDate = dateTimeUpdate;
+                    oldItemUpdateSeqNo.CreateDate = dateTimeUpdate;
                     position++;
                     continue;
                 }
