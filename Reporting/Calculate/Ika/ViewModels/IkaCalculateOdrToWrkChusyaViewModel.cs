@@ -821,7 +821,7 @@ namespace Reporting.Calculate.Ika.ViewModels
             {
                 string syukeiSaki = ReceSyukeisaki.ChusyaSonota;
 
-                if(_common.hokenKbn == HokenSyu.Jibai)
+                if(_common.hokenKbn == HokenSyuConst.Jibai)
                 {
                     // 自賠の場合、注射薬剤に集計
                     syukeiSaki = ReceSyukeisaki.ChusyaYakuzai;
