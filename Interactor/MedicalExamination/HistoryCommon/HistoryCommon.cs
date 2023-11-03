@@ -9,7 +9,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Repositories;
 using Microsoft.Extensions.Options;
 using System.Text;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
@@ -67,7 +66,7 @@ public class HistoryCommon : IHistoryCommon
                         string.Empty,
                         1,
                         0,
-                        karteInfHistoryItems)
+                        karteInfHistoryItems.OrderBy(k => k.SeqNo).ToList())
                     };
 
             var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem
@@ -154,10 +153,6 @@ public class HistoryCommon : IHistoryCommon
         List<HistoryKarteOdrRaiinItem> filteredKaruteList = new();
         foreach (var history in historyKarteOdrRaiinItems)
         {
-            if (history.RaiinNo == 902550356 || history.RaiinNo == 902550392)
-            {
-                var temp = "abc";
-            }
             if (listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
             {
                 filteredKaruteList.Add(history);
@@ -450,14 +445,14 @@ public class HistoryCommon : IHistoryCommon
                     {
                         existGairaiKanriKasan = true;
                         var odrModel = new OdrInfHistoryItem(
-                                                        groupOdrInf.HpId,
-                                                        groupOdrInf.RaiinNo,
+                                                        groupOdrInf?.HpId ?? 0,
+                                                        groupOdrInf?.RaiinNo ?? 0,
                                                         0,
                                                         0,
-                                                        groupOdrInf.PtId,
-                                                        groupOdrInf.SinDate,
-                                                        groupOdrInf.HokenPid,
-                                                        sinkouiGairaiKanriKasan.SinKouiKbn,
+                                                        groupOdrInf?.PtId ?? 0,
+                                                        groupOdrInf?.SinDate ?? 0,
+                                                        groupOdrInf?.HokenPid ?? 0,
+                                                        sinkouiGairaiKanriKasan?.SinKouiKbn ?? 0,
                                                         string.Empty,
                                                         0,
                                                         0,
@@ -470,30 +465,30 @@ public class HistoryCommon : IHistoryCommon
                                                         0,
                                                         new() {
                                                             new OdrInfDetailItem(
-                                                                groupOdrInf.HpId,
-                                                                groupOdrInf.RaiinNo,
+                                                                groupOdrInf?.HpId??0,
+                                                                groupOdrInf ?.RaiinNo ?? 0,
                                                                 0,
                                                                 0,
                                                                 0,
-                                                                groupOdrInf.PtId,
-                                                                groupOdrInf.SinDate,
-                                                                sinkouiGairaiKanriKasan.SinKouiKbn,
-                                                                sinkouiGairaiKanriKasan.TenItemCd,
-                                                                sinkouiGairaiKanriKasan.Name,
-                                                                sinkouiGairaiKanriKasan.Name,
-                                                                0,
-                                                                string.Empty,
-                                                                0,
-                                                                0,
-                                                                sinkouiGairaiKanriKasan.KohatuKbn,
-                                                                0,
-                                                                0,
-                                                                sinkouiGairaiKanriKasan.DrugKbn,
+                                                                groupOdrInf ?.PtId ?? 0,
+                                                                groupOdrInf ?.SinDate ?? 0,
+                                                                sinkouiGairaiKanriKasan?.SinKouiKbn??0,
+                                                                sinkouiGairaiKanriKasan?.TenItemCd??string.Empty,
+                                                                sinkouiGairaiKanriKasan?.Name??string.Empty,
+                                                                sinkouiGairaiKanriKasan?.Name??string.Empty,
                                                                 0,
                                                                 string.Empty,
+                                                                0,
+                                                                0,
+                                                                sinkouiGairaiKanriKasan?.KohatuKbn??0,
+                                                                0,
+                                                                0,
+                                                                sinkouiGairaiKanriKasan?.DrugKbn??0,
+                                                                0,
+                                                                string.Empty,
                                                                 string.Empty,
                                                                 0,
-                                                                sinkouiGairaiKanriKasan.IpnNameCd,
+                                                                sinkouiGairaiKanriKasan?.IpnNameCd??string.Empty,
                                                                 string.Empty,
                                                                 0,
                                                                 DateTime.MinValue,
@@ -535,14 +530,14 @@ public class HistoryCommon : IHistoryCommon
                                                                 false
                                                         )
                                                         },
-                                                        createDate ?? sinkouiGairaiKanriKasan.CreateDate,
-                                                        createId ?? sinkouiGairaiKanriKasan.CreateId,
-                                                        createName ?? sinkouiGairaiKanriKasan.CreateName,
-                                                        createDate ?? sinkouiGairaiKanriKasan.CreateDate,
+                                                        createDate ?? sinkouiGairaiKanriKasan?.CreateDate ?? DateTime.MinValue,
+                                                        createId ?? sinkouiGairaiKanriKasan?.CreateId ?? 0,
+                                                        createName ?? sinkouiGairaiKanriKasan?.CreateName ?? string.Empty,
+                                                        createDate ?? sinkouiGairaiKanriKasan?.CreateDate ?? DateTime.MinValue,
                                                         0,
                                                         string.Empty,
                                                         string.Empty,
-                                                        createName ?? sinkouiGairaiKanriKasan.CreateName
+                                                        createName ?? sinkouiGairaiKanriKasan?.CreateName ?? string.Empty
                                                      );
 
                         List<OdrInfHistoryItem> listOdrInfHistoryItem = new()
@@ -563,7 +558,7 @@ public class HistoryCommon : IHistoryCommon
     public void ReleaseResources()
     {
         _historyOrderRepository.ReleaseResource();
-        _historyOrderRepository.Dispose();
+        _historyOrderRepository.DisposeSource();
         _insuranceRepository.ReleaseResource();
         _patientInforRepository.ReleaseResource();
         _userRepository.ReleaseResource();

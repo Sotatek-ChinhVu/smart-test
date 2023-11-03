@@ -119,7 +119,7 @@ namespace Interactor.MedicalExamination
                                 string.Empty,
                                 1,
                                 0,
-                                karteInfHistoryItems)
+                                karteInfHistoryItems.OrderBy(k => k.SeqNo).ToList())
                             },
                             history.ListKarteFile.Select(item => new FileInfOutputItem(item, host.ToString()))
                                                  .OrderBy(item => item.SeqNo)
@@ -140,7 +140,7 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _historyOrderRepository.ReleaseResource();
-                _historyOrderRepository.Dispose();
+                _historyOrderRepository.DisposeSource();
             }
         }
 

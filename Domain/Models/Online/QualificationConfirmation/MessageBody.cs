@@ -22,5 +22,5 @@ public class MessageBody
     public ResultList ResultList { get; set; } = new();
 
     [XmlElement(ElementName = "QualificationConfirmSearchInfo")]
-    public QualificationConfirmSearchInfo QualificationConfirmSearchInfo { get; set; }
+    public QualificationConfirmSearchInfo QualificationConfirmSearchInfo { get; set; } = new();
 }

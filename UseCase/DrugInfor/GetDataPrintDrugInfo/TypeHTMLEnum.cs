@@ -1,6 +1,6 @@
 ﻿namespace UseCase.DrugInfor.GetDataPrintDrugInfo;
 
-public enum TypeHTMLEnum : byte
+public enum TypeHTMLObject : byte
 {
     ShowProductInf = 0,
     ShowKanjaMuke = 1,

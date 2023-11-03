@@ -11,11 +11,9 @@ public class MoveTemplateToOtherCategoryInteractor : IMoveTemplateToOtherCategor
 {
     private readonly IDocumentRepository _documentRepository;
     private readonly IAmazonS3Service _amazonS3Service;
-    private readonly AmazonS3Options _options;
 
-    public MoveTemplateToOtherCategoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service)
+    public MoveTemplateToOtherCategoryInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service)
     {
-        _options = optionsAccessor.Value;
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
     }

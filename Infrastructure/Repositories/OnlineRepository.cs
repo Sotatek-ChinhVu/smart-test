@@ -101,7 +101,8 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
     public long UpdateRefNo(int hpId, long ptId)
     {
-        var nextRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList().FirstOrDefault();
+        var allRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList();
+        var nextRefNo = allRefNo?.FirstOrDefault() ?? 1;
         string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = {nextRefNo} WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
         TrackingDataContext.Database.ExecuteSqlRaw(updateQuery);
         return nextRefNo;
@@ -876,7 +877,8 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 {
                     int minFlg = confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
                     int respondedFlg = infConsFlg[flgIdx] == ' ' ? 0 : infConsFlg![flgIdx].AsInteger();
-                    int newFlg = respondedFlg == 0 ? minFlg : (minFlg > respondedFlg ? respondedFlg : minFlg);
+                    int compareFlg = minFlg > respondedFlg ? respondedFlg : minFlg;
+                    int newFlg = respondedFlg == 0 ? minFlg : compareFlg;
                     foreach (var raiinInf in confirmedFlgRaiinInfs)
                     {
                         raiinInf.InfoConsFlg = ReplaceAt(raiinInf.InfoConsFlg ?? string.Empty, flgIdx, flgToChar(newFlg));
@@ -891,6 +893,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     }
                 }
             }
+
             //Update PharmacistsInfoConsFlg
             UpdateFlgValue(0);
             //Update SpecificHealthCheckupsInfoConsFlg

@@ -21,7 +21,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
     private readonly IEventProcessorService _eventProcessorService;
     private readonly IReceptionRepository _receptionRepository;
     private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
     public SaveAccountDueListInteractor(IAccountDueRepository accountDueRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IEventProcessorService eventProcessorService, IReceptionRepository receptionRepository, ITenantProvider tenantProvider)
     {
@@ -31,8 +30,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         _patientInforRepository = patientInforRepository;
         _eventProcessorService = eventProcessorService;
         _receptionRepository = receptionRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveAccountDueListOutputData Handle(SaveAccountDueListInputData inputData)
