@@ -35,25 +35,33 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
     private string _defaultPicZai;
     public DrugInfoData SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
     {
-        basicInfo = _coDrugInfFinder.GetBasicInfo(hpId, ptId, sinDate);
-        var partItem = _coDrugInfFinder.GetDefaultPathPicture();
-        _defaultPicHou = partItem.PathPicHou;
-        _defaultPicZai = partItem.PathPicZai;
-
-        configType = (int)_systemConfRepository.GetSettingValue(92004, 1, hpId); // 0,1 - 1 Pic; 2 - 2 Pics; 3- No Pic
-
-        selectedFormType = (int)_systemConfRepository.GetSettingValue(92004, 17, hpId);
-
-        orderInfoModels = _coDrugInfFinder.GetOrderByRaiinNo(raiinNo);
-
-        foreach (var orderInfoModel in orderInfoModels)
+        try
         {
-            SetupPrintData(hpId, orderInfoModel);
+            basicInfo = _coDrugInfFinder.GetBasicInfo(hpId, ptId, sinDate);
+            var partItem = _coDrugInfFinder.GetDefaultPathPicture();
+            _defaultPicHou = partItem.PathPicHou;
+            _defaultPicZai = partItem.PathPicZai;
+
+            configType = (int)_systemConfRepository.GetSettingValue(92004, 1, hpId); // 0,1 - 1 Pic; 2 - 2 Pics; 3- No Pic
+
+            selectedFormType = (int)_systemConfRepository.GetSettingValue(92004, 17, hpId);
+
+            orderInfoModels = _coDrugInfFinder.GetOrderByRaiinNo(raiinNo);
+
+            foreach (var orderInfoModel in orderInfoModels)
+            {
+                SetupPrintData(hpId, orderInfoModel);
+            }
+            return new DrugInfoData(
+                       selectedFormType,
+                       configType,
+                       drugInfoList);
         }
-        return new DrugInfoData(
-                   selectedFormType,
-                   configType,
-                   drugInfoList);
+        finally
+        {
+            _systemConfRepository.ReleaseResource();
+            _coDrugInfFinder.ReleaseResource();
+        }
     }
 
     private void SetupPrintData(int hpId, OrderInfoModel orderInfoModel)

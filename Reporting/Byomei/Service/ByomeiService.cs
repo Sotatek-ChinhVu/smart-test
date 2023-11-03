@@ -45,36 +45,43 @@ public class ByomeiService : IByomeiService
 
     public CommonReportingRequestModel GetByomeiReportingData(int hpId, long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
     {
-        this.hpId = hpId;
-        this.ptId = ptId;
-        fromDate = fromDay;
-        toDate = toDay;
-        this.hokenIds = hokenIds;
-        this.tenkiIn = tenkiIn;
-
-        var coModels = GetData();
-        if(coModels != null && coModels.Any()) 
+        try
         {
-            GetRowCount();
+            this.hpId = hpId;
+            this.ptId = ptId;
+            fromDate = fromDay;
+            toDate = toDay;
+            this.hokenIds = hokenIds;
+            this.tenkiIn = tenkiIn;
 
-            foreach (CoPtByomeiModel ptByomeiModel in coModels)
+            var coModels = GetData();
+            if (coModels != null && coModels.Any())
             {
-                coModel = ptByomeiModel;
-                currentPage = 1;
-                printOutData = new();
-                MakePrintDataList();
-                hasNextPage = true;
+                GetRowCount();
 
-                //病名一覧印刷
-                while (hasNextPage)
+                foreach (CoPtByomeiModel ptByomeiModel in coModels)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    coModel = ptByomeiModel;
+                    currentPage = 1;
+                    printOutData = new();
+                    MakePrintDataList();
+                    hasNextPage = true;
+
+                    //病名一覧印刷
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
+
+            return new ByomeiMapper(_singleFieldData, _tableFieldData, _visibleFieldList).GetData();
         }
-        
-        return new ByomeiMapper(_singleFieldData, _tableFieldData, _visibleFieldList).GetData();
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private void MakePrintDataList()
