@@ -221,15 +221,6 @@ namespace Infrastructure.Repositories
                                                ).OrderBy(item => item.Position)
                                                .ToList();
 
-            var listUpdateDateFile = TrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId
-                                                                                    && item.PtId == ptId
-                                                                                    && item.RaiinNo == raiinNo
-                                                                                    && item.SeqNo == lastSeqNo
-                                                                                    && item.FileName != null
-                                                                                    && !fileNameList.Contains(item.FileName))
-                                                                     .OrderBy(item => item.Position)
-                                                                     .ToList();
-
             var listUpdateFiles = TrackingDataContext.KarteImgInfs.Where(item =>
                                                item.HpId == hpId
                                                && item.PtId == ptId
@@ -239,11 +230,6 @@ namespace Infrastructure.Repositories
                                                && fileNameList.Contains(item.FileName)
                                                ).ToList();
 
-            foreach (var item in listUpdateDateFile)
-            {
-                item.UpdateDate = dateTimeUpdate;
-                item.UpdateId = userId;
-            }
 
             foreach (var fileInf in fileInfModelList)
             {
@@ -312,6 +298,22 @@ namespace Infrastructure.Repositories
                 newFile.Position = 1;
                 newFile.KarteKbn = 0;
                 TrackingDataContext.KarteImgInfs.Add(newFile);
+            }
+
+            TrackingDataContext.SaveChanges();
+
+            var listUpdateDateFile = TrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId
+                                                                                    && item.PtId == ptId
+                                                                                    && item.RaiinNo == raiinNo
+                                                                                    && item.SeqNo == lastSeqNo
+                                                                                    && item.FileName != null)
+                                                                     .OrderBy(item => item.Position)
+                                                                     .ToList();
+
+            foreach (var item in listUpdateDateFile)
+            {
+                item.UpdateDate = dateTimeUpdate;
+                item.UpdateId = userId;
             }
         }
 
