@@ -123,6 +123,16 @@ public class KensaMstModel
         CenterName = string.Empty;
     }
 
+    public void SetCenterName(string newCenterName)
+    {
+        CenterName = newCenterName;
+    }
+
+    public void SetCenterItemCd1(string newCenterItemCd1)
+    {
+        CenterItemCd1 = newCenterItemCd1;
+    }
+
     public string KensaItemCd { get; private set; }
 
     public int KensaItemSeqNo { get; private set; }

@@ -7859,7 +7859,44 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               .Replace("ｯ", "ﾂ")
                               .StartsWith(bigKeyWord)))))).ToList();
 
+        // Get kensa duplicate
+        var kensaDuplicate = kensaInKensaMst.GroupBy(item => item.KensaItemCd)
+            .Where(group => group.Count() > 1)
+            .Select(group => new
+            {
+                KensaItemCd = group.Key,
+                CenterName = JoinIfNotEmpty(group.Select(item => item.CenterName)),
+                CenterItemCd1 = JoinIfNotEmpty(group.Select(item => item.CenterItemCd1))
+            }
+            );
 
+        string JoinIfNotEmpty(IEnumerable<string> values)
+        {
+            var joinedValues = string.Join("/", values.Distinct().Where(s => !string.IsNullOrEmpty(s)));
+            return string.IsNullOrEmpty(joinedValues) ? string.Empty : joinedValues;
+        }
+
+        // Fillter remove duplicate item
+        kensaInKensaMst = kensaInKensaMst.Where(x => x.KensaItemSeqNo == allkensaKensaMst.Where(m => m.KensaItemCd == x.KensaItemCd).Min(m => m.KensaItemSeqNo)).ToList();
+
+        var centerNameDictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
+        var centerItemCd1Dictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
+
+        // Update  centerName, centerItemCd1
+        foreach (var entity in kensaInKensaMst)
+        {
+            if (centerNameDictionary.TryGetValue(entity.KensaItemCd, out var newCenterName))
+            {
+                entity.SetCenterName(newCenterName);
+            }
+
+            if (centerItemCd1Dictionary.TryGetValue(entity.KensaItemCd, out var newCenterItemCd1))
+            {
+                entity.SetCenterItemCd1(newCenterItemCd1);
+            }
+        }
+
+        #region Append parent, childrens item
         foreach (var entity in kensaInKensaMst)
         {
             var parentItem = allkensaKensaMst.Where(x => !string.IsNullOrEmpty(entity.OyaItemCd) && x.KensaItemCd == entity.OyaItemCd)
@@ -7951,6 +7988,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
 
         }
+
+        #endregion
         var total = result.Count;
         var models = result.OrderBy(u => u.SortNo).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         return (models, total);
