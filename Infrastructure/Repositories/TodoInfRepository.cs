@@ -16,6 +16,7 @@ namespace Infrastructure.Repositories
 
         public List<TodoInfModel> Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId)
         {
+
             var todoInfs = new List<TodoInf>();
             foreach (var input in upsertTodoList)
             {
@@ -53,13 +54,15 @@ namespace Infrastructure.Repositories
 
             TrackingDataContext.SaveChanges();
 
+            var result = new List<TodoInfModel>();
             if (todoInfs.Count <= 1)
             {
                 var firtTodo = todoInfs.FirstOrDefault() ?? new();
-                return GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true, true);
+                result = GetList(hpId, firtTodo.TodoNo, firtTodo.TodoEdaNo, true, true);
+                return result;
             }
 
-            List<TodoInfModel> result = GetList(hpId, 0, 0, true, true);
+            result = GetList(hpId, 0, 0, true, true);
             return result;
         }
 
@@ -118,11 +121,11 @@ namespace Infrastructure.Repositories
             var todoKbnMstRes = NoTrackingDataContext.TodoKbnMsts.Where(mst => mst.HpId == hpId);
             var todoGrpMstRes = NoTrackingDataContext.TodoGrpMsts.Where(mst => mst.HpId == hpId);
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(
-                (p) => p.HpId == hpId &&
+                (p) => p.HpId == Session.HospitalID &&
                        p.IsDeleted == 0
             );
             var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(
-                (p) => p.HpId == hpId &&
+                (p) => p.HpId == Session.HospitalID &&
                        p.IsDeleted == 0
             );
 
@@ -147,7 +150,7 @@ namespace Infrastructure.Repositories
                     OyaRaiinNo = ri2 == null ? 0 : ri2.OyaRaiinNo,
                     SyosaisinKbn = ri2 == null ? 0 : ri2.SyosaisinKbn,
                     JikanKbn = ri2 == null ? 0 : ri2.JikanKbn,
-                    IsVisitDeleted = ri2 != null && (ri2.IsDeleted == DeleteTypes.Deleted || ri2.IsDeleted == DeleteTypes.Confirm),
+                    IsVisitDeleted = ri2 == null ? false : (ri2.IsDeleted == DeleteTypes.Deleted || ri2.IsDeleted == DeleteTypes.Confirm),
                 };
 
             var query =
@@ -214,7 +217,8 @@ namespace Infrastructure.Repositories
                     TodoGrpColor = todoGrpMstInf == null ? string.Empty : todoGrpMstInf.GrpColor,
                     Gender = pi1 == null ? 0 : pi1.Sex,
                     HokenPattern = ptHokenPatternItem,
-                    PtHokenInf = ptHokenInfItem
+                    PtHokenInf = ptHokenInfItem,
+                    Sex = pi1 == null ? "" : pi1.Sex == 1 ? "男" : pi1.Sex == 2 ? "女" : ""
                 };
 
             result = query.AsEnumerable().Select(
@@ -249,7 +253,7 @@ namespace Infrastructure.Repositories
                                 x.TodoGrpNo,
                                 x.TodoInf.IsDone,
                                 x.Status,
-                                x.Gender,
+                                x.Sex,
                                 x.TodoGrpColor,
                                 x.TodoInf.CreateId
                                 ))

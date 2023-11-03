@@ -9,11 +9,13 @@ namespace Interactor.AuditTrailLog
     {
         private readonly IAuditLogRepository _auditLogRepository;
         private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
         public SaveAuditTrailLogInteractor(ITenantProvider tenantProvider, IAuditLogRepository auditLogRepository)
         {
             _auditLogRepository = auditLogRepository;
-            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveAuditTrailLogOutputData Handle(SaveAuditTrailLogInputData inputData)

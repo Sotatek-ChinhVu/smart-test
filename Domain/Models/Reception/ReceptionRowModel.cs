@@ -93,9 +93,6 @@ public class ReceptionRowModel
         ConfirmationState = string.Empty;
         ConfirmationResult = string.Empty;
         GrpIdToDynamicCell = new();
-        DrName = string.Empty;
-        TantoKanaName = string.Empty;
-        KaName = string.Empty;
     }
 
     public long PtId { get; private set; }
@@ -125,7 +122,6 @@ public class ReceptionRowModel
     public string Birthday { get; private set; }
     // 年齢
     public string Age { get; private set; }
-
     // 読
     // Patients have same KanaName will be counted as duplicate.
     // Note: This property will be affected in case of real-time update so it will be calculated by front-end.

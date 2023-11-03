@@ -7,5 +7,5 @@ namespace Domain.Models.Online.QualificationConfirmation;
 public class ResultList
 {
     [XmlElement(ElementName = "ResultOfQualificationConfirmation")]
-    public ResultOfQualificationConfirmation[] ResultOfQualificationConfirmation { get; set; } = new ResultOfQualificationConfirmation[0];
+    public ResultOfQualificationConfirmation[] ResultOfQualificationConfirmation { get; set; }
 }

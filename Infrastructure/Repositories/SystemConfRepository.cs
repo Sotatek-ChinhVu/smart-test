@@ -52,7 +52,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return result;
     }
 
-    private List<SystemConf> ReadCache()
+    private List<SystemConf> ReadCache(int hpId)
     {
         var results = _cache.StringGet(key);
         var json = results.AsString();
@@ -62,14 +62,14 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     private List<SystemConf> GetData(int hpId)
     {
-        List<SystemConf> result;
+        var result = new List<SystemConf>();
         if (!_cache.KeyExists(key))
         {
             result = ReloadCache(hpId);
         }
         else
         {
-            result = ReadCache();
+            result = ReadCache(hpId);
         }
 
         return result;
@@ -199,11 +199,6 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s?.Param ?? string.Empty, s?.Biko ?? string.Empty);
     }
 
-    private SystemConfListXmlPathModel ToModel(PathConf pathConf)
-    {
-        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine ?? string.Empty, pathConf.Path ?? string.Empty, pathConf.Param ?? string.Empty, pathConf.Biko ?? string.Empty, pathConf.CharCd, pathConf.IsInvalid, pathConf.CreateId, pathConf.CreateDate);
-    }
-
     public void ReleaseResource()
     {
         DisposeDataContext();
@@ -281,6 +276,40 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             );
     }
 
+    //Key: RoudouCd, Value: RoudouName
+    public Dictionary<string, string> GetRoudouMst()
+    {
+        var result = new Dictionary<string, string>();
+        List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
+        foreach (var item in RoudouMsts)
+        {
+            result.Add(item.RoudouCd, item.RoudouName ?? string.Empty);
+        }
+
+        return result;
+    }
+
+    public List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, List<int> menuGrp)
+    {
+        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && menuGrp.Contains(u.MenuGrp) && u.IsVisible == 1);
+        var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.SortNo);
+        var systemSettings = GetData(hpId);
+        var systemConfs = (from menu in systemConfMenus.AsEnumerable()
+                           join item in systemConfItems on menu.MenuId equals item.MenuId into items
+                           join setting in systemSettings on new { menu.GrpCd, menu.GrpEdaNo } equals new { setting.GrpCd, setting.GrpEdaNo }
+                           into settingList
+                           select ConvertToSystemConfModel(menu, items.ToList(), settingList.FirstOrDefault() ?? new())
+                          ).ToList();
+
+        var hpInfs = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
+        var prefCD = 0;
+        if (hpInfs != null) prefCD = hpInfs.PrefNo;
+
+        systemConfs.RemoveAll(x => x.PrefNo != 0 && prefCD != x.PrefNo);
+
+        return systemConfs;
+    }
+
     private SystemConfMenuModel ConvertToSystemConfModel(SystemConfMenu systemConfMenu, List<SystemConfItem> systemConfItem, SystemConf systemConf)
     {
         return new SystemConfMenuModel
@@ -328,40 +357,6 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                                      systemConf.Biko ?? string.Empty)
 
             );
-    }
-
-    //Key: RoudouCd, Value: RoudouName
-    public Dictionary<string, string> GetRoudouMst()
-    {
-        var result = new Dictionary<string, string>();
-        List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
-        foreach (var item in RoudouMsts)
-        {
-            result.Add(item.RoudouCd, item.RoudouName ?? string.Empty);
-        }
-
-        return result;
-    }
-
-    public List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, List<int> menuGrp)
-    {
-        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && menuGrp.Contains(u.MenuGrp) && u.IsVisible == 1);
-        var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.SortNo);
-        var systemSettings = GetData(hpId);
-        var systemConfs = (from menu in systemConfMenus.AsEnumerable()
-                           join item in systemConfItems on menu.MenuId equals item.MenuId into items
-                           join setting in systemSettings on new { menu.GrpCd, menu.GrpEdaNo } equals new { setting.GrpCd, setting.GrpEdaNo }
-                           into settingList
-                           select ConvertToSystemConfModel(menu, items.ToList(), settingList.FirstOrDefault() ?? new())
-                          ).ToList();
-
-        var hpInfs = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
-        var prefCD = 0;
-        if (hpInfs != null) prefCD = hpInfs.PrefNo;
-
-        systemConfs.RemoveAll(x => x.PrefNo != 0 && prefCD != x.PrefNo);
-
-        return systemConfs;
     }
 
     public List<SystemConfMenuModel> GetListSystemConfMenuOnly(int hpId, int menuGrp)
@@ -577,11 +572,11 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
     }
 
-    public List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine, bool isKensaIrai)
+    public List<SystemConfListXmlPathModel> GetSystemConfListXmlPath(int hpId, int grpCd, string machine, bool isKesaIrai)
     {
         List<PathConf> pathConf;
 
-        if (isKensaIrai)
+        if (isKesaIrai)
         {
             pathConf = NoTrackingDataContext.PathConfs.Where(item => item.HpId == hpId
                                                                            && item.GrpCd == grpCd
@@ -654,5 +649,11 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         TrackingDataContext.RemoveRange(itemDeleted);
 
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+
+    private SystemConfListXmlPathModel ToModel(PathConf pathConf)
+    {
+        return new SystemConfListXmlPathModel(pathConf.HpId, pathConf.GrpCd, pathConf.GrpEdaNo, pathConf.SeqNo, pathConf.Machine ?? string.Empty, pathConf.Path ?? string.Empty, pathConf.Param ?? string.Empty, pathConf.Biko ?? string.Empty, pathConf.CharCd, pathConf.IsInvalid, pathConf.CreateId, pathConf.CreateDate);
     }
 }

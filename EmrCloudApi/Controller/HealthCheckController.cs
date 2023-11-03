@@ -8,8 +8,10 @@ namespace EmrCloudApi.Controller
     [ApiController]
     public class HealthCheckController : ControllerBase
     {
-        public HealthCheckController()
+        private readonly IConfiguration _configuration;
+        public HealthCheckController(IConfiguration configuration)
         {
+            _configuration = configuration;
         }
 
         [HttpGet]

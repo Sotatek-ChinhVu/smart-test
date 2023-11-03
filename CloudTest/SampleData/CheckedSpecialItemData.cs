@@ -12,6 +12,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var raiinInfs = new List<RaiinInf>();
@@ -143,6 +144,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var densiSanteiKaisus = new List<DensiSanteiKaisu>();
@@ -253,6 +255,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var tenMsts = new List<TenMst>();
@@ -340,6 +343,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var sinRpInfs = new List<SinRpInf>();
@@ -416,6 +420,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var sinKouiDetails = new List<SinKouiDetail>();
@@ -491,6 +496,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var sinKouiCounts = new List<SinKouiCount>();
@@ -571,6 +577,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var hokenMsts = new List<HokenMst>();
@@ -659,6 +666,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var hokenMsts = new List<PtHokenInf>();
@@ -755,6 +763,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var kohis = new List<PtKohi>();
@@ -841,6 +850,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var ptHokenChecks = new List<PtHokenCheck>();
@@ -890,6 +900,10 @@ namespace CloudUnitTest.SampleData
                                     int.TryParse(text, out int seqNo);
                                     ptHokenCheck.SeqNo = seqNo;
                                     break;
+                                //case "F":
+                                //    DateTime.TryParse(text, out DateTime checkDate);
+                                //    ptHokenCheck.CheckDate = checkDate;
+                                //    break;
                                 case "G":
                                     int.TryParse(text, out int checkId);
                                     ptHokenCheck.CheckId = checkId;
@@ -910,6 +924,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var ptInfs = new List<PtInf>();
@@ -984,6 +999,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var ptInfs = new List<UserMst>();
@@ -1075,6 +1091,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var hokensyaMsts = new List<HokensyaMst>();
@@ -1151,6 +1168,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var roudouMsts = new List<RoudouMst>();
@@ -1199,6 +1217,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var ptRousaiTenkis = new List<PtRousaiTenki>();
@@ -1271,6 +1290,7 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedSpecialDataSample.xlsx");
             var ptHokenPatterns = new List<PtHokenPattern>();

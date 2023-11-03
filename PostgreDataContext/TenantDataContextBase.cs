@@ -6,27 +6,27 @@ namespace PostgreDataContext
 {
     public class TenantDataContext : DbContext
     {
-        ///private readonly string _connectionString;
+        private readonly string _connectionString;
         public TenantDataContext(DbContextOptions options)
         : base(options)
         {
-            ///_connectionString = string.Empty;
+            _connectionString = string.Empty;
         }
 
-        ///protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        ///{
-        ///    if (!string.IsNullOrEmpty(_connectionString))
-        ///    {
-        ///        optionsBuilder.UseNpgsql(_connectionString, buider =>
-        ///        {
-        ///            buider.EnableRetryOnFailure(maxRetryCount: 3);
-        ///        }).LogTo(Console.WriteLine, LogLevel.Information);
-        ///    }
-        ///    else
-        ///    {
-        ///        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
-        ///    }
-        ///}
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!string.IsNullOrEmpty(_connectionString))
+        //    {
+        //        optionsBuilder.UseNpgsql(_connectionString, buider =>
+        //        {
+        //            buider.EnableRetryOnFailure(maxRetryCount: 3);
+        //        }).LogTo(Console.WriteLine, LogLevel.Information);
+        //    }
+        //    else
+        //    {
+        //        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

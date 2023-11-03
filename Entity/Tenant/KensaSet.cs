@@ -41,7 +41,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SET_NAME")]
         [MaxLength(30)]
-        public string? SetName { get; set; } = string.Empty;
+        public string SetName { get; set; }
 
         /// <summary>
         /// 並び順

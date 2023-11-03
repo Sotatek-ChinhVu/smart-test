@@ -7,24 +7,24 @@ namespace UseCase.XmlDTD.OnlineConfirmHistoryData
     public class ConfirmResultQualificationConfirmSearchInfo
     {
         [XmlElement(ElementName = "InsurerNumber")]
-        public string InsurerNumber { get; set; } = string.Empty;
+        public string InsurerNumber { get; set; }
 
         [XmlElement(ElementName = "InsuredCardSymbol")]
-        public string InsuredCardSymbol { get; set; } = string.Empty;
+        public string InsuredCardSymbol { get; set; }
 
         [XmlElement(ElementName = "InsuredIdentificationNumber")]
-        public string InsuredIdentificationNumber { get; set; } = string.Empty;
+        public string InsuredIdentificationNumber { get; set; }
 
         [XmlElement(ElementName = "InsuredBranchNumber")]
-        public string InsuredBranchNumber { get; set; } = string.Empty;
+        public string InsuredBranchNumber { get; set; }
 
         [XmlElement(ElementName = "Birthdate")]
-        public string Birthdate { get; set; } = string.Empty;
+        public string Birthdate { get; set; }
 
         [XmlElement(ElementName = "LimitApplicationCertificateRelatedInfo")]
-        public ConfirmResultLimitApplicationCertificateRelatedInfo LimitApplicationCertificateRelatedInfo { get; set; } = new();
+        public ConfirmResultLimitApplicationCertificateRelatedInfo LimitApplicationCertificateRelatedInfo { get; set; }
 
         [XmlElement(ElementName = "ArbitraryIdentifier")]
-        public string ArbitraryIdentifier { get; set; } = string.Empty;
+        public string ArbitraryIdentifier { get; set; }
     }
 }

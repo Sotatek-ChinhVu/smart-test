@@ -23,7 +23,6 @@ using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using System.Text;
 using UseCase.ReceSeikyu.Save;
-using System.Linq;
 
 namespace Interactor.ReceSeikyu
 {
@@ -136,7 +135,7 @@ namespace Interactor.ReceSeikyu
                 {
                     foreach (ReceSeikyuModel model in listSourceSeikyu)
                     {
-                        if (model.IsChecked && model.SeikyuYm == 999999)
+                        if (model.IsChecked == true && model.SeikyuYm == 999999)
                         {
                             model.SetSeikyuYm(inputData.SinYm);
                         }
@@ -249,8 +248,8 @@ namespace Interactor.ReceSeikyu
                             }
                             _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.RunCalculateMonth, new
                             {
-                                inputData.HpId,
-                                receInfos[i].SeikyuYm,
+                                HpId = inputData.HpId,
+                                SeikyuYm = receInfos[i].SeikyuYm,
                                 PtIds = new List<long> { receInfos[i].PtId }
                             }).Wait();
                             _messenger.Send(new RecalculateInSeikyuPendingStatus($"計算処理中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
@@ -270,7 +269,7 @@ namespace Interactor.ReceSeikyu
                             }
                             _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new
                             {
-                                receInfos[i].SeikyuYm,
+                                SeikyuYm = receInfos[i].SeikyuYm,
                                 PtIds = new List<long> { receInfos[i].PtId }
                             }).Wait();
                             _messenger.Send(new RecalculateInSeikyuPendingStatus($"レセ集計中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
@@ -325,7 +324,7 @@ namespace Interactor.ReceSeikyu
         }
 
 
-        private void CheckErrorInMonth(SaveReceSeiKyuInputData inputData, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+        private bool CheckErrorInMonth(SaveReceSeiKyuInputData inputData, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
         {
             List<ReceCheckErrModel> newReceCheckErrList = new();
             StringBuilder errorText = new();
@@ -344,7 +343,7 @@ namespace Interactor.ReceSeikyu
             int successCount = 1;
             foreach (var recalculationItem in receRecalculationList)
             {
-                var statusCallBack = _messenger!.SendAsync(new RecalculateInSeikyuPendingStop());
+                var statusCallBack = _messenger.SendAsync(new RecalculateInSeikyuPendingStop());
                 isStopCalc = statusCallBack.Result.Result;
                 if (isStopCalc)
                 {
@@ -364,6 +363,7 @@ namespace Interactor.ReceSeikyu
                 newReceCheckErrList = CheckOrderError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
                 newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
                 newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
+                errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
 
                 if (allCheckCount == successCount)
                 {
@@ -371,8 +371,10 @@ namespace Interactor.ReceSeikyu
                 }
                 successCount++;
             }
+            errorText.Append(errorTextSinKouiCount);
+            errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
 
-            _receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserAct, newReceCheckErrList);
+            return _receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserAct, newReceCheckErrList);
         }
 
         private List<ReceCheckOptModel> GetReceCheckOptModelList(int hpId)
@@ -1619,12 +1621,14 @@ namespace Interactor.ReceSeikyu
             //E3005 check tokuzai item
             if (isCheckTokuzaiItem)
             {
-                foreach (var sinKouiCount in from sinKouiCount in sinKouiCountList
-                                             where sinKouiCount.SinKouiDetailModels.Any(item => item.ItemCd == ReceErrCdConst.TokuzaiItemCd)
-                                             select sinKouiCount)
+                foreach (var sinKouiCount in sinKouiCountList)
                 {
-                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.TokuzaiItemCheckErrCd, ReceErrCdConst.TokuzaiItemCheckErrMsg,
-                                                                        "（2017(H29)/04/01～使用不可）", ReceErrCdConst.TokuzaiItemCd, sinDate: sinKouiCount.SinDate);
+                    if (sinKouiCount.SinKouiDetailModels.Any(item => item.ItemCd == ReceErrCdConst.TokuzaiItemCd))
+                    {
+                        AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.TokuzaiItemCheckErrCd, ReceErrCdConst.TokuzaiItemCheckErrMsg,
+                                                        "（2017(H29)/04/01～使用不可）", ReceErrCdConst.TokuzaiItemCd, sinDate: sinKouiCount.SinDate);
+                        continue;
+                    }
                 }
             }
 

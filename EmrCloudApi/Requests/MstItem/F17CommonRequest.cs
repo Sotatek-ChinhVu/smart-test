@@ -9,8 +9,8 @@
             ItemCd = itemCd;
         }
 
-        public string KensaStdItemCd { get; set; }
+        public string KensaStdItemCd { get; set; } = string.Empty;
 
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
     }
 }

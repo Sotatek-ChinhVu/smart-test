@@ -338,7 +338,7 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(iagkutokusitu1.Count == 0);
-        systemConf.Val = temp;
+        if (systemConf != null) systemConf.Val = temp;
         tenantTracking.SaveChanges();
     }
 
@@ -624,7 +624,7 @@ public class CheckedOrderTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-
+        
         try
         {
             // Act
@@ -644,7 +644,7 @@ public class CheckedOrderTest : BaseUT
             tenant.OdrInfDetails.RemoveRange(odrInfDetails);
             tenant.SaveChanges();
             tenantTracking.SaveChanges();
-        }
+        } 
     }
 
     /// <summary>
@@ -726,7 +726,7 @@ public class CheckedOrderTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
-
+        
         try
         {
             // Act
@@ -745,7 +745,7 @@ public class CheckedOrderTest : BaseUT
             tenant.OdrInfDetails.RemoveRange(odrInfDetails);
             tenant.SaveChanges();
             tenantTracking.SaveChanges();
-        }
+        } 
     }
 
     /// <summary>
@@ -5156,7 +5156,7 @@ public class CheckedOrderTest : BaseUT
         var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
         //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）"); systemConf.Val = temp;
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）"); if (systemConf != null) systemConf.Val = temp;
         systemConf2.Val = temp;
         tenantTracking.SaveChanges();
     }
