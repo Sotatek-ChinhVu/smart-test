@@ -9,6 +9,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Infrastructure.Repositories
@@ -321,7 +322,7 @@ namespace Infrastructure.Repositories
                                   join t2 in NoTrackingDataContext.KensaCenterMsts
                                   on t1.CenterCd equals t2.CenterCd into leftJoinT2
                                   from t2 in leftJoinT2.DefaultIfEmpty()
-                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CMT ?? "").ToUpper().Contains(bigKeyWord)
+                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyWord)))
                                   where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd).Min(m => m.CmtSeqNo)
                                   select new KensaCmtMstModel(
                                       t1.CmtCd,
@@ -688,7 +689,7 @@ namespace Infrastructure.Repositories
                 .Select(x => x);
             var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
 
-            var kensaItemWithOutDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.KensaKana, x.SortNo }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.MaleStd, x.Key.FemaleStd, x.Key.KensaKana, x.Key.SortNo });
+            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo));
 
 
             var groupRowData = data
@@ -712,6 +713,8 @@ namespace Infrastructure.Repositories
                         item.FemaleStd,
                         item.KensaKana,
                         item.SortNo,
+                        item.SeqNo,
+                        item.SeqParentNo,
                         dynamicArray
                     ));
                 }
@@ -727,49 +730,74 @@ namespace Infrastructure.Repositories
                     item.FemaleStd,
                     item.KensaKana,
                     item.SortNo,
+                    item.SeqNo,
+                    item.SeqParentNo,
                     new List<ListKensaInfDetailItemModel> { item }
                 ));
             }
 
             // Sort row by user config
+            var kensaInfDetailRows = new List<KensaInfDetailDataModel>();
             if (setId == 0)
-
             {
                 var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
                 var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
 
-                switch (sortCoulum)
+                // Get all parent item
+                kensaInfDetailRows = kensaInfDetailData.Where(x => x.SeqParentNo == 0).ToList();
+                kensaInfDetailRows = SortRow(kensaInfDetailRows);
+                // Children item
+                var childrenItems = kensaInfDetailData.Where(x => x.SeqParentNo != 0).GroupBy(x => new { x.SeqParentNo })
+                .ToDictionary(
+                    group => group.Key.SeqParentNo,
+                    group => group.ToList());
+
+                // Append childrends
+                for (int i = 0; i < kensaInfDetailRows.Count; i++)
                 {
-                    case SortKensaMstColumn.KensaItemCd:
-                        if (sortType == 1)
+                    var item = kensaInfDetailRows[i];
+                    if (childrenItems.TryGetValue(item.SeqNo, out var childrens))
+                    {
+                        if (childrens.Count() > 1)
                         {
-                            kensaInfDetailData = kensaInfDetailData.OrderByDescending(x => x.KensaItemCd).ToList();
+                            childrens = SortRow(childrens);
                         }
-                        else
-                        {
-                            kensaInfDetailData = kensaInfDetailData.OrderBy(x => x.KensaItemCd).ToList();
-                        }
-                        break;
-                    case SortKensaMstColumn.KensaKana:
-                        if (sortType == 1)
-                        {
-                            kensaInfDetailData = kensaInfDetailData.OrderByDescending(x => x.KensaKana).ToList();
-                        }
-                        else
-                        {
-                            kensaInfDetailData = kensaInfDetailData.OrderBy(x => x.KensaKana).ToList();
-                        }
-                        break;
-                    default:
-                        if (sortType == 1)
-                        {
-                            kensaInfDetailData = kensaInfDetailData.OrderByDescending(x => x.SortNo).ToList();
-                        }
-                        else
-                        {
-                            kensaInfDetailData = kensaInfDetailData.OrderBy(x => x.SortNo).ToList();
-                        }
-                        break;
+                        kensaInfDetailRows.InsertRange(i + 1, childrens);
+                    }
+                }
+                List<KensaInfDetailDataModel> SortRow(List<KensaInfDetailDataModel> data)
+                {
+
+                    switch (sortCoulum)
+                    {
+                        case SortKensaMstColumn.KensaItemCd:
+                            if (sortType == 1)
+                            {
+                                return data.OrderByDescending(x => x.KensaItemCd).ToList();
+                            }
+                            else
+                            {
+                                return data.OrderBy(x => x.KensaItemCd).ToList();
+                            }
+                        case SortKensaMstColumn.KensaKana:
+                            if (sortType == 1)
+                            {
+                                return data.OrderByDescending(x => x.KensaKana).ToList();
+                            }
+                            else
+                            {
+                                return data.OrderBy(x => x.KensaKana).ToList();
+                            }
+                        default:
+                            if (sortType == 1)
+                            {
+                                return data.OrderByDescending(x => x.SortNo).ToList();
+                            }
+                            else
+                            {
+                                return data.OrderBy(x => x.SortNo).ToList();
+                            }
+                    }
                 }
             }
             // Sort row by KensaSet SortNo
@@ -787,7 +815,7 @@ namespace Infrastructure.Repositories
             }
             #endregion
 
-            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData, totalCol);
+            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailRows, totalCol);
             return result;
         }
 
@@ -828,8 +856,8 @@ namespace Infrastructure.Repositories
                             t1.AbnormalKbn ?? string.Empty,
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
-                            (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t5.CenterCd)) ? "不明" : t5.CMT ?? string.Empty,
-                            (!string.IsNullOrEmpty(t3.CenterCd) && t3.CenterCd.Equals(t6.CenterCd)) ? "不明" : t6.CMT ?? string.Empty,
+                            (t3.CenterCd != null && t3.CenterCd != t5.CenterCd) ? "不明" : t5.CMT ?? string.Empty,
+                            (t3.CenterCd != null && t3.CenterCd != t6.CenterCd) ? "不明" : t6.CMT ?? string.Empty,
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
