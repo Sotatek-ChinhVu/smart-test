@@ -76,27 +76,34 @@ namespace Reporting.Statistics.Sta3020.Service
 
         public CommonReportingRequestModel GetSta3020ReportingData(CoSta3020PrintConf printConf, int hpId)
         {
-            this.hpId = hpId;
-            _printConf = printConf;
-            // get data to print
-            GetFieldNameList();
-            GetRowCount();
-
-            if (GetData())
+            try
             {
-                _hasNextPage = true;
+                this.hpId = hpId;
+                _printConf = printConf;
+                // get data to print
+                GetFieldNameList();
+                GetRowCount();
 
-                _currentPage = 1;
-
-                //印刷
-                while (_hasNextPage)
+                if (GetData())
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
-            }
+                    _hasNextPage = true;
 
-            return new Sta3020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+                    _currentPage = 1;
+
+                    //印刷
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+                }
+
+                return new Sta3020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+            }
+            finally
+            {
+                _sta3020Finder.ReleaseResource();
+            }
         }
 
         private bool GetData()

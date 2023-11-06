@@ -61,33 +61,40 @@ public class P45KoukiSokatuCoReportService : IP45KoukiSokatuCoReportService
 
     public CommonReportingRequestModel GetP45KoukiSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        this.currentPage = 1;
-        var getData = GetData();
-        hasNextPage = true;
-
-        if (getData)
+        try
         {
-            for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            this.currentPage = 1;
+            var getData = GetData();
+            hasNextPage = true;
+
+            if (getData)
             {
-                prefInOut = prefCnt;
-
-                curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
-                if (curReceInfs.Count() == 0) continue;
-
-                while (getData && hasNextPage)
+                for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    prefInOut = prefCnt;
+
+                    curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+                    if (curReceInfs.Count() == 0) continue;
+
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function

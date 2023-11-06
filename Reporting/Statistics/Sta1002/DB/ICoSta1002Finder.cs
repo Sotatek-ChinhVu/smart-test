@@ -1,10 +1,11 @@
-﻿using Reporting.Statistics.Model;
+﻿using Domain.Common;
+using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
 using Reporting.Statistics.Sta1002.Models;
 
 namespace Reporting.Statistics.Sta1002.DB;
 
-public interface ICoSta1002Finder
+public interface ICoSta1002Finder : IRepositoryBase
 {
     List<CoSyunoInfModel> GetSyunoInfs(int hpId, CoSta1002PrintConf printConf);
 

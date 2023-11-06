@@ -57,4 +57,9 @@ public class CoSta1002Finder : RepositoryBase, ICoSta1002Finder
                 IsExcludeUnpaid = printConf.IsExcludeUnpaid
             };
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

@@ -130,7 +130,7 @@ public class P29KokhoSeikyuCoReportService : IP29KokhoSeikyuCoReportService
             _extralData.Add("totalPage", pageIndex.ToString());
             return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
         }
-        catch (Exception)
+        finally
         {
             _kokhoFinder.ReleaseResource();
         }

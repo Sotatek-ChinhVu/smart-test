@@ -224,6 +224,9 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
 
         public void ReleaseResource()
         {
+            _hpInfFinder.ReleaseResource();
+            _hokensyaMstFinder.ReleaseResource();
+            _hokenMstFinder.ReleaseResource();
             DisposeDataContext();
         }
     }

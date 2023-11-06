@@ -292,7 +292,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 _extralData.Add("totalPage", pageIndex.ToString());
                 return new P08KokhoSeikyuMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
             }
-            catch (Exception)
+            finally
             {
                 _kokhoFinder.ReleaseResource();
             }
