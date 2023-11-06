@@ -1,7 +1,10 @@
 ﻿using Domain.Constant;
 using Domain.Models.DrugInfor;
+using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories;
@@ -137,7 +140,8 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
                                                       .Select(item => item.OrderByDescending(t => t.EndDate).FirstOrDefault())
                                                       .ToList();
         var kouiList = NoTrackingDataContext.SinrekiFilterMstKouis.Where(item => item.HpId == hpId
-                                                                                 && grpCdList.Contains(item.GrpCd))
+                                                                                 && grpCdList.Contains(item.GrpCd)
+                                                                                 && item.IsDeleted == 0)
                                                                   .ToList();
         foreach (var mst in sinrekiMstList)
         {
@@ -152,6 +156,7 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
             var sinrekiFilterMstDetailList = (from detail in detailList.Where(item => item.GrpCd == mst.GrpCd)
                                               join ten in tenMstList on detail.ItemCd equals ten.ItemCd
                                               select new SinrekiFilterMstDetailModel(
+                                                         detail.Id,
                                                          detail.GrpCd,
                                                          detail.ItemCd ?? string.Empty,
                                                          ten.Name ?? string.Empty,
@@ -171,6 +176,180 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
         return result.OrderBy(item => item.SortNo).ToList();
     }
 
+    public bool SaveSinrekiFilterMstList(int hpId, int userId, List<SinrekiFilterMstModel> sinrekiFilterMstList)
+    {
+        var dateTimeUpdate = CIUtil.GetJapanDateTimeNow();
+        var grpCdList = sinrekiFilterMstList.Where(item => item.GrpCd > 0).Select(item => item.GrpCd).Distinct().ToList();
+        var sinrekiFilterMstDbList = TrackingDataContext.SinrekiFilterMsts.Where(item => item.HpId == hpId
+                                                                                         && grpCdList.Contains(item.GrpCd)
+                                                                                         && item.IsDeleted == 0)
+                                                                          .ToList();
+        var sinrekiFilterMstKouiDbList = TrackingDataContext.SinrekiFilterMstKouis.Where(item => item.HpId == hpId
+                                                                                                 && grpCdList.Contains(item.GrpCd)
+                                                                                                 && item.IsDeleted == 0)
+                                                                                  .ToList();
+        var sinrekiFilterMstDetailDbList = TrackingDataContext.SinrekiFilterMstDetails.Where(item => item.HpId == hpId
+                                                                                                     && grpCdList.Contains(item.GrpCd)
+                                                                                                     && item.IsDeleted == 0)
+                                                                                      .ToList();
+        var allGrpCd = NoTrackingDataContext.SinrekiFilterMsts.Select(item => item.GrpCd).ToList();
+        int maxGrpCd = allGrpCd != null && allGrpCd.Any() ? allGrpCd.Max() : 0;
+        bool saveSuccess = false;
+
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    foreach (var mstModel in sinrekiFilterMstList)
+                    {
+                        bool isAddNew = false;
+                        var mstEntity = sinrekiFilterMstDbList.FirstOrDefault(item => item.GrpCd == mstModel.GrpCd);
+                        if (mstEntity == null)
+                        {
+                            if (mstModel.GrpCd != 0)
+                            {
+                                continue;
+                            }
+                            else if (mstModel.GrpCd == 0 && mstModel.IsDeleted)
+                            {
+                                continue;
+                            }
+                            // Add new SinrekiFilterMst
+                            mstEntity = new();
+                            mstEntity.HpId = hpId;
+                            mstEntity.GrpCd = maxGrpCd + 1;
+                            mstEntity.CreateDate = dateTimeUpdate;
+                            mstEntity.CreateId = userId;
+                            maxGrpCd += 1;
+                            isAddNew = true;
+                        }
+                        mstEntity.UpdateDate = dateTimeUpdate;
+                        mstEntity.UpdateId = userId;
+                        if (mstModel.IsDeleted)
+                        {
+                            mstEntity.IsDeleted = 1;
+                        }
+                        mstEntity.Name = mstModel.Name;
+                        mstEntity.SortNo = mstModel.SortNo;
+                        if (isAddNew)
+                        {
+                            TrackingDataContext.SinrekiFilterMsts.Add(mstEntity);
+                            TrackingDataContext.SaveChanges();
+                        }
+
+                        // Update SinrekiFilterMstDetail
+                        foreach (var detailModel in mstModel.SinrekiFilterMstDetailList)
+                        {
+                            var detailEntity = sinrekiFilterMstDetailDbList.FirstOrDefault(item => item.Id == detailModel.Id);
+                            if (detailEntity == null)
+                            {
+                                if (detailModel.Id != 0)
+                                {
+                                    continue;
+                                }
+                                else if (detailModel.Id == 0 && detailModel.IsDeleted)
+                                {
+                                    continue;
+                                }
+
+                                // add new FilterMstDetail
+                                detailEntity = new();
+                                detailEntity.HpId = hpId;
+                                detailEntity.GrpCd = mstEntity.GrpCd;
+                                detailEntity.Id = 0;
+                                detailEntity.CreateDate = dateTimeUpdate;
+                                detailEntity.CreateId = userId;
+                            }
+                            detailEntity.UpdateId = userId;
+                            detailEntity.UpdateDate = dateTimeUpdate;
+                            if (detailModel.IsDeleted)
+                            {
+                                detailEntity.IsDeleted = 1;
+                                continue;
+                            }
+                            detailEntity.ItemCd = detailModel.ItemCd;
+                            detailEntity.SortNo = detailModel.SortNo;
+                            detailEntity.IsExclude = detailModel.IsExclude ? 1 : 0;
+                            if (detailEntity.Id == 0)
+                            {
+                                TrackingDataContext.SinrekiFilterMstDetails.Add(detailEntity);
+                            }
+                        }
+
+                        // Update SinrekiFilterMstKoui
+                        foreach (var kouiModel in mstModel.SinrekiFilterMstKouiList)
+                        {
+                            var kouiEntity = sinrekiFilterMstKouiDbList.FirstOrDefault(item => item.SeqNo == kouiModel.SeqNo);
+                            if (kouiEntity == null)
+                            {
+                                if (kouiModel.SeqNo != 0)
+                                {
+                                    continue;
+                                }
+                                kouiEntity = new();
+                                kouiEntity.HpId = hpId;
+                                kouiEntity.GrpCd = mstEntity.GrpCd;
+                                kouiEntity.SeqNo = 0;
+                                kouiEntity.CreateId = userId;
+                                kouiEntity.CreateDate = dateTimeUpdate;
+                                kouiEntity.KouiKbnId = kouiModel.KouiKbnId;
+                            }
+                            kouiEntity.UpdateDate = dateTimeUpdate;
+                            kouiEntity.UpdateId = userId;
+                            if (kouiModel.IsChecked)
+                            {
+                                kouiEntity.IsDeleted = 0;
+                            }
+                            else
+                            {
+                                kouiEntity.IsDeleted = 1;
+                                continue;
+                            }
+                            if (kouiEntity.SeqNo == 0)
+                            {
+                                TrackingDataContext.SinrekiFilterMstKouis.Add(kouiEntity);
+                            }
+                        }
+                    }
+                    TrackingDataContext.SaveChanges();
+                    saveSuccess = true;
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            });
+        return saveSuccess;
+    }
+
+    public bool CheckExistGrpCd(int hpId, List<int> grpCdList)
+    {
+        grpCdList = grpCdList.Distinct().ToList();
+        return NoTrackingDataContext.SinrekiFilterMsts.Count(item => item.HpId == hpId && grpCdList.Contains(item.GrpCd)) == grpCdList.Count;
+    }
+
+    public bool CheckExistKouiKbn(int hpId, List<int> kouiKbnIdList)
+    {
+        kouiKbnIdList = kouiKbnIdList.Distinct().ToList();
+        return NoTrackingDataContext.KouiKbnMsts.Count(item => item.HpId == hpId && kouiKbnIdList.Contains(item.KouiKbnId)) == kouiKbnIdList.Count;
+    }
+
+    public bool CheckExistSinrekiFilterMstKoui(int hpId, List<long> kouiSeqNoList)
+    {
+        kouiSeqNoList = kouiSeqNoList.Distinct().ToList();
+        return NoTrackingDataContext.SinrekiFilterMstKouis.Count(item => item.HpId == hpId && item.IsDeleted == 0 && kouiSeqNoList.Contains(item.SeqNo)) == kouiSeqNoList.Count;
+    }
+
+    public bool CheckExistSinrekiFilterMstDetail(int hpId, List<long> detailIdList)
+    {
+        detailIdList = detailIdList.Distinct().ToList();
+        return NoTrackingDataContext.SinrekiFilterMstDetails.Count(item => item.HpId == hpId && item.IsDeleted == 0 && detailIdList.Contains(item.Id)) == detailIdList.Count;
+    }
     public void ReleaseResource()
     {
         DisposeDataContext();

@@ -7,4 +7,14 @@ public interface IDrugInforRepository : IRepositoryBase
     DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd);
 
     List<SinrekiFilterMstModel> GetSinrekiFilterMstList(int hpId);
+
+    bool SaveSinrekiFilterMstList(int hpId, int userId, List<SinrekiFilterMstModel> sinrekiFilterMstList);
+
+    bool CheckExistGrpCd(int hpId, List<int> grpCdList);
+
+    bool CheckExistKouiKbn(int hpId, List<int> kouiKbnIdList);
+
+    bool CheckExistSinrekiFilterMstKoui(int hpId, List<long> kouiSeqNoList);
+
+    bool CheckExistSinrekiFilterMstDetail(int hpId, List<long> detailIdList);
 }
