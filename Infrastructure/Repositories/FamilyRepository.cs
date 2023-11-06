@@ -375,8 +375,11 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 TrackingDataContext.PtFamilys.Add(ptFamilyEntity);
                 TrackingDataContext.SaveChanges();
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
-                SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis);
-                            }
+                if (!SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
+                {
+                    continue;
+                }
+            }
             else
             {
                 var ptFamilyEntity = listFamilyDB.FirstOrDefault(item => item.FamilyId == familyModel.FamilyId);
@@ -402,7 +405,10 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 ptFamilyEntity.IsSeparated = familyModel.IsSeparated;
                 ptFamilyEntity.Biko = familyModel.Biko;
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
-                SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis);
+                if (!SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
+                {
+                    continue;
+                }
             }
         }
         TrackingDataContext.SaveChanges();
@@ -433,7 +439,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         return ptFamily;
     }
 
-    private void SaveFamilyRekiList(int hpId, int userId, long familyPtId, long familyId, List<PtFamilyReki> listPtFamilyRekiEntity, List<PtFamilyRekiModel> listPtFamilyRekiModel)
+    private bool SaveFamilyRekiList(int hpId, int userId, long familyPtId, long familyId, List<PtFamilyReki> listPtFamilyRekiEntity, List<PtFamilyRekiModel> listPtFamilyRekiModel)
     {
         foreach (var familyRekiModel in listPtFamilyRekiModel)
         {
@@ -462,6 +468,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 ptFamilyRekiEntity.Cmt = familyRekiModel.Cmt;
             }
         }
+        return true;
     }
 
     private PtFamilyReki ConvertToNewPtFamilyReki(int hpId, int userId, long familyPtId, long familyId, PtFamilyRekiModel model)
@@ -649,7 +656,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         if (ptHokenInfCollection == null || ptHokenInfCollection.Count <= 0) return null;
 
         var param = Expression.Parameter(typeof(PtHokenInf));
-        Expression? expression = null;
+        Expression expression = null;
 
         foreach (var ptHokenInf in ptHokenInfCollection)
         {
@@ -687,7 +694,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         if (ptIdCollection == null || ptIdCollection.Count <= 0) return null;
 
         var param = Expression.Parameter(typeof(PtInf));
-        Expression? expression = null;
+        Expression expression = null;
 
         foreach (var ptId in ptIdCollection)
         {

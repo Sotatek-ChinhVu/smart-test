@@ -324,7 +324,7 @@ namespace Infrastructure.Repositories
                                   where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyWord)))
                                   where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd).Min(m => m.CmtSeqNo)
                                   select new KensaCmtMstModel(
-                                      t1.CmtCd ?? string.Empty,
+                                      t1.CmtCd,
                                       t1.CMT ?? string.Empty,
                                       t1.CmtSeqNo,
                                       t2.CenterName ?? string.Empty

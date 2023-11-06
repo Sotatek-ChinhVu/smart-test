@@ -50,7 +50,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.PaymentMethod)]
-        public ActionResult<Response<GetPaymentMethodResponse>> PaymentMethod()
+        public ActionResult<Response<GetPaymentMethodResponse>> GetList([FromQuery] GetPaymentMethodRequest request)
         {
             var input = new GetPaymentMethodInputData(HpId);
             var output = _bus.Handle(input);
@@ -62,7 +62,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.WarningMemo)]
-        public ActionResult<Response<GetWarningMemoResponse>> WarningMemo([FromQuery] GetWarningMemoRequest request)
+        public ActionResult<Response<GetWarningMemoResponse>> GetList([FromQuery] GetWarningMemoRequest request)
         {
             var input = new GetWarningMemoInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
@@ -74,7 +74,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.PtByoMei)]
-        public ActionResult<Response<GetPtByoMeiResponse>> PtByoMei([FromQuery] GetPtByoMeiRequest request)
+        public ActionResult<Response<GetPtByoMeiResponse>> GetList([FromQuery] GetPtByoMeiRequest request)
         {
             var input = new GetPtByoMeiInputData(HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
@@ -86,7 +86,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SaveAccounting)]
-        public async Task<ActionResult<Response<SaveAccountingResponse>>> SaveAccounting([FromBody] SaveAccountingRequest request)
+        public async Task<ActionResult<Response<SaveAccountingResponse>>> SaveList([FromBody] SaveAccountingRequest request)
         {
             var input = new SaveAccountingInputData(HpId, request.PtId, UserId, request.SinDate, request.RaiinNo,
                 request.SumAdjust, request.ThisWari, request.Credit, request.PayType, request.Comment, request.IsDisCharged, request.KaikeiTime);
@@ -104,7 +104,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetHeaderInf)]
-        public ActionResult<Response<GetAccountingHeaderResponse>> GetHeaderInf([FromQuery] GetAccountingHeaderRequest request)
+        public ActionResult<Response<GetAccountingHeaderResponse>> GetList([FromQuery] GetAccountingHeaderRequest request)
         {
             var input = new GetAccountingHeaderInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
@@ -116,7 +116,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.CheckAccounting)]
-        public ActionResult<Response<CheckAccountingStatusResponse>> CheckAccounting([FromBody] CheckAccountingStatusRequest request)
+        public ActionResult<Response<CheckAccountingStatusResponse>> ActionResult([FromBody] CheckAccountingStatusRequest request)
         {
             var input = new CheckAccountingStatusInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.DebitBalance,
                 request.SumAdjust, request.Credit, request.Wari, request.IsDisCharge, request.IsSaveAccounting,
@@ -129,7 +129,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetSystemConfig)]
-        public ActionResult<Response<GetAccountingConfigResponse>> GetSystemConfig([FromQuery] GetAccountingConfigRequest request)
+        public ActionResult<Response<GetAccountingConfigResponse>> GetList([FromQuery] GetAccountingConfigRequest request)
         {
             var input = new GetAccountingConfigInputData(HpId, request.PtId, request.RaiinNo, request.SumAdjust);
             var output = _bus.Handle(input);
@@ -141,7 +141,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetMeiHoGai)]
-        public ActionResult<Response<GetMeiHoGaiResponse>> GetMeiHoGai([FromQuery] GetMeiHoGaiRequest request)
+        public ActionResult<Response<GetMeiHoGaiResponse>> GetList([FromQuery] GetMeiHoGaiRequest request)
         {
             var input = new GetMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNos);
             var output = _bus.Handle(input);
@@ -153,7 +153,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.CheckOpenAccounting)]
-        public ActionResult<Response<CheckOpenAccountingResponse>> CheckOpenAccounting([FromQuery] CheckOpenAccountingRequest request)
+        public ActionResult<Response<CheckOpenAccountingResponse>> GetList([FromQuery] CheckOpenAccountingRequest request)
         {
             var input = new CheckOpenAccountingInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
@@ -165,7 +165,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.Recaculation)]
-        public ActionResult<Response<RecaculationResponse>> Recaculation([FromBody] RecaculationRequest request)
+        public ActionResult<Response<RecaculationResponse>> ActionResult([FromBody] RecaculationRequest request)
         {
             var input = new RecaculationInputData(HpId, request.RaiinNo, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
@@ -177,7 +177,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.UpdateAccountingFormMst)]
-        public ActionResult<Response<UpdateAccountingFormMstResponse>> UpdateAccountingFormMst([FromBody] UpdateAccountingFormMstRequest request)
+        public ActionResult<Response<UpdateAccountingFormMstResponse>> ActionResult([FromBody] UpdateAccountingFormMstRequest request)
         {
             var input = new UpdateAccountingFormMstInputData(UserId, request.AccountingFormMstModels);
             var output = _bus.Handle(input);
@@ -189,7 +189,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetAccountingFormMst)]
-        public ActionResult<Response<GetAccountingFormMstResponse>> GetAccountingFormMst()
+        public ActionResult<Response<GetAccountingFormMstResponse>> ActionResult()
         {
             var input = new GetAccountingFormMstInputData(HpId);
             var output = _bus.Handle(input);

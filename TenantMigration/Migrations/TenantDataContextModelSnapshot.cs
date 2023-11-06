@@ -6672,7 +6672,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("IS_DELETED");
 
                     b.Property<string>("SetName")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("SET_NAME");
@@ -6746,7 +6745,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("IS_DELETED");
 
                     b.Property<string>("KensaItemCd")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("KENSA_ITEM_CD");
@@ -21521,6 +21519,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
 
+                    b.Property<int>("IsExclude")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_EXCLUDE");
+
                     b.Property<string>("ItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
@@ -21546,6 +21548,73 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "GrpCd", "Id");
 
                     b.ToTable("SINREKI_FILTER_MST_DETAIL");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.SinrekiFilterMstKoui", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("GrpCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("GRP_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<long>("SeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(3);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SeqNo"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE")
+                        .HasColumnOrder(6);
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID")
+                        .HasColumnOrder(7);
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE")
+                        .HasColumnOrder(8);
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED")
+                        .HasColumnOrder(5);
+
+                    b.Property<int>("KouiKbnId")
+                        .HasColumnType("integer")
+                        .HasColumnName("KOUI_KBN_ID")
+                        .HasColumnOrder(4);
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE")
+                        .HasColumnOrder(9);
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID")
+                        .HasColumnOrder(10);
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE")
+                        .HasColumnOrder(11);
+
+                    b.HasKey("HpId", "GrpCd", "SeqNo");
+
+                    b.ToTable("SINREKI_FILTER_MST_KOUI");
                 });
 
             modelBuilder.Entity("Entity.Tenant.SmartKarteAppSignalRPort", b =>

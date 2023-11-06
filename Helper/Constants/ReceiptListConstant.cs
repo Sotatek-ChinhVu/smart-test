@@ -1,10 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿namespace Helper.Constants;
 
-namespace Helper.Constants;
-
-public static class ReceiptListConstant
+public class ReceiptListConstant
 {
-    public static readonly ImmutableDictionary<string, string> ShaHoDict = new Dictionary<string, string>()
+    public static readonly Dictionary<string, string> ShaHoDict = new Dictionary<string, string>()
     {
         { "1112" , "社保単独・本人" },
         { "1114" , "社保単独・未就学" },
@@ -35,9 +33,9 @@ public static class ReceiptListConstant
         { "1222" , "公費２併" },
         { "1232" , "公費３併" },
         { "1242" , "公費４併" }
-    }.ToImmutableDictionary();
+    };
 
-    public static readonly ImmutableDictionary<string, string> KokuHoDict = new Dictionary<string, string>()
+    public static readonly Dictionary<string, string> KokuHoDict = new Dictionary<string, string>()
     {
         { "1112" , "国保単独・本人" },
         { "1114" , "国保単独・未就学" },
@@ -99,7 +97,7 @@ public static class ReceiptListConstant
         { "1456" , "退職５併・家族" },
         { "1458" , "退職５併・高一/低" },
         { "1450" , "退職５併・高７" }
-    }.ToImmutableDictionary();
+    };
 
     public static readonly string RECEIPT_LIST_INI_KEY = "ReceiptListDatagrid";
 }

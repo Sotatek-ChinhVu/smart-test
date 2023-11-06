@@ -8,6 +8,8 @@ namespace Domain.Models.Reception
 {
     public class ReceptionDto
     {
+
+
         public ReceptionDto(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment)
         {
             HpId = hpId;
@@ -53,19 +55,6 @@ namespace Domain.Models.Reception
             SinEndTime = string.Empty;
             KaikeiTime = string.Empty;
             Comment = string.Empty;
-        }
-
-        public ReceptionDto()
-        {
-            YoyakuTime = string.Empty;
-            UketukeTime = string.Empty;
-            SinStartTime = string.Empty;
-            SinEndTime = string.Empty;
-            KaikeiTime = string.Empty;
-            Comment = string.Empty;
-            DepartmentSName = string.Empty;
-            KaikeiInfModels = new();
-            HokenPatternModel = new();
         }
         public int HpId { get; private set; }
 
@@ -171,7 +160,7 @@ namespace Domain.Models.Reception
             }
             string key = hokenKbn + firstNum.AsString() + secondNum.AsString() + thirdNum.AsString() + fourthNum.AsString();
 
-            if (HokenPatternConstant.PatternNameDic.ContainsKey(key))
+            if (HokenPatternConstant.PatternNameDic.ContainsKey(key) == true)
             {
                 patternName = HokenPatternConstant.PatternNameDic[key];
             }
@@ -183,7 +172,7 @@ namespace Domain.Models.Reception
                     patternName += GetKohiCountName(kohiCount);
                 }
             }
-            if (string.IsNullOrWhiteSpace(patternName))
+            if (string.IsNullOrWhiteSpace(patternName) == true)
             {
                 patternName = "自費レセ100％";
             }
@@ -239,6 +228,19 @@ namespace Domain.Models.Reception
             {
                 return HenkanJ.Instance.ToFullsize(kohicount.AsString()) + "併";
             }
+        }
+
+        public ReceptionDto()
+        {
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
+            Comment = string.Empty;
+            DepartmentSName = string.Empty;
+            KaikeiInfModels = new();
+            HokenPatternModel = new();
         }
     }
 }

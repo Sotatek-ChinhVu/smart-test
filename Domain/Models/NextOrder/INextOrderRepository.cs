@@ -5,7 +5,7 @@ namespace Domain.Models.NextOrder
 {
     public interface INextOrderRepository : IRepositoryBase
     {
-        List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn);
+        List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int type);
 
         RsvkrtKarteInfModel GetKarteInf(int hpId, long ptId, long rsvkrtNo);
 

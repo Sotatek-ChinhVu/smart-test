@@ -568,34 +568,38 @@ namespace Reporting.Yakutai.Service
             List<CoSingleDoseMstModel> singleDoses = _finder.FindSingleDoseMst(_hpId);
 
             // 一包化指示項目を含むかどうか
-            List<CoOdrInfModel> appendOdrInfs = new();
-            List<CoOdrInfDetailModel> appendOdrDtls = new ();
+            List<CoOdrInfModel> appendOdrInfs = new List<CoOdrInfModel>();
+            List<CoOdrInfDetailModel> appendOdrDtls = new List<CoOdrInfDetailModel>();
 
             foreach (CoOdrInfModel odrInf in odrInfs.OrderBy(p => p.OdrKouiKbn).ThenBy(p => p.SortNo).ThenBy(p => p.RpNo).ThenBy(p => p.RpEdaNo))
             {
-                List<int> fukuyojis = new ()
+                List<int> fukuyojis = new List<int>()
                 {
                     0,0,0,0,0
                 };
 
-                bool ippo = !string.IsNullOrEmpty(_systemConfig.YakutaiFukuyojiIppokaItemCd()) &&
+                bool ippo =
+                    string.IsNullOrEmpty(_systemConfig.YakutaiFukuyojiIppokaItemCd()) == false &&
                     odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.ItemCd == _systemConfig.YakutaiFukuyojiIppokaItemCd());
 
                 // 用法の服用時設定を確認
-                if (ippo && odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1))
+                if (ippo)
                 {
-                    var yohoOdrDtl = odrInfDtls.First(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1);
-                    if (yohoOdrDtl.FukuyoRise + yohoOdrDtl.FukuyoMorning + yohoOdrDtl.FukuyoDaytime + yohoOdrDtl.FukuyoNight + yohoOdrDtl.FukuyoSleep <= 0)
+                    if (odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1))
                     {
-                        ippo = false;
-                    }
-                    else
-                    {
-                        fukuyojis[0] = yohoOdrDtl.FukuyoRise;
-                        fukuyojis[1] = yohoOdrDtl.FukuyoMorning;
-                        fukuyojis[2] = yohoOdrDtl.FukuyoDaytime;
-                        fukuyojis[3] = yohoOdrDtl.FukuyoNight;
-                        fukuyojis[4] = yohoOdrDtl.FukuyoSleep;
+                        CoOdrInfDetailModel yohoOdrDtl = odrInfDtls.Find(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1);
+                        if (yohoOdrDtl.FukuyoRise + yohoOdrDtl.FukuyoMorning + yohoOdrDtl.FukuyoDaytime + yohoOdrDtl.FukuyoNight + yohoOdrDtl.FukuyoSleep <= 0)
+                        {
+                            ippo = false;
+                        }
+                        else
+                        {
+                            fukuyojis[0] = yohoOdrDtl.FukuyoRise;
+                            fukuyojis[1] = yohoOdrDtl.FukuyoMorning;
+                            fukuyojis[2] = yohoOdrDtl.FukuyoDaytime;
+                            fukuyojis[3] = yohoOdrDtl.FukuyoNight;
+                            fukuyojis[4] = yohoOdrDtl.FukuyoSleep;
+                        }
                     }
                 }
 

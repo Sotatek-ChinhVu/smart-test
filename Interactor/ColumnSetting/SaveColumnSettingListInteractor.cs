@@ -9,11 +9,13 @@ public class SaveColumnSettingListInteractor : ISaveColumnSettingListInputPort
 {
     private readonly IColumnSettingRepository _columnSettingRepository;
     private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
     public SaveColumnSettingListInteractor(ITenantProvider tenantProvider, IColumnSettingRepository columnSettingRepository)
     {
         _columnSettingRepository = columnSettingRepository;
-        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveColumnSettingListOutputData Handle(SaveColumnSettingListInputData input)

@@ -10,11 +10,13 @@ namespace Interactor.CommonChecker
     {
         private readonly ICommonMedicalCheck _commonMedicalCheck;
         private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
         public CommonCheckerInteractor(ITenantProvider tenantProvider, ICommonMedicalCheck commonMedicalCheck)
         {
             _commonMedicalCheck = commonMedicalCheck;
-            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public GetOrderCheckerOutputData Handle(GetOrderCheckerInputData inputData)

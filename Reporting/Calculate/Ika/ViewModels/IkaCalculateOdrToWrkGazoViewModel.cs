@@ -268,7 +268,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                             }
                             foreach (OdrDtlTenModel odrDtl in filteredOdrDtl)
                             {
-                                if (_common.hokenKbn != HokenSyuConst.Jibai && odrDtl.IsOnlyFilm || (commentSkipFlg == false && odrDtl.IsComment))
+                                if (_common.hokenKbn != HokenSyu.Jibai && odrDtl.IsOnlyFilm || (commentSkipFlg == false && odrDtl.IsComment))
                                 {
                                     // 診療行為・コメント or 自賠以外でフィルム
                                     if (odrDtl.IsOnlyFilm)
@@ -339,7 +339,7 @@ namespace Reporting.Calculate.Ika.ViewModels
 
                             foreach (OdrDtlTenModel odrDtl in filteredOdrDtl)
                             {
-                                if (odrDtl.IsTorCommentItem(commentSkipFlg) && !(_common.hokenKbn != HokenSyuConst.Jibai && odrDtl.IsOnlyFilm))
+                                if (odrDtl.IsTorCommentItem(commentSkipFlg) && !(_common.hokenKbn != HokenSyu.Jibai && odrDtl.IsOnlyFilm))
                                 {
                                     // 特材・コメント
 
@@ -873,7 +873,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                 }
 
                 // フィルム
-                if (_common.hokenKbn == HokenSyuConst.Jibai)
+                if (_common.hokenKbn == HokenSyu.Jibai)
                 {
                     // 自賠の場合、点数欄集計先は薬剤と一緒
                     _common.Wrk.AppendNewWrkSinKoui(hokenPid, hokenId, ReceSyukeisaki.GazoYakuzai, cdKbn: _common.GetCdKbn(santeiKbn, "E"));

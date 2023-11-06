@@ -41,15 +41,15 @@ namespace EmrCloudApi.Requests.Insurance
 
         public int HokenEdaNo { get; private set; }
 
-        public string FutansyaNo { get; private set; }
+        public string FutansyaNo { get; private set; } = string.Empty;
 
-        public string JyukyusyaNo { get; private set; }
+        public string JyukyusyaNo { get; private set; } = string.Empty;
 
         public int HokenSbtKbn { get; private set; }
 
-        public string Houbetu { get; private set; }
+        public string Houbetu { get; private set; } = string.Empty;
 
-        public string TokusyuNo { get; private set; }
+        public string TokusyuNo { get; private set; } = string.Empty;
 
         public int SikakuDate { get; private set; }
 
@@ -60,12 +60,11 @@ namespace EmrCloudApi.Requests.Insurance
         public int EndDate { get; private set; }
 
         public int Rate { get; private set; }
-
         public int GendoGaku { get; private set; }
 
         public int IsDeleted { get; private set; }
 
-        public List<ConfirmDateDto> ConfirmDates { get; private set; }
+        public List<ConfirmDateDto> ConfirmDates { get; private set; } = new List<ConfirmDateDto>();
 
         public bool IsAddNew { get; private set; }
 

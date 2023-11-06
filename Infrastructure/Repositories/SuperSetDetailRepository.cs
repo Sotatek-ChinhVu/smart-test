@@ -108,7 +108,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         {
             var taskByomei = Task<List<SetByomeiModel>>.Factory.StartNew(() => ExcuGetByomeisForEachDetailItem(currentSetCd, byomeiObj, allSetByomeis, allByomeiMstList));
             var taskKarte = Task<SetKarteInfModel?>.Factory.StartNew(() => ExcuGetKarteForEachDetailItem(currentSetCd, karteObj, allKarteInfs));
-            var taskOrder = Task<List<SetOrderInfModel>>.Factory.StartNew(() => ExcuGetOrderForEachDetailItem(currentSetCd, orderObj, hpId, allSetOrderInfs, allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, ipnKansanMsts, yohoSetMsts ?? new(), tenMstYohos, settingValues, kensaIrai, kensaIraiCondition));
+            var taskOrder = Task<List<SetOrderInfModel>>.Factory.StartNew(() => ExcuGetOrderForEachDetailItem(currentSetCd, orderObj, hpId, sinDate, allSetOrderInfs, allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, ipnKansanMsts, yohoSetMsts ?? new(), tenMstYohos, settingValues, kensaIrai, kensaIraiCondition));
             var taskKarteFile = Task<List<SetFileInfModel>>.Factory.StartNew(() => ExcuGetKarteFileForEachDetailItem(currentSetCd, karteFileObj, allKarteFiles, lastSeqNos));
 
             Task.WaitAll(taskByomei, taskKarte, taskOrder, taskKarteFile);
@@ -177,13 +177,13 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         }
     }
 
-    private List<SetOrderInfModel> ExcuGetOrderForEachDetailItem(int setCd, object orderObj, int hpId, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, List<IpnKasanMst> ipnKansanMsts, List<YohoSetMst> yohoSetMsts, List<TenMst> tenMstYohos, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
+    private List<SetOrderInfModel> ExcuGetOrderForEachDetailItem(int setCd, object orderObj, int hpId, int sinDate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, List<IpnKasanMst> ipnKansanMsts, List<YohoSetMst> yohoSetMsts, List<TenMst> tenMstYohos, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
     {
-        List<SetOrderInfModel> ordInfs = new();
+        var ordInfs = new List<SetOrderInfModel>();
 
         lock (orderObj)
         {
-            ordInfs.AddRange(GetSetOrdInfModel(hpId, setCd, setOdrInfs ?? new(), setOdrInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, ipnKansanMsts, yohoSetMsts, tenMstYohos, settingValues, kensaIrai, kensaIraiCondition));
+            ordInfs.AddRange(GetSetOrdInfModel(hpId, setCd, sinDate, setOdrInfs ?? new(), setOdrInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, ipnKansanMsts, yohoSetMsts, tenMstYohos, settingValues, kensaIrai, kensaIraiCondition));
         }
 
         return ordInfs;
@@ -275,7 +275,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-
+    
         return codeLists?.Where(c => c != string.Empty).Distinct().ToList() ?? new List<string>();
     }
 
@@ -415,7 +415,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return result;
     }
 
-    private List<SetOrderInfModel> GetSetOrdInfModel(int hpId, int setCd, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, List<IpnKasanMst> ipnKansanMsts, List<YohoSetMst> yohoSetMsts, List<TenMst> tenMstYohos, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
+    private List<SetOrderInfModel> GetSetOrdInfModel(int hpId, int setCd, int sindate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, List<IpnKasanMst> ipnKansanMsts, List<YohoSetMst> yohoSetMsts, List<TenMst> tenMstYohos, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
     {
         List<SetOrderInfModel> listSetOrderInfModel = new();
 
@@ -454,6 +454,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 foreach (var odrInfDetail in currentSetOdrInfDetails)
                 {
                     var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd) ?? new TenMst();
+                    var ten = tenMst?.Ten ?? 0;
                     var ipnNameMst = allIpnNameMsts.FirstOrDefault(i => i.IpnNameCd == tenMst?.IpnNameCd);
                     var kensaMst = tenMst == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo);
                     var bunkatuKoui = 0;
@@ -465,7 +466,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                     var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
                     int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, itemOrderModel.InoutKbn, itemOrderModel.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
                     var ipnKansanMst = ipnKansanMsts?.FirstOrDefault(ipn => ipn.IpnNameCd == odrInfDetail.IpnCd);
-                    var yohoSets = GetListYohoSetMstModelByUserID(yohoSetMsts ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new());
+                    var yohoSets = GetListYohoSetMstModelByUserID(yohoSetMsts ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>());
                     var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, settingValues, yakka, tenMst ?? new(), ipnNameMst ?? new(), ipnKansanMst ?? new(), kensaMst ?? new(), yohoSets, isGetPriceInYakka, kensaGaichu, bunkatuKoui, itemOrderModel.InoutKbn, itemOrderModel.OdrKouiKbn);
                     odrDetailModels.Add(odrInfDetailModel);
                 }
@@ -769,36 +770,43 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     private bool SaveSetByomei(int setCd, int userId, int hpId, List<SetByomeiModel> setByomeiModels)
     {
         bool status = false;
-        var listOldSetByomeis = TrackingDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
-
-        // Add new SetByomei
-        var listAddNewSetByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToSetByomeiEntity(setCd, userId, hpId, new SetByomei(), model)).ToList();
-        if (listAddNewSetByomeis != null && listAddNewSetByomeis.Any())
+        try
         {
-            TrackingDataContext.SetByomei.AddRange(listAddNewSetByomeis);
-        }
+            var listOldSetByomeis = TrackingDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
 
-        // Update SetByomei
-        foreach (var model in setByomeiModels.Where(model => model.Id != 0).ToList())
-        {
-            var mst = listOldSetByomeis.FirstOrDefault(mst => mst.Id == model.Id);
-            if (mst != null)
+            // Add new SetByomei
+            var listAddNewSetByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToSetByomeiEntity(setCd, userId, hpId, new SetByomei(), model)).ToList();
+            if (listAddNewSetByomeis != null && listAddNewSetByomeis.Count > 0)
             {
-                mst = ConvertToSetByomeiEntity(setCd, userId, hpId, mst, model) ?? new();
+                TrackingDataContext.SetByomei.AddRange(listAddNewSetByomeis);
             }
-        }
 
-        // Delete SetByomei
-        var listSetByomeiDelete = listOldSetByomeis.Where(mst => !setByomeiModels.Select(model => model.Id).ToList().Contains(mst.Id)).ToList();
-        foreach (var mst in listSetByomeiDelete)
-        {
-            mst.IsDeleted = DeleteTypes.Deleted;
-            mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            mst.UpdateId = userId;
+            // Update SetByomei
+            foreach (var model in setByomeiModels.Where(model => model.Id != 0).ToList())
+            {
+                var mst = listOldSetByomeis.FirstOrDefault(mst => mst.Id == model.Id);
+                if (mst != null)
+                {
+                    mst = ConvertToSetByomeiEntity(setCd, userId, hpId, mst, model) ?? new SetByomei();
+                }
+            }
+
+            // Delete SetByomei
+            var listSetByomeiDelete = listOldSetByomeis.Where(mst => !setByomeiModels.Select(model => model.Id).ToList().Contains(mst.Id)).ToList();
+            foreach (var mst in listSetByomeiDelete)
+            {
+                mst.IsDeleted = DeleteTypes.Deleted;
+                mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                mst.UpdateId = userId;
+            }
+            TrackingDataContext.SaveChanges();
+            status = true;
+            return status;
         }
-        TrackingDataContext.SaveChanges();
-        status = true;
-        return status;
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     private SetByomei ConvertToSetByomeiEntity(int setCd, int userId, int hpId, SetByomei mst, SetByomeiModel model)
@@ -875,42 +883,50 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     private bool SaveSetKarte(int userId, SetKarteInfModel model)
     {
         bool status = false;
-        // update SetKarte
-        var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1 && mst.KarteKbn == 1);
-        if (entity == null)
-        {
-            entity = new();
-            entity.SetCd = model.SetCd;
-            entity.HpId = model.HpId;
-            entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
-            entity.IsDeleted = 0;
-            entity.KarteKbn = 1;
-            entity.CreateDate = CIUtil.GetJapanDateTimeNow();
-            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            entity.UpdateId = userId;
-            entity.CreateId = userId;
-            entity.Text = model.Text;
-            TrackingDataContext.SetKarteInf.Add(entity);
-        }
-        else
-        {
-            entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
-            entity.Text = model.Text;
-            entity.UpdateId = userId;
-            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-        }
 
-        // if set karte have image, update setKarteImage
-        var listKarteImgInfs = TrackingDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
-        foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName ?? string.Empty))).ToList())
+        try
         {
-            item.Position = 10;
+            // update SetKarte
+            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1 && mst.KarteKbn == 1);
+            if (entity == null)
+            {
+                entity = new();
+                entity.SetCd = model.SetCd;
+                entity.HpId = model.HpId;
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.IsDeleted = 0;
+                entity.KarteKbn = 1;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                entity.CreateId = userId;
+                entity.Text = model.Text;
+                TrackingDataContext.SetKarteInf.Add(entity);
+            }
+            else
+            {
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.Text = model.Text;
+                entity.UpdateId = userId;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            }
+
+            // if set karte have image, update setKarteImage
+            var listKarteImgInfs = TrackingDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
+            foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName ?? string.Empty))).ToList())
+            {
+                item.Position = 10;
+            }
+
+            TrackingDataContext.SaveChanges();
+            status = true;
+
+            return status;
         }
-
-        TrackingDataContext.SaveChanges();
-        status = true;
-
-        return status;
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     private string ConvertToLinkImage(string FileName)
@@ -924,58 +940,65 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     private bool SaveSetOrderInf(int setCd, int userId, int hpId, List<SetOrderInfModel> setOrderInfModels)
     {
         bool status = false;
-        // Add new SetOdrInf
-        List<SetOdrInf> listSetOdrInfAddNews = new();
-        List<SetOdrInfDetail> listSetOdrInfDetailAddNews = new();
-        var listAddNewSetOrderModels = setOrderInfModels.Where(model => model.IsDeleted == 0).ToList();
-        if (listAddNewSetOrderModels != null && listAddNewSetOrderModels.Count > 0)
+        try
         {
-            int plusRpNo = 1;
-            foreach (var model in listAddNewSetOrderModels)
+            // Add new SetOdrInf
+            List<SetOdrInf> listSetOdrInfAddNews = new();
+            List<SetOdrInfDetail> listSetOdrInfDetailAddNews = new();
+            var listAddNewSetOrderModels = setOrderInfModels.Where(model => model.IsDeleted == 0).ToList();
+            if (listAddNewSetOrderModels != null && listAddNewSetOrderModels.Count > 0)
             {
-                var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
-                entityMst.RpNo = model.RpNo;
-                entityMst.RpEdaNo = model.RpEdaNo + 1;
-                if (entityMst.RpNo == 0)
+                int plusRpNo = 1;
+                foreach (var model in listAddNewSetOrderModels)
                 {
-                    entityMst.RpNo = GetMaxRpNo(setCd, hpId) + plusRpNo;
-                    entityMst.RpEdaNo = 1;
-                    plusRpNo++;
+                    var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
+                    entityMst.RpNo = model.RpNo;
+                    entityMst.RpEdaNo = model.RpEdaNo + 1;
+                    if (entityMst.RpNo == 0)
+                    {
+                        entityMst.RpNo = GetMaxRpNo(setCd, hpId) + plusRpNo;
+                        entityMst.RpEdaNo = 1;
+                        plusRpNo++;
+                    }
+                    entityMst.SortNo = model.SortNo;
+                    entityMst.Id = 0;
+                    int rowNo = 1;
+                    foreach (var detail in model.OrdInfDetails)
+                    {
+                        var entityDetail = ConvertToSetOdrInfDetailEntity(setCd, hpId, new SetOdrInfDetail(), detail);
+                        entityDetail.RpNo = entityMst.RpNo;
+                        entityDetail.RpEdaNo = entityMst.RpEdaNo;
+                        entityDetail.RowNo = rowNo;
+                        listSetOdrInfDetailAddNews.Add(entityDetail);
+                        rowNo++;
+                    }
+                    listSetOdrInfAddNews.Add(entityMst);
                 }
-                entityMst.SortNo = model.SortNo;
-                entityMst.Id = 0;
-                int rowNo = 1;
-                foreach (var detail in model.OrdInfDetails)
-                {
-                    var entityDetail = ConvertToSetOdrInfDetailEntity(setCd, hpId, new SetOdrInfDetail(), detail);
-                    entityDetail.RpNo = entityMst.RpNo;
-                    entityDetail.RpEdaNo = entityMst.RpEdaNo;
-                    entityDetail.RowNo = rowNo;
-                    listSetOdrInfDetailAddNews.Add(entityDetail);
-                    rowNo++;
-                }
-                listSetOdrInfAddNews.Add(entityMst);
+                TrackingDataContext.SetOdrInf.AddRange(listSetOdrInfAddNews);
+                TrackingDataContext.SetOdrInfDetail.AddRange(listSetOdrInfDetailAddNews);
             }
-            TrackingDataContext.SetOdrInf.AddRange(listSetOdrInfAddNews);
-            TrackingDataContext.SetOdrInfDetail.AddRange(listSetOdrInfDetailAddNews);
-        }
 
-        // Delete SetOdrInf
-        var listIdDeletes = setOrderInfModels.Where(model => model.IsDeleted != 0 || model.Id > 0).Select(item => item.Id).ToList();
-        if (listIdDeletes != null && listIdDeletes.Count > 0)
+            // Delete SetOdrInf
+            var listIdDeletes = setOrderInfModels.Where(model => model.IsDeleted != 0 || model.Id > 0).Select(item => item.Id).ToList();
+            if (listIdDeletes != null && listIdDeletes.Count > 0)
+            {
+                List<SetOdrInf> listSetOdrInfDeletes = TrackingDataContext.SetOdrInf.Where(item => item.SetCd == setCd && item.HpId == hpId && listIdDeletes.Contains(item.Id)).ToList();
+                foreach (var mst in listSetOdrInfDeletes)
+                {
+                    mst.IsDeleted = DeleteTypes.Deleted;
+                    mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    mst.UpdateId = userId;
+                }
+            }
+
+            TrackingDataContext.SaveChanges();
+            status = true;
+            return status;
+        }
+        catch (Exception)
         {
-            List<SetOdrInf> listSetOdrInfDeletes = TrackingDataContext.SetOdrInf.Where(item => item.SetCd == setCd && item.HpId == hpId && listIdDeletes.Contains(item.Id)).ToList();
-            foreach (var mst in listSetOdrInfDeletes)
-            {
-                mst.IsDeleted = DeleteTypes.Deleted;
-                mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                mst.UpdateId = userId;
-            }
+            throw;
         }
-
-        TrackingDataContext.SaveChanges();
-        status = true;
-        return status;
     }
 
     private SetOdrInf ConvertToSetOdrInfEntity(int setCd, int userId, int hpId, SetOdrInf entity, SetOrderInfModel model)
@@ -1073,22 +1096,29 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         // 先発品
                         syohoKbn = 0;
                         syohoLimitKbn = 0;
+                        //odrDetail.SyohoKbn = 0;
+                        //odrDetail.SyohoLimitKbn = 0;
                         break;
                     case 1:
                         // 後発品
                         syohoKbn = settingValues["autoSetSyohoKbnKohatuDrug"] + 1;
                         syohoLimitKbn = settingValues["autoSetSyohoLimitKohatuDrug"];
+                        //odrDetail.SyohoKbn = settingValues["autoSetSyohoKbnKohatuDrug"] + 1;
+                        //odrDetail.SyohoLimitKbn = settingValues["autoSetSyohoLimitKohatuDrug"];
                         break;
                     case 2:
                         // 後発品のある先発品
                         syohoKbn = settingValues["autoSetSyohoKbnSenpatuDrug"] + 1;
                         syohoLimitKbn = settingValues["autoSetSyohoLimitSenpatuDrug"];
+                        //odrDetail.SyohoKbn = settingValues["autoSetSyohoKbnSenpatuDrug"] + 1;
+                        //odrDetail.SyohoLimitKbn = settingValues["autoSetSyohoLimitSenpatuDrug"];
                         break;
                 }
                 if (odrDetail.SyohoKbn == 3 && string.IsNullOrEmpty(ipnName))
                 {
                     // 一般名マスタに登録がない
                     syohoKbn = 2;
+                    //odrDetail.SyohoKbn = 2;
                 }
             }
         }
@@ -1208,19 +1238,26 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     public bool SaveListSetKarteFile(int hpId, int setCd, string host, List<SetFileInfModel> listFiles, bool saveTempFile)
     {
-        if (saveTempFile)
+        try
         {
-            var listInsert = ConvertListAddNewFiles(hpId, host, listFiles);
-            if (listInsert.Any())
+            if (saveTempFile)
             {
-                TrackingDataContext.SetKarteImgInf.AddRange(listInsert);
+                var listInsert = ConvertListAddNewFiles(hpId, host, listFiles);
+                if (listInsert.Any())
+                {
+                    TrackingDataContext.SetKarteImgInf.AddRange(listInsert);
+                }
             }
+            else
+            {
+                UpdateSeqNoSetFile(hpId, setCd, listFiles.Select(item => new SetFileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
+            }
+            return TrackingDataContext.SaveChanges() > 0;
         }
-        else
+        catch (Exception)
         {
-            UpdateSeqNoSetFile(hpId, setCd, listFiles.Select(item => new SetFileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
+            throw;
         }
-        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private void UpdateSeqNoSetFile(int hpId, int setCd, List<SetFileInfModel> fileInfModelList)
@@ -1613,7 +1650,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             listDetail = listDetail.Union(listDetailAll);
         }
 
-        IEnumerable<OdrSetNameModel>? listDetailResult = null;
+        IEnumerable<OdrSetNameModel> listDetailResult = null;
         // Check conditions
         if (checkBoxStatus.JihiChecked)
         {

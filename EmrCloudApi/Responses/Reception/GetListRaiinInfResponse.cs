@@ -9,5 +9,5 @@ public class GetListRaiinInfResponse
         RaiinInfs = raiinInfs;
     }
 
-    public List<GetListRaiinInfOutputItem> RaiinInfs { get; private set; }
+    public List<GetListRaiinInfOutputItem> RaiinInfs { get; private set; } = new();
 }

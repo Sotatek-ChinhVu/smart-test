@@ -2,6 +2,8 @@
 
 public class UserConfCommon
 {
+    private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
+
     public enum DateTimeFormart
     {
         JapaneseCalendar = 0,

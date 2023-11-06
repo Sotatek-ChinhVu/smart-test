@@ -31,6 +31,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public ISystemConfig? SystemConfig { get; private set; }
 
+        public IMasterDataCacheService TenMstCacheService { get; private set; }
+
         public void InitFinder(TenantNoTrackingDataContext _dataContext, IMasterDataCacheService _tenMstCacheService)
         {
             Finder = new RealtimeCheckerFinder(_dataContext, _tenMstCacheService);
@@ -66,7 +68,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public List<ItemCodeModel> GetAllOdrDetailCodeByOrderList(List<TOdrInf> orderList)
         {
-            List<ItemCodeModel> result = new();
+            List<ItemCodeModel> result = new List<ItemCodeModel>();
 
             foreach (var order in orderList)
             {
@@ -83,7 +85,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public void Dispose()
         {
-            ///DataContext.Dispose();
+            //DataContext.Dispose();
         }
     }
 }

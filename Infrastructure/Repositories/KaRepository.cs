@@ -137,7 +137,7 @@ public class KaRepository : RepositoryBase, IKaRepository
 
     public List<KacodeYousikiMstModel> GetKacodeYousikiMst()
     {
-        var kacodeMsts = NoTrackingDataContext.KacodeYousikiMsts.AsEnumerable().OrderBy(u => u.YousikiKaCd);
+        var kacodeMsts = NoTrackingDataContext.KacodeYousikiMsts.ToList().OrderBy(u => u.YousikiKaCd);
         return kacodeMsts.Select(p => new KacodeYousikiMstModel(p.YousikiKaCd, p.SortNo, p.KaName)).ToList();
     }
 

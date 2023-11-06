@@ -43,7 +43,7 @@ public class KinkiTainCheckerTest : BaseUT
         try
         {
             //Act
-            var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, new(), true);
+            var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, null, true);
 
             //Assert
             Assert.True(result.Count == 1);
@@ -81,7 +81,7 @@ public class KinkiTainCheckerTest : BaseUT
         try
         {
             //Act
-            var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, new(), true);
+            var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, null, true);
 
             //Assert
             Assert.True(!result.Any());

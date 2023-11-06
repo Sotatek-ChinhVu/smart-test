@@ -140,7 +140,7 @@ namespace Interactor.Accounting
         {
             if (ptHokenInf == null || ptHokenInf.IsReceKisaiOrNoHoken) return new();
 
-            if (ptHokenInf.IsExpirated)
+            if (ptHokenInf.IsExpirated == true)
             {
                 if (ptHokenInf.IsHoken)
                 {
@@ -168,12 +168,15 @@ namespace Interactor.Accounting
         {
             if (ptHokenInf == null || ptHokenInf.IsReceKisaiOrNoHoken) return new();
 
-            if (!ptHokenInf.HasDateConfirmed && ptHokenInf.IsHoken)
+            if (ptHokenInf.HasDateConfirmed == false)
             {
-                return new WarningMemoDto(raiinNo,
-                    string.Format(
-                        $"【保険確認】 保険が未確認です。（最終確認日：{CIUtil.SDateToShowWDate(ptHokenInf.LastDateConfirmed)}）"),
-                    alertFg);
+                if (ptHokenInf.IsHoken)
+                {
+                    return new WarningMemoDto(raiinNo,
+                        string.Format(
+                            $"【保険確認】 保険が未確認です。（最終確認日：{CIUtil.SDateToShowWDate(ptHokenInf.LastDateConfirmed)}）"),
+                        alertFg);
+                }
             }
             return new();
         }
@@ -181,7 +184,7 @@ namespace Interactor.Accounting
         private WarningMemoDto CheckKohiIsExpirated(long raiinNo, KohiInfModel ptKohiModel, int alertFg = 1)
         {
             if (ptKohiModel == null) return new();
-            if (ptKohiModel.IsExpirated)
+            if (ptKohiModel.IsExpirated == true)
             {
                 if (!string.IsNullOrWhiteSpace(ptKohiModel.FutansyaNo))
                 {
@@ -204,7 +207,7 @@ namespace Interactor.Accounting
         private WarningMemoDto CheckKohiHasDateConfirmed(long raiinNo, KohiInfModel ptKohiModel, int alertFg = 0)
         {
             if (ptKohiModel == null) return new();
-            if (!ptKohiModel.HasDateConfirmed)
+            if (ptKohiModel.HasDateConfirmed == false)
             {
                 if (!string.IsNullOrWhiteSpace(ptKohiModel.FutansyaNo))
                 {

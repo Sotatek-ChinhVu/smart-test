@@ -16,6 +16,18 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     private const int ADOPTED_CONFIRM_CD = 100005;
     private static List<ConfigGroupDefault> configGroupDefault = new();
     private readonly IDatabase _cache;
+    private List<int> listFunctionButtonCode = new List<int> { 10, 3, 902, 922, 923, 906, 907, 14, 919, 903, 9, 905, 15, 921, 928, 19 };
+    private List<int> listSuperSetButtonCode = new List<int> { 301, 302, 303, 304, 305, 306, 307, 308, 309, 310 };
+    private List<int> listSuperSetButtonCodeItem = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    private List<int> summaryGrpCds = new List<int>() { 913, 901, 914, 924, 927 };
+    private List<int> listOtherButtonCode = new List<int> { 1, 13, 909, 929, 100001, 100002, 100004, 100005, 100006, 100011, 100012 };
+    private List<int> listOrderButtonCode = new List<int> { 202, 201, 203, 205, 204, 206, 207, 208 };
+    private List<int> headerGrpCds = new List<int>() { 910, 911, 912 };
+    private List<int> karteGrpCds = new List<int> { 99, 101, 104, 103, 908, 105 };
+    private const int claimSagakuGrpCd = 922;
+    private const int claimSagakuAtReceTimeGrpCd = 923;
+    private const int noteScreenDisplayGrpCd = 919;
+    private const int saveCheckGrpCd = 921;
     private readonly string key;
     private readonly IConfiguration _configuration;
 
@@ -187,7 +199,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     private List<UserConf> GetData(int hpId, int userId)
     {
-        List<UserConf> result;
+        var result = new List<UserConf>();
         if (!_cache.KeyExists(key + userId + hpId))
         {
             result = ReloadCache(hpId, userId);

@@ -30,7 +30,7 @@ public class RecalculationController : AuthorizeControllerBase
     private readonly ITenantProvider _tenantProvider;
     private readonly IConfiguration _configuration;
     private readonly IMessenger _messenger;
-    private HubConnection _connection;
+    private HubConnection connection;
     private string uniqueKey;
     private bool stopCalculate = false;
     private bool allowNextStep = false;
@@ -42,14 +42,6 @@ public class RecalculationController : AuthorizeControllerBase
         _configuration = configuration;
         uniqueKey = string.Empty;
         _messenger = messenger;
-        if (_connection == null)
-        {
-            string domain = _tenantProvider.GetDomainFromHeader();
-            string socketUrl = _configuration.GetSection("CalculateApi")["WssPath"]! + domain;
-            _connection = new HubConnectionBuilder()
-             .WithUrl(socketUrl)
-             .Build();
-        }
     }
 
     [HttpPost]
@@ -123,15 +115,15 @@ public class RecalculationController : AuthorizeControllerBase
             {
                 string domain = _tenantProvider.GetDomainFromHeader();
                 string socketUrl = _configuration.GetSection("CalculateApi")["WssPath"]! + domain;
-                _connection = new HubConnectionBuilder()
+                connection = new HubConnectionBuilder()
                  .WithUrl(socketUrl)
                  .Build();
 
-                var connect = _connection.StartAsync();
+                var connect = connection.StartAsync();
                 connect.Wait();
             }
 
-            _connection.On<string, string>("ReceiveMessage", (function, data) =>
+            connection.On<string, string>("ReceiveMessage", (function, data) =>
             {
                 if (function.Equals(FunctionCodes.RunCalculate))
                 {
@@ -148,18 +140,17 @@ public class RecalculationController : AuthorizeControllerBase
                             SendMessage(objectStatus);
                             if (objectStatus.Done)
                             {
-                                _connection.DisposeAsync();
+                                connection.DisposeAsync();
                                 allowNextStep = true;
                             }
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         allowNextStep = true;
                         stopCalculate = true;
                         Console.WriteLine("Exception Calculate:" + data);
                         SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
-                        throw;
                     }
                 }
             });
@@ -188,14 +179,16 @@ public class RecalculationController : AuthorizeControllerBase
             _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
             HttpContext.Response.ContentType = "application/json";
+            //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
+            HttpResponse response = HttpContext.Response;
+            //response.StatusCode = 202;
 
             var input = new ReceiptCheckRecalculationInputData(HpId, UserId, request.PtIds, request.SeikyuYm, request.ReceStatus, _messenger);
             _bus.Handle(input);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
-            throw;
         }
         finally
         {

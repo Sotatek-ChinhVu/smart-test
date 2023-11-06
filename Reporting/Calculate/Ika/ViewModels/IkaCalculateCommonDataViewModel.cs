@@ -1006,8 +1006,8 @@ namespace Reporting.Calculate.Ika.ViewModels
         {
             get
             {
-                return (_arg.hokenKbn == HokenSyuConst.Rosai || _arg.hokenKbn == HokenSyuConst.After ||
-                    (_arg.hokenKbn == HokenSyuConst.Jibai && _systemConfigProvider.GetJibaiJunkyo() == 1));
+                return (_arg.hokenKbn == HokenSyu.Rosai || _arg.hokenKbn == HokenSyu.After ||
+                    (_arg.hokenKbn == HokenSyu.Jibai && _systemConfigProvider.GetJibaiJunkyo() == 1));
             }
         }
         /// <summary>
@@ -1017,7 +1017,7 @@ namespace Reporting.Calculate.Ika.ViewModels
         {
             get
             {
-                return (_arg.hokenKbn == HokenSyuConst.Jibai && _systemConfigProvider.GetJibaiJunkyo() == 1);
+                return (_arg.hokenKbn == HokenSyu.Jibai && _systemConfigProvider.GetJibaiJunkyo() == 1);
             }
         }
 

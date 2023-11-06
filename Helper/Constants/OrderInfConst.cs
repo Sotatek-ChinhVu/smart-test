@@ -177,7 +177,7 @@
         }
     }
 
-    public static class KensaGaichuText
+    public class KensaGaichuText
     {
         public const int NONE = 0;
         /// <summary>

@@ -852,12 +852,12 @@ namespace Reporting.Calculate.Ika.ViewModels
             List<int> hokensyus =
                 new List<int>
                 {
-                        HokenSyuConst.Rosai,
-                        HokenSyuConst.After
+                        HokenSyu.Rosai,
+                        HokenSyu.After
                 };
             if (_systemConfigProvider.GetJibaiJunkyo() == 1)
             {
-                hokensyus.Add(HokenSyuConst.Jibai);
+                hokensyus.Add(HokenSyu.Jibai);
             }
 
             // 合成になるかもしれない項目のリスト

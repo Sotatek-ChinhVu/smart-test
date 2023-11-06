@@ -7,7 +7,7 @@ namespace UseCase.Insurance.ValidMainInsurance
     {
         public bool Result { get => !ValidateDetails.Any(); }
 
-        public List<ResultValidateInsurance<ValidMainInsuranceStatus>> ValidateDetails { get; private set; }
+        public List<ResultValidateInsurance<ValidMainInsuranceStatus>> ValidateDetails { get; private set; } = new List<ResultValidateInsurance<ValidMainInsuranceStatus>>();
 
         public ValidMainInsuranceOutputData(List<ResultValidateInsurance<ValidMainInsuranceStatus>> details)
         {
