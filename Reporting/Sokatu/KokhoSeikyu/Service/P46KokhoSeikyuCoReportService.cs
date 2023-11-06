@@ -258,49 +258,56 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
         public CommonReportingRequestModel GetP46KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> printHokensyaNos)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.seikyuType = seikyuType;
-            var getData = GetData();
-            int indexPage = 1;
-            var fileName = new Dictionary<string, string>();
-
-            if (getData)
+            try
             {
-                foreach (string currentNo in hokensyaNos)
+                this.hpId = hpId;
+                this.seikyuYm = seikyuYm;
+                this.seikyuType = seikyuType;
+                var getData = GetData();
+                int indexPage = 1;
+                var fileName = new Dictionary<string, string>();
+
+                if (getData)
                 {
-                    currentHokensyaNo = currentNo;
-                    currentPage = 1;
-                    hasNextPage = true;
-
-                    while (getData && hasNextPage)
+                    foreach (string currentNo in hokensyaNos)
                     {
-                        UpdateDrawForm();
+                        currentHokensyaNo = currentNo;
+                        currentPage = 1;
+                        hasNextPage = true;
 
-                        if (currentPage == 2)
+                        while (getData && hasNextPage)
                         {
-                            fileName.Add(indexPage.ToString(), _formFileNameP2);
-                        }
-                        else
-                        {
-                            fileName.Add(indexPage.ToString(), _formFileNameP1);
-                        }
+                            UpdateDrawForm();
 
-                        var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
-                        var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
-                        if (kohiHoubetus.Count == 0)
-                        {
-                            hasNextPage = false;
+                            if (currentPage == 2)
+                            {
+                                fileName.Add(indexPage.ToString(), _formFileNameP2);
+                            }
+                            else
+                            {
+                                fileName.Add(indexPage.ToString(), _formFileNameP1);
+                            }
+
+                            var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
+                            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+                            if (kohiHoubetus.Count == 0)
+                            {
+                                hasNextPage = false;
+                            }
+                            currentPage++;
+                            indexPage++;
                         }
-                        currentPage++;
-                        indexPage++;
                     }
                 }
-            }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new P08KokhoSeikyuMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new P08KokhoSeikyuMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
+            }
+            finally
+            {
+                _kokhoFinder.ReleaseResource();
+            }
         }
 
         private void SetFieldData(string field, string value)

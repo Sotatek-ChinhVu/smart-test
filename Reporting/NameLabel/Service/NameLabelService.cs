@@ -16,8 +16,15 @@ public class NameLabelService : INameLabelService
 
     public CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate)
     {
-        CoNameLabelModel coModel = GetData(ptId, kanjiName, sinDate);
-        return new NameLabelMapper(coModel).GetData();
+        try
+        {
+            CoNameLabelModel coModel = GetData(ptId, kanjiName, sinDate);
+            return new NameLabelMapper(coModel).GetData();
+        }
+        finally
+        {
+            _coNameLabelFinder.ReleaseResource();
+        }
     }
 
     private CoNameLabelModel GetData(long ptId, string kanjiName, int sinDate)

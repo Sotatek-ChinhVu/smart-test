@@ -46,34 +46,42 @@ public class Karte3CoReportService : IKarte3CoReportService
 
     public CommonReportingRequestModel GetKarte3PrintData(int hpId, long ptId, int startSinYm, int endSinYm, bool includeHoken, bool includeJihi)
     {
-        this.hpId = hpId;
-        this.ptId = ptId;
-        this.startSinYm = startSinYm;
-        this.endSinYm = endSinYm;
-        this.includeHoken = includeHoken;
-        this.includeJihi = includeJihi;
-
-        var coModels = GetData();
-        if (coModels.Any())
+        try
         {
-            currentPage = 1;
-            coModel = coModels.First();
-            hasNextPage = true;
-            printoutDateTime = CIUtil.GetJapanDateTimeNow();
-            GetRowCount();
-            MakePrintDataList();
+            this.hpId = hpId;
+            this.ptId = ptId;
+            this.startSinYm = startSinYm;
+            this.endSinYm = endSinYm;
+            this.includeHoken = includeHoken;
+            this.includeJihi = includeJihi;
 
-            while (hasNextPage)
+            var coModels = GetData();
+            if (coModels.Any())
             {
-                UpdateDrawForm();
-                currentPage++;
-            }
-        }
+                currentPage = 1;
+                coModel = coModels.First();
+                hasNextPage = true;
+                printoutDateTime = CIUtil.GetJapanDateTimeNow();
+                GetRowCount();
+                MakePrintDataList();
 
-        _extralData.Add("totalPage", (currentPage - 1).ToString());
-        _extralData.Add("dataColCount", dataColCount.ToString());
-        _extralData.Add("dataRowCount", dataRowCount.ToString());
-        return new Karte3Mapper(_singleFieldData, _listTextData, _extralData).GetData();
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            _extralData.Add("totalPage", (currentPage - 1).ToString());
+            _extralData.Add("dataColCount", dataColCount.ToString());
+            _extralData.Add("dataRowCount", dataRowCount.ToString());
+            return new Karte3Mapper(_singleFieldData, _listTextData, _extralData).GetData();
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
 
     #region Private function

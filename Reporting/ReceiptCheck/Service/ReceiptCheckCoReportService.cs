@@ -56,44 +56,51 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
 
     public CommonReportingRequestModel GetReceiptCheckCoReportingData(int hpId, List<long> ptIds, int seikyuYm)
     {
-        ptIds = ptIds.OrderBy(x => x).ToList();
-        StringBuilder extendKey = new();
-        extendKey.Append(seikyuYm);
-        extendKey.Append("_");
-        foreach (var item in ptIds)
+        try
         {
-            extendKey.Append(item + "_");
-        }
-        var finalKey = key + "_" + extendKey.ToString();
-        if (_cache.KeyExists(finalKey))
-        {
-            var results = _cache.StringGet(finalKey);
-            var json = results.AsString();
-            _cache.KeyDelete(finalKey);
-            if (!string.IsNullOrEmpty(json))
+            ptIds = ptIds.OrderBy(x => x).ToList();
+            StringBuilder extendKey = new();
+            extendKey.Append(seikyuYm);
+            extendKey.Append("_");
+            foreach (var item in ptIds)
             {
-                return new CommonReportingRequestModel()
-                {
-                    DataJsonConverted = json
-                };
+                extendKey.Append(item + "_");
             }
-        }
-
-        using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
-        {
-            var finder = new CoReceiptCheckFinder(_tenantProvider);
-
-            // データ取得
-            _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
-            if (_coModels != null && _coModels.Any())
+            var finalKey = key + "_" + extendKey.ToString();
+            if (_cache.KeyExists(finalKey))
             {
-                // レセプト印刷
-                while (_hasNextPage)
+                var results = _cache.StringGet(finalKey);
+                var json = results.AsString();
+                _cache.KeyDelete(finalKey);
+                if (!string.IsNullOrEmpty(json))
                 {
-                    UpdateDrawForm(seikyuYm);
+                    return new CommonReportingRequestModel()
+                    {
+                        DataJsonConverted = json
+                    };
                 }
             }
-            return new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
+
+            using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
+            {
+                var finder = new CoReceiptCheckFinder(_tenantProvider);
+
+                // データ取得
+                _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
+                if (_coModels != null && _coModels.Any())
+                {
+                    // レセプト印刷
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm(seikyuYm);
+                    }
+                }
+                return new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
+            }
+        }
+        finally
+        {
+            _tenantProvider.DisposeDataContext();
         }
     }
 

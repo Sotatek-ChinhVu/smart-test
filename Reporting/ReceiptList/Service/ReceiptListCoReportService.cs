@@ -28,16 +28,24 @@ public class ReceiptListCoReportService : IReceiptListCoReportService
 
     public CommonReportingRequestModel GetReceiptListReportingData(int hpId, int seikyuYm, List<ReceiptInputModel> receiptListModels)
     {
-        using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
+        try
         {
-            var finder = new CoReceiptListFinder(_tenantProvider, _systemConfig);
-            _receiptListModels = finder.GetDataReceReport(hpId, seikyuYm, receiptListModels);
-            if (_receiptListModels.Any())
+            using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
             {
-                _printoutDateTime = CIUtil.GetJapanDateTimeNow();
-                UpdateDrawForm(seikyuYm);
+                var finder = new CoReceiptListFinder(_tenantProvider, _systemConfig);
+                _receiptListModels = finder.GetDataReceReport(hpId, seikyuYm, receiptListModels);
+                if (_receiptListModels.Any())
+                {
+                    _printoutDateTime = CIUtil.GetJapanDateTimeNow();
+                    UpdateDrawForm(seikyuYm);
+                }
+                return new ReceiptListMapper(_singleFieldData, _tableFieldData).GetData();
             }
-            return new ReceiptListMapper(_singleFieldData, _tableFieldData).GetData();
+        }
+        finally
+        {
+            _systemConfig.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
         }
     }
 

@@ -202,67 +202,78 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
 
     public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int seikyuYm, int hokenId, int hokenKbn, bool isNoCreatingReceData, bool isIncludeOutDrug, bool isModePrint)
     {
-        IsModePrint = isModePrint;
-        IncludeOutDrug = isIncludeOutDrug;
-
-        // TODO message or something process here
-        var target = -1;
-        switch (hokenKbn)
+        try
         {
-            case 0:
-                target = TargetConst.Jihi;
-                break;
-            case 1:
-                target = TargetConst.Syaho;
-                break;
-            case 2:
-                target = TargetConst.Kokuho;
-                break;
-            case 11:
-                target = TargetConst.RousaiTanki;
-                break;
-            case 12:
-                target = TargetConst.RousaiNenkin;
-                break;
-            case 13:
-                target = TargetConst.RousaiAfter;
-                break;
-            case 14:
-                target = TargetConst.Jibai;
-                break;
-            default:
-                return new();
+            IsModePrint = isModePrint;
+            IncludeOutDrug = isIncludeOutDrug;
+
+            // TODO message or something process here
+            var target = -1;
+            switch (hokenKbn)
+            {
+                case 0:
+                    target = TargetConst.Jihi;
+                    break;
+                case 1:
+                    target = TargetConst.Syaho;
+                    break;
+                case 2:
+                    target = TargetConst.Kokuho;
+                    break;
+                case 11:
+                    target = TargetConst.RousaiTanki;
+                    break;
+                case 12:
+                    target = TargetConst.RousaiNenkin;
+                    break;
+                case 13:
+                    target = TargetConst.RousaiAfter;
+                    break;
+                case 14:
+                    target = TargetConst.Jibai;
+                    break;
+                default:
+                    return new();
+            }
+
+            SeikyuType seikyuType = new SeikyuType(true, true, true, true, true);
+
+            if (isNoCreatingReceData)
+            {
+                InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
+                _PrintOut();
+            }
+            else
+            {
+                InitParam(hpId, seikyuYm
+                            , ptId
+                            , sinYm
+                            , hokenId
+                            , 0
+                            , 0
+                            , target
+                            , ""
+                            , 0
+                            , 999999999
+                            , seikyuType
+                            , IsPtTest
+                            , IncludeOutDrug
+                            , sort: 0);
+                _PrintOut();
+            }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
         }
-
-        SeikyuType seikyuType = new SeikyuType(true, true, true, true, true);
-
-        if (isNoCreatingReceData)
+        finally
         {
-            InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
-            _PrintOut();
+            CoModelFinder.ReleaseResource();
+            _systemConfRepository.ReleaseResource();
+            _systemConfigProvider.ReleaseResource();
+            _accountingRepository.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
         }
-        else
-        {
-            InitParam(hpId, seikyuYm
-                        , ptId
-                        , sinYm
-                        , hokenId
-                        , 0
-                        , 0
-                        , target
-                        , ""
-                        , 0
-                        , 999999999
-                        , seikyuType
-                        , IsPtTest
-                        , IncludeOutDrug
-                        , sort: 0);
-            _PrintOut();
-        }
-
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
     }
 
     public CommonReportingRequestModel GetReceiptDataByReceiptCheckList(int hpId,
@@ -272,45 +283,56 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         int sort
     )
     {
-        HpId = hpId;
-        SeikyuType = seikyuType;
-
-        SeikyuYm = seikyuYm;
-        PtId = new List<long>();
-        if (ptId.Any())
+        try
         {
-            PtId.AddRange(ptId.GroupBy(p => p).Select(p => p.Key).ToList());
+            HpId = hpId;
+            SeikyuType = seikyuType;
+
+            SeikyuYm = seikyuYm;
+            PtId = new List<long>();
+            if (ptId.Any())
+            {
+                PtId.AddRange(ptId.GroupBy(p => p).Select(p => p.Key).ToList());
+            }
+
+            SinYm = sinYm;
+            HokenId = hokenId;
+            KaId = kaId;
+            TantoId = tantoId;
+            Target = target;
+            ReceSbt = receSbt;
+            PrintNoFrom = 0;
+            PrintNoTo = 999999999;
+            IncludeTester = includeTester;
+            IncludeOutDrug = includeOutDrug;
+            Sort = sort;
+
+            GrpId = 0;
+            if (Sort > 100)
+            {
+                GrpId = Sort % 100;
+            }
+
+            if (printNoFrom > 0 && printNoTo > 0 && printNoFrom <= printNoTo)
+            {
+                PrintNoFrom = printNoFrom;
+                PrintNoTo = printNoTo;
+            }
+
+            _PrintOut();
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
         }
-
-        SinYm = sinYm;
-        HokenId = hokenId;
-        KaId = kaId;
-        TantoId = tantoId;
-        Target = target;
-        ReceSbt = receSbt;
-        PrintNoFrom = 0;
-        PrintNoTo = 999999999;
-        IncludeTester = includeTester;
-        IncludeOutDrug = includeOutDrug;
-        Sort = sort;
-
-        GrpId = 0;
-        if (Sort > 100)
+        finally
         {
-            GrpId = Sort % 100;
+            CoModelFinder.ReleaseResource();
+            _systemConfRepository.ReleaseResource();
+            _systemConfigProvider.ReleaseResource();
+            _accountingRepository.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
         }
-
-        if (printNoFrom > 0 && printNoTo > 0 && printNoFrom <= printNoTo)
-        {
-            PrintNoFrom = printNoFrom;
-            PrintNoTo = printNoTo;
-        }
-
-        _PrintOut();
-
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new ReceiptPreviewMapper(_setFieldData, _listTextData, _extralData, _fileName).GetData();
     }
 
     private void _PrintOut()

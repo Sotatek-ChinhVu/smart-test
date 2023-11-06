@@ -61,76 +61,83 @@ public class Karte1Service : IKarte1Service
 
     public CommonReportingRequestModel GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
     {
-        this.hpId = hpId;
-        this.ptId = ptId;
-        this.sinDate = sinDate;
-        this.hokenPid = hokenPid;
-        this.syuByomei = syuByomei;
-        this.tenkiByomei = tenkiByomei;
-
-        currentPage = 1;
-
-        dataCharCount = 0;
-        dataRowCount = 0;
-        dataTarget = 0;
-        dataCharCountP2 = 0;
-        dataRowCountP2 = 0;
-        dataTargetP2 = 0;
-
-        coModel = GetData();
-
-        if (this.ptId != 0 && coModel != null)
+        try
         {
-            ReadRseFileP1();
-            ReadRseFileP2();
+            this.hpId = hpId;
+            this.ptId = ptId;
+            this.sinDate = sinDate;
+            this.hokenPid = hokenPid;
+            this.syuByomei = syuByomei;
+            this.tenkiByomei = tenkiByomei;
 
-            if (SetListProperty("lsByomei", ref dataCharCount, ref dataRowCount))
-            {
-                dataTarget = 1;
-            }
-            else if (SetDataFieldProperty("ByoMei_", ref dataCharCount, ref dataRowCount))
-            {
-                dataTarget = 2;
-            }
-            else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCount, ref dataRowCount))
-            {
-                dataTarget = 3;
-            }
-
-            currentPage = 2;
-
-            if (SetListProperty("lsByomei", ref dataCharCountP2, ref dataRowCountP2))
-            {
-                dataTargetP2 = 1;
-            }
-            else if (SetDataFieldProperty("ByoMei_", ref dataCharCountP2, ref dataRowCountP2))
-            {
-                dataTargetP2 = 2;
-            }
-            else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCountP2, ref dataRowCountP2))
-            {
-                dataTargetP2 = 3;
-            }
-
-            printOutData = new List<CoKarte1PrintDataModel>();
-
-            if (dataTarget > 0)
-            {
-                MakePrintDataList();
-            }
-
-            printoutDateTime = CIUtil.GetJapanDateTimeNow();
             currentPage = 1;
-            hasNextPage = true;
-            while (hasNextPage)
+
+            dataCharCount = 0;
+            dataRowCount = 0;
+            dataTarget = 0;
+            dataCharCountP2 = 0;
+            dataRowCountP2 = 0;
+            dataTargetP2 = 0;
+
+            coModel = GetData();
+
+            if (this.ptId != 0 && coModel != null)
             {
-                UpdateDrawForm();
-                currentPage++;
+                ReadRseFileP1();
+                ReadRseFileP2();
+
+                if (SetListProperty("lsByomei", ref dataCharCount, ref dataRowCount))
+                {
+                    dataTarget = 1;
+                }
+                else if (SetDataFieldProperty("ByoMei_", ref dataCharCount, ref dataRowCount))
+                {
+                    dataTarget = 2;
+                }
+                else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCount, ref dataRowCount))
+                {
+                    dataTarget = 3;
+                }
+
+                currentPage = 2;
+
+                if (SetListProperty("lsByomei", ref dataCharCountP2, ref dataRowCountP2))
+                {
+                    dataTargetP2 = 1;
+                }
+                else if (SetDataFieldProperty("ByoMei_", ref dataCharCountP2, ref dataRowCountP2))
+                {
+                    dataTargetP2 = 2;
+                }
+                else if (SetDataFieldProperty("ByoMeiH_", ref dataCharCountP2, ref dataRowCountP2))
+                {
+                    dataTargetP2 = 3;
+                }
+
+                printOutData = new List<CoKarte1PrintDataModel>();
+
+                if (dataTarget > 0)
+                {
+                    MakePrintDataList();
+                }
+
+                printoutDateTime = CIUtil.GetJapanDateTimeNow();
+                currentPage = 1;
+                hasNextPage = true;
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
+
+            _extralData.Add("totalPage", (currentPage - 1).ToString());
+            return new Karte1Mapper(_extralData, _singleFieldData, _listTextData, _reportConfigModelPerPage).GetData();
         }
-        
-        _extralData.Add("totalPage", (currentPage - 1).ToString());
-        return new Karte1Mapper(_extralData, _singleFieldData, _listTextData, _reportConfigModelPerPage).GetData();
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     #region sub method

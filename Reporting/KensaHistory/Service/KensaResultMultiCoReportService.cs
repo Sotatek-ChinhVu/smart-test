@@ -61,30 +61,38 @@ namespace Reporting.KensaHistory.Service
         public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
 
-            this.hpId = hpId;
-            this.userId = userId;
-            this.ptId = ptId;
-            this.setId = setId;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.showAbnormalKbn = showAbnormalKbn;
-            this.sinDate = sinDate;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                currentPage = 1;
-                hasNextPage = true;
-                while (hasNextPage)
-                {
-                    UpdateDrawForm();
-                    currentPage++;
-                }
-            }
+                this.hpId = hpId;
+                this.userId = userId;
+                this.ptId = ptId;
+                this.setId = setId;
+                this.startDate = startDate;
+                this.endDate = endDate;
+                this.showAbnormalKbn = showAbnormalKbn;
+                this.sinDate = sinDate;
+                var getData = GetData();
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+                if (getData)
+                {
+                    currentPage = 1;
+                    hasNextPage = true;
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
+                }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            }
+            finally
+            {
+                _coKensaHistoryFinder.ReleaseResource();
+                _kokhoFinder.ReleaseResource();
+            }
         }
 
         private bool UpdateDrawForm()

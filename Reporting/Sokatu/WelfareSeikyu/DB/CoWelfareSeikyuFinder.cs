@@ -221,5 +221,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                     p.IsDeleted == 0
                 ).Count >= 1;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }
