@@ -2,10 +2,10 @@
 {
     public class NextOrderConst
     {
-        public const string NextOrderHeader = "予約オーダー";
-        public const string PeriodicOrderHeader = "定期オーダー";
+        public static string NextOrderHeader = "予約オーダー";
+        public static string PeriodicOrderHeader = "定期オーダー";
 
-        public const int DefaultRsvDate = 99999999;
+        public static int DefaultRsvDate = 99999999;
 
         public enum NextOrderStatus
         {

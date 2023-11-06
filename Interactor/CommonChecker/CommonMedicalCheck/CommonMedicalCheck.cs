@@ -30,6 +30,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     private int _hpID;
     private long _ptID;
     private int _sinday;
+    private readonly bool _termLimitCheckingOnly;
     private Dictionary<string, string> _itemNameDictionary;
     private Dictionary<string, string> _componentNameDictionary;
     private Dictionary<string, string> _analogueNameDictionary;
@@ -410,6 +411,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                CheckType = RealtimeCheckerType.Dosage,
                CurrentHeight = _currentHeight,
                CurrentWeight = _currentWeight,
+               TermLimitCheckingOnly = _termLimitCheckingOnly
            })
         {
             InitUnitCheck(dosageChecker);
@@ -938,15 +940,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     levelInfo.BorderBrushCode = LevelConfig.FoodAllegySource[level][1];
                     levelInfo.Title = LevelConfig.FoodAllegySource[level][2];
                 }
-
-                StringBuilder commentStringBuilder = new();
-                commentStringBuilder.Append(levelInfo.Comment);
-                commentStringBuilder.Append(item.AttentionCmt);
-                commentStringBuilder.Append(Environment.NewLine);
-                commentStringBuilder.Append(item.WorkingMechanism);
-                commentStringBuilder.Append(Environment.NewLine);
-                commentStringBuilder.Append(Environment.NewLine);
-                levelInfo.Comment = commentStringBuilder.ToString();
+                levelInfo.Comment += item.AttentionCmt + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
             tempModel.ListLevelInfo.AddRange(_listLevelInfo);
 
@@ -1005,14 +999,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 levelInfo.BackgroundCode = LevelConfig.AgeSource[level][0];
                 levelInfo.BorderBrushCode = LevelConfig.AgeSource[level][1];
                 levelInfo.Title = LevelConfig.AgeSource[level][2];
-                StringBuilder commentStringBuilder = new();
-                commentStringBuilder.Append(levelInfo.Comment);
-                commentStringBuilder.Append(attention);
-                commentStringBuilder.Append(Environment.NewLine);
-                commentStringBuilder.Append(item.WorkingMechanism);
-                commentStringBuilder.Append(Environment.NewLine);
-                commentStringBuilder.Append(Environment.NewLine);
-                levelInfo.Comment = commentStringBuilder.ToString();
+                levelInfo.Comment += attention + Environment.NewLine + item.WorkingMechanism + Environment.NewLine + Environment.NewLine;
             }
 
             tempModel.ListLevelInfo.AddRange(_listLevelInfo);
@@ -1074,29 +1061,22 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             foreach (var item in listFilteredData)
             {
                 int level = item.TenpuLevel;
-                LevelInfoModel? levelInfoModel = _listLevelInfoModel.FirstOrDefault(c => c.Level == level);
-                if (levelInfoModel == null)
+                LevelInfoModel? LevelInfoModel = _listLevelInfoModel.FirstOrDefault(c => c.Level == level);
+                if (LevelInfoModel == null)
                 {
-                    levelInfoModel = new LevelInfoModel()
+                    LevelInfoModel = new LevelInfoModel()
                     {
                         FirstItemName = itemName,
                         SecondItemName = diseaseName,
                         Level = level
                     };
-                    _listLevelInfoModel.Add(levelInfoModel);
+                    _listLevelInfoModel.Add(LevelInfoModel);
                 }
 
-                levelInfoModel.BackgroundCode = LevelConfig.DiseaseSource[level][0];
-                levelInfoModel.BorderBrushCode = LevelConfig.DiseaseSource[level][1];
-                levelInfoModel.Title = LevelConfig.DiseaseSource[level][2];
-                StringBuilder commentStringBuilder = new();
-                commentStringBuilder.Append(levelInfoModel.Comment);
-                commentStringBuilder.Append(_realtimeOrderErrorFinder.FindDiseaseComment(item.CmtCd));
-                commentStringBuilder.Append(Environment.NewLine);
-                commentStringBuilder.Append(_realtimeOrderErrorFinder.FindDiseaseComment(item.KijyoCd));
-                commentStringBuilder.Append(Environment.NewLine);
-                commentStringBuilder.Append(Environment.NewLine);
-                levelInfoModel.Comment = commentStringBuilder.ToString();
+                LevelInfoModel.BackgroundCode = LevelConfig.DiseaseSource[level][0];
+                LevelInfoModel.BorderBrushCode = LevelConfig.DiseaseSource[level][1];
+                LevelInfoModel.Title = LevelConfig.DiseaseSource[level][2];
+                LevelInfoModel.Comment += _realtimeOrderErrorFinder.FindDiseaseComment(item.CmtCd) + Environment.NewLine + _realtimeOrderErrorFinder.FindDiseaseComment(item.KijyoCd) + Environment.NewLine + Environment.NewLine;
             }
 
 
@@ -1316,7 +1296,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #region ProcessDataForKinkiUser
     private List<ErrorInfoModel> ProcessDataForKinkiUser(List<KinkiResultModel> kinkiErrorInfo)
     {
-        List<ErrorInfoModel> result = new();
+        List<ErrorInfoModel> result = new List<ErrorInfoModel>();
         kinkiErrorInfo.ForEach((k) =>
         {
             string itemAName = _itemNameDictionary.ContainsKey(k.AYjCd) ? _itemNameDictionary[k.AYjCd] : string.Empty;
@@ -1332,7 +1312,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             };
             result.Add(tempModel);
 
-            List<LevelInfoModel> _listLevelInfoModel = new()
+            List<LevelInfoModel> _listLevelInfoModel = new List<LevelInfoModel>()
             {
                 new LevelInfoModel()
                 {
@@ -1383,10 +1363,10 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #region ProcessDataForDosage
     private List<ErrorInfoModel> ProcessDataForDosage(List<DosageResultModel> listDosageError)
     {
-        List<ErrorInfoModel> result = new();
+        List<ErrorInfoModel> result = new List<ErrorInfoModel>();
         foreach (DosageResultModel dosage in listDosageError)
         {
-            ErrorInfoModel errorInfoModel = new();
+            ErrorInfoModel errorInfoModel = new ErrorInfoModel();
             result.Add(errorInfoModel);
             string itemName = _itemNameDictionary.ContainsKey(dosage.YjCd) ? _itemNameDictionary[dosage.YjCd] : string.Empty;
             errorInfoModel.ErrorType = CommonCheckerType.DosageChecker;
@@ -1438,7 +1418,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 comment = _usageDosageDictionary.ContainsKey(dosage.YjCd) ? _usageDosageDictionary[dosage.YjCd] : string.Empty;
             }
 
-            LevelInfoModel LevelInfoModel = new()
+            LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
                 Title = levelTitle,
                 BorderBrushCode = "#ff66b3",
@@ -1479,7 +1459,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 errorInfoModel.FourthCellContent = "ー";
             }
 
-            LevelInfoModel levelInfoModel = new()
+            LevelInfoModel LevelInfoModel = new LevelInfoModel()
             {
                 BackgroundCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][0],
                 BorderBrushCode = LevelConfig.DuplicationCommonSource[duplicationError.Level][1],
@@ -1491,12 +1471,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
             if (duplicationError.IsIppanCdDuplicated)
             {
-                levelInfoModel.Comment = "「" + itemName + "」と「" + duplicatedItemName + "」は一般名（" + _realtimeOrderErrorFinder.FindIppanNameByIppanCode(duplicationError.IppanCode) + "）が同じです。";
+                LevelInfoModel.Comment = "「" + itemName + "」と「" + duplicatedItemName + "」は一般名（" + _realtimeOrderErrorFinder.FindIppanNameByIppanCode(duplicationError.IppanCode) + "）が同じです。";
             }
             else if (duplicationError.IsComponentDuplicated)
             {
                 StringBuilder comment = new();
-                comment.Append(levelInfoModel.Comment);
                 switch (duplicationError.Level)
                 {
                     case 1:
@@ -1519,14 +1498,14 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                         comment.Append(string.Format(_duplicatedClassTemplate, itemName, duplicatedItemName, className) + Environment.NewLine + Environment.NewLine);
                         break;
                 }
-                levelInfoModel.Comment = comment.ToString();
+                LevelInfoModel.Comment += comment.ToString();
             }
             else
             {
-                levelInfoModel.Comment = "同一薬剤（" + itemName + "）が処方されています。";
+                LevelInfoModel.Comment = "同一薬剤（" + itemName + "）が処方されています。";
             }
 
-            errorInfoModel.ListLevelInfo = new() { levelInfoModel };
+            errorInfoModel.ListLevelInfo = new() { LevelInfoModel };
         }
         return result;
     }

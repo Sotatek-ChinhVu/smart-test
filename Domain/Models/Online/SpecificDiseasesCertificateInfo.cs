@@ -7,18 +7,18 @@ namespace Domain.Models.Online
     public class SpecificDiseasesCertificateInfo
     {
         [XmlElement(ElementName = "SpecificDiseasesDiseaseCategory")]
-        public string SpecificDiseasesDiseaseCategory { get; set; } = string.Empty;
+        public string SpecificDiseasesDiseaseCategory { get; set; }
 
         [XmlElement(ElementName = "SpecificDiseasesCertificateDate")]
-        public string SpecificDiseasesCertificateDate { get; set; } = string.Empty;
+        public string SpecificDiseasesCertificateDate { get; set; }
 
         [XmlElement(ElementName = "SpecificDiseasesValidStartDate")]
-        public string SpecificDiseasesValidStartDate { get; set; } = string.Empty;
+        public string SpecificDiseasesValidStartDate { get; set; }
 
         [XmlElement(ElementName = "SpecificDiseasesValidEndDate")]
-        public string SpecificDiseasesValidEndDate { get; set; } = string.Empty;
+        public string SpecificDiseasesValidEndDate { get; set; }
 
         [XmlElement(ElementName = "SpecificDiseasesSelfPay")]
-        public string SpecificDiseasesSelfPay { get; set; } = string.Empty;
+        public string SpecificDiseasesSelfPay { get; set; }
     }
 }

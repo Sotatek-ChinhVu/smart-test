@@ -14,6 +14,7 @@ namespace Infrastructure.Repositories
 
         public List<MonshinInforModel> GetMonshinInfor(int hpId, long ptId, long raiinNo, bool isDeleted, bool isGetAll = true)
         {
+            var monshins = new List<MonshinInforModel>();
             if (isGetAll)
             {
                 return NoTrackingDataContext.MonshinInfo
@@ -59,81 +60,87 @@ namespace Infrastructure.Repositories
 
         public bool SaveList(List<MonshinInforModel> monshinInforModels, int userId)
         {
-            foreach (var model in monshinInforModels)
+            try
             {
-                var monshinInfor = NoTrackingDataContext.MonshinInfo.
-                FirstOrDefault(x => x.HpId == model.HpId
-                    && x.PtId == model.PtId
-                    && x.RaiinNo == model.RaiinNo
-                    && x.SinDate == model.SinDate
-                    && x.IsDeleted == 0);
-
-                //Update monshin when text change
-                if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
+                foreach (var model in monshinInforModels)
                 {
-                    TrackingDataContext.MonshinInfo.Update(new MonshinInfo()
-                    {
-                        HpId = monshinInfor.HpId,
-                        PtId = monshinInfor.PtId,
-                        RaiinNo = monshinInfor.RaiinNo,
-                        SeqNo = monshinInfor.SeqNo,
-                        SinDate = monshinInfor.SinDate,
-                        Text = model.Text,
-                        Rtext = monshinInfor.Rtext,
-                        GetKbn = model.GetKbn,
-                        IsDeleted = monshinInfor.IsDeleted,
-                        CreateId = monshinInfor.CreateId,
-                        CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
-                        CreateMachine = monshinInfor.CreateMachine,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId
-                    });
-                }
+                    var monshinInfor = NoTrackingDataContext.MonshinInfo.
+                    FirstOrDefault(x => x.HpId == model.HpId
+                        && x.PtId == model.PtId
+                        && x.RaiinNo == model.RaiinNo
+                        && x.SinDate == model.SinDate
+                        && x.IsDeleted == 0);
 
-                //Delete Monshin when text is empty
-                else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
-                {
-                    TrackingDataContext.MonshinInfo.Update(new MonshinInfo()
+                    //Update monshin when text change
+                    if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
                     {
-                        HpId = monshinInfor.HpId,
-                        PtId = monshinInfor.PtId,
-                        RaiinNo = monshinInfor.RaiinNo,
-                        SeqNo = monshinInfor.SeqNo,
-                        SinDate = monshinInfor.SinDate,
-                        Text = monshinInfor.Text,
-                        Rtext = monshinInfor.Rtext,
-                        GetKbn = model.GetKbn,
-                        IsDeleted = 1,
-                        CreateId = monshinInfor.CreateId,
-                        CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
-                        CreateMachine = monshinInfor.CreateMachine,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId
-                    });
-                }
+                        TrackingDataContext.MonshinInfo.Update(new MonshinInfo()
+                        {
+                            HpId = monshinInfor.HpId,
+                            PtId = monshinInfor.PtId,
+                            RaiinNo = monshinInfor.RaiinNo,
+                            SeqNo = monshinInfor.SeqNo,
+                            SinDate = monshinInfor.SinDate,
+                            Text = model.Text,
+                            Rtext = monshinInfor.Rtext,
+                            GetKbn = model.GetKbn,
+                            IsDeleted = monshinInfor.IsDeleted,
+                            CreateId = monshinInfor.CreateId,
+                            CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
+                            CreateMachine = monshinInfor.CreateMachine,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
+                    }
 
-                //Insert monshin when not found in monshininf
-                else if (monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
-                {
-                    TrackingDataContext.MonshinInfo.Add(new MonshinInfo()
+                    //Delete Monshin when text is empty
+                    else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
                     {
-                        HpId = model.HpId,
-                        PtId = model.PtId,
-                        RaiinNo = model.RaiinNo,
-                        SinDate = model.SinDate,
-                        Text = model.Text,
-                        GetKbn = 0,
-                        IsDeleted = 0,
-                        CreateId = userId,
-                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId
-                    });
+                        TrackingDataContext.MonshinInfo.Update(new MonshinInfo()
+                        {
+                            HpId = monshinInfor.HpId,
+                            PtId = monshinInfor.PtId,
+                            RaiinNo = monshinInfor.RaiinNo,
+                            SeqNo = monshinInfor.SeqNo,
+                            SinDate = monshinInfor.SinDate,
+                            Text = monshinInfor.Text,
+                            Rtext = monshinInfor.Rtext,
+                            GetKbn = model.GetKbn,
+                            IsDeleted = 1,
+                            CreateId = monshinInfor.CreateId,
+                            CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
+                            CreateMachine = monshinInfor.CreateMachine,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
+                    }
+
+                    //Insert monshin when not found in monshininf
+                    else if (monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
+                    {
+                        TrackingDataContext.MonshinInfo.Add(new MonshinInfo()
+                        {
+                            HpId = model.HpId,
+                            PtId = model.PtId,
+                            RaiinNo = model.RaiinNo,
+                            SinDate = model.SinDate,
+                            Text = model.Text,
+                            GetKbn = 0,
+                            IsDeleted = 0,
+                            CreateId = userId,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
+                    }
                 }
+                TrackingDataContext.SaveChanges();
+                return true;
             }
-            TrackingDataContext.SaveChanges();
-            return true;
-
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public bool SaveMonshinSheet(MonshinInforModel monshin)

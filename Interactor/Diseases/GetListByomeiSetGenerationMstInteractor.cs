@@ -3,9 +3,9 @@ using UseCase.MstItem.GetListByomeiSetGenerationMst;
 
 namespace Interactor.Diseases
 {
-    public class GetListByomeiSetGenerationMstInteractor : IGetListByomeiSetGenerationMstInputPort
+    public class GetListByomeiSetGenerationMstInteractor: IGetListByomeiSetGenerationMstInputPort
     {
-        private readonly IByomeiSetGenerationMstRepository _byomeiSetGenerationMstRepository;
+        private IByomeiSetGenerationMstRepository _byomeiSetGenerationMstRepository;
         public GetListByomeiSetGenerationMstInteractor(IByomeiSetGenerationMstRepository byomeiSetGenerationMstRepository)
         {
             _byomeiSetGenerationMstRepository = byomeiSetGenerationMstRepository;
@@ -21,7 +21,7 @@ namespace Interactor.Diseases
                 var data = _byomeiSetGenerationMstRepository.GetAll(inputData.HpId);
                 if (!data.Any())
                 {
-                    return new GetListByomeiSetGenerationMstOutputData(new(), GetListByomeiSetGenerationMstStatus.NoData);
+                    new GetListByomeiSetGenerationMstOutputData(new List<ByomeiSetGenerationMstModel>(), GetListByomeiSetGenerationMstStatus.NoData);
                 }
                 return new GetListByomeiSetGenerationMstOutputData(data, GetListByomeiSetGenerationMstStatus.Successed);
             }

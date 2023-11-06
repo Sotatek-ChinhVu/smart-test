@@ -33,6 +33,8 @@ public class FoodAllergyCheckerTest : BaseUT
             new OrdInfoModel(21, 0, ordInfDetails)
         };
 
+        var mock = new Mock<ISystemConfigRepository>();
+
         var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.FoodAllergy, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 

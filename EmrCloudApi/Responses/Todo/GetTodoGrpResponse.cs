@@ -9,6 +9,6 @@ namespace EmrCloudApi.Responses.Todo
             TodoGrpMstDtos = todoGrpMstDtos;
         }
 
-        public List<TodoGrpMstDto> TodoGrpMstDtos { get; private set; }
+        public List<TodoGrpMstDto> TodoGrpMstDtos { get; private set; } = new();
     }
 }

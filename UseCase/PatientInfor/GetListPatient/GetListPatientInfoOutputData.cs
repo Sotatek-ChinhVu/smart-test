@@ -17,5 +17,5 @@ public class GetListPatientInfoOutputData : IOutputData
     }
 
     public GetListPatientInfoStatus Status { get; private set; }
-    public List<GetListPatientInfoInputItem> PatientInfoLists { get; private set; }
+    public List<GetListPatientInfoInputItem> PatientInfoLists { get; private set; } = new List<GetListPatientInfoInputItem>();
 }

@@ -94,7 +94,7 @@ public class ResultOfQualificationConfirmation
     public string SpecificDiseasesCertificateRelatedConsTime { get; set; } = string.Empty;
 
     [XmlElement(ElementName = "SpecificDiseasesCertificateList")]
-    public SpecificDiseasesCertificateInfo[] SpecificDiseasesCertificateList { get; set; } = new SpecificDiseasesCertificateInfo[0];
+    public SpecificDiseasesCertificateInfo[] SpecificDiseasesCertificateList { get; set; }
 
     [XmlElement(ElementName = "SpecificHealthCheckupsInfoConsFlg")]
     public string SpecificHealthCheckupsInfoConsFlg { get; set; } = string.Empty;

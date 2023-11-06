@@ -41,9 +41,12 @@ namespace Domain.Common
                 var checkUsageOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrugUsage);
                 var checkBunkatu = odrInf.OrdInfDetails.Any(o => o.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
                 var checkZan = odrInf.OrdInfDetails.Any(o => o.ItemCd.Contains("@ZAN"));
-                if (checkRefill && !checkZan && !checkDrugOfDetail)
+                if (checkRefill)
                 {
-                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                    if (!checkZan && !checkDrugOfDetail)
+                    {
+                        return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                    }
                 }
                 if (checkOther && checkDrugOfDetail && !checkRefill && !checkBunkatu)
                 {

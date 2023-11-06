@@ -17,11 +17,7 @@ namespace UseCase.MstItem.GetListTenMstOrigin
 
         public List<int> StartDateDisplay
         {
-            get
-            {
-                var result = TenMsts.Select(x => x.StartDate).ToList();
-                return result ?? new();
-            }
+            get => TenMsts.Select(x => x.StartDate).ToList();
         }
     }
 }

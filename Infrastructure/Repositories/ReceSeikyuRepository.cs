@@ -192,39 +192,6 @@ namespace Infrastructure.Repositories
 
         }
 
-        public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList)
-        {
-            List<ReceSeikyuModel> result = new();
-            var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
-                                                                    && item.IsDelete == DeleteTypes.None
-                                                                    && (ptIdList.Count <= 0 || ptIdList.Contains(item.PtId)))
-                                                     .ToList();
-
-            ptIdList = ptInfList.Select(item => item.PtId).Distinct().ToList();
-            var receSeikyus = NoTrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
-                                                                              && item.SeikyuYm == seikyuYm
-                                                                              && item.IsDeleted == DeleteTypes.None
-                                                                              && ptIdList.Contains(item.PtId))
-                                                                .ToList();
-
-            foreach (var ptInf in ptInfList)
-            {
-                var receSeikyu = receSeikyus.FirstOrDefault(item => item.PtId == ptInf.PtId);
-                if (receSeikyu == null)
-                {
-                    continue;
-                }
-                result.Add(new ReceSeikyuModel(
-                               ptInf.PtId,
-                               receSeikyu?.SinYm ?? 0,
-                               receSeikyu?.HokenId ?? 0,
-                               ptInf.PtNum,
-                               receSeikyu?.SeikyuKbn ?? 0
-                          ));
-            }
-            return result;
-        }
-
         public ReceSeikyuModel GetReceSeikyModelByPtNum(int hpId, int sinDate, int sinYm, long ptNum)
         {
             ReceSeikyuModel? result = null;
@@ -308,6 +275,39 @@ namespace Infrastructure.Repositories
             }
 
             return result ?? new();
+        }
+
+        public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList)
+        {
+            List<ReceSeikyuModel> result = new();
+            var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && item.IsDelete == DeleteTypes.None
+                                                                    && (ptIdList.Count <= 0 || ptIdList.Contains(item.PtId)))
+                                                     .ToList();
+
+            ptIdList = ptInfList.Select(item => item.PtId).Distinct().ToList();
+            var receSeikyus = NoTrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                              && item.SeikyuYm == seikyuYm
+                                                                              && item.IsDeleted == DeleteTypes.None
+                                                                              && ptIdList.Contains(item.PtId))
+                                                                .ToList();
+
+            foreach (var ptInf in ptInfList)
+            {
+                var receSeikyu = receSeikyus.FirstOrDefault(item => item.PtId == ptInf.PtId);
+                if (receSeikyu == null)
+                {
+                    continue;
+                }
+                result.Add(new ReceSeikyuModel(
+                               ptInf.PtId,
+                               receSeikyu?.SinYm ?? 0,
+                               receSeikyu?.HokenId ?? 0,
+                               ptInf.PtNum,
+                               receSeikyu?.SeikyuKbn ?? 0
+                          ));
+            }
+            return result;
         }
 
         public IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm)

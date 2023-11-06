@@ -1,6 +1,11 @@
 ﻿using Helper.Constants;
 using Entity.Tenant;
-using Reporting.Calculate.Ika.Constants;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Domain.Constant;
 using Reporting.Calculate.Constants;
 
 namespace Reporting.Calculate.Ika.Models
@@ -2561,26 +2566,26 @@ namespace Reporting.Calculate.Ika.Models
                 //if (new List<int> { 1, 2 }.Contains(PtHokenPattern.HokenKbn))
                 if (new List<int> { 1, 2 }.Contains(_hokenKbn))
                 {
-                    return HokenSyuConst.Kenpo;
+                    return Domain.Constant.HokenSyu.Kenpo;
                 }
                 //else if (new List<int> { 11, 12 }.Contains(PtHokenPattern.HokenKbn))
                 else if (new List<int> { 11, 12 }.Contains(_hokenKbn))
                 {
-                    return HokenSyuConst.Rosai;
+                    return Domain.Constant.HokenSyu.Rosai;
                 }
                 //else if (new List<int> { 13 }.Contains(PtHokenPattern.HokenKbn))
                 else if (new List<int> { 13 }.Contains(_hokenKbn))
                 {
-                    return HokenSyuConst.After;
+                    return Domain.Constant.HokenSyu.After;
                 }
                 //else if (new List<int> { 14 }.Contains(PtHokenPattern.HokenKbn))
                 else if (new List<int> { 14 }.Contains(_hokenKbn))
                 {
-                    return HokenSyuConst.Jibai;
+                    return Domain.Constant.HokenSyu.Jibai;
                 }
                 else
                 {
-                    return HokenSyuConst.Jihi;
+                    return Domain.Constant.HokenSyu.Jihi;
                 }
             }
         }

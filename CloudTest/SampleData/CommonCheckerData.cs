@@ -1124,100 +1124,100 @@ namespace CloudUnitTest.SampleData
             return ptOtherDrugs;
         }
 
-        ///public static List<PtOtherDrug> ReadPtOtherDrug()
-        ///{
-        ///    var rootPath = Environment.CurrentDirectory;
-        ///    rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+        //public static List<PtOtherDrug> ReadPtOtherDrug()
+        //{
+        //    var rootPath = Environment.CurrentDirectory;
+        //    rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
 
-        ///    string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
-        ///    var ptOtherDrugs = new List<PtOtherDrug>();
-        ///    using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
-        ///    {
-        ///        var workbookPart = spreadsheetDocument.WorkbookPart;
-        ///        var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_OTHER_DRUG").WorksheetPart?.Worksheet.Elements<SheetData>().First();
-        ///        string text;
-        ///        if (sheetData != null)
-        ///        {
-        ///            foreach (var r in sheetData.Elements<Row>().Skip(1))
-        ///            {
-        ///                var ptOtherDrug = new PtOtherDrug();
-        ///                foreach (var c in r.Elements<Cell>())
-        ///                {
-        ///                    text = c.CellValue?.Text ?? string.Empty;
-        ///                    if (c.DataType != null && c.DataType == CellValues.SharedString)
-        ///                    {
-        ///                        var stringId = Convert.ToInt32(c.InnerText);
-        ///                        text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
-        ///                    }
-        ///                    var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+        //    string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+        //    var ptOtherDrugs = new List<PtOtherDrug>();
+        //    using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+        //    {
+        //        var workbookPart = spreadsheetDocument.WorkbookPart;
+        //        var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_OTHER_DRUG").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+        //        string text;
+        //        if (sheetData != null)
+        //        {
+        //            foreach (var r in sheetData.Elements<Row>().Skip(1))
+        //            {
+        //                var ptOtherDrug = new PtOtherDrug();
+        //                foreach (var c in r.Elements<Cell>())
+        //                {
+        //                    text = c.CellValue?.Text ?? string.Empty;
+        //                    if (c.DataType != null && c.DataType == CellValues.SharedString)
+        //                    {
+        //                        var stringId = Convert.ToInt32(c.InnerText);
+        //                        text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+        //                    }
+        //                    var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
 
-        ///                    switch (columnName)
-        ///                    {
-        ///                        case "A":
-        ///                            int.TryParse(text, out int hpId);
-        ///                            ptOtherDrug.HpId = hpId;
-        ///                            break;
-        ///                        case "B":
-        ///                            long.TryParse(text, out long ptId);
-        ///                            ptOtherDrug.PtId = ptId;
-        ///                            break;
-        ///                        case "C":
-        ///                            int.TryParse(text, out int seqNo);
-        ///                            ptOtherDrug.SeqNo = seqNo;
-        ///                            break;
-        ///                        case "D":
-        ///                            int.TryParse(text, out int sortNo);
-        ///                            ptOtherDrug.SortNo = sortNo;
-        ///                            break;
-        ///                        case "E":
-        ///                            ptOtherDrug.ItemCd = text;
-        ///                            break;
-        ///                        case "F":
-        ///                            ptOtherDrug.DrugName = text;
-        ///                            break;
-        ///                        case "G":
-        ///                            int.TryParse(text, out int startDate);
-        ///                            ptOtherDrug.StartDate = startDate;
-        ///                            break;
-        ///                        case "H":
-        ///                            int.TryParse(text, out int endDate);
-        ///                            ptOtherDrug.EndDate = endDate;
-        ///                            break;
-        ///                        case "I":
-        ///                            ptOtherDrug.Cmt = text;
-        ///                            break;
-        ///                        case "J":
-        ///                            ptOtherDrug.IsDeleted = 0;
-        ///                            break;
-        ///                        case "K":
-        ///                            ptOtherDrug.CreateDate = DateTime.UtcNow;
-        ///                            break;
-        ///                        case "L":
-        ///                            ptOtherDrug.CreateId = 2;
-        ///                            break;
-        ///                        case "M":
-        ///                            ptOtherDrug.CreateMachine = "UNITTEST";
-        ///                            break;
-        ///                        case "N":
-        ///                            ptOtherDrug.UpdateDate = DateTime.UtcNow;
-        ///                            break;
-        ///                        case "O":
-        ///                            ptOtherDrug.UpdateId = 2;
-        ///                            break;
-        ///                        case "P":
-        ///                            ptOtherDrug.UpdateMachine = "UNITTEST";
-        ///                            break;
-        ///                        default:
-        ///                            break;
-        ///                    }
-        ///                }
-        ///                ptOtherDrugs.Add(ptOtherDrug);
-        ///            }
-        ///        }
-        ///    }
+        //                    switch (columnName)
+        //                    {
+        //                        case "A":
+        //                            int.TryParse(text, out int hpId);
+        //                            ptOtherDrug.HpId = hpId;
+        //                            break;
+        //                        case "B":
+        //                            long.TryParse(text, out long ptId);
+        //                            ptOtherDrug.PtId = ptId;
+        //                            break;
+        //                        case "C":
+        //                            int.TryParse(text, out int seqNo);
+        //                            ptOtherDrug.SeqNo = seqNo;
+        //                            break;
+        //                        case "D":
+        //                            int.TryParse(text, out int sortNo);
+        //                            ptOtherDrug.SortNo = sortNo;
+        //                            break;
+        //                        case "E":
+        //                            ptOtherDrug.ItemCd = text;
+        //                            break;
+        //                        case "F":
+        //                            ptOtherDrug.DrugName = text;
+        //                            break;
+        //                        case "G":
+        //                            int.TryParse(text, out int startDate);
+        //                            ptOtherDrug.StartDate = startDate;
+        //                            break;
+        //                        case "H":
+        //                            int.TryParse(text, out int endDate);
+        //                            ptOtherDrug.EndDate = endDate;
+        //                            break;
+        //                        case "I":
+        //                            ptOtherDrug.Cmt = text;
+        //                            break;
+        //                        case "J":
+        //                            ptOtherDrug.IsDeleted = 0;
+        //                            break;
+        //                        case "K":
+        //                            ptOtherDrug.CreateDate = DateTime.UtcNow;
+        //                            break;
+        //                        case "L":
+        //                            ptOtherDrug.CreateId = 2;
+        //                            break;
+        //                        case "M":
+        //                            ptOtherDrug.CreateMachine = "UNITTEST";
+        //                            break;
+        //                        case "N":
+        //                            ptOtherDrug.UpdateDate = DateTime.UtcNow;
+        //                            break;
+        //                        case "O":
+        //                            ptOtherDrug.UpdateId = 2;
+        //                            break;
+        //                        case "P":
+        //                            ptOtherDrug.UpdateMachine = "UNITTEST";
+        //                            break;
+        //                        default:
+        //                            break;
+        //                    }
+        //                }
+        //                ptOtherDrugs.Add(ptOtherDrug);
+        //            }
+        //        }
+        //    }
 
-        ///    return ptOtherDrugs;
-        ///}
+        //    return ptOtherDrugs;
+        //}
 
         public static List<M12FoodAlrgy> ReadM12FoodAlrgy(string key)
         {
