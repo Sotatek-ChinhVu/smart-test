@@ -138,19 +138,26 @@ namespace Infrastructure.Repositories
 
         public bool SaveListFileKarte(int hpId, int userId, long ptId, long raiinNo, string host, List<FileInfModel> listFiles, bool saveTempFile)
         {
-            if (saveTempFile)
+            try
             {
-                var listFileInsert = ConvertListInsertTempKarteFile(hpId, userId, ptId, host, listFiles);
-                if (listFileInsert.Any())
+                if (saveTempFile)
                 {
-                    TrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
+                    var listFileInsert = ConvertListInsertTempKarteFile(hpId, userId, ptId, host, listFiles);
+                    if (listFileInsert.Any())
+                    {
+                        TrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
+                    }
                 }
+                else
+                {
+                    UpdateSeqNoKarteFile(hpId, userId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
+                }
+                return TrackingDataContext.SaveChanges() > 0;
             }
-            else
+            catch (Exception)
             {
-                UpdateSeqNoKarteFile(hpId, userId, ptId, raiinNo, listFiles.Select(item => new FileInfModel(item.IsSchema, item.LinkFile.Replace(host, string.Empty))).ToList());
+                throw;
             }
-            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText)
@@ -199,6 +206,7 @@ namespace Infrastructure.Repositories
 
         private void UpdateSeqNoKarteFile(int hpId, int userId, long ptId, long raiinNo, List<FileInfModel> fileInfModelList)
         {
+            var dateTimeUpdate = CIUtil.GetJapanDateTimeNow();
             var fileNameList = fileInfModelList.Select(item => item.LinkFile).Distinct().ToList();
             int position = 1;
             var lastSeqNo = GetLastSeqNo(hpId, ptId, raiinNo);
@@ -213,15 +221,6 @@ namespace Infrastructure.Repositories
                                                ).OrderBy(item => item.Position)
                                                .ToList();
 
-            var listUpdateDateFile = TrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId
-                                                                                    && item.PtId == ptId
-                                                                                    && item.RaiinNo == raiinNo
-                                                                                    && item.SeqNo == lastSeqNo
-                                                                                    && item.FileName != null
-                                                                                    && !fileNameList.Contains(item.FileName))
-                                                                     .OrderBy(item => item.Position)
-                                                                     .ToList();
-
             var listUpdateFiles = TrackingDataContext.KarteImgInfs.Where(item =>
                                                item.HpId == hpId
                                                && item.PtId == ptId
@@ -231,11 +230,6 @@ namespace Infrastructure.Repositories
                                                && fileNameList.Contains(item.FileName)
                                                ).ToList();
 
-            foreach (var item in listUpdateDateFile)
-            {
-                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                item.UpdateId = userId;
-            }
 
             foreach (var fileInf in fileInfModelList)
             {
@@ -252,8 +246,8 @@ namespace Infrastructure.Repositories
                     convertItem.SeqNo = lastSeqNo + 1;
                     convertItem.Position = position;
                     convertItem.KarteKbn = oldItemConvert.KarteKbn;
-                    convertItem.CreateDate = DateTime.SpecifyKind(oldItemConvert.CreateDate, DateTimeKind.Utc);
-                    convertItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    convertItem.CreateDate = dateTimeUpdate;
+                    convertItem.UpdateDate = dateTimeUpdate;
                     convertItem.UpdateId = userId;
                     TrackingDataContext.KarteImgInfs.Add(convertItem);
                     position++;
@@ -269,6 +263,8 @@ namespace Infrastructure.Repositories
                     oldItemUpdateSeqNo.RaiinNo = raiinNo;
                     oldItemUpdateSeqNo.SeqNo = lastSeqNo + 1;
                     oldItemUpdateSeqNo.Position = position;
+                    oldItemUpdateSeqNo.UpdateDate = dateTimeUpdate;
+                    oldItemUpdateSeqNo.CreateDate = dateTimeUpdate;
                     position++;
                     continue;
                 }
@@ -282,9 +278,9 @@ namespace Infrastructure.Repositories
                 newItem.SeqNo = lastSeqNo + 1;
                 newItem.Position = position;
                 newItem.KarteKbn = fileInf.IsSchema ? 1 : 0;
-                newItem.CreateDate = CIUtil.GetJapanDateTimeNow();
+                newItem.CreateDate = dateTimeUpdate;
                 newItem.CreateId = userId;
-                newItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                newItem.UpdateDate = dateTimeUpdate;
                 newItem.UpdateId = userId;
                 TrackingDataContext.KarteImgInfs.Add(newItem);
                 position++;
@@ -302,6 +298,22 @@ namespace Infrastructure.Repositories
                 newFile.Position = 1;
                 newFile.KarteKbn = 0;
                 TrackingDataContext.KarteImgInfs.Add(newFile);
+            }
+
+            TrackingDataContext.SaveChanges();
+
+            var listUpdateDateFile = TrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId
+                                                                                    && item.PtId == ptId
+                                                                                    && item.RaiinNo == raiinNo
+                                                                                    && item.SeqNo == lastSeqNo
+                                                                                    && item.FileName != null)
+                                                                     .OrderBy(item => item.Position)
+                                                                     .ToList();
+
+            foreach (var item in listUpdateDateFile)
+            {
+                item.UpdateDate = dateTimeUpdate;
+                item.UpdateId = userId;
             }
         }
 

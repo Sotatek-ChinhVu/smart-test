@@ -19,6 +19,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
     private readonly IReceptionRepository _receptionRepository;
     private readonly IAuditLogRepository _auditLogRepository;
     private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
     public SaveDocInfInteractor(ITenantProvider tenantProvider, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IAuditLogRepository auditLogRepository)
     {
@@ -27,7 +28,8 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         _patientInforRepository = patientInforRepository;
         _receptionRepository = receptionRepository;
         _auditLogRepository = auditLogRepository;
-        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveDocInfOutputData Handle(SaveDocInfInputData inputData)

@@ -1,6 +1,6 @@
 ﻿namespace Helper.Constants
 {
-    public static class HokenConfOnlQuaConst
+    public class HokenConfOnlQuaConst
     {
         public const string HOKENSYA_NO = "保険者番号";
         public const string KIGO = "被保険者証記号";

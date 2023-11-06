@@ -132,6 +132,7 @@ namespace Domain.Models.NextOrder
         public bool IsFreeWord
         {
             get => ByomeiCd.AsString().Equals(ByomeiConstant.FreeWordCode);
+            set { }
         }
 
         public bool IsNotFreeWord

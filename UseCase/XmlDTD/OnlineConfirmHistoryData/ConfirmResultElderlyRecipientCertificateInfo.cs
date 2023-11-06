@@ -7,15 +7,15 @@ namespace UseCase.XmlDTD.OnlineConfirmHistoryData
     public class ConfirmResultElderlyRecipientCertificateInfo
     {
         [XmlElement(ElementName = "ElderlyRecipientCertificateDate")]
-        public string ElderlyRecipientCertificateDate { get; set; } = string.Empty;
+        public string ElderlyRecipientCertificateDate { get; set; }
 
         [XmlElement(ElementName = "ElderlyRecipientValidStartDate")]
-        public string ElderlyRecipientValidStartDate { get; set; } = string.Empty;
+        public string ElderlyRecipientValidStartDate { get; set; }
 
         [XmlElement(ElementName = "ElderlyRecipientValidEndDate")]
-        public string ElderlyRecipientValidEndDate { get; set; } = string.Empty;
+        public string ElderlyRecipientValidEndDate { get; set; }
 
         [XmlElement(ElementName = "ElderlyRecipientContributionRatio")]
-        public string ElderlyRecipientContributionRatio { get; set; } = string.Empty;
+        public string ElderlyRecipientContributionRatio { get; set; }
     }
 }

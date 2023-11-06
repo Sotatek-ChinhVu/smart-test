@@ -8,7 +8,7 @@ namespace UseCase.Insurance.ValidHokenInfAllType
     {
         public bool Result { get => !ValidateDetails.Any(); }
 
-        public List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> ValidateDetails { get; private set; }
+        public List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> ValidateDetails { get; private set; } = new List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>>();
 
         public ValidHokenInfAllTypeOutputData(List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> details)
         {

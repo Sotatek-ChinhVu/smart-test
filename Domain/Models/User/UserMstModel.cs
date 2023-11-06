@@ -29,7 +29,7 @@ namespace Domain.Models.User
             DrName = drName;
             Id = id;
             HpId = hpId;
-            Permissions = new();
+            Permissions = new List<UserPermissionModel>();
             FunctionMstModels = new();
         }
 
@@ -59,7 +59,7 @@ namespace Domain.Models.User
             DrName = drName;
             Id = id;
             HpId = hpId;
-            Permissions = new();
+            Permissions = new List<UserPermissionModel>();
             FunctionMstModels = new();
         }
         public UserMstModel()
@@ -74,7 +74,7 @@ namespace Domain.Models.User
             RenkeiCd1 = string.Empty;
             DrName = string.Empty;
             KaSName = string.Empty;
-            Permissions = new();
+            Permissions = new List<UserPermissionModel>();
             FunctionMstModels = new();
         }
 
@@ -127,7 +127,6 @@ namespace Domain.Models.User
             Permissions = new();
             FunctionMstModels = functionMstModels;
         }
-
         public UserMstModel(int hpId, int userId, string sname, string kanaName, string name, int startDate, int endDate, int isDeleted, long id)
         {
             HpId = hpId;
@@ -139,14 +138,7 @@ namespace Domain.Models.User
             EndDate = endDate;
             IsDeleted = isDeleted;
             Id = id;
-            KaSName = string.Empty;
-            LoginId = string.Empty;
-            LoginPass = string.Empty;
-            MayakuLicenseNo = string.Empty;
-            RenkeiCd1 = string.Empty;
-            DrName = string.Empty;
-            Permissions = new();
-            FunctionMstModels = new();
+
         }
 
         public long Id { get; private set; }

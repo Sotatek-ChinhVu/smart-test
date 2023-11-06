@@ -65,21 +65,7 @@ namespace Domain.Models.MstItem
 
         public string EndDateBinding
         {
-            get
-            {
-                if (!CheckDefaultValue())
-                {
-                    if (EdDate.AsInteger() == 99999999)
-                    {
-                        return "9999/99/99";
-                    }
-                }
-                else
-                {
-                    return CIUtil.SDateToShowSDate(EdDate.AsInteger());
-                }
-                return string.Empty;
-            }
+            get => CheckDefaultValue() ? string.Empty : (EdDate.AsInteger() == 99999999 ? "9999/99/99" : CIUtil.SDateToShowSDate(EdDate.AsInteger()));
         }
 
         /// <summary>

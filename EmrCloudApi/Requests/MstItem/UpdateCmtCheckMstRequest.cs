@@ -1,8 +1,9 @@
 ﻿using Domain.Models.MstItem;
 
-namespace EmrCloudApi.Requests.MstItem;
-
-public class UpdateCmtCheckMstRequest
+namespace EmrCloudApi.Requests.MstItem
 {
-    public List<ItemCmtModel> ListItemCmt { get; set; } = new();
+    public class UpdateCmtCheckMstRequest
+    {
+        public List<ItemCmtModel> ListItemCmt { get; set; }
+    }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Helper.Constants;
 
-public static class CalculateStatusConstant
+public class CalculateStatusConstant
 {
     public const int Invalid = -1;
     public const int None = 0;

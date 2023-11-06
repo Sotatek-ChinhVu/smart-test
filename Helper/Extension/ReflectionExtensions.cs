@@ -13,7 +13,7 @@
             var memInf = GetMemberInfo(obj, memberName);
 
             if (memInf == null)
-                throw new Exception("memberName");
+                throw new System.Exception("memberName");
 
             if (memInf is System.Reflection.PropertyInfo)
                 return memInf.As<System.Reflection.PropertyInfo>().GetValue(obj, null);
@@ -21,7 +21,7 @@
             if (memInf is System.Reflection.FieldInfo)
                 return memInf.As<System.Reflection.FieldInfo>().GetValue(obj);
 
-            throw new Exception();
+            throw new System.Exception();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@
 
 
             if (memInf == null)
-                throw new Exception("memberName");
+                throw new System.Exception("memberName");
 
             var oldValue = obj.GetMemberValue(memberName);
 
@@ -45,7 +45,7 @@
             else if (memInf is System.Reflection.FieldInfo)
                 memInf.As<System.Reflection.FieldInfo>().SetValue(obj, newValue);
             else
-                throw new Exception();
+                throw new System.Exception();
 
             return oldValue;
         }

@@ -11,10 +11,10 @@ namespace UseCase.MstItem.IsUsingKensa
             ItemCds = itemCds;
         }
 
-        public int HpId { get; private set; }
+        public int HpId { get; set; }
 
-        public string KensaItemCd { get; private set; }
+        public string KensaItemCd { get; set; } = string.Empty;
 
-        public List<string> ItemCds { get; private set; }
+        public List<string> ItemCds { get; set; } = new List<string>();
     }
 }

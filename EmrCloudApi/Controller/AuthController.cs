@@ -103,7 +103,7 @@ public class AuthController : ControllerBase
 
         int.TryParse(principal.FindFirstValue(ParamConstant.UserId), out int userId);
         var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken());
-        ///var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), DateTime.UtcNow.AddMinutes(3));
+        //var input = new RefreshTokenByUserInputData(userId, request.RefreshToken, AuthProvider.GeneratorRefreshToken(), DateTime.UtcNow.AddMinutes(3));
         var output = _bus.Handle(input);
         if (output.Status == RefreshTokenByUserStatus.Successful)
         {
@@ -166,7 +166,7 @@ public class AuthController : ControllerBase
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        string token = AuthProvider.GenerateAppToken(claims).token;
+        (string token, DateTime tokenExpiryTime) = AuthProvider.GenerateAppToken(claims);
 
         if (!string.IsNullOrEmpty(token))
         {

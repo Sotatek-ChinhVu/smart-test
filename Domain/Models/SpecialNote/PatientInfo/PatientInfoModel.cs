@@ -11,18 +11,14 @@ public class PatientInfoModel
         PtCmtInfItems = ptCmtInfItems;
         SeikatureInfItems = seikatureInfItems;
         PhysicalInfItems = physicalInfItems;
-        FunctionName = string.Empty;
-        FunctionCd = string.Empty;
     }
 
     public PatientInfoModel()
     {
-        PregnancyItems = new();
-        PtCmtInfItems = new();
-        SeikatureInfItems = new();
-        PhysicalInfItems = new();
-        FunctionName = string.Empty;
-        FunctionCd = string.Empty;
+        PregnancyItems = new List<PtPregnancyModel>();
+        PtCmtInfItems = new PtCmtInfModel();
+        SeikatureInfItems = new SeikaturekiInfModel();
+        PhysicalInfItems = new List<PhysicalInfoModel>();
     }
 
     public PatientInfoModel(long ptId, string functionCd, long sinDate, long raiinNo, long oyaRaiinNo, string functionName, long ptNum)

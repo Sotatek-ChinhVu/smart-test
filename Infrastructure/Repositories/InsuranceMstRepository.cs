@@ -197,6 +197,31 @@ namespace Infrastructure.Repositories
             return (new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, dataComboboxKantokuMst, byomeiMstAftercares, dataRoudouMst, allHokenMst), prefNo);
         }
 
+        private List<HokenMstModel> GetHokenMstList(int today, bool isKohi, List<HokenMstModel> allHokenMst)
+        {
+            if (isKohi)
+            {
+                return allHokenMst.Where(x => (x.HokenSbtKbn == 2 || x.HokenSbtKbn == 5 || x.HokenSbtKbn == 6 || x.HokenSbtKbn == 7)
+                                        && x.StartDate < today
+                                        && x.EndDate > today)
+                        .OrderBy(entity => entity.HokenNo)
+                        .ThenBy(entity => entity.SortNo)
+                        .ThenBy(entity => entity.HokenSbtKbn)
+                        .ThenBy(entity => entity.StartDate).ToList();
+
+            }
+            else
+            {
+                return allHokenMst.Where(hokenInf => (hokenInf.HokenSbtKbn == 1 || hokenInf.HokenSbtKbn == 8)
+                                         && hokenInf.StartDate < today
+                                         && hokenInf.EndDate > today)
+                        .OrderBy(entity => entity.HokenNo)
+                        .ThenBy(entity => entity.SortNo)
+                        .ThenBy(entity => entity.HokenSbtKbn)
+                        .ThenBy(entity => entity.StartDate).ToList();
+            }
+        }
+
         public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int sinDate, string keyword)
         {
             int prefNo = 0;
@@ -481,7 +506,7 @@ namespace Infrastructure.Repositories
                                         , entity.Address1 ?? string.Empty
                                         , entity.Address2 ?? string.Empty
                                         , entity.Tel1 ?? string.Empty
-                                        , entity.IsKigoNa);
+                                        , entity.IsKigoNa); ;
         }
 
         public List<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken)
@@ -791,6 +816,8 @@ namespace Infrastructure.Repositories
         {
             var result = new List<SelectMaintenanceModel>();
 
+            int today = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+
             bool CheckOneStartDate = NoTrackingDataContext.HokenMsts.Count(x => x.HpId == hpId &&
                                                                                 x.HokenNo == hokenNo &&
                                                                                 x.HokenEdaNo == hokenEdaNo &&
@@ -1088,6 +1115,20 @@ namespace Infrastructure.Repositories
             {
                 return new HokenMstModel();
             }
+
+            var syaExcepts = NoTrackingDataContext.ExceptHokensyas
+                                    .Where(u => u.HpId == hokenMaster.HpId &&
+                                           u.HokenNo == hokenMaster.HokenNo &&
+                                           u.HokenEdaNo == hokenMaster.HokenEdaNo &&
+                                           u.PrefNo == hokenMaster.PrefNo &&
+                                           u.StartDate == hokenMaster.StartDate)
+                                    .Select(x => new ExceptHokensyaModel(x.Id,
+                                                                         x.HpId,
+                                                                         x.PrefNo,
+                                                                         x.HokenNo,
+                                                                         x.HokenEdaNo,
+                                                                         x.StartDate,
+                                                                         x.HokensyaNo ?? string.Empty)).ToList();
 
             return new HokenMstModel(hokenMaster.FutanKbn,
                                      hokenMaster.FutanRate,

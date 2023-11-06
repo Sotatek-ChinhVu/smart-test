@@ -96,21 +96,7 @@ public class PatientInfoItem
 
     public string DisplayedValidity => Validity.AsInteger() == 1 ? "有効" : string.Empty;
 
-    public string DisplayedUketukeStatus
-    {
-        get
-        {
-            switch (UketukeStatus)
-            {
-                case 1:
-                    return "済";
-                case 9:
-                    return "削除";
-                default:
-                    return string.Empty;
-            }
-        }
-    }
+    public string DisplayedUketukeStatus => UketukeStatus == 1 ? "済" : (UketukeStatus == 9 ? "削除" : string.Empty);
 
     public string Result
     {

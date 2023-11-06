@@ -17,7 +17,7 @@ namespace EmrCloudApi.Responses.PtGroupMst
 
         public int SortNo { get; private set; }
 
-        public string GrpName { get; private set; }
+        public string GrpName { get; private set; } = string.Empty;
 
         public int IsDeleted { get; private set; }
 

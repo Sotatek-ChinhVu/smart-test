@@ -181,7 +181,7 @@ public class InitKbnSettingTest : BaseUT
         // Assert
         try
         {
-            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels));
+            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds));
         }
         finally
         {
@@ -337,7 +337,7 @@ public class InitKbnSettingTest : BaseUT
         // Assert
         try
         {
-            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels));
+            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds));
         }
         finally
         {
@@ -410,7 +410,7 @@ public class InitKbnSettingTest : BaseUT
         // Assert
         try
         {
-            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels));
+            Assert.True(CompareInitDefault(resultQuery, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds));
         }
         finally
         {
@@ -430,7 +430,7 @@ public class InitKbnSettingTest : BaseUT
 
     #region private function
 
-    private bool CompareInitDefault(List<RaiinKbnModel> resultQuery, List<RaiinKbnModel> raiinKbnModels)
+    private bool CompareInitDefault(List<RaiinKbnModel> resultQuery, List<RaiinKbnModel> raiinKbnModels, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds)
     {
         var grpCd = raiinKbnModels.FirstOrDefault()?.GrpCd ?? 0;
         var raiinKbnModel = raiinKbnModels.FirstOrDefault(item => item.GrpCd == grpCd);

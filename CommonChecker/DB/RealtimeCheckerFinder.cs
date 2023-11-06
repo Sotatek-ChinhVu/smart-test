@@ -1439,7 +1439,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                             }
                             ).ToList();
 
-            var listChecked = _tenMstCacheService.GetKinkiMstList(itemCodeList).Where(k =>
+            var listChecked = _tenMstCacheService.GetKinkiMstList(itemCodeList).Where(k => 
                                                                          k.BCd != null &&
                                                                          (
                                                                               listCurrentOrderCodeItemCd.Contains(k.ACd) && listAddedOrderCodeItemCd.Contains(k.BCd) ||
@@ -1506,7 +1506,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 })
                 .ToList();
 
-            var listAddedOrderSubYjCode =
+            var listAddedOrderSubYjCode = 
                 _tenMstCacheService.GetTenMstList(addedOrderItemCodeList.Select(x => x.ItemCd).ToList())
                 .Select(m => new
                 {
@@ -1788,7 +1788,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     ).ToList();
 
             var addedOrderItemCodeListDistinct = addedOrderItemCodeList.Select(x => x.ItemCd).Distinct().ToList();
-            var listAddedOrderSubYjCode =
+            var listAddedOrderSubYjCode = 
                 _tenMstCacheService.GetTenMstList(addedOrderItemCodeListDistinct)
                 .Select(m => new
                 {
@@ -1881,7 +1881,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             if (currentWeight <= -1)
             {
                 // Get new data from SpecialNote but have no WeightInfo
-                weight = GetCommonWeight(patientInfo.Birthday, sinday, sex);
+                weight = GetCommonWeight(hpId, ptId, patientInfo.Birthday, sinday, sex);
             }
             else if (currentWeight == 0)
             {
@@ -2648,9 +2648,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 result.Add(new DayLimitResultModel()
                 {
                     Id = id,
-                    ItemCd = item.ItemCd ?? string.Empty,
-                    ItemName = item.Name ?? string.Empty,
-                    YjCd = item.YjCd ?? string.Empty,
+                    ItemCd = item.ItemCd,
+                    ItemName = item.Name,
+                    YjCd = item.YjCd,
                     LimitDay = item.LimitDay,
                     UsingDay = usingDay
                 });
@@ -2716,7 +2716,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        private double GetCommonWeight(int birdthDay, int sinday, int sex)
+        private double GetCommonWeight(int hpId, long ptID, int birdthDay, int sinday, int sex)
         {
             PhysicalAverage commonBodyInfo = GetCommonBodyInfo(birdthDay, sinday);
             double weight = 0;
@@ -2752,12 +2752,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return height;
         }
 
-        private double GetPatientWeight(int hpId, long ptId, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
+        private double GetPatientWeight(int hpId, long ptID, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
             if (isDataOfDb)
             {
                 //Get data in db
-                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, "V0002");
+                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptID, sinday, "V0002");
 
                 if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
                 {
@@ -2767,7 +2767,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             else
             {
                 var weightInfo = kensaInfDetailModels
-                          .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == "V002" && !string.IsNullOrEmpty(k.ResultVal))
+                          .Where(k => k.HpId == hpId && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V002" && !string.IsNullOrEmpty(k.ResultVal))
                           .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
                 if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
@@ -2776,7 +2776,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 }
             }
 
-            return GetCommonWeight(birdthDay, sinday, sex);
+            return GetCommonWeight(hpId, ptID, birdthDay, sinday, sex);
         }
 
         private double GetPatientHeight(int hpId, long ptID, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels)
@@ -2789,6 +2789,14 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 var value = heightInfoModel.ResultVal ?? string.Empty;
                 return value.AsDouble();
             }
+
+            //KensaInfDetail heightInfo = GetBodyInfo(hpId, ptID, sinday, "V0001");
+
+            //if (heightInfo != null && heightInfo.HpId != 0 && heightInfo.PtId != 0 && heightInfo.SeqNo != 0 && heightInfo.IraiCd != 0 && CIUtil.IsDigitsOnly(heightInfo.ResultVal ?? string.Empty))
+            //{
+            //    var value = heightInfo.ResultVal ?? string.Empty;
+            //    return value.AsDouble();
+            //}
 
             return GetCommonHeight(birdthDay, sinday, sex);
         }
