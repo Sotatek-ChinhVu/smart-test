@@ -67,7 +67,7 @@ public class HistoryCommon : IHistoryCommon
                         string.Empty,
                         1,
                         0,
-                        karteInfHistoryItems)
+                        karteInfHistoryItems.OrderBy(k => k.SeqNo).ToList())
                     };
 
             var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem
