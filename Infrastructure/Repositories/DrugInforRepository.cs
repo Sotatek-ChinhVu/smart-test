@@ -117,7 +117,7 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
         }
     }
 
-    public List<SinrekiFilterMstModel> GetSinrekiFilterMstList(int hpId, int sinDate)
+    public List<SinrekiFilterMstModel> GetSinrekiFilterMstList(int hpId)
     {
         List<SinrekiFilterMstModel> result = new();
         var sinrekiMstList = NoTrackingDataContext.SinrekiFilterMsts.Where(item => item.HpId == hpId
@@ -132,9 +132,9 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
         var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                      && item.IsDeleted == 0
                                                                      && item.ItemCd != null
-                                                                     && itemCdList.Contains(item.ItemCd)
-                                                                     && item.StartDate <= sinDate
-                                                                     && sinDate <= item.EndDate)
+                                                                     && itemCdList.Contains(item.ItemCd))
+                                                      .GroupBy(item => item.ItemCd)
+                                                      .Select(item => item.OrderByDescending(t => t.EndDate).FirstOrDefault())
                                                       .ToList();
         var kouiList = NoTrackingDataContext.SinrekiFilterMstKouis.Where(item => item.HpId == hpId
                                                                                  && grpCdList.Contains(item.GrpCd))
@@ -149,18 +149,26 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
                                                                        item.IsDeleted == 0))
                                                    .ToList();
 
-            var sinrekiFilterMstDetailList = detailList.Where(item => item.GrpCd == mst.GrpCd)
-                                                     .Select(item => new SinrekiFilterMstDetailModel(
-                                                                item.GrpCd,
-                                                                item.ItemCd ?? string.Empty,
-                                                                item.SortNo,
-                                                                item.IsExclude == 1
-                                                            ))
-           var mstModel = new SinrekiFilterMstModel(mst.GrpCd,
-                mst.Name ?? string.Empty,
-                mst.SortNo,)
+            var sinrekiFilterMstDetailList = (from detail in detailList.Where(item => item.GrpCd == mst.GrpCd)
+                                              join ten in tenMstList on detail.ItemCd equals ten.ItemCd
+                                              select new SinrekiFilterMstDetailModel(
+                                                         detail.GrpCd,
+                                                         detail.ItemCd ?? string.Empty,
+                                                         ten.Name ?? string.Empty,
+                                                         detail.SortNo,
+                                                         detail.IsExclude == 1
+                                              )).OrderBy(item => item.SortNo)
+                                              .ToList();
+
+            var mstModel = new SinrekiFilterMstModel(
+                               mst.GrpCd,
+                               mst.Name ?? string.Empty,
+                               mst.SortNo,
+                               sinrekiFilterMstKouiList,
+                               sinrekiFilterMstDetailList);
+            result.Add(mstModel);
         }
-        return result;
+        return result.OrderBy(item => item.SortNo).ToList();
     }
 
     public void ReleaseResource()
