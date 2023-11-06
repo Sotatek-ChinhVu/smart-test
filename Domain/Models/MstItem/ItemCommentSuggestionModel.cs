@@ -8,7 +8,6 @@
             ItemName = itemName;
             SanteiItemCd = santeiItemCd;
             ItemCmtModels = itemCmtModels;
-            ListGroupComment = new();
         }
 
         public string ItemCd { get; private set; }

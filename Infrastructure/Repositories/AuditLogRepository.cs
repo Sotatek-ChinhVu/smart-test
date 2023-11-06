@@ -14,7 +14,7 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
 
     public bool SaveAuditLog(int hpId, int userId, AuditTrailLogModel auditTrailLogModel)
     {
-        AuditTrailLog auditTrailLog = new();
+        AuditTrailLog auditTrailLog = new AuditTrailLog();
         auditTrailLog.HpId = hpId;
         auditTrailLog.PtId = auditTrailLogModel.PtId;
         auditTrailLog.SinDay = auditTrailLogModel.SinDate;
@@ -26,7 +26,7 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
         var saveAuditLog = TrackingDataContext.SaveChanges();
         string hosoku = auditTrailLogModel.AuditTrailLogDetailModel.Hosoku;
 
-        if (!string.IsNullOrEmpty(hosoku))
+        if (string.IsNullOrEmpty(hosoku) == false)
         {
             // 補足が必要な場合は、AUDIT_TRAIL_LOG_DETAILに保存
             AuditTrailLogDetail auditTrailLogDetailMode = new AuditTrailLogDetail();

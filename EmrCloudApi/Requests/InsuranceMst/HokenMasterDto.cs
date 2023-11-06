@@ -168,6 +168,6 @@ namespace EmrCloudApi.Requests.InsuranceMst
 
         public bool IsAdded { get; private set; }
 
-        public List<ExceptHokensyaModel> ExcepHokenSyas { get; private set; }
+        public List<ExceptHokensyaModel> ExcepHokenSyas { get; private set; } = new List<ExceptHokensyaModel>();
     }
 }

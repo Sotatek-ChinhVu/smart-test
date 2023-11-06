@@ -11,22 +11,16 @@ namespace Domain.Models.Lock
         public LockInfModel(LockPtInfModel patientInfoModels)
         {
             PatientInfoModels = patientInfoModels;
-            CalcStatusModels = new();
-            DocInfModels = new();
         }
 
         public LockInfModel(LockCalcStatusModel calcStatusModels)
         {
             CalcStatusModels = calcStatusModels;
-            PatientInfoModels = new();
-            DocInfModels = new();
         }
 
         public LockInfModel(LockDocInfModel docInfModels)
         {
             DocInfModels = docInfModels;
-            PatientInfoModels = new();
-            CalcStatusModels = new();
         }
 
         public LockInfModel(LockPtInfModel patientInfoModels, LockCalcStatusModel calcStatusModels, LockDocInfModel docInfModels)
@@ -56,7 +50,7 @@ namespace Domain.Models.Lock
             }
         }
 
-        public LockPtInfModel PatientInfoModels { get; private set; }
+        public LockPtInfModel PatientInfoModels { get; private set; } 
 
         public LockCalcStatusModel CalcStatusModels { get; private set; }
 
@@ -146,15 +140,15 @@ namespace Domain.Models.Lock
         {
             get
             {
-                if (DocInfModels != null)
+                if (DocInfModels != null && (DocInfModels.LockDate != null || DocInfModels.LockDate != new DateTime()))
                 {
                     return DocInfModels.LockDate;
                 }
-                if (CalcStatusModels != null)
+                if (CalcStatusModels != null && (CalcStatusModels.LockDate != null || CalcStatusModels.LockDate != new DateTime()))
                 {
                     return CalcStatusModels.LockDate;
                 }
-                if (PatientInfoModels != null)
+                if (PatientInfoModels != null && (PatientInfoModels.LockDate != null || PatientInfoModels.LockDate != new DateTime()))
                 {
                     return PatientInfoModels.LockDate;
                 }

@@ -7,6 +7,7 @@ using Helper.Extension;
 using Helper.Util;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -103,9 +104,9 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         var result = new List<StaCsvMstModel>();
         for (int i = 1; i <= 8; i++)
         {
-            List<ConfigObject> template = PtManagementUtil.GetStaCsvTemplate(i);
+            List<(bool isSelected, string outputColumnName, string saveName)> template = PtManagementUtil.GetStaCsvTemplate(i);
             List<StaCsvModel> staCsvTemplateModels = template.Select(
-                    (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.SaveName, x.IsSelected, x.OutputColumnName)
+                    (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.saveName, x.isSelected, x.outputColumnName)
                 ).ToList();
             if (i == 4)
             {
@@ -118,7 +119,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             if (i != 1)
             {
                 List<StaCsvModel> staCsvSubTemplateModels = StaCsvConfigTemplate.PtInfSubConfig.Select(
-                   (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.SaveName, x.IsSelected, x.OutputColumnName)
+                   (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.saveName, x.isSelected, x.outputColumnName)
                ).ToList();
                 staCsvTemplateModels.AddRange(staCsvSubTemplateModels);
             }
@@ -134,7 +135,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                 i,
                 staCsvTemplateModels,
                 staCsvTemplateModels.Where(x => x.IsSelected).Select(
-                    (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.Columns,
+                    (x, idx) => new StaCsvModel(hpId, PtManagementUtil.GetConfName(i), i, idx, 9000, i, x.Columns ,
                             x.IsSelected,
                             x.ColumnsDisplay)).ToList(),
                 i - 1,
@@ -145,9 +146,11 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         var groupStaCsvModels = staCsvModels.GroupBy(x => new { x.DataSbt, x.ConfName, x.RowNo });
         foreach (var group in groupStaCsvModels)
         {
-            List<ConfigObject> template = PtManagementUtil.GetStaCsvTemplate(group.Key.DataSbt);
+            List<(bool isSelected, string outputColumnName, string saveName)> template = PtManagementUtil.GetStaCsvTemplate(group.Key.DataSbt);
             List<StaCsvModel> staCsvTemplateModels = template.Select(
-                    (x, idx) => new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, idx, 9000, group.Key.DataSbt, x.SaveName, x.IsSelected, x.OutputColumnName)
+                    (x, idx) => new StaCsvModel( hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, idx, 9000, group.Key.DataSbt, x.saveName,
+                        x.isSelected,
+                        x.outputColumnName)
                 ).ToList();
             if (group.Key.DataSbt == 4)
             {
@@ -160,14 +163,14 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
             if (group.Key.DataSbt != 1)
             {
                 List<StaCsvModel> staCsvSubTemplateModels = StaCsvConfigTemplate.PtInfSubConfig.Select(
-                    (x, idx) => new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(u => u.SortKbn) + 1, 9000, group.Key.DataSbt, x.SaveName, x.IsSelected, x.OutputColumnName)
+                    (x, idx) => new StaCsvModel( hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(u => u.SortKbn) + 1, 9000, group.Key.DataSbt, x.saveName, x.isSelected, x.outputColumnName)
                 ).ToList();
                 staCsvTemplateModels.AddRange(staCsvSubTemplateModels);
             }
 
             foreach (var ptGrpName in _ptGrpNameMsts)
             {
-                staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
+                staCsvTemplateModels.Add(new StaCsvModel( hpId,  group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCd_{0}", ptGrpName.GrpId), false, string.Format("グループ{0}({1}) 区分コード", ptGrpName.GrpId, ptGrpName.GrpName)));
                 staCsvTemplateModels.Add(new StaCsvModel(hpId, group.Key.ConfName ?? string.Empty, group.Key.RowNo, staCsvTemplateModels.Max(x => x.SortKbn) + 1, 9000, group.Key.DataSbt, string.Format("PtGrpCdName_{0}", ptGrpName.GrpId), false,
                  string.Format("グループ{0}({1}) 区分名称", ptGrpName.GrpId, ptGrpName.GrpName)));
             }
@@ -176,7 +179,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                 group.Key.ConfName ?? string.Empty,
                 group.Key.DataSbt,
                 staCsvTemplateModels,
-                group.AsEnumerable().Select(x => new StaCsvModel(x.Id, x.HpId, x.ConfName ?? string.Empty, x.RowNo, x.SortKbn, x.ReportId, x.DataSbt, revertJpNameToSaveName(staCsvTemplateModels, x.Columns ?? string.Empty), true, getDisplayColumnName(staCsvTemplateModels, x.Columns ?? string.Empty))).ToList(),
+                group.ToList().Select(x => new StaCsvModel(x.Id, x.HpId, x.ConfName ?? string.Empty, x.RowNo, x.SortKbn, x.ReportId, x.DataSbt, revertJpNameToSaveName(staCsvTemplateModels, x.Columns ?? string.Empty), true, getDisplayColumnName(staCsvTemplateModels, x.Columns ?? string.Empty))).ToList(),
                 group.Key.RowNo,
                 false
                 ));
@@ -197,38 +200,42 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
     {
         var addStaCsvMsts = new List<StaCsv>();
         var deleteStaCsvMsts = new List<StaCsv>();
-        foreach (var (item, staCsv) in from staCsvMstModel in staCsvMstModels
-                                       let ids = staCsvMstModel.StaCsvModelsSelected.Select(s => s.Id).ToList()
-                                       let staCsvs = TrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList()
-                                       from item in staCsvMstModel.StaCsvModelsSelected
-                                       where item.IsModified
-                                       let staCsv = staCsvs.FirstOrDefault(s => s.Id == item.Id)
-                                       select (item, staCsv))
-        {
-            if (staCsv != null)
-            {
-                staCsv.ReportId = item.ReportId;
-                staCsv.RowNo = item.RowNo;
-                staCsv.ConfName = item.ConfName;
-                staCsv.DataSbt = item.DataSbt;
-                staCsv.Columns = item.Columns;
-                staCsv.SortKbn = item.SortKbn;
-                staCsv.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                staCsv.UpdateId = userId;
-            }
 
-            if (item.Id > 0 && item.IsDeleted && staCsv != null)
+        foreach (var staCsvMstModel in staCsvMstModels)
+        {
+            var ids = staCsvMstModel.StaCsvModelsSelected.Select(s => s.Id).ToList();
+            var staCsvs = TrackingDataContext.StaCsvs.Where(s => s.HpId == hpId).AsEnumerable().Where(s => ids.Contains(s.Id)).ToList();
+            foreach (var item in staCsvMstModel.StaCsvModelsSelected)
             {
-                deleteStaCsvMsts.Add(staCsv);
-            }
-            else if (item.Id == 0 && !item.IsDeleted && item.IsSelected)
-            {
-                var newStaCsv = ConvertStaCsvModelToStaCsv(hpId, userId, item);
-                addStaCsvMsts.Add(newStaCsv);
-            }
-            else if (item.Id > 0 && !item.IsSelected && staCsv != null)
-            {
-                deleteStaCsvMsts.Add(staCsv);
+                if (item.IsModified)
+                {
+                    var staCsv = staCsvs.FirstOrDefault(s => s.Id == item.Id);
+                    if (staCsv != null)
+                    {
+                        staCsv.ReportId = item.ReportId;
+                        staCsv.RowNo = item.RowNo;
+                        staCsv.ConfName = item.ConfName;
+                        staCsv.DataSbt = item.DataSbt;
+                        staCsv.Columns = item.Columns;
+                        staCsv.SortKbn = item.SortKbn;
+                        staCsv.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        staCsv.UpdateId = userId;
+                    }
+
+                    if (item.Id > 0 && item.IsDeleted && staCsv != null)
+                    {
+                        deleteStaCsvMsts.Add(staCsv);
+                    }
+                    else if (item.Id == 0 && !item.IsDeleted && item.IsSelected)
+                    {
+                        var newStaCsv = ConvertStaCsvModelToStaCsv(hpId, userId, item);
+                        addStaCsvMsts.Add(newStaCsv);
+                    }
+                    else if (item.Id > 0 && !item.IsSelected && staCsv != null)
+                    {
+                        deleteStaCsvMsts.Add(staCsv);
+                    }
+                }
             }
         }
 
@@ -384,41 +391,49 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
     public bool SaveStaConfMenu(int hpId, int userId, StatisticMenuModel statisticMenu)
     {
-        var staMenu = TrackingDataContext.StaMenus.FirstOrDefault(item => item.HpId == hpId && item.MenuId == statisticMenu.MenuId);
-        if (staMenu == null && statisticMenu.MenuId > 0)
+        var staMenu = new StaMenu();
+
+        if (statisticMenu.IsDeleted)
         {
-            return false;
-        }
-        if (statisticMenu.IsDeleted && statisticMenu.MenuId > 0)
-        {
-            staMenu!.IsDeleted = 1;
+            staMenu.MenuId = statisticMenu.MenuId;
+            staMenu.MenuName = staMenu.MenuName;
+            staMenu.IsDeleted = 1;
             staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
             staMenu.UpdateId = userId;
+
+            TrackingDataContext.StaMenus.UpdateRange(staMenu);
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        if (statisticMenu.MenuId == 0 && staMenu == null)
+        if (!statisticMenu.IsDeleted && statisticMenu.IsModified && statisticMenu.MenuId == 0)
         {
-            staMenu = new();
-            staMenu.MenuId = 0;
             staMenu.HpId = hpId;
             staMenu.GrpId = 9;
-            staMenu.SortNo = statisticMenu.SortNo;
             staMenu.ReportId = 9000;
+            staMenu.SortNo = statisticMenu.SortNo;
             staMenu.MenuName = statisticMenu.MenuName;
-            staMenu.IsDeleted = 0;
+            staMenu.IsDeleted = statisticMenu.IsDeleted == true ? 1 : 0;
             staMenu.CreateDate = CIUtil.GetJapanDateTimeNow();
             staMenu.CreateId = userId;
+            staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            staMenu.UpdateId = userId;
+
+            TrackingDataContext.StaMenus.AddRange(staMenu);
+            TrackingDataContext.SaveChanges();
+        }
+        else if (!statisticMenu.IsDeleted && statisticMenu.IsModified)
+        {
+             staMenu = TrackingDataContext.StaMenus.FirstOrDefault(x => x.HpId == hpId && x.MenuId == statisticMenu.MenuId);
+            if (staMenu != null)
+            {
+                staMenu.MenuId = statisticMenu.MenuId;
+                staMenu.MenuName = statisticMenu.MenuName;
+                staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                staMenu.UpdateId = userId;
+            }
+            TrackingDataContext.SaveChanges();
         }
 
-        staMenu!.MenuName = statisticMenu.MenuName;
-        staMenu.UpdateDate = CIUtil.GetJapanDateTimeNow();
-        staMenu.UpdateId = userId;
-        if (staMenu.MenuId == 0)
-        {
-            TrackingDataContext.StaMenus.Add(staMenu);
-        }
-        TrackingDataContext.SaveChanges();
 
         return SavePtManagementConf(hpId, userId, staMenu.MenuId, statisticMenu.PatientManagement, statisticMenu.IsDeleted);
     }
@@ -561,21 +576,24 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
     public List<StatisticMenuModel> GetStatisticMenuModels(int hpId)
     {
+        var result = new List<StatisticMenuModel>();
+
+
         var staconfs = NoTrackingDataContext.StaConfs.Where(x => x.HpId == hpId).ToList();
 
-        var result = NoTrackingDataContext.StaMenus.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.GrpId == 9)
-                                                   .AsEnumerable()
-                                                   .Select(x => new StatisticMenuModel(
-                                                                                       x.MenuId,
-                                                                                       x.GrpId,
-                                                                                       x.ReportId,
-                                                                                       x.MenuName ?? string.Empty,
-                                                                                       x.SortNo,
-                                                                                       x.IsDeleted == 1,
-                                                                                       false,
-                                                                                       GetPatientManagement(hpId, x.MenuId, staconfs)
-                                                                                       ))
-                                                   .ToList();
+        result = NoTrackingDataContext.StaMenus.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.GrpId == 9)
+                                                .AsEnumerable()
+                                                .Select(x => new StatisticMenuModel(
+                                                                                    x.MenuId,
+                                                                                    x.GrpId,
+                                                                                    x.ReportId,
+                                                                                    x.MenuName ?? string.Empty,
+                                                                                    x.SortNo,
+                                                                                    x.IsDeleted == 1 ? true : false,
+                                                                                    false,
+                                                                                    GetPatientManagement(hpId, x.MenuId, staconfs)
+                                                                                    ))
+                                                .ToList();
 
         return result;
     }

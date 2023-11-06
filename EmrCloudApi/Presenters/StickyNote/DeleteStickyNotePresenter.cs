@@ -3,8 +3,6 @@ using EmrCloudApi.Responses;
 using UseCase.StickyNote;
 using EmrCloudApi.Responses.StickyNote;
 
-namespace EmrCloudApi.Presenters.StickyNote;
-
 public class DeleteStickyNotePresenter : IDeleteStickyNoteOutputPort
 {
     public Response<ActionStickyNoteResponse> Result { get; private set; } = default!;

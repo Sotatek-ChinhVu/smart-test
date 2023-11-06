@@ -50,6 +50,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.HpId == value) return;
                 RaiinInf.HpId = value;
+                //RaisePropertyChanged(() => HpId);
             }
         }
 
@@ -60,6 +61,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.PtId == value) return;
                 RaiinInf.PtId = value;
+                //RaisePropertyChanged(() => PtId);
             }
         }
 
@@ -70,6 +72,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.SinDate == value) return;
                 RaiinInf.SinDate = value;
+                //RaisePropertyChanged(() => SinDate);
             }
         }
 
@@ -80,6 +83,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.RaiinNo == value) return;
                 RaiinInf.RaiinNo = value;
+                //RaisePropertyChanged(() => RaiinNo);
             }
         }
 
@@ -90,6 +94,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.HokenPid == value) return;
                 RaiinInf.HokenPid = value;
+                //RaisePropertyChanged(() => HokenPid);
             }
         }
 
@@ -100,6 +105,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.OyaRaiinNo == value) return;
                 RaiinInf.OyaRaiinNo = value;
+                //RaisePropertyChanged(() => OyaRaiinNo);
             }
         }
 
@@ -110,6 +116,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.Status == value) return;
                 RaiinInf.Status = value;
+                //RaisePropertyChanged(() => Status);
             }
         }
 
@@ -120,6 +127,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.IsYoyaku == value) return;
                 RaiinInf.IsYoyaku = value;
+                //RaisePropertyChanged(() => IsYoyaku);
             }
         }
 
@@ -130,6 +138,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.YoyakuTime == value) return;
                 RaiinInf.YoyakuTime = value;
+                //RaisePropertyChanged(() => YoyakuTime);
             }
         }
 
@@ -140,6 +149,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.YoyakuId == value) return;
                 RaiinInf.YoyakuId = value;
+                //RaisePropertyChanged(() => YoyakuId);
             }
         }
 
@@ -150,6 +160,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.UketukeSbt == value) return;
                 RaiinInf.UketukeSbt = value;
+                //RaisePropertyChanged(() => UketukeSbt);
             }
         }
 
@@ -160,6 +171,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.UketukeTime == value) return;
                 RaiinInf.UketukeTime = value;
+                //RaisePropertyChanged(() => UketukeTime);
             }
         }
 
@@ -170,6 +182,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.UketukeId == value) return;
                 RaiinInf.UketukeId = value;
+                //RaisePropertyChanged(() => UketukeId);
             }
         }
 
@@ -180,6 +193,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.UketukeNo == value) return;
                 RaiinInf.UketukeNo = value;
+                //RaisePropertyChanged(() => UketukeNo);
             }
         }
 
@@ -190,6 +204,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.SinStartTime == value) return;
                 RaiinInf.SinStartTime = value;
+                //RaisePropertyChanged(() => SinStartTime);
             }
         }
 
@@ -200,6 +215,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.SinEndTime == value) return;
                 RaiinInf.SinEndTime = value;
+                //RaisePropertyChanged(() => SinEndTime);
             }
         }
 
@@ -210,6 +226,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.KaikeiTime == value) return;
                 RaiinInf.KaikeiTime = value;
+                //RaisePropertyChanged(() => KaikeiTime);
             }
         }
 
@@ -220,6 +237,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.KaikeiId == value) return;
                 RaiinInf.KaikeiId = value;
+                //RaisePropertyChanged(() => KaikeiId);
             }
         }
 
@@ -230,6 +248,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.KaId == value) return;
                 RaiinInf.KaId = value;
+                //RaisePropertyChanged(() => KaId);
             }
         }
 
@@ -240,6 +259,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.TantoId == value) return;
                 RaiinInf.TantoId = value;
+                //RaisePropertyChanged(() => TantoId);
             }
         }
 
@@ -250,6 +270,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.SyosaisinKbn == value) return;
                 RaiinInf.SyosaisinKbn = value;
+                //RaisePropertyChanged(() => SyosaisinKbn);
             }
         }
 
@@ -260,6 +281,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.JikanKbn == value) return;
                 RaiinInf.JikanKbn = value;
+                //RaisePropertyChanged(() => JikanKbn);
             }
         }
 
@@ -270,6 +292,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.CreateId == value) return;
                 RaiinInf.CreateId = value;
+                //RaisePropertyChanged(() => CreateId);
             }
         }
 
@@ -280,6 +303,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.UpdateId == value) return;
                 RaiinInf.UpdateId = value;
+                //RaisePropertyChanged(() => UpdateId);
             }
         }
 
@@ -290,6 +314,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.CreateDate == value) return;
                 RaiinInf.CreateDate = value;
+                //RaisePropertyChanged(() => CreateDate);
             }
         }
 
@@ -300,6 +325,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.UpdateDate == value) return;
                 RaiinInf.UpdateDate = value;
+                //RaisePropertyChanged(() => UpdateDate);
             }
         }
 
@@ -310,6 +336,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.CreateMachine == value) return;
                 RaiinInf.CreateMachine = value;
+                //RaisePropertyChanged(() => CreateMachine);
             }
         }
 
@@ -320,6 +347,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             {
                 if (RaiinInf.UpdateMachine == value) return;
                 RaiinInf.UpdateMachine = value;
+                //RaisePropertyChanged(() => UpdateMachine);
             }
         }
     }

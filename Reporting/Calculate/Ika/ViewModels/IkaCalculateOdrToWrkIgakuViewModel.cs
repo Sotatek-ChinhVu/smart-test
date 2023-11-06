@@ -336,7 +336,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                 CalculateJihi();
             }
 
-            if (_common.IsRosai && _common.hokenKbn != HokenSyuConst.After &&
+            if (_common.IsRosai && _common.hokenKbn != HokenSyu.After &&
                     new double[] { SyosaiConst.Saisin }.Contains(_common.syosai))
             {
                 // 再診時療養指導料
@@ -478,7 +478,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                                 {
                                     _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
-                                    if (_common.IsRosai && _common.hokenKbn != HokenSyuConst.After && odrDtl.IsEnKoumoku)
+                                    if (_common.IsRosai && _common.hokenKbn != HokenSyu.After && odrDtl.IsEnKoumoku)
                                     {
                                         // 円項目を含む場合、集計先を変える
                                         _common.Wrk.wrkSinKouis.Last().SyukeiSaki = ReceSyukeisaki.EnSido;

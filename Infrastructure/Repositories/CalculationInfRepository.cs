@@ -20,7 +20,6 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using System.Text;
 
 namespace Infrastructure.Repositories
 {
@@ -80,6 +79,49 @@ namespace Infrastructure.Repositories
                 result.Add(ConvertToModel(entity.PtByomei, entity.ByomeiMst));
             }
             return result;
+        }
+
+        private PtDiseaseModel ConvertToModel(PtByomei ptByomei, ByomeiMst byomeiMst)
+        {
+            var prefixList = Enumerable.Range(1, 21)
+                                       .Select(i => new PrefixSuffixModel($"SyusyokuCd{i}", ptByomei.GetPropertyValueOrDefault($"SyusyokuCd{i}", string.Empty)))
+                                       .ToList();
+            var byomeiCds = prefixList.Where(x => x.Name != string.Empty).Select(x => x.Name).Distinct().ToList();
+
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => byomeiCds.Contains(b.ByomeiCd)).ToList();
+
+            string fullByomei = string.Empty;
+
+            foreach (var item in byomeiCds)
+            {
+                var byomei = byomeiMstList.FirstOrDefault(b => item == b.ByomeiCd);
+                if (byomei == null || byomei.ByomeiCd == null)
+                {
+                    continue;
+                }
+
+                if (byomei.ByomeiCd.StartsWith('8'))
+                {
+                    ptByomei.Byomei += byomei.Byomei;
+                }
+                else
+                {
+                    fullByomei += byomei.Byomei;
+                }
+            }
+
+            fullByomei += ptByomei.Byomei;
+
+            return new PtDiseaseModel(ptByomei != null ? ptByomei.HokenPid : 0,
+                                      ptByomei != null ? ptByomei.ByomeiCd ?? string.Empty : string.Empty,
+                                      fullByomei,
+                                      ptByomei != null ? ptByomei.StartDate : 0,
+                                      ptByomei != null ? ptByomei.TenkiDate : 0,
+                                      ptByomei != null ? ptByomei.SyubyoKbn : 0,
+                                      ptByomei != null ? ptByomei.Id : 0,
+                                      byomeiMst != null ? byomeiMst.DelDate : 0,
+                                      ptByomei != null ? ptByomei.TenkiKbn : 0,
+                                      prefixList);
         }
 
         public int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm)
@@ -199,13 +241,13 @@ namespace Infrastructure.Repositories
             List<ReceInfModel> receInfModels = new List<ReceInfModel>();
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
 
-            var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (!ptIds.Any() || ptIds.Contains(p.PtId))).ToList();
+            var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
-            var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (!ptIds.Any() || ptIds.Contains(p.PtId))).ToList();
+            var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (!ptIds.Any() || ptIds.Contains(p.PtId))).ToList();
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
-            var ptKohiInfs = NoTrackingDataContext.PtKohis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (!ptIds.Any() || ptIds.Contains(p.PtId))).ToList();
+            var ptKohiInfs = NoTrackingDataContext.PtKohis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true)).ToList();
 
             var receInfJoinPtInfQuery = from receInf in receInfs
                                         join ptInf in ptInfs
@@ -281,8 +323,8 @@ namespace Infrastructure.Repositories
                          };
 
             var hokenChecks = NoTrackingDataContext.PtHokenChecks.Where(p => p.HpId == hpId &&
-                                                                             p.IsDeleted == DeleteTypes.None &&
-                                                                             (!ptIds.Any() || ptIds.Contains(p.PtID)));
+                                                                                             p.IsDeleted == DeleteTypes.None &&
+                                                                                             (ptIds.Count > 0 ? ptIds.Contains(p.PtID) : true));
 
             var query5 = from query4entity in query4
                          join hokenCheck in hokenChecks.Where(p => p.HokenGrp == 1)
@@ -534,7 +576,7 @@ namespace Infrastructure.Repositories
 
         private List<ConfirmDateModel> ConvertConfirmDate(List<PtHokenCheck> ptHokenCheck)
         {
-            List<ConfirmDateModel> result = new();
+            var result = new List<ConfirmDateModel>();
             foreach (var item in ptHokenCheck)
             {
                 result.Add(new ConfirmDateModel(item.HokenGrp,
@@ -610,11 +652,11 @@ namespace Infrastructure.Repositories
                                   on sinKouiCountJoinDetail.SinKouiDetail.ItemCd equals tenMst.ItemCd into tempTenMstList
                                   select new
                                   {
-                                      sinKouiCountJoinDetail.SinKouiCount.PtId,
-                                      sinKouiCountJoinDetail.SinKouiCount.SinDate,
-                                      sinKouiCountJoinDetail.SinKouiCount.RaiinNo,
-                                      sinKouiCountJoinDetail.SinKouiCount,
-                                      sinKouiCountJoinDetail.SinKouiDetail,
+                                      PtId = sinKouiCountJoinDetail.SinKouiCount.PtId,
+                                      SinDate = sinKouiCountJoinDetail.SinKouiCount.SinDate,
+                                      RaiinNo = sinKouiCountJoinDetail.SinKouiCount.RaiinNo,
+                                      SinKouiCount = sinKouiCountJoinDetail.SinKouiCount,
+                                      SinKouiDetail = sinKouiCountJoinDetail.SinKouiDetail,
                                       sinKouiCountJoinDetail.ptHokenPattern,
                                       TenMst = tempTenMstList.OrderByDescending(p => p.StartDate).FirstOrDefault(p => p.StartDate <= sinKouiCountJoinDetail.SinKouiCount.SinDate)
                                   };
@@ -625,14 +667,11 @@ namespace Infrastructure.Repositories
             {
                 foreach (var groupKey in groupKeys)
                 {
-                    if (groupKey == null)
-                    {
-                        continue;
-                    }
                     var entities = joinTenMstQuery.Where(p => p.PtId == groupKey.PtId && p.SinDate == groupKey.SinDate && p.RaiinNo == groupKey.RaiinNo);
                     var sinKouiDetailModels = new List<SinKouiDetailModel>();
                     foreach (var entity in entities)
                     {
+                        //sinKouiDetailModels.Add(new SinKouiDetailModel(entity.TenMst, entity.SinKouiDetail));
                         sinKouiDetailModels.Add(new SinKouiDetailModel(
                                                                         entity.SinKouiDetail.PtId,
                                                                         0,
@@ -652,7 +691,34 @@ namespace Infrastructure.Repositories
                     result.Add(ConvertToModel(entities.Select(p => p.ptHokenPattern).Distinct().ToList(), groupKey?.SinKouiCount ?? new(), sinKouiDetailModels));
                 }
             }
+
             return result;
+        }
+
+        private SinKouiCountModel ConvertToModel(List<PtHokenPattern> ptHokenPatterns, SinKouiCount sinKouiCount, List<SinKouiDetailModel> sinKouiDetailModels)
+        {
+            return new SinKouiCountModel(
+                                        sinKouiCount.HpId,
+                                        sinKouiCount.PtId,
+                                        sinKouiCount.SinDate,
+                                        sinKouiCount.RaiinNo,
+                                        ptHokenPatterns.Select(x => new PtHokenPatternModel(
+                                                                        x.PtId,
+                                                                        x.HokenPid,
+                                                                        x.SeqNo,
+                                                                        x.HokenKbn,
+                                                                        x.HokenSbtCd,
+                                                                        x.HokenId,
+                                                                        x.Kohi1Id,
+                                                                        x.Kohi2Id,
+                                                                        x.Kohi3Id,
+                                                                        x.Kohi4Id,
+                                                                        x.HokenMemo ?? string.Empty,
+                                                                        x.StartDate,
+                                                                        x.EndDate
+                                                        )).ToList(),
+                                        sinKouiDetailModels
+                                        );
         }
 
         public List<ReceCheckErrModel> ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
@@ -690,6 +756,8 @@ namespace Infrastructure.Repositories
                                                                                               p.HokenId == hokenId &&
                                                                                               p.IsDeleted == DeleteTypes.None)
                                                                         .Select(p => p.HokenPid).ToList();
+
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId);
 
             var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(odrDetail => odrDetail.HpId == hpId &&
                                                                                        odrDetail.PtId == ptId &&
@@ -932,106 +1000,6 @@ namespace Infrastructure.Repositories
                      );
         }
 
-        private SinKouiCountModel ConvertToModel(List<PtHokenPattern> ptHokenPatterns, SinKouiCount sinKouiCount, List<SinKouiDetailModel> sinKouiDetailModels)
-        {
-            return new SinKouiCountModel(
-                                        sinKouiCount.HpId,
-                                        sinKouiCount.PtId,
-                                        sinKouiCount.SinDate,
-                                        sinKouiCount.RaiinNo,
-                                        ptHokenPatterns.Select(x => new PtHokenPatternModel(
-                                                                        x.PtId,
-                                                                        x.HokenPid,
-                                                                        x.SeqNo,
-                                                                        x.HokenKbn,
-                                                                        x.HokenSbtCd,
-                                                                        x.HokenId,
-                                                                        x.Kohi1Id,
-                                                                        x.Kohi2Id,
-                                                                        x.Kohi3Id,
-                                                                        x.Kohi4Id,
-                                                                        x.HokenMemo ?? string.Empty,
-                                                                        x.StartDate,
-                                                                        x.EndDate
-                                                        )).ToList(),
-                                        sinKouiDetailModels
-                                        );
-        }
-
-        private SinKouiDetailModel ConvertToModel(SinKouiDetail sinKouiDetail, SinKouiCount sinKouiCount, List<ItemCommentSuggestionModel> listCmtSelect)
-        {
-            return new SinKouiDetailModel(
-                                          sinKouiDetail.PtId,
-                                          sinKouiDetail.SinYm,
-                                          sinKouiCount.SinDate,
-                                          sinKouiDetail.ItemCd ?? string.Empty,
-                                          sinKouiDetail.CmtOpt ?? string.Empty,
-                                          sinKouiDetail.ItemName ?? string.Empty,
-                                          sinKouiDetail.Suryo,
-                                          sinKouiDetail.IsNodspRece,
-                                          listCmtSelect
-                                          );
-        }
-
-        private SinKouiDetailModel ConvertToModel(PtInf ptInf, TenMst tenMst, SinKouiDetail sinKouiDetail)
-        {
-            return new SinKouiDetailModel(
-                                          ptInf.PtId,
-                                          ptInf.PtNum,
-                                          sinKouiDetail.SinYm,
-                                          tenMst.MaxAge ?? string.Empty,
-                                          tenMst.MinAge ?? string.Empty,
-                                          sinKouiDetail.ItemCd ?? string.Empty,
-                                          sinKouiDetail.CmtOpt ?? string.Empty,
-                                          sinKouiDetail.ItemCd ?? string.Empty,
-                                          tenMst.ReceName ?? string.Empty,
-                                          sinKouiDetail.Suryo,
-                                          sinKouiDetail.IsNodspRece,
-                                          tenMst.MasterSbt ?? string.Empty,
-                                          ConvertTenMstToModel(tenMst)
-                );
-        }
-
-        private ReceSeikyuModel ConvertToModel(PtInf ptInf, ReceSeikyu receSeikyu)
-        {
-            return new ReceSeikyuModel(ptInf.PtId, receSeikyu.SinYm, receSeikyu.HokenId, ptInf.PtNum, receSeikyu.SeikyuKbn);
-        }
-
-        private PtDiseaseModel ConvertToModel(PtByomei ptByomei, ByomeiMst byomeiMst)
-        {
-            var prefixList = Enumerable.Range(1, 21)
-                                       .Select(i => new PrefixSuffixModel($"SyusyokuCd{i}", ptByomei.GetPropertyValueOrDefault($"SyusyokuCd{i}", string.Empty)))
-                                       .ToList();
-            var byomeiCds = prefixList.Where(x => x.Name != string.Empty).Select(x => x.Name).Distinct().ToList();
-
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => byomeiCds.Contains(b.ByomeiCd)).ToList();
-
-            string fullByomei = string.Empty;
-            StringBuilder byomeiStringBuilder = new();
-            foreach (var item in byomeiCds)
-            {
-                var byomei = byomeiMstList.FirstOrDefault(b => item == b.ByomeiCd);
-                if (byomei == null || byomei.ByomeiCd == null)
-                {
-                    continue;
-                }
-                byomeiStringBuilder.Append(byomei.Byomei ?? string.Empty);
-            }
-
-            fullByomei += byomeiStringBuilder.ToString();
-
-            return new PtDiseaseModel(ptByomei != null ? ptByomei.HokenPid : 0,
-                                      ptByomei != null ? ptByomei.ByomeiCd ?? string.Empty : string.Empty,
-                                      fullByomei,
-                                      ptByomei != null ? ptByomei.StartDate : 0,
-                                      ptByomei != null ? ptByomei.TenkiDate : 0,
-                                      ptByomei != null ? ptByomei.SyubyoKbn : 0,
-                                      ptByomei != null ? ptByomei.Id : 0,
-                                      byomeiMst != null ? byomeiMst.DelDate : 0,
-                                      ptByomei != null ? ptByomei.TenkiKbn : 0,
-                                      prefixList);
-        }
-
         public string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
         {
             var tenMst = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId &&
@@ -1175,7 +1143,7 @@ namespace Infrastructure.Repositories
                 .ToList();
             foreach (var entity in query)
             {
-                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
+                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd, entity.SeqNo));
             }
             return result;
         }
@@ -1257,7 +1225,7 @@ namespace Infrastructure.Repositories
                                     joinSinkouiCount.SinKouiCount.SinDate >= startDate &&
                                     joinSinkouiCount.SinKouiCount.SinDate <= endDate
                                 group new { sinKouiDetail, joinSinkouiCount } by new { joinSinkouiCount.SinKouiCount.HpId } into A
-                                select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) };
+                                select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd) ? 1 : a.sinKouiDetail.Suryo)) };
 
                 var result = joinQuery.ToList();
                 if (result.Any())
@@ -1289,7 +1257,7 @@ namespace Infrastructure.Repositories
                     sinKouiCount.SinDate <= endDate &&
                     sinKouiCount.RaiinNo != raiinNo
                 group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
-                select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
+                select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd) ? 1 : a.sinKouiDetail.Suryo)) }
             );
 
                 var result = joinQuery.ToList();
@@ -1306,12 +1274,13 @@ namespace Infrastructure.Repositories
 
         public List<SinKouiModel> GetListSinKoui(int hpId, long ptId, int sinYm, int hokenId)
         {
-            List<SinKouiModel> result = new();
+            int maxSinDate = sinYm * 100 + 31;
+            List<SinKouiModel> result = new List<SinKouiModel>();
             List<SinKoui> listSinKoui = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId &&
-                                                                                  p.PtId == ptId &&
-                                                                                  p.SinYm == sinYm &&
-                                                                                  p.HokenId == hokenId &&
-                                                                                  p.IsNodspRece == 0)
+                                                                                                  p.PtId == ptId &&
+                                                                                                  p.SinYm == sinYm &&
+                                                                                                  p.HokenId == hokenId &&
+                                                                                                  p.IsNodspRece == 0)
                                                                     .ToList();
             listSinKoui.ForEach((sinKoui) =>
             {
@@ -1332,7 +1301,7 @@ namespace Infrastructure.Repositories
                                                })
                                               .ToList();
 
-                List<SinKouiDetailModel> listSinKouiDetailModel = new();
+                List<SinKouiDetailModel> listSinKouiDetailModel = new List<SinKouiDetailModel>();
                 listSinKouiDetailEntity.ForEach((sinKouiDetail) =>
                 {
                     string itemCd = sinKouiDetail.sinKouiDetail.ItemCd ?? string.Empty;
@@ -1350,6 +1319,21 @@ namespace Infrastructure.Repositories
             });
 
             return result;
+        }
+
+        private SinKouiDetailModel ConvertToModel(SinKouiDetail sinKouiDetail, SinKouiCount sinKouiCount, List<ItemCommentSuggestionModel> listCmtSelect)
+        {
+            return new SinKouiDetailModel(
+                                          sinKouiDetail.PtId,
+                                          sinKouiDetail.SinYm,
+                                          sinKouiCount.SinDate,
+                                          sinKouiDetail.ItemCd ?? string.Empty,
+                                          sinKouiDetail.CmtOpt ?? string.Empty,
+                                          sinKouiDetail.ItemName ?? string.Empty,
+                                          sinKouiDetail.Suryo,
+                                          sinKouiDetail.IsNodspRece,
+                                          listCmtSelect
+                                          );
         }
 
         public List<ItemCommentSuggestionModel> GetListComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false)
@@ -1442,7 +1426,7 @@ namespace Infrastructure.Repositories
 
                 if (listCommentWithCode.Count <= 0)
                 {
-                    inputCodeItem.SetRecedenCmtSelectModel(new());
+                    inputCodeItem.SetRecedenCmtSelectModel(new List<RecedenCmtSelectModel>());
                     continue;
                 }
 
@@ -1463,7 +1447,7 @@ namespace Infrastructure.Repositories
                 inputCodeItem.SetRecedenCmtSelectModel(listCommentWithCode);
             }
 
-            return result;
+            return result ?? new List<ItemCommentSuggestionModel>();
         }
 
         private static TenItemModel ConvertTenMstToModel(TenMst tenMst)
@@ -1485,8 +1469,8 @@ namespace Infrastructure.Repositories
                         tenMst?.IsAdopted ?? 0,
                         tenMst?.Ten ?? 0,
                         tenMst?.TenId ?? 0,
-                        string.Empty,
-                        string.Empty,
+                        "",
+                        "",
                         tenMst?.CmtCol1 ?? 0,
                         tenMst?.IpnNameCd ?? string.Empty,
                         tenMst?.SinKouiKbn ?? 0,
@@ -1564,15 +1548,15 @@ namespace Infrastructure.Repositories
 
         public List<ReceSeikyuModel> GetReceSeikyus(int hpId, List<long> ptIds, int seikyuYm)
         {
-            List<ReceSeikyuModel> result = new();
+            List<ReceSeikyuModel> result = new List<ReceSeikyuModel>();
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId &&
-                                                                 p.IsDelete == DeleteTypes.None &&
-                                                                 (!ptIds.Any() || ptIds.Contains(p.PtId)))
+                                                                                  p.IsDelete == DeleteTypes.None &&
+                                                                                  (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true))
                                                       .ToList();
             var receSeikyus = NoTrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId &&
                                                                                            p.SeikyuYm == seikyuYm &&
                                                                                            p.IsDeleted == DeleteTypes.None &&
-                                                                                           (!ptIds.Any() || ptIds.Contains(p.PtId)))
+                                                                                           (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true))
                                                                .ToList();
             var query = from receSeikyu in receSeikyus
                         join ptInf in ptInfs
@@ -1587,6 +1571,11 @@ namespace Infrastructure.Repositories
                 result.Add(ConvertToModel(entity.PtInf, entity.ReceSeikyu));
             }
             return result;
+        }
+
+        private ReceSeikyuModel ConvertToModel(PtInf ptInf, ReceSeikyu receSeikyu)
+        {
+            return new ReceSeikyuModel(ptInf.PtId, receSeikyu.SinYm, receSeikyu.HokenId, ptInf.PtNum, receSeikyu.SeikyuKbn);
         }
 
         public List<TenItemModel> GetZaiganIsoItems(int hpId, int seikyuYm)
@@ -1632,18 +1621,18 @@ namespace Infrastructure.Repositories
             var tenMsts = NoTrackingDataContext.TenMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None);
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId &&
                                                                                        p.IsDelete == DeleteTypes.None &&
-                                                                                       (!ptIds.Any() || ptIds.Contains(p.PtId)));
+                                                                                       (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
 
             var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(p => p.HpId == hpId &&
                                                                                                p.SinYm == checkMonth &&
                                                                                                p.SinDate >= firstDateOfWeek &&
                                                                                                p.SinDate <= lastDateOfWeek &&
-                                                                                               (!ptIds.Any() || ptIds.Contains(p.PtId)));
+                                                                                               (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
 
             var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId &&
                                                                                                  p.SinYm == checkMonth &&
                                                                                                  zaiganIsoItemCds.Contains(p.ItemCd ?? string.Empty) &&
-                                                                                                 (!ptIds.Any() || ptIds.Contains(p.PtId)));
+                                                                                                 (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
 
             var joinKouiCountWithDetailQuery = from sinKouiCount in sinKouiCounts
                                                join sinKouiDetail in sinKouiDetails
@@ -1661,7 +1650,7 @@ namespace Infrastructure.Repositories
                                   tenMst.EndDate >= kouiCountDetail.SinKouiCount.SinDate
                                   select new
                                   {
-                                      kouiCountDetail.SinKouiDetail,
+                                      SinKouiDetail = kouiCountDetail.SinKouiDetail,
                                       TenMst = tenMst
                                   };
 
@@ -1670,8 +1659,8 @@ namespace Infrastructure.Repositories
                                 on joinTenMst.SinKouiDetail.PtId equals ptInf.PtId
                                 select new
                                 {
-                                    joinTenMst.SinKouiDetail,
-                                    joinTenMst.TenMst,
+                                    SinKouiDetail = joinTenMst.SinKouiDetail,
+                                    TenMst = joinTenMst.TenMst,
                                     PtInf = ptInf
                                 };
 
@@ -1680,6 +1669,25 @@ namespace Infrastructure.Repositories
                 result.Add(ConvertToModel(entity.PtInf, entity.TenMst, entity.SinKouiDetail));
             }
             return result;
+        }
+
+        private SinKouiDetailModel ConvertToModel(PtInf ptInf, TenMst tenMst, SinKouiDetail sinKouiDetail)
+        {
+            return new SinKouiDetailModel(
+                                          ptInf.PtId,
+                                          ptInf.PtNum,
+                                          sinKouiDetail.SinYm,
+                                          tenMst.MaxAge ?? string.Empty,
+                                          tenMst.MinAge ?? string.Empty,
+                                          sinKouiDetail.ItemCd ?? string.Empty,
+                                          sinKouiDetail.CmtOpt ?? string.Empty,
+                                          sinKouiDetail.ItemCd ?? string.Empty,
+                                          tenMst.ReceName ?? string.Empty,
+                                          sinKouiDetail.Suryo,
+                                          sinKouiDetail.IsNodspRece,
+                                          tenMst.MasterSbt ?? string.Empty,
+                                          ConvertTenMstToModel(tenMst)
+                );
         }
 
         public int GetSanteiStartDate(int hpId, long ptId, int seikyuYm)
@@ -1698,9 +1706,9 @@ namespace Infrastructure.Repositories
                         {
                             SinKouiCount = sinKouiCount
                         };
-            if (query != null && query.Any())
+            if (query.Count() > 0)
             {
-                var entity = query.First();
+                var entity = query.FirstOrDefault();
                 return entity.SinKouiCount.SinDate;
             }
             return seikyuYm * 100 + 1;
@@ -1749,7 +1757,7 @@ namespace Infrastructure.Repositories
         public int GetSanteiEndDate(int hpId, long ptId, int seikyuYm)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId);
-            if (ptInf != null && ptInf.DeathDate > 0 && ptInf.DeathDate < seikyuYm * 100 + 1)
+            if (ptInf.DeathDate > 0 && ptInf.DeathDate < seikyuYm * 100 + 1)
             {
                 return ptInf.DeathDate;
             }
@@ -1796,7 +1804,7 @@ namespace Infrastructure.Repositories
                                                                                 && item.IsDeleted == 0)
                                                                    .ToList();
 
-            if (listReceInfEdit.Any())
+            if (listReceInfEdit.Count() > 0)
             {
                 foreach (var receInfEdit in listReceInfEdit)
                 {

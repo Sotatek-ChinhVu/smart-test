@@ -7,15 +7,15 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public int Sinday { get; set; }
+        public int Sinday;
 
-        public long PtId { get; set; }
+        public long PtId;
 
-        public ActionResultType ActionType { get; set; } = ActionResultType.OK;
+        public ActionResultType ActionType = ActionResultType.OK;
 
         public RealtimeCheckerType CheckerType { get; private set; }
 
-        public bool IsError { get; set; } = false;
+        public bool IsError = false;
 
         public List<TOdrInf>? ErrorOrderList { get; set; }
 

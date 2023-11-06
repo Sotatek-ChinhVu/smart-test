@@ -16,6 +16,7 @@ namespace Interactor.Diseases
         private readonly IInsuranceRepository _insuranceInforRepository;
         private readonly IAuditLogRepository _auditLogRepository;
         private readonly ILoggingHandler _loggingHandler;
+        private readonly ITenantProvider _tenantProvider;
 
         public UpsertPtDiseaseListInteractor(ITenantProvider tenantProvider, IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IAuditLogRepository auditLogRepository)
         {
@@ -23,7 +24,8 @@ namespace Interactor.Diseases
             _patientInforRepository = patientInforRepository;
             _insuranceInforRepository = insuranceInforRepository;
             _auditLogRepository = auditLogRepository;
-            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            _tenantProvider = tenantProvider;
+            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public UpsertPtDiseaseListOutputData Handle(UpsertPtDiseaseListInputData inputData)

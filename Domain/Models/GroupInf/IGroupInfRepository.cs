@@ -8,5 +8,5 @@ public interface IGroupInfRepository : IRepositoryBase
 
     IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList);
 
-    List<GroupInfModel> GetAllByPtIdList(int hpId, List<long> ptIdList);
+    List<GroupInfModel> GetAllByPtIdList(int hpId, List<long> ptId);
 }
