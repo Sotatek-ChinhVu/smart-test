@@ -36,7 +36,7 @@ namespace Infrastructure.Services
             return userInfo.Val;
         }
 
-        public void DisposeSource()
+        public void Dispose()
         {
             _tenantProvider.DisposeDataContext();
         }

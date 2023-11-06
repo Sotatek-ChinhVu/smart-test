@@ -850,6 +850,14 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return (dicValidation, allOdrInfs);
     }
 
+    private void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
+    {
+        lock (obj)
+        {
+            dicValidation.Add(key, status);
+        }
+    }
+
     private List<FamilyModel> ConvertToFamilyList(List<FamilyItem> familyInputList)
     {
         List<FamilyModel> result = new();
@@ -883,9 +891,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
     private UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
     {
-        foreach (var tagNo in flowSheets.Select(item => item.TagNo).ToList())
+        foreach (var flowSheet in flowSheets)
         {
-            if (tagNo < -1 || tagNo > 7)
+            if (flowSheet.TagNo < -1 || flowSheet.TagNo > 7)
             {
                 return UpsertFlowSheetStatus.TagNoNoValid;
             }

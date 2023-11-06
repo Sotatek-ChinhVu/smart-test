@@ -13,13 +13,15 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
     private readonly IHpInfRepository _hpInfRepository;
     private readonly IUserRepository _userRepository;
     private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
     public SaveListDocCategoryInteractor(ITenantProvider tenantProvider, IDocumentRepository documentRepository, IHpInfRepository hpInfRepository, IUserRepository userRepository)
     {
         _documentRepository = documentRepository;
         _hpInfRepository = hpInfRepository;
         _userRepository = userRepository;
-        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
     public SaveListDocCategoryOutputData Handle(SaveListDocCategoryInputData inputData)
     {

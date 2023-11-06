@@ -166,12 +166,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         //So need to remove one
         private List<DuplicationResultModel> RemoveDuplicatedItem(List<DuplicationResultModel> listDrugAllergyResult)
         {
-            List<DuplicationResultModel> result = new();
+            List<DuplicationResultModel> result = new List<DuplicationResultModel>();
 
             listDrugAllergyResult.ForEach((r) =>
             {
-                var duplicatedResult = result.FirstOrDefault(re => (re.ItemCd == r.DuplicatedItemCd && re.DuplicatedItemCd == r.ItemCd || re.ItemCd == r.ItemCd && re.DuplicatedItemCd == r.DuplicatedItemCd) &&
-                                                                    re.Level == r.Level);
+                var duplicatedResult = result.Where(re => (re.ItemCd == r.DuplicatedItemCd && re.DuplicatedItemCd == r.ItemCd || re.ItemCd == r.ItemCd && re.DuplicatedItemCd == r.DuplicatedItemCd) &&
+                                                           re.Level == r.Level).FirstOrDefault();
                 if (duplicatedResult == null)
                 {
                     result.Add(r);
@@ -183,7 +183,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public List<DuplicationResultModel> CheckDuplicatedItemCode(TOdrInf checkingOrder, List<ItemCodeModel> listDrugItemCode)
         {
-            List<DuplicationResultModel> listErrorInfo = new ();
+            List<DuplicationResultModel> listErrorInfo = new List<DuplicationResultModel>();
 
             List<string> listDuplicatedItemCodeIntoOrder =
                 checkingOrder.OdrInfDetailModelsIgnoreEmpty
@@ -207,7 +207,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                         DuplicatedItemCd = duplicatedItem.ItemCd,
                         IsIppanCdDuplicated = false,
                         IsComponentDuplicated = false,
-                    });
+                    }); ;
                 }
             }
 

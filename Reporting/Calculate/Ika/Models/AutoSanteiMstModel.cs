@@ -17,7 +17,7 @@ namespace Reporting.Calculate.Ika.Models
         /// </summary>
         public int HpId
         {
-            get {  return AutoSanteiMst?.HpId ?? 0; }
+            get { return AutoSanteiMst?.HpId ?? 0; }
         }
 
         /// <summary>

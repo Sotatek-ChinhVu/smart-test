@@ -2,5 +2,5 @@
 
 public class ConvertXmlToQCXmlMsgRequest
 {
-    public string XmlString { get; set; } = string.Empty;
+    public string XmlString { get; set; }
 }

@@ -172,14 +172,35 @@ namespace Infrastructure.Repositories
 
         public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId, int hpId)
         {
-            List<string> result = new();
+            List<string> result = new List<string>();
             var currentKubunMstList = TrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
             var currentKubunDetailList = TrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
             var currentKubunKouiList = TrackingDataContext.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
             var currentKubunItemList = TrackingDataContext.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
             var currentKubunYoyakuList = TrackingDataContext.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
 
-            result = ValidateRaiinKbnMst(raiinKubunMstModels);
+            int detailKbnCd = 0;
+            if (currentKubunDetailList != null && currentKubunDetailList.Any())
+            {
+                detailKbnCd = currentKubunDetailList.Max(x => x.KbnCd);
+            }
+            int kouiKbnCd = 0;
+            if (currentKubunKouiList != null && currentKubunKouiList.Any())
+            {
+                currentKubunKouiList?.Max(x => x.KouiKbnId);
+            }
+            int itemSeqNo = 0;
+            if (currentKubunItemList != null && currentKubunItemList.Any())
+            {
+                itemSeqNo = currentKubunItemList.Max(x => (int)x.SeqNo);
+            }
+            int yoyakuKbnCd = 0;
+            if (currentKubunYoyakuList != null && currentKubunYoyakuList.Any())
+            {
+                yoyakuKbnCd = currentKubunYoyakuList.Max(x => x.YoyakuCd);
+            }
+
+            result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>());
 
             if (result.Any())
             {
@@ -206,7 +227,7 @@ namespace Infrastructure.Repositories
                                     {
                                         if (x.RaiinKubunDetailModels.Any(x => x.KubunCd != 0))
                                         {
-                                            UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>(), userId);
+                                            UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>(), kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
                                         }
                                     });
                                     foreach (var model in raiinKubunMstUpdateList)
@@ -536,7 +557,7 @@ namespace Infrastructure.Repositories
         #region RaiinKbn
 
         #region Update
-        private void UpdateRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus, int userId)
+        private void UpdateRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus, int kouiId, int itemSeqNo, int yoyakuId, int userId)
         {
             if (raiinKubunDetailModels != null && raiinKubunDetailModels.Any())
             {
@@ -681,7 +702,7 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region Validate
-        private List<string> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels)
+        private List<string> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus)
         {
             List<string> result = new List<string>();
 
@@ -715,6 +736,7 @@ namespace Infrastructure.Repositories
                         return result;
                     }
 
+                    var currentDetails = currentRaiinKubunDetails.Where(x => x.IsDeleted == 0 && x.GrpCd == raiinKubunMst.GroupId).ToList();
                     var newSortRaiinKubunDetailNos = raiinKubunDetailModels.Select(x => new Tuple<int, int>(x.KubunCd, x.SortNo)).ToList();
 
                     if (!ValidateSortNo(newSortRaiinKubunDetailNos))
@@ -749,6 +771,7 @@ namespace Infrastructure.Repositories
                                 return result;
                             }
 
+                            var currentRaiinKbnItems = raiinKbItems.Where(x => x.IsDeleted == 0 && x.GrpCd == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
                             var newRRaiinKbnItemSortNos = raiinKbItemModels.Select(x => new Tuple<int, int>((int)x.SeqNo, x.SortNo)).ToList();
 
                             if (!ValidateSortNo(newRRaiinKbnItemSortNos))
@@ -765,6 +788,7 @@ namespace Infrastructure.Repositories
                                 result.Add(KubunSettingConstant.InvalidRaiinKbnYoyakuKbnCd);
                                 return result;
                             }
+                            var currentRaiinKbnYayokus = raiinKbnYayokus.Where(x => x.IsDeleted == 0 && x.GrpId == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
                             var newRaiinKbnYayokuSortNos = raiinKbnYayokuModels.Select(x => new Tuple<int, int>(x.YoyakuCd, (int)x.SeqNo)).ToList();
 
                             if (!ValidateSortNo(newRaiinKbnYayokuSortNos))

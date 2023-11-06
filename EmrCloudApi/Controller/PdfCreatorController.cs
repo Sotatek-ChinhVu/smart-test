@@ -162,6 +162,11 @@ public class PdfCreatorController : ControllerBase
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+
+        //public async Task<IActionResult> GenerateAccountingReport([FromBody] AccountingCoReportModelRequest request)
+        //{
+        //    var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
+
         var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
@@ -368,6 +373,7 @@ public class PdfCreatorController : ControllerBase
 
                 using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
                 {
+                    PdfReader pdfReader = new PdfReader(streamingData);
                     var byteData = streamingData.ToArray();
                     var result = SetTitleMetadata(byteData, "カルテ２号紙.pdf");
                     ContentDisposition cd = new ContentDisposition
@@ -391,13 +397,13 @@ public class PdfCreatorController : ControllerBase
         string htmlData = string.Empty;
         switch (inputData.Type)
         {
-            case TypeHTMLObject.ShowProductInf:
+            case TypeHTMLEnum.ShowProductInf:
                 htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
-            case TypeHTMLObject.ShowKanjaMuke:
+            case TypeHTMLEnum.ShowKanjaMuke:
                 htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
-            case TypeHTMLObject.ShowMdbByomei:
+            case TypeHTMLEnum.ShowMdbByomei:
                 htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
         }
@@ -442,6 +448,7 @@ public class PdfCreatorController : ControllerBase
 
                 using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
                 {
+                    PdfReader pdfReader = new PdfReader(streamingData);
                     var byteData = streamingData.ToArray();
                     var result = SetTitleMetadata(byteData, "医薬品情報.pdf");
                     ContentDisposition cd = new ContentDisposition
@@ -543,6 +550,8 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
     {
+        var json = JsonSerializer.Serialize(data);
+        //Console.WriteLine("DataJsonTestPdfString: " + json);
         if (returnNoData)
         {
             return Content(@"

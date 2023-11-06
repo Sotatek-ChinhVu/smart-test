@@ -156,7 +156,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                                     {
                                         firstSinryoKoui = false;
 
-                                        if (_common.hokenKbn == HokenSyuConst.Jibai &&
+                                        if (_common.hokenKbn == HokenSyu.Jibai &&
                                             (odrDtl.ItemCd == ItemCdConst.SyotiYobuKoteitaiKasan ||
                                               odrDtl.ItemCd == ItemCdConst.SyotiKyobuKoteitaiKasan ||
                                               odrDtl.ItemCd == ItemCdConst.SyotiKeibuKoteitaiKasan))
@@ -180,7 +180,7 @@ namespace Reporting.Calculate.Ika.ViewModels
                                         cdKbn = _common.GetCdKbn(odrInf.SanteiKbn, "J");
                                         syukeiSaki = ReceSyukeisaki.Syoti;
 
-                                        if(_common.hokenKbn == HokenSyuConst.Jibai &&
+                                        if(_common.hokenKbn == HokenSyu.Jibai &&
                                             ( odrDtl.ItemCd == ItemCdConst.SyotiYobuKoteitaiKasan ||
                                               odrDtl.ItemCd == ItemCdConst.SyotiKyobuKoteitaiKasan ||
                                               odrDtl.ItemCd == ItemCdConst.SyotiKeibuKoteitaiKasan) )

@@ -10,11 +10,13 @@ public class UpsertUserConfListInteractor : IUpsertUserConfListInputPort
 {
     private readonly IUserConfRepository _userConfRepository;
     private readonly ILoggingHandler _loggingHandler;
+    private readonly ITenantProvider _tenantProvider;
 
     public UpsertUserConfListInteractor(ITenantProvider tenantProvider, IUserConfRepository userConfRepository)
     {
         _userConfRepository = userConfRepository;
-        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _tenantProvider = tenantProvider;
+        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public UpsertUserConfListOutputData Handle(UpsertUserConfListInputData inputData)
@@ -29,7 +31,7 @@ public class UpsertUserConfListInteractor : IUpsertUserConfListInputPort
             {
                 return new UpsertUserConfListOutputData(UpsertUserConfListStatus.InvalidUserId, new());
             }
-            if (!inputData.UserConfs.Any())
+            if (inputData.UserConfs.Count < 0)
             {
                 return new UpsertUserConfListOutputData(UpsertUserConfListStatus.InvalidUserConfs, new());
             }
@@ -44,7 +46,7 @@ public class UpsertUserConfListInteractor : IUpsertUserConfListInputPort
                 }
                 count++;
             }
-            if (inputData.UserConfs.GroupBy(u => new { u.GrpCd, u.GrpItemCd, u.GrpItemEdaNo }).Count() != inputData.UserConfs.Count)
+            if (inputData.UserConfs.GroupBy(u => new { u.GrpCd, u.GrpItemCd, u.GrpItemEdaNo }).Count() != inputData.UserConfs.Count())
             {
                 return new UpsertUserConfListOutputData(UpsertUserConfListStatus.DuplicateUserConf, new());
             }

@@ -15,9 +15,11 @@ namespace EmrCloudApi.Controller
     public class MonshinController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
+        private readonly IUserService _userService;
         public MonshinController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetMonshinInf)]

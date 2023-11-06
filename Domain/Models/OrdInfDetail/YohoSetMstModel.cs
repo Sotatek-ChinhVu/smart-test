@@ -9,10 +9,7 @@
             SetId = setId;
             UserId = userId;
             ItemCd = itemCd;
-            CreateMachine = string.Empty;
-            UpdateMachine = string.Empty;
         }
-
         public YohoSetMstModel(int hpId, int setId, int userId, int sortNo, string itemCd, int isDeleted, DateTime createDate, int createId, string createMachine, DateTime updateDate, int updateId, string updateMachine, string itemName, bool isModified)
         {
             HpId = hpId;
@@ -40,10 +37,7 @@
             IsDeleted = isDeleted;
             Itemname = itemName;
             IsModified = isModified;
-            CreateMachine = string.Empty;
-            UpdateMachine = string.Empty;
         }
-
         public string Itemname { get; private set; }
         public int YohoKbn { get; private set; }
         public int SetId { get; private set; }

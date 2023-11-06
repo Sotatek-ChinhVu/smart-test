@@ -6,7 +6,6 @@ using EmrCloudApi.Responses.StickyNote;
 using EmrCloudApi.Requests.StickyNote;
 using UseCase.StickyNote;
 using EmrCloudApi.Services;
-using EmrCloudApi.Presenters.StickyNote;
 
 namespace EmrCloudApi.Controller
 {

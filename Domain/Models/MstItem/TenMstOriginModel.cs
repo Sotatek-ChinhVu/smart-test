@@ -248,6 +248,7 @@ namespace Domain.Models.MstItem
             RenkeiCd1 = string.Empty;
             RenkeiCd2 = string.Empty;
             MasterSbt = string.Empty;
+            IsSelected = IsSelected;
             CreateId = 0;
         }
 
@@ -316,6 +317,7 @@ namespace Domain.Models.MstItem
             KensaItemCd = string.Empty;
             RenkeiCd1 = string.Empty;
             RenkeiCd2 = string.Empty;
+            IsSelected = IsSelected;
         }
 
         /// <summary>

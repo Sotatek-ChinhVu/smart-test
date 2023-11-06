@@ -785,6 +785,7 @@ using Interactor.SmartKartePort;
 using Domain.Models.SmartKartePort;
 using UseCase.SmartKartePort.GetPort;
 using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
+using UseCase.DrugInfor.GetSinrekiFilterMstList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -832,7 +833,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IMessenger, Messenger>();
             services.AddScoped<ILoggingHandler, LoggingHandler>();
 
-            ///services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            //services.AddScoped<ISystemStartDbService, SystemStartDbService>();
 
             #region Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -1200,7 +1201,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
             services.AddTransient<ISmartKartePortRepository, SmartKartePortRepository>();
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
-            ///services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
+            //services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1719,7 +1720,7 @@ namespace EmrCloudApi.Configs.Dependency
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
 
-            //TodoInteractor
+            //Todo
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
             busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
             busBuilder.RegisterUseCase<GetTodoInfFinderInputData, GetTodoInfFinderInteractor>();
@@ -1866,8 +1867,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdatePortInputData, UpdatePortInteractor>();
             busBuilder.RegisterUseCase<GetPortInputData, GetPortInteractor>();
 
+            //PrescriptionHistory
+            busBuilder.RegisterUseCase<GetSinrekiFilterMstListInputData, GetSinrekiFilterMstListInteractor>();
+
             //SystemStartDb 
-            ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
+            //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

@@ -6,6 +6,6 @@
 
         string GetNameById(int id);
 
-        void DisposeSource();
+        void Dispose();
     }
 }

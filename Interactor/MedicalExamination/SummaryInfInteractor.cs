@@ -17,6 +17,7 @@ using Helper.Extension;
 using System.Text;
 using UseCase.MedicalExamination.SummaryInf;
 using SpecialNotePatienInfDomain = Domain.Models.SpecialNote.PatientInfo;
+using System.Linq;
 
 namespace Interactor.MedicalExamination
 {
@@ -48,8 +49,8 @@ namespace Interactor.MedicalExamination
         private readonly List<SummaryInfItem> _header1Infos = new();
         private readonly List<SummaryInfItem> _header2Infos = new();
         private List<SummaryInfItem> _notifications = new();
-        private readonly List<PopUpNotificationItem> _notificationPopUps = new();
-        private readonly List<UserConfModel> _listNotifiProperty = new();
+        private List<PopUpNotificationItem> _notificationPopUps = new();
+        private List<UserConfModel> _listNotifiProperty = new List<UserConfModel>();
 
         public SummaryInfInteractor(IPatientInforRepository patientInfAddressRepository, IPatientInforRepository patientInfPhoneRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfPhysicalRepository, IImportantNoteRepository importantNotePathologicalInflectionRepository, IImportantNoteRepository importantNoteDrugInfElseRepository, IImportantNoteRepository importantNoteInteractionOtherDrugRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository, IRsvInfRepository rsvInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfReproductionRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfLifeHistoryRepository, IImportantNoteRepository importantNoteDrugInfAlgryFoodRepository, IImportantNoteRepository importantNoteDrugInfAlgryDrugRepository, IImportantNoteRepository importantNoteInteractionOtcDrugRepository, IImportantNoteRepository importantNoteInteractionSuppleDrugRepository, IImportantNoteRepository importantNotePathologicalRekiRepository, ISummaryInfRepository summaryInfRepository)
         {
@@ -221,8 +222,8 @@ namespace Interactor.MedicalExamination
                 header2Property = header2StringBuilder.ToString();
 
                 listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> { 912 }).ToList();
-                ///_notifications = GetNotification(hpId, ptId, sinDate, userId);
-                ///_notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
+                //_notifications = GetNotification(hpId, ptId, sinDate, userId);
+                //_notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
             }
             else if (infoType == InfoType.SumaryInfo)
             {
@@ -264,13 +265,22 @@ namespace Interactor.MedicalExamination
                     }
                 }
             });
-            _header1Infos.AddRange(from item in header1Property
-                                   where header1InfoDic.ContainsKey(item.AsString())
-                                   select header1InfoDic[item.AsString()]);
 
-            _header2Infos.AddRange(from item in header2Property
-                                   where header2InfoDic.ContainsKey(item.AsString())
-                                   select header2InfoDic[item.AsString()]);
+            foreach (var item in header1Property)
+            {
+                if (header1InfoDic.ContainsKey(item.AsString()))
+                {
+                    _header1Infos.Add(header1InfoDic[item.AsString()]);
+                }
+            }
+
+            foreach (var item in header2Property)
+            {
+                if (header2InfoDic.ContainsKey(item.AsString()))
+                {
+                    _header2Infos.Add(header2InfoDic[item.AsString()]);
+                }
+            }
 
             foreach (UserConfModel userConfigurationModel in listUserconfig)
             {
@@ -293,176 +303,185 @@ namespace Interactor.MedicalExamination
             _notifications = newTempListNotification;
         }
 
-        /// TODO, it can be used in the future
-        ///private List<PopUpNotificationItem> GetPopUpNotification(int hpId, int userId, List<SummaryInfItem> listNotification)
-        ///{
-        ///    var listNotificationPopup = new List<PopUpNotificationItem>();
-        ///    _listNotifiProperty = _userConfRepository.GetList(hpId, userId, 915).Where(x => x.Val != 0).ToList();
-        ///    var objKey = new object();
-        ///    Parallel.ForEach(listNotification, item =>
-        ///    {
-        ///        var headerInfo = item.HeaderInfo;
-        ///        headerInfo = headerInfo?.Trim();
-        ///        if (headerInfo?.Contains(") /") == true)
-        ///        {
-        ///            headerInfo = headerInfo.Replace(") /", ") " + Environment.NewLine);
-        ///        }
-        ///        else if (headerInfo?.Contains(" ・ ") == true)
-        ///        {
-        ///            headerInfo = headerInfo.Replace(" ・ ", Environment.NewLine);
-        ///        }
-        ///        else
-        ///        {
-        ///            headerInfo = headerInfo?.Replace("    ", Environment.NewLine);
-        ///        }
-        ///        if (headerInfo?.Contains("kg ") == true)
-        ///        {
-        ///            headerInfo = headerInfo.Replace("kg ", "kg    ");
-        ///        }
-        ///        if (headerInfo?.Contains("BMI:" + space) == true)
-        ///        {
-        ///            headerInfo = headerInfo.Replace(" /", Environment.NewLine);
-        ///        }
-        ///        var popUpNotificationModel = new PopUpNotificationItem(headerInfo ?? string.Empty, item?.HeaderName ?? string.Empty);
-        ///        lock (objKey)
-        ///        {
-        ///            listNotificationPopup.Add(popUpNotificationModel);
-        ///        }
-        ///    });
-        ///    return listNotificationPopup;
-        ///}
-        ///private List<SummaryInfItem> GetNotification(int hpId, long ptId, int sinDate, int userId)
-        ///{
-        ///    List<SummaryInfItem> listNotification = GetNotificationContent(hpId, ptId, userId, sinDate);
-        ///    SummaryInfItem? changedLast = null;
-        ///    if (listNotification.Count >= 1)
-        ///    {
-        ///        changedLast = listNotification.Last().ChangeSpaceHeaderInf(0);
-        ///    }
-        ///    if (changedLast != null)
-        ///    {
-        ///        listNotification.Remove(listNotification.Last());
-        ///        listNotification.Add(changedLast);
-        ///    }
-        ///    return listNotification;
-        ///}
-        ///private List<SummaryInfItem> GetNotificationContent(int hpId, long ptId, int userId, int sinDate)
-        ///{
-        ///    List<SummaryInfItem> listNotification = new();
-        ///    _listNotifiProperty = _userConfRepository.GetList(hpId, userId, 915).Where(x => x.Val != 0).ToList();
-        ///    var listNotifiSort = _userConfRepository.GetList(hpId, userId, 916).OrderBy(x => x.Val).Select(x => x.GrpItemCd).Distinct().ToList();
-        ///    var objKey = new object();
-        ///    Parallel.ForEach(listNotifiSort, sort =>
-        ///    {
-        ///        var userConfiguration = _listNotifiProperty.FirstOrDefault(item => item.GrpItemCd == sort);
-        ///        if (userConfiguration != null)
-        ///        {
-        ///            var summaryInfItem = GetNotificationInfoToList(hpId, ptId, sinDate, userId, userConfiguration);
-        ///            if (summaryInfItem != null)
-        ///            {
-        ///                lock (objKey)
-        ///                {
-        ///                    listNotification.Add(summaryInfItem);
-        ///                }
-        ///            }
-        ///        }
-        ///    });
-        ///    return listNotification;
-        ///}
-        ///private SummaryInfItem? GetNotificationInfoToList(int hpId, long ptId, int sinDate, int userId, UserConfModel userConfNoti)
-        ///{
-        ///    SummaryInfItem summaryInfItem = new SummaryInfItem();
-        ///    int grpItemCd = 0;
-        ///    string propertyColor = "";
-        ///    string headerName = summaryInfItem.HeaderName;
-        ///    string headerInfo = summaryInfItem.HeaderInfo;
-        ///    double spaceHeaderName = 0;
-        ///    double spaceHeaderInfo = 0;
-        ///    switch (userConfNoti.GrpItemCd.AsString())
-        ///    {
-        ///        case "1":
-        ///            //身体情報
-        ///            summaryInfItem = GetPhysicalInfo(hpId, ptId, sinDate, headerInfo);
-        ///            grpItemCd = 1;
-        ///            break;
-        ///        case "2":
-        ///            //アレルギー 
-        ///            summaryInfItem = GetDrugInfo(ptId, sinDate);
-        ///            grpItemCd = 2;
-        ///            break;
-        ///        case "3":
-        ///            // 病態
-        ///            summaryInfItem = GetPathologicalStatus(ptId);
-        ///            grpItemCd = 3;
-        ///            break;
-        ///        case "4":
-        ///            // 服薬情報
-        ///            summaryInfItem = GetInteraction(ptId, sinDate);
-        ///            grpItemCd = 4;
-        ///            break;
-        ///        case "5":
-        ///            //生活歴
-        ///            summaryInfItem = GetLifeHistory(hpId, ptId);
-        ///            grpItemCd = 5;
-        ///            break;
-        ///        case "6":
-        ///            //出産予定
-        ///            summaryInfItem = GetReproductionInfo(ptId, sinDate);
-        ///            grpItemCd = 6;
-        ///            break;
-        ///        case "7":
-        ///            //経過日数
-        ///            summaryInfItem = GetCalculationInfo(hpId, ptId, sinDate);
-        ///            headerName = "◆経過日数";
-        ///            grpItemCd = 7;
-        ///            break;
-        ///        case "8":
-        ///            //コメント
-        ///            summaryInfItem = GetComment(hpId, ptId);
-        ///            grpItemCd = 8;
-        ///            break;
-        ///        case "9":
-        ///            //住所
-        ///            summaryInfItem = GetReservationInf(hpId, ptId, sinDate);
-        ///            grpItemCd = 9;
-        ///            break;
-        ///            //case "0":
-        ///            //    //検査結果速報
-        ///            //    ptInfNotificationModel.HeaderName = "■検査結果速報";
-        ///            //    ptInfNotificationModel.GrpItemCd = 0;
-        ///            //    break;
-        ///    }
-        ///    if (!string.IsNullOrEmpty(headerInfo))
-        ///    {
-        ///        headerName = headerName.Replace("◆", "【");
-        ///        headerName = headerName.Replace("■", "【");
-        ///        headerName = headerName.Insert(headerName.Length, "】");
-        ///        if (headerName.Contains("【コメント】"))
-        ///        {
-        ///            headerInfo = headerInfo.Replace(Environment.NewLine, " ・ ");
-        ///            headerInfo = headerInfo.Trim();
-        ///            headerInfo = headerInfo.TrimEnd('・');
-        ///        }
-        ///        else
-        ///        {
-        ///            headerInfo = headerInfo.Replace(Environment.NewLine, "    ");
-        ///        }
-        ///        headerInfo = headerInfo.Trim();
-        ///        if (!string.IsNullOrEmpty(headerInfo))
-        ///        {
-        ///            var colorTextNotifi = _userConfRepository.GetListUserConf(hpId, userId, 917).FirstOrDefault(x => x.GrpItemCd == userConfNoti.GrpItemCd);
-        ///            if (colorTextNotifi != null)
-        ///            {
-        ///                propertyColor = colorTextNotifi.Param;
-        ///            }
-        ///            spaceHeaderName = 5.0;
-        ///            spaceHeaderInfo = 30.0;
-        ///            var splitHeaderInf = headerInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-        ///            return summaryInfItem;
-        ///        }
-        ///    }
-        ///    return null;
-        ///}
+        private List<PopUpNotificationItem> GetPopUpNotification(int hpId, int userId, List<SummaryInfItem> listNotification)
+        {
+            var listNotificationPopup = new List<PopUpNotificationItem>();
+            _listNotifiProperty = _userConfRepository.GetList(hpId, userId, 915).Where(x => x.Val != 0).ToList();
+            var objKey = new object();
+            Parallel.ForEach(listNotification, item =>
+            {
+                var headerInfo = item.HeaderInfo;
+                headerInfo = headerInfo?.Trim();
+                if (headerInfo?.Contains(") /") == true)
+                {
+                    headerInfo = headerInfo.Replace(") /", ") " + Environment.NewLine);
+                }
+                else if (headerInfo?.Contains(" ・ ") == true)
+                {
+                    headerInfo = headerInfo.Replace(" ・ ", Environment.NewLine);
+                }
+                else
+                {
+                    headerInfo = headerInfo?.Replace("    ", Environment.NewLine);
+                }
+                if (headerInfo?.Contains("kg ") == true)
+                {
+                    headerInfo = headerInfo.Replace("kg ", "kg    ");
+                }
+                if (headerInfo?.Contains("BMI:" + space) == true)
+                {
+                    headerInfo = headerInfo.Replace(" /", Environment.NewLine);
+                }
+
+                var popUpNotificationModel = new PopUpNotificationItem(headerInfo ?? string.Empty, item?.HeaderName ?? string.Empty);
+                lock (objKey)
+                {
+                    listNotificationPopup.Add(popUpNotificationModel);
+                }
+            });
+
+            return listNotificationPopup;
+        }
+
+        private List<SummaryInfItem> GetNotification(int hpId, long ptId, int sinDate, int userId)
+        {
+            List<SummaryInfItem> listNotification = GetNotificationContent(hpId, ptId, userId, sinDate);
+            SummaryInfItem? changedLast = null;
+            if (listNotification.Count >= 1)
+            {
+                changedLast = listNotification.Last().ChangeSpaceHeaderInf(0);
+            }
+            if (changedLast != null)
+            {
+                listNotification.Remove(listNotification.Last());
+                listNotification.Add(changedLast);
+            }
+            return listNotification;
+        }
+
+        private List<SummaryInfItem> GetNotificationContent(int hpId, long ptId, int userId, int sinDate)
+        {
+            List<SummaryInfItem> listNotification = new();
+            _listNotifiProperty = _userConfRepository.GetList(hpId, userId, 915).Where(x => x.Val != 0).ToList();
+            var listNotifiSort = _userConfRepository.GetList(hpId, userId, 916).OrderBy(x => x.Val).Select(x => x.GrpItemCd).Distinct().ToList();
+            var objKey = new object();
+            Parallel.ForEach(listNotifiSort, sort =>
+            {
+                var userConfiguration = _listNotifiProperty.FirstOrDefault(item => item.GrpItemCd == sort);
+                if (userConfiguration != null)
+                {
+                    var summaryInfItem = GetNotificationInfoToList(hpId, ptId, sinDate, userId, userConfiguration);
+                    if (summaryInfItem != null)
+                    {
+                        lock (objKey)
+                        {
+                            listNotification.Add(summaryInfItem);
+                        }
+                    }
+                }
+            });
+
+            return listNotification;
+        }
+
+        private SummaryInfItem? GetNotificationInfoToList(int hpId, long ptId, int sinDate, int userId, UserConfModel userConfNoti)
+        {
+            SummaryInfItem summaryInfItem = new SummaryInfItem();
+            int grpItemCd = 0;
+            string propertyColor = "";
+            string headerName = summaryInfItem.HeaderName;
+            string headerInfo = summaryInfItem.HeaderInfo;
+            double spaceHeaderName = 0;
+            double spaceHeaderInfo = 0;
+
+            switch (userConfNoti.GrpItemCd.AsString())
+            {
+                case "1":
+                    //身体情報
+                    summaryInfItem = GetPhysicalInfo(hpId, ptId, sinDate, headerInfo);
+                    grpItemCd = 1;
+                    break;
+                case "2":
+                    //アレルギー 
+                    summaryInfItem = GetDrugInfo(ptId, sinDate);
+                    grpItemCd = 2;
+                    break;
+                case "3":
+                    // 病態
+                    summaryInfItem = GetPathologicalStatus(ptId);
+                    grpItemCd = 3;
+                    break;
+                case "4":
+                    // 服薬情報
+                    summaryInfItem = GetInteraction(ptId, sinDate);
+                    grpItemCd = 4;
+                    break;
+                case "5":
+                    //生活歴
+                    summaryInfItem = GetLifeHistory(hpId, ptId);
+                    grpItemCd = 5;
+                    break;
+                case "6":
+                    //出産予定
+                    summaryInfItem = GetReproductionInfo(ptId, sinDate);
+                    grpItemCd = 6;
+                    break;
+                case "7":
+                    //経過日数
+                    summaryInfItem = GetCalculationInfo(hpId, ptId, sinDate);
+                    headerName = "◆経過日数";
+                    grpItemCd = 7;
+                    break;
+                case "8":
+                    //コメント
+                    summaryInfItem = GetComment(hpId, ptId);
+                    grpItemCd = 8;
+                    break;
+                case "9":
+                    //住所
+                    summaryInfItem = GetReservationInf(hpId, ptId, sinDate);
+                    grpItemCd = 9;
+                    break;
+                    //case "0":
+                    //    //検査結果速報
+                    //    ptInfNotificationModel.HeaderName = "■検査結果速報";
+                    //    ptInfNotificationModel.GrpItemCd = 0;
+                    //    break;
+            }
+            if (!string.IsNullOrEmpty(headerInfo))
+            {
+
+                headerName = headerName.Replace("◆", "【");
+                headerName = headerName.Replace("■", "【");
+                headerName = headerName.Insert(headerName.Length, "】");
+                if (headerName.Contains("【コメント】"))
+                {
+                    headerInfo = headerInfo.Replace(Environment.NewLine, " ・ ");
+                    headerInfo = headerInfo.Trim();
+                    headerInfo = headerInfo.TrimEnd('・');
+                }
+                else
+                {
+                    headerInfo = headerInfo.Replace(Environment.NewLine, "    ");
+                }
+                headerInfo = headerInfo.Trim();
+
+                if (!string.IsNullOrEmpty(headerInfo))
+                {
+                    var colorTextNotifi = _userConfRepository.GetListUserConf(hpId, userId, 917).FirstOrDefault(x => x.GrpItemCd == userConfNoti.GrpItemCd);
+                    if (colorTextNotifi != null)
+                    {
+                        propertyColor = colorTextNotifi.Param;
+                    }
+
+                    spaceHeaderName = 5.0;
+                    spaceHeaderInfo = 30.0;
+                    var splitHeaderInf = headerInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    return summaryInfItem;
+                }
+            }
+            return null;
+        }
 
         private SummaryInfItem GetSummaryInfo(int hpId, long ptId, int sinDate, string propertyCd, long raiinNo, InfoType infoType = InfoType.PtHeaderInfo)
         {
@@ -494,7 +513,7 @@ namespace Interactor.MedicalExamination
                 switch (propertyCd)
                 {
                     case "C":
-                        //"サマリー"
+                        //"サマリー";
                         grpItemCd = 12;
                         headerName = "◆サマリー";
                         var summaryInf = _summaryInfRepository.Get(hpId, ptId);
@@ -504,12 +523,12 @@ namespace Interactor.MedicalExamination
                         }
                         break;
                     case "D":
-                        // "電話番号"
+                        // "電話番号";
                         summaryInfItem = GetPhoneNumber(hpId, ptId);
                         grpItemCd = 13;
                         break;
                     case "E":
-                        //"受付コメント"
+                        //"受付コメント";
                         summaryInfItem = GetReceptionComment(hpId, ptId, sinDate, raiinNo);
                         grpItemCd = 14;
                         break;

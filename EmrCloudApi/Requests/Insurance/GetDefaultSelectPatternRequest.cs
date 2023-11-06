@@ -1,12 +1,13 @@
-﻿namespace EmrCloudApi.Requests.Insurance;
-
-public class GetDefaultSelectPatternRequest
+﻿namespace EmrCloudApi.Requests.Insurance
 {
-    public long PtId { get; set; }
+    public class GetDefaultSelectPatternRequest
+    {
+        public long PtId { get; set; }
 
-    public int SinDate { get; set; }
+        public int SinDate { get; set; }
 
-    public List<int> HistoryPids { get; set; } = new();
+        public List<int> HistoryPids { get; set; }
 
-    public int SelectedHokenPid { get; set; }
+        public int SelectedHokenPid { get; set; }
+    }
 }

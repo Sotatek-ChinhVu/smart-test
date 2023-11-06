@@ -21,23 +21,29 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
     }
     public bool UpdateIsDeleted(int hpId, int ptId, int seqNo, int isDeleted, int userId)
     {
-        var ptTag = NoTrackingDataContext.PtTag.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo);
+        try
+        {
+            var ptTag = NoTrackingDataContext.PtTag.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo);
 
-        if (ptTag == null) return false;
+            if (ptTag == null) return false;
 
-        if (ptTag.IsDeleted == 2) return false;
+            if (ptTag.IsDeleted == 2) return false;
 
-        ptTag.IsDeleted = isDeleted;
+            ptTag.IsDeleted = isDeleted;
 
-        ptTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
-        ptTag.UpdateId = userId;
-        ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
+            ptTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            ptTag.UpdateId = userId;
+            ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
 
-        TrackingDataContext.PtTag.Update(ptTag);
-        TrackingDataContext.SaveChanges();
-        return true;
+            TrackingDataContext.PtTag.Update(ptTag);
+            TrackingDataContext.SaveChanges();
+            return true;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
-
     public bool SaveStickyNote(List<StickyNoteModel> stickyNoteModels, int userId)
     {
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();

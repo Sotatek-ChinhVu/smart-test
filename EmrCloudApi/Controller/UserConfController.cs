@@ -101,7 +101,7 @@ public class UserConfController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetList + "ForModel")]
-    public ActionResult<Response<GetUserConfModelListResponse>> GetListForModel()
+    public ActionResult<Response<GetUserConfModelListResponse>> GetList()
     {
         var input = new GetUserConfModelListInputData(HpId, UserId);
         var output = _bus.Handle(input);
