@@ -1,4 +1,5 @@
-﻿using Domain.Models.KensaCmtMst.cs;
+﻿using Amazon.S3.Model;
+using Domain.Models.KensaCmtMst.cs;
 using Domain.Models.KensaInfDetail;
 using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
@@ -10,6 +11,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Drawing;
 using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Infrastructure.Repositories
@@ -635,8 +637,7 @@ namespace Infrastructure.Repositories
 
 
             var totalCol = kensaInfDetailCol.Count();
-
-            listSeqNoItems.Add(200965);
+            
             if (listSeqNoItems == null || listSeqNoItems.Count == 0)
             {
                 // Get list with start date
@@ -820,6 +821,7 @@ namespace Infrastructure.Repositories
             }
             #endregion
 
+            #region Filter by list seqNo get data for chart
             if (listSeqNoItems != null && listSeqNoItems.Count > 0)
             {
                 bool IsNumeric(string input)
@@ -828,6 +830,7 @@ namespace Infrastructure.Repositories
                     return double.TryParse(input, out result);
                 }
 
+                //Filter rows get row by list seqNo
                 kensaInfDetailRows = kensaInfDetailRows.Where(x => listSeqNoItems.Contains(x.SeqNo)).ToList();
                 var uniqueIraiCds = kensaInfDetailRows
                        .SelectMany(item => item.DynamicArray)
@@ -835,6 +838,8 @@ namespace Infrastructure.Repositories
                        .Select(subItem => subItem.IraiCd)
                        .Where(iraiCd => iraiCd != 0)
                        .Distinct().ToList();
+                
+                // Filter col by list Iraicd 
                 kensaInfDetailCol = kensaInfDetailCol.Where(x => uniqueIraiCds.Contains(x.IraiCd)).ToList();
 
                 int index = 0;
@@ -844,6 +849,7 @@ namespace Infrastructure.Repositories
                     index++;
                 }
 
+                // pagging
                 totalCol = kensaInfDetailCol.Count();
                 if (iraiCdStart > 0)
                 {
@@ -878,6 +884,7 @@ namespace Infrastructure.Repositories
                     }
                 }
 
+                // Filter  data dynamic array by list col pagging
                 var iraiCds = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
 
                 kensaInfDetailRows = kensaInfDetailRows.Select(item => new KensaInfDetailDataModel(
@@ -893,6 +900,7 @@ namespace Infrastructure.Repositories
                         item.DynamicArray.Where(x=> iraiCds.Contains(x.IraiCd)).ToList()
                     )).ToList();
             }
+            #endregion
 
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailRows, totalCol);
             return result;
