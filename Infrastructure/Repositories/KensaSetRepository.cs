@@ -636,6 +636,7 @@ namespace Infrastructure.Repositories
 
             var totalCol = kensaInfDetailCol.Count();
 
+            listSeqNoItems.Add(200965);
             if (listSeqNoItems == null || listSeqNoItems.Count == 0)
             {
                 // Get list with start date
@@ -821,9 +822,16 @@ namespace Infrastructure.Repositories
 
             if (listSeqNoItems != null && listSeqNoItems.Count > 0)
             {
+                bool IsNumeric(string input)
+                {
+                    double result;
+                    return double.TryParse(input, out result);
+                }
+
                 kensaInfDetailRows = kensaInfDetailRows.Where(x => listSeqNoItems.Contains(x.SeqNo)).ToList();
                 var uniqueIraiCds = kensaInfDetailRows
                        .SelectMany(item => item.DynamicArray)
+                       .Where(x=> IsNumeric(x.ResultVal))
                        .Select(subItem => subItem.IraiCd)
                        .Where(iraiCd => iraiCd != 0)
                        .Distinct().ToList();
