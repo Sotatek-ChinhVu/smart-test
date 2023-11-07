@@ -606,12 +606,6 @@ namespace Infrastructure.Repositories
                             DeleteTypes.None
                         )).AsEnumerable();
 
-            
-            if (listSeqNoItems != null && listSeqNoItems.Count > 0)
-            {
-                data = data.Where(x => listSeqNoItems.Contains(x.SeqNo));
-            }
-
             if (showAbnormalKbn)
             {
                 data = data.Where(x => x.AbnormalKbn.Equals(AbnormalKbnType.High) || x.AbnormalKbn.Equals(AbnormalKbnType.Low));
@@ -642,48 +636,54 @@ namespace Infrastructure.Repositories
 
             var totalCol = kensaInfDetailCol.Count();
 
-            // Get list with start date
-            if (startDate > 0)
+            listSeqNoItems.Add(200965);
+            listSeqNoItems.Add(200964);
+            if (listSeqNoItems == null || listSeqNoItems.Count == 0)
             {
-                kensaInfDetailCol = kensaInfDetailCol.Where(x => x.IraiDate >= startDate);
-            }
-            else
-            {
-                // Get list with iraiCdStart
-                if (iraiCdStart > 0)
+                // Get list with start date
+                if (startDate > 0)
                 {
-
-                    int currentIndex = 0;
-                    foreach (var obj in kensaInfDetailCol)
-                    {
-                        if (obj.IraiCd == iraiCdStart)
-                        {
-                            break;
-                        }
-                        currentIndex++;
-                    }
-
-                    if (getGetPrevious)
-                    {
-                        kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
-                    }
-                    else
-                    {
-                        kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
-                    }
+                    kensaInfDetailCol = kensaInfDetailCol.Where(x => x.IraiDate >= startDate);
                 }
                 else
                 {
-                    if (getGetPrevious)
+                    // Get list with iraiCdStart
+                    if (iraiCdStart > 0)
                     {
-                        kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+
+                        int currentIndex = 0;
+                        foreach (var obj in kensaInfDetailCol)
+                        {
+                            if (obj.IraiCd == iraiCdStart)
+                            {
+                                break;
+                            }
+                            currentIndex++;
+                        }
+
+                        if (getGetPrevious)
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                        }
+                        else
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
+                        }
                     }
                     else
                     {
-                        kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                        if (getGetPrevious)
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                        }
+                        else
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                        }
                     }
                 }
             }
+
             #endregion
 
             #region Get Row dynamic
@@ -820,6 +820,59 @@ namespace Infrastructure.Repositories
                            ).OrderBy(x => x.SortNo).Select(x => x.Result).ToList();
             }
             #endregion
+
+            if (listSeqNoItems != null && listSeqNoItems.Count > 0)
+            {
+                kensaInfDetailRows = kensaInfDetailRows.Where(x => listSeqNoItems.Contains(x.SeqNo)).ToList();
+                var uniqueIraiCds = kensaInfDetailRows
+                       .SelectMany(item => item.DynamicArray)
+                       .Select(subItem => subItem.IraiCd)
+                       .Where(iraiCd => iraiCd != 0)
+                       .Distinct().ToList();
+                kensaInfDetailCol = kensaInfDetailCol.Where(x => uniqueIraiCds.Contains(x.IraiCd)).ToList();
+
+                int index = 0;
+                foreach (var item in kensaInfDetailCol)
+                {
+                    item.SetIndex(index);
+                    index++;
+                }
+
+                totalCol = kensaInfDetailCol.Count();
+                if (iraiCdStart > 0)
+                {
+
+                    int currentIndex = 0;
+                    foreach (var obj in kensaInfDetailCol)
+                    {
+                        if (obj.IraiCd == iraiCdStart)
+                        {
+                            break;
+                        }
+                        currentIndex++;
+                    }
+
+                    if (getGetPrevious)
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                    }
+                    else
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
+                    }
+                }
+                else
+                {
+                    if (getGetPrevious)
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                    }
+                    else
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                    }
+                }
+            }
 
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailRows, totalCol);
             return result;
