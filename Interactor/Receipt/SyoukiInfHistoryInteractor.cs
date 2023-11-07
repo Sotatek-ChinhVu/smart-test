@@ -41,15 +41,18 @@ public class SyoukiInfHistoryInteractor : ISyoukiInfHistoryInputPort
         var sinYmList = syoukiInfList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
-            var hokenId = syoukiInfList.FirstOrDefault(item => item.SinYm == sinYm)?.HokenId ?? 0;
-            var outputItem = new SyoukiInfHistoryOutputItem(
-                                 sinYm,
-                                 CIUtil.SMonthToShowSWMonth(sinYm, 1),
-                                 hokenId,
-                                 GetHokenName(hokenId, hokenInfList),
-                                 syoukiInfList.Where(item => item.SinYm == sinYm).ToList(),
-                                 syoukiKbnList);
-            result.Add(outputItem);
+            var hokenIdList = syoukiInfList.Where(item => item.SinYm == sinYm).Select(item => item.HokenId).Distinct().ToList();
+            foreach (var hokenId in hokenIdList)
+            {
+                var outputItem = new SyoukiInfHistoryOutputItem(
+                                     sinYm,
+                                     CIUtil.SMonthToShowSWMonth(sinYm, 1),
+                                     hokenId,
+                                     GetHokenName(hokenId, hokenInfList),
+                                     syoukiInfList.Where(item => item.SinYm == sinYm && item.HokenId == hokenId).ToList(),
+                                     syoukiKbnList);
+                result.Add(outputItem);
+            }
         }
         return result;
     }

@@ -21,7 +21,7 @@ RUN apt-get update \
     && apt-get install -y libgdiplus \
     && ln -s /usr/liblibgdiplus.so /usr/libgdiplus.dll \
     && apt-get install -y libc6-dev libx11-dev \
-    && apt-get install -y fontconfig \
+    && apt-get install -y fontconfig postgresql-client\
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCloudApi/out/ .
