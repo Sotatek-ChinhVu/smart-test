@@ -16,7 +16,9 @@ namespace Interactor.Lock
             try
             {
                 var data = _lockRepository.GetLockInfModels(inputData.HpId, inputData.UserId, inputData.ManagerKbn);
-                var userLocks = _lockRepository.GetLockInf(inputData.HpId);
+                var userLocks = new Dictionary<int, Dictionary<int, string>>();
+                if (inputData.ManagerKbn != 0)
+                    userLocks = _lockRepository.GetLockInf(inputData.HpId);
                 if (data.Count == 0)
                 {
                     return new GetLockInfOutputData(new(), new(), GetLockInfStatus.NoData);

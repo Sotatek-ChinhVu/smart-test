@@ -9,7 +9,7 @@ namespace Entity.Tenant
         /// <summary>
         /// Id
         /// </summary>
-        
+
         [Column(name: "ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 分類コード
         /// 
         /// </summary>
-        
+
         [Column("GRP_CD", Order = 3)]
         public int GrpCd { get; set; }
 
@@ -46,6 +46,14 @@ namespace Entity.Tenant
         [Column("SORT_NO")]
         [CustomAttribute.DefaultValue(1)]
         public int SortNo { get; set; }
+
+        /// <summary>
+        /// 削除区分
+        ///		1:削除
+        /// </summary>
+        [Column("IS_EXCLUDE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int IsExclude { get; set; }
 
         /// <summary>
         /// 削除フラグ
