@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo , bool isShowKyuSeiName = false, List<int>? listStatus = null)
+        public PatientInforModel? GetById(int hpId, long ptId, int sinDate, long raiinNo, bool isShowKyuSeiName = false, List<int>? listStatus = null)
         {
             var itemData = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
@@ -1154,245 +1154,237 @@ namespace Infrastructure.Repositories
 
         public (bool resultSave, long ptId) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
         {
-            try
+            int defaultMaxDate = 99999999;
+            int hpId = ptInf.HpId;
+
+            PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
+            if (patientInsert.PtNum == 0)
             {
-                int defaultMaxDate = 99999999;
-                int hpId = ptInf.HpId;
-
-                PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
-                if (patientInsert.PtNum == 0)
-                {
+                patientInsert.PtNum = GetAutoPtNum(hpId);
+            }
+            else
+            {
+                var ptExists = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtNum == patientInsert.PtNum && x.HpId == hpId);
+                if (ptExists != null)
                     patientInsert.PtNum = GetAutoPtNum(hpId);
-                }
-                else
-                {
-                    var ptExists = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtNum == patientInsert.PtNum && x.HpId == hpId);
-                    if (ptExists != null)
-                        patientInsert.PtNum = GetAutoPtNum(hpId);
-                }
-                if (patientInsert.DeathDate > 0)
-                {
-                    patientInsert.IsDead = 1;
-                }
-                else
-                {
-                    patientInsert.IsDead = 0;
-                }
-                patientInsert.CreateDate = CIUtil.GetJapanDateTimeNow();
-                patientInsert.CreateId = userId;
-                patientInsert.UpdateId = userId;
-                patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                patientInsert.HpId = hpId;
+            }
+            if (patientInsert.DeathDate > 0)
+            {
+                patientInsert.IsDead = 1;
+            }
+            else
+            {
+                patientInsert.IsDead = 0;
+            }
+            patientInsert.CreateDate = CIUtil.GetJapanDateTimeNow();
+            patientInsert.CreateId = userId;
+            patientInsert.UpdateId = userId;
+            patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            patientInsert.HpId = hpId;
 
-                // string querySql = $"INSERT INTO public.\"PT_INF\"\r\n(\"HP_ID\", \"PT_NUM\", \"KANA_NAME\", \"NAME\", \"SEX\", \"BIRTHDAY\", \"IS_DEAD\", \"DEATH_DATE\", \"HOME_POST\", \"HOME_ADDRESS1\", \"HOME_ADDRESS2\", \"TEL1\", \"TEL2\", \"MAIL\", \"SETAINUSI\", \"ZOKUGARA\", \"JOB\", \"RENRAKU_NAME\", \"RENRAKU_POST\", \"RENRAKU_ADDRESS1\", \"RENRAKU_ADDRESS2\", \"RENRAKU_TEL\", \"RENRAKU_MEMO\", \"OFFICE_NAME\", \"OFFICE_POST\", \"OFFICE_ADDRESS1\", \"OFFICE_ADDRESS2\", \"OFFICE_TEL\", \"OFFICE_MEMO\", \"IS_RYOSYO_DETAIL\", \"PRIMARY_DOCTOR\", \"IS_TESTER\", \"IS_DELETE\", \"CREATE_DATE\", \"CREATE_ID\", \"CREATE_MACHINE\", \"UPDATE_DATE\", \"UPDATE_ID\", \"UPDATE_MACHINE\", \"MAIN_HOKEN_PID\", \"LIMIT_CONS_FLG\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
-                TrackingDataContext.PtInfs.Add(patientInsert);
-                //TrackingDataContext.Database.SetCommandTimeout(1200);
-                //bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
-                bool resultCreatePatient = TrackingDataContext.SaveChanges() > 0;
+            string querySql = $"INSERT INTO public.\"PT_INF\"\r\n(\"HP_ID\", \"PT_NUM\", \"KANA_NAME\", \"NAME\", \"SEX\", \"BIRTHDAY\", \"IS_DEAD\", \"DEATH_DATE\", \"HOME_POST\", \"HOME_ADDRESS1\", \"HOME_ADDRESS2\", \"TEL1\", \"TEL2\", \"MAIL\", \"SETAINUSI\", \"ZOKUGARA\", \"JOB\", \"RENRAKU_NAME\", \"RENRAKU_POST\", \"RENRAKU_ADDRESS1\", \"RENRAKU_ADDRESS2\", \"RENRAKU_TEL\", \"RENRAKU_MEMO\", \"OFFICE_NAME\", \"OFFICE_POST\", \"OFFICE_ADDRESS1\", \"OFFICE_ADDRESS2\", \"OFFICE_TEL\", \"OFFICE_MEMO\", \"IS_RYOSYO_DETAIL\", \"PRIMARY_DOCTOR\", \"IS_TESTER\", \"IS_DELETE\", \"CREATE_DATE\", \"CREATE_ID\", \"CREATE_MACHINE\", \"UPDATE_DATE\", \"UPDATE_ID\", \"UPDATE_MACHINE\", \"MAIN_HOKEN_PID\", \"LIMIT_CONS_FLG\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
+            //TrackingDataContext.PtInfs.Add(patientInsert);
+            TrackingDataContext.Database.SetCommandTimeout(1200);
+            bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
 
-                if (!resultCreatePatient)
-                {
-                    return (false, 0);
-                }
-                else
-                {
-                    patientInsert.PtId = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == patientInsert.PtNum)?.PtId ?? 0;
-                }
+            if (!resultCreatePatient)
+            {
+                return (false, 0);
+            }
+            else
+            {
+                patientInsert.PtId = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == patientInsert.PtNum)?.PtId ?? 0;
+            }
 
-                if (ptSanteis != null && ptSanteis.Any())
-                {
-                    var ptSanteiInserts = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis, (src, dest) =>
-                    {
-                        dest.CreateId = userId;
-                        dest.PtId = patientInsert.PtId;
-                        dest.HpId = hpId;
-                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.UpdateId = userId;
-                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        return dest;
-                    });
-                    TrackingDataContext.PtSanteiConfs.AddRange(ptSanteiInserts);
-                }
-
-                if (!string.IsNullOrEmpty(ptInf.Memo))
-                {
-                    TrackingDataContext.PtMemos.Add(new PtMemo()
-                    {
-                        HpId = hpId,
-                        PtId = patientInsert.PtId,
-                        Memo = ptInf.Memo,
-                        CreateId = userId,
-                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId
-                    });
-                }
-
-                if (ptGrps != null && ptGrps.Any())
-                {
-                    var listPtGrpInf = Mapper.Map<GroupInfModel, PtGrpInf>(ptGrps, (src, dest) =>
-                    {
-                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.CreateId = userId;
-                        dest.HpId = hpId;
-                        dest.PtId = patientInsert.PtId;
-                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.UpdateId = userId;
-                        return dest;
-                    });
-                    TrackingDataContext.PtGrpInfs.AddRange(listPtGrpInf);
-                }
-
-                if (ptKyuseis != null && ptKyuseis.Any())
-                {
-                    var ptKyuseiList = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis, (src, dest) =>
-                    {
-                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.CreateId = userId;
-                        dest.UpdateId = userId;
-                        dest.HpId = hpId;
-                        dest.PtId = patientInsert.PtId;
-                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        return dest;
-                    });
-                    TrackingDataContext.PtKyuseis.AddRange(ptKyuseiList);
-                }
-
-                #region Hoken parterrn
-                List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.IsAddNew), (src, dest) =>
+            if (ptSanteis != null && ptSanteis.Any())
+            {
+                var ptSanteiInserts = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis, (src, dest) =>
                 {
                     dest.CreateId = userId;
-                    dest.UpdateId = userId;
-                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     dest.PtId = patientInsert.PtId;
                     dest.HpId = hpId;
-                    dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
-                    return dest;
-                });
-                TrackingDataContext.PtHokenPatterns.AddRange(pthokenPartterns);
-                #endregion Hoken parterrn
-
-                #region HokenInf
-                List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.IsAddNew), (src, dest) =>
-                {
-                    dest.CreateId = userId;
                     dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                     dest.UpdateId = userId;
                     dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    dest.PtId = patientInsert.PtId;
-                    dest.HpId = hpId;
-                    dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
-
-                    #region PtRousaiTenki
-                    TrackingDataContext.PtRousaiTenkis.AddRange(Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(src.ListRousaiTenki, (srcR, destR) =>
-                    {
-                        destR.CreateId = userId;
-                        destR.UpdateId = userId;
-                        destR.PtId = patientInsert.PtId;
-                        destR.HpId = hpId;
-                        destR.Tenki = srcR.RousaiTenkiTenki;
-                        destR.Sinkei = srcR.RousaiTenkiSinkei;
-                        destR.EndDate = srcR.RousaiTenkiEndDate;
-                        destR.HokenId = dest.HokenId;
-                        destR.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        destR.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        return destR;
-                    }));
-                    #endregion
-
-                    #region PtHokenCheck
-                    TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
-                    {
-                        destCf.CreateId = userId;
-                        destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
-                        destCf.CheckCmt = srcCf.CheckComment;
-                        destCf.HokenId = dest.HokenId;
-                        destCf.CheckId = userId;
-                        destCf.PtID = patientInsert.PtId;
-                        destCf.HokenGrp = 1;
-                        destCf.HpId = hpId;
-                        return destCf;
-                    }));
-                    #endregion
                     return dest;
                 });
-                TrackingDataContext.PtHokenInfs.AddRange(ptHokenInfs);
-                #endregion HokenInf
+                TrackingDataContext.PtSanteiConfs.AddRange(ptSanteiInserts);
+            }
 
-                #region PtKohiInf
-                List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew), (src, dest) =>
+            if (!string.IsNullOrEmpty(ptInf.Memo))
+            {
+                TrackingDataContext.PtMemos.Add(new PtMemo()
                 {
-                    dest.UpdateId = userId;
-                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    dest.CreateId = userId;
+                    HpId = hpId,
+                    PtId = patientInsert.PtId,
+                    Memo = ptInf.Memo,
+                    CreateId = userId,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId
+                });
+            }
+
+            if (ptGrps != null && ptGrps.Any())
+            {
+                var listPtGrpInf = Mapper.Map<GroupInfModel, PtGrpInf>(ptGrps, (src, dest) =>
+                {
                     dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                    dest.PtId = patientInsert.PtId;
+                    dest.CreateId = userId;
                     dest.HpId = hpId;
-                    dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
-                    #region PtHokenCheck
-                    TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
-                    {
-                        destCf.CreateId = userId;
-                        destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
-                        destCf.CheckCmt = srcCf.CheckComment;
-                        destCf.HokenId = dest.HokenId;
-                        destCf.CheckId = userId;
-                        destCf.PtID = patientInsert.PtId;
-                        destCf.HokenGrp = 2;
-                        destCf.HpId = hpId;
-                        return destCf;
-                    }));
-                    #endregion
+                    dest.PtId = patientInsert.PtId;
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.UpdateId = userId;
                     return dest;
                 });
-                TrackingDataContext.PtKohis.AddRange(ptKohiInfs);
-                #endregion PtKohiInf
+                TrackingDataContext.PtGrpInfs.AddRange(listPtGrpInf);
+            }
 
-                #region Maxmoney
-                if (maxMoneys != null && maxMoneys.Any())
+            if (ptKyuseis != null && ptKyuseis.Any())
+            {
+                var ptKyuseiList = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis, (src, dest) =>
                 {
-                    TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
-                    {
-                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.PtId = patientInsert.PtId;
-                        dest.HpId = hpId;
-                        dest.SinDate = src.SinDateY * 10000 + src.SinDateM * 100 + src.SinDateD;
-                        dest.UpdateId = userId;
-                        dest.CreateId = userId;
-                        return dest;
-                    }));
-                }
-                #endregion Maxmoney
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.CreateId = userId;
+                    dest.UpdateId = userId;
+                    dest.HpId = hpId;
+                    dest.PtId = patientInsert.PtId;
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    return dest;
+                });
+                TrackingDataContext.PtKyuseis.AddRange(ptKyuseiList);
+            }
 
-                #region insurancesCan
-                var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
-                if (insuranceScanDatas != null && insuranceScanDatas.Any())
+            #region Hoken parterrn
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.IsAddNew), (src, dest) =>
+            {
+                dest.CreateId = userId;
+                dest.UpdateId = userId;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                dest.PtId = patientInsert.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                return dest;
+            });
+            TrackingDataContext.PtHokenPatterns.AddRange(pthokenPartterns);
+            #endregion Hoken parterrn
+
+            #region HokenInf
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.IsAddNew), (src, dest) =>
+            {
+                dest.CreateId = userId;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.UpdateId = userId;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                dest.PtId = patientInsert.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+
+                #region PtRousaiTenki
+                TrackingDataContext.PtRousaiTenkis.AddRange(Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(src.ListRousaiTenki, (srcR, destR) =>
                 {
-                    TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
-                    {
-                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.CreateId = userId;
-                        dest.UpdateId = userId;
-                        return dest;
-                    }));
-                }
+                    destR.CreateId = userId;
+                    destR.UpdateId = userId;
+                    destR.PtId = patientInsert.PtId;
+                    destR.HpId = hpId;
+                    destR.Tenki = srcR.RousaiTenkiTenki;
+                    destR.Sinkei = srcR.RousaiTenkiSinkei;
+                    destR.EndDate = srcR.RousaiTenkiEndDate;
+                    destR.HokenId = dest.HokenId;
+                    destR.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    destR.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    return destR;
+                }));
                 #endregion
 
-                int changeDatas = TrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
-                if (changeDatas == 0 && resultCreatePatient)
-                    return (true, patientInsert.PtId);
+                #region PtHokenCheck
+                TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
+                {
+                    destCf.CreateId = userId;
+                    destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
+                    destCf.CheckCmt = srcCf.CheckComment;
+                    destCf.HokenId = dest.HokenId;
+                    destCf.CheckId = userId;
+                    destCf.PtID = patientInsert.PtId;
+                    destCf.HokenGrp = 1;
+                    destCf.HpId = hpId;
+                    return destCf;
+                }));
+                #endregion
+                return dest;
+            });
+            TrackingDataContext.PtHokenInfs.AddRange(ptHokenInfs);
+            #endregion HokenInf
 
-                return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
-            }
-            catch (Exception ex)
+            #region PtKohiInf
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew), (src, dest) =>
             {
-                throw ex;
+                dest.UpdateId = userId;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                dest.CreateId = userId;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.PtId = patientInsert.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                #region PtHokenCheck
+                TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
+                {
+                    destCf.CreateId = userId;
+                    destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
+                    destCf.CheckCmt = srcCf.CheckComment;
+                    destCf.HokenId = dest.HokenId;
+                    destCf.CheckId = userId;
+                    destCf.PtID = patientInsert.PtId;
+                    destCf.HokenGrp = 2;
+                    destCf.HpId = hpId;
+                    return destCf;
+                }));
+                #endregion
+                return dest;
+            });
+            TrackingDataContext.PtKohis.AddRange(ptKohiInfs);
+            #endregion PtKohiInf
+
+            #region Maxmoney
+            if (maxMoneys != null && maxMoneys.Any())
+            {
+                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
+                {
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.PtId = patientInsert.PtId;
+                    dest.HpId = hpId;
+                    dest.SinDate = src.SinDateY * 10000 + src.SinDateM * 100 + src.SinDateD;
+                    dest.UpdateId = userId;
+                    dest.CreateId = userId;
+                    return dest;
+                }));
             }
+            #endregion Maxmoney
+
+            #region insurancesCan
+            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
+            if (insuranceScanDatas != null && insuranceScanDatas.Any())
+            {
+                TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
+                {
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.CreateId = userId;
+                    dest.UpdateId = userId;
+                    return dest;
+                }));
+            }
+            #endregion
+
+            int changeDatas = TrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
+            if (changeDatas == 0 && resultCreatePatient)
+                return (true, patientInsert.PtId);
+
+            return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
         private long GetAutoPtNum(int hpId)
