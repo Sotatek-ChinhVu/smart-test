@@ -839,7 +839,6 @@ namespace Infrastructure.Repositories
                 totalCol = kensaInfDetailCol.Count();
                 if (iraiCdStart > 0)
                 {
-
                     int currentIndex = 0;
                     foreach (var obj in kensaInfDetailCol)
                     {
@@ -870,6 +869,21 @@ namespace Infrastructure.Repositories
                         kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
                     }
                 }
+
+                var iraiCds = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
+
+                kensaInfDetailRows = kensaInfDetailRows.Select(item => new KensaInfDetailDataModel(
+                        item.KensaItemCd,
+                        item.KensaName,
+                        item.Unit,
+                        item.MaleStd,
+                        item.FemaleStd,
+                        item.KensaKana,
+                        item.SortNo,
+                        item.SeqNo,
+                        item.SeqParentNo,
+                        item.DynamicArray.Where(x=> iraiCds.Contains(x.IraiCd)).ToList()
+                    )).ToList();
             }
 
             var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailRows, totalCol);
