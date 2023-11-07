@@ -1,10 +1,14 @@
 ﻿using Domain.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Domain.Models.DrugInfor;
-
-public interface IDrugInforRepository : IRepositoryBase
+namespace Domain.Models.DrugInfor
 {
-    DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd);
-
-    List<SinrekiFilterMstModel> GetSinrekiFilterMstList(int hpId);
+    public interface IDrugInforRepository : IRepositoryBase
+    {
+        DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd);
+    }
 }

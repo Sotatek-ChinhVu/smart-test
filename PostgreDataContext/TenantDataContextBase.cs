@@ -429,7 +429,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<KensaSetDetail>().HasKey(s => new { s.HpId, s.SetId, s.SetEdaNo });
             modelBuilder.Entity<KensaCmtMst>().HasKey(s => new { s.HpId, s.CmtCd, s.CmtSeqNo });
             modelBuilder.Entity<KensaResultLog>().HasKey(s => new { s.OpId });
-            modelBuilder.Entity<SinrekiFilterMstKoui>().HasKey(s => new { s.HpId, s.GrpCd, s.SeqNo });
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
 
@@ -921,8 +920,6 @@ namespace PostgreDataContext
         public DbSet<SinrekiFilterMst> SinrekiFilterMsts { get; set; } = default!;
 
         public DbSet<SinrekiFilterMstDetail> SinrekiFilterMstDetails { get; set; } = default!;
-
-        public DbSet<SinrekiFilterMstKoui> SinrekiFilterMstKouis { get; set; } = default!;
 
         public DbSet<KinkiMst> KinkiMsts { get; set; } = default!;
 
