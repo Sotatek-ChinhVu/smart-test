@@ -546,5 +546,6 @@
         //PrescriptionHistory
         public const string GetSinrekiFilterMstList = "GetSinrekiFilterMstList";
         public const string SaveSinrekiFilterMstList = "SaveSinrekiFilterMstList";
+        public const string GetContentDrugUsageHistory = "GetContentDrugUsageHistory";
     }
 }

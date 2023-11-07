@@ -8,6 +8,7 @@ using EmrCloudApi.Responses.DrugInfor;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using UseCase.DrugInfor.GetSinrekiFilterMstList;
 using UseCase.DrugInfor.SaveSinrekiFilterMstList;
 
@@ -30,6 +31,19 @@ public class PrescriptionHistoryController : AuthorizeControllerBase
         var output = _bus.Handle(input);
 
         var presenter = new GetSinrekiFilterMstListPresenter();
+        presenter.Complete(output);
+
+        var result = Ok(presenter.Result);
+        return result;
+    }
+
+    [HttpGet(ApiPath.GetContentDrugUsageHistory)]
+    public ActionResult<Response<GetContentDrugUsageHistoryResponse>> GetContentDrugUsageHistory([FromQuery] GetContentDrugUsageHistoryRequest request)
+    {
+        var input = new GetContentDrugUsageHistoryInputData(HpId, request.PtId, request.StartDate, request.EndDate);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetContentDrugUsageHistoryPresenter();
         presenter.Complete(output);
 
         var result = Ok(presenter.Result);
