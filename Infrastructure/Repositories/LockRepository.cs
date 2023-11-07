@@ -518,7 +518,7 @@ namespace Infrastructure.Repositories
             var listFunctMst = NoTrackingDataContext.FunctionMsts.Select(f => new { f.FunctionCd, f.FunctionName });
             var listPtInf = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None).Select(pt => new { pt.PtId, pt.PtNum });
             //var listCalcStatus = NoTrackingDataContext.CalcStatus.Where(cal => cal.HpId == hpId && !string.IsNullOrEmpty(cal.CreateMachine) && (cal.Status == 0 || cal.Status == 1));
-            var listDocInf = NoTrackingDataContext.DocInfs.Where(d => d.HpId == hpId && d.IsLocked == 1 && !string.IsNullOrEmpty(d.LockMachine) && d.IsDeleted == DeleteStatus.None && (managerKbn != 0 || d.LockId == userId));
+            var listDocInf = NoTrackingDataContext.DocInfs.Where(d => d.HpId == hpId && d.IsLocked == 1 && !string.IsNullOrEmpty(d.LockMachine) && d.IsDeleted == DeleteStatus.None);
 
             var lockInfQuerry = (from lockInf in listLock
                                  join functMst in listFunctMst on lockInf.FunctionCd equals functMst.FunctionCd
