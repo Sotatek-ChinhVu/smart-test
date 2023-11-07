@@ -58,7 +58,7 @@
                 KensaName = kensaName;
                 Unit = unit;
                 MaleStd = maleStd;
-                FeMaleStd = femaleStd;
+                FemaleStd = femaleStd;
                 DynamicArray = dynamicArray;
             }
 
@@ -68,7 +68,7 @@
                 KensaName = kensaName;
                 Unit = unit;
                 MaleStd = maleStd;
-                FeMaleStd = femaleStd;
+                FemaleStd = femaleStd;
                 KensaKana = kensaKana;
                 SortNo = sortNo;
                 SeqNo = seqNo;
@@ -85,7 +85,7 @@
 
             public string MaleStd { get; private set; }
 
-            public string FeMaleStd { get; private set; }
+            public string FemaleStd { get; private set; }
 
             public string KensaKana { get; private set; }
 

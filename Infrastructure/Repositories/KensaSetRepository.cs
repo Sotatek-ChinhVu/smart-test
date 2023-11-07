@@ -225,7 +225,8 @@ namespace Infrastructure.Repositories
                         join t3 in NoTrackingDataContext.KensaStdMsts
                              on t1.KensaItemCd equals t3.KensaItemCd into leftJoinT3
                         from t3 in leftJoinT3.DefaultIfEmpty()
-                        where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None
+                        where t1.HpId == hpId && t1.SetId == setId && t1.IsDeleted == DeleteTypes.None && t2.IsDelete == DeleteTypes.None
+                        where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).Min(m => m.KensaItemSeqNo)
                         orderby t1.SortNo
                         select new KensaSetDetailModel(
                         t1.HpId,
@@ -516,6 +517,13 @@ namespace Infrastructure.Repositories
 
             var userConf = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002);
 
+            var kensaSetDetailById = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId && x.HpId == hpId && x.IsDeleted == DeleteTypes.None).GroupBy(item => item.KensaItemCd)
+               .Select(group => new
+               {
+                   KensaItemCd = group.Key,
+                   SortNo = group.Min(item => item.SortNo)
+               });
+
             bool SortIraiDateAsc = true;
 
             if (userConf.Where(x => x.GrpItemCd == 0).FirstOrDefault()?.Val == 1)
@@ -532,8 +540,8 @@ namespace Infrastructure.Repositories
             {
                 // Flter data with KensaSet
                 kensaInfDetails = (from t1 in NoTrackingDataContext.KensaInfDetails
-                                   join t2 in NoTrackingDataContext.KensaSetDetails on t1.KensaItemCd equals t2.KensaItemCd
-                                   where t1.HpId == hpId && t1.PtId == ptId && t2.SetId == setId
+                                   join t2 in kensaSetDetailById on t1.KensaItemCd equals t2.KensaItemCd
+                                   where t1.HpId == hpId && t1.PtId == ptId && t1.IsDeleted == DeleteTypes.None
                                    select new
                                    {
                                        Result = t1
@@ -549,19 +557,19 @@ namespace Infrastructure.Repositories
                          on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
                         join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
                         join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
-                        join t5 in NoTrackingDataContext.KensaCmtMsts
+                        join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x=> x.IsDeleted == DeleteTypes.None)
                              on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
                         from t5 in leftJoinT5.DefaultIfEmpty()
-                        join t6 in NoTrackingDataContext.KensaCmtMsts
+                        join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
                              on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
                         from t6 in leftJoinT6.DefaultIfEmpty()
                         join t7 in NoTrackingDataContext.KensaStdMsts
                             on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                         from t7 in leftJoinT7.DefaultIfEmpty()
-                        where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
-                        && t3.IsDeleted == DeleteTypes.None && t1.IsDeleted == DeleteTypes.None
-                        where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd).Min(m => m.CmtSeqNo)
-                        where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd).Min(m => m.CmtSeqNo)
+                        where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
+                        where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).Min(m => m.KensaItemSeqNo)
+                        where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
+                        where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
@@ -796,9 +804,8 @@ namespace Infrastructure.Repositories
             else
             {
 
-                kensaInfDetailRows = (from t1 in kensaInfDetailData
-                                      join t2 in NoTrackingDataContext.KensaSetDetails on t1.KensaItemCd equals t2.KensaItemCd
-                                      where t2.SetId == setId
+                kensaInfDetailData = (from t1 in kensaInfDetailData
+                                      join t2 in kensaSetDetailById on t1.KensaItemCd equals t2.KensaItemCd
                                       select new
                                       {
                                           Result = t1,
@@ -819,19 +826,19 @@ namespace Infrastructure.Repositories
                          on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
                         join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
                         join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
-                        join t5 in NoTrackingDataContext.KensaCmtMsts
+                        join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
                              on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
                         from t5 in leftJoinT5.DefaultIfEmpty()
-                        join t6 in NoTrackingDataContext.KensaCmtMsts
+                        join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
                              on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
                         from t6 in leftJoinT6.DefaultIfEmpty()
                         join t7 in NoTrackingDataContext.KensaStdMsts
                              on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
                         from t7 in leftJoinT7.DefaultIfEmpty()
-                        where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd).Min(m => m.KensaItemSeqNo)
-                        && t3.IsDeleted == DeleteTypes.None
-                        where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd).Min(m => m.CmtSeqNo)
-                        where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd).Min(m => m.CmtSeqNo)
+                        where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
+                        where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).Min(m => m.KensaItemSeqNo)
+                        where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
+                        where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
                         select new ListKensaInfDetailItemModel
                         (
                             t1.PtId,
