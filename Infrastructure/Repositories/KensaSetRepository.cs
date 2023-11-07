@@ -636,8 +636,6 @@ namespace Infrastructure.Repositories
 
             var totalCol = kensaInfDetailCol.Count();
 
-            listSeqNoItems.Add(200965);
-            listSeqNoItems.Add(200964);
             if (listSeqNoItems == null || listSeqNoItems.Count == 0)
             {
                 // Get list with start date
