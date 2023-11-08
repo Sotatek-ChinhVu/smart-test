@@ -13,12 +13,12 @@ namespace Interactor.SetSendaiGeneration
 {
     public class AddSetSendaiGenerationInteractor : IAddSetSendaiGenerationInputPort
     {
-        private readonly ISetGenerationMstRepository _inputItemRepository;
+        private readonly ISetGenerationMstRepository _setGenerationMstRepository;
         private IMessenger? _messenger;
 
-        public AddSetSendaiGenerationInteractor(ISetGenerationMstRepository inputItemRepository)
+        public AddSetSendaiGenerationInteractor(ISetGenerationMstRepository setGenerationMstRepository)
         {
-            _inputItemRepository = inputItemRepository;
+            _setGenerationMstRepository = setGenerationMstRepository;
         }
 
         public AddSetSendaiGenerationOutputData Handle(AddSetSendaiGenerationInputData inputData)
@@ -41,11 +41,11 @@ namespace Interactor.SetSendaiGeneration
                     return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.InvalidUserId);
                 }
 
-                var result = _inputItemRepository.AddSetSendaiGeneration(inputData.UserId, inputData.HpId, inputData.StartDate);
+                var result = _setGenerationMstRepository.AddSetSendaiGeneration(inputData.UserId, inputData.HpId, inputData.StartDate);
                 if (result != null)
                 {
                     // Process Clone
-                    var getCountProcess = _inputItemRepository.GetCountStepProcess(result.TargetGeneration, result.SourceGeneration, inputData.HpId, inputData.UserId);
+                    var getCountProcess = _setGenerationMstRepository.GetCountStepProcess(result.TargetGeneration, result.SourceGeneration, inputData.HpId, inputData.UserId);
                     if (getCountProcess != null && getCountProcess.TotalCount > 0)
                     {
                         var totalCountCheck = getCountProcess.TotalCount;
@@ -59,7 +59,7 @@ namespace Interactor.SetSendaiGeneration
                             totalCountCheck -= getCountProcess.SetKbnMstSourceCount;
                             var countResult = getCountProcess.SetMstsBackupedCount + getCountProcess.SetKbnMstSourceCount;
                             // save setkbn source
-                            var saveSetKbn = _inputItemRepository.SaveCloneKbnMst(result.TargetGeneration, result.SourceGeneration, inputData.HpId, inputData.UserId);
+                            var saveSetKbn = _setGenerationMstRepository.SaveCloneKbnMst(result.TargetGeneration, result.SourceGeneration, inputData.HpId, inputData.UserId);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add SetKbnMst Successs!" : $"Add SetKbnMst Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
 
@@ -69,7 +69,7 @@ namespace Interactor.SetSendaiGeneration
                             totalCountCheck -= getCountProcess.SetByomeisSourceCount;
                             var countResult = getCountProcess.SetMstsBackupedCount + getCountProcess.SetKbnMstSourceCount + getCountProcess.SetByomeisSourceCount;
                             // save Byomei
-                            var saveSetKbn = _inputItemRepository.SaveCloneByomei(inputData.HpId, inputData.UserId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
+                            var saveSetKbn = _setGenerationMstRepository.SaveCloneByomei(inputData.HpId, inputData.UserId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add Byomei Successs!" : $"Add Byomei Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
 
@@ -79,7 +79,7 @@ namespace Interactor.SetSendaiGeneration
                             totalCountCheck -= getCountProcess.SetKarteInfsSourceCount;
                             var countResult = getCountProcess.SetMstsBackupedCount + getCountProcess.SetKbnMstSourceCount + getCountProcess.SetByomeisSourceCount + getCountProcess.SetKarteInfsSourceCount;
                             // save KarteInf
-                            var saveSetKbn = _inputItemRepository.SaveCloneKarteInf(inputData.HpId, inputData.UserId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
+                            var saveSetKbn = _setGenerationMstRepository.SaveCloneKarteInf(inputData.HpId, inputData.UserId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add KarteInf Successs!" : $"Add KarteInf Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
 
@@ -89,7 +89,7 @@ namespace Interactor.SetSendaiGeneration
                             totalCountCheck -= getCountProcess.SetKarteImgInfsSourceCount;
                             var countResult = getCountProcess.SetMstsBackupedCount + getCountProcess.SetKbnMstSourceCount + getCountProcess.SetByomeisSourceCount + getCountProcess.SetKarteInfsSourceCount + getCountProcess.SetKarteImgInfsSourceCount;
                             // save KarteImgInf
-                            var saveSetKbn = _inputItemRepository.SaveCloneKarteImgInf(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
+                            var saveSetKbn = _setGenerationMstRepository.SaveCloneKarteImgInf(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add KarteImgInf Successs!" : $"Add KarteImgInf Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
 
@@ -99,7 +99,7 @@ namespace Interactor.SetSendaiGeneration
                             totalCountCheck -= getCountProcess.SetOdrInfsSourceCount;
                             var countResult = getCountProcess.SetMstsBackupedCount + getCountProcess.SetKbnMstSourceCount + getCountProcess.SetByomeisSourceCount + getCountProcess.SetKarteInfsSourceCount + getCountProcess.SetKarteImgInfsSourceCount + getCountProcess.SetOdrInfsSourceCount;
                             // save OdrInf
-                            var saveSetKbn = _inputItemRepository.SaveCloneOdrInf(inputData.HpId, inputData.UserId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
+                            var saveSetKbn = _setGenerationMstRepository.SaveCloneOdrInf(inputData.HpId, inputData.UserId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add OdrInf Successs!" : $"Add OdrInf Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
 
@@ -109,7 +109,7 @@ namespace Interactor.SetSendaiGeneration
                             totalCountCheck -= getCountProcess.SetOdrInfDetailsSourceCount;
                             var countResult = getCountProcess.SetMstsBackupedCount + getCountProcess.SetKbnMstSourceCount + getCountProcess.SetByomeisSourceCount + getCountProcess.SetKarteInfsSourceCount + getCountProcess.SetKarteImgInfsSourceCount + getCountProcess.SetOdrInfsSourceCount + getCountProcess.SetOdrInfDetailsSourceCount;
                             // save OdrInfDetail
-                            var saveSetKbn = _inputItemRepository.SaveCloneOdrInfDetail(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
+                            var saveSetKbn = _setGenerationMstRepository.SaveCloneOdrInfDetail(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add OdrInfDetail Successs!" : $"Add OdrInfDetail Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
 
@@ -119,7 +119,7 @@ namespace Interactor.SetSendaiGeneration
                             totalCountCheck -= getCountProcess.SetOdrInfCmtSourceCount;
                             var countResult = getCountProcess.SetMstsBackupedCount + getCountProcess.SetKbnMstSourceCount + getCountProcess.SetByomeisSourceCount + getCountProcess.SetKarteInfsSourceCount + getCountProcess.SetKarteImgInfsSourceCount + getCountProcess.SetOdrInfsSourceCount + getCountProcess.SetOdrInfDetailsSourceCount + getCountProcess.SetOdrInfCmtSourceCount;
                             // save OdrInfCmt
-                            var saveSetKbn = _inputItemRepository.SaveCloneOdrInfCmt(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
+                            var saveSetKbn = _setGenerationMstRepository.SaveCloneOdrInfCmt(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add OdrInfCmt Successs!" : $"Add OdrInfCmt Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
                     }
@@ -128,13 +128,14 @@ namespace Interactor.SetSendaiGeneration
                         // Update faild. Stop process
                         _messenger.Send(new ProcessSetSendaiGenerationStatus($"Add MstBackup Faild!", 0, false, false));
                     }
+                    _setGenerationMstRepository.ReloadCache(inputData.HpId, true);
                     return new AddSetSendaiGenerationOutputData(true, AddSetSendaiGenerationStatus.Success);
                 }
                 return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
             }
             finally
             {
-                _inputItemRepository.ReleaseResource();
+                _setGenerationMstRepository.ReleaseResource();
             }
         }
     }

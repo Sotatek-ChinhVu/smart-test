@@ -390,8 +390,12 @@ namespace Infrastructure.Repositories
                             if (kensaInf == null)
                             {
                                 transaction.Rollback();
+                                successed = false;
                             }
-                            iraiDate = kensaInf.IraiDate;
+                            else
+                            {
+                                iraiDate = kensaInf.IraiDate;
+                            }
                         }
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
@@ -488,6 +492,8 @@ namespace Infrastructure.Repositories
                             if (kensaInfDetail == null)
                             {
                                 transaction.Rollback();
+                                successed = false;
+                                break;
                             }
 
                             // Delete children
@@ -510,6 +516,21 @@ namespace Infrastructure.Repositories
                             kensaInfDetail.IsDeleted = item.IsDeleted;
                             kensaInfDetail.UpdateId = userId;
                             kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
+                        }
+
+                        // Delete all item kensaInfDetail
+                        if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
+                        {
+                            var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
+                            if (kensaInf == null)
+                            {
+                                transaction.Rollback();
+                                successed = false;
+                            }
+                            else
+                            {
+                                kensaInf.IsDeleted = DeleteTypes.Deleted;
+                            }
                         }
 
                         TrackingDataContext.SaveChanges();
