@@ -1,4 +1,5 @@
-﻿using Domain.Models.KensaCmtMst.cs;
+﻿using Amazon.S3.Model;
+using Domain.Models.KensaCmtMst.cs;
 using Domain.Models.KensaInfDetail;
 using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
@@ -10,6 +11,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Drawing;
 using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Infrastructure.Repositories
@@ -511,7 +513,7 @@ namespace Infrastructure.Repositories
             return successed;
         }
 
-        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity, int startDate)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity, List<long>? listSeqNoItems, int startDate)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -557,7 +559,7 @@ namespace Infrastructure.Repositories
                          on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
                         join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
                         join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
-                        join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x=> x.IsDeleted == DeleteTypes.None)
+                        join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
                              on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
                         from t5 in leftJoinT5.DefaultIfEmpty()
                         join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
@@ -635,49 +637,53 @@ namespace Infrastructure.Repositories
 
 
             var totalCol = kensaInfDetailCol.Count();
-
-            // Get list with start date
-            if (startDate > 0)
+            
+            if (listSeqNoItems == null || listSeqNoItems.Count == 0)
             {
-                kensaInfDetailCol = kensaInfDetailCol.Where(x => x.IraiDate >= startDate);
-            }
-            else
-            {
-                // Get list with iraiCdStart
-                if (iraiCdStart > 0)
+                // Get list with start date
+                if (startDate > 0)
                 {
-
-                    int currentIndex = 0;
-                    foreach (var obj in kensaInfDetailCol)
-                    {
-                        if (obj.IraiCd == iraiCdStart)
-                        {
-                            break;
-                        }
-                        currentIndex++;
-                    }
-
-                    if (getGetPrevious)
-                    {
-                        kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
-                    }
-                    else
-                    {
-                        kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
-                    }
+                    kensaInfDetailCol = kensaInfDetailCol.Where(x => x.IraiDate >= startDate);
                 }
                 else
                 {
-                    if (getGetPrevious)
+                    // Get list with iraiCdStart
+                    if (iraiCdStart > 0)
                     {
-                        kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+
+                        int currentIndex = 0;
+                        foreach (var obj in kensaInfDetailCol)
+                        {
+                            if (obj.IraiCd == iraiCdStart)
+                            {
+                                break;
+                            }
+                            currentIndex++;
+                        }
+
+                        if (getGetPrevious)
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                        }
+                        else
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
+                        }
                     }
                     else
                     {
-                        kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                        if (getGetPrevious)
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                        }
+                        else
+                        {
+                            kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                        }
                     }
                 }
             }
+
             #endregion
 
             #region Get Row dynamic
@@ -689,8 +695,10 @@ namespace Infrastructure.Repositories
                 .Select(x => x);
             var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
 
-            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo));
-
+            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo)).
+                GroupBy(item => item.KensaItemCd)
+                                .Select(group => group.First())
+                                .ToList();
 
             var groupRowData = data
                 .GroupBy(x => new { x.KensaItemCd })
@@ -812,6 +820,87 @@ namespace Infrastructure.Repositories
                                           SortNo = t2.SortNo,
                                       }
                            ).OrderBy(x => x.SortNo).Select(x => x.Result).ToList();
+            }
+            #endregion
+
+            #region Filter by list seqNo get data for chart
+            if (listSeqNoItems != null && listSeqNoItems.Count > 0)
+            {
+                bool IsNumeric(string input)
+                {
+                    double result;
+                    return double.TryParse(input, out result);
+                }
+
+                //Filter rows get row by list seqNo
+                kensaInfDetailRows = kensaInfDetailRows.Where(x => listSeqNoItems.Contains(x.SeqNo)).ToList();
+                var uniqueIraiCds = kensaInfDetailRows
+                       .SelectMany(item => item.DynamicArray)
+                       .Where(x=> IsNumeric(x.ResultVal))
+                       .Select(subItem => subItem.IraiCd)
+                       .Where(iraiCd => iraiCd != 0)
+                       .Distinct().ToList();
+                
+                // Filter col by list Iraicd 
+                kensaInfDetailCol = kensaInfDetailCol.Where(x => uniqueIraiCds.Contains(x.IraiCd)).ToList();
+
+                int index = 0;
+                foreach (var item in kensaInfDetailCol)
+                {
+                    item.SetIndex(index);
+                    index++;
+                }
+
+                // pagging
+                totalCol = kensaInfDetailCol.Count();
+                if (iraiCdStart > 0)
+                {
+                    int currentIndex = 0;
+                    foreach (var obj in kensaInfDetailCol)
+                    {
+                        if (obj.IraiCd == iraiCdStart)
+                        {
+                            break;
+                        }
+                        currentIndex++;
+                    }
+
+                    if (getGetPrevious)
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart).TakeLast(itemQuantity);
+                    }
+                    else
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1).Take(itemQuantity);
+                    }
+                }
+                else
+                {
+                    if (getGetPrevious)
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.TakeLast(itemQuantity);
+                    }
+                    else
+                    {
+                        kensaInfDetailCol = kensaInfDetailCol.Take(itemQuantity);
+                    }
+                }
+
+                // Filter  data dynamic array by list col pagging
+                var iraiCds = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
+
+                kensaInfDetailRows = kensaInfDetailRows.Select(item => new KensaInfDetailDataModel(
+                        item.KensaItemCd,
+                        item.KensaName,
+                        item.Unit,
+                        item.MaleStd,
+                        item.FemaleStd,
+                        item.KensaKana,
+                        item.SortNo,
+                        item.SeqNo,
+                        item.SeqParentNo,
+                        item.DynamicArray.Where(x=> iraiCds.Contains(x.IraiCd)).ToList()
+                    )).ToList();
             }
             #endregion
 

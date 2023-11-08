@@ -9,5 +9,6 @@
         public bool GetGetPrevious { get; set; } = false;
         public bool ShowAbnormalKbn { get; set; } = false;
         public int ItemQuantity { get; set; } = 0;
+        public List<long> ListSeqNoItems { get; set; } = new List<long>();
     }
 }

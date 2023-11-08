@@ -48,6 +48,11 @@
             public int TosekiKbn { get; private set; }
 
             public int Index { get; private set; }
+
+            public void SetIndex(int newIndex)
+            {
+                Index = newIndex;
+            }
         }
 
         public class KensaInfDetailDataModel
