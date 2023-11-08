@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false)
+        public IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false)
         {
             var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).Select(s =>
                     new SetGenerationMstModel(
@@ -187,7 +187,7 @@ namespace Infrastructure.Repositories
         public AddSetSendaiModel? AddSetSendaiGeneration(int userId, int hpId, int startDate)
         {
             // get SendaiGeneration newest
-            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            var itemNewest = NoTrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
             // Save item Add
             var itemAdd = new SetGenerationMst();
             itemAdd.StartDate = startDate;
@@ -201,7 +201,6 @@ namespace Infrastructure.Repositories
             itemAdd.UpdateMachine = "SmartKarte";
             TrackingDataContext.SetGenerationMsts.Add(itemAdd);
             var checkAdd = TrackingDataContext.SaveChanges();
-            ReloadCache(hpId);
             if (checkAdd == 0)
             {
                 return null;
@@ -209,7 +208,7 @@ namespace Infrastructure.Repositories
             else
             {
                 // Clone Generation
-                var itemAddGet = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).FirstOrDefault();
+                var itemAddGet = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
                 if (itemNewest != null && itemAddGet != null)
                 {
                     return new AddSetSendaiModel(itemAddGet.GenerationId, itemNewest.GenerationId);
@@ -602,7 +601,7 @@ namespace Infrastructure.Repositories
         public AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
         {
             // get SendaiGeneration newest
-            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(x => x.GenerationId).FirstOrDefault();
             if (itemNewest != null && itemNewest.GenerationId != restoreGenerationId)
             {
                 // delete newest

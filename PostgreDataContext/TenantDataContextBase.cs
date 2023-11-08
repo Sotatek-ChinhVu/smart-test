@@ -444,6 +444,7 @@ namespace PostgreDataContext
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
             modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
+            modelBuilder.Entity<UserMst>().HasIndex(u => new {u.UserId}).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
