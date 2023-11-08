@@ -695,8 +695,10 @@ namespace Infrastructure.Repositories
                 .Select(x => x);
             var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
 
-            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo));
-
+            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo)).
+                GroupBy(item => item.KensaItemCd)
+                                .Select(group => group.First())
+                                .ToList();
 
             var groupRowData = data
                 .GroupBy(x => new { x.KensaItemCd })
