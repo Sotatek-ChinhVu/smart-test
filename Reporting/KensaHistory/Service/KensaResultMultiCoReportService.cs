@@ -282,7 +282,6 @@ namespace Reporting.KensaHistory.Service
             {
                 iraiStart = date.First();
                 iraiEnd = date.Last();
-                //totalPage = (kensaInfDetails.Count / 20) + 1 + (date.Count / 9);
             }
 
             return kensaInfDetails.Count > 0;
