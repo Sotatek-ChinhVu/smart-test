@@ -595,7 +595,7 @@ namespace Infrastructure.Repositories
         public AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
         {
             // get SendaiGeneration newest
-            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(x => x.GenerationId).FirstOrDefault();
             if (itemNewest != null && itemNewest.GenerationId != restoreGenerationId)
             {
                 // delete newest
