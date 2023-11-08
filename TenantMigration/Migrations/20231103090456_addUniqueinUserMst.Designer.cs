@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231103090456_addUniqueinUserMst")]
+    partial class addUniqueinUserMst
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -7168,10 +7171,6 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
 
-                    b.Property<int>("ExcKouiKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("EXC_KOUI_KBN");
-
                     b.Property<string>("KouiGrpName")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
@@ -7190,10 +7189,6 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("KOUI_NAME");
-
-                    b.Property<int>("OyaKouiKbnId")
-                        .HasColumnType("integer")
-                        .HasColumnName("OYA_KOUI_KBN_ID");
 
                     b.Property<int>("SortNo")
                         .HasColumnType("integer")
