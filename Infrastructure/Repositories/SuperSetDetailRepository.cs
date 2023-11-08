@@ -57,11 +57,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var allSetByomeis = NoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         var allKarteFiles = NoTrackingDataContext.SetKarteImgInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd)).ToList();
         List<(int setCd, long seqNo)> lastSeqNos = new();
-        foreach (var karte in allKarteFiles)
+        foreach (var setCdItem in setCds)
         {
-            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == karte.SetCd).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
-            lastSeqNos.Add(new(setCd, lastSeq));
+            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == setCdItem).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
+            if (lastSeq > 0)
+            {
+                lastSeqNos.Add(new(setCdItem, lastSeq));
+            }
         }
+        lastSeqNos = lastSeqNos.Distinct().ToList();
 
         List<string> codeLists = new();
         foreach (var item in allSetByomeis)
@@ -167,7 +171,6 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     private List<SetFileInfModel> ExcuGetKarteFileForEachDetailItem(int setCd, object karteFileObj, List<SetKarteImgInf> allKarteFiles, List<(int setCd, long seqNo)> lastSeqNos)
     {
-
         long lastSeqNo = lastSeqNos.FirstOrDefault(s => s.setCd == setCd).seqNo;
         var result = allKarteFiles.Where(item => item.SetCd == setCd && item.SeqNo == lastSeqNo && item.FileName != string.Empty).OrderBy(item => item.Position)
                        .Select(item => new SetFileInfModel(item.KarteKbn > 0, item.FileName ?? string.Empty)).ToList();
@@ -275,7 +278,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-    
+
         return codeLists?.Where(c => c != string.Empty).Distinct().ToList() ?? new List<string>();
     }
 
