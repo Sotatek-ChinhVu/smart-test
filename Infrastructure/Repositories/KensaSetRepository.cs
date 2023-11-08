@@ -1,5 +1,4 @@
-﻿using Amazon.S3.Model;
-using Domain.Models.KensaCmtMst.cs;
+﻿using Domain.Models.KensaCmtMst.cs;
 using Domain.Models.KensaInfDetail;
 using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
@@ -11,7 +10,6 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Drawing;
 using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Infrastructure.Repositories
@@ -378,8 +376,12 @@ namespace Infrastructure.Repositories
                             if (kensaInf == null)
                             {
                                 transaction.Rollback();
+                                successed = false;
                             }
-                            iraiDate = kensaInf.IraiDate;
+                            else
+                            {
+                                iraiDate = kensaInf.IraiDate;
+                            }
                         }
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
@@ -476,6 +478,8 @@ namespace Infrastructure.Repositories
                             if (kensaInfDetail == null)
                             {
                                 transaction.Rollback();
+                                successed = false;
+                                break;
                             }
 
                             // Delete children
@@ -498,6 +502,21 @@ namespace Infrastructure.Repositories
                             kensaInfDetail.IsDeleted = item.IsDeleted;
                             kensaInfDetail.UpdateId = userId;
                             kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
+                        }
+
+                        // Delete all item kensaInfDetail
+                        if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
+                        {
+                            var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
+                            if (kensaInf == null)
+                            {
+                                transaction.Rollback();
+                                successed = false;
+                            }
+                            else
+                            {
+                                kensaInf.IsDeleted = DeleteTypes.Deleted;
+                            }
                         }
 
                         TrackingDataContext.SaveChanges();
@@ -637,7 +656,7 @@ namespace Infrastructure.Repositories
 
 
             var totalCol = kensaInfDetailCol.Count();
-            
+
             if (listSeqNoItems == null || listSeqNoItems.Count == 0)
             {
                 // Get list with start date
@@ -836,11 +855,11 @@ namespace Infrastructure.Repositories
                 kensaInfDetailRows = kensaInfDetailRows.Where(x => listSeqNoItems.Contains(x.SeqNo)).ToList();
                 var uniqueIraiCds = kensaInfDetailRows
                        .SelectMany(item => item.DynamicArray)
-                       .Where(x=> IsNumeric(x.ResultVal))
+                       .Where(x => IsNumeric(x.ResultVal))
                        .Select(subItem => subItem.IraiCd)
                        .Where(iraiCd => iraiCd != 0)
                        .Distinct().ToList();
-                
+
                 // Filter col by list Iraicd 
                 kensaInfDetailCol = kensaInfDetailCol.Where(x => uniqueIraiCds.Contains(x.IraiCd)).ToList();
 
@@ -899,7 +918,7 @@ namespace Infrastructure.Repositories
                         item.SortNo,
                         item.SeqNo,
                         item.SeqParentNo,
-                        item.DynamicArray.Where(x=> iraiCds.Contains(x.IraiCd)).ToList()
+                        item.DynamicArray.Where(x => iraiCds.Contains(x.IraiCd)).ToList()
                     )).ToList();
             }
             #endregion
