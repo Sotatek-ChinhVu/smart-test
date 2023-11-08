@@ -390,12 +390,8 @@ namespace Infrastructure.Repositories
                             if (kensaInf == null)
                             {
                                 transaction.Rollback();
-                                successed = false;
                             }
-                            else
-                            {
-                                iraiDate = kensaInf.IraiDate;
-                            }
+                            iraiDate = kensaInf.IraiDate;
                         }
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
@@ -492,8 +488,6 @@ namespace Infrastructure.Repositories
                             if (kensaInfDetail == null)
                             {
                                 transaction.Rollback();
-                                successed = false;
-                                break;
                             }
 
                             // Delete children
@@ -516,21 +510,6 @@ namespace Infrastructure.Repositories
                             kensaInfDetail.IsDeleted = item.IsDeleted;
                             kensaInfDetail.UpdateId = userId;
                             kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
-                        }
-
-                        // Delete all item kensaInfDetail
-                        if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
-                        {
-                            var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
-                            if (kensaInf == null)
-                            {
-                                transaction.Rollback();
-                                successed = false;
-                            }
-                            else
-                            {
-                                kensaInf.IsDeleted = DeleteTypes.Deleted;
-                            }
                         }
 
                         TrackingDataContext.SaveChanges();
@@ -622,8 +601,8 @@ namespace Infrastructure.Repositories
                             t1.AbnormalKbn ?? string.Empty,
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
-                            (t3.CenterCd != null && t3.CenterCd != t5.CenterCd) ? "不明" : t5.CMT ?? string.Empty,
-                            (t3.CenterCd != null && t3.CenterCd != t6.CenterCd) ? "不明" : t6.CMT ?? string.Empty,
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty ) : "不明",
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty ) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
@@ -845,7 +824,7 @@ namespace Infrastructure.Repositories
             else
             {
 
-                kensaInfDetailData = (from t1 in kensaInfDetailData
+                kensaInfDetailRows = (from t1 in kensaInfDetailData
                                       join t2 in kensaSetDetailById on t1.KensaItemCd equals t2.KensaItemCd
                                       select new
                                       {
