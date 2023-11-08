@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231103074911_addTableSinrekiFilterMstKoui")]
+    partial class addTableSinrekiFilterMstKoui
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25815,10 +25818,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("USER_ID");
 
                     b.HasKey("Id", "HpId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("USER_MST");
                 });

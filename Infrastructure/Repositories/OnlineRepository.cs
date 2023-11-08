@@ -652,7 +652,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
     public (bool, List<ReceptionRowModel> receptions) UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult)
     {
-        var receptionInfos = new List<ReceptionRowModel>();
+        var raiinInfsChange = new List<RaiinInf>();
 
         listResResult = listResResult.Where(u => u.PtId > 0).ToList();
         if (listResResult.Count == 0)
@@ -717,22 +717,25 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 raiinInf.UpdateId = userId;
             }
 
-            var saveChange = TrackingDataContext.SaveChanges();
-
-            if (saveChange > 0)
+            foreach (var raiinInf in raiinInfToUpdate.raiinInfs)
             {
-                foreach (var raiinInf in raiinInfToUpdate.raiinInfs)
-                {
-                    receptionInfos.AddRange(_receptionRepository.GetList(raiinInf.HpId, raiinInf.SinDate, CommonConstants.InvalidId, raiinInf.PtId, isDeleted: 0));
-                }
-            }
-            else
-            {
-                return (false, receptionInfos);
+                raiinInfsChange.Add(raiinInf);
             }
         }
 
-        return (TrackingDataContext.SaveChanges() > 0, receptionInfos);
+        var saveChanges = TrackingDataContext.SaveChanges() > 0;
+        return (saveChanges, saveChanges ? GetListRaiinInf(raiinInfsChange) : new());
+    }
+
+    private List<ReceptionRowModel> GetListRaiinInf(List<RaiinInf> raiinInfs)
+    {
+        var result = new List<ReceptionRowModel>();
+        foreach (var raiinInf in raiinInfs)
+        {
+            result.AddRange(_receptionRepository.GetList(raiinInf.HpId, raiinInf.SinDate, CommonConstants.InvalidId, raiinInf.PtId, isDeleted: 0));
+        }
+
+        return result;
     }
 
     private (List<RaiinInf>? raiinInfs, long referenceNo) GetRaiinInfToUpdateByPtId(int hpId, long ptId, int sinDate)

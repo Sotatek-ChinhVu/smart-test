@@ -489,6 +489,8 @@ namespace Reporting.KensaHistory.DB
                         item.MaleStd,
                         item.KensaKana,
                         item.SortNo,
+                        0,
+                        0,
                         dynamicArray
                     ));
                 }
@@ -504,6 +506,8 @@ namespace Reporting.KensaHistory.DB
                     item.FemaleStd,
                     item.KensaKana,
                     item.SortNo,
+                    0,
+                    0,
                     new List<ListKensaInfDetailItemModel> { item }
                 ));
             }
