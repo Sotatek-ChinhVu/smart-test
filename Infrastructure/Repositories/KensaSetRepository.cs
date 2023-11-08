@@ -1,5 +1,4 @@
-﻿using Amazon.S3.Model;
-using Domain.Models.KensaCmtMst.cs;
+﻿using Domain.Models.KensaCmtMst.cs;
 using Domain.Models.KensaInfDetail;
 using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
@@ -11,7 +10,6 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Drawing;
 using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Infrastructure.Repositories
@@ -306,7 +304,7 @@ namespace Infrastructure.Repositories
             return res;
         }
 
-        public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyWord)
+        public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, int iraiCd, string keyWord)
         {
             string bigKeyWord = keyWord.ToUpper()
                                    .Replace("ｧ", "ｱ")
@@ -319,18 +317,32 @@ namespace Infrastructure.Repositories
                                    .Replace("ｮ", "ﾖ")
                                    .Replace("ｯ", "ﾂ");
 
+            string? centerCd = null;
+            if (iraiCd > 0)
+            {
+                var kensaInf = NoTrackingDataContext.KensaInfs.FirstOrDefault(x => x.IraiCd == iraiCd && x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+                if (kensaInf == null)
+                {
+                    return new List<KensaCmtMstModel>();
+                }
+                else
+                {
+                    centerCd = kensaInf.CenterCd;
+                }
+            }
             // Get kensa in KensaMst
             var kensaInKensaMst = from t1 in NoTrackingDataContext.KensaCmtMsts
-                                  join t2 in NoTrackingDataContext.KensaCenterMsts
-                                  on t1.CenterCd equals t2.CenterCd into leftJoinT2
-                                  from t2 in leftJoinT2.DefaultIfEmpty()
-                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyWord)))
+                                  join t3 in NoTrackingDataContext.KensaCenterMsts
+                                  on t1.CenterCd equals t3.CenterCd into leftJoinT3
+                                  from t3 in leftJoinT3.DefaultIfEmpty()
+                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CenterCd == centerCd || t1.CenterCd == null)
+                                  && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyWord)))
                                   where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd).Min(m => m.CmtSeqNo)
                                   select new KensaCmtMstModel(
                                       t1.CmtCd,
                                       t1.CMT ?? string.Empty,
                                       t1.CmtSeqNo,
-                                      t2.CenterName ?? string.Empty
+                                      t3.CenterName ?? string.Empty
                                   );
             return kensaInKensaMst.ToList();
         }
@@ -637,7 +649,7 @@ namespace Infrastructure.Repositories
 
 
             var totalCol = kensaInfDetailCol.Count();
-            
+
             if (listSeqNoItems == null || listSeqNoItems.Count == 0)
             {
                 // Get list with start date
@@ -836,11 +848,11 @@ namespace Infrastructure.Repositories
                 kensaInfDetailRows = kensaInfDetailRows.Where(x => listSeqNoItems.Contains(x.SeqNo)).ToList();
                 var uniqueIraiCds = kensaInfDetailRows
                        .SelectMany(item => item.DynamicArray)
-                       .Where(x=> IsNumeric(x.ResultVal))
+                       .Where(x => IsNumeric(x.ResultVal))
                        .Select(subItem => subItem.IraiCd)
                        .Where(iraiCd => iraiCd != 0)
                        .Distinct().ToList();
-                
+
                 // Filter col by list Iraicd 
                 kensaInfDetailCol = kensaInfDetailCol.Where(x => uniqueIraiCds.Contains(x.IraiCd)).ToList();
 
@@ -899,7 +911,7 @@ namespace Infrastructure.Repositories
                         item.SortNo,
                         item.SeqNo,
                         item.SeqParentNo,
-                        item.DynamicArray.Where(x=> iraiCds.Contains(x.IraiCd)).ToList()
+                        item.DynamicArray.Where(x => iraiCds.Contains(x.IraiCd)).ToList()
                     )).ToList();
             }
             #endregion

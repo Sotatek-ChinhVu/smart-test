@@ -11,7 +11,7 @@ namespace Domain.Models.KensaSet
 
         ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity, List<long>? listSeqNoItems = null, int startDate = 0);
         bool UpdateKensaInfDetail(int hpId, int userId, int ptId, long iraiCd, int iraiDate, List<KensaInfDetailUpdateModel> kensaInfDetails);
-        List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyword);
+        List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, int iraiCd, string keyword);
         bool UpdateKensaSet(int hpId, int userId, int setId, string setName, int sortNo, int isDeleted, List<KensaSetDetailModel> kensaSetDetails);
         List<KensaSetModel> GetListKensaSet(int hpId);
         List<KensaSetDetailModel> GetListKensaSetDetail(int hpId, int setId);
