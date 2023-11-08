@@ -128,7 +128,7 @@ namespace Interactor.SetSendaiGeneration
                         // Update faild. Stop process
                         _messenger.Send(new ProcessSetSendaiGenerationStatus($"Add MstBackup Faild!", 0, false, false));
                     }
-                    _setGenerationMstRepository.ReloadCache(inputData.HpId);
+                    _setGenerationMstRepository.ReloadCache(inputData.HpId, true);
                     return new AddSetSendaiGenerationOutputData(true, AddSetSendaiGenerationStatus.Success);
                 }
                 return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);

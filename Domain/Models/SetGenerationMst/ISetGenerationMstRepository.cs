@@ -39,6 +39,6 @@ namespace Domain.Models.SetGenerationMst
 
         List<ListSetGenerationMstModel> GetAll(int hpId);
 
-        IEnumerable<SetGenerationMstModel> ReloadCache(int hpId);
+        IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false);
     }
 }

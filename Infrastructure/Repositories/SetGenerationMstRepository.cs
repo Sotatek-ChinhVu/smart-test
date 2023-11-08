@@ -5,6 +5,7 @@ using Helper.Common;
 using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
@@ -15,6 +16,7 @@ namespace Infrastructure.Repositories
     {
         private readonly StackExchange.Redis.IDatabase _cache;
         private readonly string key;
+        private readonly string keySetKbn;
         private readonly IConfiguration _configuration;
         public SetGenerationMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
@@ -22,6 +24,7 @@ namespace Infrastructure.Repositories
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
+            keySetKbn = tenantProvider.GetClinicID() + "-" + nameof(SetKbnMstRepository) + "SetKbn";
         }
 
         public void GetRedis()
@@ -33,7 +36,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public IEnumerable<SetGenerationMstModel> ReloadCache(int hpId)
+        public IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false)
         {
             var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).Select(s =>
                     new SetGenerationMstModel(
@@ -46,7 +49,10 @@ namespace Infrastructure.Repositories
 
             var json = JsonSerializer.Serialize(setGenerationMstList);
             _cache.StringSet(key, json);
-
+            if (flag)
+            {
+                _cache.KeyDelete(keySetKbn);
+            }
             return setGenerationMstList;
         }
 
@@ -167,6 +173,7 @@ namespace Infrastructure.Repositories
                 {
                     TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
                     ReloadCache(hpId);
+                    _cache.KeyDelete(keySetKbn);
                     return TrackingDataContext.SaveChanges() > 0;
                 }
                 return false;
@@ -684,6 +691,7 @@ namespace Infrastructure.Repositories
                     TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
                     TrackingDataContext.SaveChanges();
                     ReloadCache(hpId);
+                    _cache.KeyDelete(keySetKbn);
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
