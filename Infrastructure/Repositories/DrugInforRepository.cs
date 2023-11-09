@@ -1,7 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.DrugInfor;
-using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -174,6 +174,60 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
             result.Add(mstModel);
         }
         return result.OrderBy(item => item.SortNo).ToList();
+    }
+
+    public SinrekiFilterMstModel GetSinrekiFilterMst(int hpId, int grpCd)
+    {
+        var sinrekiMst = NoTrackingDataContext.SinrekiFilterMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                                        && item.IsDeleted == 0
+                                                                                        && item.GrpCd == grpCd);
+        if (sinrekiMst == null)
+        {
+            return new();
+        }
+        var detailList = NoTrackingDataContext.SinrekiFilterMstDetails.Where(item => item.HpId == hpId
+                                                                                     && item.IsDeleted == 0
+                                                                                     && item.GrpCd == grpCd)
+                                                                      .ToList();
+        var itemCdList = detailList.Select(item => item.ItemCd).Distinct().ToList();
+        var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                     && item.IsDeleted == 0
+                                                                     && item.ItemCd != null
+                                                                     && itemCdList.Contains(item.ItemCd))
+                                                      .GroupBy(item => item.ItemCd)
+                                                      .Select(item => item.OrderByDescending(t => t.EndDate).FirstOrDefault())
+                                                      .ToList();
+        var kouiList = NoTrackingDataContext.SinrekiFilterMstKouis.Where(item => item.HpId == hpId
+                                                                                 && item.GrpCd == grpCd
+                                                                                 && item.IsDeleted == 0)
+                                                                  .ToList();
+
+        var sinrekiFilterMstKouiList = kouiList.Where(item => item.GrpCd == sinrekiMst.GrpCd)
+                                               .Select(item => new SinrekiFilterMstKouiModel(
+                                                                   item.GrpCd,
+                                                                   item.SeqNo,
+                                                                   item.KouiKbnId,
+                                                                   item.IsDeleted == 0))
+                                               .ToList();
+
+        var sinrekiFilterMstDetailList = (from detail in detailList.Where(item => item.GrpCd == sinrekiMst.GrpCd)
+                                          join ten in tenMstList on detail.ItemCd equals ten.ItemCd
+                                          select new SinrekiFilterMstDetailModel(
+                                                     detail.Id,
+                                                     detail.GrpCd,
+                                                     detail.ItemCd ?? string.Empty,
+                                                     ten.Name ?? string.Empty,
+                                                     detail.SortNo,
+                                                     detail.IsExclude == 1
+                                          )).OrderBy(item => item.SortNo)
+                                          .ToList();
+
+        return new SinrekiFilterMstModel(
+                   sinrekiMst.GrpCd,
+                   sinrekiMst.Name ?? string.Empty,
+                   sinrekiMst.SortNo,
+                   sinrekiFilterMstKouiList,
+                   sinrekiFilterMstDetailList);
     }
 
     public bool SaveSinrekiFilterMstList(int hpId, int userId, List<SinrekiFilterMstModel> sinrekiFilterMstList)
@@ -350,6 +404,90 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
         detailIdList = detailIdList.Distinct().ToList();
         return NoTrackingDataContext.SinrekiFilterMstDetails.Count(item => item.HpId == hpId && item.IsDeleted == 0 && detailIdList.Contains(item.Id)) == detailIdList.Count;
     }
+
+    public List<DrugUsageHistoryModel> GetDrugUsageHistoryList(int hpId, long ptId)
+    {
+        var odrInfRepos = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                      && item.PtId == ptId
+                                                                      && item.IsDeleted == 0)
+                                                       .ToList();
+        var rpNoList = odrInfRepos.Select(item => item.RpNo).Distinct().ToList();
+        var rpEdaNoList = odrInfRepos.Select(item => item.RpEdaNo).Distinct().ToList();
+        var raiinNoList = odrInfRepos.Select(item => item.RaiinNo).Distinct().ToList();
+        var odrInfDetailRepos = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.ItemCd != null
+                                                                                  && item.ItemCd != ""
+                                                                                  && rpNoList.Contains(item.RpNo)
+                                                                                  && rpEdaNoList.Contains(item.RpEdaNo)
+                                                                                  && raiinNoList.Contains(item.RaiinNo))
+                                                                   .ToList();
+
+        var odrInfDetailUsage = odrInfDetailRepos.Where(item => item.YohoKbn > 0).ToList();
+
+        var odrInfDetailNotUsage = odrInfDetailRepos.Where(item => item.YohoKbn == 0 &&
+                                                                   item.ItemCd != ItemCdConst.ChusyaJikocyu)
+                                                    .ToList();
+
+        var queryUsage = (from odrInf in odrInfRepos
+                          join odrInfDetail in odrInfDetailUsage on
+                              new { odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
+                              new { odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
+                          select new
+                          {
+                              OdrInf = odrInf,
+                              odrInfDetail.SinKouiKbn
+                          }).ToList();
+
+        var query = from odrInf in odrInfRepos
+                    join notUsage in odrInfDetailNotUsage on
+                        new { odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
+                        new { notUsage.RaiinNo, notUsage.RpNo, notUsage.RpEdaNo }
+                    join usage in queryUsage on
+                        new { odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
+                        new { usage.OdrInf.RaiinNo, usage.OdrInf.RpNo, usage.OdrInf.RpEdaNo } into usageList
+                    from usageItem in usageList.DefaultIfEmpty()
+                    select new
+                    {
+                        OdrInf = odrInf,
+                        SinKouiKbn = usageItem == null ? odrInf.OdrKouiKbn : usageItem.SinKouiKbn,
+                        OdrInfDetail = notUsage,
+                    };
+
+        return query.Select(item => new DrugUsageHistoryModel(
+                                        item.SinKouiKbn,
+                                        item.OdrInf.SinDate,
+                                        item.OdrInf.RaiinNo,
+                                        item.OdrInf.RpNo,
+                                        item.OdrInf.RpEdaNo,
+                                        item.OdrInf.OdrKouiKbn,
+                                        item.OdrInf.DaysCnt,
+                                        item.OdrInfDetail.RowNo,
+                                        item.OdrInfDetail.SinKouiKbn,
+                                        item.OdrInfDetail.ItemCd ?? string.Empty,
+                                        item.OdrInfDetail.ItemName ?? string.Empty,
+                                        item.OdrInfDetail.Suryo,
+                                        item.OdrInfDetail.UnitSBT,
+                                        item.OdrInfDetail.UnitName ?? string.Empty))
+            .Where(item => !(item.ItemCd == ItemCdConst.JikanKihon && item.Quantity == JikanConst.JikanNai ||
+                             item.ItemCd == ItemCdConst.SyosaiKihon && (item.Quantity == SyosaiConst.None || item.Quantity == SyosaiConst.Jihi)))
+            .ToList();
+    }
+
+    public List<KouiKbnMstModel> GetKouiKbnMstList(int hpId)
+    {
+        var result = NoTrackingDataContext.KouiKbnMsts.Where(item => item.HpId == hpId)
+                                                      .Select(item => new KouiKbnMstModel(
+                                                                          item.KouiKbnId,
+                                                                          item.KouiKbn1,
+                                                                          item.KouiKbn2,
+                                                                          item.KouiName ?? string.Empty,
+                                                                          item.ExcKouiKbn,
+                                                                          item.OyaKouiKbnId))
+                                                      .ToList();
+        return result;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

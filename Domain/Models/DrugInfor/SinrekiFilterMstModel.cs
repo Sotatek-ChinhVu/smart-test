@@ -22,6 +22,13 @@ public class SinrekiFilterMstModel
         IsDeleted = false;
     }
 
+    public SinrekiFilterMstModel()
+    {
+        Name = string.Empty;
+        SinrekiFilterMstKouiList = new();
+        SinrekiFilterMstDetailList = new();
+    }
+
     public int GrpCd { get; private set; }
 
     public string Name { get; private set; }

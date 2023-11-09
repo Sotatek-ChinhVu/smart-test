@@ -8,6 +8,8 @@ public interface IDrugInforRepository : IRepositoryBase
 
     List<SinrekiFilterMstModel> GetSinrekiFilterMstList(int hpId);
 
+    SinrekiFilterMstModel GetSinrekiFilterMst(int hpId, int grpCd);
+
     bool SaveSinrekiFilterMstList(int hpId, int userId, List<SinrekiFilterMstModel> sinrekiFilterMstList);
 
     bool CheckExistGrpCd(int hpId, List<int> grpCdList);
@@ -17,4 +19,8 @@ public interface IDrugInforRepository : IRepositoryBase
     bool CheckExistSinrekiFilterMstKoui(int hpId, List<long> kouiSeqNoList);
 
     bool CheckExistSinrekiFilterMstDetail(int hpId, List<long> detailIdList);
+
+    List<DrugUsageHistoryModel> GetDrugUsageHistoryList(int hpId, long ptId);
+
+    List<KouiKbnMstModel> GetKouiKbnMstList(int hpId);
 }
