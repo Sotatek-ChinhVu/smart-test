@@ -525,7 +525,7 @@ namespace Infrastructure.Repositories
             return successed;
         }
 
-        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity, List<long>? listSeqNoItems, int startDate)
+        public ListKensaInfDetailModel GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int iraiCd, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int itemQuantity, List<long> listSeqNoItems, int startDate, int endDate)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
 
@@ -566,6 +566,14 @@ namespace Infrastructure.Repositories
             {
                 kensaInfDetails = kensaInfDetails.Where(x => x.IraiCd == iraiCd);
             }
+            if (startDate > 0)
+            {
+                kensaInfDetails = kensaInfDetails.Where(item => item.IraiDate >= startDate);
+            }
+            if (endDate > 0)
+            {
+                kensaInfDetails = kensaInfDetails.Where(item => item.IraiDate <= endDate);
+            }
             var data = (from t1 in kensaInfDetails
                         join t2 in NoTrackingDataContext.KensaMsts
                          on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
@@ -601,8 +609,8 @@ namespace Infrastructure.Repositories
                             t1.AbnormalKbn ?? string.Empty,
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
-                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty ) : "不明",
-                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty ) : "不明",
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
@@ -650,7 +658,7 @@ namespace Infrastructure.Repositories
 
             var totalCol = kensaInfDetailCol.Count();
 
-            if (listSeqNoItems == null || listSeqNoItems.Count == 0)
+            if (listSeqNoItems.Any())
             {
                 // Get list with start date
                 if (startDate > 0)
@@ -757,7 +765,7 @@ namespace Infrastructure.Repositories
             }
 
             // Sort row by user config
-            var kensaInfDetailRows = new List<KensaInfDetailDataModel>();
+            List<KensaInfDetailDataModel> kensaInfDetailRows;
             if (setId == 0)
             {
                 var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
@@ -779,7 +787,7 @@ namespace Infrastructure.Repositories
                     var item = kensaInfDetailRows[i];
                     if (childrenItems.TryGetValue(item.SeqNo, out var childrens))
                     {
-                        if (childrens.Count() > 1)
+                        if (childrens.Count > 1)
                         {
                             childrens = SortRow(childrens);
                         }
