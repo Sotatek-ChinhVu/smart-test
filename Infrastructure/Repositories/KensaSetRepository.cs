@@ -764,10 +764,11 @@ namespace Infrastructure.Repositories
                 var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
 
                 // Get all parent item
-                kensaInfDetailRows = kensaInfDetailData.Where(x => x.SeqParentNo == 0).ToList();
+                var litRowSeqNo = new HashSet<long>(kensaInfDetailData.Select(item => item.SeqNo));
+                kensaInfDetailRows = kensaInfDetailData.Where(x => !litRowSeqNo.Contains(x.SeqParentNo)).ToList();
                 kensaInfDetailRows = SortRow(kensaInfDetailRows);
                 // Children item
-                var childrenItems = kensaInfDetailData.Where(x => x.SeqParentNo != 0).GroupBy(x => new { x.SeqParentNo })
+                var childrenItems = kensaInfDetailData.Where(x => litRowSeqNo.Contains(x.SeqParentNo)).GroupBy(x => new { x.SeqParentNo })
                 .ToDictionary(
                     group => group.Key.SeqParentNo,
                     group => group.ToList());
