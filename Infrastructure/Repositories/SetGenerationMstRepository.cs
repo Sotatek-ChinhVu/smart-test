@@ -159,7 +159,7 @@ namespace Infrastructure.Repositories
                 setGenrationCurrent.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setGenrationCurrent.CreateDate);
                 ListDataUpdate.Add(setGenrationCurrent);
                 // Get Item Above and Update
-                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate > setGenrationCurrent.StartDate).OrderBy(x => x.StartDate).FirstOrDefault();
+                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate >= setGenrationCurrent.StartDate && x.GenerationId > setGenrationCurrent.GenerationId).OrderBy(x => x.StartDate).ThenBy(x => x.GenerationId).FirstOrDefault();
                 if (itemAbove != null)
                 {
                     itemAbove.StartDate = setGenrationCurrent.StartDate;
@@ -335,7 +335,7 @@ namespace Infrastructure.Repositories
 
         public bool SaveCloneKbnMst(int targetGenerationId, int sourceGenerationId, int hpId, int userId)
         {
-            var setKbnMstSource = TrackingDataContext.SetKbnMsts.Where(x =>
+            var setKbnMstSource = NoTrackingDataContext.SetKbnMsts.Where(x =>
                     x.HpId == hpId &&
                     x.GenerationId == sourceGenerationId).ToList();
             //setKbnMst
@@ -369,7 +369,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var setByomeisSource = TrackingDataContext.SetByomei.Where(setByomei =>
+                var setByomeisSource = NoTrackingDataContext.SetByomei.Where(setByomei =>
                 setByomei.HpId == hpId && listMstDict.Contains(setByomei.SetCd))
                 .ToList();
 
@@ -408,7 +408,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var setKarteInfsSource = TrackingDataContext.SetKarteInf.Where(setKarteInf =>
+                var setKarteInfsSource = NoTrackingDataContext.SetKarteInf.Where(setKarteInf =>
                 setKarteInf.HpId == hpId && listMstDict.Contains(setKarteInf.SetCd))
                 .ToList();
 
@@ -448,7 +448,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var setKarteImgInfsSource = TrackingDataContext.SetKarteImgInf.Where(setKarteImgInf =>
+                var setKarteImgInfsSource = NoTrackingDataContext.SetKarteImgInf.Where(setKarteImgInf =>
                  setKarteImgInf.HpId == hpId && listMstDict.Contains(setKarteImgInf.SetCd))
                  .ToList();
 
@@ -486,7 +486,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var setOdrInfsSource = TrackingDataContext.SetOdrInf.Where(setOdrInf =>
+                var setOdrInfsSource = NoTrackingDataContext.SetOdrInf.Where(setOdrInf =>
                  setOdrInf.HpId == hpId && listMstDict.Contains(setOdrInf.SetCd))
                  .ToList();
 
@@ -528,7 +528,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var setOdrInfDetailsSource = TrackingDataContext.SetOdrInfDetail.Where(setOdrInfDetail =>
+                var setOdrInfDetailsSource = NoTrackingDataContext.SetOdrInfDetail.Where(setOdrInfDetail =>
                 setOdrInfDetail.HpId == hpId && listMstDict.Contains(setOdrInfDetail.SetCd))
                 .ToList();
 
@@ -565,7 +565,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var setOdrInfCmtSource = TrackingDataContext.SetOdrInfCmt.Where(setOdrInfCmt =>
+                var setOdrInfCmtSource = NoTrackingDataContext.SetOdrInfCmt.Where(setOdrInfCmt =>
                 setOdrInfCmt.HpId == hpId && listMstDict.Contains(setOdrInfCmt.SetCd))
                 .ToList();
 
@@ -686,12 +686,13 @@ namespace Infrastructure.Repositories
                         setOdrInf.UpdateId = userId;
                         setOdrInf.UpdateMachine = "SmartKarte";
                     });
+                    TrackingDataContext.SetKbnMsts.RemoveRange(setKbnMstSource);
+                    TrackingDataContext.SetKarteInf.RemoveRange(targetSetKarteInfs);
                     TrackingDataContext.SetOdrInfCmt.RemoveRange(targetSetOdrInfCmtSource);
                     TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
                     TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
+                    TrackingDataContext.SetMsts.RemoveRange(targetSetMsts);
                     TrackingDataContext.SaveChanges();
-                    ReloadCache(hpId);
-                    _cache.KeyDelete(keySetKbn);
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
