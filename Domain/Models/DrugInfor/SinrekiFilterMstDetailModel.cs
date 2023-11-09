@@ -2,14 +2,29 @@
 
 public class SinrekiFilterMstDetailModel
 {
-    public SinrekiFilterMstDetailModel(int grpCd, string itemCd, string itemName, int sortNo, bool isExclude)
+    public SinrekiFilterMstDetailModel(long id, int grpCd, string itemCd, string itemName, int sortNo, bool isExclude, bool isDeleted)
     {
+        Id = id;
         GrpCd = grpCd;
         ItemCd = itemCd;
         ItemName = itemName;
         SortNo = sortNo;
         IsExclude = isExclude;
+        IsDeleted = isDeleted;
     }
+
+    public SinrekiFilterMstDetailModel(long id, int grpCd, string itemCd, string itemName, int sortNo, bool isExclude)
+    {
+        Id = id;
+        GrpCd = grpCd;
+        ItemCd = itemCd;
+        ItemName = itemName;
+        SortNo = sortNo;
+        IsExclude = isExclude;
+        IsDeleted = false;
+    }
+
+    public long Id { get; private set; }
 
     public int GrpCd { get; private set; }
 
@@ -20,4 +35,6 @@ public class SinrekiFilterMstDetailModel
     public int SortNo { get; private set; }
 
     public bool IsExclude { get; private set; }
+
+    public bool IsDeleted { get; private set; }
 }
