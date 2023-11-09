@@ -69,6 +69,7 @@ namespace Reporting.KensaHistory.DB
             IQueryable<KensaInfDetail> kensaInfDetails;
 
             var userConf = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002);
+            var b = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002).ToList();
             bool SortIraiDateAsc = true;
 
             if (userConf.Where(x => x.GrpItemCd == 0).FirstOrDefault()?.Val == 1)
@@ -299,7 +300,7 @@ namespace Reporting.KensaHistory.DB
             date.AddRange(kensaInfDetailCol.Select(x => x.IraiDate).ToList());
             date.Remove(0);
 
-            if (userConf.Where(x => x.GrpItemCd == 0).FirstOrDefault().Val == 0)
+            if (userConf?.Where(x => x.GrpItemCd == 0).FirstOrDefault()?.Val == 0 || userConf?.Where(x => x.GrpItemCd == 0).FirstOrDefault()?.Val == null)
             {
                 date = date.OrderBy(x => x).ToList();
             }

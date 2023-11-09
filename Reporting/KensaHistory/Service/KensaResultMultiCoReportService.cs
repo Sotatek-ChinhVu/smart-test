@@ -140,10 +140,10 @@ namespace Reporting.KensaHistory.Service
 
                 if (currentPage == 1)
                 {
-                    foreach (var item in date.OrderBy(x => x))
+                    foreach (var item in date)
                     {
                         listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
-                        date.Remove(item);
+                        //date.Remove(item);
                         colDate++;
                         if (colDate > maxColDate)
                         {
@@ -178,7 +178,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (kensaInfDetails.Count <= maxRow && date.Count == 0)
+                    if (kensaInfDetails.Count <= maxRow || date.Count == 0)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -206,10 +206,10 @@ namespace Reporting.KensaHistory.Service
 
                 int counts = kensaInfDetails.Count;
 
-                foreach (var item in date.OrderBy(x => x))
+                foreach (var item in date/*.OrderBy(x => x)*/)
                 {
                     listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
-                    date.Remove(item);
+                    //date.Remove(item);
                     colDate++;
                     if (colDate > maxColDate)
                     {
@@ -276,7 +276,7 @@ namespace Reporting.KensaHistory.Service
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
             kensaInfDetails = data.Item1;
             date = data.Item2;
-            date = date.OrderBy(x => x).ToList();
+            //date = date.OrderBy(x => x).ToList();
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)
             {
