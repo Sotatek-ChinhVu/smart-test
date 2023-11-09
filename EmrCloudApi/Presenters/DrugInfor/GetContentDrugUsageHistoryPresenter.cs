@@ -12,7 +12,7 @@ public class GetContentDrugUsageHistoryPresenter : IGetContentDrugUsageHistoryOu
 
     public void Complete(GetContentDrugUsageHistoryOutputData output)
     {
-        Result.Data = new GetContentDrugUsageHistoryResponse(output.DrugUsageHistory.Select(item => new DrugUsageHistoryContentDto(item)).ToList());
+        Result.Data = new GetContentDrugUsageHistoryResponse(output.DrugUsageHistory.Select(item => new DrugUsageHistoryGroupDto(item)).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

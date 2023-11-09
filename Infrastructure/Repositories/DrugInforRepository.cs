@@ -1,11 +1,9 @@
 ﻿using Domain.Constant;
 using Domain.Models.DrugInfor;
-using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -473,6 +471,20 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
             .Where(item => !(item.ItemCd == ItemCdConst.JikanKihon && item.Quantity == JikanConst.JikanNai ||
                              item.ItemCd == ItemCdConst.SyosaiKihon && (item.Quantity == SyosaiConst.None || item.Quantity == SyosaiConst.Jihi)))
             .ToList();
+    }
+
+    public List<KouiKbnMstModel> GetKouiKbnMstList(int hpId)
+    {
+        var result = NoTrackingDataContext.KouiKbnMsts.Where(item => item.HpId == hpId)
+                                                      .Select(item => new KouiKbnMstModel(
+                                                                          item.KouiKbnId,
+                                                                          item.KouiKbn1,
+                                                                          item.KouiKbn2,
+                                                                          item.KouiName ?? string.Empty,
+                                                                          item.ExcKouiKbn,
+                                                                          item.OyaKouiKbnId))
+                                                      .ToList();
+        return result;
     }
 
     public void ReleaseResource()

@@ -21,4 +21,6 @@ public interface IDrugInforRepository : IRepositoryBase
     bool CheckExistSinrekiFilterMstDetail(int hpId, List<long> detailIdList);
 
     List<DrugUsageHistoryModel> GetDrugUsageHistoryList(int hpId, long ptId);
+
+    List<KouiKbnMstModel> GetKouiKbnMstList(int hpId);
 }

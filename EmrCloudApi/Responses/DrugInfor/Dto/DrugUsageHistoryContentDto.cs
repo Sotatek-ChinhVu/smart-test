@@ -9,9 +9,7 @@ public class DrugUsageHistoryContentDto
         ItemName = model.ItemName;
         Quantity = model.Quantity;
         UnitName = model.UnitName;
-        KouiKbn = model.KouiKbn;
-        FromDate = model.FromDate;
-        ToDate = model.ToDate;
+        OdrKouiKbn = model.OdrKouiKbn;
         ListActionGraph = model.ListActionGraph;
         Tooltip = model.Tooltip;
     }
@@ -22,11 +20,7 @@ public class DrugUsageHistoryContentDto
 
     public string UnitName { get; private set; }
 
-    public int KouiKbn { get; private set; }
-
-    public int FromDate { get; private set; }
-
-    public int ToDate { get; private set; }
+    public int OdrKouiKbn { get; private set; }
 
     public List<ActionGraph> ListActionGraph { get; private set; }
 

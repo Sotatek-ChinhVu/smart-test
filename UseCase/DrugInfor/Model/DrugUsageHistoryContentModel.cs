@@ -2,14 +2,12 @@
 
 public class DrugUsageHistoryContentModel
 {
-    public DrugUsageHistoryContentModel(string itemName, string quantity, string unitName, int kouiKbn, int fromDate, int toDate, List<ActionGraph> listActionGraph)
+    public DrugUsageHistoryContentModel(string itemName, string quantity, string unitName, int odrKouiKbn, List<ActionGraph> listActionGraph)
     {
         ItemName = itemName;
         Quantity = quantity;
         UnitName = unitName;
-        KouiKbn = kouiKbn;
-        FromDate = fromDate;
-        ToDate = toDate;
+        OdrKouiKbn = odrKouiKbn;
         ListActionGraph = listActionGraph;
     }
 
@@ -19,11 +17,7 @@ public class DrugUsageHistoryContentModel
 
     public string UnitName { get; private set; }
 
-    public int KouiKbn { get; private set; }
-
-    public int FromDate { get; private set; }
-
-    public int ToDate { get; private set; }
+    public int OdrKouiKbn { get; private set; }
 
     public List<ActionGraph> ListActionGraph { get; private set; }
 

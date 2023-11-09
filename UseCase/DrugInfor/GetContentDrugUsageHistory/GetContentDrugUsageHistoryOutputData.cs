@@ -5,13 +5,13 @@ namespace UseCase.DrugInfor.GetContentDrugUsageHistory;
 
 public class GetContentDrugUsageHistoryOutputData : IOutputData
 {
-    public GetContentDrugUsageHistoryOutputData(List<DrugUsageHistoryContentModel> drugUsageHistory, GetContentDrugUsageHistoryStatus status)
+    public GetContentDrugUsageHistoryOutputData(List<DrugUsageHistoryGroupModel> drugUsageHistory, GetContentDrugUsageHistoryStatus status)
     {
         DrugUsageHistory = drugUsageHistory;
         Status = status;
     }
 
-    public List<DrugUsageHistoryContentModel> DrugUsageHistory { get; private set; }
+    public List<DrugUsageHistoryGroupModel> DrugUsageHistory { get; private set; }
 
     public GetContentDrugUsageHistoryStatus Status { get; private set; }
 }

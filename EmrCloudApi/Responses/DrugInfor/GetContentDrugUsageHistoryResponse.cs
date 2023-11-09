@@ -4,10 +4,10 @@ namespace EmrCloudApi.Responses.DrugInfor;
 
 public class GetContentDrugUsageHistoryResponse
 {
-    public GetContentDrugUsageHistoryResponse(List<DrugUsageHistoryContentDto> drugUsageHistory)
+    public GetContentDrugUsageHistoryResponse(List<DrugUsageHistoryGroupDto> drugUsageHistory)
     {
         DrugUsageHistory = drugUsageHistory;
     }
 
-    public List<DrugUsageHistoryContentDto> DrugUsageHistory { get; private set; }
+    public List<DrugUsageHistoryGroupDto> DrugUsageHistory { get; private set; }
 }
