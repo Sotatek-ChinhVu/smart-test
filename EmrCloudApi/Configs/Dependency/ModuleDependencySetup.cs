@@ -785,6 +785,9 @@ using Interactor.SmartKartePort;
 using Domain.Models.SmartKartePort;
 using UseCase.SmartKartePort.GetPort;
 using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
+using UseCase.DrugInfor.GetSinrekiFilterMstList;
+using UseCase.DrugInfor.SaveSinrekiFilterMstList;
+using UseCase.DrugInfor.GetContentDrugUsageHistory;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1865,6 +1868,11 @@ namespace EmrCloudApi.Configs.Dependency
             //SmartKartePort
             busBuilder.RegisterUseCase<UpdatePortInputData, UpdatePortInteractor>();
             busBuilder.RegisterUseCase<GetPortInputData, GetPortInteractor>();
+
+            //PrescriptionHistory
+            busBuilder.RegisterUseCase<GetSinrekiFilterMstListInputData, GetSinrekiFilterMstListInteractor>();
+            busBuilder.RegisterUseCase<SaveSinrekiFilterMstListInputData, SaveSinrekiFilterMstListInteractor>();
+            busBuilder.RegisterUseCase<GetContentDrugUsageHistoryInputData, GetContentDrugUsageHistoryInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

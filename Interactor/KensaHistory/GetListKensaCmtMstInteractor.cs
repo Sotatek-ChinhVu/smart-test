@@ -21,7 +21,7 @@ namespace Interactor.KensaHistory
             try
             {
                 var result = new List<KensaCmtMstModel>();
-                result = _kensaSetRepository.GetListKensaCmtMst(inputData.HpId, inputData.Keyword);
+                result = _kensaSetRepository.GetListKensaCmtMst(inputData.HpId, inputData.IraiCd, inputData.Keyword);
                 return new GetListKensaCmtMstOutputData(result, SearchTenMstItemStatus.Successed);
             }
             finally

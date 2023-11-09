@@ -57,16 +57,21 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var allSetByomeis = NoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         var allKarteFiles = NoTrackingDataContext.SetKarteImgInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd)).ToList();
         List<(int setCd, long seqNo)> lastSeqNos = new();
-        foreach (var karte in allKarteFiles)
+        foreach (var setCdItem in setCds)
         {
-            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == karte.SetCd).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
-            lastSeqNos.Add(new(setCd, lastSeq));
+            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == setCdItem).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
+            if (lastSeq > 0)
+            {
+                lastSeqNos.Add(new(setCdItem, lastSeq));
+            }
         }
+        lastSeqNos = lastSeqNos.Distinct().ToList();
 
         List<string> codeLists = new();
         foreach (var item in allSetByomeis)
         {
             codeLists.AddRange(GetCodeLists(item));
+            codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
         var allByomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
         var allKarteInfs = NoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.KarteKbn == 1 && k.IsDeleted == DeleteTypes.None).ToList();
@@ -135,8 +140,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         foreach (var item in currentSetByomeis)
         {
             currentCodeLists.AddRange(GetCodeLists(item));
+            currentCodeLists.Add(item.ByomeiCd ?? string.Empty);
         }
-
         var byomeiMstList = allByomeiMstList.Where(b => currentCodeLists.Contains(b.ByomeiCd)).ToList();
         lock (byomeiObj)
         {
@@ -166,7 +171,6 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     private List<SetFileInfModel> ExcuGetKarteFileForEachDetailItem(int setCd, object karteFileObj, List<SetKarteImgInf> allKarteFiles, List<(int setCd, long seqNo)> lastSeqNos)
     {
-
         long lastSeqNo = lastSeqNos.FirstOrDefault(s => s.setCd == setCd).seqNo;
         var result = allKarteFiles.Where(item => item.SetCd == setCd && item.SeqNo == lastSeqNo && item.FileName != string.Empty).OrderBy(item => item.Position)
                        .Select(item => new SetFileInfModel(item.KarteKbn > 0, item.FileName ?? string.Empty)).ToList();
@@ -199,6 +203,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         foreach (var item in listByomeis)
         {
             codeLists.AddRange(GetCodeLists(item));
+            codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
         var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
 
@@ -223,7 +228,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         if (codeLists != null)
         {
             isSuspected = codeLists.Any(c => c == "8002");
+            codeLists.Add(mst.ByomeiCd ?? string.Empty);
         }
+        codeLists = codeLists?.Distinct().ToList();
         var byomeiMst = byomeiMstList.FirstOrDefault(b => codeLists?.Contains(b.ByomeiCd) == true) ?? new();
         return new SetByomeiModel(
                 mst.Id,
@@ -246,9 +253,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     private List<string> GetCodeLists(SetByomei mst)
     {
+
         var codeLists = new List<string>()
             {
-                mst.ByomeiCd ?? string.Empty,
                 mst.SyusyokuCd1 ?? string.Empty,
                 mst.SyusyokuCd2 ?? string.Empty,
                 mst.SyusyokuCd3 ?? string.Empty,
@@ -271,7 +278,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-        return codeLists?.Where(c => c != string.Empty).ToList() ?? new List<string>();
+
+        return codeLists?.Where(c => c != string.Empty).Distinct().ToList() ?? new List<string>();
     }
 
     #endregion

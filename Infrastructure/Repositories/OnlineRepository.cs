@@ -4,6 +4,7 @@ using Domain.Models.Insurance;
 using Domain.Models.Online;
 using Domain.Models.Online.QualificationConfirmation;
 using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -19,9 +20,12 @@ namespace Infrastructure.Repositories;
 public class OnlineRepository : RepositoryBase, IOnlineRepository
 {
     private readonly IInsuranceRepository _insuranceRepository;
-    public OnlineRepository(ITenantProvider tenantProvider, IInsuranceRepository insuranceRepository) : base(tenantProvider)
+    private readonly IReceptionRepository _receptionRepository;
+
+    public OnlineRepository(ITenantProvider tenantProvider, IInsuranceRepository insuranceRepository, IReceptionRepository receptionRepository) : base(tenantProvider)
     {
         _insuranceRepository = insuranceRepository;
+        _receptionRepository = receptionRepository;
     }
 
     public List<long> InsertOnlineConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> onlineList)
@@ -646,12 +650,14 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
     }
 
-    public bool UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult)
+    public (bool, List<ReceptionRowModel> receptions) UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult)
     {
+        var raiinInfsChange = new List<RaiinInf>();
+
         listResResult = listResResult.Where(u => u.PtId > 0).ToList();
         if (listResResult.Count == 0)
         {
-            return true;
+            return (true, new());
         }
         foreach (var resResult in listResResult)
         {
@@ -710,9 +716,26 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 raiinInf.UpdateId = userId;
             }
+
+            foreach (var raiinInf in raiinInfToUpdate.raiinInfs)
+            {
+                raiinInfsChange.Add(raiinInf);
+            }
         }
 
-        return TrackingDataContext.SaveChanges() > 0;
+        var saveChanges = TrackingDataContext.SaveChanges() > 0;
+        return (saveChanges, saveChanges ? GetListRaiinInf(raiinInfsChange) : new());
+    }
+
+    private List<ReceptionRowModel> GetListRaiinInf(List<RaiinInf> raiinInfs)
+    {
+        var result = new List<ReceptionRowModel>();
+        foreach (var raiinInf in raiinInfs)
+        {
+            result.AddRange(_receptionRepository.GetList(raiinInf.HpId, raiinInf.SinDate, CommonConstants.InvalidId, raiinInf.PtId, isDeleted: 0));
+        }
+
+        return result;
     }
 
     private (List<RaiinInf>? raiinInfs, long referenceNo) GetRaiinInfToUpdateByPtId(int hpId, long ptId, int sinDate)
@@ -906,5 +929,6 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         DisposeDataContext();
         _insuranceRepository.ReleaseResource();
+        _receptionRepository.ReleaseResource();
     }
 }

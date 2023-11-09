@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+﻿using Amazon.Runtime.Internal.Util;
+using Domain.Models.Diseases;
 using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
@@ -7,8 +8,11 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using StackExchange.Redis;
 using System.Data;
@@ -22,16 +26,20 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     private readonly string defaultSetName = "新規セット";
     private readonly string defaultGroupName = "新規グループ";
     private readonly int tryCountSave = 10;
+    private readonly IAmazonS3Service _amazonS3Service;
     private readonly string key;
     private readonly IDatabase _cache;
     private readonly IConfiguration _configuration;
+    private readonly AmazonS3Options _options;
 
-    public SetMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+    public SetMstRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider, IConfiguration configuration, IAmazonS3Service amazonS3Service) : base(tenantProvider)
     {
         key = GetCacheKey() + "SetMst";
         _configuration = configuration;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
+        _amazonS3Service = amazonS3Service;
+        _options = optionsAccessor.Value;
     }
 
     public void GetRedis()
@@ -95,7 +103,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             setMstModelList = ReadCache(generationId);
         }
-
         List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
         {
@@ -1310,6 +1317,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     private void AddNewItemToSave(int userId, List<int> listCopySetCds, Dictionary<int, SetMst> dictionarySetMstMap)
     {
         listCopySetCds = listCopySetCds.Distinct().ToList();
+
         // Order inf
         var listCopySetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetOrderInfs = new List<SetOdrInf>();
@@ -1352,17 +1360,66 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         TrackingDataContext.SetKarteInf.AddRange(listPasteSetKarteInfs);
 
-        // Karte Image inf
+        #region Karte File Inf
         var listCopySetKarteImageInfs = NoTrackingDataContext.SetKarteImgInf.Where(item => listCopySetCds.Contains(item.SetCd)).ToList();
-        var listPasteSetKarteImageInfs = new List<SetKarteImgInf>();
-        foreach (var item in listCopySetKarteImageInfs)
+        List<SetKarteImgInf> listPasteSetKarteImageInfs = new();
+        string baseAccessUrl = _options.BaseAccessUrl;
+        foreach (var copySetCd in listCopySetCds)
         {
-            SetKarteImgInf karteImage = item.DeepClone();
-            karteImage.SetCd = dictionarySetMstMap[karteImage.SetCd].SetCd;
-            karteImage.Id = 0;
-            listPasteSetKarteImageInfs.Add(karteImage);
+            var seqNoBySetCdList = listCopySetKarteImageInfs.Where(item => item.SetCd == copySetCd).Select(item => item.SeqNo).Distinct().ToList();
+            if (!seqNoBySetCdList.Any())
+            {
+                continue;
+            }
+            long maxSeqNo = seqNoBySetCdList!.Max();
+            var listCopySetKarteFileBySetCd = listCopySetKarteImageInfs.Where(item => item.SetCd == copySetCd && maxSeqNo == item.SeqNo).ToList();
+            foreach (var sourceSetFile in listCopySetKarteFileBySetCd)
+            {
+                List<string> listSourceFolder = new()
+                {
+                    CommonConstants.Store,
+                    CommonConstants.Karte,
+                    CommonConstants.SetPic,
+                    sourceSetFile.SetCd.ToString()
+                };
+
+                string path = _amazonS3Service.GetFolderUploadOther(listSourceFolder);
+                var karteImageEntity = listCopySetKarteFileBySetCd.FirstOrDefault(item => item.SetCd == sourceSetFile.SetCd
+                                                                                          && item.FileName == sourceSetFile.FileName);
+                if (karteImageEntity == null)
+                {
+                    continue;
+                }
+                SetKarteImgInf newSetFile = sourceSetFile.DeepClone();
+                newSetFile.SetCd = dictionarySetMstMap[newSetFile.SetCd].SetCd;
+                newSetFile.Id = 0;
+                newSetFile.SeqNo = 1;
+
+                var fileName = new StringBuilder();
+                fileName.Append(baseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
+                fileName.Append(karteImageEntity.FileName);
+                string oldFileName = fileName.ToString();
+
+                List<string> listNewFolder = new()
+                {
+                    CommonConstants.Store,
+                    CommonConstants.Karte,
+                    CommonConstants.SetPic,
+                    newSetFile.SetCd.ToString()
+                };
+                string newFile = baseAccessUrl + $"/" + _amazonS3Service.GetFolderUploadOther(listNewFolder) + _amazonS3Service.GetUniqueFileNameKey(karteImageEntity.FileName!.Trim());
+                var copySuccess = _amazonS3Service.CopyObjectAsync(oldFileName.Replace(baseAccessUrl, string.Empty), newFile.Replace(baseAccessUrl, string.Empty)).Result;
+                if (copySuccess)
+                {
+                    newSetFile.FileName = newFile.Replace(baseAccessUrl + "/" + _amazonS3Service.GetFolderUploadOther(listNewFolder), string.Empty);
+                    listPasteSetKarteImageInfs.Add(newSetFile);
+                }
+            }
         }
-        TrackingDataContext.SetKarteInf.AddRange(listPasteSetKarteInfs);
+        TrackingDataContext.SetKarteImgInf.AddRange(listPasteSetKarteImageInfs);
+        #endregion
 
         // Set byomei
         var listCopySetByomeies = NoTrackingDataContext.SetByomei.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
@@ -2217,8 +2274,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 ptByomei.SyusyokuCd20 ?? string.Empty,
                 ptByomei.SyusyokuCd21 ?? string.Empty
             };
-        codeList = codeList.Where(c => c != string.Empty).ToList();
-
+        codeList = codeList.Where(c => c != string.Empty).Distinct().ToList();
         if (codeList.Count == 0)
         {
             return new List<PrefixSuffixModel>();

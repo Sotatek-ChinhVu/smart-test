@@ -5,7 +5,7 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
 {
     public class SetByomeiItem
     {
-        public SetByomeiItem(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList)
+        public SetByomeiItem(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList, string icd10, string icd102013, string icd1012013, string icd1022013)
         {
             Id = id;
             IsSyobyoKbn = isSyobyoKbn;
@@ -18,6 +18,10 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
             ByomeiCmt = byomeiCmt;
             ByomeiCd = byomeiCd;
             PrefixSuffixList = prefixSuffixList;
+            Icd10 = icd10;
+            Icd1012013 = icd1012013;
+            Icd102013 = icd102013;
+            Icd1022013 = icd1022013;
         }
 
         public long Id { get; private set; }
@@ -39,6 +43,14 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
         public string ByomeiCmt { get; private set; }
 
         public string ByomeiCd { get; private set; }
+
+        public string Icd10 { get; private set; }
+
+        public string Icd102013 { get; private set; }
+
+        public string Icd1012013 { get; private set; }
+
+        public string Icd1022013 { get; private set; }
 
         public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
     }

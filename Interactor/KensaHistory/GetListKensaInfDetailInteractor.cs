@@ -27,7 +27,7 @@ namespace Interactor.KensaHistory
 
             try
             {
-                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.IraiCd, inputData.IraiCdStart, inputData.GetGetPrevious, inputData.ShowAbnormalKbn, inputData.ItemQuantity);
+                var result = _kensaSetRepository.GetListKensaInfDetail(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SetId, inputData.IraiCd, inputData.IraiCdStart, inputData.GetGetPrevious, inputData.ShowAbnormalKbn, inputData.ItemQuantity, inputData.ListSeqNoItems);
                 if (result == null)
                 {
                     return new GetListKensaInfDetailOutputData(new ListKensaInfDetailModel(), SearchPostCodeStatus.NoData);

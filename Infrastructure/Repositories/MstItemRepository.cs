@@ -7846,9 +7846,53 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public (List<KensaMstModel>, int) GetListKensaMst(int hpId, string keyWord, int pageIndex, int pageSize)
     {
         var result = new List<KensaMstModel>();
+
+        string bigKeyWord = keyWord.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ");
+
+        //get kensa in KensaMst
+        var kensaMstMatchKeywords = NoTrackingDataContext.KensaMsts.Where(p =>
+                    p.HpId == hpId && p.IsDelete == DeleteTypes.None &&
+                    (p.KensaItemCd.Contains(bigKeyWord) ||
+                    (keyWord == "ﾊﾞｲﾀﾙ" ? p.KensaItemCd.Contains("V") :
+                    (p.KensaName != null && p.KensaKana != null &&
+                     (p.KensaName.ToUpper().Contains(bigKeyWord) ||
+                      p.KensaKana.ToUpper()
+                              .Replace("ｧ", "ｱ")
+                              .Replace("ｨ", "ｲ")
+                              .Replace("ｩ", "ｳ")
+                              .Replace("ｪ", "ｴ")
+                              .Replace("ｫ", "ｵ")
+                              .Replace("ｬ", "ﾔ")
+                              .Replace("ｭ", "ﾕ")
+                              .Replace("ｮ", "ﾖ")
+                              .Replace("ｯ", "ﾂ")
+                              .StartsWith(bigKeyWord)))))).Select(x => new
+                              {
+                                  KensaItemCd = x.KensaItemCd ?? string.Empty,
+                                  OyaItemCd = x.OyaItemCd ?? string.Empty
+
+                              }).ToList();
+
+        if (kensaMstMatchKeywords == null)
+        {
+            return (result, 0);
+        }
+        var kensaItemCdSet = new HashSet<string>(kensaMstMatchKeywords.Select(item => item.KensaItemCd));
+        var kensaOyaItemCdSet = new HashSet<string>(kensaMstMatchKeywords.Where(x => x.OyaItemCd != null && x.OyaItemCd != string.Empty).Select(item => item.OyaItemCd));
+        
+        // Get list kensa childrens, parents 
         var allkensaKensaMst = (
             from kensaMst in NoTrackingDataContext.KensaMsts
-            where kensaMst.HpId == hpId && kensaMst.IsDelete == DeleteTypes.None
+            where kensaMst.IsDelete == DeleteTypes.None && (kensaItemCdSet.Contains(kensaMst.KensaItemCd) || kensaItemCdSet.Contains(kensaMst.OyaItemCd) || kensaOyaItemCdSet.Contains(kensaMst.KensaItemCd))
             join centerMst in NoTrackingDataContext.KensaCenterMsts
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
@@ -7865,7 +7909,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 kensaMst.Unit ?? string.Empty,
                 kensaMst.MaterialCd,
                 kensaMst.ContainerCd,
-                kensaMst.MaleStd ?? string.Empty,
+                kensaStd.MaleStd ?? string.Empty,
                 kensaStd.MaleStdLow ?? string.Empty,
                 kensaStd.MaleStdHigh ?? string.Empty,
                 kensaStd.FemaleStd ?? string.Empty,
@@ -7886,43 +7930,53 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             )
         ).ToList();
 
-        if (allkensaKensaMst == null)
+
+
+        // Get kensa duplicate
+        var kensaDuplicate = allkensaKensaMst.GroupBy(item => item.KensaItemCd)
+            .Where(group => group.Count() > 1)
+            .Select(group => new
+            {
+                KensaItemCd = group.Key,
+                CenterName = JoinIfNotEmpty(group.Select(item => item.CenterName)),
+                CenterItemCd1 = JoinIfNotEmpty(group.Select(item => item.CenterItemCd1))
+            }
+            );
+
+        string JoinIfNotEmpty(IEnumerable<string> values)
         {
-            return (result, 0);
+            var joinedValues = string.Join("/", values.Distinct().Where(s => !string.IsNullOrEmpty(s)));
+            return string.IsNullOrEmpty(joinedValues) ? string.Empty : joinedValues;
         }
 
-        string bigKeyWord = keyWord.ToUpper()
-                                   .Replace("ｧ", "ｱ")
-                                   .Replace("ｨ", "ｲ")
-                                   .Replace("ｩ", "ｳ")
-                                   .Replace("ｪ", "ｴ")
-                                   .Replace("ｫ", "ｵ")
-                                   .Replace("ｬ", "ﾔ")
-                                   .Replace("ｭ", "ﾕ")
-                                   .Replace("ｮ", "ﾖ")
-                                   .Replace("ｯ", "ﾂ");
+        // Fillter remove duplicate item
+        allkensaKensaMst = allkensaKensaMst.Where(x => x.KensaItemSeqNo == allkensaKensaMst.Where(m => m.KensaItemCd == x.KensaItemCd).Min(m => m.KensaItemSeqNo)).ToList();
 
-        //get kensa in KensaMst
-        var kensaInKensaMst = allkensaKensaMst.Where(p =>
-                    (p.KensaItemCd.Contains(bigKeyWord) ||
-                    (keyWord == "ﾊﾞｲﾀﾙ" ? p.KensaItemCd.Contains("V") :
-                    (p.KensaName != null && p.KensaKana != null &&
-                     (p.KensaName.ToUpper().Contains(bigKeyWord) ||
-                      p.KensaKana.ToUpper()
-                              .Replace("ｧ", "ｱ")
-                              .Replace("ｨ", "ｲ")
-                              .Replace("ｩ", "ｳ")
-                              .Replace("ｪ", "ｴ")
-                              .Replace("ｫ", "ｵ")
-                              .Replace("ｬ", "ﾔ")
-                              .Replace("ｭ", "ﾕ")
-                              .Replace("ｮ", "ﾖ")
-                              .Replace("ｯ", "ﾂ")
-                              .StartsWith(bigKeyWord)))))).ToList(); ;
+        var centerNameDictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
+        var centerItemCd1Dictionary = kensaDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
 
-
-        foreach (var entity in kensaInKensaMst)
+        // Update  centerName, centerItemCd1
+        foreach (var entity in allkensaKensaMst)
         {
+            if (centerNameDictionary.TryGetValue(entity.KensaItemCd, out var newCenterName))
+            {
+                entity.SetCenterName(newCenterName);
+            }
+
+            if (centerItemCd1Dictionary.TryGetValue(entity.KensaItemCd, out var newCenterItemCd1))
+            {
+                entity.SetCenterItemCd1(newCenterItemCd1);
+            }
+        }
+
+        #region Append parent, childrens item
+        foreach (var item in kensaItemCdSet)
+        {
+            var entity = allkensaKensaMst.Where(x => x.KensaItemCd == item).FirstOrDefault();
+            if (entity == null)
+            {
+                return (result, 0);
+            }
             var parentItem = allkensaKensaMst.Where(x => !string.IsNullOrEmpty(entity.OyaItemCd) && x.KensaItemCd == entity.OyaItemCd)
                 .Select(x => new KensaMstModel(
                       x.KensaItemCd,
@@ -7951,7 +8005,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       new(),
                       new(),
                       x.CenterName
-                    )).FirstOrDefault();
+                    )).OrderBy(x => x.SeqNo).FirstOrDefault();
             var chilrenItems = allkensaKensaMst.Where(x => x.OyaItemCd == entity.KensaItemCd).Select(x => new KensaMstModel(
                       x.KensaItemCd,
                       x.KensaItemSeqNo,
@@ -8009,9 +8063,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
               parentItem,
               entity.CenterName
             ));
-
-
         }
+        #endregion
+
         var total = result.Count();
         var models = result.OrderBy(u => u.SortNo).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         return (models, total);

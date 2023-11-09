@@ -2,7 +2,7 @@
 {
     public class KensaInfDetailUpdateModel
     {
-        public KensaInfDetailUpdateModel(string uniqId, string uniqIdParent, string kensaItemCd, long ptId, long iraiCd, int seqNo, int seqParentNo, int iraiDate, long raiinNo, string maleStd, string feMaleStd, string unit, string resultVal, string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, int isDeleted)
+        public KensaInfDetailUpdateModel(string uniqId, string uniqIdParent, string kensaItemCd, long ptId, long iraiCd, int seqNo, int seqParentNo, int iraiDate, long raiinNo, string maleStd, string femaleStd, string unit, string resultVal, string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, int isDeleted)
         {
             UniqId = uniqId;
             UniqIdParent = uniqIdParent;
@@ -14,7 +14,7 @@
             IraiDate = iraiDate;
             RaiinNo = raiinNo;
             MaleStd = maleStd;
-            FeMaleStd = feMaleStd;
+            FemaleStd = femaleStd;
             Unit = unit;
             ResultVal = resultVal;
             ResultType = resultType;
@@ -34,7 +34,7 @@
         public int IraiDate { get; private set; }
         public long RaiinNo { get; private set; }
         public string MaleStd { get; private set; }
-        public string FeMaleStd { get; private set; }
+        public string FemaleStd { get; private set; }
         public string Unit { get; private set; }
         public string ResultVal { get; private set; }
         public string ResultType { get; private set; }

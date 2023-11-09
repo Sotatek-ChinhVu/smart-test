@@ -157,7 +157,7 @@ public class DiseaseCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 999 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 3;
         if (systemConf != null)
@@ -168,7 +168,7 @@ public class DiseaseCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 999,
+                HpId = 1,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -181,9 +181,9 @@ public class DiseaseCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var tenMsts = CommonCheckerData.ReadTenMst("DIS002", "DIS002");
-        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS002");
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS002");
+        var tenMsts = CommonCheckerData.ReadTenMst("DIS003", "DIS003");
+        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS003");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS003");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
