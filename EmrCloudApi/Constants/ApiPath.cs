@@ -436,8 +436,8 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
-        public const string GetLockInf = "GetLockInf";
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
+        public const string GetLockInf = "GetLockInf"; 
         public const string Unlock = "Unlock";
         public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
