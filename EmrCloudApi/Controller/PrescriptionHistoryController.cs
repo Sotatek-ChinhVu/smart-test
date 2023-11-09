@@ -40,7 +40,7 @@ public class PrescriptionHistoryController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetContentDrugUsageHistory)]
     public ActionResult<Response<GetContentDrugUsageHistoryResponse>> GetContentDrugUsageHistory([FromQuery] GetContentDrugUsageHistoryRequest request)
     {
-        var input = new GetContentDrugUsageHistoryInputData(HpId, request.PtId, request.GrpId, request.StartDate, request.EndDate);
+        var input = new GetContentDrugUsageHistoryInputData(HpId, UserId, request.PtId, request.GrpId, request.StartDate, request.EndDate);
         var output = _bus.Handle(input);
 
         var presenter = new GetContentDrugUsageHistoryPresenter();

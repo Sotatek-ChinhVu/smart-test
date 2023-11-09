@@ -4,9 +4,10 @@ namespace UseCase.DrugInfor.GetContentDrugUsageHistory;
 
 public class GetContentDrugUsageHistoryInputData : IInputData<GetContentDrugUsageHistoryOutputData>
 {
-    public GetContentDrugUsageHistoryInputData(int hpId, long ptId, int grpCd, int startDate, int endDate)
+    public GetContentDrugUsageHistoryInputData(int hpId, int userId, long ptId, int grpCd, int startDate, int endDate)
     {
         HpId = hpId;
+        UserId = userId;
         PtId = ptId;
         GrpCd = grpCd;
         StartDate = startDate;
@@ -14,6 +15,8 @@ public class GetContentDrugUsageHistoryInputData : IInputData<GetContentDrugUsag
     }
 
     public int HpId { get; private set; }
+
+    public int UserId { get; private set; }
 
     public long PtId { get; private set; }
 

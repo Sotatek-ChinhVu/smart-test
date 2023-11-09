@@ -467,6 +467,7 @@ public class DrugInforRepository : RepositoryBase, IDrugInforRepository
                                         item.OdrInfDetail.ItemCd ?? string.Empty,
                                         item.OdrInfDetail.ItemName ?? string.Empty,
                                         item.OdrInfDetail.Suryo,
+                                        item.OdrInfDetail.UnitSBT,
                                         item.OdrInfDetail.UnitName ?? string.Empty))
             .Where(item => !(item.ItemCd == ItemCdConst.JikanKihon && item.Quantity == JikanConst.JikanNai ||
                              item.ItemCd == ItemCdConst.SyosaiKihon && (item.Quantity == SyosaiConst.None || item.Quantity == SyosaiConst.Jihi)))

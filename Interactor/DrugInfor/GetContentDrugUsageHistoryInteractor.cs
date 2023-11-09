@@ -1,8 +1,7 @@
 ﻿using Domain.Models.DrugInfor;
-using Entity.Tenant;
+using Domain.Models.UserConf;
 using Helper.Common;
 using Helper.Extension;
-using Microsoft.AspNetCore.Mvc;
 using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using UseCase.DrugInfor.Model;
 
@@ -11,26 +10,30 @@ namespace Interactor.DrugInfor;
 public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryInputPort
 {
     private readonly IDrugInforRepository _drugInforRepository;
+    private readonly IUserConfRepository _userConfRepository;
     private readonly List<int> kouiKbnIdList = new() { 23, 1, 2, 24, 3, 4, 5, 6, 25, 11, 26, 27, 17, 28, 22 };
 
-    public GetContentDrugUsageHistoryInteractor(IDrugInforRepository drugInforRepository)
+    public GetContentDrugUsageHistoryInteractor(IDrugInforRepository drugInforRepository, IUserConfRepository userConfRepository)
     {
         _drugInforRepository = drugInforRepository;
+        _userConfRepository = userConfRepository;
     }
+
     public GetContentDrugUsageHistoryOutputData Handle(GetContentDrugUsageHistoryInputData inputData)
     {
         try
         {
-            var drugUsageHistory = GetData(inputData.HpId, inputData.PtId, inputData.GrpCd, inputData.StartDate, inputData.EndDate);
+            var drugUsageHistory = GetData(inputData.HpId, inputData.UserId, inputData.PtId, inputData.GrpCd, inputData.StartDate, inputData.EndDate);
             return new GetContentDrugUsageHistoryOutputData(drugUsageHistory, GetContentDrugUsageHistoryStatus.Successed);
         }
         finally
         {
             _drugInforRepository.ReleaseResource();
+            _userConfRepository.ReleaseResource();
         }
     }
 
-    private List<DrugUsageHistoryGroupModel> GetData(int hpId, long ptId, int grpId, int startDate, int endDate, int mode = 0)
+    private List<DrugUsageHistoryGroupModel> GetData(int hpId, int userId, long ptId, int grpId, int startDate, int endDate, int mode = 0)
     {
         List<DrugUsageHistoryContentModel> drugUsageHistory = new();
         var drugUsageHistoryList = _drugInforRepository.GetDrugUsageHistoryList(hpId, ptId);
@@ -51,6 +54,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
             drugUsageHistoryList = FilterData(drugUsageHistoryList, sinrekiFilter.SinrekiFilterMstKouiList, kouiKbnMstList);
             drugUsageHistoryList = FilterData(drugUsageHistoryList, sinrekiFilter.SinrekiFilterMstDetailList);
         }
+
         var drugUsageHistoryDistinctList = GetDataDistinct(drugUsageHistoryList);
         foreach (var item in drugUsageHistoryDistinctList)
         {
@@ -66,20 +70,24 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                 actionGraphList = GetListActionTimeSeries(item, drugUsageHistoryList, startDate, endDate);
             }
             drugUsageHistory.Add(new DrugUsageHistoryContentModel(
+                                     item.ItemCd,
                                      item.ItemName,
                                      quantity,
                                      unitName,
                                      item.OdrKouiKbn,
+                                     item.Suryo,
+                                     item.UnitSbt,
                                      actionGraphList));
         }
 
-        var result = GroupItemByOdrKouiKbn(kouiKbnMstList.Where(item => item.OyaKouiKbnId > 0).ToList(), ref drugUsageHistory, true);
+        var result = GroupItemByOdrKouiKbn(kouiKbnMstList.Where(item => item.OyaKouiKbnId > 0).ToList(), ref drugUsageHistory);
         if (drugUsageHistory.Any())
         {
-            result.AddRange(GroupItemByOdrKouiKbn(kouiKbnMstList.Where(item => item.OyaKouiKbnId == 0).ToList(), ref drugUsageHistory, false));
+            result.AddRange(GroupItemByOdrKouiKbn(kouiKbnMstList.Where(item => item.OyaKouiKbnId == 0).ToList(), ref drugUsageHistory));
         }
 
-        return result;
+        // SortData
+        return SortData(hpId, userId, result);
     }
 
     private List<DrugUsageHistoryModel> FilterData(List<DrugUsageHistoryModel> listDrugUsageHistory, List<SinrekiFilterMstKouiModel> sinrekiFilterMstKouiList, List<KouiKbnMstModel> kouiKbnMstList)
@@ -250,25 +258,9 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
         return actionGraphList;
     }
 
-    private List<DrugUsageHistoryGroupModel> GroupItemByOdrKouiKbn(List<KouiKbnMstModel> kouiKbnMstList, ref List<DrugUsageHistoryContentModel> drugUsageHistory, bool isChild)
+    private List<DrugUsageHistoryGroupModel> GroupItemByOdrKouiKbn(List<KouiKbnMstModel> kouiKbnMstList, ref List<DrugUsageHistoryContentModel> drugUsageHistory)
     {
         List<DrugUsageHistoryGroupModel> result = new();
-        //if (isChild)
-        //{
-        //    foreach (var kouiKbnMst in kouiKbnMstList)
-        //    {
-        //        var drugUsageHistoryContentList = drugUsageHistory.Where(item => item.OdrKouiKbn == kouiKbnMst.KouiKbn1 && item.OdrKouiKbn == kouiKbnMst.KouiKbn2).ToList();
-        //        if (drugUsageHistoryContentList.Any())
-        //        {
-        //            result.Add(new DrugUsageHistoryGroupModel(
-        //                           kouiKbnMst.KouiKbnId,
-        //                           kouiKbnMst.KouiName,
-        //                           drugUsageHistoryContentList));
-        //            drugUsageHistory = drugUsageHistory.Where(item => !drugUsageHistoryContentList.Contains(item)).ToList();
-        //        }
-        //    }
-        //    return result;
-        //}
         foreach (var kouiKbnMst in kouiKbnMstList)
         {
             var drugUsageHistoryContentList = drugUsageHistory.Where(item => item.OdrKouiKbn >= kouiKbnMst.KouiKbn1 && item.OdrKouiKbn <= kouiKbnMst.KouiKbn2 && kouiKbnMst.ExcKouiKbn != item.OdrKouiKbn).ToList();
@@ -277,10 +269,25 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                 result.Add(new DrugUsageHistoryGroupModel(
                                kouiKbnMst.KouiKbnId,
                                kouiKbnMst.KouiName,
+                               kouiKbnMst.KouiKbn2,
                                drugUsageHistoryContentList));
                 drugUsageHistory = drugUsageHistory.Where(item => !drugUsageHistoryContentList.Contains(item)).ToList();
             }
         }
         return result;
+    }
+
+    private List<DrugUsageHistoryGroupModel> SortData(int hpId, int userId, List<DrugUsageHistoryGroupModel> drugUsageGroupList)
+    {
+        int sortConf = _userConfRepository.GetListUserConf(hpId, userId, 1003).FirstOrDefault()?.Val ?? 0;
+        foreach (var drugGrpItem in drugUsageGroupList)
+        {
+            drugGrpItem.SortDrugUsageHistoryContentList(sortConf);
+        }
+        if (sortConf == 2 || sortConf == 4)
+        {
+            return drugUsageGroupList.OrderByDescending(item => item.KouiKbn2).ToList();
+        }
+        return drugUsageGroupList.OrderBy(item => item.KouiKbn2).ToList();
     }
 }

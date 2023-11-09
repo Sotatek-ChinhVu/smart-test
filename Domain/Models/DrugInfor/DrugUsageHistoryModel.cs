@@ -6,7 +6,7 @@ namespace Domain.Models.DrugInfor;
 
 public class DrugUsageHistoryModel
 {
-    public DrugUsageHistoryModel(int sinKouiKbnUsage, int sinDate, long raiinNo, long rpNo, long rpEdaNo, int odrKouiKbn, int daysCnt, int rowNo, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName)
+    public DrugUsageHistoryModel(int sinKouiKbnUsage, int sinDate, long raiinNo, long rpNo, long rpEdaNo, int odrKouiKbn, int daysCnt, int rowNo, int sinKouiKbn, string itemCd, string itemName, double suryo, int unitSbt, string unitName)
     {
         SinKouiKbnUsage = sinKouiKbnUsage;
         SinDate = sinDate;
@@ -20,6 +20,7 @@ public class DrugUsageHistoryModel
         ItemCd = itemCd;
         ItemName = itemName;
         Suryo = suryo;
+        UnitSbt = unitSbt;
         UnitName = unitName;
     }
 
@@ -46,6 +47,8 @@ public class DrugUsageHistoryModel
     public string ItemName { get; private set; }
 
     public double Suryo { get; private set; }
+
+    public int UnitSbt { get; private set; }
 
     public string UnitName { get; private set; }
 
