@@ -59,7 +59,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListKensaCmtMst)]
         public ActionResult<Response<GetListKensaCmtMstResponse>> GetListKensaCmtMst([FromQuery] GetListKensaCmtMstRequest request)
         {
-            var input = new GetListKensaCmtMstInputData(HpId, request.Keyword);
+            var input = new GetListKensaCmtMstInputData(HpId, request.IraiCd, request.Keyword);
             var output = _bus.Handle(input);
             var presenter = new GetListKensaCmtMstPresenter();
             presenter.Complete(output);

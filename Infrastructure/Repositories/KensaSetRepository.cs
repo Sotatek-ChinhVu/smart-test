@@ -304,7 +304,7 @@ namespace Infrastructure.Repositories
             return res;
         }
 
-        public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, string keyWord)
+        public List<KensaCmtMstModel> GetListKensaCmtMst(int hpId, int iraiCd, string keyWord)
         {
             string bigKeyWord = keyWord.ToUpper()
                                    .Replace("ｧ", "ｱ")
@@ -317,18 +317,32 @@ namespace Infrastructure.Repositories
                                    .Replace("ｮ", "ﾖ")
                                    .Replace("ｯ", "ﾂ");
 
+            string? centerCd = null;
+            if (iraiCd > 0)
+            {
+                var kensaInf = NoTrackingDataContext.KensaInfs.FirstOrDefault(x => x.IraiCd == iraiCd && x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+                if (kensaInf == null)
+                {
+                    return new List<KensaCmtMstModel>();
+                }
+                else
+                {
+                    centerCd = kensaInf.CenterCd;
+                }
+            }
             // Get kensa in KensaMst
             var kensaInKensaMst = from t1 in NoTrackingDataContext.KensaCmtMsts
-                                  join t2 in NoTrackingDataContext.KensaCenterMsts
-                                  on t1.CenterCd equals t2.CenterCd into leftJoinT2
-                                  from t2 in leftJoinT2.DefaultIfEmpty()
-                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyWord)))
+                                  join t3 in NoTrackingDataContext.KensaCenterMsts
+                                  on t1.CenterCd equals t3.CenterCd into leftJoinT3
+                                  from t3 in leftJoinT3.DefaultIfEmpty()
+                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CenterCd == centerCd || t1.CenterCd == null)
+                                  && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyWord)))
                                   where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd).Min(m => m.CmtSeqNo)
                                   select new KensaCmtMstModel(
                                       t1.CmtCd,
                                       t1.CMT ?? string.Empty,
                                       t1.CmtSeqNo,
-                                      t2.CenterName ?? string.Empty
+                                      t3.CenterName ?? string.Empty
                                   );
             return kensaInKensaMst.ToList();
         }
@@ -376,12 +390,8 @@ namespace Infrastructure.Repositories
                             if (kensaInf == null)
                             {
                                 transaction.Rollback();
-                                successed = false;
                             }
-                            else
-                            {
-                                iraiDate = kensaInf.IraiDate;
-                            }
+                            iraiDate = kensaInf.IraiDate;
                         }
 
                         var uniqIdParents = new HashSet<string>(kensaInfDetails.Where(x => x.SeqNo == 0 && !string.IsNullOrEmpty(x.UniqIdParent)).Select(item => item.UniqIdParent));
@@ -478,8 +488,6 @@ namespace Infrastructure.Repositories
                             if (kensaInfDetail == null)
                             {
                                 transaction.Rollback();
-                                successed = false;
-                                break;
                             }
 
                             // Delete children
@@ -502,21 +510,6 @@ namespace Infrastructure.Repositories
                             kensaInfDetail.IsDeleted = item.IsDeleted;
                             kensaInfDetail.UpdateId = userId;
                             kensaInfDetail.UpdateMachine = CIUtil.GetComputerName();
-                        }
-
-                        // Delete all item kensaInfDetail
-                        if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
-                        {
-                            var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
-                            if (kensaInf == null)
-                            {
-                                transaction.Rollback();
-                                successed = false;
-                            }
-                            else
-                            {
-                                kensaInf.IsDeleted = DeleteTypes.Deleted;
-                            }
                         }
 
                         TrackingDataContext.SaveChanges();
@@ -608,8 +601,8 @@ namespace Infrastructure.Repositories
                             t1.AbnormalKbn ?? string.Empty,
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
-                            (t3.CenterCd != null && t3.CenterCd != t5.CenterCd) ? "不明" : t5.CMT ?? string.Empty,
-                            (t3.CenterCd != null && t3.CenterCd != t6.CenterCd) ? "不明" : t6.CMT ?? string.Empty,
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty ) : "不明",
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty ) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
@@ -771,10 +764,11 @@ namespace Infrastructure.Repositories
                 var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
 
                 // Get all parent item
-                kensaInfDetailRows = kensaInfDetailData.Where(x => x.SeqParentNo == 0).ToList();
+                var litRowSeqNo = new HashSet<long>(kensaInfDetailData.Select(item => item.SeqNo));
+                kensaInfDetailRows = kensaInfDetailData.Where(x => !litRowSeqNo.Contains(x.SeqParentNo)).ToList();
                 kensaInfDetailRows = SortRow(kensaInfDetailRows);
                 // Children item
-                var childrenItems = kensaInfDetailData.Where(x => x.SeqParentNo != 0).GroupBy(x => new { x.SeqParentNo })
+                var childrenItems = kensaInfDetailData.Where(x => litRowSeqNo.Contains(x.SeqParentNo)).GroupBy(x => new { x.SeqParentNo })
                 .ToDictionary(
                     group => group.Key.SeqParentNo,
                     group => group.ToList());
@@ -831,7 +825,7 @@ namespace Infrastructure.Repositories
             else
             {
 
-                kensaInfDetailData = (from t1 in kensaInfDetailData
+                kensaInfDetailRows = (from t1 in kensaInfDetailData
                                       join t2 in kensaSetDetailById on t1.KensaItemCd equals t2.KensaItemCd
                                       select new
                                       {
@@ -964,8 +958,8 @@ namespace Infrastructure.Repositories
                             t1.AbnormalKbn ?? string.Empty,
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
-                            (t3.CenterCd != null && t3.CenterCd != t5.CenterCd) ? "不明" : t5.CMT ?? string.Empty,
-                            (t3.CenterCd != null && t3.CenterCd != t6.CenterCd) ? "不明" : t6.CMT ?? string.Empty,
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
