@@ -33,8 +33,16 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             var kensaIraiList = AsKensaIraiReportModel(inputData.KensaIraiList);
             var odrKensaIraiKaCode = _systemConfigRepository.GetSettingValue(100019, 8, inputData.HpId);
             var odrKensaIraiFileType = _systemConfigRepository.GetSettingValue(100019, 7, inputData.HpId);
+            var data = new List<string>();
+            if (odrKensaIraiFileType == 3)
+            {
+                data = GetIraiFileData(inputData.CenterCd, kensaIraiList, 0, odrKensaIraiKaCode, odrKensaIraiFileType);
+            }
+            else
+            {
+                data = GetIraiFileDataStandard(inputData.CenterCd, kensaIraiList, 0, odrKensaIraiKaCode, odrKensaIraiFileType);
+            }
 
-            List<string> data = GetIraiFileDataStandard(inputData.CenterCd, kensaIraiList, 0, odrKensaIraiKaCode, odrKensaIraiFileType);
             var datFileByte = data.SelectMany(item => Encoding.UTF8.GetBytes(item + Environment.NewLine)).ToArray();
             string datFile = Convert.ToBase64String(datFileByte);
 
@@ -135,8 +143,8 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
     }
     #endregion
 
-    #region GetIraiFileData
-    private List<string> GetIraiFileDataStandard(string CenterCd, List<Reporting.Kensalrai.Model.KensaIraiModel> kensaIrais, int fileType = 0, double odrKensaIraiKaCode, double odrKensaIraiFileType)
+    #region OdrKensaIraiFileType in (0,1,2)
+    private List<string> GetIraiFileDataStandard(string CenterCd, List<Reporting.Kensalrai.Model.KensaIraiModel> kensaIrais, int fileType, double odrKensaIraiKaCode, double odrKensaIraiFileType)
     {
         const int RightJustification = 0;
         const int LeftJustification = 1;
@@ -406,6 +414,182 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 results.Add(o2);
             }
 
+        }
+
+        return results;
+    }
+    #endregion
+
+    #region OdrKensaIraiFileType = 3
+
+    public List<string> GetIraiFileData(string CenterCd, List<Reporting.Kensalrai.Model.KensaIraiModel> kensaIrais, int fileType, double odrKensaIraiKaCode, double odrKensaIraiFileType)
+    {
+        const int RightJustification = 0;
+        const int LeftJustification = 1;
+
+        #region local method
+        // 文字列を指定の長さに調整する（文字カット、スペース埋め）
+        string adjStr(string str, int length, int justification = LeftJustification)
+        {
+            //string result = CIUtil.Copy(str, 1, length);
+
+            if (string.IsNullOrEmpty(str))
+            {
+                str = "";
+            }
+
+            string result = str;
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Encoding enc = Encoding.GetEncoding("Shift_JIS");
+            Byte[] b = enc.GetBytes(str);
+
+            if (enc.GetByteCount(str) > length)
+            {
+                //バイト数で文字カット
+                result = enc.GetString(b, 0, length);
+
+                if (enc.GetByteCount(str) >= length + 1)
+                {
+                    //区切りが全角文字の途中の場合、１文字多くなってしまうのを防ぐ
+                    string result2 = enc.GetString(b, 0, length + 1);
+                    if (result.Length == result2.Length)
+                    {
+                        result = result.Remove(result.Length - 1);
+                    }
+                }
+            }
+
+            //埋める文字数　=　最大バイト数　-　(対象文字列のバイト数 - 対象文字列の文字列数)
+            int width = length - (enc.GetByteCount(result) - result.Length);
+            if (justification == RightJustification)
+            {
+                // 右寄せ（左にスペース）
+                result = result.PadLeft(width);
+            }
+            else
+            {
+                // 左寄せ（右にスペース）
+                result = result.PadRight(width);
+            }
+            return result;
+        }
+
+        // 身長体重を出力用文字列に変換する
+        string getHeightWeight(double val)
+        {
+            string retStr = "";
+            if (val == 0)
+            {
+                retStr = "00";
+            }
+            else
+            {
+                val = Math.Round(val, 1, MidpointRounding.AwayFromZero) * 10;
+                retStr = val.ToString();
+            }
+            return adjStr(retStr, 4, RightJustification);
+        }
+        #endregion
+
+        List<string> results = new List<string>();
+
+        foreach (var kensaIrai in kensaIrais)
+        {
+            #region O1レコード
+            string o1 = "";
+
+            // センターコード
+            o1 += CenterCd + ",";
+            // 依頼者ＫＥＹ
+            o1 += adjStr(kensaIrai.IraiCd.ToString(), 20);
+
+            //予備１ 予備２
+            o1 += " " + " " + ",";
+
+            //科コード・科名
+            o1 += adjStr(kensaIrai.KaName.ToString(), 20);
+
+            //病棟コード病棟名
+            o1 += " " + ",";
+
+            // 入院外来区分   1桁  ※2固定
+            o1 += "1" + ",";
+            // 提出医      10桁 ※未使用
+
+            o1 += CIUtil.CiCopyStrWidth(string.IsNullOrEmpty(kensaIrai.DrName) ? kensaIrai.Name : kensaIrai.DrName, 1, 10, 1) + ",";
+
+            // 被検者ＩＤ    
+            o1 += adjStr(kensaIrai.PtNum.ToString(), 15) + ",";
+            // カルテＮＯ   
+            o1 += adjStr(kensaIrai.PtNum.ToString(), 15) + ",";
+            //カルテＮＯ区分
+            o1 += " " + ",";
+            //被検者名カナ
+            o1 += adjStr(kensaIrai.KanaName, 20) + ",";
+            //被験者名漢字
+            o1 += adjStr(kensaIrai.Name, 20) + ",";
+            // 性別      
+            o1 += adjStr(kensaIrai.GetSexStr("1", "2"), 1) + ",";
+
+            // 年齢区分     1桁  ※Y固定
+            o1 += " " + ",";
+            // 年齢       3桁
+            o1 += adjStr(kensaIrai.Age.ToString(), 3, RightJustification) + ",";
+            // 生年月日区分   1桁  ※スペース固定
+            o1 += " ";
+            // 生年月日
+            o1 += (kensaIrai.Birthday % 1000000).ToString().PadLeft(6, '0') + ",";
+            // 採取日      6桁  ※YYMMDD（西暦）
+            o1 += (kensaIrai.SinDate % 1000000).ToString().PadLeft(6, '0') + ",";
+            // 採取時間     4桁  ※未使用
+            o1 += (kensaIrai.UpdateTime.PadLeft(6, '0')) + ",";
+            //保険情報
+            o1 += " ";
+            // 身長       4桁（前3桁整数部、後1桁小数点部）
+            o1 += getHeightWeight(kensaIrai.Height) + ",";
+            // 体重       4桁（前3桁整数部、後1桁小数点部）
+            o1 += getHeightWeight(kensaIrai.Weight) + ",";
+            // 尿量       4桁  ※未使用
+            o1 += adjStr("0", 4, RightJustification) + ",";
+            // 尿量単位     2桁  ※未使用
+            o1 += new string(' ', 2) + ",";
+            // 妊娠週数     2桁  ※未使用
+            o1 += new string(' ', 2) + ",";
+            // 透析前後     1桁  ※0はスペースで出力
+            o1 += adjStr(CIUtil.ToStringIgnoreZero(kensaIrai.TosekiKbn), 1) + ",";
+            // 至急報告     1桁
+            if (kensaIrai.SikyuKbn == 0)
+            {
+                o1 += adjStr(" ", 1) + ",";
+            }
+            else
+            {
+                o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1) + ",";
+            }
+
+            o1 += " , , , , , , , , , ,";
+
+            int dtlCount = 0;
+            foreach (var kensaDtl in kensaIrai.Details)
+            {
+                dtlCount++;
+                if (dtlCount > 50)
+                {
+                    o1 += new string(' ', 3);
+                    dtlCount = 1;
+                }
+
+                o1 += kensaDtl.KensaItemCd;
+                o1 += "=";
+                o1 += kensaDtl.CenterItemCd;
+                o1 += ",";
+            }
+            // 依頼コメント内容     20桁 ※未使用
+            o1 += new string(' ', 20);
+            // 空白       74桁 ※未使用
+            o1 += new string(' ', 74);
+            results.Add(o1);
+            #endregion
         }
 
         return results;
