@@ -84,6 +84,19 @@ namespace Reporting.KensaHistory.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
+            int i = 1;
+
+            foreach(var item in _setFieldData)
+            {
+                item.Value.Clear();
+                item.Value.Add("pageNumber", i.ToString() +"/"+pageIndex.ToString());
+                i++;
+                if (i > pageIndex)
+                {
+                    break;
+                }
+            }
+
             return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
@@ -119,7 +132,7 @@ namespace Reporting.KensaHistory.Service
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 23;
+                short maxRow = 20;
                 int rowNo = 0;
                 int k = 0;
                 short maxColDate = 9;
@@ -127,10 +140,10 @@ namespace Reporting.KensaHistory.Service
 
                 if (currentPage == 1)
                 {
-                    foreach (var item in date.OrderBy(x => x))
+                    foreach (var item in date)
                     {
                         listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
-                        date.Remove(item);
+                        //date.Remove(item);
                         colDate++;
                         if (colDate > maxColDate)
                         {
@@ -141,7 +154,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -165,7 +178,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (kensaInfDetails.Count < maxRow && date.Count == 0)
+                    if (kensaInfDetails.Count <= maxRow || date.Count == 0)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -193,10 +206,10 @@ namespace Reporting.KensaHistory.Service
 
                 int counts = kensaInfDetails.Count;
 
-                foreach (var item in date.OrderBy(x => x))
+                foreach (var item in date/*.OrderBy(x => x)*/)
                 {
                     listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
-                    date.Remove(item);
+                    //date.Remove(item);
                     colDate++;
                     if (colDate > maxColDate)
                     {
@@ -207,7 +220,7 @@ namespace Reporting.KensaHistory.Service
 
                 foreach (var item in kensaInfDetails)
                 {
-                    listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName));
+                    listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
                     listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                     listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                     int count = 0;
@@ -263,13 +276,12 @@ namespace Reporting.KensaHistory.Service
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
             kensaInfDetails = data.Item1;
             date = data.Item2;
-            date = date.OrderBy(x => x).ToList();
+            //date = date.OrderBy(x => x).ToList();
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)
             {
                 iraiStart = date.First();
                 iraiEnd = date.Last();
-                totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
             }
 
             return kensaInfDetails.Count > 0;
