@@ -6041,7 +6041,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             kensaInKensaMst = kensaInKensaMst.Where(u => u.KensaItemCd == itemCd);
         }
-        var kensaMsts = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId /*&& !(string.IsNullOrEmpty(p.OyaItemCd))*/ && p.IsDelete == DeleteTypes.None);
+
+        var kensaMsts = NoTrackingDataContext.KensaMsts.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
 
         var tenMstJoinKensaMstQuery = from kensaTenMst in kensaInTenMst
                                       join kensaMst in kensaMsts.Where(p => string.IsNullOrEmpty(p.OyaItemCd) || p.KensaItemCd == p.OyaItemCd)
@@ -6096,13 +6097,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.OyaItemSeqNo,
                                                                         x.SortNo,
                                                                         x.CenterItemCd1 ?? string.Empty,
-                                                                        x.CenterItemCd2 ?? string.Empty)).OrderByDescending(x => x.KensaItemCd),
+                                                                        x.CenterItemCd2 ?? string.Empty)),
                         TenMsts = tempTenMsts
                     };
 
         foreach (var entity in query)
         {
-            var tenmst = entity.TenMsts.GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault()).OrderByDescending(x => x.StartDate);
+            var tenmst = entity.TenMsts.OrderByDescending(x => x.ItemCd).GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
             result.Add(new KensaMstModel(
                 entity.ParrentKensaMst.KensaItemCd,
                 entity.ParrentKensaMst.KensaItemSeqNo,
@@ -6172,7 +6173,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                             y.SanteiItemCd ?? string.Empty,
                                                             y.SanteigaiKbn,
                                                             y.IsNosearch)).OrderByDescending(x => x.StartDate).ToList(),
-                entity.ChildKensaMsts.OrderBy(x => x.MaterialCd).ToList(),
+                entity.ChildKensaMsts.ToList(),
                 new(),
                 string.Empty
                 ));
