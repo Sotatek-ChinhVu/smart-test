@@ -6,6 +6,7 @@ using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.PatientManagement;
+using EmrCloudApi.Responses;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.DrugInfor.CommonDrugInf;
@@ -40,6 +41,10 @@ public class PdfCreatorController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IHistoryCommon _historyCommon;
     private readonly IGetCommonDrugInf _commonDrugInf;
+    private readonly string NoDataMessage = @"<meta charset=""utf-8"">
+                                              <title>印刷対象が見つかりません。</title>
+                                              <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+                                              ";
 
     public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf)
     {
@@ -327,6 +332,22 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpPost(ApiPath.SetDownloadNameReport)]
+    public IActionResult SetDownloadNameReportReportingData([FromBody] SetDownloadNameReportRequest request)
+    {
+        ContentDisposition cd = new ContentDisposition
+        {
+            FileName = HttpUtility.UrlEncode(request.DownloadName),
+            Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+        };
+        Response.Headers.Add("Content-Disposition", cd.ToString());
+        if (string.IsNullOrEmpty(request.InputBase64File))
+        {
+            return Content(NoDataMessage, "text/html");
+        }
+        return File(Convert.FromBase64String(request.InputBase64File), "application/pdf");
+    }
+
     [HttpGet(ApiPath.ExportKarte2)]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
@@ -554,11 +575,7 @@ public class PdfCreatorController : ControllerBase
         //Console.WriteLine("DataJsonTestPdfString: " + json);
         if (returnNoData)
         {
-            return Content(@"
-            <meta charset=""utf-8"">
-            <title>印刷対象が見つかりません。</title>
-            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
-            ", "text/html");
+            return Content(NoDataMessage, "text/html");
         }
 
         StringContent jsonContent = (reportType == ReportType.DrugInfo)
@@ -610,11 +627,7 @@ public class PdfCreatorController : ControllerBase
         var dataList = dataModel.Data;
         if (!dataList.Any())
         {
-            return Content(@"
-            <meta charset=""utf-8"">
-            <title>印刷対象が見つかりません。</title>
-            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
-            ", "text/html");
+            return Content(NoDataMessage, "text/html");
         }
         var csv = new StringBuilder();
 
