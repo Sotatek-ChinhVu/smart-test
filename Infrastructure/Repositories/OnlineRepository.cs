@@ -5,6 +5,7 @@ using Domain.Models.Online;
 using Domain.Models.Online.QualificationConfirmation;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
+using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -21,11 +22,13 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 {
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IReceptionRepository _receptionRepository;
+    private readonly ISystemConfRepository _systemConfig;
 
-    public OnlineRepository(ITenantProvider tenantProvider, IInsuranceRepository insuranceRepository, IReceptionRepository receptionRepository) : base(tenantProvider)
+    public OnlineRepository(ITenantProvider tenantProvider, IInsuranceRepository insuranceRepository, IReceptionRepository receptionRepository, ISystemConfRepository systemConfig) : base(tenantProvider)
     {
         _insuranceRepository = insuranceRepository;
         _receptionRepository = receptionRepository;
+        _systemConfig = systemConfig;
     }
 
     public List<long> InsertOnlineConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> onlineList)
@@ -785,9 +788,67 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
         };
         var matchHokenInfs = hokenInfs.FindAll(p => PatientInfoConverter.GetHokenConfirmationModels(p, resultOfQC, resResult.Birthday.AsInteger(), sinDate).All(x => x.IsReflect));
 
+        var systemConfigList = _systemConfig.GetList(hpId, new List<int> { 100029 });
+
+        int nameBasicInfoCheck = (int)(systemConfigList.FirstOrDefault(item => item.GrpEdaNo == 1)?.Val ?? 1);
+        int kanaNameBasicInfoCheck = (int)(systemConfigList.FirstOrDefault(item => item.GrpEdaNo == 2)?.Val ?? 1);
+        int genderBasicInfoCheck = (int)(systemConfigList.FirstOrDefault(item => item.GrpEdaNo == 3)?.Val ?? 1);
+        int birthDayBasicInfoCheck = (int)(systemConfigList.FirstOrDefault(item => item.GrpEdaNo == 4)?.Val ?? 1);
+        int addressBasicInfoCheck = (int)(systemConfigList.FirstOrDefault(item => item.GrpEdaNo == 5)?.Val ?? 1);
+        int postcodeBasicInfoCheck = (int)(systemConfigList.FirstOrDefault(item => item.GrpEdaNo == 6)?.Val ?? 1);
+        int seitaiNushiBasicInfoCheck = (int)(systemConfigList.FirstOrDefault(item => item.GrpEdaNo == 7)?.Val ?? 1);
+
         if (ptInf != null)
         {
-            matchPtInf = PatientInfoConverter.GetPtInfConfirmationModels(ConvertToPatientInfoModel(ptInf), resultOfQC).Where(x => x.IsVisible).ToList();
+            var ptInfModel = ConvertToPatientInfoModel(ptInf);
+
+            matchPtInf = new List<PtInfConfirmationModel>
+            {
+                new PtInfConfirmationModel(PtInfOQConst.KANA_NAME, 
+                                           ptInfModel.KanaName, 
+                                           resultOfQC.NameKana ,
+                                           nameBasicInfoCheck,
+                                           kanaNameBasicInfoCheck,
+                                           genderBasicInfoCheck,
+                                           birthDayBasicInfoCheck,
+                                           addressBasicInfoCheck,
+                                           postcodeBasicInfoCheck,
+                                           seitaiNushiBasicInfoCheck),
+                new PtInfConfirmationModel(PtInfOQConst.KANJI_NAME, 
+                                           ptInfModel.Name, 
+                                           resultOfQC.Name, 
+                                           nameBasicInfoCheck,
+                                           kanaNameBasicInfoCheck,
+                                           genderBasicInfoCheck,
+                                           birthDayBasicInfoCheck,
+                                           addressBasicInfoCheck,
+                                           postcodeBasicInfoCheck,
+                                           seitaiNushiBasicInfoCheck),
+                new PtInfConfirmationModel(PtInfOQConst.SEX, 
+                                           ptInfModel.Sex.AsString(), 
+                                           string.IsNullOrEmpty(resultOfQC.Sex2) ? resultOfQC.Sex1: resultOfQC.Sex2, 
+                                           nameBasicInfoCheck,
+                                           kanaNameBasicInfoCheck,
+                                           genderBasicInfoCheck,
+                                           birthDayBasicInfoCheck,
+                                           addressBasicInfoCheck,
+                                           postcodeBasicInfoCheck,
+                                           seitaiNushiBasicInfoCheck),
+                new PtInfConfirmationModel(PtInfOQConst.BIRTHDAY, 
+                                           ptInfModel.Birthday.AsString(), 
+                                           resultOfQC.Birthdate.AsString(),
+                                           nameBasicInfoCheck,
+                                           kanaNameBasicInfoCheck,
+                                           genderBasicInfoCheck,
+                                           birthDayBasicInfoCheck,
+                                           addressBasicInfoCheck,
+                                           postcodeBasicInfoCheck,
+                                           seitaiNushiBasicInfoCheck),
+                new PtInfConfirmationModel(PtInfOQConst.SETANUSI, ptInfModel.Setanusi, resultOfQC.InsuredName, nameBasicInfoCheck, kanaNameBasicInfoCheck, genderBasicInfoCheck, birthDayBasicInfoCheck, addressBasicInfoCheck, postcodeBasicInfoCheck, seitaiNushiBasicInfoCheck),
+                new PtInfConfirmationModel(PtInfOQConst.HOME_ADDRESS, ptInfModel.HomeAddress1, resultOfQC.Address, nameBasicInfoCheck, kanaNameBasicInfoCheck, genderBasicInfoCheck, birthDayBasicInfoCheck, addressBasicInfoCheck, postcodeBasicInfoCheck, seitaiNushiBasicInfoCheck),
+                new PtInfConfirmationModel(PtInfOQConst.HOME_POST, ptInfModel.HomePost, resultOfQC.PostNumber, nameBasicInfoCheck, kanaNameBasicInfoCheck, genderBasicInfoCheck, birthDayBasicInfoCheck, addressBasicInfoCheck, postcodeBasicInfoCheck, seitaiNushiBasicInfoCheck),
+            };
+            matchPtInf = matchPtInf.Where(x => x.IsVisible).ToList();
         }
         if (matchPtInf.Any(x => !x.IsReflect) && matchHokenInfs.Count <= 0)
         {
