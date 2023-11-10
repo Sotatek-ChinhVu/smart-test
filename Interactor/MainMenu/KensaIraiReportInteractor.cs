@@ -233,7 +233,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 依頼コード    20桁
             if (odrKensaIraiFileType == 2)
             {
-                o1 += (kensaIrai.SinDate % 1000000).ToString();
+                o1 += adjStr((kensaIrai.SinDate % 1000000).ToString(), 20);
             }
             else
             {
