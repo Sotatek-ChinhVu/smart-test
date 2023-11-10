@@ -29,6 +29,8 @@ using System.Text.Json;
 using System.Web;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
+using StackExchange.Redis;
+using Helper.Redis;
 
 namespace EmrCloudApi.Controller;
 
@@ -41,6 +43,7 @@ public class PdfCreatorController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IHistoryCommon _historyCommon;
     private readonly IGetCommonDrugInf _commonDrugInf;
+    private readonly IDatabase _cache;
     private readonly string NoDataMessage = @"<meta charset=""utf-8"">
                                               <title>印刷対象が見つかりません。</title>
                                               <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
@@ -52,6 +55,17 @@ public class PdfCreatorController : ControllerBase
         _configuration = configuration;
         _historyCommon = historyCommon;
         _commonDrugInf = commonDrugInf;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    private void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -332,20 +346,22 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpPost(ApiPath.SetDownloadNameReport)]
-    public IActionResult SetDownloadNameReportReportingData([FromBody] SetDownloadNameReportRequest request)
+    [HttpGet(ApiPath.SetDownloadNameReport)]
+    public IActionResult SetDownloadNameReportReportingData([FromQuery] SetDownloadNameReportRequest request)
     {
+        string key = "KensaIraiPdfReport_" + request.InputBase64File;
         ContentDisposition cd = new ContentDisposition
         {
             FileName = HttpUtility.UrlEncode(request.DownloadName),
             Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
         };
         Response.Headers.Add("Content-Disposition", cd.ToString());
-        if (string.IsNullOrEmpty(request.InputBase64File))
+        if (!_cache.KeyExists(key))
         {
             return Content(NoDataMessage, "text/html");
         }
-        return File(Convert.FromBase64String(request.InputBase64File), "application/pdf");
+        var result = _cache.StringGet(key);
+        return File(Convert.FromBase64String(result.AsString()), "application/pdf");
     }
 
     [HttpGet(ApiPath.ExportKarte2)]

@@ -2,11 +2,13 @@
 using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Redis;
 using Microsoft.Extensions.Configuration;
 using Reporting.Kensalrai.Service;
 using System.Text;
 using System.Text.Json;
 using UseCase.MainMenu.KensaIraiReport;
+using StackExchange.Redis;
 
 namespace Interactor.MainMenu;
 
@@ -17,6 +19,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
     private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
     private readonly IConfiguration _configuration;
     private readonly ISystemConfRepository _systemConfigRepository;
+    private readonly IDatabase _cache;
 
     public KensaIraiReportInteractor(IKensaIraiRepository kensaIraiRepository, IKensaIraiCoReportService kensaIraiCoReportService, IConfiguration configuration, ISystemConfRepository systemConfigRepository)
     {
@@ -24,6 +27,17 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
         _kensaIraiCoReportService = kensaIraiCoReportService;
         _configuration = configuration;
         _systemConfigRepository = systemConfigRepository;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    private void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     public KensaIraiReportOutputData Handle(KensaIraiReportInputData inputData)
@@ -33,7 +47,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             var kensaIraiList = AsKensaIraiReportModel(inputData.KensaIraiList);
             var odrKensaIraiKaCode = _systemConfigRepository.GetSettingValue(100019, 8, inputData.HpId);
             var odrKensaIraiFileType = _systemConfigRepository.GetSettingValue(100019, 7, inputData.HpId);
-            var data = new List<string>();
+            List<string> data;
             if (odrKensaIraiFileType == 3)
             {
                 data = GetIraiFileData(inputData.CenterCd, kensaIraiList, 0, odrKensaIraiKaCode, odrKensaIraiFileType);
@@ -51,7 +65,11 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             waitResult.Wait();
             var pdfFileByte = waitResult.Result;
             string pdfFile = Convert.ToBase64String(pdfFileByte);
-
+            var guid = Guid.NewGuid();
+            string key = guid.ToString();
+            string finalKey = "KensaIraiPdfReport_" + key;
+            _cache.StringSet(finalKey, pdfFile);
+            _cache.KeyExpire(finalKey, new TimeSpan(8, 0, 30));
             var kensaIraiLogModel = new KensaIraiLogModel(
                                         inputData.SystemDate,
                                         inputData.CenterCd,
@@ -63,9 +81,9 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                                         CIUtil.GetJapanDateTimeNow());
             if (_kensaIraiRepository.SaveKensaIraiLog(inputData.HpId, inputData.UserId, kensaIraiLogModel))
             {
-                return new KensaIraiReportOutputData(pdfFile, datFile, KensaIraiReportStatus.Successed);
+                return new KensaIraiReportOutputData(key, datFile, KensaIraiReportStatus.Successed);
             }
-            return new KensaIraiReportOutputData(pdfFile, datFile, KensaIraiReportStatus.Failed);
+            return new KensaIraiReportOutputData(key, datFile, KensaIraiReportStatus.Failed);
         }
         finally
         {
