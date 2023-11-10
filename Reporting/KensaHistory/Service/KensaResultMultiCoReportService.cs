@@ -156,7 +156,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -194,7 +194,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -242,7 +242,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -296,7 +296,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetailsItem)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -334,7 +334,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetailsItem)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -361,7 +361,6 @@ namespace Reporting.KensaHistory.Service
 
                 if (currentPage == 3)
                 {
-                    //date.RemoveRange(0, maxColDate);
                     int z = 0;
 
                     foreach (var item in kensaInfDetails)
@@ -387,7 +386,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -404,7 +403,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    kensaInfDetails.RemoveRange(0, /*kensaInfDetails.Count*/maxRow);
+                    kensaInfDetails.RemoveRange(0, maxRow);
                     _listTextData.Add(pageIndex, listDataPerPage);
 
                     return 1;
@@ -425,7 +424,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.Trim()));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
