@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Helper.Common;
 using Microsoft.Extensions.Configuration;
+using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
 using System.Text;
 using System.Text.Json;
@@ -15,19 +16,21 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
     private readonly IKensaIraiRepository _kensaIraiRepository;
     private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
     private readonly IConfiguration _configuration;
+    private readonly ICoKensaIraiFinder _coKensaIraiFinder;
 
-    public KensaIraiReportInteractor(IKensaIraiRepository kensaIraiRepository, IKensaIraiCoReportService kensaIraiCoReportService, IConfiguration configuration)
+    public KensaIraiReportInteractor(IKensaIraiRepository kensaIraiRepository, IKensaIraiCoReportService kensaIraiCoReportService, IConfiguration configuration, ICoKensaIraiFinder coKensaIraiFinder)
     {
         _kensaIraiRepository = kensaIraiRepository;
         _kensaIraiCoReportService = kensaIraiCoReportService;
         _configuration = configuration;
+        _coKensaIraiFinder = coKensaIraiFinder;
     }
 
     public KensaIraiReportOutputData Handle(KensaIraiReportInputData inputData)
     {
         try
         {
-            var kensaIraiList = AsKensaIraiReportModel(inputData.KensaIraiList);
+            var kensaIraiList = AsKensaIraiReportModel(inputData.HpId, inputData.KensaIraiList);
             List<string> data = _kensaIraiCoReportService.GetIraiFileData(inputData.CenterCd, kensaIraiList);
             var datFileByte = data.SelectMany(item => Encoding.UTF8.GetBytes(item + Environment.NewLine)).ToArray();
             string datFile = Convert.ToBase64String(datFileByte);
@@ -60,11 +63,12 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
     }
 
     #region private function
-    private List<Reporting.Kensalrai.Model.KensaIraiModel> AsKensaIraiReportModel(List<KensaIraiModel> source)
+    private List<Reporting.Kensalrai.Model.KensaIraiModel> AsKensaIraiReportModel(int hpId, List<KensaIraiModel> source)
     {
         List<Reporting.Kensalrai.Model.KensaIraiModel> kensaIraiList = new();
         foreach (var kensaIrai in source)
         {
+            var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaIrai.PtId, kensaIrai.SinDate);
             kensaIraiList.Add(new Reporting.Kensalrai.Model.KensaIraiModel(
                 kensaIrai.SinDate,
                 kensaIrai.RaiinNo,
@@ -78,7 +82,9 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 kensaIrai.TosekiKbn,
                 kensaIrai.SikyuKbn,
                 kensaIrai.KaId,
-                AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails)));
+                weightHeight.weight,
+                weightHeight.height,
+            AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails)));
         }
         return kensaIraiList;
     }
