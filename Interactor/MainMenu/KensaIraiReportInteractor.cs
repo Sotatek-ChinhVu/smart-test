@@ -33,7 +33,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
     {
         try
         {
-            var kensaIraiList = AsKensaIraiReportModel(inputData.KensaIraiList);
+            var kensaIraiList = AsKensaIraiReportModel(inputData.HpId, inputData.KensaIraiList);
             var odrKensaIraiKaCode = _systemConfigRepository.GetSettingValue(100019, 8, inputData.HpId);
             var odrKensaIraiFileType = _systemConfigRepository.GetSettingValue(100019, 7, inputData.HpId);
             var data = new List<string>();
@@ -46,8 +46,6 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 data = GetIraiFileDataStandard(inputData.CenterCd, kensaIraiList, 0, odrKensaIraiKaCode, odrKensaIraiFileType);
             }
 
-            var kensaIraiList = AsKensaIraiReportModel(inputData.HpId, inputData.KensaIraiList);
-            List<string> data = _kensaIraiCoReportService.GetIraiFileData(inputData.CenterCd, kensaIraiList);
             var datFileByte = data.SelectMany(item => Encoding.UTF8.GetBytes(item + Environment.NewLine)).ToArray();
             string datFile = Convert.ToBase64String(datFileByte);
 
