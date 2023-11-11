@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace SuperAdmin.Controllers
 {
@@ -7,5 +6,10 @@ namespace SuperAdmin.Controllers
     [ApiController]
     public class HealthyController : ControllerBase
     {
+        [HttpGet]
+        public ActionResult Get()
+        {
+            return Ok();
+        }
     }
 }

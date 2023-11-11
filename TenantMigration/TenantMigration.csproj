@@ -19,4 +19,8 @@
     <ProjectReference Include="..\PostgreDataContext\PostgreDataContext.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\SuperAdmin\" />
+  </ItemGroup>
+
 </Project>

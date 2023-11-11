@@ -307,6 +307,26 @@ namespace Infrastructure.CommonDB
             return _dbAdminContextOptions;
         }
 
+        private SuperAdminNoTrackingContext? _superAdminNoTrackingDataContext;
+        public SuperAdminNoTrackingContext GetSuperAdminNoTrackingDataContext()
+        {
+            if (_superAdminNoTrackingDataContext == null)
+            {
+                _superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
+            }
+            return _superAdminNoTrackingDataContext;
+        }
+
+        private SuperAdminContext? _superAdminTrackingDataContext;
+        public SuperAdminContext GetSuperAdminTrackingTenantDataContext()
+        {
+            if (_superAdminTrackingDataContext == null)
+            {
+                _superAdminTrackingDataContext = CreateNewSuperAdminTrackingDataContext();
+            }
+            return _superAdminTrackingDataContext;
+        }
+
         public TenantDataContext CreateNewTrackingDataContext()
         {
             ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
@@ -333,6 +353,32 @@ namespace Infrastructure.CommonDB
             return factory.CreateDbContext();
         }
 
+        public SuperAdminContext CreateNewSuperAdminTrackingDataContext()
+        {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<SuperAdminContext>().UseNpgsql(GetConnectionStringForSuperAdmin(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                    .UseLoggerFactory(loggerFactory)
+                    .Options;
+            var factory = new PooledDbContextFactory<SuperAdminContext>(options);
+            return factory.CreateDbContext();
+        }
+
+        public SuperAdminNoTrackingContext CreateNewSuperAdminNoTrackingDataContext()
+        {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<SuperAdminNoTrackingContext>().UseNpgsql(GetConnectionStringForSuperAdmin(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                .UseLoggerFactory(loggerFactory)
+                .Options;
+            var factory = new PooledDbContextFactory<SuperAdminNoTrackingContext>(options);
+            return factory.CreateDbContext();
+        }
+
         public DbContextOptions CreateNewTrackingAdminDbContextOption()
         {
             ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
@@ -343,6 +389,12 @@ namespace Infrastructure.CommonDB
                     .UseLoggerFactory(loggerFactory)
                     .Options;
             return options;
+        }
+
+        public string GetConnectionStringForSuperAdmin()
+        {
+            string dbSample = _configuration["SuperAdminDb"] ?? string.Empty;
+            return dbSample;
         }
 
         #endregion
