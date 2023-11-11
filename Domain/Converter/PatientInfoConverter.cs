@@ -34,20 +34,5 @@ namespace Domain.Converter
             };
             return list;
         }
-
-        public static List<PtInfConfirmationModel> GetPtInfConfirmationModels(PatientInforModel patientInf, ResultOfQualificationConfirmation resultOfQualification)
-        {
-            var list = new List<PtInfConfirmationModel>
-            {
-                new PtInfConfirmationModel(PtInfOQConst.KANA_NAME, patientInf.KanaName, resultOfQualification.NameKana),
-                new PtInfConfirmationModel(PtInfOQConst.KANJI_NAME, patientInf.Name, resultOfQualification.Name),
-                new PtInfConfirmationModel(PtInfOQConst.SEX, patientInf.Sex.AsString(), string.IsNullOrEmpty(resultOfQualification.Sex2) ? resultOfQualification.Sex1: resultOfQualification.Sex2),
-                new PtInfConfirmationModel(PtInfOQConst.BIRTHDAY, patientInf.Birthday.AsString(), resultOfQualification.Birthdate.AsString()),
-                new PtInfConfirmationModel(PtInfOQConst.SETANUSI, patientInf.Setanusi, resultOfQualification.InsuredName),
-                new PtInfConfirmationModel(PtInfOQConst.HOME_ADDRESS, patientInf.HomeAddress1, resultOfQualification.Address),
-                new PtInfConfirmationModel(PtInfOQConst.HOME_POST, patientInf.HomePost, resultOfQualification.PostNumber),
-            };
-            return list;
-        }
     }
 }

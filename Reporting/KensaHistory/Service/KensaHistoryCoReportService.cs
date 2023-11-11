@@ -128,14 +128,6 @@ namespace Reporting.KensaHistory.Service
                 {
                     foreach (var item in listKensaInfDetailItemModels)
                     {
-                        switch (item.ResultType)
-                        {
-                            case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
-                            case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
-                            case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
-                            default: break;
-                        }
-
                         listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                         listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                         listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
@@ -173,14 +165,6 @@ namespace Reporting.KensaHistory.Service
 
                 foreach (var item in listKensaInfDetailItemModels)
                 {
-                    switch (item.ResultType)
-                    {
-                        case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
-                        case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
-                        case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
-                        default: break;
-                    }
-
                     listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                     listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                     listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
@@ -240,7 +224,16 @@ namespace Reporting.KensaHistory.Service
                 }
             }
 
-            //totalPage = (listKensaInfDetailItemModels.Count / 30) + 1;
+            foreach (var item in listKensaInfDetailItemModels)
+            {
+                switch (item.ResultType)
+                {
+                    case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
+                    case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
+                    case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
+                    default: break;
+                }
+            }
 
             return listKensaInfDetailItemModels.Count > 0;
         }

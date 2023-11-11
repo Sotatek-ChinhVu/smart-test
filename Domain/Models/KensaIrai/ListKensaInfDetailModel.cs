@@ -67,6 +67,21 @@
                 DynamicArray = dynamicArray;
             }
 
+            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string maleStd, string femaleStd, string kensaKana, long sortNo, long seqNo, long seqParentNo, string rowSeqId, List<ListKensaInfDetailItemModel> dynamicArray)
+            {
+                KensaItemCd = kensaItemCd;
+                KensaName = kensaName;
+                Unit = unit;
+                MaleStd = maleStd;
+                FemaleStd = femaleStd;
+                KensaKana = kensaKana;
+                SortNo = sortNo;
+                SeqNo = seqNo;
+                SeqParentNo = seqParentNo;
+                RowSeqId = rowSeqId;
+                DynamicArray = dynamicArray;
+            }
+
             public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string maleStd, string femaleStd, string kensaKana, long sortNo, long seqNo, long seqParentNo, List<ListKensaInfDetailItemModel> dynamicArray)
             {
                 KensaItemCd = kensaItemCd;
@@ -99,6 +114,8 @@
             public long SeqNo { get; private set; }
 
             public long SeqParentNo { get; private set; }
+
+            public string RowSeqId { get; private set; }
 
             public List<ListKensaInfDetailItemModel> DynamicArray { get; private set; }
         }
