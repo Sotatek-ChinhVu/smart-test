@@ -82,6 +82,11 @@
             return this;
         }
 
+        public void SetRowSeqId(string newValue)
+        {
+            RowSeqId = newValue;
+        }
+
         public long PtId { get; private set; }
 
         public long IraiCd { get; private set; }
@@ -145,5 +150,7 @@
         public int Status { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public string RowSeqId { get; private set; }
     }
 }

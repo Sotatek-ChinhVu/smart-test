@@ -43,8 +43,9 @@ public class KensaInfDetailModel
         Type = string.Empty;
     }
 
-    public KensaInfDetailModel(string type, string centerCd, long iraiCd, string nyubi, string yoketu, string bilirubin, string kensaItemCd, string abnormalKbn, string resultVal, string resultType, string cmtCd1, string cmtCd2)
+    public KensaInfDetailModel(int index, string type, string centerCd, long iraiCd, string nyubi, string yoketu, string bilirubin, string kensaItemCd, string abnormalKbn, string resultVal, string resultType, string cmtCd1, string cmtCd2)
     {
+        Index = index;
         Type = type;
         IraiCd = iraiCd;
         KensaItemCd = kensaItemCd;
@@ -96,7 +97,10 @@ public class KensaInfDetailModel
 
     public KensaMstModel KensaMstModel { get; private set; }
 
+    public int Index { get; private set; }
+
     public long KeyNo { get; set; } = 0;
+
     public bool IsAddNew { get; set; } = false;
 
     public KensaInfDetailModel ChangeIsDeleted(int isDeleted)
