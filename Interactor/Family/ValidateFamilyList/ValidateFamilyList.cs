@@ -66,6 +66,10 @@ public class ValidateFamilyList : IValidateFamilyList
         {
             return ValidateFamilyListStatus.FamilyNotAllow;
         }
+        // anh.vu3 todo //else if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
+        //{
+        //    return ValidateFamilyListStatus.InvalidFamilyId;
+        //}
 
         // add item to family if don't exist in input list
         var familyIdNotExistDB = onlyFamlilyList.Select(item => item.FamilyId).Distinct()
@@ -76,21 +80,22 @@ public class ValidateFamilyList : IValidateFamilyList
         foreach (var item in familyNotExistDB)
         {
             listFamily.Add(new FamilyItem(
-                               item.FamilyId,
-                               item.PtId,
-                               item.ZokugaraCd,
-                               item.FamilyPtId,
-                               item.Name,
-                               item.KanaName,
-                               item.Sex,
-                               item.Birthday,
-                               item.IsDead,
-                               item.IsSeparated,
-                               item.Biko,
-                               item.SortNo,
-                               false,
-                               new(),
-                               false));
+                    item.FamilyId,
+                    item.PtId,
+                    item.ZokugaraCd,
+                    item.FamilyPtId,
+                    item.Name,
+                    item.KanaName,
+                    item.Sex,
+                    item.Birthday,
+                    item.IsDead,
+                    item.IsSeparated,
+                    item.Biko,
+                    item.SortNo,
+                    false,
+                    new(),
+                    false
+                ));
         }
 
         foreach (var familyItem in listFamily)
@@ -108,12 +113,10 @@ public class ValidateFamilyList : IValidateFamilyList
             {
                 return ValidateFamilyListStatus.InvalidBirthday;
             }
-
             // check duplicate family member
             if (onlyFamlilyList.Select(item => item.FamilyPtId).Distinct().Count(item => item == familyItem.PtId) > 1
                 || listFamily.Count(item => item.PtId == familyItem.PtId
                                             && item.FamilyPtId != 0
-                                            && !item.IsDeleted
                                             && item.FamilyPtId == familyItem.FamilyPtId) > 1)
             {
                 return ValidateFamilyListStatus.DuplicateFamily;
@@ -127,9 +130,8 @@ public class ValidateFamilyList : IValidateFamilyList
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
 
-                var totalItemSameZokugaraCd = listFamily.Count(item => item.PtId == ptId
-                                                                       && item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
-                                                                       && !item.IsDeleted);
+                var totalItemSameZokugaraCd = listFamily.Where(item => item.PtId == ptId).Count(item => item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
+                                                                                                        && !item.IsDeleted);
 
                 if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd] && !familyItem.IsDeleted)
                 {
@@ -160,11 +162,18 @@ public class ValidateFamilyList : IValidateFamilyList
             familyRekiList.AddRange(familyItem.PtFamilyRekiList);
         }
         // validate FamilyRekiInputItem
-        return ValidateFamilyRekiListInputItem(familyRekiList);
+        return ValidateFamilyRekiListInputItem(hpId, familyRekiList);
     }
 
-    private ValidateFamilyListStatus ValidateFamilyRekiListInputItem(List<FamilyRekiItem> familyRekiList)
+    private ValidateFamilyListStatus ValidateFamilyRekiListInputItem(int hpId, List<FamilyRekiItem> familyRekiList)
     {
+        // anh.vu3 todo // validate familyRekiId
+        //var listFamilyRekiId = familyRekiList.Where(item => item.Id > 0).Select(item => item.Id).Distinct().ToList();
+        //if (!_familyRepository.CheckExistFamilyRekiList(hpId, listFamilyRekiId))
+        //{
+        //    return ValidateFamilyListStatus.InvalidFamilyRekiId;
+        //}
+
         // validate byomei
         var byomeiCdList = familyRekiList.Select(item => item.ByomeiCd).Distinct().ToList();
         var byomeiList = _mstItemRepository.DiseaseSearch(byomeiCdList);
