@@ -1,548 +1,612 @@
 ﻿using CloudUnitTest.SampleData;
+using CommonChecker.Caches;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
+using Entity.Tenant;
 
-namespace CloudUnitTest.CommonChecker.Services
+namespace CloudUnitTest.CommonChecker.Services;
+
+public class DuplicationCheckerTest : BaseUT
 {
-    public class DuplicationCheckerTest : BaseUT
+    [Test]
+    public void DuplicationCheck_001_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderIsNullOrEmpty()
     {
-        //[Test]
-        //public void DuplicationCheck_001_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderIsNullOrEmpty()
-        //{
-        //    var ordInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 2,
-        //                                syohoLimitKbn: 1,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 2,
+                                    syohoLimitKbn: 1,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
 
-        //    var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: ordInfDetails);
+        var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: ordInfDetails);
 
-        //    var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
-        //                                            RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
+        var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
 
-        //    var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        //    var ptInfs = CommonCheckerData.ReadPtInf();
-        //    tenantTracking.PtInfs.AddRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var ptInfs = CommonCheckerData.ReadPtInf();
+        tenantTracking.PtInfs.AddRange(ptInfs);
+        tenantTracking.SaveChanges();
 
-        //    var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
+        var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        //    duplicationChecker.CurrentListOrder = new();
-        //    duplicationChecker.HpID = 999;
-        //    duplicationChecker.PtID = 1231;
-        //    duplicationChecker.Sinday = 20230101;
-        //    duplicationChecker.DataContext = TenantProvider.GetNoTrackingDataContext();
+        duplicationChecker.CurrentListOrder = new();
+        duplicationChecker.HpID = 999;
+        duplicationChecker.PtID = 1231;
+        duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //    //// Act
-        //    var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        //    tenantTracking.PtInfs.RemoveRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //    //// Assert
-        //    Assert.True(result.ErrorOrderList is null);
-        //}
+            // Assert
+            Assert.True(result.ErrorOrderList is null);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
+    }
 
-        //[Test]
-        //public void DuplicationCheck_002_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedItemCode()
-        //{
-        //    var ordInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 2,
-        //                                syohoLimitKbn: 1,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+    [Test]
+    public void DuplicationCheck_002_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedItemCode()
+    {
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 2,
+                                    syohoLimitKbn: 1,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
 
-        //    var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: ordInfDetails);
+        var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: ordInfDetails);
 
-        //    var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
-        //                                            RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
+        var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
 
-        //    var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        //    var ptInfs = CommonCheckerData.ReadPtInf();
-        //    tenantTracking.PtInfs.AddRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var ptInfs = CommonCheckerData.ReadPtInf();
+        tenantTracking.PtInfs.AddRange(ptInfs);
+        tenantTracking.SaveChanges();
 
-        //    var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
+        var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        //    var currentList = new List<OrdInfoModel>()
-        //    {
-        //        new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: ordInfDetails)
-        //    };
+        var currentList = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: ordInfDetails)
+        };
 
-        //    duplicationChecker.CurrentListOrder = currentList;
-        //    duplicationChecker.HpID = 999;
-        //    duplicationChecker.PtID = 1231;
-        //    duplicationChecker.Sinday = 20230101;
-        //    duplicationChecker.DataContext = TenantProvider.GetNoTrackingDataContext();
+        duplicationChecker.CurrentListOrder = currentList;
+        duplicationChecker.HpID = 999;
+        duplicationChecker.PtID = 1231;
+        duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //    //// Act
-        //    var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        //    tenantTracking.PtInfs.RemoveRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+        // Act
+        try
+        {
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //    //// Assert
-        //    Assert.True(result.ErrorInfo != null && result.IsError);
-        //}
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
+    }
 
-        //[Test]
-        //public void DuplicationCheck_003_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
-        //{
-        //    ////Setup
-        //    var currentOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 2,
-        //                                syohoLimitKbn: 1,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+    [Test]
+    public void DuplicationCheck_003_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
+    {
+        //Setup
+        var currentOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 2,
+                                    syohoLimitKbn: 1,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
 
-        //    var addedOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 2,
-        //                                syohoLimitKbn: 1,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+        var addedOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 2,
+                                    syohoLimitKbn: 1,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
-        //    var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
+        var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
 
-        //    var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
-        //                                            RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
+        var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
 
-        //    var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        //    var ptInfs = CommonCheckerData.ReadPtInf();
-        //    tenantTracking.PtInfs.AddRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var ptInfs = CommonCheckerData.ReadPtInf();
+        tenantTracking.PtInfs.AddRange(ptInfs);
+        tenantTracking.SaveChanges();
 
-        //    var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
+        var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        //    var currentList = new List<OrdInfoModel>()
-        //    {
-        //        new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
-        //    };
+        var currentList = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
+        };
 
-        //    duplicationChecker.CurrentListOrder = currentList;
-        //    duplicationChecker.HpID = 999;
-        //    duplicationChecker.PtID = 1231;
-        //    duplicationChecker.Sinday = 20230101;
-        //    duplicationChecker.DataContext = TenantProvider.GetNoTrackingDataContext();
+        duplicationChecker.CurrentListOrder = currentList;
+        duplicationChecker.HpID = 999;
+        duplicationChecker.PtID = 1231;
+        duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //    //// Act
-        //    var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        //    tenantTracking.PtInfs.RemoveRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //    //// Assert
-        //    Assert.True(result.ErrorInfo != null && result.IsError);
-        //}
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError);
+        }
+        finally
+        {
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
+    }
 
-        //[Test]
-        //public void DuplicationCheck_004_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
-        //{
-        //    var currentOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 3,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+    [Test]
+    public void DuplicationCheck_004_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
+    {
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
+        //Setup CheckDupicatedSetting
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 4);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null)
+        {
+            systemConf.Val = 1;
+        }
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2027,
+                GrpEdaNo = 4,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 2,
+                UpdateId = 2,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
 
-        //    var addedOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "12345",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 3,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+        var currentOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 3,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
-        //    var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
 
-        //    var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
-        //                                            RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
+        var addedOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "12345",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 3,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //    var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        //    var ptInfs = CommonCheckerData.ReadPtInf();
-        //    tenantTracking.PtInfs.AddRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
+        var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
 
-        //    var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
+        var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
 
-        //    var currentList = new List<OrdInfoModel>()
-        //    {
-        //        new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
-        //    };
+        var ptInfs = CommonCheckerData.ReadPtInf();
+        tenantTracking.PtInfs.AddRange(ptInfs);
+        tenantTracking.SaveChanges();
 
-        //    duplicationChecker.CurrentListOrder = currentList;
-        //    duplicationChecker.HpID = 999;
-        //    duplicationChecker.PtID = 1231;
-        //    duplicationChecker.Sinday = 20230101;
-        //    duplicationChecker.DataContext = TenantProvider.GetNoTrackingDataContext();
+        var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        //    //// Act
-        //    var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
-        //    tenantTracking.PtInfs.RemoveRange(ptInfs);
-        //    tenantTracking.SaveChanges();
+        var currentList = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
+        };
 
-        //    //// Assert
-        //    Assert.True(result.ErrorInfo != null && result.IsError);
-        //}
+        duplicationChecker.CurrentListOrder = currentList;
+        duplicationChecker.HpID = 999;
+        duplicationChecker.PtID = 1231;
+        duplicationChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        duplicationChecker.InitFinder(tenantNoTracking, cache);
 
-        //[Test]
-        //public void DuplicationCheckerTest_005_CheckDuplicatedIppanCode_TestDuplicatedError()
-        //{
-        //    ////Setup
-        //    ///
-        //    var currentOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 3,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+        try
+        {
+            // Act
+            var result = duplicationChecker.HandleCheckOrder(unitCheckerResult);
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
+            // Assert
+            Assert.True(result.ErrorInfo != null && result.IsError && result.CheckerType == RealtimeCheckerType.Duplication);
+        }
+        finally
+        {
 
-        //    var addedOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "12345",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 3,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+            if (systemConf != null) systemConf.Val = temp;
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
-        //    var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
+            tenantTracking.PtInfs.RemoveRange(ptInfs);
+            tenantTracking.SaveChanges();
+        }
+    }
 
-        //    var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
-        //                                            RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
+    [Test]
+    public void DuplicationCheckerTest_005_CheckDuplicatedIppanCode_TestDuplicatedError()
+    {
+        ////Setup
+        ///
+        var currentOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 3,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //    var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
 
-        //    var checkingOrder = unitCheckerResult.CheckingData;
+        var addedOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "12345",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 3,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //    var currentList = new List<OrdInfoModel>()
-        //    {
-        //        new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
-        //    };
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
+        var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
 
-        //    var currentOdrDetailList = duplicationChecker.GetOdrDetailListByCondition(currentList);
-        //    //// Act
-        //    var result = duplicationChecker.CheckDuplicatedIppanCode(checkingOrder, currentOdrDetailList);
+        var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
 
-        //    //Assert
+        var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-        //    Assert.True(result.Count == 1 && result[0].Id == "id1" && result[0].IsIppanCdDuplicated);
-        //}
+        var checkingOrder = unitCheckerResult.CheckingData;
 
-        //[Test]
-        //public void DuplicationCheckerTest_007_CheckDuplicatedItemCode_TestDuplicatedError()
-        //{
-        //    var currentOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 2,
-        //                                syohoLimitKbn: 1,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+        var currentList = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
+        };
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
+        var currentOdrDetailList = duplicationChecker.GetOdrDetailListByCondition(currentList);
+        // Act
+        var result = duplicationChecker.CheckDuplicatedIppanCode(checkingOrder, currentOdrDetailList);
 
-        //    var addedOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "613110017",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 2,
-        //                                syohoLimitKbn: 1,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+        //Assert
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
-        //    var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
+        Assert.True(result.Count == 1 && result[0].Id == "id1" && result[0].IsIppanCdDuplicated);
+    }
 
-        //    var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
-        //                                            RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
+    [Test]
+    public void DuplicationCheckerTest_007_CheckDuplicatedItemCode_TestDuplicatedError()
+    {
+        var currentOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 2,
+                                    syohoLimitKbn: 1,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //    var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
 
-        //    var currentList = new List<OrdInfoModel>()
-        //    {
-        //        new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
-        //    };
+        var addedOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "613110017",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 2,
+                                    syohoLimitKbn: 1,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
 
-        //    var checkingOrder = unitCheckerResult.CheckingData;
-        //    var currentOdrDetailList = duplicationChecker.GetOdrDetailListByCondition(currentList);
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
+        var odrInfoModel = new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails);
 
-        //    //// Act
-        //    var result = duplicationChecker.CheckDuplicatedItemCode(checkingOrder, currentOdrDetailList.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList());
+        var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                RealtimeCheckerType.Duplication, odrInfoModel, 20230101, 1231);
 
-        //    //Assert
-        //    Assert.True(result.Count == 1 && result[0].Id == "id1" && result[0].DuplicatedItemCd == "613110017");
-        //}
+        var duplicationChecker = new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>();
+
+        var currentList = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: currentOrdInfDetails)
+        };
+
+        var checkingOrder = unitCheckerResult.CheckingData;
+        var currentOdrDetailList = duplicationChecker.GetOdrDetailListByCondition(currentList);
+
+        // Act
+        var result = duplicationChecker.CheckDuplicatedItemCode(checkingOrder, currentOdrDetailList.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList());
+
+        //Assert
+        Assert.True(result.Count == 1 && result[0].Id == "id1" && result[0].DuplicatedItemCd == "613110017");
     }
 }

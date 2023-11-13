@@ -5,6 +5,7 @@ using Helper.Common;
 using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
@@ -15,6 +16,7 @@ namespace Infrastructure.Repositories
     {
         private readonly StackExchange.Redis.IDatabase _cache;
         private readonly string key;
+        private readonly string keySetKbn;
         private readonly IConfiguration _configuration;
         public SetGenerationMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
@@ -22,6 +24,7 @@ namespace Infrastructure.Repositories
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
+            keySetKbn = tenantProvider.GetClinicID() + "-" + nameof(SetKbnMstRepository) + "SetKbn";
         }
 
         public void GetRedis()
@@ -33,9 +36,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private IEnumerable<SetGenerationMstModel> ReloadCache()
+        public IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false)
         {
-            var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0).Select(s =>
+            var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).Select(s =>
                     new SetGenerationMstModel(
                         s.HpId,
                         s.GenerationId,
@@ -46,18 +49,19 @@ namespace Infrastructure.Repositories
 
             var json = JsonSerializer.Serialize(setGenerationMstList);
             _cache.StringSet(key, json);
-
+            if (flag)
+            {
+                _cache.KeyDelete(keySetKbn);
+            }
             return setGenerationMstList;
         }
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
         {
-            IEnumerable<SetGenerationMstModel>? setGenerationMstList =
-
-Enumerable.Empty<SetGenerationMstModel>();
+            var setGenerationMstList = Enumerable.Empty<SetGenerationMstModel>();
             if (!_cache.KeyExists(key))
             {
-                setGenerationMstList = ReloadCache();
+                setGenerationMstList = ReloadCache(hpId);
             }
             else
             {
@@ -65,6 +69,12 @@ Enumerable.Empty<SetGenerationMstModel>();
             }
 
             return setGenerationMstList!.Where(s => s.StartDate <= sinDate).OrderByDescending(x => x.StartDate).ToList();
+        }
+
+        public List<SetGenerationMstModel> GetSetGenerationMstList(int hpId)
+        {
+            var setGenerationMstList = ReloadCache(hpId).OrderByDescending(x => x.StartDate).ToList();
+            return setGenerationMstList;
         }
 
         private List<SetGenerationMstModel> ReadCache()
@@ -136,7 +146,7 @@ Enumerable.Empty<SetGenerationMstModel>();
             return date.Year.ToString() + "/" + (date.Month > 9 ? date.Month.ToString() : "0" + date.Month.ToString()) + "/" + (date.Day > 9 ? date.Day.ToString() : "0" + date.Day.ToString());
         }
 
-        public bool DeleteSetSenDaiGeneration(int generationId, int userId)
+        public bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId)
         {
             var ListDataUpdate = new List<SetGenerationMst>();
             var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.GenerationId == generationId);
@@ -149,7 +159,7 @@ Enumerable.Empty<SetGenerationMstModel>();
                 setGenrationCurrent.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setGenrationCurrent.CreateDate);
                 ListDataUpdate.Add(setGenrationCurrent);
                 // Get Item Above and Update
-                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate > setGenrationCurrent.StartDate).OrderBy(x => x.StartDate).FirstOrDefault();
+                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate >= setGenrationCurrent.StartDate && x.GenerationId > setGenrationCurrent.GenerationId).OrderBy(x => x.StartDate).ThenBy(x => x.GenerationId).FirstOrDefault();
                 if (itemAbove != null)
                 {
                     itemAbove.StartDate = setGenrationCurrent.StartDate;
@@ -162,7 +172,8 @@ Enumerable.Empty<SetGenerationMstModel>();
                 if (ListDataUpdate.Count > 0)
                 {
                     TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
-                    ReloadCache();
+                    ReloadCache(hpId);
+                    _cache.KeyDelete(keySetKbn);
                     return TrackingDataContext.SaveChanges() > 0;
                 }
                 return false;
@@ -176,7 +187,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         public AddSetSendaiModel? AddSetSendaiGeneration(int userId, int hpId, int startDate)
         {
             // get SendaiGeneration newest
-            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            var itemNewest = NoTrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
             // Save item Add
             var itemAdd = new SetGenerationMst();
             itemAdd.StartDate = startDate;
@@ -190,7 +201,6 @@ Enumerable.Empty<SetGenerationMstModel>();
             itemAdd.UpdateMachine = "SmartKarte";
             TrackingDataContext.SetGenerationMsts.Add(itemAdd);
             var checkAdd = TrackingDataContext.SaveChanges();
-            ReloadCache();
             if (checkAdd == 0)
             {
                 return null;
@@ -198,7 +208,7 @@ Enumerable.Empty<SetGenerationMstModel>();
             else
             {
                 // Clone Generation
-                var itemAddGet = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).FirstOrDefault();
+                var itemAddGet = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
                 if (itemNewest != null && itemAddGet != null)
                 {
                     return new AddSetSendaiModel(itemAddGet.GenerationId, itemNewest.GenerationId);
@@ -323,10 +333,9 @@ Enumerable.Empty<SetGenerationMstModel>();
             }
         }
 
-
         public bool SaveCloneKbnMst(int targetGenerationId, int sourceGenerationId, int hpId, int userId)
         {
-            var setKbnMstSource = TrackingDataContext.SetKbnMsts.Where(x =>
+            var setKbnMstSource = NoTrackingDataContext.SetKbnMsts.Where(x =>
                     x.HpId == hpId &&
                     x.GenerationId == sourceGenerationId).ToList();
             //setKbnMst
@@ -360,7 +369,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         {
             try
             {
-                var setByomeisSource = TrackingDataContext.SetByomei.Where(setByomei =>
+                var setByomeisSource = NoTrackingDataContext.SetByomei.Where(setByomei =>
                 setByomei.HpId == hpId && listMstDict.Contains(setByomei.SetCd))
                 .ToList();
 
@@ -399,7 +408,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         {
             try
             {
-                var setKarteInfsSource = TrackingDataContext.SetKarteInf.Where(setKarteInf =>
+                var setKarteInfsSource = NoTrackingDataContext.SetKarteInf.Where(setKarteInf =>
                 setKarteInf.HpId == hpId && listMstDict.Contains(setKarteInf.SetCd))
                 .ToList();
 
@@ -439,7 +448,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         {
             try
             {
-                var setKarteImgInfsSource = TrackingDataContext.SetKarteImgInf.Where(setKarteImgInf =>
+                var setKarteImgInfsSource = NoTrackingDataContext.SetKarteImgInf.Where(setKarteImgInf =>
                  setKarteImgInf.HpId == hpId && listMstDict.Contains(setKarteImgInf.SetCd))
                  .ToList();
 
@@ -477,7 +486,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         {
             try
             {
-                var setOdrInfsSource = TrackingDataContext.SetOdrInf.Where(setOdrInf =>
+                var setOdrInfsSource = NoTrackingDataContext.SetOdrInf.Where(setOdrInf =>
                  setOdrInf.HpId == hpId && listMstDict.Contains(setOdrInf.SetCd))
                  .ToList();
 
@@ -519,7 +528,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         {
             try
             {
-                var setOdrInfDetailsSource = TrackingDataContext.SetOdrInfDetail.Where(setOdrInfDetail =>
+                var setOdrInfDetailsSource = NoTrackingDataContext.SetOdrInfDetail.Where(setOdrInfDetail =>
                 setOdrInfDetail.HpId == hpId && listMstDict.Contains(setOdrInfDetail.SetCd))
                 .ToList();
 
@@ -556,7 +565,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         {
             try
             {
-                var setOdrInfCmtSource = TrackingDataContext.SetOdrInfCmt.Where(setOdrInfCmt =>
+                var setOdrInfCmtSource = NoTrackingDataContext.SetOdrInfCmt.Where(setOdrInfCmt =>
                 setOdrInfCmt.HpId == hpId && listMstDict.Contains(setOdrInfCmt.SetCd))
                 .ToList();
 
@@ -592,7 +601,7 @@ Enumerable.Empty<SetGenerationMstModel>();
         public AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
         {
             // get SendaiGeneration newest
-            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(x => x.GenerationId).FirstOrDefault();
             if (itemNewest != null && itemNewest.GenerationId != restoreGenerationId)
             {
                 // delete newest
@@ -677,11 +686,13 @@ Enumerable.Empty<SetGenerationMstModel>();
                         setOdrInf.UpdateId = userId;
                         setOdrInf.UpdateMachine = "SmartKarte";
                     });
+                    TrackingDataContext.SetKbnMsts.RemoveRange(setKbnMstSource);
+                    TrackingDataContext.SetKarteInf.RemoveRange(targetSetKarteInfs);
                     TrackingDataContext.SetOdrInfCmt.RemoveRange(targetSetOdrInfCmtSource);
                     TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
                     TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
+                    TrackingDataContext.SetMsts.RemoveRange(targetSetMsts);
                     TrackingDataContext.SaveChanges();
-                    ReloadCache();
                     // clone data from newest to restore item
                     return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
                 }
@@ -693,6 +704,19 @@ Enumerable.Empty<SetGenerationMstModel>();
 
 
             return null;
+        }
+
+        public List<ListSetGenerationMstModel> GetAll(int hpId)
+        {
+            var listSetGenerationMstList = NoTrackingDataContext.ListSetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).OrderByDescending(s => s.StartDate).Select(s =>
+                    new ListSetGenerationMstModel(
+                        s.HpId,
+                        s.GenerationId,
+                        s.StartDate,
+                        s.IsDeleted
+                    )
+                  ).ToList();
+            return listSetGenerationMstList;
         }
 
         public void ReleaseResource()

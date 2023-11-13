@@ -393,6 +393,7 @@
         public static readonly string InvalidMemo = "Invalid Memo";
         public static readonly string InvalidSourceItemCd = "Invalid SourceItemCd.";
         public static readonly string InvalidConversionItemCd = "Invalid ConversionItemCd.";
+        public static readonly string InvalidDeleteConversionItemCd = "Invalid DeleteConversionItemCd.";
         public static readonly string InvalidQuanlity = "Invalid Quanlity.";
 
         //Set
@@ -1065,5 +1066,14 @@
         //Main Menu
         public static readonly string InvalidConFName = "Invalid ConfName.";
         public static readonly string InvalidColumnName = "Invalid ColumnName.";
+
+        // InrekiFilter
+        public static readonly string InvalidSinrekiFilterMstName = "Invalid SinrekiFilterMst Name.";
+        public static readonly string InvalidSinrekiFilterMstGrpCd = "Invalid SinrekiFilterMst GrpCd.";
+        public static readonly string InvalidSinrekiFilterMstDetailId = "Invalid SinrekiFilterMstDetail Id.";
+        public static readonly string InvalidSinrekiFilterMstKouiKbnId = "Invalid SinrekiFilterMstKoui KouiKbnId.";
+        public static readonly string InvalidSinrekiFilterMstKouiSeqNo = "Invalid SinrekiFilterMstKoui SeqNo.";
+        public static readonly string InvalidSinrekiFilterMstDetaiDuplicateItemCd = "Invalid SinrekiFilterMstDetai Duplicate ItemCd.";
+
     }
 }

@@ -48,6 +48,8 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("drawCircleObject")]
         public Dictionary<int, Dictionary<int, List<ListDrawCircleObject>>> DrawCircleData { get; set; } = new();
+
+        public string DataJsonConverted { get; set; } = string.Empty;
     }
 
     public class CellModel

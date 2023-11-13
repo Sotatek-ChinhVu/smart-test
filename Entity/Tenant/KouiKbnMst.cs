@@ -79,5 +79,13 @@ namespace Entity.Tenant
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
+
+        [Column("EXC_KOUI_KBN")]
+        [CustomAttribute.DefaultValue(0)]
+        public int ExcKouiKbn { get; set; }
+
+        [Column("OYA_KOUI_KBN_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int OyaKouiKbnId { get; set; }
     }
 }

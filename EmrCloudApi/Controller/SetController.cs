@@ -14,6 +14,7 @@ using UseCase.MainMenu.GetOdrSetName;
 using UseCase.MainMenu.SaveOdrSet;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
+using UseCase.SetMst.GetListSetGenerationMst;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
@@ -179,7 +180,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveConversion)]
     public ActionResult<Response<SaveConversionResponse>> SaveConversion([FromBody] SaveConversionRequest request)
     {
-        var input = new SaveConversionInputData(HpId, UserId, request.SourceItemCd, request.ConversionItemCd);
+        var input = new SaveConversionInputData(HpId, UserId, request.SourceItemCd, request.ConversionItemCd, request.DeleteConversionItemCdList);
         var output = _bus.Handle(input);
 
         var presenter = new SaveConversionPresenter();
@@ -218,7 +219,7 @@ public class SetController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.SaveOdrSet)]
-    public ActionResult<Response<SaveOdrSetResponse>> SaveOdrSet([FromBody] SaveOdrSetRequest request)
+    public async Task<ActionResult<Response<SaveOdrSetResponse>>> SaveOdrSet([FromBody] SaveOdrSetRequest request)
     {
         var odrSetList = request.SetNameModelList.Select(item => new OdrSetNameModel(
                                                                      item.SetCd,
@@ -228,13 +229,30 @@ public class SetController : AuthorizeControllerBase
                                                                      item.Quantity,
                                                                      item.SetOrdInfId))
                                                   .ToList();
-        var input = new SaveOdrSetInputData(HpId, UserId, request.SinDate, odrSetList);
+        var input = new SaveOdrSetInputData(HpId, UserId, request.SinDate, odrSetList, request.UpdateSetNameList.Select(item => new OdrSetNameModel(item.SetCd, item.SetName)).ToList());
         var output = _bus.Handle(input);
 
+        if (output.Status == SaveOdrSetStatus.Successed && output.SetMstModels.Any())
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
+                new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
+        }
         var presenter = new SaveOdrSetPresenter();
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveOdrSetResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetSetGenerationMstList)]
+    public ActionResult<Response<GetSetGenerationMstListResponse>> GetSetGenerationMstList()
+    {
+        var input = new GetSetGenerationMstListInputData(HpId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSetGenerationMstListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetSetGenerationMstListResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)

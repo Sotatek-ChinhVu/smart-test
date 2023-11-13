@@ -11,6 +11,13 @@ public class SaveKensaIraiOutputData : IOutputData
         Status = status;
     }
 
+    public SaveKensaIraiOutputData()
+    {
+        Message = string.Empty;
+        KensaIraiReportItemList = new();
+        Status = SaveKensaIraiStatus.Failed;
+    }
+
     public string Message { get; private set; }
 
     public SaveKensaIraiStatus Status { get; private set; }

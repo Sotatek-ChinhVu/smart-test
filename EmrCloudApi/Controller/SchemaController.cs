@@ -61,7 +61,7 @@ namespace EmrCloudApi.Controller
                     listFiles.Add(new FileItem(fileName, isSchema, streamImage));
                 }
             }
-            var input = new SaveListFileTodayOrderInputData(HpId, request.PtId, request.SetCd, request.TypeUpload, listFiles);
+            var input = new SaveListFileTodayOrderInputData(HpId, UserId, request.PtId, request.SetCd, request.TypeUpload, listFiles);
             var output = _bus.Handle(input);
             var presenter = new SaveListFilePresenter();
             presenter.Complete(output);

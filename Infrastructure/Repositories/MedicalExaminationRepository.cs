@@ -1439,7 +1439,13 @@ namespace Infrastructure.Repositories
         {
             #region Checking
             // 特定疾患処方管理加算２（処方料）・算定
-            List<string> msgs = new();
+            List<string> msgs = new List<string>
+            {
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            };
             var tokysyoItem = checkedTenMstResult.FirstOrDefault(d => d.ItemCd == ItemCdConst.TouyakuTokuSyo2Syoho);
             List<SinKouiCountModel> lastSanteiInMonth = new List<SinKouiCountModel>();
             if (tokysyoItem != null && tokysyoItem.Santei)
@@ -1464,7 +1470,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
                     if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
                     {
-                        msgs.Insert(0, BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs[0] = BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth));
                     }
                 }
             }
@@ -1493,7 +1499,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
                     if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
                     {
-                        msgs.Insert(1, BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs[1] = BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth));
                     }
                 }
             }
@@ -1522,7 +1528,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
                     if (touyakuTokuSyo2Syohosen != null && touyakuTokuSyo2Syohosen != null)
                     {
-                        msgs.Insert(2, BuildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs[2] = BuildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth));
                     }
                 }
             }
@@ -1550,7 +1556,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
                     if (touyakuTokuSyo1Syohosen != null && touyakuTokuSyo2Syohosen != null)
                     {
-                        msgs.Insert(3, BuildMessage(touyakuTokuSyo1Syohosen.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs[3] = BuildMessage(touyakuTokuSyo1Syohosen.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth));
                     }
                 }
             }

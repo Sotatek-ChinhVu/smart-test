@@ -27,14 +27,17 @@ namespace Reporting.KensaHistory.Service
         private long iraiDate;
         private long iraiStart;
         private long iraiEnd;
+        private int sinDate;
         private int row;
         private PtInf ptInf;
         private (List<CoKensaResultMultiModel>, List<long>) data = new();
         private List<CoKensaResultMultiModel> kensaInfDetails = new();
+        private List<CoKensaResultMultiModel> kensaInfDetailsItem = new();
         private List<long> date = new();
         private int totalPage;
         private bool hasNextPage;
         private int currentPage;
+        private short t;
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
@@ -57,7 +60,7 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn)
+        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
 
             this.hpId = hpId;
@@ -67,6 +70,7 @@ namespace Reporting.KensaHistory.Service
             this.startDate = startDate;
             this.endDate = endDate;
             this.showAbnormalKbn = showAbnormalKbn;
+            this.sinDate = sinDate;
             var getData = GetData();
 
             if (getData)
@@ -82,6 +86,19 @@ namespace Reporting.KensaHistory.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
+            int i = 1;
+
+            foreach (var item in _setFieldData)
+            {
+                item.Value.Clear();
+                item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
+                i++;
+                if (i > pageIndex)
+                {
+                    break;
+                }
+            }
+
             return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
@@ -111,24 +128,24 @@ namespace Reporting.KensaHistory.Service
             #endregion
 
             #region Body
-            int UpdateFormBody()
+            int UpdateFormBodyP1()
             {
                 List<ListTextObject> listDataPerPage = new();
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 23;
+                short maxRow = 20;
                 int rowNo = 0;
                 int k = 0;
                 short maxColDate = 9;
                 short colDate = 1;
+                hasNextPage = true;
 
-                if (currentPage == 1)
+                if (date.Count <= maxColDate && kensaInfDetails.Count - 1 <= maxRow)
                 {
-                    foreach (var item in date.OrderBy(x => x))
+                    foreach (var item in date)
                     {
                         listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
-                        date.Remove(item);
                         colDate++;
                         if (colDate > maxColDate)
                         {
@@ -139,7 +156,7 @@ namespace Reporting.KensaHistory.Service
 
                     foreach (var item in kensaInfDetails)
                     {
-                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName));
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
                         listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
                         int count = 0;
@@ -156,101 +173,340 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (kensaInfDetails.Count < maxRow && date.Count == 0)
-                    {
-                        _listTextData.Add(pageIndex, listDataPerPage);
-                        hasNextPage = false;
-                        return 1;
-                    }
-                    else
-                    {
-                        hasNextPage = true;
-                        int z = 0;
-                        foreach (var item in kensaInfDetails)
-                        {
-                            item.KensaResultMultiItems.RemoveRange(0, item.KensaResultMultiItems.Count - 1);
-                            z++;
-                            if (z == kensaInfDetails.Count - 1)
-                            {
-                                break;
-                            }
-                        }
-                        _listTextData.Add(pageIndex, listDataPerPage);
-                        return 1;
-                    }
-                }
-
-                rowNo = 0;
-
-                int counts = kensaInfDetails.Count;
-
-                foreach (var item in date.OrderBy(x => x))
-                {
-                    listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
-                    date.Remove(item);
-                    colDate++;
-                    if (colDate > maxColDate)
-                    {
-                        break;
-                    }
-                    k++;
-                }
-
-                foreach (var item in kensaInfDetails)
-                {
-                    listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName));
-                    listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
-                    listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
-                    int count = 0;
-
-                    foreach (var itemKensa in item.KensaResultMultiItems)
-                    {
-                        listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
-                        listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
-                        count++;
-                    }
-                    rowNo++;
-                    if (rowNo == maxRow)
-                    {
-                        break;
-                    }
-                }
-
-                if (counts > maxRow)
-                {
-                    kensaInfDetails.RemoveRange(0, maxRow);
-                }
-                else
-                {
                     hasNextPage = false;
+                    _listTextData.Add(pageIndex, listDataPerPage);
+
+                    return 1;
                 }
 
-                _listTextData.Add(pageIndex, listDataPerPage);
+                if (date.Count > maxColDate && kensaInfDetails.Count - 1 <= maxRow)
+                {
+                    foreach (var item in date)
+                    {
+                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                        colDate++;
+                        if (colDate > maxColDate)
+                        {
+                            break;
+                        }
+                        k++;
+                    }
+
+                    foreach (var item in kensaInfDetails)
+                    {
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
+                        listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
+                        int count = 0;
+                        foreach (var itemKensa in item.KensaResultMultiItems)
+                        {
+                            listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
+                            listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
+                            count++;
+                        }
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+
+                    date.RemoveRange(0, maxColDate);
+                    int z = 0;
+                    foreach (var item in kensaInfDetails)
+                    {
+                        item.KensaResultMultiItems.RemoveRange(0, maxColDate);
+                        z++;
+                        if (z == kensaInfDetails.Count - 1)
+                        {
+                            break;
+                        }
+                    }
+                    _listTextData.Add(pageIndex, listDataPerPage);
+
+                    return 1;
+                }
+
+                if (date.Count <= maxColDate && kensaInfDetails.Count - 1 > maxRow)
+                {
+                    foreach (var item in date)
+                    {
+                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                        colDate++;
+                        if (colDate > maxColDate)
+                        {
+                            break;
+                        }
+                        k++;
+                    }
+
+                    foreach (var item in kensaInfDetails)
+                    {
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
+                        listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
+                        int count = 0;
+                        foreach (var itemKensa in item.KensaResultMultiItems)
+                        {
+                            listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
+                            listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
+                            count++;
+                        }
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+
+                    kensaInfDetails.RemoveRange(0, maxRow);
+                    _listTextData.Add(pageIndex, listDataPerPage);
+
+                    return 1;
+                }
+
+                return 1;
+            }
+
+            int UpdateFormBodyP2()
+            {
+                List<ListTextObject> listDataPerPage = new();
+                Dictionary<string, string> fieldDataPerPage = new();
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                short maxRow = 20;
+                int rowNo = 0;
+                int k = 0;
+                short maxColDate = 9;
+                short colDate = 1;
+                hasNextPage = true;
+
+                if (currentPage == 1)
+                {
+                    foreach (var item in date)
+                    {
+                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                        colDate++;
+                        if (colDate > maxColDate)
+                        {
+                            break;
+                        }
+                        k++;
+                    }
+
+                    foreach (var item in kensaInfDetailsItem)
+                    {
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
+                        listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
+                        int count = 0;
+                        foreach (var itemKensa in item.KensaResultMultiItems)
+                        {
+                            listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
+                            listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
+                            count++;
+                        }
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+
+                    kensaInfDetailsItem.RemoveRange(0, maxRow);
+                    _listTextData.Add(pageIndex, listDataPerPage);
+
+                    return 1;
+                }
+
+                if (currentPage == 2)
+                {
+                    foreach (var item in date)
+                    {
+                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                        colDate++;
+                        if (colDate > maxColDate)
+                        {
+                            break;
+                        }
+                        k++;
+                    }
+
+                    foreach (var item in kensaInfDetailsItem)
+                    {
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
+                        listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
+                        int count = 0;
+                        foreach (var itemKensa in item.KensaResultMultiItems)
+                        {
+                            listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
+                            listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
+                            count++;
+                        }
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+
+                    date.RemoveRange(0, maxColDate);
+
+                    _listTextData.Add(pageIndex, listDataPerPage);
+
+                    return 1;
+
+                }
+
+                if (currentPage == 3)
+                {
+                    int z = 0;
+
+                    foreach (var item in kensaInfDetails)
+                    {
+                        item.KensaResultMultiItems.RemoveRange(0, 9);
+                        z++;
+                        if (z == kensaInfDetails.Count - 1)
+                        {
+                            break;
+                        }
+                    }
+
+                    foreach (var item in date)
+                    {
+                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                        colDate++;
+                        if (colDate > maxColDate)
+                        {
+                            break;
+                        }
+                        k++;
+                    }
+
+                    foreach (var item in kensaInfDetails)
+                    {
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
+                        listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
+                        int count = 0;
+                        foreach (var itemKensa in item.KensaResultMultiItems)
+                        {
+                            listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
+                            listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
+                            count++;
+                        }
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+
+                    kensaInfDetails.RemoveRange(0, maxRow);
+                    _listTextData.Add(pageIndex, listDataPerPage);
+
+                    return 1;
+                }
+
+                if (currentPage == 4)
+                {
+                    foreach (var item in date)
+                    {
+                        listDataPerPage.Add(new("date" + k.ToString(), 0, rowNo, CIUtil.SDateToShowSDate((int)item)));
+                        colDate++;
+                        if (colDate > maxColDate)
+                        {
+                            break;
+                        }
+                        k++;
+                    }
+
+                    foreach (var item in kensaInfDetails)
+                    {
+                        listDataPerPage.Add(new("itemName", 0, rowNo, item.ItemName.TrimEnd()));
+                        listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
+                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.StandardValue));
+                        int count = 0;
+                        foreach (var itemKensa in item.KensaResultMultiItems)
+                        {
+                            listDataPerPage.Add(new("resultValue" + count.ToString(), 0, rowNo, itemKensa.ResultValue));
+                            listDataPerPage.Add(new("abnormalFlag" + count.ToString(), 0, rowNo, itemKensa.AbnormalKbn));
+                            count++;
+                        }
+                        rowNo++;
+                        if (rowNo == maxRow)
+                        {
+                            break;
+                        }
+                    }
+
+                    hasNextPage = false;
+                    _listTextData.Add(pageIndex, listDataPerPage);
+
+                    return 1;
+                }
 
                 return 1;
             }
             #endregion
 
             #endregion
-
-            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+            switch (t)
             {
-                return false;
+                case 1:
+                    if (UpdateFormHeader() < 0 || UpdateFormBodyP2() < 0)
+                    {
+                        return false;
+                    }
+                    break;
+                default:
+                    if (UpdateFormHeader() < 0 || UpdateFormBodyP1() < 0)
+                    {
+                        return false;
+                    }
+                    break;
             }
+
+
             return true;
         }
 
         private bool GetData()
         {
-            hpInf = _coKensaHistoryFinder.GetHpInf(hpId);
+            hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
-            kensaInfDetails = data.Item1;
+            kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
+            kensaInfDetailsItem = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
-            date = date.OrderBy(x => x).ToList();
-            iraiStart = date.First();
-            iraiEnd = date.Last();
-            totalPage = (kensaInfDetails.Count / 23) + 1 + (date.Count / 9);
+
+            if (kensaInfDetails.Count > 0 && date.Count > 0)
+            {
+                iraiStart = date.First();
+                iraiEnd = date.Last();
+            }
+
+            foreach (var item in kensaInfDetails)
+            {
+
+                foreach (var itemKensa in item.KensaResultMultiItems)
+                {
+                    switch (itemKensa.ResultType)
+                    {
+                        case "E": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以下"); break;
+                        case "L": itemKensa.ChangeResultVal(itemKensa.ResultValue + "未満"); break;
+                        case "U": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以上"); break;
+                        default: break;
+                    }
+                }
+            }
+
+            if (date.Count > 9 && kensaInfDetails.Count - 1 > 20)
+            {
+                t = 1;
+            }
+
             return kensaInfDetails.Count > 0;
         }
 

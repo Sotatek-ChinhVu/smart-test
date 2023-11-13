@@ -429,6 +429,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<KensaSetDetail>().HasKey(s => new { s.HpId, s.SetId, s.SetEdaNo });
             modelBuilder.Entity<KensaCmtMst>().HasKey(s => new { s.HpId, s.CmtCd, s.CmtSeqNo });
             modelBuilder.Entity<KensaResultLog>().HasKey(s => new { s.OpId });
+            modelBuilder.Entity<SinrekiFilterMstKoui>().HasKey(s => new { s.HpId, s.GrpCd, s.SeqNo });
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
 
@@ -442,6 +443,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<LockInf>()
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
+            modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
+            modelBuilder.Entity<UserMst>().HasIndex(u => new {u.UserId}).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -920,6 +923,8 @@ namespace PostgreDataContext
 
         public DbSet<SinrekiFilterMstDetail> SinrekiFilterMstDetails { get; set; } = default!;
 
+        public DbSet<SinrekiFilterMstKoui> SinrekiFilterMstKouis { get; set; } = default!;
+
         public DbSet<KinkiMst> KinkiMsts { get; set; } = default!;
 
         public DbSet<RsvFrameDayPtn> RsvFrameDayPtns { get; set; } = default!;
@@ -1182,5 +1187,7 @@ namespace PostgreDataContext
         public DbSet<KensaCmtMst> KensaCmtMsts { get; set; } = default!;
 
         public DbSet<KensaResultLog> KensaResultLogs { get; set; } = default!;
+
+        public DbSet<SmartKarteAppSignalRPort> SmartKarteAppSignalRPorts { get; set; } = default!;
     }
 }

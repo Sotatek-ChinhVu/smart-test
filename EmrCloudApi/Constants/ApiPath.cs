@@ -29,6 +29,8 @@
         public const string SaveConversion = "SaveConversion";
         public const string GetOdrSetName = "GetOdrSetName";
         public const string SaveOdrSet = "SaveOdrSet";
+        public const string GetSetGenerationMstList = "GetSetGenerationMstList";
+        public const string GetSetKbnMstListByGenerationId = "GetSetKbnMstListByGenerationId";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -86,6 +88,7 @@
         public const string ExistUsedKensaItemCd = "ExistUsedKensaItemCd";
         public const string GetTenMstByCode = "GetTenMstByCode";
         public const string GetByomeiByCode = "GetByomeiByCode";
+        public const string CheckJihiSbtExistsInTenMst = "CheckJihiSbtExistsInTenMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -433,8 +436,8 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
-        public const string GetLockInf = "GetLockInf"; 
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string GetLockInf = "GetLockInf";
         public const string Unlock = "Unlock";
         public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
@@ -539,5 +542,10 @@
         //log
         public const string WriteLog = "WriteLog";
         public const string WriteListLog = "WriteListLog";
+
+        //PrescriptionHistory
+        public const string GetSinrekiFilterMstList = "GetSinrekiFilterMstList";
+        public const string SaveSinrekiFilterMstList = "SaveSinrekiFilterMstList";
+        public const string GetContentDrugUsageHistory = "GetContentDrugUsageHistory";
     }
 }

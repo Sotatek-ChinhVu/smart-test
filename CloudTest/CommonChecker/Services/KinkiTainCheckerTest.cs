@@ -1,4 +1,5 @@
 ﻿using CloudUnitTest.SampleData;
+using CommonChecker.Caches;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -8,146 +9,214 @@ using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Entity.Tenant;
 
-namespace CloudUnitTest.CommonChecker.Services
+namespace CloudUnitTest.CommonChecker.Services;
+
+public class KinkiTainCheckerTest : BaseUT
 {
-    public class KinkiTainCheckerTest : BaseUT
+    /// <summary>
+    /// Test KinkiTainChecker With Setting Value is 5
+    /// </summary>
+    [Test]
+    public void Test_001_Finder_CheckKinkiTain_WhenExistingOtherDrug_AndExistingM01Kinki()
     {
-        /// <summary>
-        /// Test KinkiTainChecker With Setting Value is 5
-        /// </summary>
-        //[Test]
-        //public void Test_001_Finder_CheckKinkiTain_WhenExistingOtherDrug_AndExistingM01Kinki()
-        //{
-        //    ///Setup
-        //    var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        //    var tenMsts = CommonCheckerData.ReadTenMst("T1", "");
-        //    var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug();
-        //    tenantTracking.TenMsts.AddRange(tenMsts);
-        //    tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-        //    tenantTracking.SaveChanges();
+        ///Setup
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var tenMsts = CommonCheckerData.ReadTenMst("T1", "");
+        var ptId = 1231;
+        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
+        tenantTracking.TenMsts.AddRange(tenMsts);
+        tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+        tenantTracking.SaveChanges();
 
-        //    var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
-        //    var hpId = 999;
-        //    var ptId = 1231;
-        //    var settingLevel = 4;
-        //    var sinDay = 20230101;
-        //    var addedItemCodes = new List<ItemCodeModel>()
-        //    {
-        //        new("6220816T1", "id1")
-        //    };
+        var hpId = 999;
+        var settingLevel = 4;
+        var sinDay = 20230101;
+        var addedItemCodes = new List<ItemCodeModel>()
+        {
+            new("6220816T1", "id1")
+        };
 
-        //    ////Act
-        //    var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, null, true);
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
-        //    tenantTracking.TenMsts.RemoveRange(tenMsts);
-        //    tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
-        //    tenantTracking.SaveChanges();
+        try
+        {
+            //Act
+            var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, null, true);
 
-        //    ///Assert
-        //    Assert.True(result.Count == 1);
-        //}
+            //Assert
+            Assert.True(result.Count == 1);
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
+            tenantTracking.SaveChanges();
+        }
+    }
 
-        //[Test]
-        //public void Test_002_Finder_CheckKinkiTain_WhenNotExistingOtherDrug()
-        //{
-        //    ///Setup
-        //    var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        //    var tenMsts = CommonCheckerData.ReadTenMst("T2", "");
-        //    tenantTracking.TenMsts.AddRange(tenMsts);
-        //    tenantTracking.SaveChanges();
+    [Test]
+    public void Test_002_Finder_CheckKinkiTain_WhenNotExistingOtherDrug()
+    {
+        ///Setup
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var tenMsts = CommonCheckerData.ReadTenMst("T2", "");
+        tenantTracking.TenMsts.AddRange(tenMsts);
+        tenantTracking.SaveChanges();
 
-        //    var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext());
-        //    var hpId = 999;
-        //    var ptId = 1231;
-        //    var settingLevel = 4;
-        //    var sinDay = 20230101;
-        //    var addedItemCodes = new List<ItemCodeModel>()
-        //    {
-        //        new("6220816T2", "id1")
-        //    };
-        //        tenantTracking.SystemConfs.Add(systemConf);
-        //    }
-        //    tenantTracking.SaveChanges();
+        var hpId = 999;
+        var ptId = 1231;
+        var settingLevel = 4;
+        var sinDay = 20230101;
+        var addedItemCodes = new List<ItemCodeModel>()
+        {
+            new("6220816T2", "id1")
+        };
 
-        //    ////Act
-        //    var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, null, true);
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
-        //    tenantTracking.TenMsts.RemoveRange(tenMsts);
-        //    tenantTracking.SaveChanges();
+        try
+        {
+            //Act
+            var result = realTimeCheckerFinder.CheckKinkiTain(hpId, ptId, sinDay, settingLevel, addedItemCodes, null, true);
 
-        //    ///Assert
-        //    Assert.True(!result.Any());
-        //}
+            //Assert
+            Assert.True(!result.Any());
+        }
+        finally
+        {
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.SaveChanges();
+        }
+    }
 
-        //[Test]
-        //public void Test_003_HandleCheckOrderList_KinkiTainCheck_WhenExisitingOtherDrug_ExistingM01Kinki()
-        //{
-        //    ///Setup
-        //    var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        //    var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
-        //    var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug();
-        //    tenantTracking.TenMsts.AddRange(tenMsts);
-        //    tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-        //    tenantTracking.SaveChanges();
+    [Test]
+    public void Test_003_HandleCheckOrderList_KinkiTainCheck_WhenExisitingOtherDrug_ExistingM01Kinki()
+    {
+        //Setup
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-        //    var addedOrdInfDetails = new List<OrdInfoDetailModel>()
-        //    {
-        //        new OrdInfoDetailModel( id: "id1",
-        //                                sinKouiKbn: 20,
-        //                                itemCd: "6220816T1",
-        //                                itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
-        //                                suryo: 1,
-        //                                unitName: "g",
-        //                                termVal: 0,
-        //                                syohoKbn: 3,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 1,
-        //                                yohoKbn: 0,
-        //                                ipnCd: "3112004M1",
-        //                                bunkatu: "",
-        //                                masterSbt: "Y",
-        //                                bunkatuKoui: 0),
+        //Setup KinkiLevelSetting
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null)
+        {
+            systemConf.Val = 4;
+        }
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2027,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 2,
+                UpdateId = 2,
+                Val = 4
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
 
-        //        new OrdInfoDetailModel( id: "id2",
-        //                                sinKouiKbn: 21,
-        //                                itemCd: "Y101",
-        //                                itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
-        //                                suryo: 1,
-        //                                unitName: "・・･・・・",
-        //                                termVal: 0,
-        //                                syohoKbn: 0,
-        //                                syohoLimitKbn: 0,
-        //                                drugKbn: 0,
-        //                                yohoKbn: 1,
-        //                                ipnCd: "",
-        //                                bunkatu: "",
-        //                                masterSbt: "",
-        //                                bunkatuKoui: 0),
-        //    };
-        //    var odrInfoModel = new List<OrdInfoModel>()
-        //    {
-        //        new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails)
-        //};
+        //Setup M01_KINKI
+        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
+        var m01Kinki = new M01Kinki();
+        if (m01 == null)
+        {
+            m01Kinki.ACd = "1190700";
+            m01Kinki.BCd = "1190700";
+            m01Kinki.CmtCd = "D006";
+            m01Kinki.SayokijyoCd = "S2001";
+            m01Kinki.KyodoCd = "";
+            m01Kinki.Kyodo = "3";
+            m01Kinki.DataKbn = "1";
+
+            tenantTracking.M01Kinki.Add(m01Kinki);
+        }
+
+        tenantTracking.SaveChanges();
+
+        int ptId = 1233;
+        var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
+        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
+        tenantTracking.TenMsts.AddRange(tenMsts);
+        tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+        tenantTracking.SaveChanges();
+
+        var addedOrdInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel( id: "id1",
+                                    sinKouiKbn: 20,
+                                    itemCd: "6220816T3",
+                                    itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                    suryo: 1,
+                                    unitName: "g",
+                                    termVal: 0,
+                                    syohoKbn: 3,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 1,
+                                    yohoKbn: 0,
+                                    ipnCd: "3112004M1",
+                                    bunkatu: "",
+                                    masterSbt: "Y",
+                                    bunkatuKoui: 0),
+
+            new OrdInfoDetailModel( id: "id2",
+                                    sinKouiKbn: 21,
+                                    itemCd: "Y101",
+                                    itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                    suryo: 1,
+                                    unitName: "・・･・・・",
+                                    termVal: 0,
+                                    syohoKbn: 0,
+                                    syohoLimitKbn: 0,
+                                    drugKbn: 0,
+                                    yohoKbn: 1,
+                                    ipnCd: "",
+                                    bunkatu: "",
+                                    masterSbt: "",
+                                    bunkatuKoui: 0),
+        };
+        var odrInfoModel = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(odrKouiKbn: 21, santeiKbn: 0, ordInfDetails: addedOrdInfDetails)
+        };
 
 
-        //    var unitCheckerResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
-        //                                            RealtimeCheckerType.KinkiTain, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
+        var unitCheckerResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                RealtimeCheckerType.KinkiTain, odrInfoModel, 20230101, ptId, new(new(), new(), new()), new(), new(), true);
 
-        //    var kinkiTainChecker = new KinkiTainChecker<OrdInfoModel, OrdInfoDetailModel>();
-        //    kinkiTainChecker.HpID = 999;
-        //    kinkiTainChecker.PtID = 1231;
-        //    kinkiTainChecker.Sinday = 20230101;
-        //    kinkiTainChecker.DataContext = TenantProvider.GetNoTrackingDataContext();
+        var kinkiTainChecker = new KinkiTainChecker<OrdInfoModel, OrdInfoDetailModel>();
+        kinkiTainChecker.HpID = 999;
+        kinkiTainChecker.PtID = 1233;
+        kinkiTainChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "6220816T3" }, 20230505, ptId);
+        kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
-        //    //// Act
-        //    var result = kinkiTainChecker.HandleCheckOrderList(unitCheckerResult);
+        try
+        {
+            // Act
+            var result = kinkiTainChecker.HandleCheckOrderList(unitCheckerResult);
 
-        //    tenantTracking.TenMsts.RemoveRange(tenMsts);
-        //    tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
-        //    tenantTracking.SaveChanges();
-
-        //    ///Assert
-        //    Assert.True(result.ErrorInfo != null && result.CheckingOrderList.Count == 1 && result.CheckingOrderList[0].OrdInfDetails[0].ItemCd == "6220816T3");
-        //}
+            //Assert
+            Assert.True(result.IsError && result.CheckingOrderList[0].OrdInfDetails[0].ItemCd == "6220816T3" && result.CheckerType == RealtimeCheckerType.KinkiTain);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
+            if(m01 == null)
+            {
+                tenantTracking.M01Kinki.RemoveRange(m01Kinki);
+            }
+            tenantTracking.SaveChanges();
+        }
     }
 }

@@ -68,7 +68,11 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
                 s.IsDspKarte,
                 s.ByomeiCmt,
                 s.ByomeiCd,
-                s.PrefixSuffixList
+                s.PrefixSuffixList,
+                s.Icd10,
+                s.Icd102013,
+                s.Icd1012013,
+                s.Icd1022013
             )).ToList();
     }
 
@@ -215,11 +219,13 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
         List<SetFileInfModel> result = new();
         if (listModel.Any())
         {
-            List<string> listFolders = new();
-            listFolders.Add(CommonConstants.Store);
-            listFolders.Add(CommonConstants.Karte);
-            listFolders.Add(CommonConstants.SetPic);
-            listFolders.Add(setCd.ToString());
+            List<string> listFolders = new()
+            {
+                CommonConstants.Store,
+                CommonConstants.Karte,
+                CommonConstants.SetPic,
+                setCd.ToString()
+            };
 
             string path = _amazonS3Service.GetFolderUploadOther(listFolders);
             foreach (var model in listModel)

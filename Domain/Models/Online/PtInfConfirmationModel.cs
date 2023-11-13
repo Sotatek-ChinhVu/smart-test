@@ -31,23 +31,6 @@ public class PtInfConfirmationModel
         SeitaiNushiBasicInfoCheck = seitaiNushiBasicInfoCheck;
     }
 
-    public PtInfConfirmationModel(string name, string value, string compareValue)
-    {
-        AttributeName = name;
-        CurrentValue = value.AsString();
-        XmlValue = compareValue.AsString();
-        CanCheck = !string.IsNullOrEmpty(XmlValue);
-        switch (name)
-        {
-            case PtInfOQConst.HOME_ADDRESS:
-                IsReflect = string.IsNullOrEmpty(XmlValue) || HenkanJ.Instance.ToFullsize(CurrentValueDisplay.AsString()).Equals(HenkanJ.Instance.ToFullsize(XmlValueDisplay.AsString()));
-                break;
-            default:
-                IsReflect = string.IsNullOrEmpty(XmlValue) || CurrentValueDisplay.AsString().Equals(XmlValueDisplay.AsString());
-                break;
-        }
-    }
-
     public bool IgnoreConfig { get; private set; }
 
     public string AttributeName { get; private set; }

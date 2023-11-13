@@ -236,5 +236,6 @@ namespace Domain.Models.MstItem
         bool SaveSetNameMnt(List<SetNameMntModel> lstModel, int userId, int hpId, int sinDate);
 
         List<RenkeiTimingModel> GetRenkeiTimingModel(int hpId, int renkeiId);
+        bool CheckJihiSbtExistsInTenMst(int jihiSbt);
     }
 }

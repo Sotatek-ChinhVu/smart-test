@@ -462,6 +462,7 @@ namespace EmrCloudApi.Controllers
                     request.KarteItem.RichText),
                 UserId,
                 request.IsSagaku,
+                request.AutoSaveKensaIrai,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
                 familyList,
                 request.NextOrderItems,

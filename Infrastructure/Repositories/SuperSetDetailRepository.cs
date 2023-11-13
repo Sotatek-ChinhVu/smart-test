@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.OrdInfDetails;
+using Domain.Models.SetMst;
 using Domain.Models.SuperSetDetail;
 using Domain.Types;
 using Entity.Tenant;
@@ -12,18 +13,22 @@ using Infrastructure.Options;
 using Infrastructure.Services;
 using Microsoft.Extensions.Options;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
 public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepository
 {
     private readonly AmazonS3Options _options;
+    private readonly ISetMstRepository _setMstRepository;
     private const string SUSPECTED = "の疑い";
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
-    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider) : base(tenantProvider)
+
+    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider, ISetMstRepository setMstRepository) : base(tenantProvider)
     {
         _options = optionsAccessor.Value;
+        _setMstRepository = setMstRepository;
     }
 
     public SuperSetDetailModel GetSuperSetDetail(int hpId, int userId, int setCd, int sindate)
@@ -52,16 +57,21 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var allSetByomeis = NoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         var allKarteFiles = NoTrackingDataContext.SetKarteImgInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd)).ToList();
         List<(int setCd, long seqNo)> lastSeqNos = new();
-        foreach (var karte in allKarteFiles)
+        foreach (var setCdItem in setCds)
         {
-            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == karte.SetCd).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
-            lastSeqNos.Add(new(setCd, lastSeq));
+            var lastSeq = allKarteFiles.Where(item => item.HpId == hpId && item.SetCd == setCdItem).Select(item => item.SeqNo)?.DefaultIfEmpty(0).Max() ?? 0;
+            if (lastSeq > 0)
+            {
+                lastSeqNos.Add(new(setCdItem, lastSeq));
+            }
         }
+        lastSeqNos = lastSeqNos.Distinct().ToList();
 
         List<string> codeLists = new();
         foreach (var item in allSetByomeis)
         {
             codeLists.AddRange(GetCodeLists(item));
+            codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
         var allByomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
         var allKarteInfs = NoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.KarteKbn == 1 && k.IsDeleted == DeleteTypes.None).ToList();
@@ -130,8 +140,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         foreach (var item in currentSetByomeis)
         {
             currentCodeLists.AddRange(GetCodeLists(item));
+            currentCodeLists.Add(item.ByomeiCd ?? string.Empty);
         }
-
         var byomeiMstList = allByomeiMstList.Where(b => currentCodeLists.Contains(b.ByomeiCd)).ToList();
         lock (byomeiObj)
         {
@@ -161,7 +171,6 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     private List<SetFileInfModel> ExcuGetKarteFileForEachDetailItem(int setCd, object karteFileObj, List<SetKarteImgInf> allKarteFiles, List<(int setCd, long seqNo)> lastSeqNos)
     {
-
         long lastSeqNo = lastSeqNos.FirstOrDefault(s => s.setCd == setCd).seqNo;
         var result = allKarteFiles.Where(item => item.SetCd == setCd && item.SeqNo == lastSeqNo && item.FileName != string.Empty).OrderBy(item => item.Position)
                        .Select(item => new SetFileInfModel(item.KarteKbn > 0, item.FileName ?? string.Empty)).ToList();
@@ -194,6 +203,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         foreach (var item in listByomeis)
         {
             codeLists.AddRange(GetCodeLists(item));
+            codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
         var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
 
@@ -218,7 +228,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         if (codeLists != null)
         {
             isSuspected = codeLists.Any(c => c == "8002");
+            codeLists.Add(mst.ByomeiCd ?? string.Empty);
         }
+        codeLists = codeLists?.Distinct().ToList();
         var byomeiMst = byomeiMstList.FirstOrDefault(b => codeLists?.Contains(b.ByomeiCd) == true) ?? new();
         return new SetByomeiModel(
                 mst.Id,
@@ -241,6 +253,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     private List<string> GetCodeLists(SetByomei mst)
     {
+
         var codeLists = new List<string>()
             {
                 mst.SyusyokuCd1 ?? string.Empty,
@@ -265,7 +278,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-        return codeLists?.Where(c => c != string.Empty).ToList() ?? new List<string>();
+
+        return codeLists?.Where(c => c != string.Empty).Distinct().ToList() ?? new List<string>();
     }
 
     #endregion
@@ -1415,37 +1429,58 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                     .ToList();
     }
 
-    public bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd)
+    public bool SaveConversionItemInf(int hpId, int userId, string conversionItemCd, string sourceItemCd, List<string> deleteConversionItemCdList)
     {
         var conversionItemInfDBList = TrackingDataContext.ConversionItemInfs.Where(item => item.HpId == hpId
                                                                                            && item.SourceItemCd == sourceItemCd
                                                                                            && item.IsDeleted == 0)
                                                                             .ToList();
-
-        if (!conversionItemInfDBList.Any() || !conversionItemInfDBList.Exists(item => item.DestItemCd == conversionItemCd))
+        // Delete Item
+        foreach (var itemCd in deleteConversionItemCdList)
         {
-            var newConversionItemInf = new ConversionItemInf()
+            var conversionItem = conversionItemInfDBList.FirstOrDefault(item => item.DestItemCd == itemCd);
+            if (conversionItem == null)
+            {
+                continue;
+            }
+            conversionItem.IsDeleted = 1;
+            conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            conversionItem.UpdateId = userId;
+        }
+        conversionItemInfDBList = conversionItemInfDBList.Where(item => !deleteConversionItemCdList.Contains(item.DestItemCd)).ToList();
+
+        int sortNo = 1;
+        var updateItem = conversionItemInfDBList.FirstOrDefault(item => item.DestItemCd == conversionItemCd);
+        bool isAddNew = false;
+        if (updateItem == null)
+        {
+            updateItem = new ConversionItemInf()
             {
                 HpId = hpId,
                 CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId,
-                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                UpdateId = userId,
                 SourceItemCd = sourceItemCd,
                 DestItemCd = conversionItemCd,
                 IsDeleted = 0,
-                SortNo = 1,
             };
-            TrackingDataContext.ConversionItemInfs.Add(newConversionItemInf);
-            foreach (var conversionItem in conversionItemInfDBList)
-            {
-                conversionItem.UpdateId = userId;
-                conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                conversionItem.SortNo += 1;
-            }
-            return TrackingDataContext.SaveChanges() > 0;
+            isAddNew = true;
         }
-        return true;
+        updateItem.SortNo = sortNo;
+        updateItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        updateItem.UpdateId = userId;
+        conversionItemInfDBList = conversionItemInfDBList.Where(item => !deleteConversionItemCdList.Contains(item.DestItemCd) && updateItem.DestItemCd != item.DestItemCd).ToList();
+        foreach (var conversionItem in conversionItemInfDBList)
+        {
+            sortNo += 1;
+            conversionItem.UpdateId = userId;
+            conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            conversionItem.SortNo = sortNo;
+        }
+        if (isAddNew)
+        {
+            TrackingDataContext.ConversionItemInfs.Add(updateItem);
+        }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public List<OdrSetNameModel> GetOdrSetName(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, int timeExpired, string itemName)
@@ -1693,7 +1728,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return result;
     }
 
-    public bool SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList)
+    public (bool SaveSuccess, List<SetMstModel> SetMstUpdateList) SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList, List<OdrSetNameModel> updateSetNameList)
     {
         var setOdrInfId = setNameModelList.Select(item => item.SetOrdInfId).Distinct().ToList();
         var rowNoList = setNameModelList.Select(item => item.RowNo).Distinct().ToList();
@@ -1725,6 +1760,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                                                && item.EndDate >= sinDate
                                                                                && ipnNameCdList.Contains(item.IpnNameCd))
                                                                 .ToList();
+        #region update setNameOdr
         foreach (var model in setNameModelList)
         {
             var odrInf = odrInfDbList.FirstOrDefault(item => item.Id == model.SetOrdInfId
@@ -1817,7 +1853,49 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 odrInfDetail.SyohoLimitKbn = 0;
             }
         }
-        return TrackingDataContext.SaveChanges() > 0;
+        #endregion
+
+        #region update setName
+        List<SetMstModel> setMstUpdateList = new();
+        setCdList = updateSetNameList.Select(item => item.SetCd).Distinct().ToList();
+        var setMstDBList = TrackingDataContext.SetMsts.Where(item => item.HpId == hpId
+                                                                     && item.IsDeleted == 0
+                                                                     && setCdList.Contains(item.SetCd))
+                                                      .ToList();
+        List<int> generationIdList = new();
+        foreach (var model in updateSetNameList)
+        {
+            var setMst = setMstDBList.FirstOrDefault(item => item.SetCd == model.SetCd);
+            if (setMst == null)
+            {
+                continue;
+            }
+            setMst.SetName = model.SetName;
+            setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            setMst.UpdateId = userId;
+            generationIdList.Add(setMst.GenerationId);
+        }
+        #endregion
+        var saveSuccess = TrackingDataContext.SaveChanges() > 0;
+        if (saveSuccess)
+        {
+            foreach (var generationId in generationIdList)
+            {
+                var setMstByGenarationId = _setMstRepository.ReloadCache(hpId, generationId).ToList();
+                foreach (var model in updateSetNameList)
+                {
+                    var rootSet = setMstDBList.FirstOrDefault(item => item.SetCd == model.SetCd);
+                    if (rootSet == null)
+                    {
+                        continue;
+                    }
+                    var itemSetList = setMstByGenarationId.Where(item => item.SetKbn == rootSet.SetKbn && item.SetKbnEdaNo == rootSet.SetKbnEdaNo && item.GenerationId == rootSet.GenerationId && (rootSet.Level1 == 0 || (rootSet.Level1 > 0 && item.Level1 == rootSet.Level1))).ToList();
+                    setMstUpdateList.AddRange(itemSetList);
+                }
+            }
+        }
+        setMstUpdateList = setMstUpdateList.Distinct().ToList();
+        return (saveSuccess, setMstUpdateList);
     }
 
     private List<OdrSetNameModel> GetOdrSetNameFreeComment(int hpId, SetCheckBoxStatusModel checkBoxStatus, int generationId, string itemName, bool isQueryAll)

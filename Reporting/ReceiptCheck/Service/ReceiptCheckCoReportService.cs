@@ -1,15 +1,21 @@
-﻿using Helper.Common;
+﻿using Domain.Models.SetMst;
+using Helper.Common;
 using Helper.Extension;
+using Helper.Redis;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Reporting.CommonMasters.Enums;
+using Microsoft.Extensions.Configuration;
 using Reporting.Mappers.Common;
 using Reporting.ReceiptCheck.DB;
 using Reporting.ReceiptCheck.Mapper;
 using Reporting.ReceiptCheck.Model;
+using StackExchange.Redis;
+using System.Text;
+using System.Text.Json;
 
 namespace Reporting.ReceiptCheck.Service;
 
-public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
+public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReportService
 {
     private const int MAX_LENG_MESSAGE = 90;
 
@@ -21,8 +27,11 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
     private bool _hasNextPage = true;
+    private readonly string key;
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
 
-    public ReceiptCheckCoReportService(ITenantProvider tenantProvider)
+    public ReceiptCheckCoReportService(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
         _tenantProvider = tenantProvider;
         _tableFieldData = new();
@@ -30,10 +39,46 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
         _messageOld = string.Empty;
         _coModel = new();
         _coModels = new();
+        key = GetCacheKey() + "ReceiptCheckCoReporting";
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     public CommonReportingRequestModel GetReceiptCheckCoReportingData(int hpId, List<long> ptIds, int seikyuYm)
     {
+        ptIds = ptIds.OrderBy(x => x).ToList();
+        StringBuilder extendKey = new();
+        extendKey.Append(seikyuYm);
+        extendKey.Append("_");
+        foreach (var item in ptIds)
+        {
+            extendKey.Append(item + "_");
+        }
+        var finalKey = key + "_" + extendKey.ToString();
+        if (_cache.KeyExists(finalKey))
+        {
+            var results = _cache.StringGet(finalKey);
+            var json = results.AsString();
+            _cache.KeyDelete(finalKey);
+            if (!string.IsNullOrEmpty(json))
+            {
+                return new CommonReportingRequestModel()
+                {
+                    DataJsonConverted = json
+                };
+            }
+        }
+
         using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
         {
             var finder = new CoReceiptCheckFinder(_tenantProvider);
@@ -48,8 +93,44 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
                     UpdateDrawForm(seikyuYm);
                 }
             }
-
             return new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
+        }
+    }
+
+    public bool CheckOpenReceiptCheck(int hpId, List<long> ptIds, int seikyuYm)
+    {
+        ptIds = ptIds.OrderBy(x => x).ToList();
+        StringBuilder extendKey = new();
+        extendKey.Append(seikyuYm);
+        extendKey.Append("_");
+        foreach (var item in ptIds)
+        {
+            extendKey.Append(item + "_");
+        }
+        var finalKey = key + "_" + extendKey.ToString();
+
+        if (_cache.KeyExists(finalKey))
+        {
+            _cache.KeyDelete(finalKey);
+        }
+        using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
+        {
+            var finder = new CoReceiptCheckFinder(_tenantProvider);
+            // データ取得
+            _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
+            bool exist = _coModels != null && _coModels.Any();
+            if (exist)
+            {
+                // レセプト印刷
+                while (_hasNextPage)
+                {
+                    UpdateDrawForm(seikyuYm);
+                }
+                var result = new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
+                var json = JsonSerializer.Serialize(result);
+                _cache.StringSet(finalKey, json);
+            }
+            return exist;
         }
     }
 

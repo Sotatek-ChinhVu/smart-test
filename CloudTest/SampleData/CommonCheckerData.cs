@@ -243,7 +243,8 @@ namespace CloudUnitTest.SampleData
                                     tenMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    tenMst.ItemCd = text + itemCd;
+                                    var newItemCd = (text + itemCd);
+                                    tenMst.ItemCd = newItemCd.Length > 10 ? newItemCd.Substring(0, 10) : newItemCd;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int startDate);
@@ -460,7 +461,8 @@ namespace CloudUnitTest.SampleData
                                     tenMst.MoniterKasan = MoniterKasan;
                                     break;
                                 case "DX":
-                                    tenMst.YjCd = text + yjCd;
+                                    var newYjcd = text + yjCd;
+                                    tenMst.YjCd = newYjcd.Length > 12 ? newYjcd.Substring(0, 12) : newYjcd;
                                     break;
                                 default:
                                     break;
@@ -1032,7 +1034,7 @@ namespace CloudUnitTest.SampleData
             return kinkiMsts;
         }
 
-        public static List<PtOtherDrug> ReadPtOtherDrug()
+        public static List<PtOtherDrug> ReadPtOtherDrug(int ptId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1059,15 +1061,12 @@ namespace CloudUnitTest.SampleData
                             }
                             var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
 
+                            ptOtherDrug.PtId = ptId;
                             switch (columnName)
                             {
                                 case "A":
                                     int.TryParse(text, out int hpId);
                                     ptOtherDrug.HpId = hpId;
-                                    break;
-                                case "B":
-                                    int.TryParse(text, out int ptId);
-                                    ptOtherDrug.PtId = ptId;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int seqNo);
@@ -1280,7 +1279,7 @@ namespace CloudUnitTest.SampleData
             return m12FoodAlrgys;
         }
 
-        public static List<PtOtcDrug> ReadPtOtcDrug(string key)
+        public static List<PtOtcDrug> ReadPtOtcDrug()
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1530,7 +1529,7 @@ namespace CloudUnitTest.SampleData
             return ptSupples;
         }
 
-        public static List<M41SuppleIndexdef> ReadM41SuppleIndexdef(string key)
+        public static List<M41SuppleIndexdef> ReadM41SuppleIndexdef()
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1580,7 +1579,7 @@ namespace CloudUnitTest.SampleData
             return m41SuppleIndexdefs;
         }
 
-        public static List<M41SuppleIndexcode> ReadM41SuppleIndexcode(string key)
+        public static List<M41SuppleIndexcode> ReadM41SuppleIndexcode()
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1627,7 +1626,7 @@ namespace CloudUnitTest.SampleData
             return m41SuppleIndexcodes;
         }
 
-        public static List<M01Kinki> ReadM01Kinki(string key)
+        public static List<M01Kinki> ReadM01Kinki()
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));

@@ -451,7 +451,7 @@ namespace Interactor.MedicalExamination
                 {
                     continue;
                 }
-                int minStartDate = tenMsts.Min(item => item.StartDate);
+                int minStartDate = tenMsts != null && tenMsts.Any() ? tenMsts.Min(item => item.StartDate) : 0;
 
                 if (minStartDate > sinDate)
                 {
@@ -460,7 +460,7 @@ namespace Interactor.MedicalExamination
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
 
-                int maxEndDate = tenMsts.Max(item => item.EndDate);
+                int maxEndDate = tenMsts != null && tenMsts.Any() ? tenMsts.Max(item => item.EndDate) : 0;
 
                 if (maxEndDate < sinDate)
                 {
