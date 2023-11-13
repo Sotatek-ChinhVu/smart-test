@@ -3724,5 +3724,64 @@ namespace Helper.Common
         {
             return Environment.MachineName;
         }
+
+        /// <summary>
+        /// 半角カタカナ以外を除去する
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static string GetKatakana(string target)
+        {
+            StringBuilder ret = new();
+
+            for (int i = 0; i < target.Length; i++)
+            {
+                if (((IsHalfKatakanaPunctuation(target.Substring(i, 1))) ||
+                    (IsFullKatakana(target.Substring(i, 1))) ||
+                   (target.Substring(i, 1) == " ") ||
+                   (target.Substring(i, 1) == "　") ||
+                   (target.Substring(i, 1) == "゛")) && target.Substring(i, 1) != "･" &&
+                       target.Substring(i, 1) != "・")
+                {
+                    ret.Append(target.Substring(i, 1));
+                }
+            }
+
+            return ret.ToString();
+        }
+
+        /// <summary>
+        /// 分割調剤の分割数量取得
+        /// </summary>
+        public static string GetBunkatuStr(string str, int kouiCd)
+        {
+            string ret = string.Empty;
+            string sTgt = str;
+            string sTani;
+
+            if (kouiCd == 21)
+            {
+                //内服
+                sTani = "日分";
+            }
+            else
+            {
+                sTani = "回分";
+            }
+
+            string[] bunkatuKaisus = sTgt.Split('+');
+
+            foreach (string bunkatuKaisu in bunkatuKaisus)
+            {
+                ret = bunkatuKaisu + sTani;
+            }
+
+            if (ret != string.Empty)
+            {
+                ret = $"({ret})";
+            }
+
+            return ret;
+        }
     }
 }
