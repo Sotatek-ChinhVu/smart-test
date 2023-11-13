@@ -78,7 +78,7 @@
 
         public ListKensaInfDetailItemModel ChangeResultVal(string resultVal)
         {
-            RowSeqId = resultVal;
+            ResultVal = resultVal;
             return this;
         }
 

@@ -51,6 +51,7 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
         List<KensaInfDetailModel> result = new();
         List<string> contenItemList = contentString.Split("\r\n").ToList();
         bool successed = true;
+        int index = 1;
         foreach (var item in contenItemList)
         {
             if (string.IsNullOrEmpty(item) || item.Length != 256)
@@ -65,13 +66,28 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
             string nyubi = SubString(item, 70, 3);
             string yoketu = SubString(item, 73, 3);
             string bilirubin = SubString(item, 76, 3);
-            string kensaItemCd = SubString(item, 79, 5);
-            string abnormalKbn = SubString(item, 84, 4);
-            string resultVal = SubString(item, 96, 8);
-            string resultType = SubString(item, 104, 1);
-            string cmtCd1 = SubString(item, 105, 3);
-            string cmtCd2 = SubString(item, 108, 3);
-            result.Add(new KensaInfDetailModel(type, centerCd, iraiCd, nyubi, yoketu, bilirubin, kensaItemCd, abnormalKbn, resultVal, resultType, cmtCd1, cmtCd2));
+            int startIndex = 79;
+            for (int i = 1; i <= 5; i++)
+            {
+                string kensaItemCd = SubString(item, startIndex, 5);
+                startIndex += 5;
+                string abnormalKbn = SubString(item, startIndex, 4);
+                startIndex += 4 + 3 + 3 + 2;
+                string resultVal = SubString(item, startIndex, 8);
+                startIndex += 8;
+                string resultType = SubString(item, startIndex, 1);
+                startIndex += 1;
+                string cmtCd1 = SubString(item, startIndex, 3);
+                startIndex += 3;
+                string cmtCd2 = SubString(item, startIndex, 3);
+                startIndex += 3;
+                if (string.IsNullOrEmpty(kensaItemCd))
+                {
+                    continue;
+                }
+                result.Add(new KensaInfDetailModel(index, type, centerCd, iraiCd, nyubi, yoketu, bilirubin, kensaItemCd, abnormalKbn, resultVal, resultType, cmtCd1, cmtCd2));
+                index++;
+            }
         }
         var iraiCdList = result.Where(item => item.IraiCd > 0).Select(item => item.IraiCd).Distinct().ToList();
         var iraiCdNotExitList = _kensaIraiRepository.GetIraiCdNotExistList(hpId, iraiCdList);
