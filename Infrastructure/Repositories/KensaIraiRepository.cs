@@ -1196,7 +1196,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 {
                     if (doneProgress)
                     {
-                        var status = new KensaInfMessageStatus(true, true, messageItem, string.Empty);
+                        var status = new KensaInfMessageStatus(true, successCount, true, messageItem, string.Empty);
                         SendMessager(status);
                     }
                 }
@@ -1391,11 +1391,12 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         var ptInf = ptInfDBList.FirstOrDefault(item => item.PtId == kensaInf.PtId);
 
         // update kensaInfDetail
-        List<int> indexUsedList = new();
-        List<long> seqNoUsedList = new();
+        List<(int index, long seqNo)> indexUsedList = new();
+        List<long> parentSeqNoUsedList = new();
 
         foreach (var detailModel in kensaInfDetailModelList)
         {
+            bool isAddNew = false;
             if (string.IsNullOrEmpty(detailModel.KensaItemCd))
             {
                 continue;
@@ -1403,9 +1404,9 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
 
             var kensaInfDetail = kensaInfDetailDBList.FirstOrDefault(item => item.IraiCd == iraiCd
                                                                              && item.KensaItemCd == detailModel.KensaItemCd
-                                                                             && !indexUsedList.Contains(detailModel.Index));
+                                                                             && !indexUsedList.Select(item => item.index).Contains(detailModel.Index)
+                                                                             && !indexUsedList.Select(index => index.seqNo).Contains(item.SeqNo));
             var kensaMst = kensaMstDBList.FirstOrDefault(item => item.KensaItemCd == detailModel.KensaItemCd);
-            indexUsedList.Add(detailModel.Index);
             if (kensaMst == null)
             {
                 continue;
@@ -1477,6 +1478,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 kensaInfDetail.RaiinNo = kensaInf.RaiinNo;
                 kensaInfDetail.KensaItemCd = detailModel.KensaItemCd;
                 kensaInfDetail.SeqNo = 0;
+                isAddNew = true;
             }
             kensaInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
             kensaInfDetail.UpdateId = userId;
@@ -1485,28 +1487,28 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             kensaInfDetail.CmtCd1 = detailModel.CmtCd1;
             kensaInfDetail.CmtCd2 = detailModel.CmtCd2;
             kensaInfDetail.ResultType = detailModel.ResultType == "B" ? string.Empty : detailModel.ResultType;
-            if (kensaInfDetail.SeqNo == 0)
+            if (isAddNew)
             {
                 TrackingDataContext.KensaInfDetails.Add(kensaInfDetail);
                 TrackingDataContext.SaveChanges();
                 kensaInfDetailDBList.Add(kensaInfDetail);
-
-                // if item is a child, get its parent
-                var parentKensaMst = kensaMstDBList.FirstOrDefault(item => item.OyaItemCd == kensaInfDetail.KensaItemCd);
-                if (parentKensaMst != null)
-                {
-                    // get parent item in kensaDetailDbList
-                    var kensaDetailParent = kensaInfDetailDBList.Where(item => item.KensaItemCd == parentKensaMst.KensaItemCd
-                                                                               && !seqNoUsedList.Contains(item.SeqNo))
-                                                                .OrderBy(item => item.SeqNo)
-                                                                .FirstOrDefault();
-                    if (kensaDetailParent != null)
-                    {
-                        kensaInfDetail.SeqParentNo = kensaDetailParent.SeqNo;
-                        seqNoUsedList.Add(kensaDetailParent.SeqNo);
-                    }
-                }
             }
+
+            // get parent item in kensaDetailDbList
+            var kensaDetailParent = kensaInfDetailDBList.Where(item => item.KensaItemCd == kensaMst.OyaItemCd
+                                                                       && !parentSeqNoUsedList.Contains(item.SeqNo)
+                                                                       && item.SeqNo != kensaInfDetail.SeqNo)
+                                                        .OrderBy(item => item.SeqNo)
+                                                        .FirstOrDefault();
+            if (kensaDetailParent != null)
+            {
+                if (isAddNew)
+                {
+                    kensaInfDetail.SeqParentNo = kensaDetailParent.SeqNo;
+                }
+                parentSeqNoUsedList.Add(kensaDetailParent.SeqNo);
+            }
+            indexUsedList.Add(new(detailModel.Index, kensaInfDetail.SeqNo));
             kensaInfDetailMessageList.Add(new KensaInfDetailMessageModel(
                                               kensaInfDetail.KensaItemCd ?? string.Empty,
                                               kensaMst.KensaName ?? string.Empty));
