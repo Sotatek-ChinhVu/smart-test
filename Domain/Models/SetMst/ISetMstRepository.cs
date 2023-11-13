@@ -18,4 +18,6 @@ public interface ISetMstRepository : IRepositoryBase
     SetMstTooltipModel GetToolTip(int hpId, int setCd);
 
     IEnumerable<SetMstModel> ReloadCache(int hpId, int generationId);
+
+    void DeleteKey(int generationId);
 }

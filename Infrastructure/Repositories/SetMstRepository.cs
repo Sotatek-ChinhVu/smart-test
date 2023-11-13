@@ -82,6 +82,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModelList;
     }
 
+    public void DeleteKey(int generationId)
+    {
+        var finalKey = key + "_" + generationId;
+        _cache.KeyDelete(finalKey);
+    }
+
     private IEnumerable<SetMstModel> ReadCache(int generationId)
     {
         var finalKey = key + "_" + generationId;

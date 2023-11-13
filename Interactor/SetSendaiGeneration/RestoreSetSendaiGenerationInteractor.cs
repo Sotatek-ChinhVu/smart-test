@@ -8,17 +8,20 @@ using UseCase.SetSendaiGeneration.Restore;
 using UseCase.SetSendaiGeneration.Delete;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Domain.Models.SetMst;
 
 namespace Interactor.SetSendaiGeneration
 {
     public class RestoreSetSendaiGenerationInteractor : IRestoreSetSendaiGenerationInputPort
     {
         private readonly ISetGenerationMstRepository _setGenerationMstRepository;
+        private readonly ISetMstRepository _setMstRepository;
         private IMessenger? _messenger;
 
-        public RestoreSetSendaiGenerationInteractor(ISetGenerationMstRepository setGenerationMstRepository)
+        public RestoreSetSendaiGenerationInteractor(ISetGenerationMstRepository setGenerationMstRepository, ISetMstRepository setMstRepository)
         {
             _setGenerationMstRepository = setGenerationMstRepository;
+            _setMstRepository = setMstRepository;
         }
 
         public RestoreSetSendaiGenerationOutputData Handle(RestoreSetSendaiGenerationInputData inputData)
@@ -129,6 +132,7 @@ namespace Interactor.SetSendaiGeneration
                         _messenger.Send(new ProcessSetSendaiGenerationStatus($"Add MstBackup Faild!", 0, false, false));
                     }
                     _setGenerationMstRepository.ReloadCache(inputData.HpId, true);
+                    _setMstRepository.DeleteKey(result.TargetGeneration);
                     return new RestoreSetSendaiGenerationOutputData(true, RestoreSetSendaiGenerationStatus.Success);
                 }
                 return new RestoreSetSendaiGenerationOutputData(false, RestoreSetSendaiGenerationStatus.Faild);
@@ -136,6 +140,7 @@ namespace Interactor.SetSendaiGeneration
             finally
             {
                 _setGenerationMstRepository.ReleaseResource();
+                _setMstRepository.ReleaseResource();
             }
         }
     }
