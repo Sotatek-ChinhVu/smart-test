@@ -335,7 +335,7 @@ namespace Infrastructure.Repositories
                                   join t3 in NoTrackingDataContext.KensaCenterMsts
                                   on t1.CenterCd equals t3.CenterCd into leftJoinT3
                                   from t3 in leftJoinT3.DefaultIfEmpty()
-                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CenterCd == centerCd || t1.CenterCd == null)
+                                  where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CenterCd == centerCd || t1.CenterCd == null || t1.CenterCd == string.Empty)
                                   && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyWord)))
                                   where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd).Min(m => m.CmtSeqNo)
                                   select new KensaCmtMstModel(
