@@ -1196,7 +1196,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 {
                     if (doneProgress)
                     {
-                        var status = new KensaInfMessageStatus(true, true, messageItem, string.Empty);
+                        var status = new KensaInfMessageStatus(true, successCount, true, messageItem, string.Empty);
                         SendMessager(status);
                     }
                 }
