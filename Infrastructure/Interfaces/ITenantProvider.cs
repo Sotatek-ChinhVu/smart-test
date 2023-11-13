@@ -46,5 +46,13 @@ namespace Infrastructure.Interfaces
         DbContextOptions CreateNewTrackingAdminDbContextOption();
 
         string GetLoginKeyFromHeader();
+
+        SuperAdminContext CreateNewSuperAdminTrackingDataContext();
+
+        SuperAdminNoTrackingContext CreateNewSuperAdminNoTrackingDataContext();
+
+        SuperAdminNoTrackingContext GetSuperAdminNoTrackingDataContext();
+
+        SuperAdminContext GetSuperAdminTrackingTenantDataContext();
     }
 }
