@@ -349,7 +349,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.SetDownloadNameReport)]
     public IActionResult SetDownloadNameReportReportingData([FromQuery] SetDownloadNameReportRequest request)
     {
-        string key = "KensaIraiPdfReport_" + request.InputBase64File;
+        string key = "KensaIraiPdfReport_" + request.KeyReport;
         ContentDisposition cd = new ContentDisposition
         {
             FileName = HttpUtility.UrlEncode(request.DownloadName),
