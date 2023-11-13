@@ -4,7 +4,7 @@ using PostgreDataContext;
 var builder = WebApplication.CreateBuilder(args);
 
 // This config is needed for EF Core Migrations to find the DbContext
-builder.Services.AddDbContext<SuperAdminContext>(options =>
+builder.Services.AddDbContext<TenantDataContext>(options =>
 {
     var connectionStr = builder.Configuration["TenantDb"];
     options.UseNpgsql(connectionStr, b => b.MigrationsAssembly("TenantMigration"));
