@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Configs.Options;
+﻿namespace SuperAdmin.Configs.Options;
 
 public class JwtOptions
 {
