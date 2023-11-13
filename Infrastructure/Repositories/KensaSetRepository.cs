@@ -794,7 +794,7 @@ namespace Infrastructure.Repositories
                 {
                     var item = kensaInfDetailRows[i];
                     var childrens = childrenItems.Where(x => item.RowSeqId.Contains(x.SeqParentNo.ToString())).ToList();
-                    if (childrens != null && childrens.Count() > 0)
+                    if (childrens != null && childrens.Any())
                     {
                         if (childrens.Count > 1)
                         {

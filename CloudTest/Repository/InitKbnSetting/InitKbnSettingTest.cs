@@ -401,8 +401,6 @@ public class InitKbnSettingTest : BaseUT
         int sinDate = 22221212;
 
         var raiinKbnModels = raiinKubunMstRepository.GetRaiinKbns(hpId, ptId, raiinNo, sinDate);
-        var raiinKouiKbns = raiinKubunMstRepository.GetRaiinKouiKbns(hpId);
-        var raiinKbnItemCds = raiinKubunMstRepository.GetRaiinKbnItems(hpId);
 
         int frameID = 12345;
         var resultQuery = raiinKubunMstRepository.InitDefaultByRsv(hpId, frameID, raiinKbnModels);

@@ -7828,11 +7828,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         }
         var kensaItemCdSet = new HashSet<string>(kensaMstMatchKeywords.Select(item => item.KensaItemCd));
         var kensaOyaItemCdSet = new HashSet<string>(kensaMstMatchKeywords.Where(x => x.OyaItemCd != null && x.OyaItemCd != string.Empty).Select(item => item.OyaItemCd));
-        
+
         // Get list kensa childrens, parents 
         var allkensaKensaMst = (
             from kensaMst in NoTrackingDataContext.KensaMsts
-            where kensaMst.IsDelete == DeleteTypes.None && (kensaItemCdSet.Contains(kensaMst.KensaItemCd) || kensaItemCdSet.Contains(kensaMst.OyaItemCd) || kensaOyaItemCdSet.Contains(kensaMst.KensaItemCd))
+            where kensaMst.IsDelete == DeleteTypes.None && (kensaItemCdSet.Contains(kensaMst.KensaItemCd) || (kensaMst.OyaItemCd != null && kensaItemCdSet.Contains(kensaMst.OyaItemCd)) || kensaOyaItemCdSet.Contains(kensaMst.KensaItemCd))
             join centerMst in NoTrackingDataContext.KensaCenterMsts
             on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
             into joinedData
@@ -7869,8 +7869,6 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 res.CenterName ?? string.Empty
             )
         ).ToList();
-
-
 
         // Get kensa duplicate
         var kensaDuplicate = allkensaKensaMst.GroupBy(item => item.KensaItemCd)
@@ -7912,7 +7910,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         #region Append parent, childrens item
         foreach (var item in kensaItemCdSet)
         {
-            var entity = allkensaKensaMst.Where(x => x.KensaItemCd == item).FirstOrDefault();
+            var entity = allkensaKensaMst.FirstOrDefault(x => x.KensaItemCd == item);
             if (entity == null)
             {
                 return (result, 0);
@@ -8000,7 +7998,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
               new(),
               new(),
               chilrenItems,
-              parentItem,
+              parentItem ?? new(),
               entity.CenterName
             ));
         }

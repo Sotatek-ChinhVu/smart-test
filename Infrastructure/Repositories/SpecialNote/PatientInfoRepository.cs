@@ -126,7 +126,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.IsDeleted,
                 x.UpdateDate,
                 x.UpdateId,
-                x.UpdateMachine ?? String.Empty,
+                x.UpdateMachine ?? string.Empty,
                 0
             ));
             return ptPregnancys.ToList();
@@ -169,7 +169,6 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<KensaInfDetailModel> GetListKensaInfDetailModel(int hpId, long ptId, int sinDate)
         {
-            var result = new List<KensaInfDetailModel>();
             var KensaMstRepos = NoTrackingDataContext.KensaMsts.Where(k => k.HpId == hpId && k.IsDelete == 0 && k.KensaItemCd.StartsWith("V"))
                 .Select(u => new
                 {
@@ -193,12 +192,12 @@ namespace Infrastructure.Repositories.SpecialNote
                             KensaInfDetail = listDetail.OrderByDescending(item => item.IraiDate).ThenByDescending(item => item.UpdateDate).FirstOrDefault()
                         };
 
-            result = query.AsEnumerable().Select(u => new KensaInfDetailModel(
-                u.KensaMst.KensaItemCd,
-                u.KensaMst.Unit,
-                u.KensaMst.KensaName,
-                u.KensaMst.SortNo
-            )).ToList();
+            var result = query.AsEnumerable().Select(u => new KensaInfDetailModel(
+                 u.KensaMst.KensaItemCd,
+                 u.KensaMst.Unit,
+                 u.KensaMst.KensaName,
+                 u.KensaMst.SortNo
+             )).ToList();
 
             return result;
         }
