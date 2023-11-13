@@ -72,6 +72,19 @@ namespace Reporting.KensaHistory.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
+            int i = 1;
+
+            foreach (var item in _setFieldData)
+            {
+                item.Value.Clear();
+                item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
+                i++;
+                if (i > pageIndex)
+                {
+                    break;
+                }
+            }
+
             return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
@@ -108,26 +121,23 @@ namespace Reporting.KensaHistory.Service
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 33;
+                short maxRow = 20;
                 int rowNo = 0;
 
                 if (currentPage == 1)
                 {
                     foreach (var item in listKensaInfDetailItemModels)
                     {
-                        switch (item.ResultType)
-                        {
-                            case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
-                            case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
-                            case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
-                            default: break;
-                        }
-
                         listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                         listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                         listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
-                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
+
+                        switch (ptInf.Sex)
+                        {
+                            case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
+                            case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
+                        }
                         rowNo++;
                         if (rowNo == maxRow)
                         {
@@ -135,7 +145,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (listKensaInfDetailItemModels.Count < maxRow)
+                    if (listKensaInfDetailItemModels.Count <= maxRow)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -155,19 +165,17 @@ namespace Reporting.KensaHistory.Service
 
                 foreach (var item in listKensaInfDetailItemModels)
                 {
-                    switch (item.ResultType)
-                    {
-                        case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
-                        case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
-                        case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
-                        default: break;
-                    }
-
                     listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                     listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                     listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
                     listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
-                    listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
+
+                    switch (ptInf.Sex)
+                    {
+                        case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
+                        case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
+                    }
+                    
                     rowNo++;
                     if (rowNo == maxRow)
                     {
@@ -215,7 +223,17 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
             }
-            totalPage = (listKensaInfDetailItemModels.Count / 30) + 1;
+
+            foreach (var item in listKensaInfDetailItemModels)
+            {
+                switch (item.ResultType)
+                {
+                    case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
+                    case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
+                    case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
+                    default: break;
+                }
+            }
 
             return listKensaInfDetailItemModels.Count > 0;
         }

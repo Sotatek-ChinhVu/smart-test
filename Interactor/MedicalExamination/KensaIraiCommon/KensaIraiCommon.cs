@@ -9,6 +9,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
+using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
 using UseCase.MedicalExamination.SaveKensaIrai;
 
@@ -24,8 +25,9 @@ public class KensaIraiCommon : IKensaIraiCommon
     private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
     private readonly IGroupInfRepository _groupInfRepository;
     private readonly ILoggingHandler _loggingHandler;
+    private readonly ICoKensaIraiFinder _coKensaIraiFinder;
 
-    public KensaIraiCommon(ITenantProvider tenantProvider, IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository, IKensaIraiCoReportService kensaIraiCoReportService, IGroupInfRepository groupInfRepository)
+    public KensaIraiCommon(ITenantProvider tenantProvider, IKensaIraiRepository kensaIraiRepository, ISystemConfRepository systemConfRepository, IPatientInforRepository patientInforRepository, IReceptionRepository receptionRepository, IOrdInfRepository ordInfRepository, IKensaIraiCoReportService kensaIraiCoReportService, IGroupInfRepository groupInfRepository, ICoKensaIraiFinder coKensaIraiFinder)
     {
         _kensaIraiRepository = kensaIraiRepository;
         _systemConfRepository = systemConfRepository;
@@ -34,8 +36,8 @@ public class KensaIraiCommon : IKensaIraiCommon
         _ordInfRepository = ordInfRepository;
         _kensaIraiCoReportService = kensaIraiCoReportService;
         _groupInfRepository = groupInfRepository;
-        var _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _coKensaIraiFinder = coKensaIraiFinder;
+        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         kensaCenterMst = new();
         odrInfModels = new();
         odrInfDetailModels = new();
@@ -425,6 +427,7 @@ public class KensaIraiCommon : IKensaIraiCommon
 
             if (addKensaIraiDtls.Any())
             {
+                var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaInf.PtId, raiinInfModel?.SinDate ?? 0);
                 // 検査依頼データ生成
                 var addKensaIrai =
                     new Reporting.Kensalrai.Model.KensaIraiModel(
@@ -440,6 +443,8 @@ public class KensaIraiCommon : IKensaIraiCommon
                         kensaInf.TosekiKbn,
                         kensaInf.SikyuKbn,
                         raiinInfModel?.KaId ?? 0,
+                        weightHeight.weight,
+                        weightHeight.height,
                         addKensaIraiDtls);
                 addKensaIrai.UpdateTime = kensaInf.UpdateDate.ToString("HHmm");
 

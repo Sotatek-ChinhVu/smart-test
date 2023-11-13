@@ -23,9 +23,9 @@
             MaleStd = string.Empty;
             FemaleStd = string.Empty;
             MaleStdLow = string.Empty;
-            FemalStdLow = string.Empty;
+            FemaleStdLow = string.Empty;
             MaleStdHigh = string.Empty;
-            FemalStdHigh = string.Empty;
+            FemaleStdHigh = string.Empty;
             Unit = string.Empty;
             Nyubi = string.Empty;
             Yoketu = string.Empty;
@@ -62,9 +62,9 @@
             MaleStd = maleStd;
             FemaleStd = femaleStd;
             MaleStdLow = maleStdLow;
-            FemalStdLow = femaleStdLow;
+            FemaleStdLow = femaleStdLow;
             MaleStdHigh = maleStdHigh;
-            FemalStdHigh = femaleStdHigh;
+            FemaleStdHigh = femaleStdHigh;
             Unit = unit;
             Nyubi = nyubi;
             Yoketu = yoketu;
@@ -80,6 +80,11 @@
         {
             ResultVal = resultVal;
             return this;
+        }
+
+        public void SetRowSeqId(string newValue)
+        {
+            RowSeqId = newValue;
         }
 
         public long PtId { get; private set; }
@@ -122,11 +127,11 @@
 
         public string MaleStdLow { get; private set; }
 
-        public string FemalStdLow { get; private set; }
+        public string FemaleStdLow { get; private set; }
 
         public string MaleStdHigh { get; private set; }
 
-        public string FemalStdHigh { get; private set; }
+        public string FemaleStdHigh { get; private set; }
 
         public string Unit { get; private set; }
 
@@ -145,5 +150,7 @@
         public int Status { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public string RowSeqId { get; private set; }
     }
 }

@@ -59,7 +59,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListKensaCmtMst)]
         public ActionResult<Response<GetListKensaCmtMstResponse>> GetListKensaCmtMst([FromQuery] GetListKensaCmtMstRequest request)
         {
-            var input = new GetListKensaCmtMstInputData(HpId, request.Keyword);
+            var input = new GetListKensaCmtMstInputData(HpId, request.IraiCd, request.Keyword);
             var output = _bus.Handle(input);
             var presenter = new GetListKensaCmtMstPresenter();
             presenter.Complete(output);
@@ -79,7 +79,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetListKensaInfDetail)]
         public ActionResult<Response<GetListKensaInfDetailResponse>> GetListKensaInfDetail([FromQuery] GetListKensaInfDetailRequest request)
         {
-            var input = new GetListKensaInfDetailInputData(HpId, UserId, request.PtId, request.SetId, request.IraiCd, request.IraiCdStart, request.GetGetPrevious, request.ShowAbnormalKbn, request.ItemQuantity);
+            var input = new GetListKensaInfDetailInputData(HpId, UserId, request.PtId, request.SetId, request.IraiCd, request.IraiCdStart, request.GetGetPrevious, request.ShowAbnormalKbn, request.ItemQuantity, request.ListSeqNoItems, request.StartDate, request.EndDate);
             var output = _bus.Handle(input);
             var presenter = new GetListKensaInfDetailPresenter();
             presenter.Complete(output);
