@@ -1,5 +1,6 @@
 using SuperAdmin.Configs.Dependency;
 using SuperAdmin.Realtime;
+using SuperAdminAPI.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// Authentication
+builder.Services.SetupAuthentication(builder.Configuration);
 var dependencySetup = new ModuleDependencySetup();
 dependencySetup.Run(builder.Services);
 

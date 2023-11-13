@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Helper.Constants;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SuperAdmin.Presenters.Admin;
 using SuperAdmin.Requests.Admin;
 using SuperAdmin.Responses;
 using SuperAdmin.Responses.Admin;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.Login;
 
@@ -18,8 +23,8 @@ namespace SuperAdmin.Controllers
             _bus = bus;
         }
 
-        [HttpGet("Login")]
-        public ActionResult<Response<LoginResponse>> GetListMst([FromQuery] LoginRequest request)
+        [HttpPost("Login")]
+        public ActionResult<Response<LoginResponse>> Login([FromBody] LoginRequest request)
         {
             var input = new LoginInputData(request.LoginId, request.Password);
             var output = _bus.Handle(input);
