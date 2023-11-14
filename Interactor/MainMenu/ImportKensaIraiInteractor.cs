@@ -24,7 +24,8 @@ public class ImportKensaIraiInteractor : IImportKensaIraiInputPort
         {
             try
             {
-                var streamReader = new StreamReader(inputData.DatFile, Encoding.ASCII);
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                var streamReader = new StreamReader(inputData.DatFile, Encoding.GetEncoding(932));
                 contentString = streamReader.ReadToEnd();
             }
             catch
