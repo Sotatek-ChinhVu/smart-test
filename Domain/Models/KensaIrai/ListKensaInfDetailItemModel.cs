@@ -6,12 +6,8 @@
         {
             PtId = ptId;
             IraiCd = iraiCd;
-            RaiinNo = 0;
-            IraiDate = 0;
-            SeqNo = 0;
             KensaName = string.Empty;
             KensaKana = string.Empty;
-            SortNo = 0;
             KensaItemCd = string.Empty;
             ResultVal = string.Empty;
             ResultType = string.Empty;
@@ -30,11 +26,7 @@
             Nyubi = string.Empty;
             Yoketu = string.Empty;
             Bilirubin = string.Empty;
-            SikyuKbn = 0;
-            TosekiKbn = 0;
-            InoutKbn = 0;
-            Status = 0;
-            IsDeleted = 0;
+            RowSeqId = string.Empty;
         }
 
         public ListKensaInfDetailItemModel(
@@ -74,6 +66,7 @@
             InoutKbn = inoutKbn;
             Status = status;
             IsDeleted = isDeleted;
+            RowSeqId = string.Empty;
         }
 
         public ListKensaInfDetailItemModel ChangeResultVal(string resultVal)

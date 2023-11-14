@@ -203,15 +203,15 @@ namespace Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                var error = ex.InnerException?.Message;
+                var error = ex.InnerException?.Message ?? string.Empty;
                 if (error.Contains("23505: duplicate key value violates unique constraint \"IX_USER_MST_USER_ID\""))
                 {
                     return false;
                 }
                 throw;
-                
+
             }
-            
+
         }
 
         private static UserMstModel ToModel(UserMst u, List<KaMst> listKaMsts)
@@ -293,15 +293,8 @@ namespace Infrastructure.Repositories
 
         public bool MigrateDatabase()
         {
-            try
-            {
-                TrackingDataContext.Database.Migrate();
-                return true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            TrackingDataContext.Database.Migrate();
+            return true;
         }
 
         public void ReleaseResource()
@@ -638,7 +631,7 @@ namespace Infrastructure.Repositories
                         update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = currentUser;
                     }
-                    
+
                 }
             }
             return TrackingDataContext.SaveChanges() > 0;

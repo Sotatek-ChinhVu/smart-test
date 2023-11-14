@@ -3,7 +3,7 @@
 /// <summary>
 /// 診療行為コード
 /// </summary>
-public class ReportOdrKouiKbnConst
+public static class ReportOdrKouiKbnConst
 {
     /// <summary>
     /// 未設定

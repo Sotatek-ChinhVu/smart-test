@@ -261,7 +261,6 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     public List<SanteiInfModel> GetCalculationInfo(int hpId, long ptId, int sinDate)
     {
         List<int> listAletTermIsValid = new List<int>() { 2, 3, 4, 5, 6 };
-        List<SanteiInfModel> result = new();
 
         // Query Santei inf code
         var santeiInfs = NoTrackingDataContext.SanteiInfs.Where(u => u.HpId == hpId &&
@@ -330,8 +329,8 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                               TenMst = tenMstItem
                           };
 
-        result = santeiQuery.Select(u => new SanteiInfModel(u.SanteiInf.Id,
-            u.SanteiInf.PtId, u.SanteiInf.ItemCd ?? string.Empty, u.SanteiInf.SeqNo, u.SanteiInf.AlertDays, u.SanteiInf.AlertTerm, u.TenMst.Name ?? string.Empty, LastOdrDate(u.SnteiInfDetail, listOrdDetailInfomation.Where(o => o.SanteiCd == u.SanteiInf.ItemCd).FirstOrDefault()?.OdrInfDetail ?? new()), u.SnteiInfDetail?.KisanSbt ?? 0, 0, 0, 0, sinDate, new List<SanteiInfDetailModel> { })).OrderBy(t => t.ItemCd).ToList();
+        var result = santeiQuery.Select(u => new SanteiInfModel(u.SanteiInf.Id,
+             u.SanteiInf.PtId, u.SanteiInf.ItemCd ?? string.Empty, u.SanteiInf.SeqNo, u.SanteiInf.AlertDays, u.SanteiInf.AlertTerm, u.TenMst.Name ?? string.Empty, LastOdrDate(u.SnteiInfDetail, listOrdDetailInfomation.FirstOrDefault(o => o.SanteiCd == u.SanteiInf.ItemCd)?.OdrInfDetail ?? new()), u.SnteiInfDetail?.KisanSbt ?? 0, 0, 0, 0, sinDate, new List<SanteiInfDetailModel> { })).OrderBy(t => t.ItemCd).ToList();
 
         return result;
     }

@@ -99,12 +99,9 @@
         {
             get
             {
-                if (!string.IsNullOrEmpty(PostCode))
+                if (!string.IsNullOrEmpty(PostCode) && PostCode.Length > 3)
                 {
-                    if (PostCode.Length > 3)
-                    {
-                        return PostCode.Substring(0, 3) + "-" + PostCode.Substring(3);
-                    }
+                    return PostCode.Substring(0, 3) + "-" + PostCode.Substring(3);
                 }
                 return PostCode;
             }

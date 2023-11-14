@@ -4,5 +4,5 @@ public class SetDownloadNameReportRequest
 {
     public string DownloadName { get; set; } = string.Empty;
 
-    public string InputBase64File { get; set; } = string.Empty;
+    public string KeyReport { get; set; } = string.Empty;
 }

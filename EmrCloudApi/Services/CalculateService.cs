@@ -117,7 +117,6 @@ namespace EmrCloudApi.Services
 
             try
             {
-                var httpMessage = new HttpRequestMessage();
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, cancellationToken);
                 if (response.IsSuccessStatusCode)

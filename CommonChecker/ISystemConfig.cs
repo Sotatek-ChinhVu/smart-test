@@ -53,13 +53,13 @@ namespace CommonChecker
         /////     0:標榜なし（既定値）
         /////     1:標榜あり
         ///// </summary>
-        //public int IsHyoboSyounika { get => (int)GetSettingValue(3004, 0); }
+        ///public int IsHyoboSyounika { get => (int)GetSettingValue(3004, 0); }
         ///// <summary>
         ///// 産科標榜有無
         /////     0:標榜なし（既定値）
         /////     1:標榜あり
         ///// </summary>
-        //public int IsHyoboSanka { get => (int)GetSettingValue(3004, 1); }
+        ///public int IsHyoboSanka { get => (int)GetSettingValue(3004, 1); }
         /// <summary>
         /// 自賠準拠区分
         ///     0:健保準拠（既定値）
@@ -169,7 +169,8 @@ namespace CommonChecker
         /// Paramに開始請求年月(YYYYMM)
         /// </summary>
         public int NaraFukusiReceCmt { get => (int)GetSettingValue(3011, 0, 0); }
-        public string NaraFukusiReceCmtStartDate { get => (string)GetSettingParam(3011, 0, ""); }
+
+        public string NaraFukusiReceCmtStartDate { get => GetSettingParam(3011, 0, ""); }
 
         /// <summary>
         /// 高額療養費の窓口負担まるめ設定
@@ -426,45 +427,6 @@ namespace CommonChecker
 
         public int ApprovalNumberOfStartDateAgo { get => (int)GetSettingValue(2022, 1, 0); }
 
-        //Dictionary<int, SolidColorBrush> _statusColorsHex;
-        //public Dictionary<int, SolidColorBrush> StatusColorsHex(bool lastValue = false)
-        //{
-        //    if (lastValue == true || _statusColorsHex == null)
-        //    {
-        //        _statusColorsHex = new Dictionary<int, SolidColorBrush>();
-        //        _statusColorsHex.Add(0, CIUtil.ColorBrush(GetSettingParam(5003, 0)));
-        //        _statusColorsHex.Add(1, CIUtil.ColorBrush(GetSettingParam(5003, 1)));
-        //        _statusColorsHex.Add(2, CIUtil.ColorBrush(GetSettingParam(5003, 2)));
-        //        _statusColorsHex.Add(3, CIUtil.ColorBrush(GetSettingParam(5003, 3)));
-        //        _statusColorsHex.Add(5, CIUtil.ColorBrush(GetSettingParam(5003, 5)));
-        //        _statusColorsHex.Add(7, CIUtil.ColorBrush(GetSettingParam(5003, 7)));
-        //        _statusColorsHex.Add(9, CIUtil.ColorBrush(GetSettingParam(5003, 9)));
-        //    }
-        //    return _statusColorsHex;
-        //}
-
-        //Dictionary<int, SolidColorBrush> _elapsedTime;
-        //public Dictionary<int, SolidColorBrush> ElapsedTime(bool lastValue = false)
-        //{
-        //    lock (_threadsafelock)
-        //    {
-        //        if (lastValue == true || _elapsedTime == null)
-        //        {
-        //            _elapsedTime = new Dictionary<int, SolidColorBrush>();
-        //            List<SystemConf> listTime = GetListGroupCd(5002).OrderBy(item => item.GrpEdaNo).ToList();
-        //            if (listTime == null || listTime.Count <= 0)
-        //            {
-        //                return _elapsedTime;
-        //            }
-
-        //            foreach (var item in listTime)
-        //            {
-        //                _elapsedTime.Add(item.GrpEdaNo, CIUtil.ColorBrush(item.Param));
-        //            }
-        //        }
-        //    }
-        //    return _elapsedTime;
-        //}
         /// <summary>
         /// 受診票　Rp名称印字
         ///     0:しない

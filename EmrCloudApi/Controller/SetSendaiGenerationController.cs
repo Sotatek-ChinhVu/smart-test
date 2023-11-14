@@ -61,10 +61,8 @@ namespace EmrCloudApi.Controller
                 _messenger.Register<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
                 _messenger.Register<ProcessSetSendaiGenerationStop>(this, StopProcess);
                 HttpContext.Response.ContentType = "application/json";
-                HttpResponse response = HttpContext.Response;
                 var input = new AddSetSendaiGenerationInputData(request.StartDate, HpId, UserId, _messenger);
                 var output = _bus.Handle(input);
-                var presenter = new AddSetSendaiGenerationPresenter();
                 if (output.Status == AddSetSendaiGenerationStatus.Success)
                 {
                     UpdateProcessSave(new ProcessSetSendaiGenerationStatus(string.Empty, 100, true, true));
@@ -120,7 +118,6 @@ namespace EmrCloudApi.Controller
                 _messenger.Register<ProcessSetSendaiGenerationStatus>(this, UpdateProcessSave);
                 _messenger.Register<ProcessSetSendaiGenerationStop>(this, StopProcess);
                 HttpContext.Response.ContentType = "application/json";
-                HttpResponse response = HttpContext.Response;
                 var input = new RestoreSetSendaiGenerationInputData(request.RestoreGenerationId, HpId, UserId, _messenger);
                 var output = _bus.Handle(input);
                 if (output.Status == RestoreSetSendaiGenerationStatus.Success)

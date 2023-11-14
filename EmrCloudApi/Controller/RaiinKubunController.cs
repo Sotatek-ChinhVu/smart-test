@@ -36,7 +36,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetList + "KubunSetting")]
-        public ActionResult<Response<LoadDataKubunSettingResponse>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
+        public ActionResult<Response<LoadDataKubunSettingResponse>> LoadDataKubunSetting()
         {
             var input = new LoadDataKubunSettingInputData(HpId, UserId);
             var output = _bus.Handle(input);
@@ -60,7 +60,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetColumnName)]
-        public ActionResult<Response<GetColumnNameListResponse>> GetColumnName([FromQuery] GetColumnNameListRequest request)
+        public ActionResult<Response<GetColumnNameListResponse>> GetColumnName()
         {
             var input = new GetColumnNameListInputData(HpId);
             var output = _bus.Handle(input);

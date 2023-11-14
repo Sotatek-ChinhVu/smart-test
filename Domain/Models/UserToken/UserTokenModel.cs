@@ -21,6 +21,5 @@
         public bool RefreshTokenIsUsed { get; private set; }
 
         public bool RefreshTokenIsValid => !string.IsNullOrEmpty(RefreshToken) && DateTime.UtcNow <= RefreshTokenExpiryTime;
-            //&& !RefreshTokenIsUsed;
     }
 }

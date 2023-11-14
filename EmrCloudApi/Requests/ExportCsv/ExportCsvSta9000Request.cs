@@ -20,32 +20,32 @@ namespace EmrCloudApi.Requests.ExportCsv
             PtIds = ptIds;
         }
 
-        public List<string> OutputColumns { get; set; } = new();
+        public List<string> OutputColumns { get; set; }
 
         public bool IsPutColName { get; set; }
 
-        public string OutputFileName { get; set; } = string.Empty;
+        public string OutputFileName { get; set; }
 
-        public CoSta9000PtConf? PtConf { get; set; } = new();
+        public CoSta9000PtConf? PtConf { get; set; }
 
-        public CoSta9000HokenConf? HokenConf { get; set; } = new();
+        public CoSta9000HokenConf? HokenConf { get; set; }
 
-        public CoSta9000ByomeiConf? ByomeiConf { get; set; } = new();
+        public CoSta9000ByomeiConf? ByomeiConf { get; set; }
 
-        public CoSta9000RaiinConf? RaiinConf { get; set; } = new();
+        public CoSta9000RaiinConf? RaiinConf { get; set; }
 
-        public CoSta9000SinConf? SinConf { get; set; } = new();
+        public CoSta9000SinConf? SinConf { get; set; }
 
-        public CoSta9000KarteConf? KarteConf { get; set; } = new();
+        public CoSta9000KarteConf? KarteConf { get; set; }
 
-        public CoSta9000KensaConf? KensaConf { get; set; } = new();
+        public CoSta9000KensaConf? KensaConf { get; set; }
 
-        public List<long> PtIds { get; set; } = new();
+        public List<long> PtIds { get; set; }
 
-        public  int SortOrder { get; set; }
+        public int SortOrder { get; set; }
 
-        public  int SortOrder2 { get; set; }
+        public int SortOrder2 { get; set; }
 
-        public  int SortOrder3 { get; set; }
+        public int SortOrder3 { get; set; }
     }
 }
