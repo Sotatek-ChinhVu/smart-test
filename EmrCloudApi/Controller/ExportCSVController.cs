@@ -1,6 +1,5 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportCsv;
-using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,6 @@ using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReportServices;
 using System.Text;
-using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller;
 
@@ -17,10 +15,8 @@ public class ExportCSVController : AuthorizeControllerBase
 {
     private readonly IReportService _reportService;
 
-    private readonly UseCaseBus _bus;
-    public ExportCSVController(UseCaseBus bus, IUserService userService, IReportService reportService, ITenantProvider tenantProvider) : base(userService)
+    public ExportCSVController(IUserService userService, IReportService reportService, ITenantProvider tenantProvider) : base(userService)
     {
-        _bus = bus;
         _reportService = reportService;
     }
 

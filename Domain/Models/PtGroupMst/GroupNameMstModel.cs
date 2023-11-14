@@ -19,6 +19,6 @@
 
         public int IsDeleted { get; private set; }
 
-        public List<GroupItemModel> GroupItems { get; private set; } = new List<GroupItemModel>();
+        public List<GroupItemModel> GroupItems { get; private set; }
     }
 }

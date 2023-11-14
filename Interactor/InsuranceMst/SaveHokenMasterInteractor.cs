@@ -11,13 +11,11 @@ namespace Interactor.InsuranceMst
     {
         private readonly IInsuranceMstRepository _insuranceMstReponsitory;
         private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
 
         public SaveHokenMasterInteractor(ITenantProvider tenantProvider, IInsuranceMstRepository insuranceMstReponsitory)
         {
             _insuranceMstReponsitory = insuranceMstReponsitory;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveHokenMasterOutputData Handle(SaveHokenMasterInputData inputData)

@@ -80,7 +80,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetSystemSetting)]
-        public ActionResult<Response<GetSystemSettingResponse>> GetList([FromQuery] GetSystemSettingRequest request)
+        public ActionResult<Response<GetSystemSettingResponse>> GetList()
         {
             var input = new GetSystemSettingInputData(HpId);
             var output = _bus.Handle(input);

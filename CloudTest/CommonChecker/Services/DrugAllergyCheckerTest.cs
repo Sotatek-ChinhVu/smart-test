@@ -416,7 +416,7 @@ namespace CloudUnitTest.CommonChecker.Services
                 var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
 
                 // Assert
-                Assert.True(result.ErrorOrderList.Count > 0);
+                Assert.True(result.ErrorOrderList.Any());
             }
             finally
             {

@@ -16,8 +16,8 @@ namespace Infrastructure.Repositories
 {
     public class NextOrderRepository : RepositoryBase, INextOrderRepository
     {
-        private readonly IAmazonS3Service _amazonS3Service;
-        private readonly AmazonS3Options _options;
+        private readonly IAmazonS3Service? _amazonS3Service;
+        private readonly AmazonS3Options? _options;
 
         public NextOrderRepository(ITenantProvider tenantProvider, IAmazonS3Service amazonS3Service, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
         {
@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
 
         public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn)
         {
-            var byomeis = new List<RsvkrtByomei>();
+            List<RsvkrtByomei> byomeis = new();
             if (rsvkrtKbn == 0)
             {
                 byomeis = NoTrackingDataContext.RsvkrtByomeis.Where(b => b.HpId == hpId && b.PtId == ptId && b.RsvkrtNo == rsvkrtNo && b.IsDeleted == DeleteTypes.None).ToList();
@@ -42,10 +42,7 @@ namespace Infrastructure.Repositories
                 prefixSuffixModels.AddRange(SyusyokuCdToList(item));
             }
 
-            var codeList = prefixSuffixModels.Select(c => c.Code);
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
-
-            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b, byomeiMstList)).ToList();
+            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b)).ToList();
 
             return byomeiModels;
         }
@@ -73,7 +70,6 @@ namespace Infrastructure.Repositories
             var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate) && (ipnCds != null && ipnCds.Contains(t.IpnNameCd))).ToList();
             var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate)).ToList();
             var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate)).ToList();
-            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDate && ipn.EndDate >= sinDate).ToList();
             var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
             var listYohoSets = NoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
             var itemCdYohos = listYohoSets?.Select(od => od.ItemCd ?? string.Empty);
@@ -85,8 +81,7 @@ namespace Infrastructure.Repositories
             var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
-            var oderInfModels = orderInfs.Select(o => ConvertOrderInfToModel(o, orderInfDetails, tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, ipnNameMsts, ipnKansanMsts, listYohoSets ?? new(), tenMstYohos, kensaIrai, kensaIraiCondition)).ToList();
-
+            var oderInfModels = orderInfs.Select(o => ConvertOrderInfToModel(o, orderInfDetails, tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, ipnKansanMsts, listYohoSets ?? new(), tenMstYohos, kensaIrai, kensaIraiCondition)).ToList();
             return oderInfModels;
         }
 
@@ -205,14 +200,14 @@ namespace Infrastructure.Repositories
             List<KouiKbnMst> kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
 
             // Define Added RaiinListInf
-            List<RaiinListInf> raiinListInfList = new List<RaiinListInf>();
+            List<RaiinListInf> raiinListInfList = new();
 
             foreach (var odrInf in nextOrderModels)
             {
-                HashSet<int> deleteKouiSet = new HashSet<int>();
-                HashSet<int> currentKouiSet = new HashSet<int>();
-                HashSet<string> deleteItemCdSet = new HashSet<string>();
-                HashSet<string> currentItemCdSet = new HashSet<string>();
+                HashSet<int> deleteKouiSet = new();
+                HashSet<int> currentKouiSet = new();
+                HashSet<string> deleteItemCdSet = new();
+                HashSet<string> currentItemCdSet = new();
 
                 int hpId = odrInf.HpId;
                 long ptId = odrInf.PtId;
@@ -246,6 +241,7 @@ namespace Infrastructure.Repositories
                     // Get KouiKbnMst
                     var kouiMst = kouiKbnMst?.Find(item => item.KouiKbn1 == koui || item.KouiKbn2 == koui);
                     if (kouiMst == null) continue;
+
                     // Get List RaiinListKoui contains koui 
                     List<RaiinListKoui> kouiItemList = raiinListKouis.FindAll(item => item.KouiKbnId == kouiMst.KouiKbnId);
                     foreach (RaiinListKoui kouiItem in kouiItemList)
@@ -401,8 +397,6 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-
-            //TrackingDataContext.SaveChanges();
         }
 
         private void UpsertKarteInf(int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
@@ -440,8 +434,6 @@ namespace Infrastructure.Repositories
             {
                 img.RsvkrtNo = karteInf.RsvkrtNo;
             }
-
-            //TrackingDataContext.SaveChanges();
         }
 
         private long GetMaxSeqNo(long ptId, int hpId, long rsvkrtNo)
@@ -455,7 +447,6 @@ namespace Infrastructure.Repositories
         {
             var allOldByomeis = TrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
             var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
-            var maxSeqNo = allOldByomeis.Count > 0 ? allOldByomeis.Max(a => a.SeqNo) : 0;
             foreach (var byomei in byomeis)
             {
                 var oldByomei = oldByomeis.FirstOrDefault(item => item.HpId == byomei.HpId
@@ -512,19 +503,16 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, ++maxSeqNo, rsvkrtNo);
+                        var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, rsvkrtNo);
                         TrackingDataContext.Add(orderInfEntity);
                     }
                 }
             }
         }
 
-        private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
+        private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei)
         {
-            var prefixSuffixModels = SyusyokuCdToList(byomei);
             //prefix and suffix
-            var codeList = prefixSuffixModels.Select(p => p.Code);
-            var byomeiMst = byomeiMsts.FirstOrDefault(item => codeList.Contains(item.ByomeiCd)) ?? new ByomeiMst();
             var byomeiMstMain = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(item => byomei.ByomeiCd == item.ByomeiCd) ?? new ByomeiMst();
 
             return new RsvkrtByomeiModel(
@@ -564,7 +552,7 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        private RsvkrtOrderInfModel ConvertOrderInfToModel(RsvkrtOdrInf odrInf, List<RsvkrtOdrInfDetail> odrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> ipnNames, List<IpnKasanMst> ipnKasanMsts, List<YohoSetMst> yohoSetMsts, List<TenMst> tenMstYohos, double kensaIrai, double kensaIraiCondition)
+        private RsvkrtOrderInfModel ConvertOrderInfToModel(RsvkrtOdrInf odrInf, List<RsvkrtOdrInfDetail> odrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnKasanMst> ipnKasanMsts, List<YohoSetMst> yohoSetMsts, List<TenMst> tenMstYohos, double kensaIrai, double kensaIraiCondition)
         {
 
             odrInfDetails = odrInfDetails.Where(od => od.RpNo == odrInf.RpNo && od.RpEdaNo == odrInf.RpEdaNo).ToList();
@@ -883,7 +871,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel byomei, long seqNo, long rsvkrtNo = 0)
+        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel byomei, long rsvkrtNo = 0)
         {
             return new RsvkrtByomei
             {
@@ -1204,7 +1192,7 @@ namespace Infrastructure.Repositories
 
                     //checkbox group raiinKouiKbn
                     var kbnItems = raiinKbnItemCds.FindAll(p => p.GrpCd == kbnDetail.GrpCd && p.KbnCd == kbnDetail.KbnCd && !string.IsNullOrEmpty(p.ItemCd));
-                    var includeItems = kbnItems.FindAll(p => !(p.IsExclude == 1));
+                    var includeItems = kbnItems.FindAll(p => p.IsExclude != 1);
                     var excludeItems = kbnItems.FindAll(p => p.IsExclude == 1);
 
                     bool isSet = false;
@@ -1301,8 +1289,8 @@ namespace Infrastructure.Repositories
             listFolders.Add(CommonConstants.Store);
             listFolders.Add(CommonConstants.Karte);
             listFolders.Add(CommonConstants.NextPic);
-            path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptNum);
-            string host = _options.BaseAccessUrl + "/" + path;
+            path = _amazonS3Service!.GetFolderUploadToPtNum(listFolders, ptNum);
+            string host = _options!.BaseAccessUrl + "/" + path;
             var listUpdates = listFileItems.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
@@ -1346,15 +1334,15 @@ namespace Infrastructure.Repositories
                                             CommonConstants.Store,
                                             CommonConstants.Karte
                                         };
-            string baseAccessUrl = _options.BaseAccessUrl;
-            string karteHost = baseAccessUrl + "/" + _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
+            string baseAccessUrl = _options!.BaseAccessUrl;
+            string karteHost = baseAccessUrl + "/" + _amazonS3Service!.GetFolderUploadToPtNum(listFolderPath, ptNum);
 
             foreach (var oldFileLink in listFileFromKarte)
             {
                 string oldFileName = Path.GetFileName(oldFileLink);
                 if (oldFileLink.Contains(karteHost))
                 {
-                    string newFile = baseAccessUrl + "/" + pathSaveSet + _amazonS3Service.GetUniqueFileNameKey(oldFileName.Trim());
+                    string newFile = baseAccessUrl + $"/" + pathSaveSet + _amazonS3Service.GetUniqueFileNameKey(oldFileName.Trim());
                     var copySuccess = _amazonS3Service.CopyObjectAsync(oldFileLink.Replace(baseAccessUrl, string.Empty), newFile.Replace(baseAccessUrl, string.Empty)).Result;
                     if (copySuccess)
                     {
@@ -1390,7 +1378,7 @@ namespace Infrastructure.Repositories
                                       Mst = mst,
                                       Odrs = odrs,
                                   };
-            return queryRsvkrtMsts.AsEnumerable().Count(x => x != null && x.Odrs.Any(o => o != null && o.IsDeleted == 0)) > 0;
+            return queryRsvkrtMsts.AsEnumerable().Any(x => x != null && x.Odrs.Any(o => o != null && o.IsDeleted == 0));
         }
 
         public bool CheckUpsertNextOrder(int hpId, long ptId, int rsvDate)

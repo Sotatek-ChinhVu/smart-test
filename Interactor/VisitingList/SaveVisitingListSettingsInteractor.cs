@@ -11,13 +11,11 @@ public class SaveVisitingListSettingsInteractor : ISaveVisitingListSettingsInput
 {
     private readonly IVisitingListSettingRepository _visitingListSettingRepository;
     private readonly ILoggingHandler _loggingHandler;
-    private readonly ITenantProvider _tenantProvider;
 
     public SaveVisitingListSettingsInteractor(ITenantProvider tenantProvider, IVisitingListSettingRepository visitingListSettingRepository)
     {
         _visitingListSettingRepository = visitingListSettingRepository;
-        _tenantProvider = tenantProvider;
-        _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+        _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
     }
 
     public SaveVisitingListSettingsOutputData Handle(SaveVisitingListSettingsInputData input)

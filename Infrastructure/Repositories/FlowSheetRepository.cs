@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
         private readonly TenantDataContext _tenantCmtInf;
         private readonly StackExchange.Redis.IDatabase _cache;
         private readonly IConfiguration _configuration;
-        private string key;
+        private readonly string key;
         public FlowSheetRepository(ITenantProvider tenantProvider, ITenantProvider tenantRaiinInf, ITenantProvider tenantNextOrder, ITenantProvider tenantNextKarteInf, ITenantProvider tenantKarteInf, ITenantProvider tenantTagInf, ITenantProvider tenantCmtInf, IConfiguration configuration) : base(tenantProvider)
         {
             _tenantHistory = tenantRaiinInf.GetNoTrackingDataContext();
@@ -111,7 +111,7 @@ namespace Infrastructure.Repositories
             var tagInfList = taskTagInf.Result;
             var commentList = taskCmt.Result;
 
-           var allFlowSheetQueryable = allRaiinInfList.Union(groupNextOdr);
+            var allFlowSheetQueryable = allRaiinInfList.Union(groupNextOdr);
 
             totalCount = allFlowSheetQueryable.Count();
             List<FlowSheetModel> flowSheetModelList =
@@ -121,7 +121,7 @@ namespace Infrastructure.Repositories
                                      .ToList();
 
 
-            Parallel.ForEach(flowSheetModelList, flowSheetModel  =>
+            Parallel.ForEach(flowSheetModelList, flowSheetModel =>
             {
                 string karteContent = string.Empty;
 
@@ -148,7 +148,6 @@ namespace Infrastructure.Repositories
                 flowSheetModel.ChangeFlowSheet(tagNoValue, karteContent, commentValue, ptId);
             });
 
-            //stopwatch.Stop();
             Console.WriteLine($"End GetListFlowSheet: {ptId} - {stopwatch.ElapsedMilliseconds}");
 
             _tenantHistory.Dispose();
@@ -249,7 +248,7 @@ namespace Infrastructure.Repositories
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
         {
             var stopwatch = Stopwatch.StartNew();
-            var setKbnMstList = new List<RaiinListMstModel>();
+            List<RaiinListMstModel> setKbnMstList;
             if (!_cache.KeyExists(RaiinListMstCacheKey))
             {
                 setKbnMstList = ReloadRaiinListMstCache(hpId);
@@ -322,7 +321,7 @@ namespace Infrastructure.Repositories
                 if (holidayUpdate.HolidayKbn == 0)
                     holidayUpdate.HolidayName = string.Empty;
             }
-            var result =  TrackingDataContext.SaveChanges() > 0;
+            var result = TrackingDataContext.SaveChanges() > 0;
             if (result)
             {
                 ReloadHolidayCache(holiday.HpId);
@@ -332,7 +331,7 @@ namespace Infrastructure.Repositories
 
         public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
-            var holidayMstList = new List<HolidayDto>();
+            List<HolidayDto> holidayMstList;
             if (!_cache.KeyExists(HolidayMstCacheKey))
             {
                 holidayMstList = ReloadHolidayCache(hpId);
@@ -423,7 +422,7 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
         }
 
-        private List<FlowSheetModel> SortAll(string sort, List<FlowSheetModel> todayNextOdrs)
+        public List<FlowSheetModel> SortAll(string sort, List<FlowSheetModel> todayNextOdrs)
         {
             try
             {
@@ -592,7 +591,7 @@ namespace Infrastructure.Repositories
             object obj = new object();
             Parallel.ForEach(dates, date =>
             {
-                string tooltip = "";
+                string tooltip = string.Empty;
                 var holiday = holidays.FirstOrDefault(h => h.SinDate == date);
                 if (!string.IsNullOrEmpty(holiday?.HolidayName ?? string.Empty))
                 {
@@ -605,17 +604,13 @@ namespace Infrastructure.Repositories
                     var datetateItem = raiinInfs.FirstOrDefault(item => item.SinDate == date);
                     foreach (var dateSyosaiItem in dateSyosaiItems)
                     {
-                        if (!dateSyosaiItem.Equals(default(KeyValuePair<int, int>)))
+                        if (!dateSyosaiItem.Equals(default(KeyValuePair<int, int>)) && !(!datetateItem?.Equals(default(KeyValuePair<int, int>)) == true && date == sinDate && datetateItem?.Status < RaiinState.TempSave))
                         {
-                            if (!(!datetateItem?.Equals(default(KeyValuePair<int, int>)) == true && date == sinDate && datetateItem?.Status < RaiinState.TempSave))
-                            {
-                                tooltip = (string.IsNullOrEmpty(tooltip) ? "" : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn) ? SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
-                            }
-
+                            tooltip = (string.IsNullOrEmpty(tooltip) ? string.Empty : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn) ? SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
                         }
                     }
                 }
-         
+
                 if (!string.IsNullOrEmpty(tooltip))
                 {
                     lock (obj)
