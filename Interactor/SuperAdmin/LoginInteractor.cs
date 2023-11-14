@@ -18,21 +18,21 @@ namespace Interactor.SuperAdmin
             {
                 if (inputData.LoginId <= 0)
                 {
-                    return new LoginOutputData(LoginStatus.InvalidLoginId);
+                    return new LoginOutputData(new AdminModel(), LoginStatus.InvalidLoginId);
                 }
                 if (inputData.Password.Length > 100)
                 {
-                    return new LoginOutputData(LoginStatus.InvalidPassWord);
+                    return new LoginOutputData( new AdminModel(), LoginStatus.InvalidPassWord);
                 }
 
                 var result = _adminRepository.Get(inputData.LoginId, inputData.Password);
 
                 if (result.Id > 0)
                 {
-                    return new LoginOutputData(LoginStatus.Successed);
+                    return new LoginOutputData(result, LoginStatus.Successed);
                 }
 
-                return new LoginOutputData(LoginStatus.Failed);
+                return new LoginOutputData(new AdminModel(), LoginStatus.Failed);
             }
             finally
             {
