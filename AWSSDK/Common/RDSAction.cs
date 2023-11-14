@@ -1,5 +1,6 @@
 ﻿using Amazon.RDS;
 using Amazon.RDS.Model;
+using Npgsql;
 
 namespace AWSSDK.Common
 {
@@ -128,6 +129,63 @@ namespace AWSSDK.Common
             }
         }
 
+
+        public static void CreateDatabase(string host, string tenantId)
+        {
+            try
+            {
+                var connectionString = $"Host={host};Username=postgres;Password=Emr!23456789;Port=5432";
+
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandText = $"CREATE DATABASE {tenantId}";
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
+        public static void CreateTables(string host, string tenantId)
+        {
+            try
+            {
+                var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
+
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+
+                        var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "template", "gdump.sql");
+
+                        if (File.Exists(filePath))
+                        {
+                            var sqlScript = File.ReadAllText(filePath);
+                            command.CommandText = sqlScript;
+                            command.ExecuteNonQuery();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: SQL file not found");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
 
         public static void GenerateDumpfile(string tenantId)
         {
