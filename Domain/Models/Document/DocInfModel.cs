@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Domain.Models.Document;
+﻿namespace Domain.Models.Document;
 
 public class DocInfModel
 {
@@ -11,6 +9,8 @@ public class DocInfModel
         DisplayFileName = string.Empty;
         UpdateDate = new DateTime();
         FileLink = string.Empty;
+        DspFileName = string.Empty;
+        LockMachine = string.Empty;
     }
 
     public DocInfModel(int hpId, long fileId, long ptId, int getDate, int categoryCd, string categoryName, string fileName, string displayFileName, DateTime updateDate)
@@ -25,32 +25,14 @@ public class DocInfModel
         DisplayFileName = displayFileName;
         UpdateDate = updateDate;
         FileLink = string.Empty;
+        DspFileName = string.Empty;
+        LockMachine = string.Empty;
     }
 
     public DocInfModel SetFileLinkForDocInf(string fileLink)
     {
         FileLink = fileLink;
         return this;
-    }
-
-    public DocInfModel(long ptId, long ptNum, int sinDate, long raiinNo, int seqNo, int categoryCd, string fileName, string dspFileName, int isLocked, DateTime lockDate, int lockId, string lockMachine, int isDeleted)
-    {
-        PtId = ptId;
-        PtNum = ptNum;
-        SinDate = sinDate;
-        RaiinNo = raiinNo;
-        SeqNo = seqNo;
-        CategoryCd = categoryCd;
-        FileName = fileName;
-        DspFileName = dspFileName;
-        IsLocked = isLocked;
-        LockDate = lockDate;
-        LockId = lockId;
-        LockMachine = lockMachine;
-        IsDeleted = isDeleted;
-        CategoryName = string.Empty;
-        DisplayFileName = string.Empty;
-        FileLink = string.Empty;
     }
 
     public int HpId { get; private set; }

@@ -59,7 +59,7 @@ namespace Domain.Models.PtTag
 
         public long SeqNo { get; private set; }
 
-        public string Memo { get; private set; } = string.Empty;
+        public string Memo { get; private set; }
 
         public int StartDate { get; private set; }
 
@@ -73,7 +73,7 @@ namespace Domain.Models.PtTag
 
         public int IsDspRece { get; private set; }
 
-        public string BackgroundColor { get; private set; } = string.Empty;
+        public string BackgroundColor { get; private set; }
 
         public int TagGrpCd { get; private set; }
 

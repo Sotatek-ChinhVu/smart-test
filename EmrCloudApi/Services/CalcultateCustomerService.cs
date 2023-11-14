@@ -23,7 +23,6 @@ namespace EmrCloudApi.Services
         {
             try
             {
-                //StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
                 var content = JsonContent.Create(input);
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);
@@ -54,7 +53,6 @@ namespace EmrCloudApi.Services
         {
             try
             {
-                //StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
                 var content = JsonContent.Create(input);
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
                 HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);

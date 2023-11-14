@@ -24,7 +24,7 @@
         /// <summary>
         /// 職種名
         /// </summary>
-        public string JobName { get; set; } = string.Empty;
+        public string JobName { get; set; }
 
         /// <summary>
         /// 並び順

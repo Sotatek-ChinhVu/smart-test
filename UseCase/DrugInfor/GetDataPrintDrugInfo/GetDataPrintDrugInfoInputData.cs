@@ -4,7 +4,7 @@ namespace UseCase.DrugInfor.GetDataPrintDrugInfo;
 
 public class GetDataPrintDrugInfoInputData : IInputData<GetDataPrintDrugInfoOutputData>
 {
-    public GetDataPrintDrugInfoInputData(int hpId, int sinDate, string itemCd, int level, string drugName, string yJCode, TypeHTMLEnum type)
+    public GetDataPrintDrugInfoInputData(int hpId, int sinDate, string itemCd, int level, string drugName, string yJCode, TypeHTMLObject type)
     {
         HpId = hpId;
         SinDate = sinDate;
@@ -27,5 +27,5 @@ public class GetDataPrintDrugInfoInputData : IInputData<GetDataPrintDrugInfoOutp
 
     public string YJCode { get; private set; }
 
-    public TypeHTMLEnum Type { get; private set; }
+    public TypeHTMLObject Type { get; private set; }
 }

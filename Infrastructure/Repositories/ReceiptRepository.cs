@@ -573,8 +573,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                             item.RpEdaNo,
                                                                             item.RpNo,
                                                                             item.PtId,
-                                                                            item.ItemCd,
-                                                                            item.Suryo, item.ItemName));
+                                                                            item.ItemCd ?? string.Empty,
+                                                                            item.Suryo,
+                                                                            item.ItemName ?? string.Empty));
 
                     enumOdrDetailItemSum = (from odrDetail in odrDetails.AsEnumerable()
                                             join rece in receInfs on new { odrDetail.HpId, odrDetail.PtId, odrDetail.SinYm } equals new { rece.HpId, rece.PtId, rece.SinYm }
@@ -777,34 +778,34 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 {
                     bool isFreeByomei = item.IsComment;
                     var ptByoNextQuery = NoTrackingDataContext.PtByomeis.Where(x => x.HpId == hpId
-                                                                                    && (isFreeByomei ? x.ByomeiCd.Trim() == ByomeiConstant.FreeWordCode : x.ByomeiCd.Trim() == item.ByomeiCd.Trim())
-                                                                                    && (!isFreeByomei || x.Byomei.Trim().Contains(item.InputName.Trim()))
+                                                                                    && (isFreeByomei ? x.ByomeiCd != null && x.ByomeiCd.Trim() == ByomeiConstant.FreeWordCode : x.ByomeiCd != null && x.ByomeiCd.Trim() == item.ByomeiCd.Trim())
+                                                                                    && (!isFreeByomei || (x.Byomei != null && x.Byomei.Trim().Contains(item.InputName.Trim())))
                                                                                     && x.IsDeleted == 0);
 
                     // 疑い病名のみ
                     if (searchModel.IsOnlySuspectedDisease)
                     {
-                        ptByoNextQuery = ptByoNextQuery.Where(x => (x.SyusyokuCd1.Trim() == valueCheck
-                                                                || x.SyusyokuCd2.Trim() == valueCheck
-                                                                || x.SyusyokuCd3.Trim() == valueCheck
-                                                                || x.SyusyokuCd4.Trim() == valueCheck
-                                                                || x.SyusyokuCd5.Trim() == valueCheck
-                                                                || x.SyusyokuCd6.Trim() == valueCheck
-                                                                || x.SyusyokuCd7.Trim() == valueCheck
-                                                                || x.SyusyokuCd8.Trim() == valueCheck
-                                                                || x.SyusyokuCd9.Trim() == valueCheck
-                                                                || x.SyusyokuCd10.Trim() == valueCheck
-                                                                || x.SyusyokuCd11.Trim() == valueCheck
-                                                                || x.SyusyokuCd12.Trim() == valueCheck
-                                                                || x.SyusyokuCd13.Trim() == valueCheck
-                                                                || x.SyusyokuCd14.Trim() == valueCheck
-                                                                || x.SyusyokuCd15.Trim() == valueCheck
-                                                                || x.SyusyokuCd16.Trim() == valueCheck
-                                                                || x.SyusyokuCd11.Trim() == valueCheck
-                                                                || x.SyusyokuCd18.Trim() == valueCheck
-                                                                || x.SyusyokuCd19.Trim() == valueCheck
-                                                                || x.SyusyokuCd20.Trim() == valueCheck
-                                                                || x.SyusyokuCd21.Trim() == valueCheck)
+                        ptByoNextQuery = ptByoNextQuery.Where(x => ((x.SyusyokuCd1 != null && x.SyusyokuCd1.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd2 != null && x.SyusyokuCd2.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd3 != null && x.SyusyokuCd3.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd4 != null && x.SyusyokuCd4.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd5 != null && x.SyusyokuCd5.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd6 != null && x.SyusyokuCd6.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd7 != null && x.SyusyokuCd7.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd8 != null && x.SyusyokuCd8.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd9 != null && x.SyusyokuCd9.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd10 != null && x.SyusyokuCd10.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd11 != null && x.SyusyokuCd11.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd12 != null && x.SyusyokuCd12.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd13 != null && x.SyusyokuCd13.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd14 != null && x.SyusyokuCd14.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd15 != null && x.SyusyokuCd15.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd16 != null && x.SyusyokuCd16.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd17 != null && x.SyusyokuCd17.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd18 != null && x.SyusyokuCd18.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd19 != null && x.SyusyokuCd19.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd20 != null && x.SyusyokuCd20.Trim() == valueCheck)
+                                                                || (x.SyusyokuCd21 != null && x.SyusyokuCd21.Trim() == valueCheck))
                                                                 );
                     }
 
@@ -3474,11 +3475,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
 
-        var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (!ptIds.Any() || ptIds.Contains(p.PtId)));
 
-        var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+        var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (!ptIds.Any() || ptIds.Contains(p.PtId)));
 
-        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (!ptIds.Any() || ptIds.Contains(p.PtId)));
 
         var receInfJoinPtInfQuery = from receInf in receInfs
                                     join ptInf in ptInfs
@@ -3490,7 +3491,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                     {
                                         PtInf = ptInf,
                                         ReceInf = receInf,
-                                        RcStatus = tempRcStt ?? null
+                                        RcStatus = tempRcStt
                                     };
 
         var query = from receInfJoinPtInf in receInfJoinPtInfQuery
@@ -3500,10 +3501,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     where receInfJoinPtInf.ReceInf.HokenId != 0
                     select new
                     {
-                        PtInf = receInfJoinPtInf.PtInf,
-                        ReceInf = receInfJoinPtInf.ReceInf,
+                        receInfJoinPtInf.PtInf,
+                        receInfJoinPtInf.ReceInf,
                         PtHokenInf = tempPtHokenInf,
-                        RcStatus = receInfJoinPtInf.RcStatus
+                        receInfJoinPtInf.RcStatus
                     };
 
         return query.Select(x => new ReceInfValidateModel(x.PtInf.PtId,
@@ -3530,17 +3531,17 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public List<ReceInfForCheckErrSwapHokenModel> GetReceInforCheckErrForCalculateSwapHoken(int hpId, List<long> ptIds, int sinYM)
     {
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None && ptIds.Contains(p.PtId));
-        var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count <= 0 || ptIds.Contains(p.PtId)));
 
         var query = from rc in receInfs
                     join pt in ptInfs
                     on rc.PtId equals pt.PtId
                     select new
                     {
-                        PtId = pt.PtId,
-                        PtNum = pt.PtNum,
-                        HokenId = rc.HokenId,
-                        SinYm = rc.SinYm
+                        pt.PtId,
+                        pt.PtNum,
+                        rc.HokenId,
+                        rc.SinYm
                     };
 
         return query.AsEnumerable().Select(x => new ReceInfForCheckErrSwapHokenModel(x.PtId, x.PtNum, x.SinYm, x.HokenId)).ToList();
@@ -3760,9 +3761,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).FirstOrDefault();
         var groupCd = 100001;
         var grpEdaNo = 0;
-        //var defaultValue = 0;
         var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
-                p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+                         p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
 
         if (hpInf != null)
         {
@@ -3776,12 +3776,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
               .Select(x => new SokatuMstModel(x.PrefNo, x.StartYm, x.EndYm, x.ReportId, x.ReportEdaNo, x.SortNo, x.ReportName ?? string.Empty, x.PrintType, x.PrintNoType, x.DataAll, x.DataDisk, x.DataPaper, x.DataKbn, x.DiskKind ?? string.Empty, x.DiskCnt, x.IsSort))
               .ToList();
 
-            if (result != null && systemConf.Val != 1)
+            if (result != null && systemConf?.Val != 1)
             {
                 result = result.Where(item => item.ReportId != 4).ToList();
             }
         }
-        return result;
+        return result ?? new();
     }
 
     public List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinYm, int dayInMonth, int rpNo, int seqNo)

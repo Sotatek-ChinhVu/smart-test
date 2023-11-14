@@ -1,4 +1,6 @@
-﻿namespace Helper.Constants
+﻿using System.Collections.Immutable;
+
+namespace Helper.Constants
 {
     public static class ItemCdConst
     {
@@ -488,7 +490,7 @@
         public const string SaisinSurveillance = "112024570";
         #endregion
 
-        public static List<string> IryoJyohoKibanList = new List<string>()
+        public static readonly ImmutableList<string> IryoJyohoKibanList = new List<string>()
         {
             SyosinIryoJyohoKiban1,
             SyosinIryoJyohoKiban2,
@@ -496,7 +498,7 @@
             IgakuIryoJyohoKiban2,
             SaisinIryoJyohoKiban3,
             IgakuIryoJyohoKiban3
-        };
+        }.ToImmutableList();
 
         public const string IgakuIryoJyohoKiban1 = "113045070";
 
@@ -1375,8 +1377,8 @@
         #endregion
 
         #region ZAN
-        public static string ZanGigi = "@ZANGIGI";
-        public static string ZanTeiKyo = "@ZANTEIKYO";
+        public const string ZanGigi = "@ZANGIGI";
+        public const string ZanTeiKyo = "@ZANTEIKYO";
         #endregion
 
         #region 乳幼児育児栄養指導料
@@ -2184,7 +2186,7 @@
         /// </summary>
         public const string GazoSyoniTinseiMRI = "170036170";
 
-        public static List<string> GazoTaisatuei = new List<string>()
+        public static readonly ImmutableList<string> GazoTaisatuei = new List<string>()
         {
             // 他医撮影の写真診断（乳房撮影）
             GazoTaiNyu,
@@ -2204,8 +2206,9 @@
             GazoTaiKansetuZouei,
             // 他医撮影のコンピューター断層診断
             GazoTaiComputer
-        };
-        public static List<string> ZaitakuTokushu = new List<string>()
+        }.ToImmutableList();
+
+        public static readonly ImmutableList<string> ZaitakuTokushu = new List<string>()
         {
             ZaiOusin,
             ZaiOusinTokubetu,
@@ -2215,7 +2218,7 @@
             ZaiHoumon1_2DouIgai,
             ZaiHoumon2i,
             ZaiHoumon2ro
-        };
+        }.ToImmutableList();
         #endregion
 
         #region 投薬関連

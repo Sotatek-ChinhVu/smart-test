@@ -96,7 +96,19 @@ namespace Infrastructure.Logger
                 var indexStart = queryString.IndexOf(ParamConstant.Domain);
                 var indexSub = indexStart > 0 ? indexStart + 7 : 0;
                 var tempIndexEnd = queryString.IndexOf("&", indexStart);
-                var indexEndSub = indexStart > 0 ? tempIndexEnd == -1 ? queryString.Length : tempIndexEnd : 0;
+
+                int indexEndSub = 0;
+                if (indexStart > 0)
+                {
+                    if (tempIndexEnd == -1)
+                    {
+                        indexEndSub = queryString.Length;
+                    }
+                    else
+                    {
+                        indexEndSub = tempIndexEnd;
+                    }
+                }
                 var length = indexEndSub > indexSub ? indexEndSub - indexSub : 0;
                 return queryString.Substring(indexSub, length);
             }

@@ -12,7 +12,7 @@ namespace EmrCloudApi.Presenters.MstItem
         {
             Result = new Response<UpdateSingleDoseMstResponse>
             {
-                Status = outputData.StatusUpdate == true ? 1 : 0
+                Status = outputData.StatusUpdate ? 1 : 0
             };
             switch (outputData.StatusUpdate)
             {

@@ -2,7 +2,57 @@
 {
     public class PatientManagementModel
     {
-        public PatientManagementModel() { }
+        public PatientManagementModel()
+        {
+            KanaName = string.Empty;
+            Name = string.Empty;
+            AgeRefDate = string.Empty;
+            HomePost = string.Empty;
+            ZipCD1 = string.Empty;
+            ZipCD2 = string.Empty;
+            Address = string.Empty;
+            PhoneNumber = string.Empty;
+            ListPtNums = new();
+            GroupSelected = string.Empty;
+            HokensyaNoFrom = string.Empty;
+            HokensyaNoTo = string.Empty;
+            Kigo = string.Empty;
+            Bango = string.Empty;
+            EdaNo = string.Empty;
+            AgeFrom = string.Empty;
+            AgeTo = string.Empty;
+            KohiTokusyuNoFrom = string.Empty;
+            KohiTokusyuNoTo = string.Empty;
+            SearchWord = string.Empty;
+            KohiFutansyaNoFrom = string.Empty;
+            KohiFutansyaNoTo = string.Empty;
+            HokenSbt = new();
+            Houbetu1 = string.Empty;
+            Houbetu2 = string.Empty;
+            Houbetu3 = string.Empty;
+            Houbetu4 = string.Empty;
+            Houbetu5 = string.Empty;
+            Kogaku = string.Empty;
+            RaiinAgeFrom = string.Empty;
+            RaiinAgeTo = string.Empty;
+            MedicalSearchWord = string.Empty;
+            TenkiKbns = new();
+            SikkanKbns = new();
+            ByomeiCds = new();
+            FreeByomeis = new();
+            NanbyoCds = new();
+            Statuses = new();
+            UketukeSbtId = new();
+            ItemCds = new();
+            KaMstId = new();
+            UserMstId = new();
+            JikanKbns = new();
+            ItemCmts = new();
+            KarteKbns = new();
+            KarteSearchWords = new();
+            KensaItemCds = new();
+        }
+
         public PatientManagementModel(int outputOrder, int outputOrder2, int outputOrder3, int reportType, long ptNumFrom, long ptNumTo, string kanaName, string name, int birthDayFrom, int birthDayTo, string ageFrom, string ageTo, string ageRefDate, int sex, string homePost, string zipCD1, string zipCD2, string address, string phoneNumber, int includeTestPt, List<long> listPtNums, int registrationDateFrom, int registrationDateTo, string groupSelected, string hokensyaNoFrom, string hokensyaNoTo, string kigo, string bango, string edaNo, int hokenKbn, string kohiFutansyaNoFrom, string kohiFutansyaNoTo, string kohiTokusyuNoFrom, string kohiTokusyuNoTo, int expireDateFrom, int expireDateTo, List<int> hokenSbt, string houbetu1, string houbetu2, string houbetu3, string houbetu4, string houbetu5, string kogaku, int kohiHokenNoFrom, int kohiHokenEdaNoFrom, int kohiHokenNoTo, int kohiHokenEdaNoTo, int startDateFrom, int startDateTo, int tenkiDateFrom, int tenkiDateTo, int isDoubt, string searchWord, int searchWordMode, int byomeiCdOpt, int sindateFrom, int sindateTo, int lastVisitDateFrom, int lastVisitDateTo, int isSinkan, string raiinAgeFrom, string raiinAgeTo, int dataKind, int itemCdOpt, string medicalSearchWord, int wordOpt, int karteWordOpt, int startIraiDate, int endIraiDate, int kensaItemCdOpt, List<int> tenkiKbns, List<int> sikkanKbns, List<string> byomeiCds, List<string> freeByomeis, List<int> nanbyoCds, List<int> statuses, List<int> uketukeSbtId, List<string> itemCds, List<int> kaMstId, List<int> userMstId, List<int> jikanKbns, List<string> itemCmts, List<int> karteKbns, List<string> karteSearchWords, List<string> kensaItemCds)
         {
             OutputOrder = outputOrder;

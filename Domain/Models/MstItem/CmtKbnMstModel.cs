@@ -33,7 +33,18 @@ namespace Domain.Models.MstItem
 
         public string EndDateBinding
         {
-            get => CheckDefaultValue() ? string.Empty : (EndDate == 99999999 ? "9999/99/99" : CIUtil.SDateToShowSDate(EndDate));
+            get
+            {
+                if (!CheckDefaultValue())
+                {
+                    if (EndDate == 99999999)
+                    {
+                        return "9999/99/99";
+                    }
+                    return CIUtil.SDateToShowSDate(EndDate);
+                }
+                return string.Empty;
+            }
         }
 
         public int CmtKbn { get; private set; }

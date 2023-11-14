@@ -34,7 +34,7 @@
 
         public int PreHokenId { get; private set; }
 
-        public string Cmt { get; private set; } = string.Empty;
+        public string Cmt { get; private set; }
 
         public bool IsModified { get; private set; }
 

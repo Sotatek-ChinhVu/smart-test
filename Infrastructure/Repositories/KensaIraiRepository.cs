@@ -977,10 +977,10 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         List<long> ptIdList = new();
         List<long> seqNoList = new();
 
-        foreach (var item in kensaInfList)
+        foreach (var item in kensaInfList.Select(item => item.KensaInfDetailModelList).ToList())
         {
-            ptIdList.AddRange(item.KensaInfDetailModelList.Select(detail => detail.PtId).ToList());
-            seqNoList.AddRange(item.KensaInfDetailModelList.Select(detail => detail.SeqNo).ToList());
+            ptIdList.AddRange(item.Select(detail => detail.PtId).ToList());
+            seqNoList.AddRange(item.Select(detail => detail.SeqNo).ToList());
         }
         ptIdList = ptIdList.Distinct().ToList();
         seqNoList = seqNoList.Distinct().ToList();
@@ -1143,6 +1143,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         string messageItem = string.Empty;
         int successCount = 0;
         bool doneProgress = true;
+
 
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
@@ -1388,6 +1389,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
             // 分析物コードが未設定の場合は、読み飛ばす。 skip if iraiCd is not match
             return (null, false);
         }
+        string iraiDate = CIUtil.SDateToShowSDate(kensaInf.IraiDate);
         var ptInf = ptInfDBList.FirstOrDefault(item => item.PtId == kensaInf.PtId);
 
         // update kensaInfDetail
@@ -1420,6 +1422,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     string itemSuccessed = JsonSerializer.Serialize(new KensaInfMessageModel(
                                                                     kensaInf.PtId,
                                                                     iraiCd,
+                                                                    iraiDate,
                                                                     ptInf?.PtNum ?? 0,
                                                                     ptInf?.Name ?? string.Empty,
                                                                     kensaInfDetailMessageList));
@@ -1429,6 +1432,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 string errorItem = JsonSerializer.Serialize(new KensaInfMessageModel(
                                                                 kensaInf.PtId,
                                                                 iraiCd,
+                                                                iraiDate,
                                                                 ptInf?.PtNum ?? 0,
                                                                 ptInf?.Name ?? string.Empty,
                                                                 new()
@@ -1445,6 +1449,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                     string message = JsonSerializer.Serialize(new KensaInfMessageModel(
                                                                   kensaInf.PtId,
                                                                   iraiCd,
+                                                                  iraiDate,
                                                                   ptInf?.PtNum ?? 0,
                                                                   ptInf?.Name ?? string.Empty,
                                                                   kensaInfDetailMessageList));
@@ -1453,6 +1458,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 string errorItem = JsonSerializer.Serialize(new KensaInfMessageModel(
                                                                 kensaInf.PtId,
                                                                 iraiCd,
+                                                                iraiDate,
                                                                 ptInf?.PtNum ?? 0,
                                                                 ptInf?.Name ?? string.Empty,
                                                                 new()
@@ -1528,6 +1534,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
         var result = new KensaInfMessageModel(
                          kensaInf.PtId,
                          iraiCd,
+                         iraiDate,
                          ptInf?.PtNum ?? 0,
                          ptInf?.Name ?? string.Empty,
                          kensaInfDetailMessageList);

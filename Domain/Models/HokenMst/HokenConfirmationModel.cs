@@ -8,8 +8,8 @@ namespace Domain.Models.HokenMst
 {
     public class HokenConfirmationModel
     {
-        private OnlineKogakuHelper OnlineKogakuHelper;
-        public HokenConfirmationModel(string name, string value, string compareValue, int age = -1, int sinDate = 0, OnlineKogakuHelper onlineKogakuHelper = null)
+        private readonly OnlineKogakuHelper? OnlineKogakuHelper;
+        public HokenConfirmationModel(string name, string value, string compareValue, int age = -1, int sinDate = 0, OnlineKogakuHelper? onlineKogakuHelper = null)
         {
             AttributeName = name;
             Age = age;
@@ -17,7 +17,7 @@ namespace Domain.Models.HokenMst
             OnlineKogakuHelper = onlineKogakuHelper;
             CurrentValue = value.AsString();
 
-            if (AttributeName == HokenConfOnlQuaConst.KOGAKU_KBN)
+            if (AttributeName == HokenConfOnlQuaConst.KOGAKU_KBN && OnlineKogakuHelper != null)
             {
                 XmlValue = OnlineKogakuHelper.GetXmlValue().AsString();
             }
@@ -42,7 +42,7 @@ namespace Domain.Models.HokenMst
                 IsReflect = CIUtil.ToHalfsize(CurrentValueDisplay.AsString()).Replace("/", "").Trim()
                             .Equals(CIUtil.ToHalfsize(XmlValueDisplay.AsString()).Replace("/", ""));
             }
-            else if (AttributeName == HokenConfOnlQuaConst.KOGAKU_KBN)
+            else if (AttributeName == HokenConfOnlQuaConst.KOGAKU_KBN && OnlineKogakuHelper != null)
             {
                 IsReflect = OnlineKogakuHelper.IsReflect(CurrentValue.AsInteger(), CurrentValueDisplay);
             }
@@ -121,7 +121,7 @@ namespace Domain.Models.HokenMst
                         }
                         break;
                     case HokenConfOnlQuaConst.KOGAKU_KBN:
-                        if (Age >= 0)
+                        if (Age >= 0 && OnlineKogakuHelper != null)
                         {
                             returnValue = OnlineKogakuHelper.GetXmlDisplay(CurrentValueDisplay);
                         }
@@ -134,23 +134,18 @@ namespace Domain.Models.HokenMst
                         break;
                 }
 
-                if (string.IsNullOrEmpty(returnValue))
-                {
-                    if (AttributeName != HokenConfOnlQuaConst.KIGO
+                if (string.IsNullOrEmpty(returnValue) && AttributeName != HokenConfOnlQuaConst.KIGO
                         && AttributeName != HokenConfOnlQuaConst.CREDENTIAL)
-                    {
-                        returnValue = "(情報なし)";
-                    }
+                {
+                    returnValue = "(情報なし)";
                 }
 
                 return returnValue;
             }
         }
 
-        private bool _canCheck = true;
         public bool CanCheck { get; private set; }
 
-        private bool _isReflect;
         public bool IsReflect { get; private set; }
 
         public string Reflect
@@ -175,10 +170,5 @@ namespace Domain.Models.HokenMst
         }
 
         public int Age { get; set; }
-
-        public bool CheckDefaultValue()
-        {
-            return false;
-        }
     }
 }
