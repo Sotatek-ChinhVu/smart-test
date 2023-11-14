@@ -188,6 +188,20 @@ namespace Infrastructure.Repositories
         {
             // get SendaiGeneration newest
             var itemNewest = NoTrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
+            if (itemNewest?.StartDate == startDate)
+            {
+                var year = startDate / 10000;
+                var yearMonth = startDate / 100;
+                var month = yearMonth % year;
+                if (month == 12)
+                {
+                    startDate = (year + 1) * 10000 + 1 * 100 + 1;
+                }
+                else
+                {
+                    startDate += 100;
+                }
+            }
             // Save item Add
             var itemAdd = new SetGenerationMst();
             itemAdd.StartDate = startDate;
