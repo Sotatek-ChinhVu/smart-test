@@ -2,5 +2,5 @@
 
 public class ConvertStringChkJISKjRequest
 {
-    public List<string> InputList { get; set; }
+    public List<string> InputList { get; set; } = new();
 }

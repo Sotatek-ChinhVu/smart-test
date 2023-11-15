@@ -4,5 +4,7 @@
     {
         Task<Dictionary<string, Dictionary<string, string>>> SummaryCard();
         Task<List<string>> GetAvailableIdentifiersAsync();
+
+        Task<string> GetInfTenantByTenant(string Id);
     }
 }

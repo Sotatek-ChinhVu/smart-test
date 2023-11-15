@@ -3,13 +3,13 @@ using StackExchange.Redis;
 
 namespace Helper.Redis
 {
-    public class RedisConnectorHelper
+    public static class RedisConnectorHelper
     {
         public static string RedisHost = string.Empty;
 
         static RedisConnectorHelper()
         {
-            RedisConnectorHelper.lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
+            lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
             {
                 var strs = RedisHost.Split(":");
                 string host = string.Empty;
@@ -18,7 +18,6 @@ namespace Helper.Redis
                 {
                     AbortOnConnectFail = false
                 };
-                ConfigurationOptions options = new ConfigurationOptions();
                 if (strs.Count() == 2)
                 {
                     host = strs.FirstOrDefault()?.ToString() ?? string.Empty;

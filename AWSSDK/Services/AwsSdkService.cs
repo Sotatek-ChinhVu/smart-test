@@ -102,5 +102,11 @@ namespace AWSSDK.Services
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
+        }
+
+        public async Task<string> GetInfTenantByTenant(string id)
+        {
+            return "";
+        }
     }
 }

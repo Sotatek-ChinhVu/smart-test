@@ -2913,7 +2913,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidHpId && output.CheckSpecialItemModels.Count() == 0);
+        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidHpId && !output.CheckSpecialItemModels.Any());
     }
 
     [Test]
@@ -2933,7 +2933,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidPtId && output.CheckSpecialItemModels.Count() == 0);
+        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidPtId && !output.CheckSpecialItemModels.Any());
     }
 
     [Test]
@@ -2953,7 +2953,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidSinDate && output.CheckSpecialItemModels.Count() == 0);
+        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidSinDate && !output.CheckSpecialItemModels.Any());
     }
 
     [Test]
@@ -2973,7 +2973,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidIBirthDay && output.CheckSpecialItemModels.Count() == 0);
+        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidIBirthDay && !output.CheckSpecialItemModels.Any());
     }
 
     [Test]
@@ -2993,7 +2993,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidCheckAge && output.CheckSpecialItemModels.Count() == 0);
+        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidCheckAge && !output.CheckSpecialItemModels.Any());
     }
 
     [Test]
@@ -3013,7 +3013,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidRaiinNo && output.CheckSpecialItemModels.Count() == 0);
+        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidRaiinNo && !output.CheckSpecialItemModels.Any());
     }
 
     [Test]
@@ -3033,7 +3033,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidOdrInfDetail && output.CheckSpecialItemModels.Count() == 0);
+        Assert.True(output.Status == CheckedSpecialItemStatus.InvalidOdrInfDetail && !output.CheckSpecialItemModels.Any());
     }
 
     [Test]
@@ -3219,8 +3219,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
             );
         odrDetails.Add(odrDetailDuplicateCheck);
         odrDetails.Add(odrDetailDuplicateCheck);
-
-        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
 
         var checkedSpecialItemInputData1 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
         var checkedSpecialItemInputData2 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
@@ -3420,8 +3418,6 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
             );
         odrDetails.Add(odrDetailDuplicateCheck);
         odrDetails.Add(odrDetailDuplicateCheck);
-
-        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
 
         var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new KarteItemInputData(1, 901072057, 1, 20221111, "comment abc", 0, "abc"), false, true);
 

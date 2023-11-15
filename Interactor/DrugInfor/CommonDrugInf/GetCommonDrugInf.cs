@@ -110,7 +110,6 @@ public class GetCommonDrugInf : IGetCommonDrugInf
         stringBuilder.Append("<head>");
         stringBuilder.Append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
         stringBuilder.Append("<style type='text/css'><!--");
-        //
         for (int i = 0; i <= drugDetailModel.MaxLevel; i++)
         {
             stringBuilder.Append("td.level-" + i.AsString() + " {width: " + (20 * i).AsString() + "px;clear:both}");
@@ -189,7 +188,6 @@ public class GetCommonDrugInf : IGetCommonDrugInf
         }
 
         stringBuilder.Append("</td></tr></table>");
-        //stringBuilder.Append("<br>");
 
         bool bSiyoFlg = false;
 
@@ -379,14 +377,12 @@ public class GetCommonDrugInf : IGetCommonDrugInf
         //replace 1st occurrence
         var regex = new Regex(Regex.Escape("!"));
         rs = regex.Replace(rs, "<tr><td>", 1);
-        //rs = rs.Replace("!", "<tr><td>");
         rs = rs.Replace(":", "</td><td>");
         rs = rs.Replace("!", "</td></tr><tr><td>");
         rs = rs.Replace(CON_KAI, "<br>");
         rs = rs.Replace(CON_PAI, "<br>");
         rs = rs.Replace(CON_SYU, "</td></tr></table>");
         rs = rs.Replace("<td></td>", "<td>&nbsp;</td>");
-        //TODO
         return rs;
     }
 
@@ -407,7 +403,6 @@ public class GetCommonDrugInf : IGetCommonDrugInf
         }
 
         //   項目番号と内容を分ける
-
         if (
             (new[] { 2, 3, 4, }.Contains(ipos1) && (ipos2 == 0) && (ipos3 >= 3))////「).」の場合
             || ((ipos1 == 0) && (new[] { 3, 4 }.Contains(ipos2)) && (ipos3 >= 4))//　「].」の場合
@@ -454,9 +449,8 @@ public class GetCommonDrugInf : IGetCommonDrugInf
         stringBuilder.Append("</head>");
         stringBuilder.Append("<body>");
         stringBuilder.Append("<div id='header' style='display:none'>");
-        //string imgSpace = MakeHeaderPrint();
-        //stringBuilder.Append(imgSpace);
         stringBuilder.Append("</div>");
+
         //Create body
         stringBuilder.Append("<table><tr><td></td><td><p style='font-weight: bold; font-size:12pt;'>【薬剤識別】</p></td></tr></table>");
 

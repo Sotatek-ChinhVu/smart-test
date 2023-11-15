@@ -2,9 +2,9 @@
 
 public class UpdatePtInfOnlineQualifyRequestItem
 {
-    public string AttributeName { get; set; }
+    public string AttributeName { get; set; } = string.Empty;
 
-    public string CurrentValue { get; set; }
+    public string CurrentValue { get; set; } = string.Empty;
 
-    public string XmlValue { get; set; }
+    public string XmlValue { get; set; } = string.Empty;
 }

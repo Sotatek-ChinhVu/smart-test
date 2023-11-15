@@ -90,7 +90,6 @@ using Domain.Models.OrdInfDetails;
 using UseCase.MstItem.UpdateYohoSetMst;
 using UseCase.MstItem.GetTenMstByCode;
 using UseCase.MstItem.GetByomeiByCode;
-using UseCase.MstItem.GetListResultKensaMst;
 using UseCase.MstItem.GetRenkeiTiming;
 using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
 
@@ -530,15 +529,11 @@ namespace EmrCloudApi.Controller
 
             BasicSettingTabModel basicSettingTab = new BasicSettingTabModel(Mapper.Map<CmtKbnMstModelDto, CmtKbnMstModel>(request.CmtKbnMstModels));
 
-            IjiSettingTabModel ijiSettingTab = ObjectExtension.CreateInstance<IjiSettingTabModel>();
-
             PrecriptionSettingTabModel precriptionSettingTab = new PrecriptionSettingTabModel(Mapper.Map<M10DayLimitModelDto, M10DayLimitModel>(request.M10DayLimitModels),
                                                                                               Mapper.Map<IpnMinYakkaMstModelDto, IpnMinYakkaMstModel>(request.IpnMinYakkaMsts),
                                                                                               Mapper.Map<DrugDayLimitModelDto, DrugDayLimitModel>(request.DrugDayLimits),
                                                                                               Mapper.Map(request.DosageMst, new DosageMstModel()),
                                                                                               Mapper.Map(request.IpnNameMst, new IpnNameMstModel()));
-
-            UsageSettingTabModel usageSettingTab = ObjectExtension.CreateInstance<UsageSettingTabModel>();
 
             DrugInfomationTabModel drugInfomationTab = new DrugInfomationTabModel(Mapper.Map<DrugInfModelDto, DrugInfModel>(request.DrugInfs),
                                                                                   Mapper.Map(request.ZaiImage, new PiImageModel()),

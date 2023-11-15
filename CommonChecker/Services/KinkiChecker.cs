@@ -8,7 +8,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public List<TOdrInf> CurrentListOrder = new();
+        public List<TOdrInf> CurrentListOrder { get; set; } = new();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
@@ -43,7 +43,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             for (int i = 0; i < checkedResult.Count; i++)
             {
                 var item = checkedResult[i];
-                var listDuplicate = checkedResult.Where(c => item.AYjCd == c.BYjCd && item.AYjCd == c.BYjCd).ToList();
+                var listDuplicate = checkedResult.Where(c => item.AYjCd == c.BYjCd).ToList();
                 for (int j = 0; j < listDuplicate.Count; j++)
                 {
                     checkedResult.Remove(listDuplicate[j]);

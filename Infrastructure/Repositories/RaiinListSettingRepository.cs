@@ -8,13 +8,14 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Text;
 
 namespace Infrastructure.Repositories
 {
     public class RaiinListSettingRepository : RepositoryBase, IRaiinListSettingRepository
     {
         private readonly StackExchange.Redis.IDatabase _cache;
-        private string key;
+        private readonly string key;
         private string RaiinListMstCacheKey
         {
             get => $"{key}-RaiinListMstCacheKey";
@@ -1281,7 +1282,7 @@ namespace Infrastructure.Repositories
                                                                                                          x.SeqNo,
                                                                                                          x.KouiKbnId,
                                                                                                          x.IsDeleted)).ToList();
-                    if (raiinListKoui != null && raiinListKoui.Count() > 0)
+                    if (raiinListKoui != null && raiinListKoui.Any())
                     {
                         kouiAddList.AddRange(raiinListKoui);
                     }
@@ -1302,7 +1303,7 @@ namespace Infrastructure.Repositories
                                                                                                          0,
                                                                                                          false,
                                                                                                          0)).ToList();
-                    if (raiinListItem != null && raiinListItem.Count() > 0)
+                    if (raiinListItem != null && raiinListItem.Any())
                     {
                         itemAddList.AddRange(raiinListItem);
                     }
@@ -1320,7 +1321,7 @@ namespace Infrastructure.Repositories
                                                                                                                                                 x.CategoryCd,
                                                                                                                                                 string.Empty,
                                                                                                                                                 0)).ToList();
-                    if (raiinListDoc != null && raiinListDoc.Count() > 0)
+                    if (raiinListDoc != null && raiinListDoc.Any())
                     {
                         docAddList.AddRange(raiinListDoc);
                     }
@@ -1338,7 +1339,7 @@ namespace Infrastructure.Repositories
                                                                                                                                                 string.Empty,
                                                                                                                                                 x.SeqNo,
                                                                                                                                                 x.IsDeleted)).ToList();
-                    if (raiinListFile != null && raiinListFile.Count() > 0)
+                    if (raiinListFile != null && raiinListFile.Any())
                     {
                         fileAddList.AddRange(raiinListFile);
                     }
@@ -1510,8 +1511,7 @@ namespace Infrastructure.Repositories
                                     foreach (var detailDelete in raiinDetailDeleteList)
                                     {
                                         var detailDeleteExistInDb = databaseRaiinDetails.FirstOrDefault(x => x.GrpId == detailDelete.GrpId && x.KbnCd == detailDelete.KbnCd);
-                                        if (detailDeleteExistInDb == null || detailDeleteExistInDb.IsDeleted == DeleteTypes.Deleted) continue;
-                                        else
+                                        if (!(detailDeleteExistInDb == null || detailDeleteExistInDb.IsDeleted == DeleteTypes.Deleted))
                                         {
                                             detailDeleteExistInDb.IsDeleted = DeleteTypes.Deleted;
                                             detailDeleteExistInDb.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -1754,32 +1754,62 @@ namespace Infrastructure.Repositories
 
                         // Delete by all detail
                         string queryDelete = "DELETE FROM \"public\".\"RAIIN_LIST_INF\" WHERE FALSE";
+                        StringBuilder queryStringBuilder = new();
+                        queryStringBuilder.Append(queryDelete);
                         detailDeletedList.AddRange(detailDeleteds);
                         foreach (var deleteDetailModel in detailDeletedList)
                         {
-                            queryDelete += " OR (\"GRP_ID\" = " + deleteDetailModel.GrpId + " AND \"KBN_CD\" = " + deleteDetailModel.KbnCd + ")";
+                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(deleteDetailModel.GrpId);
+                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(deleteDetailModel.KbnCd);
+                            queryStringBuilder.Append(")");
                         }
 
                         foreach (var kouiModel in kouiDeleteList)
                         {
-                            queryDelete += " OR (\"GRP_ID\" = " + kouiModel.GrpId + " AND \"KBN_CD\" = " + kouiModel.KbnCd + " AND  \"RAIIN_LIST_KBN\" = " + RaiinListKbnConstants.KOUI_KBN + ")";
+                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(kouiModel.GrpId);
+                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(kouiModel.KbnCd);
+                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(RaiinListKbnConstants.KOUI_KBN + ")");
                         }
 
                         foreach (var itemModel in itemDeleteList)
                         {
-                            queryDelete += " OR (\"GRP_ID\" = " + itemModel.GrpId + " AND \"KBN_CD\" = " + itemModel.KbnCd + " AND  \"RAIIN_LIST_KBN\" = " + RaiinListKbnConstants.ITEM_KBN + ")";
+                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(itemModel.GrpId);
+                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(itemModel.KbnCd);
+                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(RaiinListKbnConstants.ITEM_KBN);
+                            queryStringBuilder.Append(")");
                         }
 
                         foreach (var docModel in docDeleteList)
                         {
-                            queryDelete += " OR (\"GRP_ID\" = " + docModel.GrpId + " AND \"KBN_CD\" = " + docModel.KbnCd + " AND  \"RAIIN_LIST_KBN\" = " + RaiinListKbnConstants.DOCUMENT_KBN + ")";
+                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(docModel.GrpId);
+                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(docModel.KbnCd);
+                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(RaiinListKbnConstants.DOCUMENT_KBN);
+                            queryStringBuilder.Append(")");
                         }
 
                         foreach (var fileModel in fileDeleteList)
                         {
-                            queryDelete += " OR (\"GRP_ID\" = " + fileModel.GrpId + " AND \"KBN_CD\" = " + fileModel.KbnCd + " AND  \"RAIIN_LIST_KBN\" = " + RaiinListKbnConstants.FILE_KBN + ")";
+                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(fileModel.GrpId);
+                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(fileModel.KbnCd);
+                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(RaiinListKbnConstants.FILE_KBN);
+                            queryStringBuilder.Append(")");
                         }
 
+                        queryDelete = queryStringBuilder.ToString();
                         TrackingDataContext.Database.ExecuteSqlRaw(queryDelete);
                         TrackingDataContext.SaveChanges();
 

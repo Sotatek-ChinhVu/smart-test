@@ -11,6 +11,13 @@
             CreateDate = createDate;
             CreateMachine = createMachine;
             CreateId = createId;
+            FunctionName = string.Empty;
+        }
+
+        public LockCalcStatusModel()
+        {
+            CreateMachine = string.Empty;
+            FunctionName = string.Empty;
         }
 
         public long CalcId { get; private set; }
@@ -33,8 +40,8 @@
 
         public string CreateMachine { get; private set; }
 
-        public int CreateId {  get; private set; }
+        public int CreateId { get; private set; }
 
-        public string FunctionName {  get; private set; }
+        public string FunctionName { get; private set; }
     }
 }

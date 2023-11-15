@@ -74,8 +74,6 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
 
     public bool UpdateTimeZoneDayInf(int hpId, int userId, int sinDate, int currentTimeKbn, int uketukeTime)
     {
-        try
-        {
             //update latest timeZoneDayInf in sindate
             var updateTimeZoneDayInf = TrackingDataContext.TimeZoneDayInfs.Where(t => t.HpId == hpId &&
                                                                 t.SinDate == sinDate &&
@@ -104,11 +102,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
             TrackingDataContext.TimeZoneDayInfs.Add(timeDayInf);
 
             return TrackingDataContext.SaveChanges() > 0;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        
     }
 
     public List<TimeZoneConfGroupModel> GetTimeZoneConfGroupModels(int hpId)
@@ -135,7 +129,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
 
         foreach (var day in dayOfWeek)
         {
-            var group = result.Where(x => x.YoubiKbn == day).FirstOrDefault();
+            var group = result.FirstOrDefault(x => x.YoubiKbn == day);
             if (group == null)
             {
                 result.Add(
@@ -152,7 +146,6 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
     {
         List<TimeZoneConfModel> source = timeZoneConfs.Where(u => !u.CheckDefaultValue() && u.ModelModified).ToList();
 
-        List<TimeZoneConf> entities = new List<TimeZoneConf>();
         foreach (var model in source)
         {
             if (!model.CheckDefaultValue() && model.ModelModified)

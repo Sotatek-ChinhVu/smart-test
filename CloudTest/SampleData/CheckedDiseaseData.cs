@@ -12,7 +12,6 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
-            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedDiseaseSample.xlsx");
             var byomeiMsts = new List<ByomeiMst>();
@@ -153,7 +152,6 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
-            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedDiseaseSample.xlsx");
             var tenMsts = new List<TenMst>();
@@ -241,7 +239,6 @@ namespace CloudUnitTest.SampleData
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
-            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedDiseaseSample.xlsx");
             var tekiouByomeiMsts = new List<TekiouByomeiMst>();

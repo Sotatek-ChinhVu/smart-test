@@ -82,15 +82,15 @@ namespace UseCase.Lock.Unlock
         {
             get
             {
-                if (DocInfModels != null && (DocInfModels.LockDate != null || DocInfModels.LockDate != new DateTime()))
+                if (DocInfModels != null && DocInfModels.LockDate != new DateTime())
                 {
                     return DocInfModels.LockDate;
                 }
-                if (CalcStatusModels != null && (CalcStatusModels.LockDate != null || CalcStatusModels.LockDate != new DateTime()))
+                if (CalcStatusModels != null && CalcStatusModels.LockDate != new DateTime())
                 {
                     return CalcStatusModels.LockDate;
                 }
-                if (PatientInfoModels != null && (PatientInfoModels.LockDate != null || PatientInfoModels.LockDate != new DateTime()))
+                if (PatientInfoModels != null && PatientInfoModels.LockDate != new DateTime())
                 {
                     return PatientInfoModels.LockDate;
                 }
