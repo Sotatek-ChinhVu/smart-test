@@ -50,6 +50,9 @@ namespace Entity.SuperAdmin
         [Column("SCHEDULE_TIME")]
         public int ScheduleTime { get; set; }
 
+        [Column("RDS_IDENTIFIER")]
+        public string RdsIdentifier { get; set; } = string.Empty;
+
         [Column("IS_DELETED")]
         public int IsDeleted { get; set; }
 

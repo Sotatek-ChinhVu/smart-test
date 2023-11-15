@@ -112,5 +112,11 @@ namespace AWSSDK.Services
             var exits = await Route53Action.CheckSubdomainExistence(subdomainToCheck);
             return exits;
         }
+
+        public async Task<bool> IsDedicatedTypeAsync(string dbIdentifier)
+        {
+            var result = await RDSAction.IsDedicatedTypeAsync(dbIdentifier);
+            return result;
+        }
     }
 }
