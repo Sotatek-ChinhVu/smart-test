@@ -3,14 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Logger;
 
-public class AuditLog
+public class NewAuditLog
 {
     [Column(Order = 1)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long LogId { get; set; }
 
-    [MaxLength(200)]
-    public string TenantId { get; set; } = string.Empty;
+    public int TenantId { get; set; }
 
     [MaxLength(200)]
     public string Domain { get; set; } = string.Empty;

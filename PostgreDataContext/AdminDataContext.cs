@@ -14,6 +14,7 @@ namespace PostgreDataContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AuditLog>().HasKey(a => new { a.LogId });
+            modelBuilder.Entity<NewAuditLog>().HasKey(a => new { a.LogId });
         }
 
         public DbSet<AuditLog> AuditLogs { get; set; } = default!;
