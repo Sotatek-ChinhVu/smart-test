@@ -6,5 +6,6 @@
         public static readonly string Fail = "Fail";
         public static readonly string InvalidLoginId = "Invalid Login Id";
         public static readonly string InvalidPassword = "Invalid Password";
+        public static readonly string InvalidTenantId = "Invalid Tenant Id";
     }
 }
