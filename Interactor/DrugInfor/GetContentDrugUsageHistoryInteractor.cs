@@ -158,13 +158,34 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
         List<ActionGraph> actionGraphList = new();
         List<DrugUsageHistoryModel> drugUsageList;
 
+        if (drugUsageHistory.OdrKouiKbn == 21)
+        {
+            drugUsageList = listDrugUsageHistory.Where(item => item.SinDate < fromDate
+                                                               && item.EndDate >= fromDate
+                                                               && item.OdrKouiKbn == drugUsageHistory.OdrKouiKbn
+                                                               && item.ItemCd == drugUsageHistory.ItemCd
+                                                               && item.Quantity.AsString() == drugUsageHistory.Quantity.AsString())
+                                                .OrderByDescending(item => item.EndDate)
+                                                .ToList();
+
+            foreach (var drugUsage in drugUsageList)
+            {
+                actionGraphList.Add(new ActionGraph(
+                                        ActionType.Nai,
+                                        drugUsage.SinDate,
+                                        drugUsage.EndDate,
+                                        drugUsage.DaysCnt,
+                                        string.Format($"{CIUtil.SDateToShowSDate(drugUsage.SinDate)} ～ {CIUtil.SDateToShowSDate(drugUsage.EndDate)} ({drugUsage.DaysCnt}日間)")));
+            }
+        }
+
         drugUsageList = listDrugUsageHistory.Where(item => item.SinDate >= fromDate
-                                                           && item.SinDate <= toDate
-                                                           && item.OdrKouiKbn == drugUsageHistory.OdrKouiKbn
-                                                           && item.ItemCd == drugUsageHistory.ItemCd
-                                                           && item.Quantity.AsString() == drugUsageHistory.Quantity.AsString())
-                                            .OrderBy(item => item.SinDate)
-                                            .ToList();
+                                                               && item.SinDate <= toDate
+                                                               && item.OdrKouiKbn == drugUsageHistory.OdrKouiKbn
+                                                               && item.ItemCd == drugUsageHistory.ItemCd
+                                                               && item.Quantity.AsString() == drugUsageHistory.Quantity.AsString())
+                                                .OrderBy(item => item.SinDate)
+                                                .ToList();
 
         foreach (var drugUsage in drugUsageList)
         {
