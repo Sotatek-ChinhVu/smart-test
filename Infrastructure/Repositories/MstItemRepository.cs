@@ -6222,6 +6222,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 }
             }
         }
+
         return TrackingDataContext.SaveChanges() >= 1;
     }
 
@@ -6253,7 +6254,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         };
     }
 
-    public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts)
+    public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts, List<TenItemModel> tenMstListGenDate)
     {
         List<TenMst> newTenMsts = new();
 
@@ -6351,10 +6352,70 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (item.IsDeleted == 1)
             {
+                var listTenMst = TrackingDataContext.TenMsts.Where(x => x.ItemCd == item.ItemCd);
+                if (listTenMst != null)
+                {
+                    foreach (var listTenMstItem in listTenMst)
+
+                        if (!listTenMstItem.ItemCd.StartsWith("KN") || listTenMstItem.ItemCd.StartsWith("IGE") || listTenMstItem.ItemCd.StartsWith("HRT"))
+                        {
+                            listTenMstItem.KensaItemCd = null;
+                            listTenMstItem.KensaItemSeqNo = 0;
+                        }
+                        else
+                        {
+                            listTenMstItem.IsDeleted = 1;
+                        }
+                }
+            }
+            else
+            {
                 var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
                 if (listTenMst != null)
                 {
-                    listTenMst.IsDeleted = 1;
+                    listTenMst.SinKouiKbn = item.SinKouiKbn;
+                    listTenMst.MasterSbt = item.MasterSbt;
+                    listTenMst.ItemCd = item.ItemCd;
+                    listTenMst.KensaItemCd = item.KensaItemCd;
+                    listTenMst.KensaItemSeqNo = item.KensaItemSeqNo;
+                    listTenMst.Ten = item.Ten;
+                    listTenMst.Name = item.Name;
+                    listTenMst.ReceName = item.ReceName;
+                    listTenMst.KanaName1 = item.KanaName1;
+                    listTenMst.KanaName2 = item.KanaName2;
+                    listTenMst.KanaName3 = item.KanaName3;
+                    listTenMst.KanaName4 = item.KanaName4;
+                    listTenMst.KanaName5 = item.KanaName5;
+                    listTenMst.KanaName6 = item.KanaName6;
+                    listTenMst.KanaName7 = item.KanaName7;
+                    listTenMst.StartDate = item.StartDate;
+                    listTenMst.EndDate = item.EndDate;
+                    listTenMst.DefaultVal = item.DefaultValue;
+                    listTenMst.OdrUnitName = item.OdrUnitName;
+                    listTenMst.SanteiItemCd = item.SanteiItemCd;
+                    listTenMst.SanteigaiKbn = item.SanteigaiKbn;
+                    listTenMst.IsNosearch = item.IsNoSearch;
+                    listTenMst.IsDeleted = item.IsDeleted;
+                    listTenMst.UpdateId = userId;
+                    listTenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
+                else
+                {
+                    TenMst itemtest = ConvertTenMasterList(item, userId, hpId);
+                    newTenMsts.Add(itemtest);
+                    TrackingDataContext.TenMsts.AddRange(newTenMsts);
+                }
+            }
+        }
+
+        foreach (var item in tenMstListGenDate)
+        {
+            if (item.IsDeleted == 1)
+            {
+                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                if (listTenMst != null)
+                {
+                    TrackingDataContext.TenMsts.Remove(listTenMst);
                 }
             }
             else
