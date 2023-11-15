@@ -1,75 +1,77 @@
-﻿using Domain.SuperAdminModels.Admin;
-using Domain.SuperAdminModels.Logger;
+﻿
+using Domain.SuperAdminModels.Admin;
+using Domain.SuperAdminModels.Tenant;
 using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Infrastructure.Services;
 using Infrastructure.SuperAdminRepositories;
 using Interactor.SuperAdmin;
-using Interactor.SuperAdmin.AuditLog;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.Core.Builder;
-using UseCase.SuperAdmin.AuditLog;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.UpgradePremium;
 
-namespace SuperAdmin.Configs.Dependency;
-
-public class ModuleDependencySetup : IDependencySetup
+namespace SuperAdmin.Configs.Dependency
 {
-    public void Run(IServiceCollection services)
+    public class ModuleDependencySetup : IDependencySetup
     {
-        // If using Kestrel:
-        services.Configure<KestrelServerOptions>(options =>
+        public void Run(IServiceCollection services)
         {
-            options.AllowSynchronousIO = true;
-        });
+            // If using Kestrel:
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
 
-        // If using IIS:
-        services.Configure<IISServerOptions>(options =>
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<GlobalExceptionFilters>();
+            });
+
+            SetupRepositories(services);
+            SetupInterfaces(services);
+            SetupUseCase(services);
+        }
+
+        private void SetupInterfaces(IServiceCollection services)
         {
-            options.AllowSynchronousIO = true;
-        });
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<ITenantProvider, TenantProvider>();
+            services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
-        services.AddControllers(options =>
+            //Init follow transient so no need change transient
+            //services.AddScoped<ILoggingHandler, LoggingHandler>();
+
+            //services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+        }
+
+        private void SetupRepositories(IServiceCollection services)
         {
-            options.Filters.Add<GlobalExceptionFilters>();
-        });
+            services.AddTransient<IAdminRepository, AdminRepository>();
+            services.AddTransient<ITenantRepository, TenantRepository>();
+        }
 
-        SetupRepositories(services);
-        SetupInterfaces(services);
-        SetupUseCase(services);
-    }
+        private void SetupUseCase(IServiceCollection services)
+        {
+            var registration = new ServiceRegistration(services);
+            var busBuilder = new SyncUseCaseBusBuilder(registration);
 
-    private void SetupInterfaces(IServiceCollection services)
-    {
-        services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-        services.AddTransient<ITenantProvider, TenantProvider>();
-        services.AddTransient<IAmazonS3Service, AmazonS3Service>();
-        services.AddTransient<IAdminAuditLogRepository, AdminAuditLogRepository>();
+            busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
+            busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
 
-        //Init follow transient so no need change transient
-        //services.AddScoped<ILoggingHandler, LoggingHandler>();
+            //SystemStartDb 
+            //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
-        //services.AddScoped<ISystemStartDbService, SystemStartDbService>();
-    }
-
-    private void SetupRepositories(IServiceCollection services)
-    {
-        services.AddTransient<IAdminRepository, AdminRepository>();
-    }
-
-    private void SetupUseCase(IServiceCollection services)
-    {
-        var registration = new ServiceRegistration(services);
-        var busBuilder = new SyncUseCaseBusBuilder(registration);
-
-        busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
-        busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
-
-        //SystemStartDb 
-        //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
-
-        var bus = busBuilder.Build();
-        services.AddSingleton(bus);
+            var bus = busBuilder.Build();
+            services.AddSingleton(bus);
+        }
     }
 }
