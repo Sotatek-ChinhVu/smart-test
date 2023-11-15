@@ -1,6 +1,4 @@
-﻿using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
-using AWSSDK.Common;
+﻿using AWSSDK.Common;
 using AWSSDK.Interfaces;
 
 namespace AWSSDK.Services
@@ -19,7 +17,7 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public  async Task<string> GetInfTenantByTenant(string id)
+        public async Task<string> GetInfTenantByTenant(string id)
         {
             return "";
         }
