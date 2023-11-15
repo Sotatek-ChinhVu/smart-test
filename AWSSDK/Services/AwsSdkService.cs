@@ -16,5 +16,10 @@ namespace AWSSDK.Services
             var result = sumaryCard.Where(entry => entry.Value["available"] == "yes").Select(entry => entry.Key).ToList();
             return result;
         }
+
+        public async Task<string> GetInfTenantByTenant(string id)
+        {
+            return "";
+        }
     }
 }
