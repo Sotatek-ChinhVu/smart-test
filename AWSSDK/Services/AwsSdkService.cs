@@ -18,7 +18,7 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public async Task<Dictionary<string, string>> TenantOnboardAsync(string tenantId, string maxCcu, string tier)
+        public async Task<Dictionary<string, string>> TenantOnboardAsync(string tenantId, int size, int sizeType, int tier)
         {
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
@@ -29,7 +29,7 @@ namespace AWSSDK.Services
                 // Provisioning SubDomain for new tenants
                 if (!string.IsNullOrEmpty(tenantId))
                 {
-                    tenantUrl = $"{tenantId}.smartkarte.org";
+                    tenantUrl = $"{tenantId}.{ConfigConstant.Domain}";
                     await Route53Action.CreateTenantDomain(tenantId);
                     await CloudFrontAction.UpdateNewTenantAsync(tenantId);
 
@@ -37,7 +37,7 @@ namespace AWSSDK.Services
                     if (tenantId.Length > 0)
                     {
                         // Checking tenant tier, if dedicated, provision new RDS instance
-                        if (tier == "dedicated")
+                        if (tier == 2)
                         {
                             string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                             var rdsInfo = await RDSAction.GetRDSInformation();
@@ -91,7 +91,6 @@ namespace AWSSDK.Services
             {
                 { "tenant_url", tenantUrl },
                 { "rds_endpoint", host },
-                { "max_ccu", maxCcu },
                 { "message", "Please wait for 15 minutes for all resources to be available" }
             };
 
@@ -102,11 +101,16 @@ namespace AWSSDK.Services
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
-        }
 
         public async Task<string> GetInfTenantByTenant(string id)
         {
             return "";
+        }
+
+        public async Task<bool> CheckSubdomainExistenceAsync(string subdomainToCheck)
+        {
+            var exits = await Route53Action.CheckSubdomainExistence(subdomainToCheck);
+            return exits;
         }
     }
 }

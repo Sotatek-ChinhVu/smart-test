@@ -1,5 +1,6 @@
 ﻿using Amazon.RDS;
 using Amazon.RDS.Model;
+using AWSSDK.Dto;
 using Npgsql;
 
 namespace AWSSDK.Common
@@ -39,6 +40,22 @@ namespace AWSSDK.Common
                 Console.WriteLine($"Error: {ex.Message}");
                 return null;
             }
+        }
+
+        public static async Task<bool> IsDedicatedTypeAsync(string dbIdentifier)
+        {
+            var rds = new AmazonRDSClient();
+            var instances = await rds.DescribeDBInstancesAsync();
+            var data = instances.DBInstances.FirstOrDefault(i => i.DBInstanceIdentifier == dbIdentifier);
+            if (data != null)
+            {
+                if (data.DBInstanceClass == "")
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
 
         public static async Task CreateNewShardAsync(string dbIdentifier)
