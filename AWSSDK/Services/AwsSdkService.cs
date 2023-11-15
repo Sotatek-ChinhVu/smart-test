@@ -1,4 +1,6 @@
-﻿using AWSSDK.Common;
+﻿using Amazon.IdentityManagement;
+using Amazon.IdentityManagement.Model;
+using AWSSDK.Common;
 using AWSSDK.Interfaces;
 
 namespace AWSSDK.Services
@@ -15,6 +17,11 @@ namespace AWSSDK.Services
             var sumaryCard = await CloudWatchAction.GetSummaryCardAsync();
             var result = sumaryCard.Where(entry => entry.Value["available"] == "yes").Select(entry => entry.Key).ToList();
             return result;
+        }
+
+        public  async Task<string> GetInfTenantByTenant(string id)
+        {
+            return "";
         }
     }
 }

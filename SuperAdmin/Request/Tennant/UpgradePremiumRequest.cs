@@ -2,5 +2,6 @@
 {
     public class UpgradePremiumRequest
     {
+        public int TenantId { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using Domain.SuperAdminModels.Admin;
+using Domain.SuperAdminModels.Tenant;
 using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -10,6 +11,7 @@ using Interactor.SuperAdmin;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -54,6 +56,7 @@ namespace SuperAdmin.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IAdminRepository, AdminRepository>();
+            services.AddTransient<ITenantRepository, TenantRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -62,6 +65,7 @@ namespace SuperAdmin.Configs.Dependency
             var busBuilder = new SyncUseCaseBusBuilder(registration);
 
             busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
+            busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
