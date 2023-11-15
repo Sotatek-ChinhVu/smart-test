@@ -13,7 +13,7 @@ namespace Domain.Models.SetGenerationMst
 
         List<SetSendaiGenerationModel> GetListSendaiGeneration(int hpId);
 
-        bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId);
+        bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId, int startDate);
 
         AddSetSendaiModel? AddSetSendaiGeneration(int userId, int hpId, int startDate);
 

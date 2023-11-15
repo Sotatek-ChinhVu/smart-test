@@ -5,7 +5,6 @@ using Helper.Common;
 using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
-using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
@@ -146,7 +145,25 @@ namespace Infrastructure.Repositories
             return date.Year.ToString() + "/" + (date.Month > 9 ? date.Month.ToString() : "0" + date.Month.ToString()) + "/" + (date.Day > 9 ? date.Day.ToString() : "0" + date.Day.ToString());
         }
 
-        public bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId)
+        public bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId, int startDate)
+        {
+            DeleteSetGeneration(hpId, generationId, userId);
+
+            DeleteByomeiSetGeneration(hpId, userId, startDate);
+
+            DeleteListSetGeneration(hpId, generationId, userId);
+            var saveChanges = TrackingDataContext.SaveChanges() > 0;
+
+            if (saveChanges)
+            {
+                ReloadCache(hpId);
+                _cache.KeyDelete(keySetKbn);
+            }
+
+            return saveChanges;
+        }
+
+        public void DeleteSetGeneration(int hpId, int generationId, int userId)
         {
             var ListDataUpdate = new List<SetGenerationMst>();
             var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.GenerationId == generationId);
@@ -172,15 +189,73 @@ namespace Infrastructure.Repositories
                 if (ListDataUpdate.Count > 0)
                 {
                     TrackingDataContext.SetGenerationMsts.UpdateRange(ListDataUpdate);
-                    ReloadCache(hpId);
-                    _cache.KeyDelete(keySetKbn);
-                    return TrackingDataContext.SaveChanges() > 0;
                 }
-                return false;
             }
-            else
+        }
+
+        public void DeleteByomeiSetGeneration(int hpId, int userId, int startDate)
+        {
+            var deleteByomeiSet = NoTrackingDataContext.ByomeiSetGenerationMsts.FirstOrDefault(x =>
+                x.HpId == hpId &&
+                x.StartDate == startDate &&
+                x.IsDeleted == 0);
+
+            if (deleteByomeiSet == null) return;
+
+            var byomeiSetGeneration = TrackingDataContext.ByomeiSetGenerationMsts.FirstOrDefault(x =>
+                    x.HpId == hpId &&
+                    x.IsDeleted == 0 &&
+                    x.GenerationId == deleteByomeiSet.GenerationId);
+            var aboveByomeiSetGeneration = TrackingDataContext.ByomeiSetGenerationMsts.Where(x =>
+                    x.HpId == hpId &&
+                    x.IsDeleted == 0 &&
+                    x.StartDate > deleteByomeiSet.StartDate)
+                .OrderBy(x => x.StartDate)
+                .FirstOrDefault();
+            if (byomeiSetGeneration != null)
             {
-                return false;
+                if (aboveByomeiSetGeneration != null)
+                {
+                    aboveByomeiSetGeneration.StartDate = byomeiSetGeneration.StartDate;
+                    aboveByomeiSetGeneration.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    aboveByomeiSetGeneration.UpdateId = userId;
+                }
+                byomeiSetGeneration.IsDeleted = 1;
+                byomeiSetGeneration.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                byomeiSetGeneration.UpdateId = userId;
+            }
+        }
+
+        public void DeleteListSetGeneration(int hpId, int userId, int startDate)
+        {
+            var deleteListSet = NoTrackingDataContext.ListSetGenerationMsts.FirstOrDefault(x =>
+                    x.HpId == hpId &&
+                    x.StartDate == startDate &&
+                    x.IsDeleted == 0);
+
+            if (deleteListSet == null) return;
+
+            var listSetGeneration = TrackingDataContext.ListSetGenerationMsts.FirstOrDefault(x =>
+                    x.HpId == hpId &&
+                    x.IsDeleted == 0 &&
+                    x.GenerationId == deleteListSet.GenerationId);
+            var aboveListSetGeneration = TrackingDataContext.ListSetGenerationMsts.Where(x =>
+                    x.HpId == hpId &&
+                    x.IsDeleted == 0 &&
+                    x.StartDate > deleteListSet.StartDate)
+                .OrderBy(x => x.StartDate)
+                .FirstOrDefault();
+            if (listSetGeneration != null)
+            {
+                if (aboveListSetGeneration != null)
+                {
+                    aboveListSetGeneration.StartDate = listSetGeneration.StartDate;
+                    aboveListSetGeneration.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    aboveListSetGeneration.UpdateId = userId;
+                }
+                listSetGeneration.IsDeleted = 1;
+                listSetGeneration.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                listSetGeneration.UpdateId = userId;
             }
         }
 
@@ -601,6 +676,14 @@ namespace Infrastructure.Repositories
         public AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
         {
             // get SendaiGeneration newest
+            var setGeneration = RestoreSetGeneration(restoreGenerationId, hpId, userId);
+
+
+            return null;
+        }
+
+        private AddSetSendaiModel RestoreSetGeneration(int restoreGenerationId, int hpId, int userId)
+        {
             var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(x => x.GenerationId).FirstOrDefault();
             if (itemNewest != null && itemNewest.GenerationId != restoreGenerationId)
             {
@@ -702,8 +785,54 @@ namespace Infrastructure.Repositories
                 }
             }
 
-
             return null;
+        }
+
+        private void RestoreByomeiSetGeneration(int hpId,int userId, int targetGeneration, int sourceGenerationId)
+        {
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+
+            return executionStrategy.Execute(
+                () =>
+                {
+                    using var transaction = TrackingDataContext.Database.BeginTransaction();
+
+                    var targetSetMsts = TrackingDataContext.ByomeiSetMsts.Where(x =>
+                    x.HpId == hpId &&
+                    x.GenerationId == targetGeneration).ToList();
+                    try
+                    {
+
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                    }
+                }
+                );
+            
+                try
+                {
+                    targetSetMsts.ForEach(byomeiSetMst =>
+                    {
+                        byomeiSetMst.IsDeleted = 1;
+                        byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        byomeiSetMst.UpdateId = userId;
+                        byomeiSetMst.UpdateMachine = "SmartKarte";
+                    });
+                    localContext.SaveChanged();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    Log.WriteLogError(_moduleName, this, nameof(RestoreSetGeneration), e);
+                }
+                finally
+                {
+                    localContext.Dispose();
+                }
+                return targetSetMsts.Count;
         }
 
         public List<ListSetGenerationMstModel> GetAll(int hpId)
