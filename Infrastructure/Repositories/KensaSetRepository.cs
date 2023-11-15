@@ -507,6 +507,21 @@ namespace Infrastructure.Repositories
                                 }
                             }
 
+                            // Delete all item kensaInfDetail
+                            if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
+                            {
+                                var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
+                                if (kensaInf == null)
+                                {
+                                    transaction.Rollback();
+                                    successed = false;
+                                }
+                                else
+                                {
+                                    kensaInf.IsDeleted = DeleteTypes.Deleted;
+                                }
+                            }
+
                             kensaInfDetail.ResultVal = item.ResultVal;
                             kensaInfDetail.ResultType = item.ResultType;
                             kensaInfDetail.AbnormalKbn = item.AbnormalKbn;
