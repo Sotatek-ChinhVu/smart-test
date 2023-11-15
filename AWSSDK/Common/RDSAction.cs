@@ -1,5 +1,6 @@
 ﻿using Amazon.RDS;
 using Amazon.RDS.Model;
+using AWSSDK.Constants;
 using AWSSDK.Dto;
 using Npgsql;
 
@@ -49,7 +50,7 @@ namespace AWSSDK.Common
             var data = instances.DBInstances.FirstOrDefault(i => i.DBInstanceIdentifier == dbIdentifier);
             if (data != null)
             {
-                if (data.DBInstanceClass == "")
+                if (data.DBInstanceClass == ConfigConstant.DedicateInstance)
                 {
                     return true;
                 }
