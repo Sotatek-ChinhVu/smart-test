@@ -204,5 +204,78 @@ namespace AWSSDK.Common
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
+
+        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        {
+            try
+            {
+                // Assuming you have AWS credentials set up (access key and secret key)
+                var rdsClient = new AmazonRDSClient();
+
+                // Create a request to create a DB snapshot
+                var createSnapshotRequest = new CreateDBSnapshotRequest
+                {
+                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier),
+                    DBInstanceIdentifier = dbInstanceIdentifier
+                };
+
+                // Call the CreateDBSnapshotAsync method to asynchronously create the snapshot
+                var response = await rdsClient.CreateDBSnapshotAsync(createSnapshotRequest);
+
+                // Check the response for success
+                if (response != null && response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return response.DBSnapshot.DBInstanceIdentifier;
+                }
+                else
+                {
+                    Console.WriteLine($"DB snapshot creation failed. Response: {response}");
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        public static async Task<string> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        {
+            return string.Empty;
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+                var response = await rdsClient.RestoreDBInstanceFromDBSnapshotAsync(
+                new RestoreDBInstanceFromDBSnapshotRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    DBSnapshotIdentifier = snapshotIdentifier,
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier)
+        {
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-Snapshot-{timestamp}";
+
+            dbSnapshotIdentifier = string.Join("", dbSnapshotIdentifier.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
+
+            if (!char.IsLetter(dbSnapshotIdentifier[0]))
+            {
+                dbSnapshotIdentifier = "A" + dbSnapshotIdentifier.Substring(1);
+            }
+
+            dbSnapshotIdentifier = dbSnapshotIdentifier.TrimEnd('-');
+            dbSnapshotIdentifier = dbSnapshotIdentifier.Length > 63 ? dbSnapshotIdentifier.Substring(0, 63) : dbSnapshotIdentifier;
+            return dbSnapshotIdentifier;
+        }
     }
 }

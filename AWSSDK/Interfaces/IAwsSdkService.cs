@@ -4,7 +4,7 @@
     {
         Task<Dictionary<string, Dictionary<string, string>>> SummaryCard();
         Task<List<string>> GetAvailableIdentifiersAsync();
-
-        Task<string> GetInfTenantByTenant(string Id);
+        Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier);
+        Task<string> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier);
     }
 }

@@ -1,4 +1,5 @@
-﻿using AWSSDK.Common;
+﻿using Amazon.RDS.Model;
+using AWSSDK.Common;
 using AWSSDK.Interfaces;
 
 namespace AWSSDK.Services
@@ -17,9 +18,15 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public async Task<string> GetInfTenantByTenant(string id)
+        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
         {
-            return "";
+            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
+        }
+
+        public async Task<string> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        {
+            var response = await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+            throw new NotImplementedException();
         }
     }
 }

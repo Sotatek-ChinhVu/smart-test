@@ -1,4 +1,6 @@
 ﻿
+using AWSSDK.Interfaces;
+using AWSSDK.Services;
 using Domain.SuperAdminModels.Admin;
 using Domain.SuperAdminModels.Tenant;
 using Infrastructure.Common;
@@ -46,6 +48,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IAwsSdkService, AwsSdkService>();
 
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
