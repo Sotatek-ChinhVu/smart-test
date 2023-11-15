@@ -12,8 +12,8 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations.AdminData
 {
     [DbContext(typeof(AdminDataContext))]
-    [Migration("20231114081708_addTableAuditLogToDBLoging")]
-    partial class addTableAuditLogToDBLoging
+    [Migration("20231115133733_firstMigrationAdminTenant")]
+    partial class firstMigrationAdminTenant
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,27 +116,26 @@ namespace TenantMigration.Migrations.AdminData
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
 
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ClientIP")
                         .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
+                        .HasColumnType("text");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Desciption")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Domain")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("text");
 
                     b.Property<string>("EventCd")
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)");
+                        .HasColumnType("text");
 
                     b.Property<int>("HpId")
                         .HasColumnType("integer");
@@ -146,17 +145,14 @@ namespace TenantMigration.Migrations.AdminData
 
                     b.Property<string>("LogType")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoginKey")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Path")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint");
@@ -171,20 +167,16 @@ namespace TenantMigration.Migrations.AdminData
                     b.Property<int>("SinDay")
                         .HasColumnType("integer");
 
-                    b.Property<int>("TenantId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("ThreadId")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.HasKey("LogId");
+                    b.HasKey("LogId", "TenantId");
 
-                    b.ToTable("NewAuditLog");
+                    b.ToTable("NewAuditLogs");
                 });
 #pragma warning restore 612, 618
         }

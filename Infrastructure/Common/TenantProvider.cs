@@ -412,5 +412,57 @@ namespace Infrastructure.CommonDB
             _trackingDataContext?.Dispose();
             _noTrackingDataContext?.Dispose();
         }
+
+        public AdminDataContext CreateNewAuditLogTrackingDataContext()
+        {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetConnectionStringForAuditLog(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                    .UseLoggerFactory(loggerFactory)
+                    .Options;
+            var factory = new PooledDbContextFactory<AdminDataContext>(options);
+            return factory.CreateDbContext();
+        }
+
+        public AdminNoTrackingContext CreateNewAuditLogNoTrackingDataContext()
+        {
+            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<AdminNoTrackingContext>().UseNpgsql(GetConnectionStringForAuditLog(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                .UseLoggerFactory(loggerFactory)
+                .Options;
+            var factory = new PooledDbContextFactory<AdminNoTrackingContext>(options);
+            return factory.CreateDbContext();
+        }
+
+        private AdminNoTrackingContext? _auditLogNoTrackingDataContext;
+        public AdminNoTrackingContext GetAuditLogNoTrackingDataContext()
+        {
+            if (_auditLogNoTrackingDataContext == null)
+            {
+                _auditLogNoTrackingDataContext = CreateNewAuditLogNoTrackingDataContext();
+            }
+            return _auditLogNoTrackingDataContext;
+        }
+
+        private AdminDataContext? _auditLogTrackingDataContext;
+        public AdminDataContext GetAuditLogTrackingDataContext()
+        {
+            if (_auditLogTrackingDataContext == null)
+            {
+                _auditLogTrackingDataContext = CreateNewAuditLogTrackingDataContext();
+            }
+            return _auditLogTrackingDataContext;
+        }
+
+        public string GetConnectionStringForAuditLog()
+        {
+            string dbSample = _configuration["AuditLogDb"] ?? string.Empty;
+            return dbSample;
+        }
     }
 }

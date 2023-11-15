@@ -1,29 +1,29 @@
-﻿using Helper.Common;
+﻿using Domain.SuperAdminModels.Logger;
 
-namespace Domain.SuperAdminModels.Logger;
+namespace SuperAdminAPI.Reponse.AuditLog.Dto;
 
-public class AuditLogModel
+public class AuditLogDto
 {
-    public AuditLogModel(long logId, int tenantId, string domain, string threadId, string logType, int hpId, int userId, string loginKey, int departmentId, DateTime logDate, string eventCd, long ptId, int sinDay, long raiinNo, string path, string requestInfo, string clientIP, string desciption)
+    public AuditLogDto(AuditLogModel model)
     {
-        LogId = logId;
-        TenantId = tenantId;
-        Domain = domain;
-        ThreadId = threadId;
-        LogType = logType;
-        HpId = hpId;
-        UserId = userId;
-        LoginKey = loginKey;
-        DepartmentId = departmentId;
-        LogDate = logDate;
-        EventCd = eventCd;
-        PtId = ptId;
-        SinDay = sinDay;
-        RaiinNo = raiinNo;
-        Path = path;
-        RequestInfo = requestInfo;
-        ClientIP = clientIP;
-        Desciption = desciption;
+        LogId = model.LogId;
+        TenantId = model.TenantId;
+        Domain = model.Domain;
+        ThreadId = model.ThreadId;
+        LogType = model.LogType;
+        HpId = model.HpId;
+        UserId = model.UserId;
+        LoginKey = model.LoginKey;
+        DepartmentId = model.DepartmentId;
+        LogDate = model.LogDate;
+        EventCd = model.EventCd;
+        PtId = model.PtId;
+        SinDay = model.SinDay;
+        RaiinNo = model.RaiinNo;
+        Path = model.Path;
+        RequestInfo = model.RequestInfo;
+        ClientIP = model.ClientIP;
+        Desciption = model.Desciption;
     }
 
     public long LogId { get; private set; }
