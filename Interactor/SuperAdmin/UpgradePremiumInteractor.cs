@@ -1,16 +1,7 @@
-﻿using Amazon.RDS;
-using Amazon.RDS.Model;
+﻿using AWSSDK.Common;
+using AWSSDK.Constants;
 using AWSSDK.Interfaces;
-using AWSSDK.Services;
-using Domain.SuperAdminModels.Admin;
 using Domain.SuperAdminModels.Tenant;
-using Infrastructure.SuperAdminRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.SuperAdmin.Login;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
@@ -27,11 +18,6 @@ namespace Interactor.SuperAdmin
 
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<UpgradePremiumOutputData> HandleAsync(UpgradePremiumInputData inputData)
-        {
             try
             {
                 if (inputData.TenantId <= 0)
@@ -46,35 +32,89 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
 
-                // Check type in AWS
+                // Exit domain 
+                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(tenant.SubDomain).Result;
+                if (checkSubDomain)
+                {
+                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
+                }
 
-                // Update tenant status
 
-                // Create Snapshot asynchronously
-                var createSnapshotTask = _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
 
-                // Create RSD  preminum
-                //var createDBTask = _awsSdkService.CreateDBAsync();
+                _ = Task.Run(() =>
+                {
 
-                // Continue with other logic without waiting for the tasks to complete
-                var snapshotIdentifierTask = createSnapshotTask.ContinueWith(task => task.Result);
-                var dbInstanceIdentifierTask = createSnapshotTask.ContinueWith(task => task.Result);
+                    var createSnapshot = _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
+                    // Create RSD  preminum
+                    var createTenantResult = TenantOnboardAsync(tenant.SubDomain, 0, 0).Result;
+                    var dbInstanceIdentifier = "";
+                    var snapshotIdentifier = "";
 
-                // Continue with other logic without waiting for the tasks to complete
-                var snapshotIdentifier = await snapshotIdentifierTask;
-                var dbInstanceIdentifier = await dbInstanceIdentifierTask;
+                    // Restore DB Instance from snapshot
+                    _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+                });
 
-                // Restore DB Instance from snapshot
-                _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
-
-                // Continue with other logic...
-
-                // Return a response immediately
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
             }
             finally
             {
                 _tenantRepository.ReleaseResource();
+            }
+        }
+
+        public async Task<Dictionary<string, string>> TenantOnboardAsync(string tenantId, int size, int sizeType)
+        {
+            string rString = CommonConstants.GenerateRandomString(6);
+            string tenantUrl = "";
+            string host = "";
+            string dbIdentifier = "";
+
+            try
+            {
+                // Provisioning SubDomain for new tenants
+                if (!string.IsNullOrEmpty(tenantId))
+                {
+                    tenantUrl = $"{tenantId}.{ConfigConstant.Domain}";
+                    await Route53Action.CreateTenantDomain(tenantId);
+                    await CloudFrontAction.UpdateNewTenantAsync(tenantId);
+
+                    // Checking Available RDS Cluster
+                    if (tenantId.Length > 0)
+                    {
+                        // Checking tenant tier, if dedicated, provision new RDS instance
+
+                        dbIdentifier = $"develop-smartkarte-postgres-{rString}";
+                        var rdsInfo = await RDSAction.GetRDSInformation();
+                        if (rdsInfo.ContainsKey(dbIdentifier))
+                        {
+                            host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
+                            //RDSAction.CreateDatabase(host, tenantId);
+                            //RDSAction.CreateTables(host, tenantId);
+                        }
+                        else
+                        {
+                            await RDSAction.CreateNewShardAsync(dbIdentifier);
+                            host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
+                        }
+                    }
+                }
+                else // Return landing page url by default
+                {
+                    tenantUrl = "landingpage.smartkarte.org";
+                }
+
+                // Return message for Super Admin
+                Dictionary<string, string> result = new Dictionary<string, string>
+            {
+                { "dbIdentifier", dbIdentifier },
+                { "rds_endpoint", host }
+            };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
     }
