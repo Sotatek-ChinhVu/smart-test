@@ -1,3 +1,4 @@
+using StackExchange.Redis;
 using SuperAdmin.Configs.Dependency;
 using SuperAdmin.Realtime;
 using SuperAdminAPI.Security;
