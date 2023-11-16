@@ -2,10 +2,9 @@
 
 public class AuditLogSearchModel
 {
-    public AuditLogSearchModel(int logId, int tenantId, int startDate, int endDate, string domain, string threadId, string logType, int hpId, int userId, string loginKey, int departmentId, int sinDay, string eventCd, long ptId, long raiinNo, string path, string requestInfo, string clientIP, string desciption)
+    public AuditLogSearchModel(int logId, DateTime? startDate, DateTime? endDate, string domain, string threadId, string logType, int hpId, int userId, string loginKey, int departmentId, int sinDay, string eventCd, long ptId, long raiinNo, string path, string requestInfo, string clientIP, string desciption)
     {
         LogId = logId;
-        TenantId = tenantId;
         StartDate = startDate;
         EndDate = endDate;
         Domain = domain;
@@ -27,11 +26,9 @@ public class AuditLogSearchModel
 
     public int LogId { get; private set; }
 
-    public int TenantId { get; private set; }
+    public DateTime? StartDate { get; private set; }
 
-    public int StartDate { get; private set; }
-
-    public int EndDate { get; private set; }
+    public DateTime? EndDate { get; private set; }
 
     public string Domain { get; private set; }
 
@@ -67,13 +64,12 @@ public class AuditLogSearchModel
     {
         get
         {
-            return TenantId == 0
-                   && string.IsNullOrEmpty(Domain)
+            return string.IsNullOrEmpty(Domain)
                    && string.IsNullOrEmpty(ThreadId)
                    && string.IsNullOrEmpty(LogType)
                    && HpId == 0
-                   && StartDate == 0
-                   && EndDate == 0
+                   && StartDate == null
+                   && EndDate == null
                    && UserId == 0
                    && string.IsNullOrEmpty(LoginKey)
                    && DepartmentId == 0

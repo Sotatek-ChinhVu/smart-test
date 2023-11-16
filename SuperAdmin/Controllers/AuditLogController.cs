@@ -24,7 +24,6 @@ public class AuditLogController : ControllerBase
     {
         var searchModel = new AuditLogSearchModel(
                               request.RequestModel.LogId,
-                              request.RequestModel.TenantId,
                               request.RequestModel.StartDate,
                               request.RequestModel.EndDate,
                               request.RequestModel.Domain,

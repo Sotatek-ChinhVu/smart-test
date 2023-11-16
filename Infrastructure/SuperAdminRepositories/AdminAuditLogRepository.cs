@@ -126,23 +126,13 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
         {
             query = query.Where(item => item.LogId == requestModel.LogId);
         }
-        if (requestModel.StartDate > 0)
+        if (requestModel.StartDate != null)
         {
-            var startDateRequest = CIUtil.SDateToDateTime(requestModel.StartDate);
-            if (startDateRequest != null)
-            {
-                startDateRequest = DateTime.SpecifyKind((DateTime)startDateRequest, DateTimeKind.Utc).AddHours(-12);
-                query = query.Where(item => item.LogDate >= startDateRequest);
-            }
+            query = query.Where(item => item.LogDate >= requestModel.StartDate);
         }
-        if (requestModel.EndDate > 0)
+        if (requestModel.EndDate != null)
         {
-            var endDateDateRequest = CIUtil.SDateToDateTime(requestModel.EndDate);
-            if (endDateDateRequest != null)
-            {
-                endDateDateRequest = DateTime.SpecifyKind((DateTime)endDateDateRequest, DateTimeKind.Utc).AddHours(12);
-                query = query.Where(item => item.LogDate <= endDateDateRequest);
-            }
+            query = query.Where(item => item.LogDate <= requestModel.EndDate);
         }
         return query;
     }
