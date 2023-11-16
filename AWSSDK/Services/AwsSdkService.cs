@@ -1,5 +1,6 @@
 ﻿using Amazon.RDS.Model;
 using AWSSDK.Common;
+using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 
 namespace AWSSDK.Services
@@ -16,7 +17,7 @@ namespace AWSSDK.Services
             var sumaryCard = await CloudWatchAction.GetSummaryCardAsync();
             var result = sumaryCard.Where(entry => entry.Value["available"] == "yes").Select(entry => entry.Key).ToList();
             return result;
-        }
+        }        
 
         public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
         {
@@ -27,6 +28,18 @@ namespace AWSSDK.Services
         {
             var response = await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> CheckSubdomainExistenceAsync(string subdomainToCheck)
+        {
+            var exits = await Route53Action.CheckSubdomainExistence(subdomainToCheck);
+            return exits;
+        }
+
+        public async Task<bool> IsDedicatedTypeAsync(string dbIdentifier)
+        {
+            var result = await RDSAction.IsDedicatedTypeAsync(dbIdentifier);
+            return result;
         }
     }
 }
