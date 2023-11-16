@@ -5,10 +5,12 @@ using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
+using Domain.Models.KensaSet;
 using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
+using Domain.Models.SetMst;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Entity.Tenant;
@@ -20,6 +22,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6111,7 +6114,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.CenterItemCd2 ?? string.Empty)),
                         TenMsts = tempTenMsts
                     };
-
+        
         foreach (var entity in query)
         {
             var tenmst = entity.TenMsts.OrderByDescending(x => x.ItemCd).GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
@@ -6357,7 +6360,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 {
                     foreach (var listTenMstItem in listTenMst)
 
-                        if (!listTenMstItem.ItemCd.StartsWith("KN") || listTenMstItem.ItemCd.StartsWith("IGE") || listTenMstItem.ItemCd.StartsWith("HRT"))
+                        if (!(listTenMstItem.ItemCd.StartsWith("KN") || listTenMstItem.ItemCd.StartsWith("IGE") || listTenMstItem.ItemCd.StartsWith("HRT")) || IsUsingKensaItem(hpId, listTenMstItem.KensaItemCd ?? string.Empty, listTenMstItem.ItemCd))
                         {
                             listTenMstItem.KensaItemCd = null;
                             listTenMstItem.KensaItemSeqNo = 0;
@@ -6735,7 +6738,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public bool IsKensaItemOrdering(int hpId, string tenItemCd)
     {
-        return NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        bool existOdrInfDetail = NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        bool existSetOdrInfDetail = NoTrackingDataContext.SetOdrInfDetail.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        bool existListSetMst = NoTrackingDataContext.ListSetMsts.Where(p => p.HpId == hpId && p.IsDeleted == 0 && p.ItemCd == tenItemCd).Any();
+
+        return existOdrInfDetail || existSetOdrInfDetail || existListSetMst;
     }
 
     public double GetTenOfKNItem(int hpId, string itemCd)
