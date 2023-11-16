@@ -5,12 +5,10 @@ using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
-using Domain.Models.KensaSet;
 using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
-using Domain.Models.SetMst;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Entity.Tenant;
@@ -22,7 +20,6 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6114,7 +6111,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.CenterItemCd2 ?? string.Empty)),
                         TenMsts = tempTenMsts
                     };
-        
+
         foreach (var entity in query)
         {
             var tenmst = entity.TenMsts.OrderByDescending(x => x.ItemCd).GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
@@ -6294,6 +6291,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     listKensaMst.CenterItemCd1 = itemKensa.CenterItemCd1;
                     listKensaMst.CenterItemCd2 = itemKensa.CenterItemCd2;
                     listKensaMst.Digit = itemKensa.Digit;
+                    listKensaMst.ContainerCd = itemKensa.ContainerCd;
                     listKensaMst.UpdateId = userId;
                     listKensaMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
