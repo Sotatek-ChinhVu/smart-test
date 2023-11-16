@@ -6277,6 +6277,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     listKensaMst.KensaKana = itemKensa.KensaKana;
                     listKensaMst.Unit = itemKensa.Unit;
                     listKensaMst.MaterialCd = itemKensa.MaterialCd;
+                    listKensaMst.ContainerCd = itemKensa.ContainerCd;
                     listKensaMst.MaleStd = itemKensa.MaleStd;
                     listKensaMst.MaleStdLow = itemKensa.MaleStdLow;
                     listKensaMst.MaleStdHigh = itemKensa.MaleStdHigh;
@@ -7907,7 +7908,82 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             }
         }
 
-        #region Append parent, childrens item
+        #region Append parent, childrens item, Childs of parent match keyword
+
+        #region Apend Childs of parent match keyword
+        var kensaOyaItemCdMatchKeyword = NoTrackingDataContext.KensaMsts.Where(x => kensaItemCdSet.Contains(x.KensaItemCd) && x.OyaItemCd != string.Empty && x.OyaItemCd != null).Select(x => x.OyaItemCd).ToHashSet();
+        // list child of parent item match keyword
+        var listChilsMatchKeyword = (
+            from kensaMst in NoTrackingDataContext.KensaMsts
+            where kensaMst.IsDelete == DeleteTypes.None && kensaOyaItemCdMatchKeyword.Contains(kensaMst.OyaItemCd)
+            join centerMst in NoTrackingDataContext.KensaCenterMsts
+            on new { kensaMst.CenterCd, kensaMst.HpId } equals new { centerMst.CenterCd, centerMst.HpId }
+            into joinedData
+            from res in joinedData.DefaultIfEmpty()
+            join kensaStd in NoTrackingDataContext.KensaStdMsts
+                             on kensaMst.KensaItemCd equals kensaStd.KensaItemCd into leftJoinKensaStd
+            from kensaStd in leftJoinKensaStd.DefaultIfEmpty()
+            select new KensaMstModel(
+               kensaMst.KensaItemCd,
+               kensaMst.KensaItemSeqNo,
+                kensaMst.CenterCd ?? string.Empty,
+                kensaMst.KensaName ?? string.Empty,
+                kensaMst.KensaKana ?? string.Empty,
+                kensaMst.Unit ?? string.Empty,
+                kensaMst.MaterialCd,
+                kensaMst.ContainerCd,
+                kensaStd.MaleStd ?? string.Empty,
+                kensaStd.MaleStdLow ?? string.Empty,
+                kensaStd.MaleStdHigh ?? string.Empty,
+                kensaStd.FemaleStd ?? string.Empty,
+                kensaStd.FemaleStdLow ?? string.Empty,
+                kensaStd.FemaleStdHigh ?? string.Empty,
+                kensaMst.Formula ?? string.Empty,
+                kensaMst.Digit,
+                kensaMst.OyaItemCd ?? string.Empty,
+                kensaMst.OyaItemSeqNo,
+                kensaMst.SortNo,
+                kensaMst.CenterItemCd1 ?? string.Empty,
+                kensaMst.CenterItemCd2 ?? string.Empty,
+                new(),
+                new(),
+                new(),
+                new(),
+                res.CenterName ?? string.Empty
+            )
+        ).ToList();
+
+        var listChilsMatchKeywordDuplicate = listChilsMatchKeyword.GroupBy(item => item.KensaItemCd)
+            .Where(group => group.Count() > 1)
+            .Select(group => new
+            {
+                KensaItemCd = group.Key,
+                CenterName = JoinIfNotEmpty(group.Select(item => item.CenterName)),
+                CenterItemCd1 = JoinIfNotEmpty(group.Select(item => item.CenterItemCd1))
+            }
+            );
+
+        // Fillter remove duplicate item
+        listChilsMatchKeyword = listChilsMatchKeyword.Where(x => x.KensaItemSeqNo == listChilsMatchKeyword.Where(m => m.KensaItemCd == x.KensaItemCd).Min(m => m.KensaItemSeqNo)).ToList();
+
+        var listChildCenterNameDictionary = listChilsMatchKeywordDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterName);
+        var listChildCenterItemCd1Dictionary = listChilsMatchKeywordDuplicate.ToDictionary(item => item.KensaItemCd, item => item.CenterItemCd1);
+
+        // Update  centerName, centerItemCd1
+        foreach (var entity in listChilsMatchKeyword)
+        {
+            if (listChildCenterNameDictionary.TryGetValue(entity.KensaItemCd, out var newCenterName))
+            {
+                entity.SetCenterName(newCenterName);
+            }
+
+            if (listChildCenterItemCd1Dictionary.TryGetValue(entity.KensaItemCd, out var newCenterItemCd1))
+            {
+                entity.SetCenterItemCd1(newCenterItemCd1);
+            }
+        }
+        #endregion
+
         foreach (var item in kensaItemCdSet)
         {
             var entity = allkensaKensaMst.FirstOrDefault(x => x.KensaItemCd == item);
@@ -7940,7 +8016,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                       x.CenterItemCd2 ?? string.Empty,
                       new(),
                       new(),
-                      new(),
+                     listChilsMatchKeyword.Where(x => x.OyaItemCd == entity.OyaItemCd).ToList(),
                       new(),
                       x.CenterName
                     )).OrderBy(x => x.SeqNo).FirstOrDefault();

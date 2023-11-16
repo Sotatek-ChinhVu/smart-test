@@ -2,6 +2,7 @@
 using AWSSDK.Interfaces;
 using AWSSDK.Services;
 using Domain.SuperAdminModels.Admin;
+using Domain.SuperAdminModels.Logger;
 using Domain.SuperAdminModels.Tenant;
 using Infrastructure.Common;
 using Infrastructure.CommonDB;
@@ -10,8 +11,10 @@ using Infrastructure.Logger;
 using Infrastructure.Services;
 using Infrastructure.SuperAdminRepositories;
 using Interactor.SuperAdmin;
+using Interactor.SuperAdmin.AuditLog;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.Core.Builder;
+using UseCase.SuperAdmin.AuditLog;
 using UseCase.SuperAdmin.Login;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.UpgradePremium;
@@ -61,6 +64,7 @@ namespace SuperAdmin.Configs.Dependency
         {
             services.AddTransient<IAdminRepository, AdminRepository>();
             services.AddTransient<ITenantRepository, TenantRepository>();
+            services.AddTransient<IAdminAuditLogRepository, AdminAuditLogRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -71,6 +75,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
             busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
+            busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
