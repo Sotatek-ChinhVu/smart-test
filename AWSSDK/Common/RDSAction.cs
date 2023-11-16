@@ -225,7 +225,7 @@ namespace AWSSDK.Common
                 // Check the response for success
                 if (response != null && response.HttpStatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    return response.DBSnapshot.DBInstanceIdentifier;
+                    return response.DBSnapshot.DBSnapshotIdentifier;
                 }
                 else
                 {
@@ -276,6 +276,33 @@ namespace AWSSDK.Common
             dbSnapshotIdentifier = dbSnapshotIdentifier.TrimEnd('-');
             dbSnapshotIdentifier = dbSnapshotIdentifier.Length > 63 ? dbSnapshotIdentifier.Substring(0, 63) : dbSnapshotIdentifier;
             return dbSnapshotIdentifier;
+        }
+
+        public async static Task<bool> IsSnapshotAvailableAsync(string dbSnapshotIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                // Create a request to describe DB snapshots
+                var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
+                {
+                    DBSnapshotIdentifier = dbSnapshotIdentifier
+                };
+
+                // Call DescribeDBSnapshotsAsync to asynchronously get information about the snapshot
+                var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
+
+                // Check if the snapshot exists and is in the "available" state
+                var snapshot = describeSnapshotsResponse.DBSnapshots.FirstOrDefault();
+                return snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions (e.g., AWS service exceptions, network issues)
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
         }
     }
 }

@@ -24,7 +24,13 @@ namespace Interactor.SuperAdmin
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
         }
+
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<UpgradePremiumOutputData> HandleAsync(UpgradePremiumInputData inputData)
         {
             try
             {
@@ -40,10 +46,30 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
 
+                // Check type in AWS
 
-                // Create Snapshot
-                var rdsIdentifier =  _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
+                // Update tenant status
 
+                // Create Snapshot asynchronously
+                var createSnapshotTask = _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
+
+                // Create RSD  preminum
+                //var createDBTask = _awsSdkService.CreateDBAsync();
+
+                // Continue with other logic without waiting for the tasks to complete
+                var snapshotIdentifierTask = createSnapshotTask.ContinueWith(task => task.Result);
+                var dbInstanceIdentifierTask = createSnapshotTask.ContinueWith(task => task.Result);
+
+                // Continue with other logic without waiting for the tasks to complete
+                var snapshotIdentifier = await snapshotIdentifierTask;
+                var dbInstanceIdentifier = await dbInstanceIdentifierTask;
+
+                // Restore DB Instance from snapshot
+                _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+
+                // Continue with other logic...
+
+                // Return a response immediately
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
             }
             finally
