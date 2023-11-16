@@ -1,4 +1,6 @@
 ﻿
+using AWSSDK.Interfaces;
+using AWSSDK.Services;
 using Domain.SuperAdminModels.Admin;
 using Domain.SuperAdminModels.Logger;
 using Domain.SuperAdminModels.Tenant;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdmin.Configs.Dependency
@@ -49,6 +52,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IAwsSdkService, AwsSdkService>();
 
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
@@ -70,6 +74,7 @@ namespace SuperAdmin.Configs.Dependency
 
             busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
             busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
+            busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
 
             //SystemStartDb 
