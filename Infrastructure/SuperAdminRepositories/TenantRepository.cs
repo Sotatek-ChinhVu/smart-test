@@ -18,6 +18,16 @@ namespace Infrastructure.SuperAdminRepositories
             return tenantModel;
         }
 
+        public int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.SubDomain == subDomain && t.RdsIdentifier == dbIdentifier && t.IsDeleted == 0);
+            if (tenant != null)
+            {
+                return tenant.Count();
+            }
+            return 0;
+        }
+
         private TenantModel ConvertEntityToModel(Tenant tenant)
         {
             return new TenantModel(
