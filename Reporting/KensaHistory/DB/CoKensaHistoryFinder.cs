@@ -199,7 +199,7 @@ namespace Reporting.KensaHistory.DB
             // Get list with start date and end date
             if (endDate == 0)
             {
-                data = data.Where(x => x.IraiDate <= startDate);
+                data = data.Where(x => x.IraiDate >= startDate && x.IraiDate <= 99999999);
             }
             else
             {
