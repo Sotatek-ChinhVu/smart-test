@@ -1,5 +1,6 @@
 ﻿using Amazon.Route53;
 using Amazon.Route53.Model;
+using AWSSDK.Constants;
 
 namespace AWSSDK.Common
 {
@@ -11,7 +12,7 @@ namespace AWSSDK.Common
             {
                 var route53Client = new AmazonRoute53Client();
 
-                var subDomain = $"{tenantId}.smartkarte.org";
+                var subDomain = $"{tenantId}.{ConfigConstant.Domain}";
                 var changeBatch = new ChangeBatch
                 {
                     Changes = new List<Change>
@@ -37,12 +38,10 @@ namespace AWSSDK.Common
                     Comment = "tenan03",
                 };
 
-                var hostedZoneId = "Z09462362PXK5JFYQ59B";
-
                 var response = await route53Client.ChangeResourceRecordSetsAsync(new ChangeResourceRecordSetsRequest
                 {
                     ChangeBatch = changeBatch,
-                    HostedZoneId = hostedZoneId,
+                    HostedZoneId = ConfigConstant.HostedZoneId,
                 });
 
                 return response;
@@ -51,6 +50,28 @@ namespace AWSSDK.Common
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 return null;
+            }
+        }
+
+        public static async Task<bool> CheckSubdomainExistence(string subdomainToCheck)
+        {
+            using (var route53Client = new AmazonRoute53Client())
+            {
+                var listResourceRecordSetsRequest = new ListResourceRecordSetsRequest
+                {
+                    HostedZoneId = ConfigConstant.HostedZoneId
+                };
+
+                var listResourceRecordSetsResponse = await route53Client.ListResourceRecordSetsAsync(listResourceRecordSetsRequest);
+
+                bool subdomainExists = listResourceRecordSetsResponse.ResourceRecordSets
+                    .Any(recordSet => recordSet.Name == $"{subdomainToCheck}.{ConfigConstant.Domain}.");
+
+                if (subdomainExists)
+                {
+                    return true;
+                }
+                return false;
             }
         }
     }

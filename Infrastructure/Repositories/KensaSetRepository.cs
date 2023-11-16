@@ -630,7 +630,7 @@ namespace Infrastructure.Repositories
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
                             (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
-                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
+                            (t3.CenterCd == t6.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
@@ -645,7 +645,8 @@ namespace Infrastructure.Repositories
                             t3.TosekiKbn,
                             t3.InoutKbn,
                             t3.Status,
-                            DeleteTypes.None
+                            DeleteTypes.None,
+                            t1.SeqGroupNo
                         )).AsEnumerable();
 
             if (showAbnormalKbn)
@@ -731,63 +732,35 @@ namespace Infrastructure.Repositories
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
 
-            var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.IraiCd }).SelectMany(group => group.Skip(1))
-                .Select(x => x);
-            var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
-
-            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo)).
-                GroupBy(item => item.KensaItemCd)
-                                .Select(group =>
-                                {
-                                    var newItem = group.First();
-                                    newItem.SetRowSeqId(string.Join("-", group.Select(x => x.SeqNo)));
-                                    return newItem;
-                                })
-                                .ToList();
-
             var groupRowData = data
-                .GroupBy(x => new { x.KensaItemCd })
+                .GroupBy(x => new { x.KensaItemCd, x.SeqGroupNo })
                 .ToDictionary(
-                    group => group.Key.KensaItemCd,
-                    group => group.Where(x => !seqNos.Contains(x.SeqNo)).ToList());
-
+                    group =>
+                    {
+                        var newItem = group.First();
+                        newItem.SetRowSeqId(string.Join("-", group.Select(x => x.SeqNo)));
+                        return newItem;
+                    },
+                    group => group.ToList());
 
             var kensaInfDetailData = new List<KensaInfDetailDataModel>();
 
-            foreach (var item in kensaItemWithOutDuplicate)
+            foreach (var item in groupRowData)
             {
-                if (groupRowData.TryGetValue(item.KensaItemCd, out var dynamicArray))
-                {
-                    kensaInfDetailData.Add(new KensaInfDetailDataModel(
-                        item.KensaItemCd,
-                        item.KensaName,
-                        item.Unit,
-                        item.MaleStd,
-                        item.FemaleStd,
-                        item.KensaKana,
-                        item.SortNo,
-                        item.SeqNo,
-                        item.SeqParentNo,
-                        item.RowSeqId,
-                        dynamicArray
-                    ));
-                }
-            }
-
-            foreach (var item in kensaItemDuplicate)
-            {
+                var row = item.Key;
                 kensaInfDetailData.Add(new KensaInfDetailDataModel(
-                    item.KensaItemCd,
-                    item.KensaName,
-                    item.Unit,
-                    item.MaleStd,
-                    item.FemaleStd,
-                    item.KensaKana,
-                    item.SortNo,
-                    item.SeqNo,
-                    item.SeqParentNo,
-                    item.SeqNo.ToString(),
-                    new List<ListKensaInfDetailItemModel> { item }));
+                row.KensaItemCd,
+                row.KensaName,
+                row.Unit,
+                row.MaleStd,
+                row.FemaleStd,
+                row.KensaKana,
+                row.SortNo,
+                row.SeqNo,
+                row.SeqParentNo,
+                row.RowSeqId,
+                item.Value
+            ));
             }
 
             // Sort row by user config
@@ -1007,7 +980,7 @@ namespace Infrastructure.Repositories
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
                             (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
-                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
+                            (t3.CenterCd == t6.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
@@ -1022,7 +995,8 @@ namespace Infrastructure.Repositories
                             t3.TosekiKbn,
                             t3.InoutKbn,
                             t3.Status,
-                            DeleteTypes.None
+                            DeleteTypes.None,
+                            t1.SeqGroupNo
                         )).ToList();
             return data;
         }

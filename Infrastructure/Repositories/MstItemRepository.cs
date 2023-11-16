@@ -6277,6 +6277,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                     listKensaMst.KensaKana = itemKensa.KensaKana;
                     listKensaMst.Unit = itemKensa.Unit;
                     listKensaMst.MaterialCd = itemKensa.MaterialCd;
+                    listKensaMst.ContainerCd = itemKensa.ContainerCd;
                     listKensaMst.MaleStd = itemKensa.MaleStd;
                     listKensaMst.MaleStdLow = itemKensa.MaleStdLow;
                     listKensaMst.MaleStdHigh = itemKensa.MaleStdHigh;

@@ -161,5 +161,9 @@ namespace Entity.Tenant
         [Column("SEQ_PARENT_NO")]
         [CustomAttribute.DefaultValue(0)]
         public long SeqParentNo { get; set; }
+
+        [Column("SEQ_GROUP_NO")]
+        [CustomAttribute.DefaultValue(0)]
+        public long SeqGroupNo { get; set; }
     }
 }

@@ -147,7 +147,8 @@ namespace Reporting.KensaHistory.DB
                                                                  t3.TosekiKbn,
                                                                  t3.InoutKbn,
                                                                  t3.Status,
-                                                                 DeleteTypes.None
+                                                                 DeleteTypes.None,
+                                                                 t1.SeqGroupNo
                                                              ));
 
             if (showAbnormalKbn)
@@ -199,7 +200,7 @@ namespace Reporting.KensaHistory.DB
             // Get list with start date and end date
             if (endDate == 0)
             {
-                data = data.Where(x => x.IraiDate <= startDate);
+                data = data.Where(x => x.IraiDate >= startDate && x.IraiDate <= 99999999);
             }
             else
             {
@@ -403,7 +404,8 @@ namespace Reporting.KensaHistory.DB
                                                                  t3.TosekiKbn,
                                                                  t3.InoutKbn,
                                                                  t3.Status,
-                                                                 DeleteTypes.None
+                                                                 DeleteTypes.None,
+                                                                 t1.SeqGroupNo
                                                              ));
 
             if (showAbnormalKbn)

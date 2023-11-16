@@ -1,5 +1,7 @@
 ﻿using Amazon.RDS;
 using Amazon.RDS.Model;
+using AWSSDK.Constants;
+using AWSSDK.Dto;
 using Npgsql;
 
 namespace AWSSDK.Common
@@ -39,6 +41,22 @@ namespace AWSSDK.Common
                 Console.WriteLine($"Error: {ex.Message}");
                 return null;
             }
+        }
+
+        public static async Task<bool> IsDedicatedTypeAsync(string dbIdentifier)
+        {
+            var rds = new AmazonRDSClient();
+            var instances = await rds.DescribeDBInstancesAsync();
+            var data = instances.DBInstances.FirstOrDefault(i => i.DBInstanceIdentifier == dbIdentifier);
+            if (data != null)
+            {
+                if (data.DBInstanceClass == ConfigConstant.DedicateInstance)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
 
         public static async Task CreateNewShardAsync(string dbIdentifier)
@@ -202,6 +220,106 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
+        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        {
+            try
+            {
+                // Assuming you have AWS credentials set up (access key and secret key)
+                var rdsClient = new AmazonRDSClient();
+
+                // Create a request to create a DB snapshot
+                var createSnapshotRequest = new CreateDBSnapshotRequest
+                {
+                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier),
+                    DBInstanceIdentifier = dbInstanceIdentifier
+                };
+
+                // Call the CreateDBSnapshotAsync method to asynchronously create the snapshot
+                var response = await rdsClient.CreateDBSnapshotAsync(createSnapshotRequest);
+
+                // Check the response for success
+                if (response != null && response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return response.DBSnapshot.DBSnapshotIdentifier;
+                }
+                else
+                {
+                    Console.WriteLine($"DB snapshot creation failed. Response: {response}");
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        public static async Task<string> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        {
+            return string.Empty;
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+                var response = await rdsClient.RestoreDBInstanceFromDBSnapshotAsync(
+                new RestoreDBInstanceFromDBSnapshotRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    DBSnapshotIdentifier = snapshotIdentifier,
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return string.Empty;
+            }
+        }
+
+        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier)
+        {
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-Snapshot-{timestamp}";
+
+            dbSnapshotIdentifier = string.Join("", dbSnapshotIdentifier.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
+
+            if (!char.IsLetter(dbSnapshotIdentifier[0]))
+            {
+                dbSnapshotIdentifier = "A" + dbSnapshotIdentifier.Substring(1);
+            }
+
+            dbSnapshotIdentifier = dbSnapshotIdentifier.TrimEnd('-');
+            dbSnapshotIdentifier = dbSnapshotIdentifier.Length > 63 ? dbSnapshotIdentifier.Substring(0, 63) : dbSnapshotIdentifier;
+            return dbSnapshotIdentifier;
+        }
+
+        public async static Task<bool> IsSnapshotAvailableAsync(string dbSnapshotIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                // Create a request to describe DB snapshots
+                var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
+                {
+                    DBSnapshotIdentifier = dbSnapshotIdentifier
+                };
+
+                // Call DescribeDBSnapshotsAsync to asynchronously get information about the snapshot
+                var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
+
+                // Check if the snapshot exists and is in the "available" state
+                var snapshot = describeSnapshotsResponse.DBSnapshots.FirstOrDefault();
+                return snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions (e.g., AWS service exceptions, network issues)
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
             }
         }
     }
