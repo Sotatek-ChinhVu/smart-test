@@ -44,7 +44,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Delete)]
         public ActionResult<Response<DeleteSetSendaiGenerationResponse>> Delete([FromBody] DeleteSetSendaiGenerationRequest request)
         {
-            var input = new DeleteSendaiGenerationInputData(HpId, request.GenerationId, request.RowIndex, UserId);
+            var input = new DeleteSendaiGenerationInputData(HpId, request.GenerationId, request.RowIndex, UserId, request.StartDate);
             var output = _bus.Handle(input);
 
             var presenter = new DeleteSetSendaiGenerationPresenter();

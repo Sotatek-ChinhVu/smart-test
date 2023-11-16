@@ -676,14 +676,6 @@ namespace Infrastructure.Repositories
         public AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId)
         {
             // get SendaiGeneration newest
-            var setGeneration = RestoreSetGeneration(restoreGenerationId, hpId, userId);
-
-
-            return null;
-        }
-
-        private AddSetSendaiModel RestoreSetGeneration(int restoreGenerationId, int hpId, int userId)
-        {
             var itemNewest = TrackingDataContext.SetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(x => x.GenerationId).FirstOrDefault();
             if (itemNewest != null && itemNewest.GenerationId != restoreGenerationId)
             {
@@ -786,53 +778,6 @@ namespace Infrastructure.Repositories
             }
 
             return null;
-        }
-
-        private void RestoreByomeiSetGeneration(int hpId,int userId, int targetGeneration, int sourceGenerationId)
-        {
-            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-
-            return executionStrategy.Execute(
-                () =>
-                {
-                    using var transaction = TrackingDataContext.Database.BeginTransaction();
-
-                    var targetSetMsts = TrackingDataContext.ByomeiSetMsts.Where(x =>
-                    x.HpId == hpId &&
-                    x.GenerationId == targetGeneration).ToList();
-                    try
-                    {
-
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                    }
-                }
-                );
-            
-                try
-                {
-                    targetSetMsts.ForEach(byomeiSetMst =>
-                    {
-                        byomeiSetMst.IsDeleted = 1;
-                        byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        byomeiSetMst.UpdateId = userId;
-                        byomeiSetMst.UpdateMachine = "SmartKarte";
-                    });
-                    localContext.SaveChanged();
-                    transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    transaction.Rollback();
-                    Log.WriteLogError(_moduleName, this, nameof(RestoreSetGeneration), e);
-                }
-                finally
-                {
-                    localContext.Dispose();
-                }
-                return targetSetMsts.Count;
         }
 
         public List<ListSetGenerationMstModel> GetAll(int hpId)
