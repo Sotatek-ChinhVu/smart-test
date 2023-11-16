@@ -1,12 +1,7 @@
 ﻿using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
-using Amazon.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using AWSSDK.Constants;
+
 
 namespace AWSSDK.Common
 {
@@ -17,7 +12,7 @@ namespace AWSSDK.Common
             try
             {
                 var cloudFrontClient = new AmazonCloudFrontClient();
-                var cname = new List<string> { $"{tenantId}.smartkarte.org" };
+                var cname = new List<string> { $"{tenantId}.{ConfigConstant.Domain}" };
                 cname.AddRange(alterName);
                 var request = new UpdateDistributionRequest
                 {

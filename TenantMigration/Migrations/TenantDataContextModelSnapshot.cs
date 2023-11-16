@@ -6358,6 +6358,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(10)")
                         .HasColumnName("RESULT_VAL");
 
+                    b.Property<long>("SeqGroupNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_GROUP_NO");
+
                     b.Property<long>("SeqParentNo")
                         .HasColumnType("bigint")
                         .HasColumnName("SEQ_PARENT_NO");
@@ -6672,7 +6676,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("IS_DELETED");
 
                     b.Property<string>("SetName")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("SET_NAME");
@@ -6746,7 +6749,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("IS_DELETED");
 
                     b.Property<string>("KensaItemCd")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("KENSA_ITEM_CD");
@@ -27366,6 +27368,10 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("RESULT_VAL");
+
+                    b.Property<long>("SeqGroupNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_GROUP_NO");
 
                     b.Property<long>("SeqNo")
                         .ValueGeneratedOnAdd()

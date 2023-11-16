@@ -1406,9 +1406,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             {
                 continue;
             }
-            conversionItem.IsDeleted = 1;
-            conversionItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            conversionItem.UpdateId = userId;
+
+            TrackingDataContext.RemoveRange(conversionItem);
         }
         conversionItemInfDBList = conversionItemInfDBList.Where(item => !deleteConversionItemCdList.Contains(item.DestItemCd)).ToList();
 

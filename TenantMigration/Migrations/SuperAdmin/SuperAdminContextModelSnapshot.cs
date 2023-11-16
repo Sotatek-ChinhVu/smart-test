@@ -198,6 +198,11 @@ namespace TenantMigration.Migrations.SuperAdmin
                         .HasColumnType("text")
                         .HasColumnName("PASSWORD");
 
+                    b.Property<string>("RdsIdentifier")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("RDS_IDENTIFIER");
+
                     b.Property<int>("ScheduleDate")
                         .HasColumnType("integer")
                         .HasColumnName("SCHEDULE_DATE");
