@@ -830,14 +830,25 @@ namespace Infrastructure.Repositories
             // Filter row by KensaSet
             else
             {
-                var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId).ToList();
+                var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId).OrderBy(x => x.SortNo).ToList();
                 foreach (var cunrentItemSet in kensasetDetail)
                 {
                     var lastItemSet = kensasetDetail.LastOrDefault(x => x.KensaItemCd == cunrentItemSet.KensaItemCd);
                     if (cunrentItemSet == lastItemSet)
                     {
                         var listRow = kensaInfDetailData.Where(x => x.KensaItemCd == cunrentItemSet.KensaItemCd).ToList();
-                        kensaInfDetailRows.AddRange(listRow);
+                        if (listRow.Count > 0)
+                        {
+                            kensaInfDetailRows.AddRange(listRow);
+                        }
+                        else
+                        {
+                            var duplicatRow = kensaInfDetailRows.Where(x => x.KensaItemCd == cunrentItemSet.KensaItemCd).LastOrDefault();
+                            if (duplicatRow != null)
+                            {
+                                kensaInfDetailRows.Add(duplicatRow);
+                            }
+                        }
                     }
                     else
                     {
@@ -845,12 +856,15 @@ namespace Infrastructure.Repositories
                         if (row == null)
                         {
                             var duplicatRow = kensaInfDetailRows.Where(x => x.KensaItemCd == cunrentItemSet.KensaItemCd).LastOrDefault();
-                            kensaInfDetailRows.Add(duplicatRow);
+                            if (duplicatRow != null)
+                            {
+                                kensaInfDetailRows.Add(duplicatRow);
+                            }
                         }
                         else
                         {
                             kensaInfDetailRows.Add(row);
-                            kensaInfDetailRows.Remove(row);
+                            kensaInfDetailData.Remove(row);
                         }
                     }
                 }
