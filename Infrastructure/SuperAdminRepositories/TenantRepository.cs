@@ -18,9 +18,9 @@ namespace Infrastructure.SuperAdminRepositories
             return tenantModel;
         }
 
-        private int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier)
+        public int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier)
         {
-            var tenant = NoTrackingDataContext.Tenants.Where(t => t.SubDomain == subDomain && t.RdsIdentifier == dbIdentifier);
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.SubDomain == subDomain && t.RdsIdentifier == dbIdentifier && t.IsDeleted == 0);
             if (tenant != null)
             {
                 return tenant.Count();
