@@ -791,7 +791,7 @@ namespace Infrastructure.Repositories
             }
 
             // Sort row by user config
-            List<KensaInfDetailDataModel> kensaInfDetailRows;
+            List<KensaInfDetailDataModel> kensaInfDetailRows = new List<KensaInfDetailDataModel>();
             if (setId == 0)
             {
                 var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
@@ -853,18 +853,34 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-            // Sort row by KensaSet SortNo
+
+            // Filter row by KensaSet
             else
             {
-
-                kensaInfDetailRows = (from t1 in kensaInfDetailData
-                                      join t2 in kensaSetDetailById on t1.KensaItemCd equals t2.KensaItemCd
-                                      select new
-                                      {
-                                          Result = t1,
-                                          SortNo = t2.SortNo,
-                                      }
-                           ).OrderBy(x => x.SortNo).Select(x => x.Result).ToList();
+                var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId).ToList();
+                foreach (var cunrentItemSet in kensasetDetail)
+                {
+                    var lastItemSet = kensasetDetail.LastOrDefault(x => x.KensaItemCd == cunrentItemSet.KensaItemCd);
+                    if (cunrentItemSet == lastItemSet)
+                    {
+                        var listRow = kensaInfDetailData.Where(x => x.KensaItemCd == cunrentItemSet.KensaItemCd).ToList();
+                        kensaInfDetailRows.AddRange(listRow);
+                    }
+                    else
+                    {
+                        var row = kensaInfDetailData.FirstOrDefault(x => x.KensaItemCd == cunrentItemSet.KensaItemCd);
+                        if (row == null)
+                        {
+                            var duplicatRow = kensaInfDetailRows.Where(x => x.KensaItemCd == cunrentItemSet.KensaItemCd).LastOrDefault();
+                            kensaInfDetailRows.Add(duplicatRow);
+                        }
+                        else
+                        {
+                            kensaInfDetailRows.Add(row);
+                            kensaInfDetailRows.Remove(row);
+                        }
+                    }
+                }
             }
             #endregion
 
