@@ -92,15 +92,15 @@ namespace Interactor.SuperAdmin
                             if (rdsInfo.ContainsKey(dbIdentifier))
                             {
                                 host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-                                RDSAction.CreateDatabase(host, tenantId);
-                                RDSAction.CreateTables(host, tenantId);
+                                //RDSAction.CreateDatabase(host, tenantId);
+                                //RDSAction.CreateTables(host, tenantId);
                             }
                             else
                             {
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
                                 host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-                                RDSAction.CreateDatabase(host, tenantId);
-                                RDSAction.CreateTables(host, tenantId);
+                                //RDSAction.CreateDatabase(host, tenantId);
+                                //RDSAction.CreateTables(host, tenantId);
                             }
                         }
                         else // In the rest cases, checking available RDS for new Tenant
@@ -114,8 +114,8 @@ namespace Interactor.SuperAdmin
                                 string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
                                 host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-                                RDSAction.CreateDatabase(host, tenantId);
-                                RDSAction.CreateTables(host, tenantId);
+                                //RDSAction.CreateDatabase(host, tenantId);
+                                //RDSAction.CreateTables(host, tenantId);
                             }
                             else // Else, returning the first available RDS Cluster in the list
                             {
@@ -126,16 +126,16 @@ namespace Interactor.SuperAdmin
                                     host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
 
                                     // Provisioning Database and tables for new tenant
-                                    RDSAction.CreateDatabase(host, tenantId);
-                                    RDSAction.CreateTables(host, tenantId);
+                                    //RDSAction.CreateDatabase(host, tenantId);
+                                    //RDSAction.CreateTables(host, tenantId);
                                 }
                                 else
                                 {
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
                                     host = await RDSAction.CheckingRDSStatusAsync(dbIdentifierNew);
-                                    RDSAction.CreateDatabase(host, tenantId);
-                                    RDSAction.CreateTables(host, tenantId);
+                                    //RDSAction.CreateDatabase(host, tenantId);
+                                    //RDSAction.CreateTables(host, tenantId);
                                 }
 
                             }
