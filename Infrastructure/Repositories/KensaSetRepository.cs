@@ -340,7 +340,7 @@ namespace Infrastructure.Repositories
                                   from t3 in leftJoinT3.DefaultIfEmpty()
                                   where t1.HpId == hpId && t1.IsDeleted == DeleteTypes.None && (t1.CenterCd == centerCd || t1.CenterCd == null || t1.CenterCd == string.Empty)
                                   && ((t1.CMT ?? "").ToUpper().Contains(bigKeyWord) || (t1.CmtCd != null && t1.CmtCd.Contains(keyword)))
-                                  where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd).Min(m => m.CmtSeqNo)
+                                  where t1.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == hpId && m.CmtCd == t1.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
                                   select new KensaCmtMstModel(
                                       t1.CmtCd ?? string.Empty,
                                       t1.CMT ?? string.Empty,
@@ -504,6 +504,21 @@ namespace Infrastructure.Repositories
                                     child.IsDeleted = DeleteTypes.Deleted;
                                     child.UpdateId = userId;
                                     child.UpdateMachine = CIUtil.GetComputerName();
+                                }
+                            }
+
+                            // Delete all item kensaInfDetail
+                            if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
+                            {
+                                var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
+                                if (kensaInf == null)
+                                {
+                                    transaction.Rollback();
+                                    successed = false;
+                                }
+                                else
+                                {
+                                    kensaInf.IsDeleted = DeleteTypes.Deleted;
                                 }
                             }
 
