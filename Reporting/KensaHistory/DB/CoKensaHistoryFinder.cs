@@ -332,10 +332,16 @@ namespace Reporting.KensaHistory.DB
 
             List<CoKensaResultMultiModel> result = new();
             List<KensaResultMultiItem> kensaResultMultiItems = new();
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
             foreach (var item in kensaInfDetailRows)
             {
-                result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.MaleStd, new(), new()));
+                switch (ptInf?.Sex)
+                {
+                    case 1: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.MaleStd, new(), new())); break;
+                    case 2: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.FemaleStd, new(), new())); break;
+                }
+                
             }
 
             foreach (var item in kensaInfDetailRows)
