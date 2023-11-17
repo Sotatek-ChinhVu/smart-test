@@ -313,6 +313,7 @@ namespace AWSSDK.Common
                     {
                         DBInstanceIdentifier = dbInstanceIdentifier,
                         DBSnapshotIdentifier = snapshotIdentifier,
+                        DBInstanceClass = "db.t4g.micro" // Todo update
                     });
 
                 if (response.DBInstance.DBInstanceStatus.Equals("available", StringComparison.OrdinalIgnoreCase))

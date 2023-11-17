@@ -32,7 +32,7 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
 
-                // Exit domain 
+                // Check exit domain 
                 var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(tenant.SubDomain).Result;
                 if (checkSubDomain)
                 {
@@ -42,26 +42,28 @@ namespace Interactor.SuperAdmin
                 _ = Task.Run(async () =>
                 {
                     // Create SnapShot
-                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
-                    // Create RSD  preminum
-                    var dbInstanceIdentifier = await TenantOnboardAsync(tenant.SubDomain, 0, 0);
+                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync("develop-smartkarte-logging");
 
-                    if(string.IsNullOrEmpty(snapshotIdentifier) || string.IsNullOrEmpty(dbInstanceIdentifier))
+                    if(string.IsNullOrEmpty(snapshotIdentifier))
                     {
                         cts.Cancel();
                     }
 
-                    var host = await RDSAction.CheckingRDSStatusAsync(dbInstanceIdentifier);
                     var isAvailableSnapShot = await RDSAction.CheckingSnapshotAvailableAsync(snapshotIdentifier);
-                    if (string.IsNullOrEmpty(host) || !isAvailableSnapShot)
+                    if (!isAvailableSnapShot)
                     {
                         cts.Cancel();
                     }
 
                     // Restore DB Instance from snapshot
+                    Console.WriteLine($"Start Restore");
+
+                    string rString = CommonConstants.GenerateRandomString(6);
+                    var dbInstanceIdentifier = $"develop-smartkarte-postgres-{rString}";
+
                     await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
                     // Check Restore success 
-                    // To do 
+                    // To do   dump database, delete DB, Notification
                 });
 
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
