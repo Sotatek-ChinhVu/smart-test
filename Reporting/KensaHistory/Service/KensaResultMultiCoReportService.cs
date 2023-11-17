@@ -117,7 +117,7 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiStartDate", CIUtil.SDateToShowSDate(startDate.AsInteger()));
                 SetFieldData("iraiEndDate", CIUtil.SDateToShowSDate(endDate.AsInteger()));
-                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
+                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd hh:mm:ss"));
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
