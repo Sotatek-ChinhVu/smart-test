@@ -508,7 +508,7 @@ namespace Infrastructure.Repositories
                             }
 
                             // Delete all item kensaInfDetail
-                            if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
+                            if (!kensaInfDetails.Any(x => x.IsDeleted == DeleteTypes.None))
                             {
                                 var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
                                 if (kensaInf == null)
@@ -630,7 +630,7 @@ namespace Infrastructure.Repositories
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
                             (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
-                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
+                            (t3.CenterCd == t6.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
@@ -678,7 +678,7 @@ namespace Infrastructure.Repositories
 
             var totalCol = kensaInfDetailCol.Count();
 
-            if (listSeqNoItems.Any())
+            if (!listSeqNoItems.Any())
             {
                 // Get list with start date
                 if (startDate > 0)
@@ -991,7 +991,7 @@ namespace Infrastructure.Repositories
                             t1.CmtCd1 ?? string.Empty,
                             t1.CmtCd2 ?? string.Empty,
                             (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
-                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
+                            (t3.CenterCd == t6.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
                             t7.MaleStd ?? string.Empty,
                             t7.FemaleStd ?? string.Empty,
                             t7.MaleStdLow ?? string.Empty,
