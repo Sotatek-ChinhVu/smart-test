@@ -1,4 +1,4 @@
-﻿namespace AWSSDK
+﻿namespace AWSSDK.Dto
 {
     public class RDSInformation
     {

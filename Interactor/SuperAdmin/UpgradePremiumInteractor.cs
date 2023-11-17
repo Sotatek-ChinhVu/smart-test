@@ -19,9 +19,9 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        public UpgradePremiumInteractor(ITenantRepository tenantRepository)
+        public UpgradePremiumInteractor(IAwsSdkService awsSdkService, ITenantRepository tenantRepository)
         {
-            //_awsSdkService = awsSdkService;
+            _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
         }
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
@@ -43,7 +43,7 @@ namespace Interactor.SuperAdmin
                 // Todo check tenant on  Aws
                 // var tenantAwsInf =  _awsSdkService.GetInfTenantByTenant("1");
 
-                
+
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
             }
             finally

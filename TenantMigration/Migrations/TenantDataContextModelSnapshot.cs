@@ -6285,16 +6285,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID")
-                        .HasColumnOrder(2);
-
-                    b.Property<long>("IraiCd")
-                        .HasColumnType("bigint")
-                        .HasColumnName("IRAI_CD")
-                        .HasColumnOrder(3);
-
                     b.Property<long>("SeqNo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
@@ -6331,6 +6321,11 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
 
+                    b.Property<long>("IraiCd")
+                        .HasColumnType("bigint")
+                        .HasColumnName("IRAI_CD")
+                        .HasColumnOrder(3);
+
                     b.Property<int>("IraiDate")
                         .HasColumnType("integer")
                         .HasColumnName("IRAI_DATE");
@@ -6343,6 +6338,11 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("KENSA_ITEM_CD");
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
 
                     b.Property<long>("RaiinNo")
                         .HasColumnType("bigint")
@@ -6357,6 +6357,10 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("RESULT_VAL");
+
+                    b.Property<long>("SeqGroupNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_GROUP_NO");
 
                     b.Property<long>("SeqParentNo")
                         .HasColumnType("bigint")
@@ -6375,7 +6379,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId", "PtId", "IraiCd", "SeqNo");
+                    b.HasKey("HpId", "SeqNo");
 
                     b.ToTable("KENSA_INF_DETAIL");
                 });
@@ -6672,7 +6676,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("IS_DELETED");
 
                     b.Property<string>("SetName")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("SET_NAME");
@@ -6746,7 +6749,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("IS_DELETED");
 
                     b.Property<string>("KensaItemCd")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("KENSA_ITEM_CD");
@@ -27366,6 +27368,10 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("RESULT_VAL");
+
+                    b.Property<long>("SeqGroupNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_GROUP_NO");
 
                     b.Property<long>("SeqNo")
                         .ValueGeneratedOnAdd()
