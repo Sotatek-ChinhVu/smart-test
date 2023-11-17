@@ -146,7 +146,8 @@ namespace Reporting.KensaHistory.DB
                                                                  t3.TosekiKbn,
                                                                  t3.InoutKbn,
                                                                  t3.Status,
-                                                                 DeleteTypes.None
+                                                                 DeleteTypes.None,
+                                                                 t1.SeqGroupNo
                                                              ));
 
             if (showAbnormalKbn)
@@ -476,7 +477,8 @@ namespace Reporting.KensaHistory.DB
                                                                  t3.TosekiKbn,
                                                                  t3.InoutKbn,
                                                                  t3.Status,
-                                                                 DeleteTypes.None
+                                                                 DeleteTypes.None,
+                                                                 t1.SeqGroupNo
                                                              ));
 
             if (showAbnormalKbn)
