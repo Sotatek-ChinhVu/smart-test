@@ -508,7 +508,7 @@ namespace Infrastructure.Repositories
                             }
 
                             // Delete all item kensaInfDetail
-                            if (kensaInfDetails.Where(x => x.IsDeleted == DeleteTypes.None).Count() == 0)
+                            if (!kensaInfDetails.Any(x => x.IsDeleted == DeleteTypes.None))
                             {
                                 var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
                                 if (kensaInf == null)
@@ -678,7 +678,7 @@ namespace Infrastructure.Repositories
 
             var totalCol = kensaInfDetailCol.Count();
 
-            if (listSeqNoItems.Any())
+            if (!listSeqNoItems.Any())
             {
                 // Get list with start date
                 if (startDate > 0)
