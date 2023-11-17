@@ -1,3 +1,5 @@
+using Amazon.RDS;
+using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
