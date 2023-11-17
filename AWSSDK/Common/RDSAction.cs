@@ -69,7 +69,7 @@ namespace AWSSDK.Common
                 {
                     DBInstanceIdentifier = dbIdentifier,
                     AllocatedStorage = 20,
-                    DBName = "smartkarte",
+                    //DBName = "smartkarte",
                     Engine = "postgres",
                     EngineVersion = "14.4",
                     StorageType = "gp2",
@@ -146,7 +146,52 @@ namespace AWSSDK.Common
                 return null;
             }
         }
+        public static async Task<string> CheckingRDSStatusAsync(string dbIdentifier, int tenantId)
+        {
+            try
+            {
+                string host = string.Empty;
+                bool running = true;
 
+                while (running)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    var response = await rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
+                    {
+                        DBInstanceIdentifier = dbIdentifier
+                    });
+
+                    var dbInstances = response.DBInstances;
+
+                    if (dbInstances.Count != 1)
+                    {
+                        throw new Exception("More than one Database Shard returned; this should never happen");
+                    }
+
+                    var dbInstance = dbInstances[0];
+                    var status = dbInstance.DBInstanceStatus;
+
+                    Console.WriteLine($"Last Database Shard status: {status}");
+
+                    Thread.Sleep(5000);
+
+                    if (status == "available")
+                    {
+                        var endpoint = dbInstance.Endpoint;
+                        host = endpoint.Address;
+                        running = false;
+                    }
+                }
+
+                return host;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return null;
+            }
+        }
 
         public static void CreateDatabase(string host, string tenantId)
         {
