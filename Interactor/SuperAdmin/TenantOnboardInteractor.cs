@@ -38,7 +38,7 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, string.Empty, inputData.Size, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty);
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty);
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -92,7 +92,7 @@ namespace Interactor.SuperAdmin
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                         {
-                            var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty);
+                            var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
                         }
                     }
 
@@ -101,11 +101,11 @@ namespace Interactor.SuperAdmin
                     Thread.Sleep(5000);
 
                     if (checkStatus == "available")
-                    {                  
+                    {
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host);
+                        var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
                         running = false;
                     }
                 }
@@ -158,7 +158,7 @@ namespace Interactor.SuperAdmin
                             {
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;                               
+                                model.RdsIdentifier = dbIdentifier;
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
@@ -180,7 +180,7 @@ namespace Interactor.SuperAdmin
                                 string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;                              
+                                model.RdsIdentifier = dbIdentifier;
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
@@ -207,7 +207,7 @@ namespace Interactor.SuperAdmin
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                     var id = _tenantRepository.CreateTenant(model);
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.RdsIdentifier = dbIdentifier;                                   
+                                    model.RdsIdentifier = dbIdentifier;
                                     _ = Task.Run(async () =>
                                     {
                                         host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);

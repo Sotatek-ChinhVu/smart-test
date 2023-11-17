@@ -66,8 +66,8 @@ namespace Infrastructure.SuperAdminRepositories
             tenant.Db = model.Db;
             tenant.Size = model.Size;
             tenant.Type = model.Type;
-            tenant.EndPointDb = model.EndPointDb;
-            tenant.EndSubDomain = model.EndSubDomain;
+            tenant.EndPointDb = model.SubDomain;
+            tenant.EndSubDomain = model.SubDomain;
             tenant.RdsIdentifier = model.RdsIdentifier;
             tenant.IsDeleted = 0;
             tenant.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -76,18 +76,22 @@ namespace Infrastructure.SuperAdminRepositories
             TrackingDataContext.SaveChanges();
             return tenant.TenantId;
         }
-        public bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPointDb)
+        public bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier)
         {
             var tenant = TrackingDataContext.Tenants.FirstOrDefault(i => i.TenantId == tenantId);
             if (tenant != null)
             {
-                if (string.IsNullOrEmpty(endPointDb))
+                if (!string.IsNullOrEmpty(endPointDb))
                 {
                     tenant.EndPointDb = endPointDb;
                 }
-                if (string.IsNullOrEmpty(endSubDomain))
+                if (!string.IsNullOrEmpty(endSubDomain))
                 {
                     tenant.SubDomain = endSubDomain;
+                }
+                if (!string.IsNullOrEmpty(dbIdentifier))
+                {
+                    tenant.RdsIdentifier = dbIdentifier;
                 }
                 tenant.Status = status;
                 tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
