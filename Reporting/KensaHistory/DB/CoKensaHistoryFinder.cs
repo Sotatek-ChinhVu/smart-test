@@ -69,7 +69,6 @@ namespace Reporting.KensaHistory.DB
             IQueryable<KensaInfDetail> kensaInfDetails;
 
             var userConf = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002);
-            var b = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002).ToList();
             bool SortIraiDateAsc = true;
 
             if (userConf.Where(x => x.GrpItemCd == 0).FirstOrDefault()?.Val == 1)
@@ -265,10 +264,16 @@ namespace Reporting.KensaHistory.DB
 
             List<CoKensaResultMultiModel> result = new();
             List<KensaResultMultiItem> kensaResultMultiItems = new();
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
 
             foreach (var item in kensaInfDetailData)
             {
-                result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.MaleStd, new(), new()));
+                switch (ptInf?.Sex)
+                {
+                    case 1: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.MaleStd, new(), new())); break;
+                    case 2: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.FemaleStd, new(), new())); break;
+                }
+                
             }
 
             foreach (var item in kensaInfDetailData)
