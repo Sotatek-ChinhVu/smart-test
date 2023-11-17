@@ -101,7 +101,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<KarteKbnMst>().HasKey(o => new { o.HpId, o.KarteKbn });
             modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.PtId, r.SeqNo });
             modelBuilder.Entity<PtSanteiConf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
-            modelBuilder.Entity<KensaInfDetail>().HasKey(r => new { r.HpId, r.PtId, r.IraiCd, r.SeqNo });
+            modelBuilder.Entity<KensaInfDetail>().HasKey(r => new { r.HpId, r.SeqNo });
             modelBuilder.Entity<KensaMst>().HasKey(r => new { r.HpId, r.KensaItemCd, r.KensaItemSeqNo });
             modelBuilder.Entity<PtAlrgyDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
             modelBuilder.Entity<PtAlrgyElse>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
