@@ -1255,11 +1255,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
     {
         KensaInfDetail kensaInfDetail = new();
         kensaInfDetail.HpId = hpId;
+        kensaInfDetail.SeqNo = 0;
         kensaInfDetail.PtId = model.PtId;
         kensaInfDetail.IraiCd = model.IraiCd;
         kensaInfDetail.RaiinNo = model.RaiinNo;
         kensaInfDetail.IraiDate = model.IraiDate;
-        kensaInfDetail.SeqNo = model.SeqNo;
         kensaInfDetail.KensaItemCd = model.KensaItemCd;
         kensaInfDetail.ResultVal = model.ResultVal;
         kensaInfDetail.ResultType = model.ResultType;
