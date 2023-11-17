@@ -186,6 +186,13 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
                     _tableFieldData.Add(data);
                     _coModel = coModelItem!;
                 }
+                else
+                {
+                    _tableFieldData.Add(new Dictionary<string, CellModel>
+                    {
+                        { "DT_Ym", new CellModel(string.Empty) }
+                    });
+                }
 
                 var messagetemp = coModelItem?.ErrorMessage ?? string.Empty;
                 string message = CIUtil.CiCopyStrWidth(messagetemp, 1, MAX_LENG_MESSAGE);
