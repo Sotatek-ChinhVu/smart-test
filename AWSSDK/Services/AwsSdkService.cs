@@ -1,3 +1,5 @@
+using Amazon.RDS;
+using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
@@ -23,10 +25,9 @@ namespace AWSSDK.Services
             return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
         }
 
-        public async Task<string> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
-            var response = await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
-            throw new NotImplementedException();
+           return await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
         }
 
 

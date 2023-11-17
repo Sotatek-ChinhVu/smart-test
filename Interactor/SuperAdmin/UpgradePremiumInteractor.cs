@@ -38,20 +38,30 @@ namespace Interactor.SuperAdmin
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
-
-
-
-                _ = Task.Run(() =>
+                CancellationTokenSource cts = new CancellationTokenSource();
+                _ = Task.Run(async () =>
                 {
-
-                    var createSnapshot = _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
+                    // Create SnapShot
+                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
                     // Create RSD  preminum
-                    var createTenantResult = TenantOnboardAsync(tenant.SubDomain, 0, 0).Result;
-                    var dbInstanceIdentifier = "";
-                    var snapshotIdentifier = "";
+                    var dbInstanceIdentifier = await TenantOnboardAsync(tenant.SubDomain, 0, 0);
+
+                    if(string.IsNullOrEmpty(snapshotIdentifier) || string.IsNullOrEmpty(dbInstanceIdentifier))
+                    {
+                        cts.Cancel();
+                    }
+
+                    var host = await RDSAction.CheckingRDSStatusAsync(dbInstanceIdentifier);
+                    var isAvailableSnapShot = await RDSAction.CheckingSnapshotAvailableAsync(snapshotIdentifier);
+                    if (string.IsNullOrEmpty(host) || !isAvailableSnapShot)
+                    {
+                        cts.Cancel();
+                    }
 
                     // Restore DB Instance from snapshot
-                    _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+                    await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+                    // Check Restore success 
+                    // To do 
                 });
 
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
@@ -62,7 +72,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public async Task<Dictionary<string, string>> TenantOnboardAsync(string tenantId, int size, int sizeType)
+        public async Task<string> TenantOnboardAsync(string tenantId, int size, int sizeType)
         {
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
@@ -88,13 +98,10 @@ namespace Interactor.SuperAdmin
                         if (rdsInfo.ContainsKey(dbIdentifier))
                         {
                             host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-                            //RDSAction.CreateDatabase(host, tenantId);
-                            //RDSAction.CreateTables(host, tenantId);
                         }
                         else
                         {
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
-                            host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
                         }
                     }
                 }
@@ -103,18 +110,11 @@ namespace Interactor.SuperAdmin
                     tenantUrl = "landingpage.smartkarte.org";
                 }
 
-                // Return message for Super Admin
-                Dictionary<string, string> result = new Dictionary<string, string>
-            {
-                { "dbIdentifier", dbIdentifier },
-                { "rds_endpoint", host }
-            };
-
-                return result;
+                return dbIdentifier;
             }
             catch (Exception ex)
             {
-                return new Dictionary<string, string> { { "Error", ex.Message } };
+                return string.Empty;
             }
         }
     }

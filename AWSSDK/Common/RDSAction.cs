@@ -147,6 +147,51 @@ namespace AWSSDK.Common
             }
         }
 
+        public static async Task<bool> CheckingSnapshotAvailableAsync(string dbSnapshotIdentifier)
+        {
+            try
+            {
+                bool available = false;
+                bool running = true;
+
+                while (running)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    // Create a request to describe DB snapshots
+                    var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
+                    {
+                        DBSnapshotIdentifier = dbSnapshotIdentifier
+                    };
+
+                    // Call DescribeDBSnapshotsAsync to asynchronously get information about the snapshot
+                    var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
+
+                    // Check if the snapshot exists
+                    var snapshot = describeSnapshotsResponse.DBSnapshots.FirstOrDefault();
+                    if (snapshot != null)
+                    {
+                        // Check if the snapshot is in the "available" state
+                        if (snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase))
+                        {
+                            available = true;
+                            running = false;
+                        }
+                    }
+
+                    // Wait for 5 seconds before the next attempt
+                    Thread.Sleep(5000);
+                }
+
+                return available;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+        }
+
 
         public static void CreateDatabase(string host, string tenantId)
         {
@@ -258,23 +303,31 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<string> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public static async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
-            return string.Empty;
             try
             {
                 var rdsClient = new AmazonRDSClient();
                 var response = await rdsClient.RestoreDBInstanceFromDBSnapshotAsync(
-                new RestoreDBInstanceFromDBSnapshotRequest
+                    new RestoreDBInstanceFromDBSnapshotRequest
+                    {
+                        DBInstanceIdentifier = dbInstanceIdentifier,
+                        DBSnapshotIdentifier = snapshotIdentifier,
+                    });
+
+                if (response.DBInstance.DBInstanceStatus.Equals("available", StringComparison.OrdinalIgnoreCase))
                 {
-                    DBInstanceIdentifier = dbInstanceIdentifier,
-                    DBSnapshotIdentifier = snapshotIdentifier,
-                });
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return string.Empty;
+                return false;
             }
         }
 
