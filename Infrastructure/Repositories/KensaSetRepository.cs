@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Domain.Models.KensaCmtMst.cs;
+﻿using Domain.Models.KensaCmtMst.cs;
 using Domain.Models.KensaInfDetail;
 using Domain.Models.KensaIrai;
 using Domain.Models.KensaSet;
@@ -360,13 +359,13 @@ namespace Infrastructure.Repositories
 
             // Genarate list CreateTime 
             var listCreateDateTime = new Dictionary<int, DateTime>();
-            
-            var currentCreateTime = CIUtil.GetJapanDateTimeNow() ;
-            foreach(var item in kensaInfDetails)
+
+            var currentCreateTime = CIUtil.GetJapanDateTimeNow();
+            foreach (var item in kensaInfDetails)
             {
                 listCreateDateTime.Add(kensaInfDetails.IndexOf(item), currentCreateTime);
                 currentCreateTime = currentCreateTime.AddMilliseconds(100);
-            }    
+            }
             executionStrategy.Execute(
                 () =>
                 {
@@ -512,22 +511,6 @@ namespace Infrastructure.Repositories
                                 }
                             }
 
-                            // Delete all item kensaInfDetail
-                            if (!kensaInfDetails.Any(x => x.IsDeleted == DeleteTypes.None))
-                            {
-                                var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
-                                if (kensaInf == null)
-                                {
-                                    transaction.Rollback();
-                                    successed = false;
-                                }
-                                else
-                                {
-                                    kensaInf.IsDeleted = DeleteTypes.Deleted;
-                                    kensaInf.UpdateId = userId;
-                                }
-                            }
-
                             kensaInfDetail.ResultVal = CIUtil.ToNarrowWithOutToLower(item.ResultVal);
                             kensaInfDetail.ResultType = item.ResultType;
                             kensaInfDetail.AbnormalKbn = item.AbnormalKbn;
@@ -535,6 +518,22 @@ namespace Infrastructure.Repositories
                             kensaInfDetail.CmtCd2 = item.CmtCd2;
                             kensaInfDetail.IsDeleted = item.IsDeleted;
                             kensaInfDetail.UpdateId = userId;
+                        }
+
+                        // Delete all item kensaInfDetail
+                        if (!kensaInfDetails.Any(x => x.IsDeleted == DeleteTypes.None))
+                        {
+                            var kensaInf = TrackingDataContext.KensaInfs.Where(x => x.HpId == hpId && x.IraiCd == iraiCd).FirstOrDefault();
+                            if (kensaInf == null)
+                            {
+                                transaction.Rollback();
+                                successed = false;
+                            }
+                            else
+                            {
+                                kensaInf.IsDeleted = DeleteTypes.Deleted;
+                                kensaInf.UpdateId = userId;
+                            }
                         }
 
                         TrackingDataContext.SaveChanges();
@@ -963,7 +962,7 @@ namespace Infrastructure.Repositories
 
         public List<ListKensaInfDetailItemModel> GetKensaInfDetailByIraiCd(int hpId, int iraiCd)
         {
-            var data = (from t1 in NoTrackingDataContext.KensaInfDetails.Where(x => x.IraiCd == iraiCd && x.HpId == hpId && x.IsDeleted == DeleteTypes.None).OrderBy(x=> x.CreateDate)
+            var data = (from t1 in NoTrackingDataContext.KensaInfDetails.Where(x => x.IraiCd == iraiCd && x.HpId == hpId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.CreateDate)
                         join t2 in NoTrackingDataContext.KensaMsts
                          on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
                         join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
