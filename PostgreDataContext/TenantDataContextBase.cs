@@ -430,6 +430,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<KensaCmtMst>().HasKey(s => new { s.HpId, s.CmtCd, s.CmtSeqNo });
             modelBuilder.Entity<KensaResultLog>().HasKey(s => new { s.OpId });
             modelBuilder.Entity<SinrekiFilterMstKoui>().HasKey(s => new { s.HpId, s.GrpCd, s.SeqNo });
+            modelBuilder.Entity<PtNum>().HasKey(p => new {p.HpId, p.PtNumber});
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
 
@@ -1189,5 +1190,6 @@ namespace PostgreDataContext
         public DbSet<KensaResultLog> KensaResultLogs { get; set; } = default!;
 
         public DbSet<SmartKarteAppSignalRPort> SmartKarteAppSignalRPorts { get; set; } = default!;
+        public DbSet<PtNum> PtNums { get; set; } = default!;
     }
 }

@@ -2859,5 +2859,31 @@ namespace Infrastructure.Repositories
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
+
+        public long CheckInsertPtNum(int hpId , long ptNum)
+        {
+            try
+            {
+                if (ptNum == 0)
+                {
+                    ptNum = GetAutoPtNum(hpId);
+                }
+                else
+                {
+                    var ptExists = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtNum == ptNum && x.HpId == hpId);
+                    ptNum = 1019;
+                    if (ptExists != null)
+                        ptNum = GetAutoPtNum(hpId);
+                }
+                TrackingDataContext.PtNums.Add(new PtNum { HpId = hpId, PtNumber = ptNum });
+                TrackingDataContext.SaveChanges();
+                return ptNum;
+            }
+            catch (Exception ex)
+            {
+
+                return 0;
+            }
+        }
     }
 }

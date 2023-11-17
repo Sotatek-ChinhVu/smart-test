@@ -12,6 +12,11 @@ namespace EmrCloudApi.Responses.PatientInfor
             ShouldCheckCloneByomei = shouldCheckCloneByomei;
         }
 
+        public SavePatientInfoResponse()
+        {
+            ValidateDetails = Enumerable.Empty<SavePatientInfoValidationResult>(); ;
+        }
+
         public IEnumerable<SavePatientInfoValidationResult> ValidateDetails { get; private set; }
 
         public SavePatientInfoStatus State { get; private set; }

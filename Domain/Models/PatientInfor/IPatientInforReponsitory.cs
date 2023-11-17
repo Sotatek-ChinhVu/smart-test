@@ -83,5 +83,7 @@ namespace Domain.Models.PatientInfor
         bool UpdateVisitTimesManagement(int hpId, int userId, long ptId, int kohiId, int sinYm, List<VisitTimesManagementModel> visitTimesManagementList);
 
         bool UpdateVisitTimesManagementNeedSave(int hpId, int userId, long ptId, List<VisitTimesManagementModel> visitTimesManagementList);
+
+        long CheckInsertPtNum(int hpId, long ptNum);
     }
 }

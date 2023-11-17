@@ -788,6 +788,7 @@ using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
 using UseCase.DrugInfor.GetSinrekiFilterMstList;
 using UseCase.DrugInfor.SaveSinrekiFilterMstList;
 using UseCase.DrugInfor.GetContentDrugUsageHistory;
+using UseCase.PatientInfor.CheckPtNum;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1873,6 +1874,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSinrekiFilterMstListInputData, GetSinrekiFilterMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSinrekiFilterMstListInputData, SaveSinrekiFilterMstListInteractor>();
             busBuilder.RegisterUseCase<GetContentDrugUsageHistoryInputData, GetContentDrugUsageHistoryInteractor>();
+
+            busBuilder.RegisterUseCase<CheckPtNumInputData, CheckPtNumInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

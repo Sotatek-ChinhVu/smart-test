@@ -36,7 +36,6 @@ namespace Interactor.PatientInfor
             _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
-        [Obsolete]
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
             PatientInforModel patientInforModel = new();
