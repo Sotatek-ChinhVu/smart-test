@@ -1,3 +1,5 @@
+using Amazon.RDS;
+using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
@@ -86,6 +88,11 @@ namespace AWSSDK.Services
         {
             var result = await RDSAction.IsDedicatedTypeAsync(dbIdentifier);
             return result;
+        }
+
+        public Task<string> GetInfTenantByTenant(string Id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
