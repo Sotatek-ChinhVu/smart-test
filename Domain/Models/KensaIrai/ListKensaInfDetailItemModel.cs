@@ -32,7 +32,7 @@
         public ListKensaInfDetailItemModel(
             long ptId, long iraiCd, long raiinNo, long iraiDate, long seqNo, long seqParentNo, string kensaName, string kensaKana, long sortNo, string kensaItemCd, string resultVal,
             string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, string cmt1, string cmt2, string maleStd, string femaleStd, string maleStdLow, string femaleStdLow,
-            string maleStdHigh, string femaleStdHigh, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted, long seqGroupNo)
+            string maleStdHigh, string femaleStdHigh, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted)
         {
             PtId = ptId;
             IraiCd = iraiCd;
@@ -66,7 +66,6 @@
             InoutKbn = inoutKbn;
             Status = status;
             IsDeleted = isDeleted;
-            SeqGroupNo = seqGroupNo;
             RowSeqId = string.Empty;
         }
 
@@ -146,7 +145,5 @@
         public int IsDeleted { get; private set; }
 
         public string RowSeqId { get; private set; }
-
-        public long SeqGroupNo { get; private set; } 
     }
 }

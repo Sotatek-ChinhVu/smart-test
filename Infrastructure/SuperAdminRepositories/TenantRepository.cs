@@ -40,8 +40,7 @@ namespace Infrastructure.SuperAdminRepositories
                 tenant.Type,
                 tenant.EndPointDb,
                 tenant.EndSubDomain,
-                tenant.Action,
-                tenant.RdsIdentifier
+                tenant.Action
                 );
         }
 

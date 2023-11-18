@@ -645,8 +645,7 @@ namespace Infrastructure.Repositories
                             t3.TosekiKbn,
                             t3.InoutKbn,
                             t3.Status,
-                            DeleteTypes.None,
-                            t1.SeqGroupNo
+                            DeleteTypes.None
                         )).AsEnumerable();
 
             if (showAbnormalKbn)
@@ -732,35 +731,63 @@ namespace Infrastructure.Repositories
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
 
+            var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.IraiCd }).SelectMany(group => group.Skip(1))
+                .Select(x => x);
+            var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
+
+            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo)).
+                GroupBy(item => item.KensaItemCd)
+                                .Select(group =>
+                                {
+                                    var newItem = group.First();
+                                    newItem.SetRowSeqId(string.Join("-", group.Select(x => x.SeqNo)));
+                                    return newItem;
+                                })
+                                .ToList();
+
             var groupRowData = data
-                .GroupBy(x => new { x.KensaItemCd, x.SeqGroupNo })
+                .GroupBy(x => new { x.KensaItemCd })
                 .ToDictionary(
-                    group =>
-                    {
-                        var newItem = group.First();
-                        newItem.SetRowSeqId(string.Join("-", group.Select(x => x.SeqNo)));
-                        return newItem;
-                    },
-                    group => group.ToList());
+                    group => group.Key.KensaItemCd,
+                    group => group.Where(x => !seqNos.Contains(x.SeqNo)).ToList());
+
 
             var kensaInfDetailData = new List<KensaInfDetailDataModel>();
 
-            foreach (var item in groupRowData)
+            foreach (var item in kensaItemWithOutDuplicate)
             {
-                var row = item.Key;
+                if (groupRowData.TryGetValue(item.KensaItemCd, out var dynamicArray))
+                {
+                    kensaInfDetailData.Add(new KensaInfDetailDataModel(
+                        item.KensaItemCd,
+                        item.KensaName,
+                        item.Unit,
+                        item.MaleStd,
+                        item.FemaleStd,
+                        item.KensaKana,
+                        item.SortNo,
+                        item.SeqNo,
+                        item.SeqParentNo,
+                        item.RowSeqId,
+                        dynamicArray
+                    ));
+                }
+            }
+
+            foreach (var item in kensaItemDuplicate)
+            {
                 kensaInfDetailData.Add(new KensaInfDetailDataModel(
-                row.KensaItemCd,
-                row.KensaName,
-                row.Unit,
-                row.MaleStd,
-                row.FemaleStd,
-                row.KensaKana,
-                row.SortNo,
-                row.SeqNo,
-                row.SeqParentNo,
-                row.RowSeqId,
-                item.Value
-            ));
+                    item.KensaItemCd,
+                    item.KensaName,
+                    item.Unit,
+                    item.MaleStd,
+                    item.FemaleStd,
+                    item.KensaKana,
+                    item.SortNo,
+                    item.SeqNo,
+                    item.SeqParentNo,
+                    item.SeqNo.ToString(),
+                    new List<ListKensaInfDetailItemModel> { item }));
             }
 
             // Sort row by user config
@@ -979,8 +1006,7 @@ namespace Infrastructure.Repositories
                             t3.TosekiKbn,
                             t3.InoutKbn,
                             t3.Status,
-                            DeleteTypes.None,
-                            t1.SeqGroupNo
+                            DeleteTypes.None
                         )).ToList();
             return data;
         }
