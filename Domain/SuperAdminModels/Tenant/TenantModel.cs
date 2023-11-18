@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.SuperAdminModels.Tenant
+﻿namespace Domain.SuperAdminModels.Tenant
 {
     public class TenantModel
     {
@@ -14,7 +6,7 @@ namespace Domain.SuperAdminModels.Tenant
         {
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string subDomain, string db, byte type, string endPointDb, string endSubDomain, int action)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string subDomain, string db, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -26,6 +18,7 @@ namespace Domain.SuperAdminModels.Tenant
             EndPointDb = endPointDb;
             EndSubDomain = endSubDomain;
             Action = action;
+            RdsIdentifier = rdsIdentifier;
         }
 
         public int TenantId { get; set; }
@@ -47,5 +40,7 @@ namespace Domain.SuperAdminModels.Tenant
         public string EndSubDomain { get; set; } = string.Empty;
 
         public int Action { get; set; }
+
+        public string RdsIdentifier { get; set; } = string.Empty;
     }
 }
