@@ -89,5 +89,10 @@ namespace AWSSDK.Services
             var result = await RDSAction.IsDedicatedTypeAsync(dbIdentifier);
             return result;
         }
+
+        public Task<string> GetInfTenantByTenant(string Id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
