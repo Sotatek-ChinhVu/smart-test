@@ -2,6 +2,8 @@
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Tenant;
+using System.Data.Common;
+using System.Data.SqlClient;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
@@ -38,13 +40,14 @@ namespace Interactor.SuperAdmin
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
+
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(async () =>
                 {
                     // Create SnapShot
                     var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync("develop-smartkarte-logging");
 
-                    if(string.IsNullOrEmpty(snapshotIdentifier))
+                    if (string.IsNullOrEmpty(snapshotIdentifier))
                     {
                         cts.Cancel();
                     }
@@ -60,10 +63,32 @@ namespace Interactor.SuperAdmin
 
                     string rString = CommonConstants.GenerateRandomString(6);
                     var dbInstanceIdentifier = $"develop-smartkarte-postgres-{rString}";
+                    Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
 
-                    await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+                   var endpoint =  await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+                    if (endpoint == null)
+                    {
+                        cts.Cancel();
+                    }
                     // Check Restore success 
-                    // To do   dump database, delete DB, Notification
+                    var isAvailableRestoreInstance = await RDSAction.CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier);
+                    if (!isAvailableRestoreInstance)
+                    {
+                        cts.Cancel();
+                    }
+                    // Get list DB from Instance
+                    var databaseList = await RDSAction.GetDatabasesFromDBInstanceAsync(dbInstanceIdentifier);
+                    if (databaseList.Contains(tenant.Db))
+                    {
+                        databaseList.Remove(tenant.Db);
+                    }
+                    else
+                    {
+                        cts.Cancel();
+                    }
+                    // Delete list Db without tenant DB
+                    ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, databaseList);
+                    // Update  endpoint 
                 });
 
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
@@ -74,49 +99,54 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public async Task<string> TenantOnboardAsync(string tenantId, int size, int sizeType)
+        public bool ConnectAndDeleteDatabases(string serverEndpoint, int port, List<string> databaseNames)
         {
-            string rString = CommonConstants.GenerateRandomString(6);
-            string tenantUrl = "";
-            string host = "";
-            string dbIdentifier = "";
-
             try
             {
-                // Provisioning SubDomain for new tenants
-                if (!string.IsNullOrEmpty(tenantId))
+                // Replace these values with your actual RDS information
+                string username = "YourUsername";
+                string password = "YourPassword";
+
+                // Connection string format for SQL Server
+                string connectionString = $"Server={serverEndpoint},{port};User Id={username};Password={password};";
+
+                // Create and open a connection
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    tenantUrl = $"{tenantId}.{ConfigConstant.Domain}";
-                    await Route53Action.CreateTenantDomain(tenantId);
-                    await CloudFrontAction.UpdateNewTenantAsync(tenantId);
-
-                    // Checking Available RDS Cluster
-                    if (tenantId.Length > 0)
+                    try
                     {
-                        // Checking tenant tier, if dedicated, provision new RDS instance
+                        connection.Open();
 
-                        dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                        var rdsInfo = await RDSAction.GetRDSInformation();
-                        if (rdsInfo.ContainsKey(dbIdentifier))
+                        foreach (var databaseName in databaseNames)
                         {
-                            host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
+                            // Change database
+                            connection.ChangeDatabase(databaseName);
+
+                            // Delete database
+                            using (DbCommand command = connection.CreateCommand())
+                            {
+                                command.CommandText = $"DROP DATABASE [{databaseName}]";
+                                command.ExecuteNonQuery();
+                            }
+
+                            Console.WriteLine($"Database '{databaseName}' deleted successfully.");
                         }
-                        else
-                        {
-                            await RDSAction.CreateNewShardAsync(dbIdentifier);
-                        }
+
+                        Console.WriteLine("Connected to the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
                     }
                 }
-                else // Return landing page url by default
-                {
-                    tenantUrl = "landingpage.smartkarte.org";
-                }
 
-                return dbIdentifier;
+                
+                return true;
             }
             catch (Exception ex)
             {
-                return string.Empty;
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
             }
         }
     }

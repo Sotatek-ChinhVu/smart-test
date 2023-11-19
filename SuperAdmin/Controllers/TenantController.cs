@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
