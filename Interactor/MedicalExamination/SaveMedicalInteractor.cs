@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+
+using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.HpInf;
@@ -350,14 +351,16 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             if (saveMedicalSuccess)
             {
-                Task.Run(() =>
+                Task.Run(() =>{
                _calculateService.RunCalculate(new RecaculationInputDto(
                         hpId,
-                        ptId,
-                        sinDate,
+                      ptId,
+                       sinDate,
                         inputDatas.IsSagaku ? 1 : 0,
                         ""
-                    )));
+                    ));
+                _calculateService.ReleaseSource();
+                   });
             }
 
             if (saveMedicalSuccess)

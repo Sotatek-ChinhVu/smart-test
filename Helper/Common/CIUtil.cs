@@ -3146,6 +3146,11 @@ namespace Helper.Common
             return HenkanJ.Instance.ToHalfsize(s);
         }
 
+        public static string ToNarrowWithOutToLower(string s)
+        {
+            return HenkanJ.Instance.ToHalfsizeWithOutToLower(s);
+        }
+
         /// <summary>
         /// Add days to date
         /// </summary>

@@ -364,6 +364,8 @@ namespace Infrastructure.Repositories
 
         public List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo)
         {
+            var stopwatch = Stopwatch.StartNew();
+            Console.WriteLine("Get Info after Remove Lock");
             List<ResponseLockModel> result = new();
             List<long> raiinNoList = new();
             List<RaiinInf> raiinInfList = new();
@@ -413,6 +415,7 @@ namespace Infrastructure.Repositories
                                RaiinState.Examining
                            ));
             }
+            Console.WriteLine($"Stop Get Info after Remove Lock {stopwatch.ElapsedMilliseconds}");
             return result;
         }
 
