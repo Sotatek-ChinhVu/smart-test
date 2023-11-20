@@ -468,7 +468,7 @@ namespace Infrastructure.Repositories
                         // Create kensaInfDetail no children
                         foreach (var item in kensaInfDetails.Where(x => x.SeqNo == 0 && string.IsNullOrEmpty(x.UniqIdParent) && x.UniqId != null && !uniqIdParents.Contains(x.UniqId) && x.IsDeleted == DeleteTypes.None))
                         {
-                            var test = new KensaInfDetail()
+                            TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
                             {
                                 HpId = hpId,
                                 PtId = item.PtId,
@@ -486,8 +486,7 @@ namespace Infrastructure.Repositories
                                 CreateDate = listCreateDateTime[kensaInfDetails.IndexOf(item)],
                                 UpdateDate = listCreateDateTime[kensaInfDetails.IndexOf(item)],
                                 IsDeleted = DeleteTypes.None,
-                            };
-                            TrackingDataContext.KensaInfDetails.Add(test);
+                            });
                         }
 
                         // Update kensaInfDetail
