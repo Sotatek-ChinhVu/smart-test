@@ -147,7 +147,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<bool> CheckingSnapshotAvailableAsync(string dbSnapshotIdentifier)
+        public static async Task<bool> CheckSnapshotAvailableAsync(string dbSnapshotIdentifier)
         {
             try
             {
@@ -315,14 +315,16 @@ namespace AWSSDK.Common
             try
             {
                 var rdsClient = new AmazonRDSClient();
+                var vpcSecurityGroupIds = new List<string> { "sg-0cc9111542280b236" };
                 var response = await rdsClient.RestoreDBInstanceFromDBSnapshotAsync(
                     new RestoreDBInstanceFromDBSnapshotRequest
                     {
                         DBInstanceIdentifier = dbInstanceIdentifier,
                         DBSnapshotIdentifier = snapshotIdentifier,
+                        DBSubnetGroupName = "develop-smartkarte-rds-subnetgroup",  // Todo update
+                        VpcSecurityGroupIds = vpcSecurityGroupIds,  // Todo update
                         DBInstanceClass = "db.t4g.micro" // Todo update
                     });
-
                 if (response.DBInstance.DBInstanceStatus.Equals("available", StringComparison.OrdinalIgnoreCase))
                 {
                     return response.DBInstance.Endpoint;
@@ -441,47 +443,5 @@ namespace AWSSDK.Common
                 return false;
             }
         }
-
-        public static async Task<List<string>> GetDatabasesFromDBInstanceAsync(string dbInstanceIdentifier)
-        {
-            try
-            {
-                var rdsClient = new AmazonRDSClient();
-
-                // Create a request to describe DB instances
-                var describeInstancesRequest = new DescribeDBInstancesRequest
-                {
-                    DBInstanceIdentifier = dbInstanceIdentifier
-                };
-
-                // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
-                var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
-
-                // Check if the DB instance exists
-                var dbInstances = describeInstancesResponse.DBInstances;
-                if (dbInstances.Count == 1)
-                {
-                    var dbInstance = dbInstances[0];
-                    // Extract the list of database names from the DB instance
-                    var databases = dbInstance.DBName;
-
-                    // Convert the list to a string array or List<string> based on your needs
-                    var databaseList = databases.Split(',').Select(db => db.Trim()).ToList();
-
-                    return databaseList;
-                }
-                else
-                {
-                    Console.WriteLine("DB instance not found or more than one instance returned.");
-                    return new List<string>();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return new List<string>();
-            }
-        }
-
     }
 }
