@@ -39,7 +39,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
 
-        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts);
+        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts, List<TenItemModel> tenMstListGenDate);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd);
 

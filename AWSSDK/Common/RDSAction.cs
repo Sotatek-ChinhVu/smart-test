@@ -147,6 +147,51 @@ namespace AWSSDK.Common
             }
         }
 
+        public static async Task<bool> CheckingSnapshotAvailableAsync(string dbSnapshotIdentifier)
+        {
+            try
+            {
+                bool available = false;
+                bool running = true;
+
+                while (running)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    // Create a request to describe DB snapshots
+                    var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
+                    {
+                        DBSnapshotIdentifier = dbSnapshotIdentifier
+                    };
+
+                    // Call DescribeDBSnapshotsAsync to asynchronously get information about the snapshot
+                    var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
+
+                    // Check if the snapshot exists
+                    var snapshot = describeSnapshotsResponse.DBSnapshots.FirstOrDefault();
+                    if (snapshot != null)
+                    {
+                        // Check if the snapshot is in the "available" state
+                        if (snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase))
+                        {
+                            available = true;
+                            running = false;
+                        }
+                    }
+
+                    // Wait for 5 seconds before the next attempt
+                    Thread.Sleep(5000);
+                }
+
+                return available;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+        }
+
 
         public static void CreateDatabase(string host, string tenantId)
         {
@@ -258,23 +303,32 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<string> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public static async Task<Endpoint> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
-            return string.Empty;
             try
             {
                 var rdsClient = new AmazonRDSClient();
                 var response = await rdsClient.RestoreDBInstanceFromDBSnapshotAsync(
-                new RestoreDBInstanceFromDBSnapshotRequest
+                    new RestoreDBInstanceFromDBSnapshotRequest
+                    {
+                        DBInstanceIdentifier = dbInstanceIdentifier,
+                        DBSnapshotIdentifier = snapshotIdentifier,
+                        DBInstanceClass = "db.t4g.micro" // Todo update
+                    });
+
+                if (response.DBInstance.DBInstanceStatus.Equals("available", StringComparison.OrdinalIgnoreCase))
                 {
-                    DBInstanceIdentifier = dbInstanceIdentifier,
-                    DBSnapshotIdentifier = snapshotIdentifier,
-                });
+                    return response.DBInstance.Endpoint;
+                }
+                else
+                {
+                    return new();
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return string.Empty;
+                return new();
             }
         }
 
@@ -322,5 +376,97 @@ namespace AWSSDK.Common
                 return false;
             }
         }
+
+        public static async Task<bool> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier)
+        {
+            try
+            {
+                bool available = false;
+                bool running = true;
+
+                while (running)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    // Create a request to describe DB instances
+                    var describeInstancesRequest = new DescribeDBInstancesRequest
+                    {
+                        DBInstanceIdentifier = dbInstanceIdentifier
+                    };
+
+                    // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
+                    var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
+
+                    // Check if the DB instance exists
+                    var dbInstances = describeInstancesResponse.DBInstances;
+                    if (dbInstances.Count == 1)
+                    {
+                        var dbInstance = dbInstances[0];
+                        var status = dbInstance.DBInstanceStatus;
+
+                        Console.WriteLine($"DB Instance status: {status}");
+
+                        // Check if the DB instance is in the "available" state
+                        if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
+                        {
+                            available = true;
+                            running = false;
+                        }
+                    }
+
+                    // Wait for 5 seconds before the next attempt
+                    Thread.Sleep(5000);
+                }
+
+                return available;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static async Task<List<string>> GetDatabasesFromDBInstanceAsync(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                // Create a request to describe DB instances
+                var describeInstancesRequest = new DescribeDBInstancesRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier
+                };
+
+                // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
+                var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
+
+                // Check if the DB instance exists
+                var dbInstances = describeInstancesResponse.DBInstances;
+                if (dbInstances.Count == 1)
+                {
+                    var dbInstance = dbInstances[0];
+                    // Extract the list of database names from the DB instance
+                    var databases = dbInstance.DBName;
+
+                    // Convert the list to a string array or List<string> based on your needs
+                    var databaseList = databases.Split(',').Select(db => db.Trim()).ToList();
+
+                    return databaseList;
+                }
+                else
+                {
+                    Console.WriteLine("DB instance not found or more than one instance returned.");
+                    return new List<string>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new List<string>();
+            }
+        }
+
     }
 }

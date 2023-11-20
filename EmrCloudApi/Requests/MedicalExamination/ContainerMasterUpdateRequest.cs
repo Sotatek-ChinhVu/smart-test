@@ -13,6 +13,6 @@ namespace EmrCloudApi.Requests.MedicalExamination
 
         public string ContainerName { get; set; } = string.Empty;
 
-        public ModelStatus ContainerModelStatus { get; private set; }
+        public ModelStatus ContainerModelStatus { get; set; }
     }
 }
