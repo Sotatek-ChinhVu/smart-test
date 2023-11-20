@@ -13,6 +13,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using StackExchange.Redis;
+using Helper.Extension;
 
 namespace Infrastructure.CommonDB
 {
@@ -20,10 +22,23 @@ namespace Infrastructure.CommonDB
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
+        private readonly IDatabase _cache;
+
         public TenantProvider(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        private void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public string GetConnectionString()
@@ -47,17 +62,32 @@ namespace Infrastructure.CommonDB
             }
             return clientDomainInConfig;
         }
+
         public string GetAdminConnectionString()
         {
             string dbSample = _configuration["AdminDatabase"] ?? string.Empty;
             return dbSample;
         }
 
-        public string GetClinicID()
+        public string GetDomainName()
         {
             var domain = GetDomainFromHeader();
             domain = string.IsNullOrEmpty(domain) ? GetDomainFromQueryString() : domain;
             return string.IsNullOrEmpty(domain) ? TempIdentity.ClinicID : domain;
+        }
+
+        public int GetTenantId()
+        {
+            string domain = GetDomainName();
+            int tenantId = 0;
+            if (_cache.KeyExists(domain))
+            {
+                return _cache.StringGet(domain).AsInteger();
+            }
+            var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
+            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.SubDomain == domain)?.TenantId ?? 0;
+            _cache.StringSet(domain, tenantId.ToString());
+            return tenantId;
         }
 
         #region Expose data

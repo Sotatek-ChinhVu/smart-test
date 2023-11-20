@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
-            keySetKbn = tenantProvider.GetClinicID() + "-" + nameof(SetKbnMstRepository) + "SetKbn";
+            keySetKbn = tenantProvider.GetDomainName() + "-" + nameof(SetKbnMstRepository) + "SetKbn";
         }
 
         public void GetRedis()

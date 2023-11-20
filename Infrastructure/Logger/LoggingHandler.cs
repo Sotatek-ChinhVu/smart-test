@@ -17,7 +17,7 @@ namespace Infrastructure.Logger
 
         public async Task WriteLogStartAsync(string message = "")
         {
-            AuditLogs.Add(await GenerateAuditLog(1, string.Empty, 0, 0, 0, message));
+             AuditLogs.Add(await GenerateAuditLog(1, string.Empty, 0, 0, 0, message));
             SaveChanges();
         }
 
@@ -54,7 +54,7 @@ namespace Infrastructure.Logger
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
-                TenantId = _tenantProvider.GetClinicID(),
+                TenantId = _tenantProvider.GetTenantId(),
                 RequestInfo = await _tenantProvider.GetRequestInfoAsync(),
                 LogDate = CIUtil.GetJapanDateTimeNow(),
                 ThreadId = Thread.CurrentThread.ManagedThreadId.ToString(),
@@ -94,7 +94,7 @@ namespace Infrastructure.Logger
                 HpId = _tenantProvider.GetHpId(),
                 DepartmentId = _tenantProvider.GetDepartmentId(),
                 UserId = _tenantProvider.GetUserId(),
-                TenantId = _tenantProvider.GetClinicID(),
+                TenantId = _tenantProvider.GetTenantId(),
                 Path = path,
                 RequestInfo = requestInfo,
                 LogDate = CIUtil.GetJapanDateTimeNow(),
@@ -118,7 +118,7 @@ namespace Infrastructure.Logger
             int hpId = _tenantProvider.GetHpId();
             int departmentId = _tenantProvider.GetDepartmentId();
             int userId = _tenantProvider.GetUserId();
-            string tenantId = _tenantProvider.GetClinicID();
+            int tenantId = _tenantProvider.GetTenantId();
 
             foreach (var item in auditLogList)
             {

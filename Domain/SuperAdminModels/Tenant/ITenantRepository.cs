@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Domain.SuperAdminModels.Tenant;
 
-namespace Domain.SuperAdminModels.Tenant
+public interface ITenantRepository
 {
-    public interface ITenantRepository
-    {
-        TenantModel Get(int tenantId);
-        int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier);
+    TenantModel Get(int tenantId);
 
-        void ReleaseResource();
-    }
+    int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier);
+
+    void ReleaseResource();
 }
