@@ -368,12 +368,10 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.UpdateKensaMst)]
         public ActionResult<Response<UpdateKensaMstResponse>> UpdateKensaMst(UpdateKensaMstRequest request)
         {
-            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => KensaMstItemsRequestToModel(x)).ToList(), request.ChildKensaMstItems.Select(x => ChildKensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList());
+            var input = new UpdateKensaMstInputData(HpId, UserId, request.KensaMstItems.Select(x => KensaMstItemsRequestToModel(x)).ToList(), request.ChildKensaMstItems.Select(x => ChildKensaMstItemsRequestToModel(x)).ToList(), request.TenMstItems.Select(x => TenMstItemsRequestToModel(x)).ToList(), request.TenMstListGenDate.Select(x => TenMstItemsRequestToModel(x)).ToList());
             var output = _bus.Handle(input);
-
             var presenter = new UpdateKensaMstPresenter();
             presenter.Complete(output);
-
             return new ActionResult<Response<UpdateKensaMstResponse>>(presenter.Result);
         }
 

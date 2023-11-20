@@ -5,10 +5,12 @@ using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
+using Domain.Models.KensaSet;
 using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
+using Domain.Models.SetMst;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Entity.Tenant;
@@ -20,6 +22,7 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -6111,7 +6114,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.CenterItemCd2 ?? string.Empty)),
                         TenMsts = tempTenMsts
                     };
-
+        
         foreach (var entity in query)
         {
             var tenmst = entity.TenMsts.OrderByDescending(x => x.ItemCd).GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
@@ -6222,6 +6225,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 }
             }
         }
+
         return TrackingDataContext.SaveChanges() >= 1;
     }
 
@@ -6253,7 +6257,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         };
     }
 
-    public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts)
+    public bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts, List<TenItemModel> tenMstListGenDate)
     {
         List<TenMst> newTenMsts = new();
 
@@ -6352,10 +6356,70 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
         {
             if (item.IsDeleted == 1)
             {
+                var listTenMst = TrackingDataContext.TenMsts.Where(x => x.ItemCd == item.ItemCd);
+                if (listTenMst != null)
+                {
+                    foreach (var listTenMstItem in listTenMst)
+
+                        if (!(listTenMstItem.ItemCd.StartsWith("KN") || listTenMstItem.ItemCd.StartsWith("IGE") || listTenMstItem.ItemCd.StartsWith("HRT")) || IsUsingKensaItem(hpId, listTenMstItem.KensaItemCd ?? string.Empty, listTenMstItem.ItemCd))
+                        {
+                            listTenMstItem.KensaItemCd = null;
+                            listTenMstItem.KensaItemSeqNo = 0;
+                        }
+                        else
+                        {
+                            listTenMstItem.IsDeleted = 1;
+                        }
+                }
+            }
+            else
+            {
                 var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
                 if (listTenMst != null)
                 {
-                    listTenMst.IsDeleted = 1;
+                    listTenMst.SinKouiKbn = item.SinKouiKbn;
+                    listTenMst.MasterSbt = item.MasterSbt;
+                    listTenMst.ItemCd = item.ItemCd;
+                    listTenMst.KensaItemCd = item.KensaItemCd;
+                    listTenMst.KensaItemSeqNo = item.KensaItemSeqNo;
+                    listTenMst.Ten = item.Ten;
+                    listTenMst.Name = item.Name;
+                    listTenMst.ReceName = item.ReceName;
+                    listTenMst.KanaName1 = item.KanaName1;
+                    listTenMst.KanaName2 = item.KanaName2;
+                    listTenMst.KanaName3 = item.KanaName3;
+                    listTenMst.KanaName4 = item.KanaName4;
+                    listTenMst.KanaName5 = item.KanaName5;
+                    listTenMst.KanaName6 = item.KanaName6;
+                    listTenMst.KanaName7 = item.KanaName7;
+                    listTenMst.StartDate = item.StartDate;
+                    listTenMst.EndDate = item.EndDate;
+                    listTenMst.DefaultVal = item.DefaultValue;
+                    listTenMst.OdrUnitName = item.OdrUnitName;
+                    listTenMst.SanteiItemCd = item.SanteiItemCd;
+                    listTenMst.SanteigaiKbn = item.SanteigaiKbn;
+                    listTenMst.IsNosearch = item.IsNoSearch;
+                    listTenMst.IsDeleted = item.IsDeleted;
+                    listTenMst.UpdateId = userId;
+                    listTenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
+                else
+                {
+                    TenMst itemtest = ConvertTenMasterList(item, userId, hpId);
+                    newTenMsts.Add(itemtest);
+                    TrackingDataContext.TenMsts.AddRange(newTenMsts);
+                }
+            }
+        }
+
+        foreach (var item in tenMstListGenDate)
+        {
+            if (item.IsDeleted == 1)
+            {
+                var listTenMst = TrackingDataContext.TenMsts.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.StartDate == item.StartDate);
+                if (listTenMst != null)
+                {
+                    TrackingDataContext.TenMsts.Remove(listTenMst);
                 }
             }
             else
@@ -6675,7 +6739,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public bool IsKensaItemOrdering(int hpId, string tenItemCd)
     {
-        return NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        bool existOdrInfDetail = NoTrackingDataContext.OdrInfDetails.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        bool existSetOdrInfDetail = NoTrackingDataContext.SetOdrInfDetail.Where(p => p.HpId == hpId && p.ItemCd == tenItemCd).Any();
+        bool existListSetMst = NoTrackingDataContext.ListSetMsts.Where(p => p.HpId == hpId && p.IsDeleted == 0 && p.ItemCd == tenItemCd).Any();
+
+        return existOdrInfDetail || existSetOdrInfDetail || existListSetMst;
     }
 
     public double GetTenOfKNItem(int hpId, string itemCd)
