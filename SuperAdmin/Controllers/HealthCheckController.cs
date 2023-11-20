@@ -9,7 +9,7 @@ namespace SuperAdmin.Controllers
         [HttpGet]
         public ActionResult Get()
         {
-            return Ok();
+            return Ok("Done");
         }
     }
 }
