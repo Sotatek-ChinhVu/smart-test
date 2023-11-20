@@ -152,6 +152,7 @@ namespace AWSSDK.Common
             try
             {
                 bool available = false;
+                DateTime startTime = DateTime.Now;
                 bool running = true;
 
                 while (running)
@@ -179,6 +180,13 @@ namespace AWSSDK.Common
                         }
                     }
 
+                    // Check if more than Timeout
+                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
+                    {
+                        Console.WriteLine($"Timeout: Snapshot not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
+                        running = false;
+                    }
+
                     // Wait for 5 seconds before the next attempt
                     Thread.Sleep(5000);
                 }
@@ -191,7 +199,6 @@ namespace AWSSDK.Common
                 return false;
             }
         }
-
 
         public static void CreateDatabase(string host, string tenantId)
         {
@@ -382,6 +389,7 @@ namespace AWSSDK.Common
             try
             {
                 bool available = false;
+                DateTime startTime = DateTime.Now;
                 bool running = true;
 
                 while (running)
@@ -412,6 +420,13 @@ namespace AWSSDK.Common
                             available = true;
                             running = false;
                         }
+                    }
+
+                    // Check if more than timeout
+                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
+                    {
+                        Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
+                        running = false;
                     }
 
                     // Wait for 5 seconds before the next attempt
