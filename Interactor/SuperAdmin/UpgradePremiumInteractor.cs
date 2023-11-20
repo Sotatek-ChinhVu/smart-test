@@ -24,7 +24,13 @@ namespace Interactor.SuperAdmin
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
         }
+
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<UpgradePremiumOutputData> HandleAsync(UpgradePremiumInputData inputData)
         {
             try
             {
