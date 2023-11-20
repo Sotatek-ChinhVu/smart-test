@@ -25,7 +25,7 @@ namespace AWSSDK.Services
             return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
         }
 
-        public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public async Task<Endpoint> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
            return await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
         }
