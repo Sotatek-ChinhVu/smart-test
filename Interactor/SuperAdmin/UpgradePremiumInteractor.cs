@@ -46,7 +46,9 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
 
-                // Check type in AWS
+
+                // Create Snapshot
+                var rdsIdentifier =  _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
 
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
             }
