@@ -16,7 +16,6 @@ namespace Interactor.PatientInfor
 
         public CheckPtNumOutputData Handle(CheckPtNumInputData inputData)
         {
-
             try
             {
                 long ptNum = 0;
@@ -35,7 +34,7 @@ namespace Interactor.PatientInfor
                 GC.Collect();
 
                 // Wait for all finalizers to complete before continuing.
-                GC.WaitForPendingFinalizers();fi
+                GC.WaitForPendingFinalizers();
             }
         }
 

@@ -2202,6 +2202,7 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+            _receptionRepository.ReleaseResource();
         }
 
         public List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize)
@@ -2871,7 +2872,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     var ptExists = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtNum == ptNum && x.HpId == hpId);
-                    ptNum = 1019;
+                    ptNum = 1022;
                     if (ptExists != null)
                         ptNum = GetAutoPtNum(hpId);
                 }
