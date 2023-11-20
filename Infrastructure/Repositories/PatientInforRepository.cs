@@ -2882,7 +2882,6 @@ namespace Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-
                 return 0;
             }
         }
