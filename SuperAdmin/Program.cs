@@ -69,7 +69,9 @@ builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
 });
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() ||
+    app.Environment.IsProduction() ||
+    app.Environment.IsStaging())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -81,7 +83,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
-
 // SignalR Hub
 app.MapHub<CommonHub>("/CommonHub");
+
+app.Run();
+
