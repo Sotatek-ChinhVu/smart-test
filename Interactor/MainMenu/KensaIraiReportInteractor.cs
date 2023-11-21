@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KensaIrai;
+using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
@@ -6,11 +7,10 @@ using Helper.Redis;
 using Microsoft.Extensions.Configuration;
 using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
+using StackExchange.Redis;
 using System.Text;
 using System.Text.Json;
 using UseCase.MainMenu.KensaIraiReport;
-using StackExchange.Redis;
-using Domain.Models.Reception;
 
 namespace Interactor.MainMenu;
 
@@ -106,7 +106,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
         {
             var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaIrai.PtId, kensaIrai.SinDate);
 
-            var raiinInf = _receptionRepository.GetRaiinInf(hpId, kensaIrai.PtId,kensaIrai.SinDate, kensaIrai.RaiinNo);
+            var raiinInf = _receptionRepository.GetRaiinInf(hpId, kensaIrai.PtId, kensaIrai.SinDate, kensaIrai.RaiinNo);
             kensaIraiList.Add(new Reporting.Kensalrai.Model.KensaIraiModel(
                 kensaIrai.SinDate,
                 kensaIrai.RaiinNo,
@@ -533,16 +533,16 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // センターコード
             o1 += CenterCd + ",";
             // 依頼者ＫＥＹ
-            o1 += adjStr(kensaIrai.IraiCd.ToString(), 20) + ",";
+            o1 += kensaIrai.IraiCd.ToString() + ",";
 
             //予備１ 予備２
-            o1 +=  "," +  ",";
+            o1 += "," + ",";
 
             //科コード・科名
-            o1 += adjStr(kensaIrai.KaSName.ToString(), 20) + ",";
+            o1 += kensaIrai.KaSName.ToString() + ",";
 
             //病棟コード病棟名
-            o1 +=  ",";
+            o1 += ",";
 
             // 入院外来区分   1桁  ※2固定
             o1 += "1" + ",";
@@ -551,24 +551,24 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             o1 += CIUtil.CiCopyStrWidth(string.IsNullOrEmpty(kensaIrai.DrName) ? kensaIrai.Name : kensaIrai.DrName, 1, 10, 1) + ",";
 
             // 被検者ＩＤ    
-            o1 += adjStr(kensaIrai.PtNum.ToString(), 15) + ",";
+            o1 += kensaIrai.PtNum.ToString() + ",";
             // カルテＮＯ   
-            o1 += adjStr(kensaIrai.PtNum.ToString(), 15) + ",";
+            o1 += kensaIrai.PtNum.ToString() + ",";
             //カルテＮＯ区分
-            o1 +=  ",";
+            o1 += ",";
             //被検者名カナ
-            o1 += adjStr(kensaIrai.KanaName, 20) + ",";
+            o1 += kensaIrai.KanaName + ",";
             //被験者名漢字
-            o1 += adjStr(kensaIrai.Name, 20) + ",";
+            o1 += kensaIrai.Name + ",";
             // 性別      
-            o1 += adjStr(kensaIrai.GetSexStr("1", "2"), 1) + ",";
+            o1 += kensaIrai.GetSexStr("1", "2") + ",";
 
             // 年齢区分     1桁  ※Y固定
-            o1 +=  ",";
+            o1 += ",";
             // 年齢       3桁
-            o1 += adjStr(kensaIrai.Age.ToString(), 3, RightJustification) + ",";
+            o1 += kensaIrai.Age.ToString() + ",";
             // 生年月日区分   1桁  ※スペース固定
-            o1 +=  ",";
+            o1 += ",";
             // 生年月日
             o1 += (kensaIrai.Birthday % 1000000).ToString().PadLeft(6, '0') + ",";
             // 採取日      6桁  ※YYMMDD（西暦）
@@ -580,11 +580,11 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
 
             if (kensaIrai.SikyuKbn == 0)
             {
-                o1 += adjStr(" ", 1) + ",";
+                o1 += " " + ",";
             }
             else
             {
-                o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1) + ",";
+                o1 += kensaIrai.SikyuKbn.ToString() + ",";
             }
 
             o1 += ",,,,,,,,,,,,";
