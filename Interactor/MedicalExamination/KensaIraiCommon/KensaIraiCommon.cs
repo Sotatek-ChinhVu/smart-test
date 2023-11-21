@@ -428,6 +428,8 @@ public class KensaIraiCommon : IKensaIraiCommon
             if (addKensaIraiDtls.Any())
             {
                 var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaInf.PtId, raiinInfModel?.SinDate ?? 0);
+
+                var raiinInf = _receptionRepository.GetRaiinInf(hpId, kensaInf.PtId, raiinInfModel?.SinDate ?? 0, raiinInfModel?.RaiinNo ?? 0);
                 // 検査依頼データ生成
                 var addKensaIrai =
                     new Reporting.Kensalrai.Model.KensaIraiModel(
@@ -445,6 +447,8 @@ public class KensaIraiCommon : IKensaIraiCommon
                         raiinInfModel?.KaId ?? 0,
                         weightHeight.weight,
                         weightHeight.height,
+                        raiinInf?.TantoKanaName ?? string.Empty,
+                        raiinInf?.KaSName ?? string.Empty,
                         addKensaIraiDtls);
                 addKensaIrai.UpdateTime = kensaInf.UpdateDate.ToString("HHmm");
 

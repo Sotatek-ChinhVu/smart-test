@@ -2,8 +2,8 @@
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Tenant;
+using Npgsql;
 using System.Data.Common;
-using System.Data.SqlClient;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
@@ -34,61 +34,47 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
 
-                // Check exit domain 
-                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(tenant.SubDomain).Result;
-                if (checkSubDomain)
-                {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
-                }
-
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(async () =>
                 {
                     // Create SnapShot
-                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync("develop-smartkarte-logging");
+                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
 
-                    if (string.IsNullOrEmpty(snapshotIdentifier))
+                    if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
                     {
                         cts.Cancel();
-                    }
-
-                    var isAvailableSnapShot = await RDSAction.CheckingSnapshotAvailableAsync(snapshotIdentifier);
-                    if (!isAvailableSnapShot)
-                    {
-                        cts.Cancel();
+                        return;
                     }
 
                     // Restore DB Instance from snapshot
                     Console.WriteLine($"Start Restore");
 
                     string rString = CommonConstants.GenerateRandomString(6);
-                    var dbInstanceIdentifier = $"develop-smartkarte-postgres-{rString}";
+                    var dbInstanceIdentifier = $"develop-smartkarte-logging-{rString}";
                     Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
 
-                   var endpoint =  await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
-                    if (endpoint == null)
-                    {
-                        cts.Cancel();
-                    }
+                    var endpoint = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+
                     // Check Restore success 
                     var isAvailableRestoreInstance = await RDSAction.CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier);
-                    if (!isAvailableRestoreInstance)
+                    if ((endpoint == null || string.IsNullOrEmpty(endpoint.Address)) || !isAvailableRestoreInstance)
                     {
                         cts.Cancel();
+                        return;
                     }
-                    // Get list DB from Instance
-                    var databaseList = await RDSAction.GetDatabasesFromDBInstanceAsync(dbInstanceIdentifier);
-                    if (databaseList.Contains(tenant.Db))
+
+                    //Delete list Db without tenant DB
+                    var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, tenant.Db);
+
+                    // Update endpoint, dbInstanceIdentifier
+                    if (isDeleteSuccess)
                     {
-                        databaseList.Remove(tenant.Db);
+                        _tenantRepository.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address);
                     }
-                    else
-                    {
-                        cts.Cancel();
-                    }
-                    // Delete list Db without tenant DB
-                    ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, databaseList);
-                    // Update  endpoint 
+
+                    //Finished
+                    cts.Cancel();
+                    return;
                 });
 
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
@@ -99,40 +85,41 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public bool ConnectAndDeleteDatabases(string serverEndpoint, int port, List<string> databaseNames)
+        public bool ConnectAndDeleteDatabases(string serverEndpoint, int port, string tennantDB)
         {
             try
             {
                 // Replace these values with your actual RDS information
-                string username = "YourUsername";
-                string password = "YourPassword";
-
+                string username = "postgres";
+                string password = "Emr!23456789";
                 // Connection string format for SQL Server
-                string connectionString = $"Server={serverEndpoint},{port};User Id={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
 
                 // Create and open a connection
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
                     try
                     {
                         connection.Open();
 
-                        foreach (var databaseName in databaseNames)
+                        // Delete database
+                        using (DbCommand command = connection.CreateCommand())
                         {
-                            // Change database
-                            connection.ChangeDatabase(databaseName);
-
-                            // Delete database
-                            using (DbCommand command = connection.CreateCommand())
-                            {
-                                command.CommandText = $"DROP DATABASE [{databaseName}]";
-                                command.ExecuteNonQuery();
-                            }
-
-                            Console.WriteLine($"Database '{databaseName}' deleted successfully.");
+                            command.CommandText = @$"
+                                            DO $$ 
+                                            DECLARE 
+                                                db_name text; 
+                                            BEGIN 
+                                                FOR db_name IN (SELECT datname FROM pg_catalog.pg_database WHERE datname != ${tennantDB}) 
+                                                LOOP 
+                                                    EXECUTE 'DROP DATABASE IF EXISTS ' || db_name; 
+                                                END LOOP; 
+                                            END $$;
+                                        ";
+                            command.ExecuteNonQuery();
                         }
 
-                        Console.WriteLine("Connected to the database.");
+                        Console.WriteLine($"Database deleted successfully.");
                     }
                     catch (Exception ex)
                     {
@@ -140,7 +127,6 @@ namespace Interactor.SuperAdmin
                     }
                 }
 
-                
                 return true;
             }
             catch (Exception ex)
