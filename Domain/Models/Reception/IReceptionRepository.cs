@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.Family;
 using System.Runtime.InteropServices;
 
 namespace Domain.Models.Reception
@@ -74,5 +75,7 @@ namespace Domain.Models.Reception
         ReceptionModel GetRaiinInfBySinDate(int hpId, long ptId, int sinDate);
 
         int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo);
+
+        RaiinInfModel? GetRaiinInf(int hpId, long ptId, int sinDate, long raiinNo);
     }
 }
