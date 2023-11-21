@@ -1,4 +1,4 @@
-
+using Domain.Models.AuditLog;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
@@ -66,9 +66,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly ITenantProvider _tenantProvider;
     private readonly IKensaIraiCommon _kensaIraiCommon;
     private readonly ISystemConfRepository _systemConfRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository, IKensaIraiCommon kensaIraiCommon, ISystemConfRepository systemConfRepository)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository, IKensaIraiCommon kensaIraiCommon, ISystemConfRepository systemConfRepository, IAuditLogRepository auditLogRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -91,6 +92,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         _kensaIraiCommon = kensaIraiCommon;
         _systemConfRepository = systemConfRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -351,16 +353,17 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             if (saveMedicalSuccess)
             {
-                Task.Run(() =>{
-               _calculateService.RunCalculate(new RecaculationInputDto(
-                        hpId,
-                      ptId,
-                       sinDate,
-                        inputDatas.IsSagaku ? 1 : 0,
-                        ""
-                    ));
-                _calculateService.ReleaseSource();
-                   });
+                Task.Run(() =>
+                {
+                    _calculateService.RunCalculate(new RecaculationInputDto(
+                             hpId,
+                           ptId,
+                            sinDate,
+                             inputDatas.IsSagaku ? 1 : 0,
+                             ""
+                         ));
+                    _calculateService.ReleaseSource();
+                });
             }
 
             if (saveMedicalSuccess)
@@ -967,4 +970,128 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertPtDiseaseListStatus.Valid;
     }
 
+    private void AddAuditKaikeiSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, bool odrOrSyosaisinChanged, bool todayKarteChanged, bool nextOdrChanged, bool periodicOdrChanged, bool fromRece)
+    {
+        var args = new List<ArgumentModel>();
+
+        args.Add(new ArgumentModel(
+                        EventCode.SavePress,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+
+        if (odrOrSyosaisinChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.SavePressOrderChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty
+            ));
+
+        }
+
+        if (todayKarteChanged)
+        {
+            args.Add(new ArgumentModel(
+               EventCode.SavePressKarteChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty
+            ));
+        }
+
+        if (nextOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+              EventCode.SavePressNextOdrChanged,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+           ));
+        }
+
+        if (periodicOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.SavePressPeriodicOdrChanged,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+           ));
+        }
+
+        if (!fromRece)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.SavePressReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+           ));
+
+            if (odrOrSyosaisinChanged)
+            {
+                args.Add(new ArgumentModel(
+                       EventCode.SavePressOrderChangedReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+                ));
+
+            }
+            if (todayKarteChanged)
+            {
+                args.Add(new ArgumentModel(
+                       EventCode.SavePressKarteChangedReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+                ));
+
+            }
+        }
+
+        _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
+    }
 }
