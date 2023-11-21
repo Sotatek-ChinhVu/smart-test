@@ -78,16 +78,13 @@ namespace Interactor.SuperAdmin
                     }
 
                     //Delete list Db without tenant DB
-                    //var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, tenant.Db);
-                    //if (isDeleteSuccess)
-                    //{
-                    //}
-                    //else
-                    //{
-                    //    // Todo check
-                    //}
+                    var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, tenant.Db);
+                    if (!isDeleteSuccess)
+                    {
+                        // To rerun  delete
+                    }
 
-                    // Todo Delete old RDS
+                    // Todo Delete DB in old RDS
                     cts.Cancel();
                     return;
                 });
