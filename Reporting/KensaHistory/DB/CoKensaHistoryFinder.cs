@@ -69,6 +69,13 @@ namespace Reporting.KensaHistory.DB
 
             var userConf = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002);
 
+            var kensaSetDetailById = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId && x.HpId == hpId && x.IsDeleted == DeleteTypes.None).GroupBy(item => item.KensaItemCd)
+               .Select(group => new
+               {
+                   KensaItemCd = group.Key,
+                   SortNo = group.Min(item => item.SortNo)
+               });
+
             bool SortIraiDateAsc = true;
 
             if (userConf.Where(x => x.GrpItemCd == 0).FirstOrDefault()?.Val == 1)
@@ -85,14 +92,13 @@ namespace Reporting.KensaHistory.DB
             {
                 // Fllter data with KensaSet
                 kensaInfDetails = (from t1 in NoTrackingDataContext.KensaInfDetails
-                                   join t2 in NoTrackingDataContext.KensaSetDetails on t1.KensaItemCd equals t2.KensaItemCd
-                                   where t1.HpId == hpId && t1.PtId == ptId
+                                   join t2 in kensaSetDetailById on t1.KensaItemCd equals t2.KensaItemCd
+                                   where t1.HpId == hpId && t1.PtId == ptId && t1.IsDeleted == DeleteTypes.None
                                    select new
                                    {
-                                       Result = t1,
-                                       SortNo = t2.SortNo,
+                                       Result = t1
                                    }
-                            ).OrderBy(x => x.SortNo).Select(x => x.Result);
+                            ).Select(x => x.Result);
             }
 
             IEnumerable<ListKensaInfDetailItemModel> data = (from t1 in kensaInfDetails
@@ -131,7 +137,7 @@ namespace Reporting.KensaHistory.DB
                                                                  t1.CmtCd1 ?? string.Empty,
                                                                  t1.CmtCd2 ?? string.Empty,
                                                                  (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
-                                                                 (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
+                                                                 (t3.CenterCd == t6.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
                                                                  t7.MaleStd ?? string.Empty,
                                                                  t7.FemaleStd ?? string.Empty,
                                                                  t7.MaleStdLow ?? string.Empty,
