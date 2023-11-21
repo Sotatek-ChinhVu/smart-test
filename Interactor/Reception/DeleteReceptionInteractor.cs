@@ -47,6 +47,7 @@ public class DeleteReceptionInteractor : IDeleteReceptionInputPort
                 Task.Run(() =>
                 {
                     _calculateService.RunCalculate(new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "DR_"));
+                    _calculateService.ReleaseSource();
                 });
                 //Item1: SinDate, Item2: RaiinNo, Item3: PtId
                 receptionInfos.Add(new ReceptionRowModel(result.First().Item2, result.First().Item3, result.First().Item1, 1));

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.SuperAdminModels.Tenant
+﻿namespace Domain.SuperAdminModels.Tenant
 {
     public interface ITenantRepository
     {
@@ -13,6 +7,8 @@ namespace Domain.SuperAdminModels.Tenant
         int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier);
         int CreateTenant(TenantModel model);
         bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPoint, string dbIdentifier);
+        bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
+
         void ReleaseResource();
     }
 }
