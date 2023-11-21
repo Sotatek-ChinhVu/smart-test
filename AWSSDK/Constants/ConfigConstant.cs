@@ -28,7 +28,8 @@ namespace AWSSDK.Constants
             {"restoring", 6},
             {"failed", 7},
             {"inaccessible-encryption-credentials",8},
-            {"storage-full", 9}
+            {"storage-full", 9},
+            {"restor-failed", 10}
         };
 
             return rdsStatusDictionary;

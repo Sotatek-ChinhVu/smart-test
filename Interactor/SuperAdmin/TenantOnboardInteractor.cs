@@ -92,7 +92,7 @@ namespace Interactor.SuperAdmin
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                         {
-                            var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
+                            var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
                         }
                     }
 
@@ -105,7 +105,7 @@ namespace Interactor.SuperAdmin
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
                         running = false;
                     }
                 }

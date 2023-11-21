@@ -76,7 +76,7 @@ namespace Infrastructure.SuperAdminRepositories
             TrackingDataContext.SaveChanges();
             return tenant.TenantId;
         }
-        public bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier)
+        public bool UpdateInfTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier)
         {
             var tenant = TrackingDataContext.Tenants.FirstOrDefault(i => i.TenantId == tenantId);
             if (tenant != null)
@@ -100,7 +100,31 @@ namespace Infrastructure.SuperAdminRepositories
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
-        public bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint)
+        public TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint)
+        {
+            try
+            {
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
+                if (tenant == null)
+                {
+                    return new();
+                }
+                tenant.EndPointDb = endPoint;
+                tenant.Type = 1;
+                tenant.Status = 1;
+                tenant.RdsIdentifier = dbIdentifier;
+                TrackingDataContext.SaveChanges();
+                var tenantModel = ConvertEntityToModel(tenant);
+                return tenantModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new();
+            }
+        }
+
+        public bool UpdateStatusTenant(int tenantId, byte status)
         {
             try
             {
@@ -109,10 +133,7 @@ namespace Infrastructure.SuperAdminRepositories
                 {
                     return false;
                 }
-                tenant.EndPointDb = endPoint;
-                tenant.Type = 1;
-                tenant.Status = 1;
-                tenant.RdsIdentifier = dbIdentifier;
+                tenant.Status = status;
                 TrackingDataContext.SaveChanges();
                 return true;
             }

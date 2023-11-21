@@ -2,6 +2,7 @@
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Tenant;
+using Interactor.Realtime;
 using Npgsql;
 using System.Data.Common;
 using UseCase.SuperAdmin.UpgradePremium;
@@ -12,10 +13,12 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        public UpgradePremiumInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService)
+        private readonly IWebSocketService _webSocketService;
+        public UpgradePremiumInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService)
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
+            _webSocketService = webSocketService;
         }
 
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
@@ -29,11 +32,11 @@ namespace Interactor.SuperAdmin
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
 
-                if (tenant.Type == 1)
+                if (tenant.Type == ConfigConstant.TypeDedicate)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
-
+                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restoring"]);
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(async () =>
                 {
@@ -42,6 +45,7 @@ namespace Interactor.SuperAdmin
 
                     if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
                     {
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restor-failed"]);
                         cts.Cancel();
                         return;
                     }
@@ -53,26 +57,37 @@ namespace Interactor.SuperAdmin
                     var dbInstanceIdentifier = $"develop-smartkarte-logging-{rString}";
                     Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
 
-                    var endpoint = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+                    var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
 
                     // Check Restore success 
-                    var isAvailableRestoreInstance = await RDSAction.CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier);
-                    if ((endpoint == null || string.IsNullOrEmpty(endpoint.Address)) || !isAvailableRestoreInstance)
+                    var endpoint = await RDSAction.CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier);
+                    if (!isSuccessRestoreInstance || endpoint == null || string.IsNullOrEmpty(endpoint?.Address))
                     {
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restor-failed"]);
                         cts.Cancel();
                         return;
+                    } 
+
+                    // Update endpoint, dbInstanceIdentifier, status tenant available 
+                    var tenantUpgrade = _tenantRepository.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address);
+
+                    // Finished upgrade
+                    if (tenantUpgrade != null)
+                    {
+                        await _webSocketService.SendMessageAsync(FunctionCodes.FinishedUpgradePremium, tenantUpgrade);
                     }
 
                     //Delete list Db without tenant DB
-                    var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, tenant.Db);
+                    //var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, tenant.Db);
+                    //if (isDeleteSuccess)
+                    //{
+                    //}
+                    //else
+                    //{
+                    //    // Todo check
+                    //}
 
-                    // Update endpoint, dbInstanceIdentifier
-                    if (isDeleteSuccess)
-                    {
-                        _tenantRepository.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address);
-                    }
-
-                    //Finished
+                    // Todo Delete old RDS
                     cts.Cancel();
                     return;
                 });
