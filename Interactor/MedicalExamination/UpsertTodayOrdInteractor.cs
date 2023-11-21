@@ -172,14 +172,16 @@ namespace Interactor.MedicalExamination
 
                 if (check)
                 {
-                    Task.Run(() =>
+                    Task.Run(() =>{
                    _calculateService.RunCalculate(new RecaculationInputDto(
                             hpId,
                             ptId,
                             sinDate,
                             0,
                             ""
-                        )));
+                        ));
+                        _calculateService.ReleaseSource();
+                        });
 
                     var receptionInfos = _receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, isDeleted: 0);
                     var sameVisitList = _receptionRepository.GetListSameVisit(hpId, ptId, sinDate);

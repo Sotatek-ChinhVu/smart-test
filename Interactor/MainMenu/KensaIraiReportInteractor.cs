@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json;
 using UseCase.MainMenu.KensaIraiReport;
 using StackExchange.Redis;
+using Domain.Models.Reception;
 
 namespace Interactor.MainMenu;
 
@@ -22,14 +23,16 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
     private readonly ISystemConfRepository _systemConfigRepository;
     private readonly IDatabase _cache;
     private readonly ICoKensaIraiFinder _coKensaIraiFinder;
+    private readonly IReceptionRepository _receptionRepository;
 
-    public KensaIraiReportInteractor(IKensaIraiRepository kensaIraiRepository, IKensaIraiCoReportService kensaIraiCoReportService, IConfiguration configuration, ISystemConfRepository systemConfigRepository, ICoKensaIraiFinder coKensaIraiFinder)
+    public KensaIraiReportInteractor(IKensaIraiRepository kensaIraiRepository, IKensaIraiCoReportService kensaIraiCoReportService, IConfiguration configuration, ISystemConfRepository systemConfigRepository, ICoKensaIraiFinder coKensaIraiFinder, IReceptionRepository receptionRepository)
     {
         _kensaIraiRepository = kensaIraiRepository;
         _kensaIraiCoReportService = kensaIraiCoReportService;
         _configuration = configuration;
         _coKensaIraiFinder = coKensaIraiFinder;
         _systemConfigRepository = systemConfigRepository;
+        _receptionRepository = receptionRepository;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
@@ -91,6 +94,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
         finally
         {
             _kensaIraiRepository.ReleaseResource();
+            _receptionRepository.ReleaseResource();
         }
     }
 
@@ -101,6 +105,8 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
         foreach (var kensaIrai in source)
         {
             var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaIrai.PtId, kensaIrai.SinDate);
+
+            var raiinInf = _receptionRepository.GetRaiinInf(hpId, kensaIrai.PtId,kensaIrai.SinDate, kensaIrai.RaiinNo);
             kensaIraiList.Add(new Reporting.Kensalrai.Model.KensaIraiModel(
                 kensaIrai.SinDate,
                 kensaIrai.RaiinNo,
@@ -116,6 +122,8 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 kensaIrai.KaId,
                 weightHeight.weight,
                 weightHeight.height,
+                raiinInf?.TantoKanaName ?? string.Empty,
+                raiinInf?.KaSName ?? string.Empty,
             AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails)));
         }
         return kensaIraiList;
@@ -525,13 +533,13 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // センターコード
             o1 += CenterCd + ",";
             // 依頼者ＫＥＹ
-            o1 += adjStr(kensaIrai.IraiCd.ToString(), 20);
+            o1 += adjStr(kensaIrai.IraiCd.ToString(), 20) + ",";
 
             //予備１ 予備２
-            o1 += " " + " " + ",";
+            o1 += " " + "," + " " + ",";
 
             //科コード・科名
-            o1 += adjStr(kensaIrai.KaName.ToString(), 20);
+            o1 += adjStr(kensaIrai.KaSName.ToString(), 20) + ",";
 
             //病棟コード病棟名
             o1 += " " + ",";
@@ -560,7 +568,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 年齢       3桁
             o1 += adjStr(kensaIrai.Age.ToString(), 3, RightJustification) + ",";
             // 生年月日区分   1桁  ※スペース固定
-            o1 += " ";
+            o1 += " " + ",";
             // 生年月日
             o1 += (kensaIrai.Birthday % 1000000).ToString().PadLeft(6, '0') + ",";
             // 採取日      6桁  ※YYMMDD（西暦）
@@ -568,20 +576,12 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 採取時間     4桁  ※未使用
             o1 += (kensaIrai.UpdateTime.PadLeft(6, '0')) + ",";
             //保険情報
-            o1 += " ";
+            o1 += " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + ",";
             // 身長       4桁（前3桁整数部、後1桁小数点部）
             o1 += getHeightWeight(kensaIrai.Height) + ",";
             // 体重       4桁（前3桁整数部、後1桁小数点部）
             o1 += getHeightWeight(kensaIrai.Weight) + ",";
-            // 尿量       4桁  ※未使用
-            o1 += adjStr("0", 4, RightJustification) + ",";
-            // 尿量単位     2桁  ※未使用
-            o1 += new string(' ', 2) + ",";
-            // 妊娠週数     2桁  ※未使用
-            o1 += new string(' ', 2) + ",";
-            // 透析前後     1桁  ※0はスペースで出力
-            o1 += adjStr(CIUtil.ToStringIgnoreZero(kensaIrai.TosekiKbn), 1) + ",";
-            // 至急報告     1桁
+
             if (kensaIrai.SikyuKbn == 0)
             {
                 o1 += adjStr(" ", 1) + ",";
@@ -591,7 +591,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1) + ",";
             }
 
-            o1 += " , , , , , , , , , ,";
+            o1 += " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " ";
 
             int dtlCount = 0;
             foreach (var kensaDtl in kensaIrai.Details)
@@ -602,16 +602,11 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                     o1 += new string(' ', 3);
                     dtlCount = 1;
                 }
-
+                o1 += ",";
                 o1 += kensaDtl.KensaItemCd;
                 o1 += "=";
                 o1 += kensaDtl.CenterItemCd;
-                o1 += ",";
             }
-            // 依頼コメント内容     20桁 ※未使用
-            o1 += new string(' ', 20);
-            // 空白       74桁 ※未使用
-            o1 += new string(' ', 74);
             results.Add(o1);
             #endregion
         }

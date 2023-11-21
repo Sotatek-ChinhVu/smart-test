@@ -1,4 +1,6 @@
-﻿using AWSSDK.Common;
+﻿using Amazon.RDS.Model;
+using Amazon.RDS;
+using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Tenant;
@@ -36,28 +38,19 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
                 }
-                var tenantOnboard = TenantOnboardAsync(inputData.SubDomain, inputData.Size, inputData.SizeType, inputData.ClusterMode).Result;
-                var tenantUrl = string.Empty;
-                var rdsEndpoint = string.Empty;
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty);
+                var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
                 {
                     Console.WriteLine($"Exception: {errorValue}");
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
                 }
-                if (tenantOnboard.TryGetValue("tenant_url", out string? tenantUrlValue))
-                {
-                    tenantUrl = tenantUrlValue;
-                }
-                if (tenantOnboard.TryGetValue("rds_endpoint", out string? rdsEndpointValue))
-                {
-                    rdsEndpoint = rdsEndpointValue;
-                }
                 if (tenantOnboard.TryGetValue("message", out string? messageValue))
                 {
                     message = messageValue;
                 }
-                var data = new TenantOnboardItem(message, rdsEndpoint, tenantUrl);
+                var data = new TenantOnboardItem(message);
 
                 return new TenantOnboardOutputData(data, TenantOnboardStatus.Successed);
             }
@@ -67,8 +60,70 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public async Task<Dictionary<string, string>> TenantOnboardAsync(string tenantId, int size, int sizeType, int tier)
+        private async Task<string> CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
         {
+            try
+            {
+                string host = string.Empty;
+                bool running = true;
+                string status = string.Empty;
+
+                while (running)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    var response = await rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
+                    {
+                        DBInstanceIdentifier = dbIdentifier
+                    });
+
+                    var dbInstances = response.DBInstances;
+
+                    if (dbInstances.Count != 1)
+                    {
+                        throw new Exception("More than one Database Shard returned; this should never happen");
+                    }
+
+                    var dbInstance = dbInstances[0];
+                    var checkStatus = dbInstance.DBInstanceStatus;
+                    if (status != checkStatus)
+                    {
+                        status = checkStatus;
+                        var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
+                        if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
+                        {
+                            var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
+                        }
+                    }
+
+                    Console.WriteLine($"Last Database Shard status: {checkStatus}");
+
+                    Thread.Sleep(5000);
+
+                    if (checkStatus == "available")
+                    {
+                        var endpoint = dbInstance.Endpoint;
+                        host = endpoint.Address;
+                        // update status available: 1
+                        var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        running = false;
+                    }
+                }
+
+                return host;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return null;
+            }
+        }
+        private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
+        {
+            string subDomain = model.SubDomain;
+            int size = model.Size;
+            int sizeType = 1;
+            int tier = model.Type;
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
             string host = "";
@@ -76,31 +131,42 @@ namespace Interactor.SuperAdmin
             try
             {
                 // Provisioning SubDomain for new tenants
-                if (!string.IsNullOrEmpty(tenantId))
+                if (!string.IsNullOrEmpty(subDomain))
                 {
-                    tenantUrl = $"{tenantId}.{ConfigConstant.Domain}";
-                    await Route53Action.CreateTenantDomain(tenantId);
-                    await CloudFrontAction.UpdateNewTenantAsync(tenantId);
+                    tenantUrl = $"{subDomain}.{ConfigConstant.Domain}";
+                    await Route53Action.CreateTenantDomain(subDomain);
+                    await CloudFrontAction.UpdateNewTenantAsync(subDomain);
                     // Checking Available RDS Cluster
-                    if (tenantId.Length > 0)
+                    if (subDomain.Length > 0)
                     {
                         // Checking tenant tier, if dedicated, provision new RDS instance
-                        if (tier == 2)
+                        if (tier == ConfigConstant.TypeDedicate)
                         {
                             string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                             var rdsInfo = await RDSAction.GetRDSInformation();
                             if (rdsInfo.ContainsKey(dbIdentifier))
                             {
-                                host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-                                //RDSAction.CreateDatabase(host, tenantId);
-                                //RDSAction.CreateTables(host, tenantId);
+                                _ = Task.Run(async () =>
+                                {
+                                    var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
+                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                    //RDSAction.CreateDatabase(host, tenantId);
+                                    //RDSAction.CreateTables(host, tenantId);
+                                });
                             }
                             else
                             {
+                                var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-                                //RDSAction.CreateDatabase(host, tenantId);
-                                //RDSAction.CreateTables(host, tenantId);
+                                model.RdsIdentifier = dbIdentifier;
+                                _ = Task.Run(async () =>
+                                {
+                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                    //RDSAction.CreateDatabase(host, tenantId);
+                                    //RDSAction.CreateTables(host, tenantId);
+                                });
+
+
                             }
                         }
                         else // In the rest cases, checking available RDS for new Tenant
@@ -112,32 +178,43 @@ namespace Interactor.SuperAdmin
                             if (availableIdentifier.Count == 0)
                             {
                                 string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
+                                var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-                                //RDSAction.CreateDatabase(host, tenantId);
-                                //RDSAction.CreateTables(host, tenantId);
+                                model.RdsIdentifier = dbIdentifier;
+                                _ = Task.Run(async () =>
+                                {
+                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                    //RDSAction.CreateDatabase(host, tenantId);
+                                    //RDSAction.CreateTables(host, tenantId);
+                                });
                             }
                             else // Else, returning the first available RDS Cluster in the list
                             {
                                 string dbIdentifier = availableIdentifier[0];
-                                var sumubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(tenantId, dbIdentifier);
+                                var sumubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(subDomain, dbIdentifier);
                                 if (sumubDomainToDbIdentifier <= 3)
                                 {
-                                    host = await RDSAction.CheckingRDSStatusAsync(dbIdentifier);
-
-                                    // Provisioning Database and tables for new tenant
-                                    //RDSAction.CreateDatabase(host, tenantId);
-                                    //RDSAction.CreateTables(host, tenantId);
+                                    _ = Task.Run(async () =>
+                                    {
+                                        var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
+                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                        //RDSAction.CreateDatabase(host, tenantId);
+                                        //RDSAction.CreateTables(host, tenantId);
+                                    });
                                 }
                                 else
                                 {
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
+                                    var id = _tenantRepository.CreateTenant(model);
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    host = await RDSAction.CheckingRDSStatusAsync(dbIdentifierNew);
-                                    //RDSAction.CreateDatabase(host, tenantId);
-                                    //RDSAction.CreateTables(host, tenantId);
+                                    model.RdsIdentifier = dbIdentifier;
+                                    _ = Task.Run(async () =>
+                                    {
+                                        host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
+                                        //RDSAction.CreateDatabase(host, tenantId);
+                                        //RDSAction.CreateTables(host, tenantId);
+                                    });
                                 }
-
                             }
                         }
                     }
@@ -150,8 +227,6 @@ namespace Interactor.SuperAdmin
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
             {
-                { "tenant_url", tenantUrl },
-                { "rds_endpoint", host },
                 { "message", "Please wait for 15 minutes for all resources to be available" }
             };
 

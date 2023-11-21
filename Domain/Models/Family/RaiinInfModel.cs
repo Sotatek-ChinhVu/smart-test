@@ -13,6 +13,23 @@ public class RaiinInfModel
         DoctorName = doctorName;
         HokenPid = hokenPid;
         HokenPatternName = hokenPatternName;
+        TantoName = string.Empty;
+        TantoKanaName = string.Empty;
+    }
+
+    public RaiinInfModel(long ptId, int sinDate, long raiinNo, int kaId, string kaName, int tantoId, string doctorName, string tantoName, string tantoKanaName, string kaSName)
+    {
+        PtId = ptId;
+        SinDate = sinDate;
+        RaiinNo = raiinNo;
+        KaId = kaId;
+        KaName = kaName;
+        TantoId = tantoId;
+        DoctorName = doctorName;
+        TantoName = tantoName;
+        TantoKanaName = tantoKanaName;
+        KaSName = kaSName;
+        HokenPatternName = string.Empty;
     }
 
     public long PtId { get; private set; }
@@ -32,4 +49,10 @@ public class RaiinInfModel
     public int HokenPid { get; private set; }
 
     public string HokenPatternName { get; private set; }
+
+    public string TantoName { get; private set; }
+
+    public string TantoKanaName { get; private set; }
+
+    public string KaSName { get; private set; }
 }
