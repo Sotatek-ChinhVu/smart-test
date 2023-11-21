@@ -480,20 +480,32 @@ namespace Reporting.KensaHistory.Service
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
 
-            /*if (checkAbnormalKbn)
+            List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
+
+            if (checkAbnormalKbn)
             {
                 foreach (var item in data.Item1)
                 {
+                    int count = 0;
                     foreach (var itemDynamicArray in item.KensaResultMultiItems)
                     {
-                        if(itemDynamicArray.AbnormalKbn == "")
+                        if (itemDynamicArray.AbnormalKbn == "")
                         {
-                            data.Item1.Remove(item);
-                            break;
-                        }    
+                            count++;
+                        }
+
+                        if (count == data.Item2.Count)
+                        {
+                            coKensaResultMultiModels.Add(item);
+                        }
                     }
                 }
-            }*/
+            }
+
+            foreach (var item in coKensaResultMultiModels)
+            {
+                data.Item1.Remove(item);
+            }
 
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
             kensaInfDetailsItem = new List<CoKensaResultMultiModel>(data.Item1);
