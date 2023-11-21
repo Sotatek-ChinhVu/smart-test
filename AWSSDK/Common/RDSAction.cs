@@ -69,7 +69,7 @@ namespace AWSSDK.Common
                 {
                     DBInstanceIdentifier = dbIdentifier,
                     AllocatedStorage = 20,
-                    DBName = "smartkarte",
+                    //DBName = "smartkarte",
                     Engine = "postgres",
                     EngineVersion = "14.4",
                     StorageType = "gp2",

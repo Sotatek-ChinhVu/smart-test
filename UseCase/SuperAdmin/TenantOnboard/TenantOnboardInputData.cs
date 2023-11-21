@@ -4,7 +4,7 @@ namespace UseCase.SuperAdmin.TenantOnboard
 {
     public sealed class TenantOnboardInputData : IInputData<TenantOnboardOutputData>
     {
-        public TenantOnboardInputData(string hospital, string adminId, string password, string subDomain, int size, int sizeType, int clusterMode)
+        public TenantOnboardInputData(string hospital, int adminId, string password, string subDomain, int size, int sizeType, byte clusterMode)
         {
             Hospital = hospital;
             AdminId = adminId;
@@ -16,7 +16,7 @@ namespace UseCase.SuperAdmin.TenantOnboard
         }
 
         public string Hospital { get; private set; } = string.Empty;
-        public string AdminId { get; private set; } = string.Empty;
+        public int AdminId { get; private set; }
         public string Password { get; private set; } = string.Empty;
         public string SubDomain { get; private set; } = string.Empty;
 
@@ -33,6 +33,6 @@ namespace UseCase.SuperAdmin.TenantOnboard
         /// <summary>
         /// 1: Sharing , 2: Dedicated
         /// </summary>
-        public int ClusterMode { get; private set; }
+        public byte ClusterMode { get; private set; }
     }
 }

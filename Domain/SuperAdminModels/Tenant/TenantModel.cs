@@ -6,14 +6,31 @@
         {
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string subDomain, string db, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
         {
             TenantId = tenantId;
             Hospital = hospital;
             Status = status;
             AdminId = adminId;
+            Password = password;
             SubDomain = subDomain;
             Db = db;
+            Size = size;
+            Type = type;
+            EndPointDb = endPointDb;
+            EndSubDomain = endSubDomain;
+            Action = action;
+            RdsIdentifier = rdsIdentifier;
+        }
+        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
+        {
+            Hospital = hospital;
+            Status = status;
+            AdminId = adminId;
+            Password = password;
+            SubDomain = subDomain;
+            Db = db;
+            Size = size;
             Type = type;
             EndPointDb = endPointDb;
             EndSubDomain = endSubDomain;
@@ -28,10 +45,13 @@
         public byte Status { get; set; }
 
         public int AdminId { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         public string SubDomain { get; set; } = string.Empty;
 
         public string Db { get; set; } = string.Empty;
+
+        public int Size { get; set; }
 
         public byte Type { get; set; }
 
