@@ -536,13 +536,13 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             o1 += adjStr(kensaIrai.IraiCd.ToString(), 20) + ",";
 
             //予備１ 予備２
-            o1 += " " + "," + " " + ",";
+            o1 +=  "," +  ",";
 
             //科コード・科名
             o1 += adjStr(kensaIrai.KaSName.ToString(), 20) + ",";
 
             //病棟コード病棟名
-            o1 += " " + ",";
+            o1 +=  ",";
 
             // 入院外来区分   1桁  ※2固定
             o1 += "1" + ",";
@@ -555,7 +555,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // カルテＮＯ   
             o1 += adjStr(kensaIrai.PtNum.ToString(), 15) + ",";
             //カルテＮＯ区分
-            o1 += " " + ",";
+            o1 +=  ",";
             //被検者名カナ
             o1 += adjStr(kensaIrai.KanaName, 20) + ",";
             //被験者名漢字
@@ -564,11 +564,11 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             o1 += adjStr(kensaIrai.GetSexStr("1", "2"), 1) + ",";
 
             // 年齢区分     1桁  ※Y固定
-            o1 += " " + ",";
+            o1 +=  ",";
             // 年齢       3桁
             o1 += adjStr(kensaIrai.Age.ToString(), 3, RightJustification) + ",";
             // 生年月日区分   1桁  ※スペース固定
-            o1 += " " + ",";
+            o1 +=  ",";
             // 生年月日
             o1 += (kensaIrai.Birthday % 1000000).ToString().PadLeft(6, '0') + ",";
             // 採取日      6桁  ※YYMMDD（西暦）
@@ -576,11 +576,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 採取時間     4桁  ※未使用
             o1 += (kensaIrai.UpdateTime.PadLeft(6, '0')) + ",";
             //保険情報
-            o1 += " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + ",";
-            // 身長       4桁（前3桁整数部、後1桁小数点部）
-            o1 += getHeightWeight(kensaIrai.Height) + ",";
-            // 体重       4桁（前3桁整数部、後1桁小数点部）
-            o1 += getHeightWeight(kensaIrai.Weight) + ",";
+            o1 += ",,,,,,,";
 
             if (kensaIrai.SikyuKbn == 0)
             {
@@ -591,7 +587,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1) + ",";
             }
 
-            o1 += " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " " + "," + " ";
+            o1 += ",,,,,,,,,,,,";
 
             int dtlCount = 0;
             foreach (var kensaDtl in kensaIrai.Details)
