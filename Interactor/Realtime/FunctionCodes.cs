@@ -4,5 +4,6 @@
 public static class FunctionCodes
 {
     public const string RunCalculate = "RunCalculate";
+    public const string FailedUpgradePremium = "FailedUpgradePremium";
     public const string FinishedUpgradePremium = "FinishedUpgradePremium";
 }

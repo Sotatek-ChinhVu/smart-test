@@ -46,6 +46,7 @@ namespace Interactor.SuperAdmin
                     if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restor-failed"]);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, tenant);
                         cts.Cancel();
                         return;
                     }
@@ -64,6 +65,7 @@ namespace Interactor.SuperAdmin
                     if (!isSuccessRestoreInstance || endpoint == null || string.IsNullOrEmpty(endpoint?.Address))
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restor-failed"]);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, tenant);
                         cts.Cancel();
                         return;
                     } 
