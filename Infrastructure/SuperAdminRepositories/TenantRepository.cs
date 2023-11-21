@@ -13,7 +13,7 @@ namespace Infrastructure.SuperAdminRepositories
 
         public TenantModel Get(int tenantId)
         {
-            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId).FirstOrDefault();
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.IsDeleted == 0).FirstOrDefault();
             var tenantModel = tenant == null ? new() : ConvertEntityToModel(tenant);
             return tenantModel;
         }
@@ -43,6 +43,29 @@ namespace Infrastructure.SuperAdminRepositories
                 tenant.Action,
                 tenant.RdsIdentifier
                 );
+        }
+
+        public bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint)
+        {
+            try
+            {
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
+                if (tenant == null)
+                {
+                    return false;
+                }
+                tenant.EndPointDb = endPoint;
+                tenant.Type = 1;
+                tenant.Status = 1;
+                tenant.RdsIdentifier = dbIdentifier;
+                TrackingDataContext.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
         }
 
         public void ReleaseResource()
