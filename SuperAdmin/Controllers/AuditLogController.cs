@@ -1,4 +1,5 @@
 ﻿using Domain.SuperAdminModels.Logger;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.AuditLog;
@@ -11,6 +12,7 @@ namespace SuperAdminAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class AuditLogController : ControllerBase
 {
     private readonly UseCaseBus _bus;
