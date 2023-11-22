@@ -16,6 +16,7 @@ using Interactor.SuperAdmin.AuditLog;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
+using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.Login;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.UpgradePremium;
@@ -78,6 +79,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
+            busBuilder.RegisterUseCase<GetTenantInputData, GetTenantInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

@@ -168,7 +168,7 @@ namespace Interactor.SuperAdmin
                             {
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
@@ -193,7 +193,7 @@ namespace Interactor.SuperAdmin
                                 string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
@@ -226,7 +226,7 @@ namespace Interactor.SuperAdmin
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                     var id = _tenantRepository.CreateTenant(model);
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.RdsIdentifier = dbIdentifier;
+                                    model.ChangeRdsIdentifier(dbIdentifier);
                                     _ = Task.Run(async () =>
                                     {
                                         host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
