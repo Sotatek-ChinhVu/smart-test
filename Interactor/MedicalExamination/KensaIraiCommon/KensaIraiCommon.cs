@@ -249,7 +249,7 @@ public class KensaIraiCommon : IKensaIraiCommon
                                                                 string.Empty,
                                                                 string.Empty,
                                                                 string.Empty,
-                                                                true,
+                                                                false,
                                                                 createId);
                                 addkensaInf.IsAddNew = true;
                                 addkensaInf.KeyNo = keyNo;
