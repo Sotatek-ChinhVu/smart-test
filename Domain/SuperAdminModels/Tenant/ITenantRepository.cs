@@ -18,5 +18,7 @@ public interface ITenantRepository
 
     List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
 
+    TenantModel GetTenant(int tenantId);
+
     void ReleaseResource();
 }
