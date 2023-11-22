@@ -47,7 +47,7 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiDate, int startDate, int endDate, bool showAbnormalKbn, int sinDate, bool checkAbnormalKbn)
+        public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiDate, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
             this.hpId = hpId;
             this.userId = userId;
@@ -175,7 +175,7 @@ namespace Reporting.KensaHistory.Service
                         case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
                         case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
                     }
-                    
+
                     rowNo++;
                     if (rowNo == maxRow)
                     {

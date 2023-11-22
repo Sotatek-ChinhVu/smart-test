@@ -265,12 +265,12 @@ public class PdfCreatorController : ControllerBase
     {
         if (request.IraiDate != 0)
         {
-            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate, request.CheckAbnormalKbn);
+            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
         else
         {
-            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate, request.CheckAbnormalKbn);
+            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
     }

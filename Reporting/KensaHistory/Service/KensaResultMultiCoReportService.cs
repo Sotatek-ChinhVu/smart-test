@@ -29,7 +29,6 @@ namespace Reporting.KensaHistory.Service
         private long iraiEnd;
         private int sinDate;
         private int row;
-        private bool checkAbnormalKbn;
         private PtInf ptInf;
         private (List<CoKensaResultMultiModel>, List<long>) data = new();
         private List<CoKensaResultMultiModel> kensaInfDetails = new();
@@ -61,7 +60,7 @@ namespace Reporting.KensaHistory.Service
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
-        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn, int sinDate, bool checkAbnormalKbn)
+        public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
 
             this.hpId = hpId;
@@ -72,7 +71,6 @@ namespace Reporting.KensaHistory.Service
             this.endDate = endDate;
             this.showAbnormalKbn = showAbnormalKbn;
             this.sinDate = sinDate;
-            this.checkAbnormalKbn = checkAbnormalKbn;
             var getData = GetData();
 
             if (getData)
@@ -482,33 +480,7 @@ namespace Reporting.KensaHistory.Service
 
             List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
 
-            if (checkAbnormalKbn)
-            {
-                foreach (var item in data.Item1)
-                {
-                    int count = 0;
-                    foreach (var itemDynamicArray in item.KensaResultMultiItems)
-                    {
-                        if (itemDynamicArray.AbnormalKbn == "")
-                        {
-                            count++;
-                        }
-
-                        if (count == data.Item2.Count)
-                        {
-                            coKensaResultMultiModels.Add(item);
-                        }
-                    }
-                }
-            }
-
-            foreach (var item in coKensaResultMultiModels)
-            {
-                data.Item1.Remove(item);
-            }
-
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
-            kensaInfDetailsItem = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)

@@ -11,7 +11,5 @@
         public int EndDate { get; set; } = 0;
         public bool ShowAbnormalKbn { get; set; } = false;
         public int SinDate { get; set; }
-
-        public bool CheckAbnormalKbn { get; set; } = false;
     }
 }
