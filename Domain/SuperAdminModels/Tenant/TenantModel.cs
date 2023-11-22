@@ -29,7 +29,7 @@
             RdsIdentifier = rdsIdentifier;
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -39,6 +39,7 @@
             SubDomain = subDomain;
             Db = db;
             Size = size;
+            SizeType = sizeType;
             Type = type;
             EndPointDb = endPointDb;
             EndSubDomain = endSubDomain;
@@ -76,6 +77,8 @@
         public string Db { get; private set; }
 
         public int Size { get; private set; }
+
+        public int SizeType { get; private set; }
 
         public byte Type { get; private set; }
 

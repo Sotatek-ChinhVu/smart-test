@@ -3,20 +3,38 @@ using Entity.SuperAdmin;
 using Helper.Common;
 using Helper.Enum;
 using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Npgsql;
 using System.Data;
 using System.Text;
+using StackExchange.Redis;
+using Microsoft.Extensions.Configuration;
+using Amazon.Runtime.Internal.Util;
+using Entity.Tenant;
 
 namespace Infrastructure.SuperAdminRepositories;
 
 public class TenantRepository : SuperAdminRepositoryBase, ITenantRepository
 {
-    public TenantRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
+    public TenantRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
 
+    private void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
+    }
     public TenantModel Get(int tenantId)
     {
         var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.IsDeleted == 0).FirstOrDefault();
@@ -116,14 +134,10 @@ public class TenantRepository : SuperAdminRepositoryBase, ITenantRepository
         DisposeDataContext();
     }
 
-    public List<TenantModel> GetTenantList(int tenantId, SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
+    public List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
     {
         List<TenantModel> result;
         IQueryable<Tenant> query = NoTrackingDataContext.Tenants;
-        if (tenantId > 0)
-        {
-            query = query.Where(item => item.TenantId == tenantId);
-        }
         if (!searchModel.IsEmptyModel)
         {
             // filte data ignore storageFull
@@ -135,12 +149,49 @@ public class TenantRepository : SuperAdminRepositoryBase, ITenantRepository
         {
             var querySortList = SortTenantQuery(query, sortDictionary);
             querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
-            result = querySortList.Select(item => ConvertEntityToModel(item)).ToList();
+            result = querySortList.Select(tenant => new TenantModel(
+                                                        tenant.TenantId,
+                                                        tenant.Hospital,
+                                                        tenant.Status,
+                                                        tenant.AdminId,
+                                                        tenant.Password,
+                                                        tenant.SubDomain,
+                                                        tenant.Db,
+                                                        tenant.Size,
+                                                        tenant.SizeType,
+                                                        tenant.Type,
+                                                        tenant.EndPointDb,
+                                                        tenant.EndSubDomain,
+                                                        tenant.Action,
+                                                        tenant.ScheduleDate,
+                                                        tenant.ScheduleTime,
+                                                        tenant.CreateDate,
+                                                        tenant.RdsIdentifier))
+                                  .ToList();
+            result = ChangeStorageFull(result);
+            result = SortTenantList(result, sortDictionary).ToList();
             return result;
         }
-
-        result = query.Select(item => ConvertEntityToModel(item)).ToList();
-        result = CalculateStorageFull(result);
+        result = query.Select(tenant => new TenantModel(
+                                        tenant.TenantId,
+                                        tenant.Hospital,
+                                        tenant.Status,
+                                        tenant.AdminId,
+                                        tenant.Password,
+                                        tenant.SubDomain,
+                                        tenant.Db,
+                                        tenant.Size,
+                                        tenant.SizeType,
+                                        tenant.Type,
+                                        tenant.EndPointDb,
+                                        tenant.EndSubDomain,
+                                        tenant.Action,
+                                        tenant.ScheduleDate,
+                                        tenant.ScheduleTime,
+                                        tenant.CreateDate,
+                                        tenant.RdsIdentifier))
+                      .ToList();
+        result = ChangeStorageFull(result);
         if (searchModel.StorageFull != StorageFullEnum.Empty)
         {
             switch (searchModel.StorageFull)
@@ -517,55 +568,78 @@ public class TenantRepository : SuperAdminRepositoryBase, ITenantRepository
         return querySortList;
     }
 
-    private List<TenantModel> CalculateStorageFull(List<TenantModel> tenantList)
+    private List<TenantModel> ChangeStorageFull(List<TenantModel> tenantList)
     {
-        List<TenantModel> result = new();
-        foreach (var tenant in tenantList)
+        Parallel.ForEach(tenantList, tenant =>
         {
             double storageInDB = 0;
             int port = 5432;
             string id = "postgres";
-            string password = "Emr!23456789";
-            StringBuilder sConnectionString = new();
-            sConnectionString.Append("host=");
-            sConnectionString.Append(tenant.EndPointDb);
-            sConnectionString.Append(";port=");
-            sConnectionString.Append(port.ToString());
-            sConnectionString.Append(";database=");
-            sConnectionString.Append(tenant.Db);
-            sConnectionString.Append(";user id=");
-            sConnectionString.Append(id);
-            sConnectionString.Append(";password=");
-            sConnectionString.Append(password);
-
-            var connStr = new NpgsqlConnectionStringBuilder(sConnectionString.ToString());
-            connStr.TrustServerCertificate = true;
-            try
+            //string password = "Emr!23456789";
+            string password = "Emr!23";
+            StringBuilder connectionStringBuilder = new();
+            connectionStringBuilder.Append("host=");
+            connectionStringBuilder.Append(tenant.EndPointDb);
+            connectionStringBuilder.Append(";port=");
+            connectionStringBuilder.Append(port.ToString());
+            connectionStringBuilder.Append(";database=");
+            connectionStringBuilder.Append(tenant.Db);
+            connectionStringBuilder.Append(";user id=");
+            connectionStringBuilder.Append(id);
+            connectionStringBuilder.Append(";password=");
+            connectionStringBuilder.Append(password);
+            string connectionString = connectionStringBuilder.ToString();
+            string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
+            if (_cache.KeyExists(finalKey))
             {
-                using (var conn = new NpgsqlConnection(connStr.ToString()))
-                {
-                    conn.Open();
-                    string sqlQuery = string.Format("select pg_database_size('{0}')", tenant.Db);
-                    using (var command = new NpgsqlCommand(sqlQuery, conn))
-                    {
-                        var reader = command.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            storageInDB = reader.GetInt32(0);
-                        }
-                        reader.Close();
-                    }
-                }
-                double storageFull = (storageInDB / tenant.Size) * 100;
+                var storageFull = _cache.StringGet(finalKey).AsInteger();
                 tenant.ChangeStorageFull(storageFull);
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine("Can not connect to database " + tenant.EndPointDb + tenant.Db + "\n" + ex.ToString());
+                var connStr = new NpgsqlConnectionStringBuilder(connectionString);
+                connStr.TrustServerCertificate = true;
+                try
+                {
+                    using (var conn = new NpgsqlConnection(connStr.ToString()))
+                    {
+                        conn.Open();
+                        string sqlQuery = string.Format("select pg_database_size('{0}')", tenant.Db);
+                        using (var command = new NpgsqlCommand(sqlQuery, conn))
+                        {
+                            NpgsqlDataReader reader = command.ExecuteReader();
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                /// 1: MB; 2: GB
+                                switch (tenant.SizeType)
+                                {
+                                    case 1:
+                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024);
+                                        break;
+                                    case 2:
+                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024 / 1024);
+                                        break;
+                                }
+                            }
+                            reader.Close();
+                        }
+                    }
+                    var storageFull = Math.Round((storageInDB / tenant.Size) * 100);
+                    if (storageFull > 0)
+                    {
+                        _cache.StringSet(finalKey, storageFull.ToString());
+                        _cache.KeyExpire(finalKey, new TimeSpan(1, 0, 0));
+                    }
+                    tenant.ChangeStorageFull(storageFull);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Can not connect to database " + tenant.EndPointDb + tenant.Db + "\n" + ex.ToString());
+                }
             }
-        }
-
-        return result;
+        });
+        return tenantList;
     }
 
     private TenantModel ConvertEntityToModel(Tenant tenant)
@@ -579,6 +653,7 @@ public class TenantRepository : SuperAdminRepositoryBase, ITenantRepository
             tenant.SubDomain,
             tenant.Db,
             tenant.Size,
+            tenant.SizeType,
             tenant.Type,
             tenant.EndPointDb,
             tenant.EndSubDomain,

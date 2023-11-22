@@ -16,7 +16,7 @@ public interface ITenantRepository
 
     bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
 
-    List<TenantModel> GetTenantList(int tenantId, SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
+    List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
 
     void ReleaseResource();
 }

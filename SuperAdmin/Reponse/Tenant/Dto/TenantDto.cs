@@ -14,6 +14,7 @@ public class TenantDto
         SubDomain = model.SubDomain;
         Db = model.Db;
         Size = model.Size;
+        SizeType = model.SizeType;
         Type = model.Type;
         EndPointDb = model.EndPointDb;
         EndSubDomain = model.EndSubDomain;
@@ -40,6 +41,11 @@ public class TenantDto
     public string Db { get; private set; }
 
     public int Size { get; private set; }
+
+    /// <summary>
+    /// 1: MB; 2: GB
+    /// </summary>
+    public int SizeType { get; private set; }
 
     public byte Type { get; private set; }
 

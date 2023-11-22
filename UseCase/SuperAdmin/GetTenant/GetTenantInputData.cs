@@ -6,16 +6,13 @@ namespace UseCase.SuperAdmin.GetTenant;
 
 public class GetTenantInputData : IInputData<GetTenantOutputData>
 {
-    public GetTenantInputData(int tenantId, SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
+    public GetTenantInputData(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
     {
-        TenantId = tenantId;
         SearchModel = searchModel;
         SortDictionary = sortDictionary;
         Skip = skip;
         Take = take;
     }
-
-    public int TenantId { get; private set; }
 
     public SearchTenantModel SearchModel { get; private set; }
 

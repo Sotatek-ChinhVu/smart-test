@@ -35,7 +35,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("GetTenant")]
         public ActionResult<Response<GetTenantResponse>> GetTenant([FromBody] GetTenantRequest request)
         {
-            var input = new GetTenantInputData(request.TenantId, GetSearchTenantModel(request.SearchModel), request.SortDictionary, request.Skip, request.Take);
+            var input = new GetTenantInputData(GetSearchTenantModel(request.SearchModel), request.SortDictionary, request.Skip, request.Take);
             var output = _bus.Handle(input);
             var presenter = new GetTenantPresenter();
             presenter.Complete(output);
