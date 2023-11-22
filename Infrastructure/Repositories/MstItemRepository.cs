@@ -6163,7 +6163,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               x?.SanteiItemCd ?? string.Empty,
                               x?.SanteigaiKbn ?? 0,
                               x?.IsNosearch ?? 0,
-                              entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList())).ToList(),
+                              entity.TenMsts.Select(x => CIUtil.SDateToShowSDate(x.StartDate)).Distinct().ToList(),
+                              x.UpdateDate
+                              )).OrderBy(t => t.CreateDate).ToList(),
                 entity.TenMsts.Select(y => new TenItemModel(
                                                             y.SinKouiKbn,
                                                             y.MasterSbt ?? string.Empty,

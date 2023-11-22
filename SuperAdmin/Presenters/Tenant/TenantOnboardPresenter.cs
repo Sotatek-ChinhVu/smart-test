@@ -30,6 +30,7 @@ namespace SuperAdminAPI.Presenters.Tenant
             TenantOnboardStatus.InvalidSize => ResponseMessage.InvalidSize,
             TenantOnboardStatus.InvalidClusterMode => ResponseMessage.InvalidClusterMode,
             TenantOnboardStatus.InvalidSizeType => ResponseMessage.InvalidSizeType,
+            TenantOnboardStatus.SubDomainExists => ResponseMessage.SubDomainExists,
             _ => string.Empty
         };
     }
