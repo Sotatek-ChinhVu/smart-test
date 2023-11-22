@@ -10,5 +10,6 @@
         public static readonly string InvalidClusterMode = "Invalid Cluster Mode";
         public static readonly string InvalidSizeType = "Invalid Size Type";
         public static readonly string InvalidSize = "Invalid Size";
+        public static readonly string SubDomainExists = "SubDomain Exists";
     }
 }

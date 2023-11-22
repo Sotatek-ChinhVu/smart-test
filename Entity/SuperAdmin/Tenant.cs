@@ -32,6 +32,15 @@ namespace Entity.SuperAdmin
         [Column("SIZE")]
         public int Size { get; set; }
 
+        /// <summary>
+        /// 1: MB; 2: GB
+        /// </summary>
+        [Column("SIZE_TYPE")]
+        public int SizeType { get; set; }
+
+        /// <summary>
+        /// 0: sharing; 1: dedicate(premium)
+        /// </summary>
         [Column("TYPE")]
         public byte Type { get; set; }
 

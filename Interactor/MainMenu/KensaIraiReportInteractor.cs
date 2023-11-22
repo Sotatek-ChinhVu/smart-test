@@ -122,9 +122,10 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 kensaIrai.KaId,
                 weightHeight.weight,
                 weightHeight.height,
+                raiinInf?.TantoName ?? string.Empty,
                 raiinInf?.TantoKanaName ?? string.Empty,
                 raiinInf?.KaSName ?? string.Empty,
-            AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails)));
+            AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails))) ;
         }
         return kensaIraiList;
     }
@@ -548,7 +549,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             o1 += "1" + ",";
             // 提出医      10桁 ※未使用
 
-            o1 += CIUtil.CiCopyStrWidth(string.IsNullOrEmpty(kensaIrai.DrName) ? kensaIrai.Name : kensaIrai.DrName, 1, 10, 1) + ",";
+            o1 += CIUtil.CiCopyStrWidth(string.IsNullOrEmpty(kensaIrai.DrName) ? kensaIrai.TantoName : kensaIrai.DrName, 1, 10, 1) + ",";
 
             // 被検者ＩＤ    
             o1 += kensaIrai.PtNum.ToString() + ",";
@@ -580,7 +581,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
 
             if (kensaIrai.SikyuKbn == 0)
             {
-                o1 += " " + ",";
+                o1 += string.Empty + ",";
             }
             else
             {

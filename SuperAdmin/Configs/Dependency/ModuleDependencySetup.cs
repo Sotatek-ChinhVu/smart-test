@@ -10,6 +10,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Infrastructure.Services;
 using Infrastructure.SuperAdminRepositories;
+using Interactor.Realtime;
 using Interactor.SuperAdmin;
 using Interactor.SuperAdmin.AuditLog;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -53,6 +54,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IAwsSdkService, AwsSdkService>();
+            services.AddTransient<IWebSocketService, WebSocketService>();
 
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
