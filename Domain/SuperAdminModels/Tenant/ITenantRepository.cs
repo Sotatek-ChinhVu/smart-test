@@ -8,6 +8,7 @@
         int CreateTenant(TenantModel model);
         bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPoint, string dbIdentifier);
         bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
+        void RevokeInsertPermission();
 
         void ReleaseResource();
     }

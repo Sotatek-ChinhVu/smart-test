@@ -3,6 +3,7 @@ using Entity.SuperAdmin;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Npgsql;
 
 namespace Infrastructure.SuperAdminRepositories
 {
@@ -121,6 +122,62 @@ namespace Infrastructure.SuperAdminRepositories
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 return false;
+            }
+        }
+
+        public void RevokeInsertPermission()
+        {
+            var listTenant = NoTrackingDataContext.Tenants.Where(i => i.Status == 1 && i.IsDeleted == 0).ToList();
+            foreach (var tenant in listTenant)
+            {
+                var connectionString = $"Host={tenant.EndPointDb};Username=postgres;Password=Emr!23456789;Port=5432";
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var sizeCheckCommand = new NpgsqlCommand())
+                    {
+                        sizeCheckCommand.Connection = connection;
+                        sizeCheckCommand.CommandText = $"SELECT pg_database_size('{tenant.Db}')";
+
+                        var databaseSize = sizeCheckCommand.ExecuteScalar();
+                        if (databaseSize == null) continue;
+                        if (tenant.SizeType == 1) //MB
+                        {
+                            GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
+                        }
+                        else if (tenant.SizeType == 2) //GB
+                        {
+                            GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
+                        }
+
+                    }
+                }
+            }
+        }
+        private void GrantOrRevokeExecute(int size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role)
+        {
+            var sizeDatabase = Convert.ToInt64(databaseSize) / (1024 * 1024); //MB
+            if (sizeType == 2)
+            {
+                sizeDatabase = Convert.ToInt64(databaseSize) / 1024; //GB
+            }
+            if (sizeDatabase < size)
+            {
+                using (var grantCommand = new NpgsqlCommand())
+                {
+                    grantCommand.Connection = connection;
+                    grantCommand.CommandText = $"GRANT INSERT ON ALL TABLES IN SCHEMA public TO {role}";
+                    grantCommand.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                using (var revokeCommand = new NpgsqlCommand())
+                {
+                    revokeCommand.Connection = connection;
+                    revokeCommand.CommandText = $"REVOKE INSERT ON ALL TABLES IN SCHEMA public FROM {role}";
+                    revokeCommand.ExecuteNonQuery();
+                }
             }
         }
 

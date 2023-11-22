@@ -12,12 +12,16 @@ using Infrastructure.Services;
 using Infrastructure.SuperAdminRepositories;
 using Interactor.SuperAdmin;
 using Interactor.SuperAdmin.AuditLog;
+using Interactor.SystemStartDbs;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using SuperAdminAPI.Services;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.RevokeInsertPermission;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.UpgradePremium;
+using UseCase.SystemStartDbs;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -54,6 +58,8 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IAwsSdkService, AwsSdkService>();
 
+            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
 
@@ -79,6 +85,8 @@ namespace SuperAdmin.Configs.Dependency
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
+
+            busBuilder.RegisterUseCase<RevokeInsertPermissionInputData, RevokeInsertPermissionInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
