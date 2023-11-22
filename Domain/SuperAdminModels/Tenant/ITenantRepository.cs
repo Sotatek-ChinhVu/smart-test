@@ -1,14 +1,22 @@
-﻿namespace Domain.SuperAdminModels.Tenant
-{
-    public interface ITenantRepository
-    {
-        TenantModel Get(int tenantId);
-        int GetBySubDomainAndIdentifier(string subDomain, string Identifier);
-        int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier);
-        int CreateTenant(TenantModel model);
-        bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPoint, string dbIdentifier);
-        bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
+﻿using Helper.Enum;
 
-        void ReleaseResource();
-    }
+namespace Domain.SuperAdminModels.Tenant;
+
+public interface ITenantRepository
+{
+    TenantModel Get(int tenantId);
+
+    int GetBySubDomainAndIdentifier(string subDomain, string Identifier);
+
+    int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier);
+
+    int CreateTenant(TenantModel model);
+
+    bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier);
+
+    bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
+
+    List<TenantModel> GetTenantList(int tenantId, SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
+
+    void ReleaseResource();
 }

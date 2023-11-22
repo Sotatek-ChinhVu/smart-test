@@ -92,7 +92,7 @@ namespace Interactor.SuperAdmin
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                         {
-                            var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
+                            _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
                         }
                     }
 
@@ -105,7 +105,7 @@ namespace Interactor.SuperAdmin
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
                         running = false;
                     }
                 }
@@ -121,8 +121,6 @@ namespace Interactor.SuperAdmin
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
             string subDomain = model.SubDomain;
-            int size = model.Size;
-            int sizeType = 1;
             int tier = model.Type;
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
@@ -150,20 +148,20 @@ namespace Interactor.SuperAdmin
                                 {
                                     var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    //RDSAction.CreateDatabase(host, tenantId);
-                                    //RDSAction.CreateTables(host, tenantId);
+                                    ///RDSAction.CreateDatabase(host, tenantId);
+                                    ///RDSAction.CreateTables(host, tenantId);
                                 });
                             }
                             else
                             {
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    //RDSAction.CreateDatabase(host, tenantId);
-                                    //RDSAction.CreateTables(host, tenantId);
+                                    ///RDSAction.CreateDatabase(host, tenantId);
+                                    ///RDSAction.CreateTables(host, tenantId);
                                 });
 
 
@@ -180,12 +178,12 @@ namespace Interactor.SuperAdmin
                                 string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    //RDSAction.CreateDatabase(host, tenantId);
-                                    //RDSAction.CreateTables(host, tenantId);
+                                    ///RDSAction.CreateDatabase(host, tenantId);
+                                    ///RDSAction.CreateTables(host, tenantId);
                                 });
                             }
                             else // Else, returning the first available RDS Cluster in the list
@@ -198,8 +196,8 @@ namespace Interactor.SuperAdmin
                                     {
                                         var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
                                         host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                        //RDSAction.CreateDatabase(host, tenantId);
-                                        //RDSAction.CreateTables(host, tenantId);
+                                        ///RDSAction.CreateDatabase(host, tenantId);
+                                        ///RDSAction.CreateTables(host, tenantId);
                                     });
                                 }
                                 else
@@ -207,12 +205,12 @@ namespace Interactor.SuperAdmin
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                     var id = _tenantRepository.CreateTenant(model);
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.RdsIdentifier = dbIdentifier;
+                                    model.ChangeRdsIdentifier(dbIdentifier);
                                     _ = Task.Run(async () =>
                                     {
                                         host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
-                                        //RDSAction.CreateDatabase(host, tenantId);
-                                        //RDSAction.CreateTables(host, tenantId);
+                                        ///RDSAction.CreateDatabase(host, tenantId);
+                                        ///RDSAction.CreateTables(host, tenantId);
                                     });
                                 }
                             }
