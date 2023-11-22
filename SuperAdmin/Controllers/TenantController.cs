@@ -14,6 +14,7 @@ namespace SuperAdminAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TenantController : ControllerBase
     {
         private readonly UseCaseBus _bus;
