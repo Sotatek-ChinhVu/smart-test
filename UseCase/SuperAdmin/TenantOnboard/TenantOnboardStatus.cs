@@ -6,6 +6,7 @@
         InvalidSize = 2,
         InvalidSizeType = 3,
         InvalidClusterMode = 4,
-        Failed = 5
+        Failed = 5,
+        SubDomainExists = 6
     }
 }

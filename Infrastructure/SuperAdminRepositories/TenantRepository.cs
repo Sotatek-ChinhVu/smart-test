@@ -65,6 +65,7 @@ namespace Infrastructure.SuperAdminRepositories
             tenant.Status = 2; //Status: creating
             tenant.Db = model.Db;
             tenant.Size = model.Size;
+            tenant.SizeType = model.SizeType;
             tenant.Type = model.Type;
             tenant.EndPointDb = model.SubDomain;
             tenant.EndSubDomain = model.SubDomain;

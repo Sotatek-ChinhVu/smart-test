@@ -22,7 +22,7 @@
             Action = action;
             RdsIdentifier = rdsIdentifier;
         }
-        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
+        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
         {
             Hospital = hospital;
             Status = status;
@@ -31,6 +31,7 @@
             SubDomain = subDomain;
             Db = db;
             Size = size;
+            SizeType = sizeType;
             Type = type;
             EndPointDb = endPointDb;
             EndSubDomain = endSubDomain;
@@ -53,6 +54,14 @@
 
         public int Size { get; set; }
 
+        /// <summary>
+        /// 1:MB ; 2:GB
+        /// </summary>
+        public int SizeType { get; set; }
+
+        /// <summary>
+        /// 1:sharing; 2:dedicate(premium)
+        /// </summary>
         public byte Type { get; set; }
 
         public string EndPointDb { get; set; } = string.Empty;
