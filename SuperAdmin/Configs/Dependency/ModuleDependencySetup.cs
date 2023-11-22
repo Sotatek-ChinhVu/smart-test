@@ -18,6 +18,7 @@ using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
 using UseCase.SuperAdmin.Login;
 using UseCase.SuperAdmin.TenantOnboard;
+using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdmin.Configs.Dependency
@@ -78,6 +79,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
+            busBuilder.RegisterUseCase<TerminateTenantInputData, TerminateTenantInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

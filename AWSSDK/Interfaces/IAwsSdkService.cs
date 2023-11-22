@@ -10,5 +10,7 @@ namespace AWSSDK.Interfaces
         Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier);
         Task<bool> CheckSubdomainExistenceAsync(string subdomainToCheck);
         Task<bool> IsDedicatedTypeAsync(string dbIdentifier);
+        Task<bool> CheckExitRDS(string dbIdentifier);
+        bool DeleteTenantDb(string serverEndpoint, string tennantDB);
     }
 }

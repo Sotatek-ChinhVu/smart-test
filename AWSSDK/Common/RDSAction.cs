@@ -39,7 +39,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                return new Dictionary<string, RDSInformation>();
             }
         }
 
@@ -425,7 +425,7 @@ namespace AWSSDK.Common
                 string password = "Emr!23456789";
                 int port = 5432;
                 // Connection string format for PostgreSQL
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"host={serverEndpoint};port={port};userid={username};password={password};";
 
                 List<string> databaseList = new List<string>();
 
@@ -434,7 +434,7 @@ namespace AWSSDK.Common
                 {
                     try
                     {
-                        await connection.OpenAsync();
+                        connection.Open();
 
                         // Select databases
                         using (NpgsqlCommand command = new NpgsqlCommand("SELECT datname FROM pg_catalog.pg_database;", connection))

@@ -6,6 +6,7 @@ using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.TenantOnboard;
+using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdminAPI.Controllers
@@ -24,7 +25,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("UpgradePremium")]
         public ActionResult<Response<UpgradePremiumResponse>> UpgradePremium([FromBody] UpgradePremiumRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId);
+            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.Domain);
             var output = _bus.Handle(input);
             var presenter = new UpgradePremiumPresenter();
             presenter.Complete(output);
@@ -49,13 +50,13 @@ namespace SuperAdminAPI.Controllers
         }
 
         [HttpPost("TerminateTenant")]
-        public ActionResult<Response<UpgradePremiumResponse>> TerminateTenant([FromBody] UpgradePremiumRequest request)
+        public ActionResult<Response<TerminateTenantResponse>> TerminateTenant([FromBody] TerminateTenantRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId);
+            var input = new TerminateTenantInputData(request.TenantId);
             var output = _bus.Handle(input);
-            var presenter = new UpgradePremiumPresenter();
+            var presenter = new TerminateTenantPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<UpgradePremiumResponse>>(presenter.Result);
+            return new ActionResult<Response<TerminateTenantResponse>>(presenter.Result);
         }
     }
 }

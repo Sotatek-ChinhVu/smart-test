@@ -3,8 +3,6 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
-using Npgsql;
-using System.Data.Common;
 using UseCase.SuperAdmin.TerminateTenant;
 
 namespace Interactor.SuperAdmin
@@ -46,93 +44,53 @@ namespace Interactor.SuperAdmin
             _ = Task.Run(async () =>
             {
                 Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
+                bool isDeleteDb = false;
+
                 // Connect RDS delete TenantDb
                 if (listTenantDb.Count > 1)
                 {
-                    if (DeleteTenantDb(tenant.EndPointDb, tenant.Db))
+                    if (!_awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db))
                     {
-
+                        isDeleteDb = true;
                     }
                     else
                     {
-
+                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
                     }
 
                 }
 
-                // Delete RDS
-                // Delete DNS
-                // Delete Could front
+                // Deleted RDS
                 else
                 {
-                    if (await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier))
+                    await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
+                    isDeleteDb = await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier);
+                    if (!isDeleteDb)
                     {
-                    }
-
-                    // Terminate failure 
-                    else
-                    {
-                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
-                    }
-
-                    // Check Deleted RDS, DNS, Could front
-                    if (await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier))
-                    {
-                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
+                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
+                        cts.Cancel();
+                        return;
                     }
                 }
 
-                
-                // Notification
+                // Delete DNS
+                // Delete Could font
+
+                // Check Deleted Finished RDS, DNS, Could font
+                if (!isDeleteDb)
+                {
+                    _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
+                    cts.Cancel();
+                    return;
+                }
 
                 //Finished terminate
+                _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
+                // Notification
                 cts.Cancel();
                 return;
             });
             return new TerminateTenantOutputData(true, TerminateTenantStatus.Successed);
-        }
-
-        public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
-        {
-            try
-            {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                var port = 5432;
-                // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
-
-                // Create and open a connection
-                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
-                {
-                    try
-                    {
-                        connection.Open();
-
-                        // Delete database
-                        using (DbCommand command = connection.CreateCommand())
-                        {
-                            command.CommandText = $"EXECUTE 'DROP DATABASE {tennantDB};";
-                            command.ExecuteNonQuery();
-                        }
-
-                        Console.WriteLine($"Database deleted successfully.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
-            }
         }
     }
 }

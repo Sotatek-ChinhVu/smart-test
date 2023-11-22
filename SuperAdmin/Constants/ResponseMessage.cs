@@ -10,5 +10,8 @@
         public static readonly string InvalidClusterMode = "Invalid Cluster Mode";
         public static readonly string InvalidSizeType = "Invalid Size Type";
         public static readonly string InvalidSize = "Invalid Size";
+        public static readonly string TenantDoesNotExist = "Tenant Does Not Exist";
+        public static readonly string TenantDbDoesNotExistInRDS = "TenantDb Does Not Exist In RDS";
     }
+    
 }

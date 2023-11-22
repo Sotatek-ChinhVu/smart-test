@@ -1,7 +1,7 @@
-using Amazon.RDS;
-using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Interfaces;
+using Npgsql;
+using System.Data.Common;
 
 namespace AWSSDK.Services
 {
@@ -41,9 +41,56 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public Task<string> GetInfTenantByTenant(string Id)
+        public async Task<bool> CheckExitRDS(string dbIdentifier)
         {
-            throw new NotImplementedException();
+            var RDSInfs = await RDSAction.GetRDSInformation();
+            if (RDSInfs.ContainsKey(dbIdentifier))
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
+        {
+            try
+            {
+                // Replace these values with your actual RDS information
+                string username = "postgres";
+                string password = "Emr!23456789";
+                var port = 5432;
+                // Connection string format for SQL Server
+                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+
+                // Create and open a connection
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        // Delete database
+                        using (DbCommand command = connection.CreateCommand())
+                        {
+                            command.CommandText = $"EXECUTE 'DROP DATABASE {tennantDB};";
+                            command.ExecuteNonQuery();
+                        }
+
+                        Console.WriteLine($"Database deleted successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
         }
     }
 }
