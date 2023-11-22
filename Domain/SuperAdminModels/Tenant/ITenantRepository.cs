@@ -12,9 +12,11 @@ public interface ITenantRepository
 
     int CreateTenant(TenantModel model);
 
-    bool UpdateStatusTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier);
+    bool UpdateInfTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier);
 
-    bool UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
+    bool UpdateStatusTenant(int tenantId, byte status);
+
+    TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
 
     List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
 

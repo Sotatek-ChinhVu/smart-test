@@ -25,20 +25,20 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                else if (inputData.SizeType != 1 && inputData.SizeType != 2)
+                else if (inputData.SizeType != ConfigConstant.SizeTypeMB && inputData.SizeType != ConfigConstant.SizeTypeGB)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSizeType);
                 }
-                else if (inputData.ClusterMode != 1 && inputData.ClusterMode != 2)
+                else if (inputData.ClusterMode != ConfigConstant.TypeSharing && inputData.ClusterMode != ConfigConstant.TypeDedicate)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
                 var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
                 if (checkSubDomain)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty);
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty);
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -67,6 +67,7 @@ namespace Interactor.SuperAdmin
                 string host = string.Empty;
                 bool running = true;
                 string status = string.Empty;
+                DateTime startTime = DateTime.Now;
 
                 while (running)
                 {
@@ -92,12 +93,11 @@ namespace Interactor.SuperAdmin
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                         {
-                            _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
+                            var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
                         }
                     }
 
                     Console.WriteLine($"Last Database Shard status: {checkStatus}");
-
                     Thread.Sleep(5000);
 
                     if (checkStatus == "available")
@@ -105,7 +105,13 @@ namespace Interactor.SuperAdmin
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        running = false;
+                    }
+                    // Check if more than timeout
+                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
+                    {
+                        Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                         running = false;
                     }
                 }
@@ -121,6 +127,8 @@ namespace Interactor.SuperAdmin
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
             string subDomain = model.SubDomain;
+            int size = model.Size;
+            int sizeType = model.SizeType;
             int tier = model.Type;
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
@@ -148,8 +156,12 @@ namespace Interactor.SuperAdmin
                                 {
                                     var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    ///RDSAction.CreateDatabase(host, tenantId);
-                                    ///RDSAction.CreateTables(host, tenantId);
+                                    if (!string.IsNullOrEmpty(host))
+                                    {
+                                        RDSAction.CreateDatabase(host, subDomain);
+                                        RDSAction.CreateTables(host, subDomain);
+                                    }
+
                                 });
                             }
                             else
@@ -160,8 +172,11 @@ namespace Interactor.SuperAdmin
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    ///RDSAction.CreateDatabase(host, tenantId);
-                                    ///RDSAction.CreateTables(host, tenantId);
+                                    if (!string.IsNullOrEmpty(host))
+                                    {
+                                        RDSAction.CreateDatabase(host, subDomain);
+                                        RDSAction.CreateTables(host, subDomain);
+                                    }
                                 });
 
 
@@ -182,8 +197,11 @@ namespace Interactor.SuperAdmin
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    ///RDSAction.CreateDatabase(host, tenantId);
-                                    ///RDSAction.CreateTables(host, tenantId);
+                                    if (!string.IsNullOrEmpty(host))
+                                    {
+                                        RDSAction.CreateDatabase(host, subDomain);
+                                        RDSAction.CreateTables(host, subDomain);
+                                    }
                                 });
                             }
                             else // Else, returning the first available RDS Cluster in the list
@@ -196,8 +214,11 @@ namespace Interactor.SuperAdmin
                                     {
                                         var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
                                         host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                        ///RDSAction.CreateDatabase(host, tenantId);
-                                        ///RDSAction.CreateTables(host, tenantId);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            RDSAction.CreateDatabase(host, subDomain);
+                                            RDSAction.CreateTables(host, subDomain);
+                                        }
                                     });
                                 }
                                 else
@@ -209,8 +230,11 @@ namespace Interactor.SuperAdmin
                                     _ = Task.Run(async () =>
                                     {
                                         host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
-                                        ///RDSAction.CreateDatabase(host, tenantId);
-                                        ///RDSAction.CreateTables(host, tenantId);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            RDSAction.CreateDatabase(host, subDomain);
+                                            RDSAction.CreateTables(host, subDomain);
+                                        }
                                     });
                                 }
                             }
