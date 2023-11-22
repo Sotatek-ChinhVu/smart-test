@@ -1,7 +1,6 @@
 using Amazon.RDS;
 using Amazon.RDS.Model;
 using AWSSDK.Common;
-using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 
 namespace AWSSDK.Services
@@ -18,16 +17,16 @@ namespace AWSSDK.Services
             var sumaryCard = await CloudWatchAction.GetSummaryCardAsync();
             var result = sumaryCard.Where(entry => entry.Value["available"] == "yes").Select(entry => entry.Key).ToList();
             return result;
-        }        
+        }
 
         public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
         {
             return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
         }
 
-        public async Task<Endpoint> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
-           return await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+            return await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
         }
 
 
