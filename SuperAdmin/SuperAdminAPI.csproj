@@ -1,36 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.23" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.23" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Entity\Entity.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\Interactor\Interactor.csproj" />
-    <ProjectReference Include="..\PostgreDataContext\PostgreDataContext.csproj" />
-    <ProjectReference Include="..\UseCase\UseCase.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Entity\Entity.csproj" />
+		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+		<ProjectReference Include="..\Interactor\Interactor.csproj" />
+		<ProjectReference Include="..\PostgreDataContext\PostgreDataContext.csproj" />
+		<ProjectReference Include="..\UseCase\UseCase.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="UseCase.Core">
-      <HintPath>lib\UseCase.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="UseCase.Core">
+			<HintPath>lib\UseCase.Core.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Template\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Template\" />
+	</ItemGroup>
 
 </Project>
