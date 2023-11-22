@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Domain.SuperAdminModels.Tenant;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
+using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.UpgradePremium;
 
@@ -31,6 +33,16 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<UpgradePremiumResponse>>(presenter.Result);
         }
 
+        [HttpPost("GetTenant")]
+        public ActionResult<Response<GetTenantResponse>> GetTenant([FromBody] GetTenantRequest request)
+        {
+            var input = new GetTenantInputData(GetSearchTenantModel(request.SearchModel), request.SortDictionary, request.Skip, request.Take);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenantResponse>>(presenter.Result);
+        }
+
         [HttpPost("TenantOnboard")]
         public ActionResult<Response<TenantOnboardResponse>> TenantOnboardAsync([FromBody] TenantOnboardRequest request)
         {
@@ -47,5 +59,18 @@ namespace SuperAdminAPI.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<TenantOnboardResponse>>(presenter.Result);
         }
+
+        #region 
+        private SearchTenantModel GetSearchTenantModel(SearchTenantRequestItem requestItem)
+        {
+            return new SearchTenantModel(
+                       requestItem.KeyWord,
+                       requestItem.FromDate,
+                       requestItem.ToDate,
+                       requestItem.Type,
+                       requestItem.Status,
+                       requestItem.StorageFull);
+        }
+        #endregion
     }
 }
