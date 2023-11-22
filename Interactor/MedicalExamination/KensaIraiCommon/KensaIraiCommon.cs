@@ -447,6 +447,7 @@ public class KensaIraiCommon : IKensaIraiCommon
                         raiinInfModel?.KaId ?? 0,
                         weightHeight.weight,
                         weightHeight.height,
+                        raiinInf?.TantoName ?? string.Empty,
                         raiinInf?.TantoKanaName ?? string.Empty,
                         raiinInf?.KaSName ?? string.Empty,
                         addKensaIraiDtls);
