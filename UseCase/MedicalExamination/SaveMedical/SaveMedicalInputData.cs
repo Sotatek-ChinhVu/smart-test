@@ -10,7 +10,7 @@ namespace UseCase.MedicalExamination.SaveMedical;
 
 public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 {
-    public SaveMedicalInputData(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, bool isSagaku, bool autoSaveKensaIrai, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem, List<UpsertPtDiseaseListInputItem> upsertPtDiseaseListInputItems, List<UpsertFlowSheetItemInputData> flowSheetItems, MonshinInforModel monshins)
+    public SaveMedicalInputData(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, bool isSagaku, bool autoSaveKensaIrai, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem, List<UpsertPtDiseaseListInputItem> upsertPtDiseaseListInputItems, List<UpsertFlowSheetItemInputData> flowSheetItems, MonshinInforModel monshins, MedicalStateChanged stateChanged)
     {
         HpId = hpId;
         PtId = ptId;
@@ -38,6 +38,7 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
         UpsertPtDiseaseListInputItems = upsertPtDiseaseListInputItems;
         FlowSheetItems = flowSheetItems;
         Monshins = monshins;
+        StateChanged = stateChanged;
     }
 
     public int HpId { get; private set; }
@@ -91,4 +92,6 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
     public List<UpsertFlowSheetItemInputData> FlowSheetItems { get; private set; }
 
     public MonshinInforModel Monshins { get; private set; }
+
+    public MedicalStateChanged StateChanged { get; private set; }
 }
