@@ -575,8 +575,7 @@ public class TenantRepository : SuperAdminRepositoryBase, ITenantRepository
             double storageInDB = 0;
             int port = 5432;
             string id = "postgres";
-            //string password = "Emr!23456789";
-            string password = "Emr!23";
+            string password = "Emr!23456789";
             StringBuilder connectionStringBuilder = new();
             connectionStringBuilder.Append("host=");
             connectionStringBuilder.Append(tenant.EndPointDb);
@@ -645,24 +644,23 @@ public class TenantRepository : SuperAdminRepositoryBase, ITenantRepository
     private TenantModel ConvertEntityToModel(Tenant tenant)
     {
         return new TenantModel(
-            tenant.TenantId,
-            tenant.Hospital,
-            tenant.Status,
-            tenant.AdminId,
-            tenant.Password,
-            tenant.SubDomain,
-            tenant.Db,
-            tenant.Size,
-            tenant.SizeType,
-            tenant.Type,
-            tenant.EndPointDb,
-            tenant.EndSubDomain,
-            tenant.Action,
-            tenant.ScheduleDate,
-            tenant.ScheduleTime,
-            tenant.CreateDate,
-            tenant.RdsIdentifier
-            );
+                   tenant.TenantId,
+                   tenant.Hospital,
+                   tenant.Status,
+                   tenant.AdminId,
+                   tenant.Password,
+                   tenant.SubDomain,
+                   tenant.Db,
+                   tenant.Size,
+                   tenant.SizeType,
+                   tenant.Type,
+                   tenant.EndPointDb,
+                   tenant.EndSubDomain,
+                   tenant.Action,
+                   tenant.ScheduleDate,
+                   tenant.ScheduleTime,
+                   tenant.CreateDate,
+                   tenant.RdsIdentifier);
     }
     #endregion
 }
