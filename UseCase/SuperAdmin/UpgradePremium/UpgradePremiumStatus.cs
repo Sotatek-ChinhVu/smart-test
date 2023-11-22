@@ -5,6 +5,7 @@
         Successed = 1,
         InvalidTenantId = 2,
         FailedTenantIsPremium = 3,
-        Failed = 4
+        Failed = 4,
+        TenantDoesNotExist = 5
     }
 }

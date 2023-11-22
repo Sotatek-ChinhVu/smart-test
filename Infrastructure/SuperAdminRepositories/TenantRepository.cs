@@ -144,6 +144,30 @@ namespace Infrastructure.SuperAdminRepositories
             }
         }
 
+        public TenantModel TerminateTenant(int tenantId, byte TerminateStatus)
+        {
+            try
+            {
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
+                if (tenant == null)
+                {
+                    return new();
+                }
+
+                tenant.Status = TerminateStatus;
+                tenant.IsDeleted = 1;
+                tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                TrackingDataContext.SaveChanges();
+                var tenantModel = ConvertEntityToModel(tenant);
+                return tenantModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new();
+            }
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

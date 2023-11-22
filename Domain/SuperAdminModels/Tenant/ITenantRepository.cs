@@ -9,6 +9,7 @@
         bool UpdateInfTenant(int tenantId, byte status, string endSubDomain, string endPoint, string dbIdentifier);
         bool UpdateStatusTenant(int tenantId, byte status);
         TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint);
+        TenantModel TerminateTenant(int tenantId, byte TerminateStatus);
         void ReleaseResource();
     }
 }

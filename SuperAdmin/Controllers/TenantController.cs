@@ -46,5 +46,15 @@ namespace SuperAdminAPI.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<TenantOnboardResponse>>(presenter.Result);
         }
+
+        [HttpPost("TerminateTenant")]
+        public ActionResult<Response<UpgradePremiumResponse>> TerminateTenant([FromBody] UpgradePremiumRequest request)
+        {
+            var input = new UpgradePremiumInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new UpgradePremiumPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpgradePremiumResponse>>(presenter.Result);
+        }
     }
 }

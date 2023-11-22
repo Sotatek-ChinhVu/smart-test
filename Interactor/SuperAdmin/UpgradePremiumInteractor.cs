@@ -5,6 +5,7 @@ using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
 using Npgsql;
 using System.Data.Common;
+using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
@@ -32,10 +33,16 @@ namespace Interactor.SuperAdmin
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
 
+                if(tenant == null)
+                {
+                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.TenantDoesNotExist);
+                }
+
                 if (tenant.Type == ConfigConstant.TypeDedicate)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
+
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restoring"]);
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(async () =>
@@ -138,6 +145,7 @@ namespace Interactor.SuperAdmin
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
+                        return false;
                     }
                 }
 
