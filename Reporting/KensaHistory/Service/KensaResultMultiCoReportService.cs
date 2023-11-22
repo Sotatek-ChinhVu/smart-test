@@ -477,8 +477,10 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
+
+            List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
+
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
-            kensaInfDetailsItem = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)
