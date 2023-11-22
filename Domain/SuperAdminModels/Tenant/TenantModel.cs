@@ -50,6 +50,23 @@
             RdsIdentifier = rdsIdentifier;
         }
 
+        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
+        {
+            Hospital = hospital;
+            Status = status;
+            AdminId = adminId;
+            Password = password;
+            SubDomain = subDomain;
+            Db = db;
+            Size = size;
+            SizeType = sizeType;
+            Type = type;
+            EndPointDb = endPointDb;
+            EndSubDomain = endSubDomain;
+            Action = action;
+            RdsIdentifier = rdsIdentifier;
+        }
+
         public TenantModel ChangeStorageFull(double storageFull)
         {
             StorageFull = storageFull;
