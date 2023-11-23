@@ -4,6 +4,7 @@ using AWSSDK.Services;
 using Domain.SuperAdminModels.Admin;
 using Domain.SuperAdminModels.Logger;
 using Domain.SuperAdminModels.MigrationTenantHistory;
+using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using EmrCloudApi.ScheduleTask;
 using Infrastructure.Common;
@@ -20,7 +21,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using SuperAdminAPI.Services;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
+using UseCase.SuperAdmin.GetNotification;
 using UseCase.SuperAdmin.GetTenant;
+using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.Login;
 using UseCase.SuperAdmin.RevokeInsertPermission;
 using UseCase.SuperAdmin.TenantOnboard;
@@ -79,6 +82,7 @@ namespace SuperAdmin.Configs.Dependency
 
             //services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
 
+            services.AddTransient<INotificationRepository, NotificationRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -91,6 +95,8 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
             busBuilder.RegisterUseCase<GetTenantInputData, GetTenantInteractor>();
+            busBuilder.RegisterUseCase<GetTenantDetailInputData, GetTenantDetailInteractor>();
+            busBuilder.RegisterUseCase<GetNotificationInputData, GetNotificationInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

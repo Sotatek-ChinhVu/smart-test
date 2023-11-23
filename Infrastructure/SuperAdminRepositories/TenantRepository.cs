@@ -217,7 +217,7 @@ namespace Infrastructure.SuperAdminRepositories
         public List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
         {
             List<TenantModel> result;
-            IQueryable<Tenant> query = NoTrackingDataContext.Tenants;
+            IQueryable<Tenant> query = NoTrackingDataContext.Tenants.Where(item => item.IsDeleted == 0);
             if (!searchModel.IsEmptyModel)
             {
                 // filte data ignore storageFull
@@ -292,6 +292,19 @@ namespace Infrastructure.SuperAdminRepositories
             }
             result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
             return result;
+        }
+
+        public TenantModel GetTenant(int tenantId)
+        {
+            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId && item.IsDeleted == 0);
+            if (tenant == null)
+            {
+                return new();
+            }
+            var tenantModel = ConvertEntityToModel(tenant);
+            var storageFull = GetStorageFullItem(tenantModel, true);
+            tenantModel.ChangeStorageFull(storageFull);
+            return tenantModel;
         }
 
         #region private function
@@ -652,73 +665,84 @@ namespace Infrastructure.SuperAdminRepositories
         {
             Parallel.ForEach(tenantList, tenant =>
             {
-                double storageInDB = 0;
-                int port = 5432;
-                string id = "postgres";
-                string password = "Emr!23456789";
-                StringBuilder connectionStringBuilder = new();
-                connectionStringBuilder.Append("host=");
-                connectionStringBuilder.Append(tenant.EndPointDb);
-                connectionStringBuilder.Append(";port=");
-                connectionStringBuilder.Append(port.ToString());
-                connectionStringBuilder.Append(";database=");
-                connectionStringBuilder.Append(tenant.Db);
-                connectionStringBuilder.Append(";user id=");
-                connectionStringBuilder.Append(id);
-                connectionStringBuilder.Append(";password=");
-                connectionStringBuilder.Append(password);
-                string connectionString = connectionStringBuilder.ToString();
-                string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
-                if (_cache.KeyExists(finalKey))
-                {
-                    var storageFull = _cache.StringGet(finalKey).AsInteger();
-                    tenant.ChangeStorageFull(storageFull);
-                }
-                else
-                {
-                    var connStr = new NpgsqlConnectionStringBuilder(connectionString);
-                    connStr.TrustServerCertificate = true;
-                    try
-                    {
-                        using (var conn = new NpgsqlConnection(connStr.ToString()))
-                        {
-                            conn.Open();
-                            string sqlQuery = string.Format("select pg_database_size('{0}')", tenant.Db);
-                            using (var command = new NpgsqlCommand(sqlQuery, conn))
-                            {
-                                NpgsqlDataReader reader = command.ExecuteReader();
-                                if (reader.HasRows)
-                                {
-                                    reader.Read();
-                                    /// 1: MB; 2: GB
-                                    switch (tenant.SizeType)
-                                    {
-                                        case 1:
-                                            storageInDB = (reader.GetInt64(0) / 1024 / 1024);
-                                            break;
-                                        case 2:
-                                            storageInDB = (reader.GetInt64(0) / 1024 / 1024 / 1024);
-                                            break;
-                                    }
-                                }
-                                reader.Close();
-                            }
-                        }
-                        var storageFull = Math.Round((storageInDB / tenant.Size) * 100);
-                        if (storageFull > 0)
-                        {
-                            _cache.StringSet(finalKey, storageFull.ToString());
-                            _cache.KeyExpire(finalKey, new TimeSpan(1, 0, 0));
-                        }
-                        tenant.ChangeStorageFull(storageFull);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Can not connect to database " + tenant.EndPointDb + tenant.Db + "\n" + ex.ToString());
-                    }
-                }
+                var storageFull = GetStorageFullItem(tenant, false);
+                tenant.ChangeStorageFull(storageFull);
             });
             return tenantList;
+        }
+
+        private double GetStorageFullItem(TenantModel tenant, bool isClearCache)
+        {
+            double storageFull = 0;
+            double storageInDB = 0;
+            int port = 5432;
+            string id = "postgres";
+            string password = "Emr!23456789";
+            StringBuilder connectionStringBuilder = new();
+            connectionStringBuilder.Append("host=");
+            connectionStringBuilder.Append(tenant.EndPointDb);
+            connectionStringBuilder.Append(";port=");
+            connectionStringBuilder.Append(port.ToString());
+            connectionStringBuilder.Append(";database=");
+            connectionStringBuilder.Append(tenant.Db);
+            connectionStringBuilder.Append(";user id=");
+            connectionStringBuilder.Append(id);
+            connectionStringBuilder.Append(";password=");
+            connectionStringBuilder.Append(password);
+            string connectionString = connectionStringBuilder.ToString();
+            string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
+            if (isClearCache)
+            {
+                _cache.KeyDelete(finalKey);
+            }
+            if (_cache.KeyExists(finalKey))
+            {
+                storageFull = _cache.StringGet(finalKey).AsInteger();
+                return storageFull;
+            }
+            else
+            {
+                var connStr = new NpgsqlConnectionStringBuilder(connectionString);
+                connStr.TrustServerCertificate = true;
+                try
+                {
+                    using (var conn = new NpgsqlConnection(connStr.ToString()))
+                    {
+                        conn.Open();
+                        string sqlQuery = string.Format("select pg_database_size('{0}')", tenant.Db);
+                        using (var command = new NpgsqlCommand(sqlQuery, conn))
+                        {
+                            NpgsqlDataReader reader = command.ExecuteReader();
+                            if (reader.HasRows)
+                            {
+                                reader.Read();
+                                /// 1: MB; 2: GB
+                                switch (tenant.SizeType)
+                                {
+                                    case 1:
+                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024);
+                                        break;
+                                    case 2:
+                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024 / 1024);
+                                        break;
+                                }
+                            }
+                            reader.Close();
+                        }
+                    }
+                    storageFull = Math.Round((storageInDB / tenant.Size) * 100);
+                    if (storageFull > 0)
+                    {
+                        _cache.StringSet(finalKey, storageFull.ToString());
+                        _cache.KeyExpire(finalKey, new TimeSpan(1, 0, 0));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Can not connect to database " + tenant.EndPointDb + tenant.Db + "\n" + ex.ToString());
+                }
+            }
+            return storageFull;
         }
 
         private TenantModel ConvertEntityToModel(Tenant tenant)

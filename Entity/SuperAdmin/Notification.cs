@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace Entity.SuperAdmin
 {
@@ -14,10 +13,13 @@ namespace Entity.SuperAdmin
         public byte Status { get; set; }
 
         [Column("MESSAGE")]
-        public string? ENDPOINTDB { get; set; } = string.Empty;
+        public string? Message { get; set; } = string.Empty;
 
         [Column("IS_DELETED")]
         public int IsDeleted { get; set; }
+
+        [Column("IS_READ")]
+        public byte IsRead { get; set; }
 
         [Column("CREATE_DATE")]
         public DateTime CreateDate { get; set; }
