@@ -244,7 +244,7 @@ namespace Infrastructure.SuperAdminRepositories
                 return new();
             }
             var tenantModel = ConvertEntityToModel(tenant);
-            var storageFull = GetStorageFullItem(tenantModel);
+            var storageFull = GetStorageFullItem(tenantModel, true);
             tenantModel.ChangeStorageFull(storageFull);
             return tenantModel;
         }
@@ -607,13 +607,13 @@ namespace Infrastructure.SuperAdminRepositories
         {
             Parallel.ForEach(tenantList, tenant =>
             {
-                var storageFull = GetStorageFullItem(tenant);
+                var storageFull = GetStorageFullItem(tenant, false);
                 tenant.ChangeStorageFull(storageFull);
             });
             return tenantList;
         }
 
-        private double GetStorageFullItem(TenantModel tenant)
+        private double GetStorageFullItem(TenantModel tenant, bool isClearCache)
         {
             double storageFull = 0;
             double storageInDB = 0;
@@ -633,6 +633,10 @@ namespace Infrastructure.SuperAdminRepositories
             connectionStringBuilder.Append(password);
             string connectionString = connectionStringBuilder.ToString();
             string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
+            if (isClearCache)
+            {
+                _cache.KeyDelete(finalKey);
+            }
             if (_cache.KeyExists(finalKey))
             {
                 storageFull = _cache.StringGet(finalKey).AsInteger();
