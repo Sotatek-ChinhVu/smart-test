@@ -175,7 +175,7 @@ namespace Reporting.KensaHistory.Service
                         case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
                         case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
                     }
-                    
+
                     rowNo++;
                     if (rowNo == maxRow)
                     {
