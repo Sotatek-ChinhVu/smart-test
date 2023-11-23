@@ -398,21 +398,25 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     }
                 }
                 //Add AuditTrailLog
-                if (inputDatas.Status == (byte)ModeSaveData.KaikeiSave)
-                {
-                    AddAuditKaikeiSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
-                }
-                else if (inputDatas.Status == (byte)ModeSaveData.KeisanSave)
-                {
-                    AddAuditKeisanSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
-                }
-                else if (inputDatas.Status == (byte)ModeSaveData.TempSave)
-                {
-                    AddAuditTempSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
-                }
 
-                UpdateOdrKarteEvent(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                Task.Run(() =>
+                {
+                    if (inputDatas.Status == (byte)ModeSaveData.KaikeiSave)
+                    {
+                        AddAuditKaikeiSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    }
+                    else if (inputDatas.Status == (byte)ModeSaveData.KeisanSave)
+                    {
+                        AddAuditKeisanSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    }
+                    else if (inputDatas.Status == (byte)ModeSaveData.TempSave)
+                    {
+                        AddAuditTempSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    }
 
+                    UpdateOdrKarteEvent(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                });
+                
                 return new SaveMedicalOutputData(
                          SaveMedicalStatus.Successed,
                          RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
