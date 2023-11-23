@@ -33,6 +33,19 @@
                 Index = index;
             }
 
+            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, long seqGroupNo, int index)
+            {
+                IraiCd = iraiCd;
+                IraiDate = iraiDate;
+                Nyubi = nyubi;
+                Yoketu = yoketu;
+                Bilirubin = bilirubin;
+                SikyuKbn = sikyuKbn;
+                TosekiKbn = tosekiKbn;
+                SeqGroupNo = seqGroupNo;
+                Index = index;
+            }
+
             public long IraiCd { get; private set; }
 
             public long IraiDate { get; private set; }
@@ -48,6 +61,8 @@
             public int TosekiKbn { get; private set; }
 
             public int Index { get; private set; }
+
+            public long SeqGroupNo { get; private set; }
 
             public void SetIndex(int newIndex)
             {
@@ -82,6 +97,19 @@
                 SeqParentNo = seqParentNo;
                 RowSeqId = rowSeqId;
                 DynamicArray = dynamicArray;
+            }
+
+            public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string maleStd, string femaleStd, long seqNo, List<ListKensaInfDetailItemModel> dynamicArray)
+            {
+                KensaItemCd = kensaItemCd;
+                KensaName = kensaName;
+                Unit = unit;
+                MaleStd = maleStd;
+                FemaleStd = femaleStd;
+                SeqNo = seqNo;
+                DynamicArray = dynamicArray;
+                KensaKana = string.Empty;
+                RowSeqId = string.Empty;
             }
 
             public KensaInfDetailDataModel(string kensaItemCd, string kensaName, string unit, string maleStd, string femaleStd, string kensaKana, long sortNo, long seqNo, long seqParentNo, List<ListKensaInfDetailItemModel> dynamicArray)

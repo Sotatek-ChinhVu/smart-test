@@ -423,6 +423,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 {
                     continue;
                 }
+                odrInfDetailDBList.Remove(odrInfDetailItem);
                 var detailModel = new KensaIraiDetailModel(
                                       tenMstItem.KensaItemCd ?? string.Empty,
                                       tenMstItem.ItemCd ?? string.Empty,
@@ -441,15 +442,12 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                 kensaIraiDetailList.Add(detailModel);
             }
 
-            var itemCdExistList = kensaIraiDetailList.Select(item => item.ItemCd).Distinct().ToList();
-            var newDetailModel = odrInfDetailDBList.Where(item => odrInfItemList.Any(odr => item.RaiinNo == odr.RaiinNo
-                                                                                            && item.RpNo == odr.RpNo
-                                                                                            && item.RpEdaNo == odr.RpEdaNo)
-                                                                  && item.ItemCd != null
-                                                                  && !itemCdExistList.Contains(item.ItemCd))
-                                                   .ToList();
+            var newDetailModelList = odrInfDetailDBList.Where(item => odrInfItemList.Any(odr => item.RaiinNo == odr.RaiinNo
+                                                                                                && item.RpNo == odr.RpNo
+                                                                                                && item.RpEdaNo == odr.RpEdaNo))
+                                                       .ToList();
 
-            foreach (var odrDetail in newDetailModel)
+            foreach (var odrDetail in newDetailModelList)
             {
                 var tenMstItem = tenMstDBList.FirstOrDefault(item => odrDetail.ItemCd == item.ItemCd);
                 if (tenMstItem == null)
@@ -1255,11 +1253,11 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
     {
         KensaInfDetail kensaInfDetail = new();
         kensaInfDetail.HpId = hpId;
+        kensaInfDetail.SeqNo = 0;
         kensaInfDetail.PtId = model.PtId;
         kensaInfDetail.IraiCd = model.IraiCd;
         kensaInfDetail.RaiinNo = model.RaiinNo;
         kensaInfDetail.IraiDate = model.IraiDate;
-        kensaInfDetail.SeqNo = model.SeqNo;
         kensaInfDetail.KensaItemCd = model.KensaItemCd;
         kensaInfDetail.ResultVal = model.ResultVal;
         kensaInfDetail.ResultType = model.ResultType;

@@ -69,7 +69,8 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.HasKey("Id");
 
                     b.HasIndex("LoginId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("ADMIN");
                 });
@@ -198,6 +199,11 @@ namespace TenantMigration.Migrations.SuperAdmin
                         .HasColumnType("text")
                         .HasColumnName("PASSWORD");
 
+                    b.Property<string>("RdsIdentifier")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("RDS_IDENTIFIER");
+
                     b.Property<int>("ScheduleDate")
                         .HasColumnType("integer")
                         .HasColumnName("SCHEDULE_DATE");
@@ -209,6 +215,10 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.Property<int>("Size")
                         .HasColumnType("integer")
                         .HasColumnName("SIZE");
+
+                    b.Property<int>("SizeType")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIZE_TYPE");
 
                     b.Property<byte>("Status")
                         .HasColumnType("smallint")
@@ -230,22 +240,28 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.HasKey("TenantId");
 
                     b.HasIndex("AdminId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.HasIndex("Db")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.HasIndex("EndPointDb")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.HasIndex("EndSubDomain")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.HasIndex("Hospital")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.HasIndex("SubDomain")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("TENANT");
                 });

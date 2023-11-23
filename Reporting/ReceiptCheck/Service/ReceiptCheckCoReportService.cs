@@ -25,17 +25,22 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
     private string _messageOld;
     private readonly char[] _arrCharNotEnd = new char[] { '(', '"', '\'', '{', '[', '’', '′', '“', '「', '【', '［', '『', '（', '’', '″', '‘', '`', '‘' };
     private readonly Dictionary<string, string> _singleFieldData;
-    private readonly List<Dictionary<string, CellModel>> _tableFieldData;
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
+    private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+    private readonly Dictionary<string, string> _extralData;
     private bool _hasNextPage = true;
     private readonly string key;
     private readonly IDatabase _cache;
     private readonly IConfiguration _configuration;
+    private int currentPage = 1;
 
     public ReceiptCheckCoReportService(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
         _tenantProvider = tenantProvider;
-        _tableFieldData = new();
         _singleFieldData = new();
+        _setFieldData = new();
+        _listTextData = new();
+        _extralData = new();
         _messageOld = string.Empty;
         _coModel = new();
         _coModels = new();
@@ -93,7 +98,8 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
                     UpdateDrawForm(seikyuYm);
                 }
             }
-            return new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
+            _extralData.Add("totalPage", currentPage.ToString());
+            return new CoReceiptCheckMapper(_setFieldData, _singleFieldData, _listTextData, _extralData).GetData();
         }
     }
 
@@ -126,7 +132,8 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
                 {
                     UpdateDrawForm(seikyuYm);
                 }
-                var result = new CoReceiptCheckMapper(_singleFieldData, _tableFieldData).GetData();
+                _extralData.Add("totalPage", currentPage.ToString());
+                var result = new CoReceiptCheckMapper(_setFieldData, _singleFieldData, _listTextData, _extralData).GetData();
                 var json = JsonSerializer.Serialize(result);
                 _cache.StringSet(finalKey, json);
             }
@@ -136,15 +143,17 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
 
     private void UpdateDrawForm(int seikyuYm)
     {
+        List<ListTextObject> listDataPerPage = new();
+        Dictionary<string, string> fieldDataPerPage = new();
         string tempSinYm = seikyuYm.AsString().Insert(4, "年");
-        string sYmd = CIUtil.SDateToShowSWDate(CIUtil.StrToIntDef(CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd"), 0), fmtDate: 1) +
-                      "（" + CIUtil.JapanDayOfWeek(CIUtil.GetJapanDateTimeNow()) + "）" +
-                       CIUtil.GetJapanDateTimeNow().ToString("HH:mm") + " 作成";
+        string sYmd = CIUtil.SDateToShowSWDate(CIUtil.StrToIntDef(DateTime.Now.ToString("yyyyMMdd"), 0), fmtDate: 1) +
+                      "（" + CIUtil.JapanDayOfWeek(DateTime.Now) + "）" +
+                       DateTime.Now.ToString("HH:mm") + " 作成";
 
         string sTgtYm = tempSinYm + "月度";
 
-        setFieldData("DT_TgtYm", sTgtYm);
-        setFieldData("DT_Date", sYmd);
+        SetFieldData("DT_TgtYm", sTgtYm);
+        SetFieldData("DT_Date", sYmd);
 
         int linePinted = 0;
         while (linePinted < 45)
@@ -153,48 +162,46 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
             if (!string.IsNullOrEmpty(_messageOld))
             {
                 string message = CIUtil.CiCopyStrWidth(_messageOld, 1, MAX_LENG_MESSAGE);
-                setFieldData(fieldMessage, message);
+                fieldDataPerPage.Add(fieldMessage, message);
                 _messageOld = _messageOld.Remove(0, message.Length);
             }
             else
             {
-                var coModelItem = _coModels.FirstOrDefault();
-                if (coModelItem == null)
+                var coModel = _coModels.FirstOrDefault();
+                if (coModel == null)
                 {
                     _hasNextPage = false;
-                    return;
+                    break;
                 }
 
                 if (_coModel == null ||
-                    coModelItem.SinYm != _coModel.SinYm ||
-                    coModelItem.PtId != _coModel.PtId ||
-                    coModelItem.HokenId != _coModel.HokenId)
+                    coModel.SinYm != _coModel.SinYm ||
+                    coModel.PtId != _coModel.PtId ||
+                    coModel.HokenId != _coModel.HokenId)
                 {
                     if (linePinted > 43)
                     {
                         _hasNextPage = true;
+                        break;
                     }
 
-                    string sinYm = coModelItem?.SinYm.AsString().Insert(4, "年") + "月";
-                    var data = new Dictionary<string, CellModel>
-                    {
-                        { "DT_Ym", new CellModel(sinYm) },
-                        { "DT_KanID", new CellModel((coModelItem?.PtNum ?? 0).ToString()) },
-                        { "DT_KanNM", new CellModel(coModelItem?.PtName ?? string.Empty) },
-                        { "DT_HoInf", new CellModel(coModelItem?.HokenName ?? string.Empty) }
-                    };
-                    _tableFieldData.Add(data);
-                    _coModel = coModelItem!;
+                    string sinYm = coModel.SinYm.AsString().Insert(4, "年") + "月";
+                    listDataPerPage.Add(new("DT_Ym", 0, linePinted, sinYm));
+                    listDataPerPage.Add(new("DT_KanID", 0, linePinted, coModel.PtNum.AsString()));
+                    listDataPerPage.Add(new("DT_KanNM", 0, linePinted, coModel.PtName));
+                    listDataPerPage.Add(new("DT_HoInf", 0, linePinted, coModel.HokenName));
+
+                    _coModel = coModel;
                 }
 
-                var messagetemp = coModelItem?.ErrorMessage ?? string.Empty;
+                var messagetemp = coModel.ErrorMessage;
                 string message = CIUtil.CiCopyStrWidth(messagetemp, 1, MAX_LENG_MESSAGE);
                 if (_arrCharNotEnd.Contains(message.LastOrDefault()))
                 {
                     message = message.Remove(message.Length - 1, 1);
                 }
 
-                setFieldData(fieldMessage, message);
+                fieldDataPerPage.Add(fieldMessage, message);
                 _messageOld = messagetemp.Remove(0, message.Length);
 
                 _coModels.RemoveAt(0);
@@ -202,11 +209,17 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
 
             linePinted++;
         }
-        _hasNextPage = !string.IsNullOrEmpty(_messageOld) || _coModels.Count > 0;
+        _listTextData.Add(currentPage, listDataPerPage);
+        _setFieldData.Add(currentPage, fieldDataPerPage);
+        _hasNextPage = !string.IsNullOrEmpty(_messageOld) || _coModels.Any();
+        if (_hasNextPage)
+        {
+            currentPage++;
+        }
     }
 
 
-    private void setFieldData(string field, string value)
+    private void SetFieldData(string field, string value)
     {
         if (string.IsNullOrEmpty(field) || !_singleFieldData.ContainsKey(field))
         {

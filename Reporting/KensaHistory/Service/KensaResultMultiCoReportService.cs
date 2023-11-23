@@ -117,7 +117,7 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiStartDate", CIUtil.SDateToShowSDate(startDate.AsInteger()));
                 SetFieldData("iraiEndDate", CIUtil.SDateToShowSDate(endDate.AsInteger()));
-                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
+                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd hh:mm:ss"));
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
@@ -477,8 +477,10 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
+
+            List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
+
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
-            kensaInfDetailsItem = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)

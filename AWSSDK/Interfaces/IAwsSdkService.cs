@@ -1,10 +1,15 @@
-﻿namespace AWSSDK.Interfaces
+﻿using Amazon.RDS.Model;
+
+namespace AWSSDK.Interfaces
 {
     public interface IAwsSdkService
     {
         Task<Dictionary<string, Dictionary<string, string>>> SummaryCard();
         Task<List<string>> GetAvailableIdentifiersAsync();
-
-        Task<string> GetInfTenantByTenant(string Id);
+        Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier);
+        Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier);
+        Task<bool> IsSnapshotAvailableAsync(string dbSnapshotIdentifier);
+        Task<bool> CheckSubdomainExistenceAsync(string subdomainToCheck);
+        Task<bool> IsDedicatedTypeAsync(string dbIdentifier);
     }
 }
