@@ -12,6 +12,7 @@
         public static readonly string InvalidSize = "Invalid Size";
         public static readonly string TenantDoesNotExist = "Tenant Does Not Exist";
         public static readonly string TenantDbDoesNotExistInRDS = "TenantDb Does Not Exist In RDS";
+        public static readonly string SubDomainExists = "SubDomain Exists";
     }
     
 }

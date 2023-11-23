@@ -34,7 +34,7 @@ namespace Reporting.Kensalrai.Model
             }
         }
 
-        public KensaIraiModel(int sinDate, long raiinNo, long iraiCd, long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int tosekiKbn, int sikyuKbn, int kaId, double weight, double height, string tantoKanaName, string kaSName, List<KensaIraiDetailModel> details)
+        public KensaIraiModel(int sinDate, long raiinNo, long iraiCd, long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int tosekiKbn, int sikyuKbn, int kaId, double weight, double height, string tantoName, string tantoKanaName, string kaSName, List<KensaIraiDetailModel> details)
         {
             SinDate = sinDate;
             RaiinNo = raiinNo;
@@ -51,6 +51,7 @@ namespace Reporting.Kensalrai.Model
             Weight = weight;
             Height = height;
             Details = details;
+            TantoName = tantoName;
             TantoKanaName = tantoKanaName;
             KaSName = kaSName;
             if (Details != null)
