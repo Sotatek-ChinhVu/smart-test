@@ -30,19 +30,19 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidTenantId);
                 }
 
-                var tenant = _tenantRepository.Get(inputData.TenantId);
+                var oldTenant = _tenantRepository.Get(inputData.TenantId);
 
-                if (tenant == null)
+                if (oldTenant == null)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.TenantDoesNotExist);
                 }
 
-                if (tenant.Type == ConfigConstant.TypeDedicate)
+                if (oldTenant.Type == ConfigConstant.TypeDedicate)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
 
-                if (!_awsSdkService.CheckExitRDS(tenant.RdsIdentifier).Result)
+                if (!_awsSdkService.CheckExitRDS(oldTenant.RdsIdentifier).Result)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.RdsDoesNotExist);
                 }
@@ -52,12 +52,12 @@ namespace Interactor.SuperAdmin
                 _ = Task.Run(async () =>
                 {
                     // Create SnapShot
-                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier);
+                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier);
 
                     if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restor-failed"]);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, tenant);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, oldTenant);
                         cts.Cancel();
                         return;
                     }
@@ -76,7 +76,7 @@ namespace Interactor.SuperAdmin
                     if (!isSuccessRestoreInstance || endpoint == null || string.IsNullOrEmpty(endpoint?.Address))
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restor-failed"]);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, tenant);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, oldTenant);
                         cts.Cancel();
                         return;
                     }
@@ -91,56 +91,29 @@ namespace Interactor.SuperAdmin
                     }
 
                     //Delete list Db without tenantDB in new RDS
-                    var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, tenant.Db);
+                    Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
+                    var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, oldTenant.Db);
+
                     //if (!isDeleteSuccess)
                     //{
                     //    // To rerun  delete
                     //}
 
                     // Delete DB in old RDS
-                    Console.WriteLine($"Start Terminate old tenant: {tenant.RdsIdentifier}");
-                    bool isDeleteDb = false;
-                    var listTenantDb = await RDSAction.GetListDatabase(tenant.RdsIdentifier);
+                    var listTenantDb = await RDSAction.GetListDatabase(oldTenant.RdsIdentifier);
 
                     // Connect RDS delete TenantDb
                     if (listTenantDb.Count > 1)
                     {
-                        if (!_awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db))
-                        {
-                            isDeleteDb = true;
-                        }
-                        else
-                        {
-                            //_tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
-                        }
-
+                        _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db);
                     }
+
                     // Deleted RDS
                     else
                     {
-                        await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
-                        isDeleteDb = await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier);
-                        if (!isDeleteDb)
-                        {
-                            //.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
-                            cts.Cancel();
-                            return;
-                        }
+                        await RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
                     }
 
-                    // Delete DNS
-                    // Delete Could font
-
-                    // Check Deleted Finished RDS, DNS, Could font
-                    if (!isDeleteDb)
-                    {
-                        //_tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
-                        cts.Cancel();
-                        return;
-                    }
-
-                    //Finished terminate
-                    //_tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
                     cts.Cancel();
                     return;
                 });

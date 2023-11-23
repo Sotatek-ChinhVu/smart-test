@@ -31,64 +31,58 @@ namespace Interactor.SuperAdmin
                 return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
             }
 
-            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
             var listTenantDb = RDSAction.GetListDatabase(tenant.RdsIdentifier).Result;
-
             // Check valid delete tennatDb
             if (listTenantDb == null || listTenantDb.Count() == 0 || !listTenantDb.Contains(tenant.Db))
             {
                 return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantDbDoesNotExistInRDS);
             }
 
+            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
+
             CancellationTokenSource cts = new CancellationTokenSource();
             _ = Task.Run(async () =>
             {
                 Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
-                bool isDeleteDb = false;
+                bool deleteRDSAction = false;
 
                 // Connect RDS delete TenantDb
                 if (listTenantDb.Count > 1)
                 {
                     if (!_awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db))
                     {
-                        isDeleteDb = true;
+                        deleteRDSAction = true;
                     }
-                    else
-                    {
-                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
-                    }
-
                 }
 
                 // Deleted RDS
                 else
                 {
-                    await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
-                    isDeleteDb = await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier);
-                    if (!isDeleteDb)
+                    deleteRDSAction = await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
+                }
+
+                // Delete DNS
+                var deleteDNSAction = await Route53Action.DeleteTenantDomain(tenant.SubDomain);
+                // Delete could font
+
+                // Check action deleted  RDS, DNS, Could font
+                if (deleteRDSAction && deleteDNSAction)
+                {
+                    if (await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier) && !await Route53Action.CheckSubdomainExistence(tenant.SubDomain))
                     {
-                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
+                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
+                        // Notification  terminating success
                         cts.Cancel();
                         return;
                     }
                 }
-
-                // Delete DNS
-                // Delete Could font
-
-                // Check Deleted Finished RDS, DNS, Could font
-                if (!isDeleteDb)
+                else
                 {
                     _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
+                    // Notification  terminating failed
                     cts.Cancel();
                     return;
                 }
-
-                //Finished terminate
-                _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
-                // Notification
-                cts.Cancel();
-                return;
             });
             return new TerminateTenantOutputData(true, TerminateTenantStatus.Successed);
         }
