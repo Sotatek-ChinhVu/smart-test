@@ -7,6 +7,7 @@ using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
+using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.UpgradePremium;
 
@@ -41,6 +42,16 @@ namespace SuperAdminAPI.Controllers
             var presenter = new GetTenantPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenantResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetTenantDetail")]
+        public ActionResult<Response<GetTenantDetailResponse>> GetTenantDetail([FromQuery] GetTenantDetailRequest request)
+        {
+            var input = new GetTenantDetailInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenantDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenantDetailResponse>>(presenter.Result);
         }
 
         [HttpPost("TenantOnboard")]
