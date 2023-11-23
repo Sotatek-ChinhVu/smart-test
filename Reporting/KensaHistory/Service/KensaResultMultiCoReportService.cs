@@ -480,6 +480,31 @@ namespace Reporting.KensaHistory.Service
 
             List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
 
+            if (showAbnormalKbn)
+            {
+                foreach (var item in data.Item1)
+                {
+                    int count = 0;
+                    foreach (var itemDynamicArray in item.KensaResultMultiItems)
+                    {
+                        if (itemDynamicArray.AbnormalKbn == "")
+                        {
+                            count++;
+                        }
+
+                        if (count == data.Item2.Count)
+                        {
+                            coKensaResultMultiModels.Add(item);
+                        }
+                    }
+                }
+            }
+
+            foreach (var item in coKensaResultMultiModels)
+            {
+                data.Item1.Remove(item);
+            }
+
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
 

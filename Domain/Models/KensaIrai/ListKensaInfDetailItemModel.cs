@@ -29,6 +29,33 @@
             RowSeqId = string.Empty;
         }
 
+        public ListKensaInfDetailItemModel(long iraiCd, string kensaName, string resultVal, string abnormalKbn, string unit, string maleStd, string femaleStd, string resultType)
+        {
+            IraiCd = iraiCd;
+            KensaName = kensaName;
+            KensaKana = string.Empty;
+            KensaItemCd = string.Empty;
+            ResultVal = resultVal;
+            ResultType = resultType;
+            AbnormalKbn = abnormalKbn;
+            CmtCd1 = string.Empty;
+            CmtCd2 = string.Empty;
+            Cmt1 = string.Empty;
+            Cmt2 = string.Empty;
+            MaleStd = maleStd;
+            FemaleStd = femaleStd;
+            MaleStdLow = string.Empty;
+            FemaleStdLow = string.Empty;
+            MaleStdHigh = string.Empty;
+            FemaleStdHigh = string.Empty;
+            Unit = unit;
+            Nyubi = string.Empty;
+            Yoketu = string.Empty;
+            Bilirubin = string.Empty;
+            RowSeqId = string.Empty;
+        }
+
+
         public ListKensaInfDetailItemModel(
             long ptId, long iraiCd, long raiinNo, long iraiDate, long seqNo, long seqParentNo, string kensaName, string kensaKana, long sortNo, string kensaItemCd, string resultVal,
             string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, string cmt1, string cmt2, string maleStd, string femaleStd, string maleStdLow, string femaleStdLow,
