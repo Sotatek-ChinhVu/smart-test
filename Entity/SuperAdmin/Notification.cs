@@ -14,7 +14,7 @@ namespace Entity.SuperAdmin
         public byte Status { get; set; }
 
         [Column("MESSAGE")]
-        public string? ENDPOINTDB { get; set; } = string.Empty;
+        public string? Message{ get; set; } = string.Empty;
 
         [Column("IS_DELETED")]
         public int IsDeleted { get; set; }

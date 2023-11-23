@@ -68,6 +68,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAdminRepository, AdminRepository>();
             services.AddTransient<ITenantRepository, TenantRepository>();
             services.AddTransient<IAdminAuditLogRepository, AdminAuditLogRepository>();
+            services.AddTransient<INotificationRepository, NotificationRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
