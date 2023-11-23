@@ -50,7 +50,7 @@
             RdsIdentifier = rdsIdentifier;
         }
 
-        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
+        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             Hospital = hospital;
             Status = status;
@@ -65,6 +65,8 @@
             EndSubDomain = endSubDomain;
             Action = action;
             RdsIdentifier = rdsIdentifier;
+            UserConnect = userConnect;
+            PasswordConnect = passwordConnect;
         }
 
         public TenantModel ChangeStorageFull(double storageFull)
@@ -114,5 +116,7 @@
         public string RdsIdentifier { get; private set; }
 
         public double StorageFull { get; private set; }
+        public string UserConnect { get; private set; }
+        public string PasswordConnect { get; private set; }
     }
 }

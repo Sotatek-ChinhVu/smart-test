@@ -8,7 +8,7 @@ public interface ITenantRepository
 
     int GetBySubDomainAndIdentifier(string subDomain, string Identifier);
 
-    int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier);
+    int SumSubDomainToDbIdentifier(string dbIdentifier);
 
     int CreateTenant(TenantModel model);
 

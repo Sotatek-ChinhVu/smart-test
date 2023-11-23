@@ -16,7 +16,7 @@ namespace SuperAdminAPI.BackgroundService
             do
             {
                 var now = DateTime.Now;
-                if (now > _nextRun && now.Hour == 0)
+                if (now > _nextRun)
                 {
                     await Process();
                     _nextRun = _schedule.GetNextOccurrence(DateTime.Now);

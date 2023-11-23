@@ -3,7 +3,9 @@ using AWSSDK.Interfaces;
 using AWSSDK.Services;
 using Domain.SuperAdminModels.Admin;
 using Domain.SuperAdminModels.Logger;
+using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Tenant;
+using EmrCloudApi.ScheduleTask;
 using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -61,12 +63,11 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAwsSdkService, AwsSdkService>();
             services.AddTransient<IWebSocketService, WebSocketService>();
 
-            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
 
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
 
-            //services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -74,6 +75,10 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAdminRepository, AdminRepository>();
             services.AddTransient<ITenantRepository, TenantRepository>();
             services.AddTransient<IAdminAuditLogRepository, AdminAuditLogRepository>();
+            services.AddTransient<IMigrationTenantHistoryRepository, MigrationTenantHistoryRepository>();
+
+            //services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
+
         }
 
         private void SetupUseCase(IServiceCollection services)

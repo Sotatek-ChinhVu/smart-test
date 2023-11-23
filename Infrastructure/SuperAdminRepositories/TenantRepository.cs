@@ -48,9 +48,9 @@ namespace Infrastructure.SuperAdminRepositories
             return tenant == null ? 0 : tenant.TenantId;
         }
 
-        public int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier)
+        public int SumSubDomainToDbIdentifier(string dbIdentifier)
         {
-            var tenant = NoTrackingDataContext.Tenants.Where(t => t.SubDomain == subDomain && t.RdsIdentifier == dbIdentifier && t.IsDeleted == 0);
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.RdsIdentifier == dbIdentifier && t.IsDeleted == 0);
             if (tenant != null)
             {
                 return tenant.Count();
@@ -74,6 +74,8 @@ namespace Infrastructure.SuperAdminRepositories
             tenant.EndPointDb = model.SubDomain;
             tenant.EndSubDomain = model.SubDomain;
             tenant.RdsIdentifier = model.RdsIdentifier;
+            tenant.UserConnect = model.UserConnect;
+            tenant.PasswordConnect = model.PasswordConnect;
             tenant.IsDeleted = 0;
             tenant.CreateDate = CIUtil.GetJapanDateTimeNow();
             tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
