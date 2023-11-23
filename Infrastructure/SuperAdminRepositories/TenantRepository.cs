@@ -619,7 +619,7 @@ namespace Infrastructure.SuperAdminRepositories
             double storageInDB = 0;
             int port = 5432;
             string id = "postgres";
-            string password = "Emr!23";
+            string password = "Emr!23456789";
             StringBuilder connectionStringBuilder = new();
             connectionStringBuilder.Append("host=");
             connectionStringBuilder.Append(tenant.EndPointDb);
