@@ -7,13 +7,11 @@ namespace AWSSDK.Common
 {
     public class CloudFrontAction
     {
-        public static async Task<UpdateDistributionResponse> UpdateAlterCNAMEAsync(string tenantId, string? eTag, int quantity, List<string> alterName)
+        public static async Task<UpdateDistributionResponse> UpdateAlterCNAMEAsync(string? eTag, List<string> cname)
         {
             try
             {
                 var cloudFrontClient = new AmazonCloudFrontClient();
-                var cname = new List<string> { $"{tenantId}.{ConfigConstant.Domain}" };
-                cname.AddRange(alterName);
                 var request = new UpdateDistributionRequest
                 {
                     DistributionConfig = new DistributionConfig
@@ -21,7 +19,7 @@ namespace AWSSDK.Common
                         CallerReference = "4531dda9-e0db-4080-83ef-04d572e4407f",
                         Aliases = new Aliases
                         {
-                            Quantity = quantity + 1,
+                            Quantity = cname.Count(),
                             Items = cname
                         },
                         DefaultRootObject = "",
@@ -120,10 +118,10 @@ namespace AWSSDK.Common
                         ViewerCertificate = new ViewerCertificate
                         {
                             CloudFrontDefaultCertificate = false,
-                            ACMCertificateArn = "arn:aws:acm:us-east-1:519870134487:certificate/f3d9a1e8-8b06-4fb6-9d99-2e05c3855d1f",
+                            ACMCertificateArn = "arn:aws:acm:us-east-1:519870134487:certificate/523b4cb6-2f4e-4da3-a44f-e1922d30b00c",
                             SSLSupportMethod = "sni-only",
                             MinimumProtocolVersion = "TLSv1.2_2021",
-                            Certificate = "arn:aws:acm:us-east-1:519870134487:certificate/f3d9a1e8-8b06-4fb6-9d99-2e05c3855d1f",
+                            Certificate = "arn:aws:acm:us-east-1:519870134487:certificate/523b4cb6-2f4e-4da3-a44f-e1922d30b00c",
                             CertificateSource = "acm"
                         },
                         Restrictions = new Restrictions
@@ -189,13 +187,47 @@ namespace AWSSDK.Common
                     var eTag = distInfo["ETag"].ToString();
                     var quantity = (int)distInfo["Quantity"];
                     var alterName = (List<string>)distInfo["AlterName"];
+                    alterName.Add($"{tenantId}.{ConfigConstant.Domain}");
 
-                    await UpdateAlterCNAMEAsync(tenantId, eTag, quantity, alterName);
+                    await UpdateAlterCNAMEAsync(eTag, alterName);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
+        public static async Task<bool> RemoveItemCnameAsync(string tenantId)
+        {
+            try
+            {
+                var distInfo = await GetDistributionConfigAsync("E1Q6ZVLBFAFBDX");
+
+                if (distInfo != null)
+                {
+                    var eTag = distInfo["ETag"].ToString();
+                    var quantity = (int)distInfo["Quantity"];
+                    var alterName = (List<string>)distInfo["AlterName"];
+                    alterName.Remove($"{tenantId}.{ConfigConstant.Domain}");
+
+                    // Update the distribution with the modified CNAME list
+                    UpdateDistributionResponse resUpdate = await UpdateAlterCNAMEAsync(eTag, alterName);
+
+                    // Check if the update was successful
+                    if (resUpdate != null && resUpdate.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        Console.WriteLine("CNAME removed successfully!");
+                        return true;
+                    }
+                }
+
+                return false; // Return false if there was an issue or if the update was not successful
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
             }
         }
     }
