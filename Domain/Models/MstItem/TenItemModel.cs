@@ -651,6 +651,48 @@ namespace Domain.Models.MstItem
             CdKbn = string.Empty;
         }
 
+        public TenItemModel(int sinKouiKbn, string masterSbt, string itemCd, string kensaItemCd, int kensaItemSeqNo, double ten, string name, string receName, string kanaName1
+                     , string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, int startDate, int endDate, double defaultValue
+                     , string odrUnitName, string santeiItemCd, int santeigaiKbn, int isNoSearch, List<string> listGenDate, DateTime createDate)
+        {
+            SinKouiKbn = sinKouiKbn;
+            MasterSbt = masterSbt;
+            ItemCd = itemCd;
+            KensaItemCd = kensaItemCd;
+            KensaItemSeqNo = kensaItemSeqNo;
+            Ten = ten;
+            Name = name;
+            ReceName = receName;
+            KanaName1 = kanaName1;
+            KanaName2 = kanaName2;
+            KanaName3 = kanaName3;
+            KanaName4 = kanaName4;
+            KanaName5 = kanaName5;
+            KanaName6 = kanaName6;
+            KanaName7 = kanaName7;
+            StartDate = startDate;
+            EndDate = endDate;
+            DefaultValue = defaultValue;
+            OdrUnitName = odrUnitName;
+            SanteiItemCd = santeiItemCd;
+            SanteigaiKbn = santeigaiKbn;
+            IsNoSearch = isNoSearch;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IpnNameCd = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnCD = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            CdKbn = string.Empty;
+            ListGenDate = listGenDate;
+            SetItemType();
+            CreateDate = createDate;
+        }
+
         public int HpId { get; private set; }
 
         public string ReceName { get; private set; }
@@ -782,6 +824,8 @@ namespace Domain.Models.MstItem
         public int Kasan1 { get; private set; }
 
         public int Kasan2 { get; private set; }
+
+        public DateTime CreateDate { get; private set; }
 
         public string RousaiKbnDisplay
         {

@@ -10,6 +10,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Infrastructure.Services;
 using Infrastructure.SuperAdminRepositories;
+using Interactor.Realtime;
 using Interactor.SuperAdmin;
 using Interactor.SuperAdmin.AuditLog;
 using Interactor.SystemStartDbs;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using SuperAdminAPI.Services;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
+using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.Login;
 using UseCase.SuperAdmin.RevokeInsertPermission;
 using UseCase.SuperAdmin.TenantOnboard;
@@ -57,6 +59,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IAwsSdkService, AwsSdkService>();
+            services.AddTransient<IWebSocketService, WebSocketService>();
 
             services.AddScoped<ISystemStartDbService, SystemStartDbService>();
 
@@ -82,6 +85,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
+            busBuilder.RegisterUseCase<GetTenantInputData, GetTenantInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

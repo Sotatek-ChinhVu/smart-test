@@ -4,11 +4,17 @@
     {
         public TenantModel()
         {
+            Hospital = string.Empty;
+            Password = string.Empty;
+            SubDomain = string.Empty;
+            Db = string.Empty;
+            EndPointDb = string.Empty;
+            EndSubDomain = string.Empty;
+            RdsIdentifier = string.Empty;
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
+        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
         {
-            TenantId = tenantId;
             Hospital = hospital;
             Status = status;
             AdminId = adminId;
@@ -22,6 +28,28 @@
             Action = action;
             RdsIdentifier = rdsIdentifier;
         }
+
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier)
+        {
+            TenantId = tenantId;
+            Hospital = hospital;
+            Status = status;
+            AdminId = adminId;
+            Password = password;
+            SubDomain = subDomain;
+            Db = db;
+            Size = size;
+            SizeType = sizeType;
+            Type = type;
+            EndPointDb = endPointDb;
+            EndSubDomain = endSubDomain;
+            Action = action;
+            ScheduleDate = scheduleDate;
+            ScheduleTime = scheduleTime;
+            CreateDate = createDate;
+            RdsIdentifier = rdsIdentifier;
+        }
+
         public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
         {
             Hospital = hospital;
@@ -39,37 +67,52 @@
             RdsIdentifier = rdsIdentifier;
         }
 
-        public int TenantId { get; set; }
+        public TenantModel ChangeStorageFull(double storageFull)
+        {
+            StorageFull = storageFull;
+            return this;
+        }
 
-        public string Hospital { get; set; } = string.Empty;
+        public TenantModel ChangeRdsIdentifier(string rdsIdentifier)
+        {
+            RdsIdentifier = rdsIdentifier;
+            return this;
+        }
 
-        public byte Status { get; set; }
+        public int TenantId { get; private set; }
 
-        public int AdminId { get; set; }
-        public string Password { get; set; } = string.Empty;
+        public string Hospital { get; private set; }
 
-        public string SubDomain { get; set; } = string.Empty;
+        public byte Status { get; private set; }
 
-        public string Db { get; set; } = string.Empty;
+        public int AdminId { get; private set; }
 
-        public int Size { get; set; }
+        public string Password { get; private set; }
 
-        /// <summary>
-        /// 1:MB ; 2:GB
-        /// </summary>
-        public int SizeType { get; set; }
+        public string SubDomain { get; private set; }
 
-        /// <summary>
-        /// 1:sharing; 2:dedicate(premium)
-        /// </summary>
-        public byte Type { get; set; }
+        public string Db { get; private set; }
 
-        public string EndPointDb { get; set; } = string.Empty;
+        public int Size { get; private set; }
 
-        public string EndSubDomain { get; set; } = string.Empty;
+        public int SizeType { get; private set; }
 
-        public int Action { get; set; }
+        public byte Type { get; private set; }
 
-        public string RdsIdentifier { get; set; } = string.Empty;
+        public string EndPointDb { get; private set; }
+
+        public string EndSubDomain { get; private set; }
+
+        public int Action { get; private set; }
+
+        public int ScheduleDate { get; private set; }
+
+        public int ScheduleTime { get; private set; }
+
+        public DateTime CreateDate { get; private set; }
+
+        public string RdsIdentifier { get; private set; }
+
+        public double StorageFull { get; private set; }
     }
 }

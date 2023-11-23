@@ -93,7 +93,7 @@ namespace Interactor.SuperAdmin
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                         {
-                            var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
+                            var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
                         }
                     }
 
@@ -105,7 +105,7 @@ namespace Interactor.SuperAdmin
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        var updateStatus = _tenantRepository.UpdateStatusTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
                         running = false;
                     }
                     // Check if more than timeout
@@ -168,7 +168,7 @@ namespace Interactor.SuperAdmin
                             {
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
@@ -193,7 +193,7 @@ namespace Interactor.SuperAdmin
                                 string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.RdsIdentifier = dbIdentifier;
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
@@ -226,7 +226,7 @@ namespace Interactor.SuperAdmin
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                     var id = _tenantRepository.CreateTenant(model);
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.RdsIdentifier = dbIdentifier;
+                                    model.ChangeRdsIdentifier(dbIdentifier);
                                     _ = Task.Run(async () =>
                                     {
                                         host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);

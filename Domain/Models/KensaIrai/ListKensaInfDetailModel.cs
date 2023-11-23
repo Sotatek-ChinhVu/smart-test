@@ -33,6 +33,19 @@
                 Index = index;
             }
 
+            public KensaInfDetailColModel(long iraiCd, long iraiDate, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, long seqGroupNo, int index)
+            {
+                IraiCd = iraiCd;
+                IraiDate = iraiDate;
+                Nyubi = nyubi;
+                Yoketu = yoketu;
+                Bilirubin = bilirubin;
+                SikyuKbn = sikyuKbn;
+                TosekiKbn = tosekiKbn;
+                SeqGroupNo = seqGroupNo;
+                Index = index;
+            }
+
             public long IraiCd { get; private set; }
 
             public long IraiDate { get; private set; }
@@ -48,6 +61,8 @@
             public int TosekiKbn { get; private set; }
 
             public int Index { get; private set; }
+
+            public long SeqGroupNo { get; private set; }
 
             public void SetIndex(int newIndex)
             {

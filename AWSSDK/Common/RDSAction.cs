@@ -3,6 +3,7 @@ using Amazon.RDS.Model;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using Npgsql;
+using System.Data.Common;
 
 namespace AWSSDK.Common
 {
@@ -294,7 +295,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<Endpoint> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public static async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
             try
             {
@@ -309,19 +310,12 @@ namespace AWSSDK.Common
                         VpcSecurityGroupIds = vpcSecurityGroupIds,  // Todo update
                         DBInstanceClass = "db.t4g.micro" // Todo update
                     });
-                if (response.DBInstance.DBInstanceStatus.Equals("available", StringComparison.OrdinalIgnoreCase))
-                {
-                    return response.DBInstance.Endpoint;
-                }
-                else
-                {
-                    return new();
-                }
+                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new();
+                return false;
             }
         }
 
@@ -370,11 +364,10 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<bool> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier)
+        public static async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier)
         {
             try
             {
-                bool available = false;
                 DateTime startTime = DateTime.Now;
                 bool running = true;
 
@@ -403,9 +396,14 @@ namespace AWSSDK.Common
                         // Check if the DB instance is in the "available" state
                         if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
                         {
-                            available = true;
                             running = false;
+                            return describeInstancesResponse.DBInstances[0].Endpoint;
                         }
+                    }
+                    else
+                    {
+                        running = false;
+                        return new Endpoint();
                     }
 
                     // Check if more than timeout
@@ -413,13 +411,56 @@ namespace AWSSDK.Common
                     {
                         Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                         running = false;
+                        return new Endpoint();
                     }
 
                     // Wait for 5 seconds before the next attempt
                     Thread.Sleep(5000);
                 }
 
-                return available;
+                // Return an empty Endpoint if the loop exits without finding an available instance
+                return new Endpoint();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new Endpoint();
+            }
+        }
+
+        public static async Task<bool> GetListDatabase(string serverEndpoint, int port)
+        {
+            try
+            {
+                // Replace these values with your actual RDS information
+                string username = "postgres";
+                string password = "Emr!23456789";
+                // Connection string format for SQL Server
+                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+
+                // Create and open a connection
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        // Delete database
+                        using (DbCommand command = connection.CreateCommand())
+                        {
+                            command.CommandText = "SELECT datname FROM pg_catalog.pg_database;";
+                            command.ExecuteReader();
+                        }
+
+                        Console.WriteLine($"Database deleted successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                    }
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
