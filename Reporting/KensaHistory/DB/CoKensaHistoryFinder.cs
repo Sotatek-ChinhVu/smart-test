@@ -156,11 +156,6 @@ namespace Reporting.KensaHistory.DB
                                                                  t1.SeqGroupNo
                                                              ));
 
-            if (showAbnormalKbn)
-            {
-                data = data.Where(x => x.AbnormalKbn.Equals(AbnormalKbnType.High) || x.AbnormalKbn.Equals(AbnormalKbnType.Low));
-            }
-
             var sortedData = SortIraiDateAsc
                 ? data.OrderBy(x => x.IraiDate)
                 : data.OrderByDescending(x => x.IraiDate);
@@ -451,6 +446,7 @@ namespace Reporting.KensaHistory.DB
         public ListKensaInfDetailModel GetListKensaInf(int hpId, int userId, long ptId, int setId, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int startDate)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
+            List<long>? listSeqNoItems = new();
 
             var userConf = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002);
 
@@ -487,59 +483,59 @@ namespace Reporting.KensaHistory.DB
             }
 
             IEnumerable<ListKensaInfDetailItemModel> data = (from t1 in kensaInfDetails
-                                                             join t2 in NoTrackingDataContext.KensaMsts
-                                                              on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
-                                                             join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
-                                                             join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
-                                                             join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
-                                                                  on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
-                                                             from t5 in leftJoinT5.DefaultIfEmpty()
-                                                             join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
-                                                                  on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
-                                                             from t6 in leftJoinT6.DefaultIfEmpty()
-                                                             join t7 in NoTrackingDataContext.KensaStdMsts
-                                                                 on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
-                                                             from t7 in leftJoinT7.DefaultIfEmpty()
-                                                             where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
-                                                             where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).Min(m => m.KensaItemSeqNo)
-                                                             where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
-                                                             where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
-                                                             select new ListKensaInfDetailItemModel
-                                                             (
-                                                                 t1.PtId,
-                                                                 t1.IraiCd,
-                                                                 t1.RaiinNo,
-                                                                 t1.IraiDate,
-                                                                 t1.SeqNo,
-                                                                 t1.SeqParentNo,
-                                                                 t2.KensaName ?? string.Empty,
-                                                                 t2.KensaKana ?? string.Empty,
-                                                                 t2.SortNo,
-                                                                 t1.KensaItemCd ?? string.Empty,
-                                                                 t1.ResultVal ?? string.Empty,
-                                                                 t1.ResultType ?? string.Empty,
-                                                                 t1.AbnormalKbn ?? string.Empty,
-                                                                 t1.CmtCd1 ?? string.Empty,
-                                                                 t1.CmtCd2 ?? string.Empty,
-                                                                 (t3.CenterCd != null && t3.CenterCd != t5.CenterCd) ? "不明" : t5.CMT ?? string.Empty,
-                                                                 (t3.CenterCd != null && t3.CenterCd != t6.CenterCd) ? "不明" : t6.CMT ?? string.Empty,
-                                                                 t7.MaleStd ?? string.Empty,
-                                                                 t7.FemaleStd ?? string.Empty,
-                                                                 t7.MaleStdLow ?? string.Empty,
-                                                                 t7.FemaleStdLow ?? string.Empty,
-                                                                 t7.MaleStdHigh ?? string.Empty,
-                                                                 t7.FemaleStdHigh ?? string.Empty,
-                                                                 t2.Unit ?? string.Empty,
-                                                                 t3.Nyubi ?? string.Empty,
-                                                                 t3.Yoketu ?? string.Empty,
-                                                                 t3.Bilirubin ?? string.Empty,
-                                                                 t3.SikyuKbn,
-                                                                 t3.TosekiKbn,
-                                                                 t3.InoutKbn,
-                                                                 t3.Status,
-                                                                 DeleteTypes.None,
-                                                                 t1.SeqGroupNo
-                                                             ));
+                        join t2 in NoTrackingDataContext.KensaMsts
+                         on new { t1.KensaItemCd, t1.HpId } equals new { t2.KensaItemCd, t2.HpId }
+                        join t3 in NoTrackingDataContext.KensaInfs on new { t1.HpId, t1.PtId, t1.IraiCd } equals new { t3.HpId, t3.PtId, t3.IraiCd }
+                        join t4 in NoTrackingDataContext.PtInfs on new { t1.PtId, t1.HpId } equals new { t4.PtId, t4.HpId }
+                        join t5 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
+                             on t1.CmtCd1 equals t5.CmtCd into leftJoinT5
+                        from t5 in leftJoinT5.DefaultIfEmpty()
+                        join t6 in NoTrackingDataContext.KensaCmtMsts.Where(x => x.IsDeleted == DeleteTypes.None)
+                             on t1.CmtCd2 equals t6.CmtCd into leftJoinT6
+                        from t6 in leftJoinT6.DefaultIfEmpty()
+                        join t7 in NoTrackingDataContext.KensaStdMsts
+                            on t1.KensaItemCd equals t7.KensaItemCd into leftJoinT7
+                        from t7 in leftJoinT7.DefaultIfEmpty()
+                        where t2.IsDelete == DeleteTypes.None && t3.IsDeleted == DeleteTypes.None && t4.IsDelete == DeleteTypes.None
+                        where t2.KensaItemSeqNo == NoTrackingDataContext.KensaMsts.Where(m => m.HpId == t2.HpId && m.KensaItemCd == t2.KensaItemCd && m.IsDelete == DeleteTypes.None).Min(m => m.KensaItemSeqNo)
+                        where t5.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t5.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
+                        where t6.CmtSeqNo == NoTrackingDataContext.KensaCmtMsts.Where(m => m.HpId == t2.HpId && m.CmtCd == t6.CmtCd && m.IsDeleted == DeleteTypes.None).Min(m => m.CmtSeqNo)
+                        select new ListKensaInfDetailItemModel
+                        (
+                            t1.PtId,
+                            t1.IraiCd,
+                            t1.RaiinNo,
+                            t1.IraiDate,
+                            t1.SeqNo,
+                            t1.SeqParentNo,
+                            t2.KensaName ?? string.Empty,
+                            t2.KensaKana ?? string.Empty,
+                            t2.SortNo,
+                            t1.KensaItemCd ?? string.Empty,
+                            t1.ResultVal ?? string.Empty,
+                            t1.ResultType ?? string.Empty,
+                            t1.AbnormalKbn ?? string.Empty,
+                            t1.CmtCd1 ?? string.Empty,
+                            t1.CmtCd2 ?? string.Empty,
+                            (t3.CenterCd == t5.CenterCd || string.IsNullOrEmpty(t5.CenterCd)) ? (t5.CMT ?? string.Empty) : "不明",
+                            (t3.CenterCd == t6.CenterCd || string.IsNullOrEmpty(t6.CenterCd)) ? (t6.CMT ?? string.Empty) : "不明",
+                            t7.MaleStd ?? string.Empty,
+                            t7.FemaleStd ?? string.Empty,
+                            t7.MaleStdLow ?? string.Empty,
+                            t7.FemaleStdLow ?? string.Empty,
+                            t7.MaleStdHigh ?? string.Empty,
+                            t7.FemaleStdHigh ?? string.Empty,
+                            t2.Unit ?? string.Empty,
+                            t3.Nyubi ?? string.Empty,
+                            t3.Yoketu ?? string.Empty,
+                            t3.Bilirubin ?? string.Empty,
+                            t3.SikyuKbn,
+                            t3.TosekiKbn,
+                            t3.InoutKbn,
+                            t3.Status,
+                            DeleteTypes.None,
+                            t1.SeqGroupNo
+                        ));
 
             if (showAbnormalKbn)
             {
@@ -571,9 +567,7 @@ namespace Reporting.KensaHistory.DB
 
             var totalCol = kensaInfDetailCol.Count();
 
-            List<long>? listSeqNoItems = new();
-
-            if (listSeqNoItems == null || listSeqNoItems.Count == 0)
+            if (!listSeqNoItems.Any())
             {
                 // Get list with start date
                 if (startDate > 0)
@@ -615,62 +609,41 @@ namespace Reporting.KensaHistory.DB
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
             data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
 
-            var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.IraiCd }).SelectMany(group => group.Skip(1))
-                .Select(x => x);
-            var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
-
-            var kensaItemWithOutDuplicate = data.Where(x => !seqNos.Contains(x.SeqNo)).
-                GroupBy(item => item.KensaItemCd)
-                                .Select(group => group.First())
-                                .ToList();
-
             var groupRowData = data
-                .GroupBy(x => new { x.KensaItemCd })
+                .GroupBy(x => new { x.KensaItemCd, x.SeqGroupNo })
                 .ToDictionary(
-                    group => group.Key.KensaItemCd,
-                    group => group.Where(x => !seqNos.Contains(x.SeqNo)).ToList());
-
+                    group =>
+                    {
+                        var newItem = group.First();
+                        newItem.SetRowSeqId(string.Join("-", group.Select(x => x.SeqNo)));
+                        return newItem;
+                    },
+                    group => group.ToList());
 
             var kensaInfDetailData = new List<KensaInfDetailDataModel>();
 
-            foreach (var item in kensaItemWithOutDuplicate)
+            foreach (var item in groupRowData)
             {
-                if (groupRowData.TryGetValue(item.KensaItemCd, out var dynamicArray))
-                {
-                    kensaInfDetailData.Add(new KensaInfDetailDataModel(
-                        item.KensaItemCd,
-                        item.KensaName,
-                        item.Unit,
-                        item.MaleStd,
-                        item.FemaleStd,
-                        item.KensaKana,
-                        item.SortNo,
-                        item.SeqNo,
-                        item.SeqParentNo,
-                        dynamicArray
-                    ));
-                }
-            }
-
-            foreach (var item in kensaItemDuplicate)
-            {
+                var row = item.Key;
                 kensaInfDetailData.Add(new KensaInfDetailDataModel(
-                    item.KensaItemCd,
-                    item.KensaName,
-                    item.Unit,
-                    item.MaleStd,
-                    item.FemaleStd,
-                    item.KensaKana,
-                    item.SortNo,
-                    item.SeqNo,
-                    item.SeqParentNo,
-                    new List<ListKensaInfDetailItemModel> { item }
-                ));
+                row.KensaItemCd,
+                row.KensaName,
+                row.Unit,
+                row.MaleStd,
+                row.FemaleStd,
+                row.KensaKana,
+                row.SortNo,
+                row.SeqNo,
+                row.SeqParentNo,
+                row.RowSeqId,
+                item.Value
+            ));
             }
 
             // Sort row by user config
-            var kensaInfDetailRows = new List<KensaInfDetailDataModel>();
-            if (setId == 0)
+            List<KensaInfDetailDataModel> kensaInfDetailRows = new List<KensaInfDetailDataModel>();
+
+            if (setId == 0 && showAbnormalKbn == false)
             {
                 var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
                 var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
@@ -678,19 +651,18 @@ namespace Reporting.KensaHistory.DB
                 // Get all parent item
                 kensaInfDetailRows = kensaInfDetailData.Where(x => x.SeqParentNo == 0).ToList();
                 kensaInfDetailRows = SortRow(kensaInfDetailRows);
+
                 // Children item
-                var childrenItems = kensaInfDetailData.Where(x => x.SeqParentNo != 0).GroupBy(x => new { x.SeqParentNo })
-                .ToDictionary(
-                    group => group.Key.SeqParentNo,
-                    group => group.ToList());
+                var childrenItems = kensaInfDetailData.Where(x => x.SeqParentNo > 0).ToList();
 
                 // Append childrends
                 for (int i = 0; i < kensaInfDetailRows.Count; i++)
                 {
                     var item = kensaInfDetailRows[i];
-                    if (childrenItems.TryGetValue(item.SeqNo, out var childrens))
+                    var childrens = childrenItems.Where(x => item.RowSeqId.Contains(x.SeqParentNo.ToString())).ToList();
+                    if (childrens != null && childrens.Any())
                     {
-                        if (childrens.Count() > 1)
+                        if (childrens.Count > 1)
                         {
                             childrens = SortRow(childrens);
                         }
@@ -732,8 +704,9 @@ namespace Reporting.KensaHistory.DB
                     }
                 }
             }
-            // Sort row by KensaSet SortNo
-            else
+
+            // Filter row by KensaSet
+            else if(setId != 0 && showAbnormalKbn == false)
             {
                 var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).ToList();
                 foreach (var cunrentItemSet in kensasetDetail)
@@ -771,6 +744,48 @@ namespace Reporting.KensaHistory.DB
                             kensaInfDetailRows.Add(row);
                             kensaInfDetailData.Remove(row);
                         }
+                    }
+                }
+            }
+            else
+            {
+                var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
+                var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
+
+                // Get all parent item
+                kensaInfDetailRows = SortRow(kensaInfDetailData);
+
+                List<KensaInfDetailDataModel> SortRow(List<KensaInfDetailDataModel> data)
+                {
+                    switch (sortCoulum)
+                    {
+                        case SortKensaMstColumn.KensaItemCd:
+                            if (sortType == 1)
+                            {
+                                return data.OrderByDescending(x => x.KensaItemCd).ToList();
+                            }
+                            else
+                            {
+                                return data.OrderBy(x => x.KensaItemCd).ToList();
+                            }
+                        case SortKensaMstColumn.KensaKana:
+                            if (sortType == 1)
+                            {
+                                return data.OrderByDescending(x => x.KensaKana).ToList();
+                            }
+                            else
+                            {
+                                return data.OrderBy(x => x.KensaKana).ToList();
+                            }
+                        default:
+                            if (sortType == 1)
+                            {
+                                return data.OrderByDescending(x => x.SortNo).ToList();
+                            }
+                            else
+                            {
+                                return data.OrderBy(x => x.SortNo).ToList();
+                            }
                     }
                 }
             }
