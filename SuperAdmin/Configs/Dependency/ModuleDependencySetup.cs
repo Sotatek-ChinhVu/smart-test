@@ -22,6 +22,7 @@ using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.Login;
 using UseCase.SuperAdmin.TenantOnboard;
+using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdmin.Configs.Dependency
@@ -86,6 +87,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenantInputData, GetTenantInteractor>();
             busBuilder.RegisterUseCase<GetTenantDetailInputData, GetTenantDetailInteractor>();
             busBuilder.RegisterUseCase<GetNotificationInputData, GetNotificationInteractor>();
+            busBuilder.RegisterUseCase<UpdateNotificationInputData, UpdateNotificationInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
