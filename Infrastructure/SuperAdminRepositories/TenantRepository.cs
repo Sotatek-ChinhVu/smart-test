@@ -95,7 +95,7 @@ namespace Infrastructure.SuperAdminRepositories
                 }
                 if (!string.IsNullOrEmpty(endSubDomain))
                 {
-                    tenant.SubDomain = endSubDomain;
+                    tenant.EndSubDomain = endSubDomain;
                 }
                 if (!string.IsNullOrEmpty(dbIdentifier))
                 {
