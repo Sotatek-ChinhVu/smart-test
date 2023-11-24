@@ -3,7 +3,6 @@ using Amazon.RDS.Model;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using Npgsql;
-using System.Data.Common;
 
 namespace AWSSDK.Common
 {
@@ -40,7 +39,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                return new Dictionary<string, RDSInformation>();
             }
         }
 
@@ -358,33 +357,6 @@ namespace AWSSDK.Common
             return dbSnapshotIdentifier;
         }
 
-        public async static Task<bool> IsSnapshotAvailableAsync(string dbSnapshotIdentifier)
-        {
-            try
-            {
-                var rdsClient = new AmazonRDSClient();
-
-                // Create a request to describe DB snapshots
-                var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
-                {
-                    DBSnapshotIdentifier = dbSnapshotIdentifier
-                };
-
-                // Call DescribeDBSnapshotsAsync to asynchronously get information about the snapshot
-                var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
-
-                // Check if the snapshot exists and is in the "available" state
-                var snapshot = describeSnapshotsResponse.DBSnapshots.FirstOrDefault();
-                return snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions (e.g., AWS service exceptions, network issues)
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
-            }
-        }
-
         public static async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier)
         {
             try
@@ -449,15 +421,18 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<bool> GetListDatabase(string serverEndpoint, int port)
+        public static async Task<List<string>> GetListDatabase(string serverEndpoint)
         {
             try
             {
                 // Replace these values with your actual RDS information
                 string username = "postgres";
                 string password = "Emr!23456789";
-                // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                int port = 5432;
+                // Connection string format for PostgreSQL
+                string connectionString = $"host={serverEndpoint};port={port};userid={username};password={password};";
+
+                List<string> databaseList = new List<string>();
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -466,14 +441,16 @@ namespace AWSSDK.Common
                     {
                         connection.Open();
 
-                        // Delete database
-                        using (DbCommand command = connection.CreateCommand())
+                        // Select databases
+                        using (NpgsqlCommand command = new NpgsqlCommand("SELECT datname FROM pg_catalog.pg_database;", connection))
+                        using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            command.CommandText = "SELECT datname FROM pg_catalog.pg_database;";
-                            command.ExecuteReader();
+                            while (await reader.ReadAsync())
+                            {
+                                string dbName = reader.GetString(0);
+                                databaseList.Add(dbName);
+                            }
                         }
-
-                        Console.WriteLine($"Database deleted successfully.");
                     }
                     catch (Exception ex)
                     {
@@ -481,7 +458,78 @@ namespace AWSSDK.Common
                     }
                 }
 
-                return true;
+                return databaseList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new List<string>();
+            }
+        }
+
+        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                var deleteRequest = new DeleteDBInstanceRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    //SkipFinalSnapshot = true // Set this to true if you don't want to create a final DB snapshot
+                };
+
+                var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
+
+                // Check if the HTTP status code indicates success
+                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log the exception details
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static async Task<bool> CheckRDSInstanceDeleted(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var startTime = DateTime.Now;
+                var timeout = TimeSpan.FromMinutes(ConfigConstant.TimeoutCheckingAvailable);
+                while ((DateTime.Now - startTime) < timeout)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    var describeRequest = new DescribeDBInstancesRequest
+                    {
+                        DBInstanceIdentifier = dbInstanceIdentifier
+                    };
+
+                    var describeResponse = await rdsClient.DescribeDBInstancesAsync(describeRequest);
+
+                    // Check if the instance doesn't exist (status will be null if it doesn't)
+                    if (!describeResponse.DBInstances.Any())
+                    {
+                        return true;
+                    }
+
+                    var instanceStatus = describeResponse.DBInstances[0].DBInstanceStatus;
+
+                    // Check if the status is "deleting" or "deleted"
+                    if (instanceStatus.Equals("deleting", StringComparison.OrdinalIgnoreCase) ||
+                        instanceStatus.Equals("deleted", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+
+                    // Wait for a short duration before the next attempt
+                    await Task.Delay(5000); // 5 seconds delay, adjust as needed
+                }
+
+                // If the loop runs for the entire timeout duration, return false
+                return false;
             }
             catch (Exception ex)
             {
