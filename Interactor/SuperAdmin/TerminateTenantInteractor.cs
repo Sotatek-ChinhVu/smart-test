@@ -31,7 +31,7 @@ namespace Interactor.SuperAdmin
                 return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
             }
 
-            var listTenantDb = RDSAction.GetListDatabase(tenant.RdsIdentifier).Result;
+            var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb).Result;
             // Check valid delete tennatDb
             if (listTenantDb == null || listTenantDb.Count() == 0 || !listTenantDb.Contains(tenant.Db))
             {

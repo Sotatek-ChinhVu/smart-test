@@ -146,7 +146,7 @@ namespace Interactor.SuperAdmin
                     //}
 
                     // Delete DB in old RDS
-                    var listTenantDb = await RDSAction.GetListDatabase(oldTenant.RdsIdentifier);
+                    var listTenantDb = await RDSAction.GetListDatabase(oldTenant.EndPointDb);
 
                     // Connect RDS delete TenantDb
                     if (listTenantDb.Count > 1)
