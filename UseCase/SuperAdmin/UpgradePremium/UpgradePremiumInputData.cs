@@ -12,8 +12,11 @@ namespace UseCase.SuperAdmin.UpgradePremium
             SubDomain = subDomain;
         }
         public int TenantId { get; private set; }
+
         public int Size { get; private set; }
+
         public int SizeType { get; private set; }
+
         public string SubDomain { get; private set; } 
     }
 }
