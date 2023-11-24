@@ -30,9 +30,28 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
         {
             int fromSinDate = seikyuYm * 100 + 1;
             int toSinDate = seikyuYm * 100 + 99;
+            bool havePtIds = ptIds.Any();
 
-            var kaikeiDetails = _tenantDataContext.KaikeiDetails.FindListQueryableNoTrack();
-            var receSeikyus = _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(r => r.IsDeleted == DeleteStatus.None);
+            var kaikeiDetails = _tenantDataContext.KaikeiDetails.Where(item => item.HpId == hpId
+                                                                               && item.SinDate >= fromSinDate
+                                                                               && item.SinDate <= toSinDate
+                                                                               && (!havePtIds
+                                                                                   || ptIds.Contains(item.PtId)))
+                                                                .ToList();
+
+            var ptIdList = kaikeiDetails.Select(item => item.PtId).Distinct().ToList();
+            var raiinNoList = kaikeiDetails.Select(item => item.RaiinNo).Distinct().ToList();
+            var hokenIdList = kaikeiDetails.Select(item => item.HokenId).Distinct().ToList();
+            var receSeikyus = _tenantDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                           && item.IsDeleted == DeleteStatus.None
+                                                                           && hokenIdList.Contains(item.HokenId)
+                                                                           && ptIdList.Contains(item.PtId))
+                                                            .ToList();
+
+            var raiinInfs = _tenantDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                       && item.IsDeleted == 0
+                                                                       && raiinNoList.Contains(item.RaiinNo))
+                                                        .ToList();
 
             var maxReceSeikyus = _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(
                 r => r.IsDeleted == DeleteStatus.None
@@ -47,9 +66,7 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
                     r.Key.HokenId,
                     SeikyuYm = r.Max(x => x.SeikyuYm)
                 }
-            );
-
-            var raiinInfs = _tenantDataContext.RaiinInfs.FindListQueryableNoTrack();
+            ).ToList();
 
             var joinQuery = (
                 from kaikeiDetail in kaikeiDetails
@@ -58,8 +75,8 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
                     new { rs.HpId, rs.PtId, rs.SinYm, rs.HokenId } into rsJoin
                 from receSeikyu in rsJoin.DefaultIfEmpty()
                 join raiinInf in raiinInfs on
-                    new { kaikeiDetail.HpId, kaikeiDetail.PtId, kaikeiDetail.RaiinNo } equals
-                    new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
+                    new { kaikeiDetail.RaiinNo } equals
+                    new { raiinInf.RaiinNo }
                 where
                             kaikeiDetail.HpId == hpId &&
                             //kaikeiDetail.HokenKbn != HokenKbn.Jihi &&  //自費を除く
