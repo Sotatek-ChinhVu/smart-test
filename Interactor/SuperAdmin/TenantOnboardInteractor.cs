@@ -6,6 +6,8 @@ using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Tenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using Domain.SuperAdminModels.MigrationTenantHistory;
+using Interactor.Realtime;
+using Domain.SuperAdminModels.Notification;
 
 namespace Interactor.SuperAdmin
 {
@@ -14,11 +16,21 @@ namespace Interactor.SuperAdmin
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
         private readonly IMigrationTenantHistoryRepository _migrationTenantHistoryRepository;
-        public TenantOnboardInteractor(IAwsSdkService awsSdkService, ITenantRepository tenantRepository, IMigrationTenantHistoryRepository migrationTenantHistoryRepository)
+        private readonly IWebSocketService _iWebSocketService;
+        private readonly INotificationRepository _notificationRepository;
+        public TenantOnboardInteractor(
+            IAwsSdkService awsSdkService,
+            ITenantRepository tenantRepository,
+            IMigrationTenantHistoryRepository migrationTenantHistoryRepository,
+            IWebSocketService iWebSocketService,
+            INotificationRepository notificationRepository
+            )
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _migrationTenantHistoryRepository = migrationTenantHistoryRepository;
+            _iWebSocketService = iWebSocketService;
+            _notificationRepository = notificationRepository;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -143,8 +155,6 @@ namespace Interactor.SuperAdmin
                 if (!string.IsNullOrEmpty(subDomain))
                 {
                     tenantUrl = $"{subDomain}.{ConfigConstant.Domain}";
-                    await Route53Action.CreateTenantDomain(subDomain);
-                    await CloudFrontAction.UpdateNewTenantAsync(subDomain);
                     // Checking Available RDS Cluster
                     if (subDomain.Length > 0)
                     {
@@ -255,6 +265,8 @@ namespace Interactor.SuperAdmin
                             }
                         }
                     }
+                    await Route53Action.CreateTenantDomain(subDomain);
+                    await CloudFrontAction.UpdateNewTenantAsync(subDomain);
                 }
                 else // Return landing page url by default
                 {
@@ -263,14 +275,19 @@ namespace Interactor.SuperAdmin
 
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
-            {
-                { "message", "Please wait for 15 minutes for all resources to be available" }
-            };
-
+                {
+                    { "message", "Please wait for 15 minutes for all resources to be available" }
+                };
+                var message = $"{subDomain} is created successfuly.";
+                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
+                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return result;
             }
             catch (Exception ex)
             {
+                var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
