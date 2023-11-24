@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations.SuperAdmin
 {
     [DbContext(typeof(SuperAdminContext))]
-    partial class SuperAdminContextModelSnapshot : ModelSnapshot
+    [Migration("20231123071128_addTableMigrationTenantHistory")]
+    partial class addTableMigrationTenantHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,17 +114,13 @@ namespace TenantMigration.Migrations.SuperAdmin
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
 
+                    b.Property<string>("ENDPOINTDB")
+                        .HasColumnType("text")
+                        .HasColumnName("MESSAGE");
+
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
-
-                    b.Property<byte>("IsRead")
-                        .HasColumnType("smallint")
-                        .HasColumnName("IS_READ");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("text")
-                        .HasColumnName("MESSAGE");
 
                     b.Property<byte>("Status")
                         .HasColumnType("smallint")
@@ -226,11 +225,6 @@ namespace TenantMigration.Migrations.SuperAdmin
                         .HasColumnType("text")
                         .HasColumnName("PASSWORD");
 
-                    b.Property<string>("PasswordConnect")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("PASSWORD_CONNECT");
-
                     b.Property<string>("RdsIdentifier")
                         .IsRequired()
                         .HasColumnType("text")
@@ -268,11 +262,6 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("UPDATE_DATE");
-
-                    b.Property<string>("UserConnect")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("USER_CONNECT");
 
                     b.HasKey("TenantId");
 

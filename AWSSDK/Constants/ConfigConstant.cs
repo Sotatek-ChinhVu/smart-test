@@ -10,6 +10,7 @@ namespace AWSSDK.Constants
     {
         public static string HostedZoneId = "Z09462362PXK5JFYQ59B";
         public static string Domain = "smartkarte.org";
+        public static string DistributionId = "E1Q6ZVLBFAFBDX";
         public static string DedicateInstance = "db.m6g.large";
         public static string SharingInstance = "db.m6g.xlarge";
         public static int TimeoutCheckingAvailable = 15;
@@ -17,6 +18,7 @@ namespace AWSSDK.Constants
         public static int TypeDedicate = 1;
         public static int SizeTypeMB = 1;
         public static int SizeTypeGB = 2;
+        public static List<string> LISTSYSTEMDB = new List<string>() { "rdsadmin, postgres" };
 
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
@@ -31,7 +33,10 @@ namespace AWSSDK.Constants
             {"failed", 7},
             {"inaccessible-encryption-credentials",8},
             {"storage-full", 9},
-            {"restor-failed", 10}
+            {"restore-failed", 10},
+            {"terminating", 11},
+            {"terminated", 12},
+            {"terminating-failed", 13}
         };
 
             return rdsStatusDictionary;

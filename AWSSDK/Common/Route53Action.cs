@@ -74,5 +74,56 @@ namespace AWSSDK.Common
                 return false;
             }
         }
+        public static async Task<bool> DeleteTenantDomain(string tenantId)
+        {
+            try
+            {
+                var route53Client = new AmazonRoute53Client();
+
+                var subDomain = $"{tenantId}.{ConfigConstant.Domain}";
+
+                // Create a new DELETE change batch
+                var changeBatch = new ChangeBatch
+                {
+                    Changes = new List<Change>
+            {
+                new Change
+                {
+                    Action = ChangeAction.DELETE,
+                    ResourceRecordSet = new ResourceRecordSet
+                    {
+                        Name = subDomain,
+                        TTL = 60,
+                        Type = RRType.CNAME,
+                        ResourceRecords = new List<ResourceRecord>
+                        {
+                            new ResourceRecord
+                            {
+                                Value = "d1x8o8ft7xbpco.cloudfront.net",
+                            },
+                        },
+                    },
+                },
+            },
+                    Comment = "Delete CNAME record for tenant",
+                };
+
+                // Send a request to change the resource record sets
+                var response = await route53Client.ChangeResourceRecordSetsAsync(new ChangeResourceRecordSetsRequest
+                {
+                    ChangeBatch = changeBatch,
+                    HostedZoneId = ConfigConstant.HostedZoneId,
+                });
+
+                // Return true if the status code is OK (successful)
+                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+        }
+
     }
 }
