@@ -10,6 +10,7 @@ namespace AWSSDK.Constants
     {
         public static string HostedZoneId = "Z09462362PXK5JFYQ59B";
         public static string Domain = "smartkarte.org";
+        public static string DistributionId = "E1Q6ZVLBFAFBDX";
         public static string DedicateInstance = "db.m6g.large";
         public static string SharingInstance = "db.m6g.xlarge";
         public static int TimeoutCheckingAvailable = 15;

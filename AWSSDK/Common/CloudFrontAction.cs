@@ -137,7 +137,7 @@ namespace AWSSDK.Common
                         IsIPV6Enabled = true
                     },
                     IfMatch = eTag,
-                    Id = "E1Q6ZVLBFAFBDX"
+                    Id = ConfigConstant.DistributionId
                 };
 
                 return await cloudFrontClient.UpdateDistributionAsync(request);
@@ -180,7 +180,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                var distInfo = await GetDistributionConfigAsync("E1Q6ZVLBFAFBDX");
+                var distInfo = await GetDistributionConfigAsync(ConfigConstant.DistributionId);
 
                 if (distInfo != null)
                 {

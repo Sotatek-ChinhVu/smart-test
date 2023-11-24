@@ -62,6 +62,12 @@ namespace Entity.SuperAdmin
         [Column("RDS_IDENTIFIER")]
         public string RdsIdentifier { get; set; } = string.Empty;
 
+        [Column("USER_CONNECT")]
+        public string UserConnect { get; set; } = string.Empty;
+
+        [Column("PASSWORD_CONNECT")]
+        public string PasswordConnect { get; set; } = string.Empty;
+
         [Column("IS_DELETED")]
         public int IsDeleted { get; set; }
 
