@@ -109,7 +109,7 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint)
+        public TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType)
         {
             try
             {
@@ -121,6 +121,9 @@ namespace Infrastructure.SuperAdminRepositories
                 tenant.EndPointDb = endPoint;
                 tenant.Type = 1;
                 tenant.Status = 1;
+                tenant.SubDomain = subDomain;
+                tenant.Size = size;
+                tenant.SizeType = sizeType;
                 tenant.RdsIdentifier = dbIdentifier;
                 TrackingDataContext.SaveChanges();
                 var tenantModel = ConvertEntityToModel(tenant);

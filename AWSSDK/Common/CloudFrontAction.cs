@@ -7,13 +7,11 @@ namespace AWSSDK.Common
 {
     public class CloudFrontAction
     {
-        public static async Task<UpdateDistributionResponse> UpdateAlterCNAMEAsync(string tenantId, string? eTag, int quantity, List<string> alterName)
+        public static async Task<UpdateDistributionResponse> UpdateAlterCNAMEAsync(string? eTag, List<string> cname)
         {
             try
             {
                 var cloudFrontClient = new AmazonCloudFrontClient();
-                var cname = new List<string> { $"{tenantId}.{ConfigConstant.Domain}" };
-                cname.AddRange(alterName);
                 var request = new UpdateDistributionRequest
                 {
                     DistributionConfig = new DistributionConfig
@@ -21,7 +19,7 @@ namespace AWSSDK.Common
                         CallerReference = "4531dda9-e0db-4080-83ef-04d572e4407f",
                         Aliases = new Aliases
                         {
-                            Quantity = quantity + 1,
+                            Quantity = cname.Count(),
                             Items = cname
                         },
                         DefaultRootObject = "",
@@ -189,13 +187,47 @@ namespace AWSSDK.Common
                     var eTag = distInfo["ETag"].ToString();
                     var quantity = (int)distInfo["Quantity"];
                     var alterName = (List<string>)distInfo["AlterName"];
+                    alterName.Add($"{tenantId}.{ConfigConstant.Domain}");
 
-                    await UpdateAlterCNAMEAsync(tenantId, eTag, quantity, alterName);
+                    await UpdateAlterCNAMEAsync(eTag, alterName);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
+        public static async Task<bool> RemoveItemCnameAsync(string tenantId)
+        {
+            try
+            {
+                var distInfo = await GetDistributionConfigAsync("E1Q6ZVLBFAFBDX");
+
+                if (distInfo != null)
+                {
+                    var eTag = distInfo["ETag"].ToString();
+                    var quantity = (int)distInfo["Quantity"];
+                    var alterName = (List<string>)distInfo["AlterName"];
+                    alterName.Remove($"{tenantId}.{ConfigConstant.Domain}");
+
+                    // Update the distribution with the modified CNAME list
+                    UpdateDistributionResponse resUpdate = await UpdateAlterCNAMEAsync(eTag, alterName);
+
+                    // Check if the update was successful
+                    if (resUpdate != null && resUpdate.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        Console.WriteLine("CNAME removed successfully!");
+                        return true;
+                    }
+                }
+
+                return false; // Return false if there was an issue or if the update was not successful
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
             }
         }
     }

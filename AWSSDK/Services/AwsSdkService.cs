@@ -57,7 +57,7 @@ namespace AWSSDK.Services
                 // Replace these values with your actual RDS information
                 string username = "postgres";
                 string password = "Emr!23456789";
-                var port = 5432;
+                int port = 5432;
                 // Connection string format for SQL Server
                 string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
 
@@ -71,7 +71,7 @@ namespace AWSSDK.Services
                         // Delete database
                         using (DbCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = $"EXECUTE 'DROP DATABASE {tennantDB};";
+                            command.CommandText = $"DROP DATABASE {tennantDB};";
                             command.ExecuteNonQuery();
                         }
 

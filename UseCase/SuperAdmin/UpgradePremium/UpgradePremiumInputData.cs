@@ -4,14 +4,19 @@ namespace UseCase.SuperAdmin.UpgradePremium
 {
     public class UpgradePremiumInputData : IInputData<UpgradePremiumOutputData>
     {
-        public UpgradePremiumInputData(int tenantId, int size, string domain)
+        public UpgradePremiumInputData(int tenantId, int size, int sizeType, string subDomain)
         {
             TenantId = tenantId;
             Size = size;
-            Domain = domain;
+            SizeType = sizeType;
+            SubDomain = subDomain;
         }
         public int TenantId { get; private set; }
-        public string Domain { get; private set; }
+
         public int Size { get; private set; }
+
+        public int SizeType { get; private set; }
+
+        public string SubDomain { get; private set; } 
     }
 }
