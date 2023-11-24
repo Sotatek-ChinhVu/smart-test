@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using SuperAdmin.Configs.Dependency;
 using SuperAdmin.Configs.Options;
 using SuperAdmin.Realtime;
