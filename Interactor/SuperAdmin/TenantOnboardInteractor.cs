@@ -157,8 +157,8 @@ namespace Interactor.SuperAdmin
                             {
                                 _ = Task.Run(async () =>
                                 {
-                                    //var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
                                     var id = _tenantRepository.CreateTenant(model);
+                                    model.ChangeRdsIdentifier(dbIdentifier);
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
                                     if (!string.IsNullOrEmpty(host))
                                     {
@@ -213,29 +213,34 @@ namespace Interactor.SuperAdmin
                             }
                             else // Else, returning the first available RDS Cluster in the list
                             {
-                                string dbIdentifier = availableIdentifier[0];
-                                var sumubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(dbIdentifier);
-                                if (sumubDomainToDbIdentifier <= 3)
+                                bool checkAvailableIdentifier = false;
+                                foreach (var dbIdentifier in availableIdentifier)
                                 {
-                                    _ = Task.Run(async () =>
+                                    var sumSubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(dbIdentifier);
+                                    if (sumSubDomainToDbIdentifier <= 3)
                                     {
-                                        //var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
-                                        var id = _tenantRepository.CreateTenant(model);
-                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                        if (!string.IsNullOrEmpty(host))
+                                        checkAvailableIdentifier = true;
+                                        model.ChangeRdsIdentifier(dbIdentifier);
+                                        _ = Task.Run(async () =>
                                         {
-                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                            RDSAction.CreateTables(host, subDomain, dataMigration);
-                                        }
-                                    });
+                                            var id = _tenantRepository.CreateTenant(model);
+                                            host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                            if (!string.IsNullOrEmpty(host))
+                                            {
+                                                var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                                RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                                RDSAction.CreateTables(host, subDomain, dataMigration);
+                                            }
+                                        });
+                                        break;
+                                    }
                                 }
-                                else
+                                if (!checkAvailableIdentifier)
                                 {
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                     var id = _tenantRepository.CreateTenant(model);
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.ChangeRdsIdentifier(dbIdentifier);
+                                    model.ChangeRdsIdentifier(dbIdentifierNew);
                                     _ = Task.Run(async () =>
                                     {
                                         host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
