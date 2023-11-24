@@ -50,18 +50,19 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
             var sinYmMaxReceSeikyuList = maxReceSeikyus.Select(item => item.SinYm).Distinct().ToList();
             var hokenIdMaxReceSeikyuList = maxReceSeikyus.Select(item => item.HokenId).Distinct().ToList();
 
+            var receSeikyus = _tenantDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                           && item.IsDeleted == DeleteStatus.None)
+                                                            .ToList();
+
             var kaikeiDetails = _tenantDataContext.KaikeiDetails.Where(item => item.HpId == hpId
                                                                                && (!havePtIds || ptIds.Contains(item.PtId))
                                                                                && ((item.SinDate >= fromSinDate && item.SinDate <= toSinDate)
                                                                                     || (ptIdMaxReceSeikyuList.Contains(item.PtId)
                                                                                         && sinYmMaxReceSeikyuList.Contains(item.SinDate / 100)
-                                                                                        && hokenIdMaxReceSeikyuList.Contains(item.HokenId))
-                                                                 )).ToList();
+                                                                                        && hokenIdMaxReceSeikyuList.Contains(item.HokenId)))
+                                                                 ).ToList();
 
             var raiinNoList = kaikeiDetails.Select(item => item.RaiinNo).Distinct().ToList();
-            var receSeikyus = _tenantDataContext.ReceSeikyus.Where(item => item.HpId == hpId
-                                                                           && item.IsDeleted == DeleteStatus.None)
-                                                            .ToList();
 
             var raiinInfs = _tenantDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                        && item.IsDeleted == 0
@@ -71,8 +72,8 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
             var joinQuery = (
                 from kaikeiDetail in kaikeiDetails
                 join rs in receSeikyus on
-                    new { kaikeiDetail.HpId, kaikeiDetail.PtId, SinYm = (int)Math.Floor((double)kaikeiDetail.SinDate / 100), kaikeiDetail.HokenId } equals
-                    new { rs.HpId, rs.PtId, rs.SinYm, rs.HokenId } into rsJoin
+                    new { kaikeiDetail.PtId, SinYm = kaikeiDetail.SinDate / 100, kaikeiDetail.HokenId } equals
+                    new { rs.PtId, rs.SinYm, rs.HokenId } into rsJoin
                 from receSeikyu in rsJoin.DefaultIfEmpty()
                 join raiinInf in raiinInfs on
                     new { kaikeiDetail.RaiinNo } equals
@@ -104,7 +105,6 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
                                     select rs2
                                 ).Any(
                                     r =>
-                                        r.HpId == kaikeiDetail.HpId &&
                                         r.PtId == kaikeiDetail.PtId &&
                                         r.SinYm == kaikeiDetail.SinDate / 100 &&
                                         r.HokenId == kaikeiDetail.HokenId
