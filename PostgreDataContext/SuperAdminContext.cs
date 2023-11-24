@@ -18,6 +18,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<Notification>().HasKey(a => new { a.Id });
             modelBuilder.Entity<Scription>().HasKey(a => new { a.Id });
             modelBuilder.Entity<Tenant>().HasKey(a => new { a.TenantId });
+            modelBuilder.Entity<MigrationTenantHistory>().HasKey(a => new { a.Id });
 
             modelBuilder.Entity<Admin>().HasIndex(a => new { a.LoginId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.AdminId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
@@ -35,6 +36,8 @@ namespace PostgreDataContext
         public DbSet<Scription> Scriptions { get; set; } = default!;
 
         public DbSet<Tenant> Tenants { get; set; } = default!;
+
+        public DbSet<MigrationTenantHistory> MigrationTenantHistories { get; set; } = default!;
 
     }
 }

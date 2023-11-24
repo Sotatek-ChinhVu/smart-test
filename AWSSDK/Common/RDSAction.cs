@@ -154,7 +154,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void CreateDatabase(string host, string tenantId)
+        public static void CreateDatabase(string host, string subDomain, string passwordConnect)
         {
             try
             {
@@ -168,13 +168,13 @@ namespace AWSSDK.Common
                     using (var checkCommand = new NpgsqlCommand())
                     {
                         checkCommand.Connection = connection;
-                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{tenantId}'";
+                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{subDomain}'";
 
                         var existingDatabase = checkCommand.ExecuteScalar();
 
-                        if (existingDatabase != null && existingDatabase.ToString() == tenantId)
+                        if (existingDatabase != null && existingDatabase.ToString() == subDomain)
                         {
-                            Console.WriteLine($"Database '{tenantId}' already exists.");
+                            Console.WriteLine($"Database '{subDomain}' already exists.");
                             return;
                         }
                     }
@@ -182,10 +182,10 @@ namespace AWSSDK.Common
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        command.CommandText = $"CREATE DATABASE {tenantId}";
+                        command.CommandText = $"CREATE DATABASE {subDomain}; CREATE ROLE {subDomain} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {subDomain};";
                         command.ExecuteNonQuery();
-                        Console.WriteLine($"Database '{tenantId}' created successfully.");
-                    }                    
+                        Console.WriteLine($"Database '{subDomain}' created successfully.");
+                    }
                 }
             }
             catch (Exception ex)
@@ -194,10 +194,11 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void CreateTables(string host, string tenantId)
+        public static void CreateTables(string host, string tenantId, List<string> listMigration)
         {
             try
             {
+                var dataMasterFileName = "data-master";
                 var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -215,9 +216,29 @@ namespace AWSSDK.Common
 
                             if (sqlFiles.Length > 0)
                             {
-                                foreach (var filePath in sqlFiles)
+                                var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                                if (fileNames.Contains(dataMasterFileName))
                                 {
-                                    var sqlScript = File.ReadAllText(filePath);
+                                    fileNames.Remove(dataMasterFileName);
+                                }
+                                var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                                // insert table
+                                foreach (var fileName in uniqueFileNames)
+                                {
+                                    var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                    if (File.Exists(filePath))
+                                    {
+                                        var sqlScript = File.ReadAllText(filePath);
+                                        command.CommandText = sqlScript;
+                                        command.ExecuteNonQuery();
+                                    }
+                                }
+                                // insert data master
+                                var filePathMaster = Path.Combine(folderPath, $"{dataMasterFileName}.sql");
+                                if (File.Exists(filePathMaster) && !listMigration.Contains(dataMasterFileName))
+                                {
+                                    var sqlScript = File.ReadAllText(filePathMaster);
                                     command.CommandText = sqlScript;
                                     command.ExecuteNonQuery();
                                 }
