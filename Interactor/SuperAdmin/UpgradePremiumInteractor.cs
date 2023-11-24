@@ -1,13 +1,13 @@
-﻿using Amazon.RDS.Model;
-using Amazon.RDS;
+﻿using Amazon.RDS;
+using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
 using Npgsql;
 using UseCase.SuperAdmin.UpgradePremium;
-using Entity.SuperAdmin;
 
 namespace Interactor.SuperAdmin
 {
@@ -50,12 +50,12 @@ namespace Interactor.SuperAdmin
                 }
 
                 var oldTenant = _tenantRepository.Get(inputData.TenantId);
-                if (oldTenant.TenantId <= 0 )
+                if (oldTenant.TenantId <= 0)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.TenantDoesNotExist);
                 }
 
-                var listTenantDb = RDSAction.GetListDatabase(oldTenant.RdsIdentifier);
+                var aa = RDSAction.GetListDatabase(oldTenant.RdsIdentifier);
 
                 if (oldTenant.Type == ConfigConstant.TypeDedicate)
                 {
@@ -239,7 +239,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public  async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier, int tenantId)
+        public async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier, int tenantId)
         {
             try
             {
