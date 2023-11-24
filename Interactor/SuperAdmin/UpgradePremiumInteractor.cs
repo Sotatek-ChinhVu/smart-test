@@ -83,8 +83,8 @@ namespace Interactor.SuperAdmin
                     if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.FailedUpgradePremium);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, oldTenant);
+                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.SuperAdmin);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, oldTenant);
                         cts.Cancel();
                         return;
                     }
@@ -99,8 +99,8 @@ namespace Interactor.SuperAdmin
                         else
                         {
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                            _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.FailedUpgradePremium);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, oldTenant);
+                            _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.SuperAdmin);
+                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, oldTenant);
                             cts.Cancel();
                             return;
                         }
@@ -120,8 +120,8 @@ namespace Interactor.SuperAdmin
                     if (!isSuccessRestoreInstance || endpoint == null || string.IsNullOrEmpty(endpoint?.Address))
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.FailedUpgradePremium);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.FailedUpgradePremium, oldTenant);
+                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.SuperAdmin);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, oldTenant);
                         cts.Cancel();
                         return;
                     }
@@ -132,21 +132,17 @@ namespace Interactor.SuperAdmin
                     // Finished upgrade
                     if (tenantUpgrade != null)
                     {
-                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], FunctionCodes.FinishedUpgradePremium);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.FinishedUpgradePremium, tenantUpgrade);
+                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], FunctionCodes.SuperAdmin);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, tenantUpgrade);
                     }
 
                     //Delete list Db without tenantDB in new RDS
                     Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
                     var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, oldTenant.Db);
 
-                    //if (!isDeleteSuccess)
-                    //{
-                    //    // To rerun  delete
-                    //}
 
                     // Delete DB in old RDS
-                    var listTenantDb = await RDSAction.GetListDatabase(oldTenant.RdsIdentifier);
+                    var listTenantDb = await RDSAction.GetListDatabase(oldTenant.EndPointDb);
 
                     // Connect RDS delete TenantDb
                     if (listTenantDb.Count > 1)

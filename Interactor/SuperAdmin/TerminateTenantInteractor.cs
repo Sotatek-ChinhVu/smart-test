@@ -1,6 +1,7 @@
 ﻿using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
 using UseCase.SuperAdmin.TerminateTenant;
@@ -12,11 +13,13 @@ namespace Interactor.SuperAdmin
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
         private readonly IWebSocketService _webSocketService;
-        public TerminateTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService)
+        private readonly INotificationRepository _notificationRepository;
+        public TerminateTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository)
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _webSocketService = webSocketService;
+            _notificationRepository = notificationRepository;
         }
         public TerminateTenantOutputData Handle(TerminateTenantInputData inputData)
         {
@@ -31,7 +34,7 @@ namespace Interactor.SuperAdmin
                 return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
             }
 
-            var listTenantDb = RDSAction.GetListDatabase(tenant.RdsIdentifier).Result;
+            var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb).Result;
             // Check valid delete tennatDb
             if (listTenantDb == null || listTenantDb.Count() == 0 || !listTenantDb.Contains(tenant.Db))
             {
@@ -65,7 +68,7 @@ namespace Interactor.SuperAdmin
                 var deleteDNSAction = await Route53Action.DeleteTenantDomain(tenant.SubDomain);
 
                 // Delete item cname in cloud front
-                var deleteItemCnameAction = await CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain);  
+                var deleteItemCnameAction = await CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain);
                 // Check action deleted  RDS, DNS, Cloud front
                 if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
                 {
@@ -74,13 +77,16 @@ namespace Interactor.SuperAdmin
                     {
                         _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
                         // Notification  terminating success
+                        var messenge = tenant.EndSubDomain + $"is {""}" + "";
+                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
                     }
                 }
                 else
                 {
-                    _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating-failed"]);
+                    _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
                     // Notification  terminating failed
                     cts.Cancel();
                     return;

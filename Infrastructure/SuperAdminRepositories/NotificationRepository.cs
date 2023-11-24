@@ -12,21 +12,37 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
     {
     }
 
-    public bool CreateNotification(byte status, string messenge)
+    public NotificationModel CreateNotification(byte status, string messenge)
     {
         try
         {
             var notification = new Notification();
             notification.Status = status;
             notification.Message = messenge;
+            notification.IsDeleted = 0;
+            notification.IsRead = 0;
+            notification.CreateDate = CIUtil.GetJapanDateTimeNow();
             notification.UpdateDate = CIUtil.GetJapanDateTimeNow();
             TrackingDataContext.Notifications.Add(notification);
             TrackingDataContext.SaveChanges();
-            return true;
+
+            return new NotificationModel(
+                        notification.Id,
+                        notification.Status,
+                        notification.Message ?? string.Empty,
+                        notification.IsDeleted == 1,
+                        notification.IsRead == 0,
+                        notification.CreateDate);
         }
         catch
         {
-            return false;
+            return new NotificationModel(
+                        0,
+                        status,
+                        messenge ?? string.Empty,
+                        false,
+                        false,
+                        CIUtil.GetJapanDateTimeNow());
         }
     }
 
