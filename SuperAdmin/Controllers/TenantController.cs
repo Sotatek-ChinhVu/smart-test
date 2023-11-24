@@ -27,7 +27,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("UpgradePremium")]
         public ActionResult<Response<UpgradePremiumResponse>> UpgradePremium([FromBody] UpgradePremiumRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.Domain);
+            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.SizeType, request.Domain);
             var output = _bus.Handle(input);
             var presenter = new UpgradePremiumPresenter();
             presenter.Complete(output);

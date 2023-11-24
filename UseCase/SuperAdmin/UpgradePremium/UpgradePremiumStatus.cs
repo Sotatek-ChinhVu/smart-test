@@ -8,5 +8,9 @@
         Failed = 4,
         TenantDoesNotExist = 5,
         RdsDoesNotExist = 6,
+        NewDomainAleadyExist = 7,
+        InvalidSize = 8,
+        InvalidSizeType = 9,
+        InvalidDomain = 10,
     }
 }

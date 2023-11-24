@@ -19,6 +19,7 @@ namespace Infrastructure.SuperAdminRepositories
                 var notification = new Notification();
                 notification.Status = status;
                 notification.Message = messenge;
+                notification.CreateDate = CIUtil.GetJapanDateTimeNow();
                 notification.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.Notifications.Add(notification);
                 TrackingDataContext.SaveChanges();

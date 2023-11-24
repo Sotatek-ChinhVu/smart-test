@@ -57,7 +57,8 @@ namespace AWSSDK.Services
                 // Replace these values with your actual RDS information
                 string username = "postgres";
                 string password = "Emr!23456789";
-                var port = 5432;
+                int port = 22;
+                serverEndpoint = "localhost";
                 // Connection string format for SQL Server
                 string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
 
