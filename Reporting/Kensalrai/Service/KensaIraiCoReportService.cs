@@ -254,8 +254,16 @@ namespace Reporting.Kensalrai.Service
                 o1 += "O1";
                 // センターコード  6桁
                 o1 += adjStr(CenterCd, 6);
-                // 依頼コード    20桁
-                o1 += adjStr(kensaIrai.IraiCd.ToString(), 20);
+                // 依頼コード    20桁              
+                if (fileType == 3)
+                {
+                    // 岡山
+                    o1 += adjStr(kensaIrai.SinDate.ToString() + kensaIrai.IraiCd.ToString(), 20);
+                }
+                else
+                {
+                    o1 += adjStr(kensaIrai.IraiCd.ToString(), 20);
+                }
                 // 科コード     15桁
                 if (_systemConfig.OdrKensaIraiKaCode() == 1)
                 {
@@ -287,7 +295,7 @@ namespace Reporting.Kensalrai.Service
                 // 入院外来区分   1桁  ※2固定
                 o1 += "2";
                 // 提出医      10桁 ※未使用
-                if (fileType == 1)
+                if (new int[] { 1, 3 }.Contains(fileType))
                 {
                     // 加古川
                     o1 += CIUtil.CiCopyStrWidth(kensaIrai.TantoKanaName, 1, 10, 1);
@@ -386,12 +394,19 @@ namespace Reporting.Kensalrai.Service
                         o2 += "O2";
                         // センターコード  6桁
                         o2 += adjStr(CenterCd, 6);
-                        // 依頼コード    20桁
-                        o2 += adjStr(kensaIrai.IraiCd.ToString(), 20);
-
+                        // 依頼コード    20桁             
+                        if (fileType == 3)
+                        {
+                            // 岡山
+                            o2 += adjStr(kensaIrai.SinDate.ToString() + kensaIrai.IraiCd.ToString(), 20);
+                        }
+                        else
+                        {
+                            o2 += adjStr(kensaIrai.IraiCd.ToString(), 20);
+                        }
                     }
 
-                    if (fileType == 1)
+                    if (new int[] { 1, 3 }.Contains(fileType))
                     {
                         // 加古川
                         o2 += adjStr(kensaDtl.CenterItemCd, 25);
