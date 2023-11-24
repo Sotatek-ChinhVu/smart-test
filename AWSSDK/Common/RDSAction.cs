@@ -236,7 +236,7 @@ namespace AWSSDK.Common
                                 }
                                 // insert data master
                                 var filePathMaster = Path.Combine(folderPath, $"{dataMasterFileName}.sql");
-                                if (File.Exists(filePathMaster))
+                                if (File.Exists(filePathMaster) && !listMigration.Contains(dataMasterFileName))
                                 {
                                     var sqlScript = File.ReadAllText(filePathMaster);
                                     command.CommandText = sqlScript;

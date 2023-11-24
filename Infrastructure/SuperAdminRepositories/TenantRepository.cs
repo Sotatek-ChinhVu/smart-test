@@ -174,11 +174,11 @@ namespace Infrastructure.SuperAdminRepositories
                             if (databaseSize == null) continue;
                             if (tenant.SizeType == 1) //MB
                             {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect);
                             }
                             else if (tenant.SizeType == 2) //GB
                             {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect);
                             }
                         }
                     }
@@ -203,6 +203,7 @@ namespace Infrastructure.SuperAdminRepositories
                     grantCommand.Connection = connection;
                     grantCommand.CommandText = $"GRANT INSERT ON ALL TABLES IN SCHEMA public TO {role}";
                     grantCommand.ExecuteNonQuery();
+                    Console.WriteLine($"Schedule Task: GRANT INSERT DATABASE SUCCESS");
                 }
             }
             else
@@ -212,6 +213,7 @@ namespace Infrastructure.SuperAdminRepositories
                     revokeCommand.Connection = connection;
                     revokeCommand.CommandText = $"REVOKE INSERT ON ALL TABLES IN SCHEMA public FROM {role}";
                     revokeCommand.ExecuteNonQuery();
+                    Console.WriteLine($"Schedule Task: REVOKE INSERT DATABASE SUCCESS");
                 }
             }
         }
