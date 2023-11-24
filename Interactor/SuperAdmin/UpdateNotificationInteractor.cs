@@ -20,9 +20,10 @@ public class UpdateNotificationInteractor : IUpdateNotificationInputPort
             {
                 return new UpdateNotificationOutputData(UpdateNotificationStatus.InvalidIdNotification);
             }
-            else if (_notificationRepository.UpdateNotificationList(inputData.NotificationList))
+            var notificationResult = _notificationRepository.UpdateNotificationList(inputData.NotificationList);
+            if (notificationResult.Any())
             {
-                return new UpdateNotificationOutputData(UpdateNotificationStatus.Successed);
+                return new UpdateNotificationOutputData(notificationResult, UpdateNotificationStatus.Successed);
             }
             return new UpdateNotificationOutputData(UpdateNotificationStatus.Failed);
         }

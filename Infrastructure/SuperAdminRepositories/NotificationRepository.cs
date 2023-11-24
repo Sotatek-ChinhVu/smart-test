@@ -1,7 +1,9 @@
 ﻿using Domain.SuperAdminModels.Notification;
+using Entity.SuperAdmin;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.Linq;
 
 namespace Infrastructure.SuperAdminRepositories;
 
@@ -29,7 +31,7 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
         return result;
     }
 
-    public bool UpdateNotificationList(List<NotificationModel> notificationList)
+    public List<NotificationModel> UpdateNotificationList(List<NotificationModel> notificationList)
     {
         var notificationIdList = notificationList.Select(item => item.Id).Distinct().ToList();
         var notificationDBList = TrackingDataContext.Notifications.Where(item => notificationIdList.Contains(item.Id)
@@ -46,7 +48,16 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
             notification.IsRead = (byte)(model.IsRead ? 1 : 0);
             notification.UpdateDate = CIUtil.GetJapanDateTimeNow();
         }
-        return TrackingDataContext.SaveChanges() > 0;
+        TrackingDataContext.SaveChanges();
+        var result = notificationDBList.Select(notification => new NotificationModel(
+                                                                   notification.Id,
+                                                                   notification.Status,
+                                                                   notification.Message ?? string.Empty,
+                                                                   notification.IsDeleted == 1,
+                                                                   notification.IsRead == 1,
+                                                                   notification.CreateDate))
+                                        .ToList();
+        return result;
     }
 
     public bool CheckExistNotification(List<int> notificationIdList)

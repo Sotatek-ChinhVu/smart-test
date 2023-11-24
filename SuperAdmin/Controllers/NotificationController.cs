@@ -1,4 +1,5 @@
 ﻿using Domain.SuperAdminModels.Notification;
+using Interactor.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuperAdmin.Responses;
@@ -6,6 +7,7 @@ using SuperAdminAPI.Presenters.Notification;
 using SuperAdminAPI.Reponse.Notification;
 using SuperAdminAPI.Request.Notification;
 using UseCase.Core.Sync;
+using UseCase.SetMst.SaveSetMst;
 using UseCase.SuperAdmin.GetNotification;
 using UseCase.SuperAdmin.UpdateNotification;
 
@@ -17,9 +19,12 @@ namespace SuperAdminAPI.Controllers;
 public class NotificationController : ControllerBase
 {
     private readonly UseCaseBus _bus;
-    public NotificationController(UseCaseBus bus)
+    private readonly IWebSocketService _webSocketService;
+
+    public NotificationController(UseCaseBus bus, IWebSocketService webSocketService)
     {
         _bus = bus;
+        _webSocketService = webSocketService;
     }
 
     [HttpGet("GetNotification")]
@@ -33,10 +38,14 @@ public class NotificationController : ControllerBase
     }
 
     [HttpPost("UpdateNotification")]
-    public ActionResult<Response<UpdateNotificationResponse>> UpdateNotification([FromBody] UpdateNotificationRequest request)
+    public async Task<ActionResult<Response<UpdateNotificationResponse>>> UpdateNotification([FromBody] UpdateNotificationRequest request)
     {
         var input = new UpdateNotificationInputData(request.NotificationList.Select(item => new NotificationModel(item.Id, item.IsDeleted, item.IsRead)).ToList());
         var output = _bus.Handle(input);
+        if (output.Status == UpdateNotificationStatus.Successed && output.NotificationList.Any())
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateNotification, output.NotificationList);
+        }
         var presenter = new UpdateNotificationPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<UpdateNotificationResponse>>(presenter.Result);
