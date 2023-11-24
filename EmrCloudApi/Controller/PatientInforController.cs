@@ -442,7 +442,6 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SavePatientInfo)]
         public async Task<ActionResult<Response<SavePatientInfoResponse>>> SavePatientInfo([FromForm] SavePatientInfoFromFormRequest request)
         {
-            return Ok();
             var patientInfo = JsonConvert.DeserializeObject<SavePatientInfoRequest>(request.JsonPt);
             if (patientInfo is null)
                 return BadRequest();
