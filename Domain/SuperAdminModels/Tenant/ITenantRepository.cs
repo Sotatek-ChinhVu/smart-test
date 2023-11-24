@@ -25,6 +25,6 @@ public interface ITenantRepository
         void RevokeInsertPermission();
         
         TenantModel GetTenant(int tenantId);
-
+        
         void ReleaseResource();
 }
