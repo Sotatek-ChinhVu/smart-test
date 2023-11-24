@@ -1086,13 +1086,6 @@ namespace Infrastructure.Repositories
                 DataRaiinInf.TantoId);
         }
 
-        public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
-        {
-            var check = NoTrackingDataContext.RaiinInfs
-                .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
-            return check;
-        }
-
         public ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor)
         {
             var tantoId = 0;
