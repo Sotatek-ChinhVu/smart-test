@@ -32,41 +32,41 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
             int toSinDate = seikyuYm * 100 + 99;
             bool havePtIds = ptIds.Any();
 
-            var kaikeiDetails = _tenantDataContext.KaikeiDetails.Where(item => item.HpId == hpId
-                                                                               && item.SinDate >= fromSinDate
-                                                                               && item.SinDate <= toSinDate
-                                                                               && (!havePtIds
-                                                                                   || ptIds.Contains(item.PtId)))
-                                                                .ToList();
-
-            var ptIdList = kaikeiDetails.Select(item => item.PtId).Distinct().ToList();
-            var raiinNoList = kaikeiDetails.Select(item => item.RaiinNo).Distinct().ToList();
-            var hokenIdList = kaikeiDetails.Select(item => item.HokenId).Distinct().ToList();
-            var receSeikyus = _tenantDataContext.ReceSeikyus.Where(item => item.HpId == hpId
-                                                                           && item.IsDeleted == DeleteStatus.None
-                                                                           && hokenIdList.Contains(item.HokenId)
-                                                                           && ptIdList.Contains(item.PtId))
-                                                            .ToList();
-
-            var raiinInfs = _tenantDataContext.RaiinInfs.Where(item => item.HpId == hpId
-                                                                       && item.IsDeleted == 0
-                                                                       && raiinNoList.Contains(item.RaiinNo))
-                                                        .ToList();
-
-            var maxReceSeikyus = _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(
-                r => r.IsDeleted == DeleteStatus.None
+            var maxReceSeikyus = _tenantDataContext.ReceSeikyus.Where(item => item.IsDeleted == DeleteStatus.None
+                                                                              && item.HpId == hpId
+                                                                              && item.SeikyuYm == seikyuYm
             ).GroupBy(
-                r => new { r.HpId, r.SinYm, r.PtId, r.HokenId }
+                r => new { r.SinYm, r.PtId, r.HokenId }
             ).Select(
                 r => new
                 {
-                    r.Key.HpId,
                     r.Key.SinYm,
                     r.Key.PtId,
                     r.Key.HokenId,
                     SeikyuYm = r.Max(x => x.SeikyuYm)
                 }
             ).ToList();
+            var ptIdMaxReceSeikyuList = maxReceSeikyus.Select(item => item.PtId).Distinct().ToList();
+            var sinYmMaxReceSeikyuList = maxReceSeikyus.Select(item => item.SinYm).Distinct().ToList();
+            var hokenIdMaxReceSeikyuList = maxReceSeikyus.Select(item => item.HokenId).Distinct().ToList();
+
+            var kaikeiDetails = _tenantDataContext.KaikeiDetails.Where(item => item.HpId == hpId
+                                                                               && (!havePtIds || ptIds.Contains(item.PtId))
+                                                                               && ((item.SinDate >= fromSinDate && item.SinDate <= toSinDate)
+                                                                                    || (ptIdMaxReceSeikyuList.Contains(item.PtId)
+                                                                                        && sinYmMaxReceSeikyuList.Contains(item.SinDate / 100)
+                                                                                        && hokenIdMaxReceSeikyuList.Contains(item.HokenId))
+                                                                 )).ToList();
+
+            var raiinNoList = kaikeiDetails.Select(item => item.RaiinNo).Distinct().ToList();
+            var receSeikyus = _tenantDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                           && item.IsDeleted == DeleteStatus.None)
+                                                            .ToList();
+
+            var raiinInfs = _tenantDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                       && item.IsDeleted == 0
+                                                                       && raiinNoList.Contains(item.RaiinNo))
+                                                        .ToList();
 
             var joinQuery = (
                 from kaikeiDetail in kaikeiDetails
@@ -78,7 +78,6 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
                     new { kaikeiDetail.RaiinNo } equals
                     new { raiinInf.RaiinNo }
                 where
-                            kaikeiDetail.HpId == hpId &&
                             //kaikeiDetail.HokenKbn != HokenKbn.Jihi &&  //自費を除く
                             (
                                 //当月分
@@ -87,13 +86,9 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
                                 (
                                     (
                                         from rs1 in maxReceSeikyus
-                                        where
-                                            rs1.HpId == hpId &&
-                                            rs1.SeikyuYm == seikyuYm
                                         select rs1
                                     ).Any(
                                         r =>
-                                            r.HpId == kaikeiDetail.HpId &&
                                             r.PtId == kaikeiDetail.PtId &&
                                             r.SinYm == kaikeiDetail.SinDate / 100 &&
                                             r.HokenId == kaikeiDetail.HokenId
@@ -105,7 +100,6 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
                                 !(
                                     from rs2 in receSeikyus
                                     where
-                                        rs2.HpId == hpId &&
                                         rs2.SeikyuYm != seikyuYm
                                     select rs2
                                 ).Any(
