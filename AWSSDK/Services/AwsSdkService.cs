@@ -72,7 +72,7 @@ namespace AWSSDK.Services
                         // Delete database
                         using (DbCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = $"EXECUTE 'DROP DATABASE {tennantDB};";
+                            command.CommandText = $"DROP DATABASE {tennantDB};";
                             command.ExecuteNonQuery();
                         }
 

@@ -55,8 +55,6 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.TenantDoesNotExist);
                 }
 
-                var aa = RDSAction.GetListDatabase(oldTenant.RdsIdentifier);
-
                 if (oldTenant.Type == ConfigConstant.TypeDedicate)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
@@ -66,11 +64,6 @@ namespace Interactor.SuperAdmin
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.RdsDoesNotExist);
                 }
-
-                //if (oldTenant.Size != inputData.Size || oldTenant.SizeType != inputData.SizeType)
-                //{
-                //    // check valid
-                //}
 
                 if (oldTenant.SubDomain != inputData.SubDomain)
                 {

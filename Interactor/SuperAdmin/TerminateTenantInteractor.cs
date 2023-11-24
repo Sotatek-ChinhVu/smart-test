@@ -65,7 +65,7 @@ namespace Interactor.SuperAdmin
                 var deleteDNSAction = await Route53Action.DeleteTenantDomain(tenant.SubDomain);
 
                 // Delete item cname in cloud front
-                var deleteItemCnameAction = await CloudFrontAction.RemoveItemCnameAsync("thai");  
+                var deleteItemCnameAction = await CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain);  
                 // Check action deleted  RDS, DNS, Cloud front
                 if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
                 {
