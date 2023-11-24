@@ -95,7 +95,7 @@ namespace Infrastructure.SuperAdminRepositories
                 }
                 if (!string.IsNullOrEmpty(endSubDomain))
                 {
-                    tenant.SubDomain = endSubDomain;
+                    tenant.EndSubDomain = endSubDomain;
                 }
                 if (!string.IsNullOrEmpty(dbIdentifier))
                 {
@@ -109,7 +109,7 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint)
+        public TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType)
         {
             try
             {
@@ -121,6 +121,9 @@ namespace Infrastructure.SuperAdminRepositories
                 tenant.EndPointDb = endPoint;
                 tenant.Type = 1;
                 tenant.Status = 1;
+                tenant.SubDomain = subDomain;
+                tenant.Size = size;
+                tenant.SizeType = sizeType;
                 tenant.RdsIdentifier = dbIdentifier;
                 TrackingDataContext.SaveChanges();
                 var tenantModel = ConvertEntityToModel(tenant);
@@ -153,6 +156,30 @@ namespace Infrastructure.SuperAdminRepositories
             }
         }
 
+        public TenantModel TerminateTenant(int tenantId, byte TerminateStatus)
+        {
+            try
+            {
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
+                if (tenant == null)
+                {
+                    return new();
+                }
+
+                tenant.Status = TerminateStatus;
+                tenant.IsDeleted = 1;
+                tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                TrackingDataContext.SaveChanges();
+                var tenantModel = ConvertEntityToModel(tenant);
+                return tenantModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new();
+            }
+        }
+        
         public void RevokeInsertPermission()
         {
             //check status tenant = available
