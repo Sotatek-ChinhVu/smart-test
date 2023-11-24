@@ -155,30 +155,37 @@ namespace Infrastructure.SuperAdminRepositories
 
         public void RevokeInsertPermission()
         {
+            //check status tenant = available
             var listTenant = NoTrackingDataContext.Tenants.Where(i => i.Status == 1 && i.IsDeleted == 0).ToList();
             foreach (var tenant in listTenant)
             {
                 var connectionString = $"Host={tenant.EndPointDb};Username=postgres;Password=Emr!23456789;Port=5432";
-                using (var connection = new NpgsqlConnection(connectionString))
+                try
                 {
-                    connection.Open();
-                    using (var sizeCheckCommand = new NpgsqlCommand())
+                    using (var connection = new NpgsqlConnection(connectionString))
                     {
-                        sizeCheckCommand.Connection = connection;
-                        sizeCheckCommand.CommandText = $"SELECT pg_database_size('{tenant.Db}')";
-
-                        var databaseSize = sizeCheckCommand.ExecuteScalar();
-                        if (databaseSize == null) continue;
-                        if (tenant.SizeType == 1) //MB
+                        connection.Open();
+                        using (var sizeCheckCommand = new NpgsqlCommand())
                         {
-                            GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
-                        }
-                        else if (tenant.SizeType == 2) //GB
-                        {
-                            GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
-                        }
+                            sizeCheckCommand.Connection = connection;
+                            sizeCheckCommand.CommandText = $"SELECT pg_database_size('{tenant.Db}')";
 
+                            var databaseSize = sizeCheckCommand.ExecuteScalar();
+                            if (databaseSize == null) continue;
+                            if (tenant.SizeType == 1) //MB
+                            {
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
+                            }
+                            else if (tenant.SizeType == 2) //GB
+                            {
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.SubDomain);
+                            }
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception: {ex.Message}");
                 }
             }
         }
