@@ -120,10 +120,10 @@ namespace AWSSDK.Common
                         ViewerCertificate = new ViewerCertificate
                         {
                             CloudFrontDefaultCertificate = false,
-                            ACMCertificateArn = "arn:aws:acm:us-east-1:519870134487:certificate/f3d9a1e8-8b06-4fb6-9d99-2e05c3855d1f",
+                            ACMCertificateArn = "arn:aws:acm:us-east-1:519870134487:certificate/523b4cb6-2f4e-4da3-a44f-e1922d30b00c",
                             SSLSupportMethod = "sni-only",
                             MinimumProtocolVersion = "TLSv1.2_2021",
-                            Certificate = "arn:aws:acm:us-east-1:519870134487:certificate/f3d9a1e8-8b06-4fb6-9d99-2e05c3855d1f",
+                            Certificate = "arn:aws:acm:us-east-1:519870134487:certificate/523b4cb6-2f4e-4da3-a44f-e1922d30b00c",
                             CertificateSource = "acm"
                         },
                         Restrictions = new Restrictions
@@ -139,7 +139,7 @@ namespace AWSSDK.Common
                         IsIPV6Enabled = true
                     },
                     IfMatch = eTag,
-                    Id = "E1Q6ZVLBFAFBDX"
+                    Id = ConfigConstant.DistributionId
                 };
 
                 return await cloudFrontClient.UpdateDistributionAsync(request);
@@ -182,7 +182,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                var distInfo = await GetDistributionConfigAsync("E1Q6ZVLBFAFBDX");
+                var distInfo = await GetDistributionConfigAsync(ConfigConstant.DistributionId);
 
                 if (distInfo != null)
                 {

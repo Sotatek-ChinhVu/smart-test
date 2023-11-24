@@ -8,7 +8,7 @@ public interface ITenantRepository
 
     int GetBySubDomainAndIdentifier(string subDomain, string Identifier);
 
-    int SumSubDomainToDbIdentifier(string subDomain, string dbIdentifier);
+    int SumSubDomainToDbIdentifier(string dbIdentifier);
 
     int CreateTenant(TenantModel model);
 
@@ -20,6 +20,7 @@ public interface ITenantRepository
 
     List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
 
+    void RevokeInsertPermission();
     TenantModel GetTenant(int tenantId);
 
     void ReleaseResource();
