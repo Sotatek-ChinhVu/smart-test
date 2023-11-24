@@ -65,7 +65,6 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
             var raiinNoList = kaikeiDetails.Select(item => item.RaiinNo).Distinct().ToList();
 
             var raiinInfs = _tenantDataContext.RaiinInfs.Where(item => item.HpId == hpId
-                                                                       && item.IsDeleted == 0
                                                                        && raiinNoList.Contains(item.RaiinNo))
                                                         .ToList();
 
