@@ -179,8 +179,7 @@ namespace Interactor.SuperAdmin
                 // Replace these values with your actual RDS information
                 string username = "postgres";
                 string password = "Emr!23456789";
-                int port = 22;
-                serverEndpoint = "localhost";
+                int port = 5432;
 
                 // Connection string format for SQL Server
                 string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";

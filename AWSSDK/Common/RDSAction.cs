@@ -364,8 +364,7 @@ namespace AWSSDK.Common
                 // Replace these values with your actual RDS information
                 string username = "postgres";
                 string password = "Emr!23456789";
-                int port = 22;
-                serverEndpoint = "localhost";
+                int port = 5432;
                 // Connection string format for PostgreSQL
                 string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
                 var withOutDb = ConfigConstant.LISTSYSTEMDB;
@@ -415,8 +414,10 @@ namespace AWSSDK.Common
                 var deleteRequest = new DeleteDBInstanceRequest
                 {
                     DBInstanceIdentifier = dbInstanceIdentifier,
-                    //SkipFinalSnapshot = true // Set this to true if you don't want to create a final DB snapshot
+                    SkipFinalSnapshot = false
                 };
+
+                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier);
 
                 var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
 
