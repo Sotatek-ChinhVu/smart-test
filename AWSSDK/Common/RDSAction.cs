@@ -198,6 +198,7 @@ namespace AWSSDK.Common
         {
             try
             {
+                var dataMasterFileName = "data-master";
                 var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -216,13 +217,28 @@ namespace AWSSDK.Common
                             if (sqlFiles.Length > 0)
                             {
                                 var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                                listMigration.Add("data-master");
+                                if (fileNames.Contains(dataMasterFileName))
+                                {
+                                    fileNames.Remove(dataMasterFileName);
+                                }
                                 var uniqueFileNames = fileNames.Except(listMigration).ToList();
 
+                                // insert table
                                 foreach (var fileName in uniqueFileNames)
                                 {
                                     var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                    var sqlScript = File.ReadAllText(filePath);
+                                    if (File.Exists(filePath))
+                                    {
+                                        var sqlScript = File.ReadAllText(filePath);
+                                        command.CommandText = sqlScript;
+                                        command.ExecuteNonQuery();
+                                    }
+                                }
+                                // insert data master
+                                var filePathMaster = Path.Combine(folderPath, $"{dataMasterFileName}.sql");
+                                if (File.Exists(filePathMaster))
+                                {
+                                    var sqlScript = File.ReadAllText(filePathMaster);
                                     command.CommandText = sqlScript;
                                     command.ExecuteNonQuery();
                                 }
