@@ -23,6 +23,7 @@ namespace Reporting.KensaHistory.Service
         private PtInf ptInf;
         private ListKensaInfDetailModel kensaInfDetailModel;
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModels = new();
+        private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModelItems = new();
         private bool hasNextPage;
         private int currentPage;
         private int totalPage;
@@ -103,7 +104,7 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("ptNum", ptInf.PtNum.ToString());
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiDate", CIUtil.SDateToShowSDate(iraiDate));
-                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd hh:mm:ss"));
+                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd HH:mm:ss"));
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
@@ -126,7 +127,7 @@ namespace Reporting.KensaHistory.Service
 
                 if (currentPage == 1)
                 {
-                    foreach (var item in listKensaInfDetailItemModels)
+                    foreach (var item in listKensaInfDetailItemModelItems)
                     {
                         listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                         listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
@@ -145,7 +146,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (listKensaInfDetailItemModels.Count <= maxRow)
+                    if (listKensaInfDetailItemModelItems.Count <= maxRow)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -154,16 +155,16 @@ namespace Reporting.KensaHistory.Service
                     else
                     {
                         hasNextPage = true;
-                        listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                        listKensaInfDetailItemModelItems.RemoveRange(0, maxRow);
                         _listTextData.Add(pageIndex, listDataPerPage);
                         return 1;
                     }
                 }
 
                 rowNo = 0;
-                int count = listKensaInfDetailItemModels.Count;
+                int count = listKensaInfDetailItemModelItems.Count;
 
-                foreach (var item in listKensaInfDetailItemModels)
+                foreach (var item in listKensaInfDetailItemModelItems)
                 {
                     listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                     listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
@@ -185,7 +186,7 @@ namespace Reporting.KensaHistory.Service
 
                 if (count > maxRow)
                 {
-                    listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                    listKensaInfDetailItemModelItems.RemoveRange(0, maxRow);
                 }
                 else
                 {
@@ -224,7 +225,18 @@ namespace Reporting.KensaHistory.Service
                 }
             }
 
-            foreach (var item in listKensaInfDetailItemModels)
+            var iraiCds = listKensaInfDetailItemModels.Select(x => x.IraiCd).Distinct().ToList();
+            var listKensaInfDetail = listKensaInfDetailItemModels.GroupBy(x => x.IraiCd);
+
+            foreach (var item in listKensaInfDetail)
+            {
+                foreach (var index in item)
+                {
+                    listKensaInfDetailItemModelItems.Add(new ListKensaInfDetailItemModel(index.IraiCd, index.KensaName, index.ResultVal, index.AbnormalKbn, index.Unit, index.MaleStd, index.FemaleStd, index.ResultType));
+                }
+            }
+
+            foreach (var item in listKensaInfDetailItemModelItems)
             {
                 switch (item.ResultType)
                 {
@@ -235,7 +247,7 @@ namespace Reporting.KensaHistory.Service
                 }
             }
 
-            return listKensaInfDetailItemModels.Count > 0;
+            return listKensaInfDetailItemModelItems.Count > 0;
         }
 
         private void SetFieldData(string field, string value)
