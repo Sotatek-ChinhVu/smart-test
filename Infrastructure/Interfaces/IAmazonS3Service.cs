@@ -33,4 +33,6 @@ public interface IAmazonS3Service
     string GetAccessBaseS3();
 
     Task<(bool valid, string key)> S3FilePathIsExists(string locationFile);
+
+    void Dispose();
 }
