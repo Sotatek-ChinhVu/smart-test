@@ -5,6 +5,7 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Tenant;
 using UseCase.SuperAdmin.TenantOnboard;
+using Domain.SuperAdminModels.MigrationTenantHistory;
 
 namespace Interactor.SuperAdmin
 {
@@ -12,10 +13,12 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        public TenantOnboardInteractor(IAwsSdkService awsSdkService, ITenantRepository tenantRepository)
+        private readonly IMigrationTenantHistoryRepository _migrationTenantHistoryRepository;
+        public TenantOnboardInteractor(IAwsSdkService awsSdkService, ITenantRepository tenantRepository, IMigrationTenantHistoryRepository migrationTenantHistoryRepository)
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
+            _migrationTenantHistoryRepository = migrationTenantHistoryRepository;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -38,7 +41,7 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty);
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomString(6));
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -154,12 +157,14 @@ namespace Interactor.SuperAdmin
                             {
                                 _ = Task.Run(async () =>
                                 {
-                                    var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
+                                    var id = _tenantRepository.CreateTenant(model);
+                                    model.ChangeRdsIdentifier(dbIdentifier);
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
                                     if (!string.IsNullOrEmpty(host))
                                     {
-                                        RDSAction.CreateDatabase(host, subDomain);
-                                        RDSAction.CreateTables(host, subDomain);
+                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                        RDSAction.CreateTables(host, subDomain, dataMigration);
                                     }
 
                                 });
@@ -174,8 +179,9 @@ namespace Interactor.SuperAdmin
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
                                     if (!string.IsNullOrEmpty(host))
                                     {
-                                        RDSAction.CreateDatabase(host, subDomain);
-                                        RDSAction.CreateTables(host, subDomain);
+                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                        RDSAction.CreateTables(host, subDomain, dataMigration);
                                     }
                                 });
 
@@ -199,41 +205,50 @@ namespace Interactor.SuperAdmin
                                     host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
                                     if (!string.IsNullOrEmpty(host))
                                     {
-                                        RDSAction.CreateDatabase(host, subDomain);
-                                        RDSAction.CreateTables(host, subDomain);
+                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                        RDSAction.CreateTables(host, subDomain, dataMigration);
                                     }
                                 });
                             }
                             else // Else, returning the first available RDS Cluster in the list
                             {
-                                string dbIdentifier = availableIdentifier[0];
-                                var sumubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(subDomain, dbIdentifier);
-                                if (sumubDomainToDbIdentifier <= 3)
+                                bool checkAvailableIdentifier = false;
+                                foreach (var dbIdentifier in availableIdentifier)
                                 {
-                                    _ = Task.Run(async () =>
+                                    var sumSubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(dbIdentifier);
+                                    if (sumSubDomainToDbIdentifier <= 3)
                                     {
-                                        var id = _tenantRepository.GetBySubDomainAndIdentifier(subDomain, dbIdentifier);
-                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                        if (!string.IsNullOrEmpty(host))
+                                        checkAvailableIdentifier = true;
+                                        model.ChangeRdsIdentifier(dbIdentifier);
+                                        _ = Task.Run(async () =>
                                         {
-                                            RDSAction.CreateDatabase(host, subDomain);
-                                            RDSAction.CreateTables(host, subDomain);
-                                        }
-                                    });
+                                            var id = _tenantRepository.CreateTenant(model);
+                                            host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                            if (!string.IsNullOrEmpty(host))
+                                            {
+                                                var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                                RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                                RDSAction.CreateTables(host, subDomain, dataMigration);
+                                            }
+                                        });
+                                        break;
+                                    }
                                 }
-                                else
+                                if (!checkAvailableIdentifier)
                                 {
                                     string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                     var id = _tenantRepository.CreateTenant(model);
                                     await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.ChangeRdsIdentifier(dbIdentifier);
+                                    model.ChangeRdsIdentifier(dbIdentifierNew);
                                     _ = Task.Run(async () =>
                                     {
                                         host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
                                         if (!string.IsNullOrEmpty(host))
                                         {
-                                            RDSAction.CreateDatabase(host, subDomain);
-                                            RDSAction.CreateTables(host, subDomain);
+                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                            RDSAction.CreateTables(host, subDomain, dataMigration);
                                         }
                                     });
                                 }

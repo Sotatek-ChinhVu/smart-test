@@ -411,6 +411,8 @@ namespace Infrastructure.CommonDB
         {
             _trackingDataContext?.Dispose();
             _noTrackingDataContext?.Dispose();
+            _superAdminNoTrackingDataContext?.Dispose();
+            _superAdminTrackingDataContext?.Dispose();
         }
 
         public AdminDataContext CreateNewAuditLogTrackingDataContext()

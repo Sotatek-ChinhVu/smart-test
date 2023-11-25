@@ -7,7 +7,9 @@ using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
+using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.TenantOnboard;
+using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdminAPI.Controllers
@@ -26,7 +28,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("UpgradePremium")]
         public ActionResult<Response<UpgradePremiumResponse>> UpgradePremium([FromBody] UpgradePremiumRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId);
+            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.SizeType, request.Domain);
             var output = _bus.Handle(input);
             var presenter = new UpgradePremiumPresenter();
             presenter.Complete(output);
@@ -41,6 +43,16 @@ namespace SuperAdminAPI.Controllers
             var presenter = new GetTenantPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenantResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetTenantDetail")]
+        public ActionResult<Response<GetTenantDetailResponse>> GetTenantDetail([FromQuery] GetTenantDetailRequest request)
+        {
+            var input = new GetTenantDetailInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenantDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenantDetailResponse>>(presenter.Result);
         }
 
         [HttpPost("TenantOnboard")]
@@ -60,6 +72,16 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<TenantOnboardResponse>>(presenter.Result);
         }
 
+        [HttpPost("TerminateTenant")]
+        public ActionResult<Response<TerminateTenantResponse>> TerminateTenant([FromBody] TerminateTenantRequest request)
+        {
+            var input = new TerminateTenantInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new TerminateTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<TerminateTenantResponse>>(presenter.Result);
+        }
+        
         #region 
         private SearchTenantModel GetSearchTenantModel(SearchTenantRequestItem requestItem)
         {

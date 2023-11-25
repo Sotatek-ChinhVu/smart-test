@@ -3,7 +3,6 @@ using Amazon.RDS.Model;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using Npgsql;
-using System.Data.Common;
 
 namespace AWSSDK.Common
 {
@@ -40,7 +39,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                return new Dictionary<string, RDSInformation>();
             }
         }
 
@@ -154,7 +153,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void CreateDatabase(string host, string tenantId)
+        public static void CreateDatabase(string host, string subDomain, string passwordConnect)
         {
             try
             {
@@ -168,13 +167,13 @@ namespace AWSSDK.Common
                     using (var checkCommand = new NpgsqlCommand())
                     {
                         checkCommand.Connection = connection;
-                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{tenantId}'";
+                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{subDomain}'";
 
                         var existingDatabase = checkCommand.ExecuteScalar();
 
-                        if (existingDatabase != null && existingDatabase.ToString() == tenantId)
+                        if (existingDatabase != null && existingDatabase.ToString() == subDomain)
                         {
-                            Console.WriteLine($"Database '{tenantId}' already exists.");
+                            Console.WriteLine($"Database '{subDomain}' already exists.");
                             return;
                         }
                     }
@@ -182,10 +181,10 @@ namespace AWSSDK.Common
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        command.CommandText = $"CREATE DATABASE {tenantId}";
+                        command.CommandText = $"CREATE DATABASE {subDomain}; CREATE ROLE {subDomain} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {subDomain};";
                         command.ExecuteNonQuery();
-                        Console.WriteLine($"Database '{tenantId}' created successfully.");
-                    }                    
+                        Console.WriteLine($"Database '{subDomain}' created successfully.");
+                    }
                 }
             }
             catch (Exception ex)
@@ -194,10 +193,11 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void CreateTables(string host, string tenantId)
+        public static void CreateTables(string host, string tenantId, List<string> listMigration)
         {
             try
             {
+                var dataMasterFileName = "data-master";
                 var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -215,9 +215,29 @@ namespace AWSSDK.Common
 
                             if (sqlFiles.Length > 0)
                             {
-                                foreach (var filePath in sqlFiles)
+                                var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                                if (fileNames.Contains(dataMasterFileName))
                                 {
-                                    var sqlScript = File.ReadAllText(filePath);
+                                    fileNames.Remove(dataMasterFileName);
+                                }
+                                var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                                // insert table
+                                foreach (var fileName in uniqueFileNames)
+                                {
+                                    var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                    if (File.Exists(filePath))
+                                    {
+                                        var sqlScript = File.ReadAllText(filePath);
+                                        command.CommandText = sqlScript;
+                                        command.ExecuteNonQuery();
+                                    }
+                                }
+                                // insert data master
+                                var filePathMaster = Path.Combine(folderPath, $"{dataMasterFileName}.sql");
+                                if (File.Exists(filePathMaster) && !listMigration.Contains(dataMasterFileName))
+                                {
+                                    var sqlScript = File.ReadAllText(filePathMaster);
                                     command.CommandText = sqlScript;
                                     command.ExecuteNonQuery();
                                 }
@@ -337,106 +357,20 @@ namespace AWSSDK.Common
             return dbSnapshotIdentifier;
         }
 
-        public async static Task<bool> IsSnapshotAvailableAsync(string dbSnapshotIdentifier)
-        {
-            try
-            {
-                var rdsClient = new AmazonRDSClient();
-
-                // Create a request to describe DB snapshots
-                var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
-                {
-                    DBSnapshotIdentifier = dbSnapshotIdentifier
-                };
-
-                // Call DescribeDBSnapshotsAsync to asynchronously get information about the snapshot
-                var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
-
-                // Check if the snapshot exists and is in the "available" state
-                var snapshot = describeSnapshotsResponse.DBSnapshots.FirstOrDefault();
-                return snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions (e.g., AWS service exceptions, network issues)
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
-            }
-        }
-
-        public static async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier)
-        {
-            try
-            {
-                DateTime startTime = DateTime.Now;
-                bool running = true;
-
-                while (running)
-                {
-                    var rdsClient = new AmazonRDSClient();
-
-                    // Create a request to describe DB instances
-                    var describeInstancesRequest = new DescribeDBInstancesRequest
-                    {
-                        DBInstanceIdentifier = dbInstanceIdentifier
-                    };
-
-                    // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
-                    var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
-
-                    // Check if the DB instance exists
-                    var dbInstances = describeInstancesResponse.DBInstances;
-                    if (dbInstances.Count == 1)
-                    {
-                        var dbInstance = dbInstances[0];
-                        var status = dbInstance.DBInstanceStatus;
-
-                        Console.WriteLine($"DB Instance status: {status}");
-
-                        // Check if the DB instance is in the "available" state
-                        if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
-                        {
-                            running = false;
-                            return describeInstancesResponse.DBInstances[0].Endpoint;
-                        }
-                    }
-                    else
-                    {
-                        running = false;
-                        return new Endpoint();
-                    }
-
-                    // Check if more than timeout
-                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
-                    {
-                        Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                        running = false;
-                        return new Endpoint();
-                    }
-
-                    // Wait for 5 seconds before the next attempt
-                    Thread.Sleep(5000);
-                }
-
-                // Return an empty Endpoint if the loop exits without finding an available instance
-                return new Endpoint();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return new Endpoint();
-            }
-        }
-
-        public static async Task<bool> GetListDatabase(string serverEndpoint, int port)
+        public static async Task<List<string>> GetListDatabase(string serverEndpoint)
         {
             try
             {
                 // Replace these values with your actual RDS information
                 string username = "postgres";
                 string password = "Emr!23456789";
-                // Connection string format for SQL Server
+                int port = 5432;
+                // Connection string format for PostgreSQL
                 string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                var withOutDb = ConfigConstant.LISTSYSTEMDB;
+                string strWithoutDb = string.Join(", ", withOutDb);
+                strWithoutDb = "'" + strWithoutDb.Replace(", ", "', '") + "'";
+                List<string> databaseList = new List<string>();
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -445,14 +379,16 @@ namespace AWSSDK.Common
                     {
                         connection.Open();
 
-                        // Delete database
-                        using (DbCommand command = connection.CreateCommand())
+                        // Select databases
+                        using (NpgsqlCommand command = new NpgsqlCommand($"SELECT datname FROM pg_catalog.pg_database WHERE datname NOT IN ({strWithoutDb}) AND NOT datistemplate", connection))
+                        using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            command.CommandText = "SELECT datname FROM pg_catalog.pg_database;";
-                            command.ExecuteReader();
+                            while (await reader.ReadAsync())
+                            {
+                                string dbName = reader.GetString(0);
+                                databaseList.Add(dbName);
+                            }
                         }
-
-                        Console.WriteLine($"Database deleted successfully.");
                     }
                     catch (Exception ex)
                     {
@@ -460,7 +396,80 @@ namespace AWSSDK.Common
                     }
                 }
 
-                return true;
+                return databaseList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new List<string>();
+            }
+        }
+
+        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                var deleteRequest = new DeleteDBInstanceRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    SkipFinalSnapshot = false
+                };
+
+                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier);
+
+                var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
+
+                // Check if the HTTP status code indicates success
+                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log the exception details
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static async Task<bool> CheckRDSInstanceDeleted(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var startTime = DateTime.Now;
+                var timeout = TimeSpan.FromMinutes(ConfigConstant.TimeoutCheckingAvailable);
+                while ((DateTime.Now - startTime) < timeout)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    var describeRequest = new DescribeDBInstancesRequest
+                    {
+                        DBInstanceIdentifier = dbInstanceIdentifier
+                    };
+
+                    var describeResponse = await rdsClient.DescribeDBInstancesAsync(describeRequest);
+
+                    // Check if the instance doesn't exist (status will be null if it doesn't)
+                    if (!describeResponse.DBInstances.Any())
+                    {
+                        return true;
+                    }
+
+                    var instanceStatus = describeResponse.DBInstances[0].DBInstanceStatus;
+
+                    // Check if the status is "deleting" or "deleted"
+                    if (instanceStatus.Equals("deleting", StringComparison.OrdinalIgnoreCase) ||
+                        instanceStatus.Equals("deleted", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+
+                    // Wait for a short duration before the next attempt
+                    await Task.Delay(5000); // 5 seconds delay, adjust as needed
+                }
+
+                // If the loop runs for the entire timeout duration, return false
+                return false;
             }
             catch (Exception ex)
             {
