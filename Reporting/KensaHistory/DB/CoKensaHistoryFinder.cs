@@ -182,7 +182,7 @@ namespace Reporting.KensaHistory.DB
 
             var seqNos = new HashSet<long>(kensaItemDuplicate.Select(item => item.SeqNo));
 
-            var kensaItemWithOutDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.SeqGroupNo })
+            var kensaItemWithOutDuplicate = data.Where(x => seqNos.Contains(x.SeqNo)).GroupBy(x => new { x.KensaItemCd, x.SeqGroupNo })
                                                 .Select(group =>
                                                 {
                                                     var newItem = group.First();
