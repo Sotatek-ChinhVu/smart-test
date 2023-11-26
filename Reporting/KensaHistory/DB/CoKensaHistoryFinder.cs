@@ -153,14 +153,13 @@ namespace Reporting.KensaHistory.DB
                                                                  t3.InoutKbn,
                                                                  t3.Status,
                                                                  DeleteTypes.None,
-                                                                 t1.SeqGroupNo
+                                                                 t1.SeqGroupNo,
+                                                                 ""
                                                              ));
 
             var sortedData = SortIraiDateAsc
                 ? data.OrderBy(x => x.IraiDate)
                 : data.OrderByDescending(x => x.IraiDate);
-
-
 
             var kensaInfDetailCol = sortedData
                 .GroupBy(x => new { x.IraiCd, x.IraiDate, x.Nyubi, x.Yoketu, x.Bilirubin, x.SikyuKbn, x.TosekiKbn })
@@ -177,7 +176,7 @@ namespace Reporting.KensaHistory.DB
 
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
 
-            data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd));
+            data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd) && x.IraiDate >= startDate && x.IraiDate <= endDate);
 
             var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.IraiCd }).SelectMany(group => group.Skip(1)).Select(x => x);
 
@@ -191,16 +190,6 @@ namespace Reporting.KensaHistory.DB
                                                     return newItem;
                                                 })
                                                 .ToList();
-
-            // Get list with start date and end date
-            if (endDate == 0)
-            {
-                data = data.Where(x => x.IraiDate >= startDate && x.IraiDate <= 99999999);
-            }
-            else
-            {
-                data = data.Where(x => x.IraiDate >= startDate && x.IraiDate <= endDate);
-            }
 
             var kensaItemCds = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.SeqNo, x.SeqGroupNo }).Select(x => new { x.Key.KensaItemCd, x.Key.KensaName, x.Key.Unit, x.Key.MaleStd, x.Key.FemaleStd, x.Key.SeqNo, x.Key.SeqGroupNo });
 
@@ -300,6 +289,7 @@ namespace Reporting.KensaHistory.DB
                         kensaInfDetailRowItem.InsertRange(i + 1, childrens);
                     }
                 }
+
                 List<KensaInfDetailDataModel> SortRow(List<KensaInfDetailDataModel> data)
                 {
 
@@ -394,8 +384,8 @@ namespace Reporting.KensaHistory.DB
             {
                 switch (ptInf?.Sex)
                 {
-                    case 1: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.MaleStd, new(), new())); break;
-                    case 2: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.FemaleStd, new(), new())); break;
+                    case 1: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.MaleStd, new(), new(), item.SeqParentNo, item.RowSeqId)); break;
+                    case 2: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.FemaleStd, new(), new(), item.SeqParentNo, item.RowSeqId)); break;
                 }
 
             }
@@ -438,7 +428,7 @@ namespace Reporting.KensaHistory.DB
                 date = date.OrderByDescending(x => x).ToList();
             }
 
-            result.Add(new CoKensaResultMultiModel("", "", "", new(), date));
+            result.Add(new CoKensaResultMultiModel("", "", "", new(), date, 0, ""));
 
             return (result, date);
         }
@@ -446,7 +436,6 @@ namespace Reporting.KensaHistory.DB
         public ListKensaInfDetailModel GetListKensaInf(int hpId, int userId, long ptId, int setId, int iraiCdStart, bool getGetPrevious, bool showAbnormalKbn, int startDate)
         {
             IQueryable<KensaInfDetail> kensaInfDetails;
-            List<long>? listSeqNoItems = new();
 
             var userConf = NoTrackingDataContext.UserConfs.Where(x => x.UserId == userId && x.HpId == hpId && x.GrpCd == 1002);
 
@@ -534,13 +523,9 @@ namespace Reporting.KensaHistory.DB
                             t3.InoutKbn,
                             t3.Status,
                             DeleteTypes.None,
-                            t1.SeqGroupNo
+                            t1.SeqGroupNo,
+                            ""
                         ));
-
-            if (showAbnormalKbn)
-            {
-                data = data.Where(x => x.AbnormalKbn.Equals(AbnormalKbnType.High) || x.AbnormalKbn.Equals(AbnormalKbnType.Low));
-            }
 
             #region Get Col dynamic
 
@@ -566,41 +551,6 @@ namespace Reporting.KensaHistory.DB
 
 
             var totalCol = kensaInfDetailCol.Count();
-
-            if (!listSeqNoItems.Any())
-            {
-                // Get list with start date
-                if (startDate > 0)
-                {
-                    kensaInfDetailCol = kensaInfDetailCol.Where(x => x.IraiDate >= startDate);
-                }
-                else
-                {
-                    // Get list with iraiCdStart
-                    if (iraiCdStart > 0)
-                    {
-
-                        int currentIndex = 0;
-                        foreach (var obj in kensaInfDetailCol)
-                        {
-                            if (obj.IraiCd == iraiCdStart)
-                            {
-                                break;
-                            }
-                            currentIndex++;
-                        }
-
-                        if (getGetPrevious)
-                        {
-                            kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart);
-                        }
-                        else
-                        {
-                            kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1);
-                        }
-                    }
-                }
-            }
 
             #endregion
 
@@ -643,7 +593,7 @@ namespace Reporting.KensaHistory.DB
             // Sort row by user config
             List<KensaInfDetailDataModel> kensaInfDetailRows = new List<KensaInfDetailDataModel>();
 
-            if (setId == 0 && showAbnormalKbn == false)
+            if (setId == 0)
             {
                 var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
                 var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
@@ -706,7 +656,7 @@ namespace Reporting.KensaHistory.DB
             }
 
             // Filter row by KensaSet
-            else if(setId != 0 && showAbnormalKbn == false)
+            else
             {
                 var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).ToList();
                 foreach (var cunrentItemSet in kensasetDetail)
@@ -746,118 +696,6 @@ namespace Reporting.KensaHistory.DB
                         }
                     }
                 }
-            }
-            else
-            {
-                var sortCoulum = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 0).FirstOrDefault()?.Val;
-                var sortType = userConf.Where(x => x.GrpItemCd == 1 && x.GrpItemEdaNo == 1).FirstOrDefault()?.Val;
-
-                // Get all parent item
-                kensaInfDetailRows = SortRow(kensaInfDetailData);
-
-                List<KensaInfDetailDataModel> SortRow(List<KensaInfDetailDataModel> data)
-                {
-                    switch (sortCoulum)
-                    {
-                        case SortKensaMstColumn.KensaItemCd:
-                            if (sortType == 1)
-                            {
-                                return data.OrderByDescending(x => x.KensaItemCd).ToList();
-                            }
-                            else
-                            {
-                                return data.OrderBy(x => x.KensaItemCd).ToList();
-                            }
-                        case SortKensaMstColumn.KensaKana:
-                            if (sortType == 1)
-                            {
-                                return data.OrderByDescending(x => x.KensaKana).ToList();
-                            }
-                            else
-                            {
-                                return data.OrderBy(x => x.KensaKana).ToList();
-                            }
-                        default:
-                            if (sortType == 1)
-                            {
-                                return data.OrderByDescending(x => x.SortNo).ToList();
-                            }
-                            else
-                            {
-                                return data.OrderBy(x => x.SortNo).ToList();
-                            }
-                    }
-                }
-            }
-            #endregion
-
-            #region Filter by list seqNo get data for chart
-            if (listSeqNoItems != null && listSeqNoItems.Count > 0)
-            {
-                bool IsNumeric(string input)
-                {
-                    double result;
-                    return double.TryParse(input, out result);
-                }
-
-                //Filter rows get row by list seqNo
-                kensaInfDetailRows = kensaInfDetailRows.Where(x => listSeqNoItems.Contains(x.SeqNo)).ToList();
-                var uniqueIraiCds = kensaInfDetailRows
-                       .SelectMany(item => item.DynamicArray)
-                       .Where(x => IsNumeric(x.ResultVal))
-                       .Select(subItem => subItem.IraiCd)
-                       .Where(iraiCd => iraiCd != 0)
-                       .Distinct().ToList();
-
-                // Filter col by list Iraicd 
-                kensaInfDetailCol = kensaInfDetailCol.Where(x => uniqueIraiCds.Contains(x.IraiCd)).ToList();
-
-                int index = 0;
-                foreach (var item in kensaInfDetailCol)
-                {
-                    item.SetIndex(index);
-                    index++;
-                }
-
-                // pagging
-                totalCol = kensaInfDetailCol.Count();
-                if (iraiCdStart > 0)
-                {
-                    int currentIndex = 0;
-                    foreach (var obj in kensaInfDetailCol)
-                    {
-                        if (obj.IraiCd == iraiCdStart)
-                        {
-                            break;
-                        }
-                        currentIndex++;
-                    }
-
-                    if (getGetPrevious)
-                    {
-                        kensaInfDetailCol = kensaInfDetailCol.TakeWhile(x => x.IraiCd != iraiCdStart);
-                    }
-                    else
-                    {
-                        kensaInfDetailCol = kensaInfDetailCol.Skip(currentIndex + 1);
-                    }
-                }
-
-                // Filter  data dynamic array by list col pagging
-                var iraiCds = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
-
-                kensaInfDetailRows = kensaInfDetailRows.Select(item => new KensaInfDetailDataModel(
-                        item.KensaItemCd,
-                        item.KensaName,
-                        item.Unit,
-                        item.MaleStd,
-                        item.FemaleStd,
-                        item.KensaKana,
-                        item.SortNo,
-                        item.SeqNo,
-                        item.SeqParentNo,
-                        item.DynamicArray.Where(x => iraiCds.Contains(x.IraiCd)).ToList()
-                    )).ToList();
             }
             #endregion
 

@@ -29,7 +29,7 @@
             RowSeqId = string.Empty;
         }
 
-        public ListKensaInfDetailItemModel(long iraiCd, string kensaName, string resultVal, string abnormalKbn, string unit, string maleStd, string femaleStd, string resultType)
+        public ListKensaInfDetailItemModel(long iraiCd, string kensaName, string resultVal, string abnormalKbn, string unit, string maleStd, string femaleStd, string resultType, string rowSeqId, long seqParentNo)
         {
             IraiCd = iraiCd;
             KensaName = kensaName;
@@ -52,14 +52,15 @@
             Nyubi = string.Empty;
             Yoketu = string.Empty;
             Bilirubin = string.Empty;
-            RowSeqId = string.Empty;
+            RowSeqId = rowSeqId;
+            SeqParentNo = seqParentNo;
         }
 
 
         public ListKensaInfDetailItemModel(
             long ptId, long iraiCd, long raiinNo, long iraiDate, long seqNo, long seqParentNo, string kensaName, string kensaKana, long sortNo, string kensaItemCd, string resultVal,
             string resultType, string abnormalKbn, string cmtCd1, string cmtCd2, string cmt1, string cmt2, string maleStd, string femaleStd, string maleStdLow, string femaleStdLow,
-            string maleStdHigh, string femaleStdHigh, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted, long seqGroupNo)
+            string maleStdHigh, string femaleStdHigh, string unit, string nyubi, string yoketu, string bilirubin, int sikyuKbn, int tosekiKbn, int inoutKbn, int status, int isDeleted, long seqGroupNo, string rowSeqId)
         {
             PtId = ptId;
             IraiCd = iraiCd;
@@ -94,7 +95,7 @@
             Status = status;
             IsDeleted = isDeleted;
             SeqGroupNo = seqGroupNo;
-            RowSeqId = string.Empty;
+            RowSeqId = rowSeqId;
         }
 
         public ListKensaInfDetailItemModel ChangeResultVal(string resultVal)
