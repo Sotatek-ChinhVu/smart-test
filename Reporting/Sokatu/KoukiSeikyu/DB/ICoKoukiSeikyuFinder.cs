@@ -1,4 +1,5 @@
-﻿using Reporting.Sokatu.Common.Models;
+﻿using Domain.Common;
+using Reporting.Sokatu.Common.Models;
 using Reporting.Structs;
 
 namespace Reporting.Sokatu.KoukiSeikyu.DB
@@ -14,5 +15,7 @@ namespace Reporting.Sokatu.KoukiSeikyu.DB
         List<CoHokensyaMstModel> GetHokensyaName(int hpId, List<string> hokensyaNos);
 
         List<CoKohiHoubetuMstModel> GetKohiHoubetuMst(int hpId, int seikyuYm);
+
+        void ReleaseResource();
     }
 }

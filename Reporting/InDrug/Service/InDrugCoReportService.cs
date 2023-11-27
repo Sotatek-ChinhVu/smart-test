@@ -95,33 +95,40 @@ namespace Reporting.InDrug.Service
 
         public CommonReportingRequestModel GetInDrugPrintData(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            this.hpId = hpId;
-            this.ptId = ptId;
-            this.sinDate = sinDate;
-            this.raiinNo = raiinNo;
-            coModel = GetData();
-            if (coModel != null)
+            try
             {
-                GetRowCount("fmInDrug.rse");
-                currentPage = 1;
-                hasNextPage = true;
-
-                printoutDateTime = CIUtil.GetJapanDateTimeNow();
-
-                // リスト作成
-                MakeOdrDtlList();
-
-                // 印刷処理
-                while (hasNextPage)
+                this.hpId = hpId;
+                this.ptId = ptId;
+                this.sinDate = sinDate;
+                this.raiinNo = raiinNo;
+                coModel = GetData();
+                if (coModel != null)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
-                }
-            }
+                    GetRowCount("fmInDrug.rse");
+                    currentPage = 1;
+                    hasNextPage = true;
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new InDrugMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+                    printoutDateTime = CIUtil.GetJapanDateTimeNow();
+
+                    // リスト作成
+                    MakeOdrDtlList();
+
+                    // 印刷処理
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
+                }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new InDrugMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            }
+            finally
+            {
+                _indrugFinder.ReleaseResource();
+            }
         }
 
         #region Private function

@@ -11,7 +11,7 @@ namespace Reporting.KensaHistory.Service
 {
     public class KensaHistoryCoReportService : IKensaHistoryCoReportService
     {
-        private ICoKensaHistoryFinder _coKensaHistoryFinder;
+        private readonly ICoKensaHistoryFinder _coKensaHistoryFinder;
         private HpInfModel hpInf;
         private int hpId;
         private int userId;
@@ -34,7 +34,7 @@ namespace Reporting.KensaHistory.Service
         private readonly Dictionary<string, string> _extralData;
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, bool> _visibleFieldData;
-        private string _formFileName = "kensaResult.rse";
+        private readonly string _formFileName = "kensaResult.rse";
         private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
         private readonly Dictionary<string, bool> _visibleAtPrint;
 
@@ -51,43 +51,50 @@ namespace Reporting.KensaHistory.Service
 
         public CommonReportingRequestModel GetKensaHistoryPrintData(int hpId, int userId, long ptId, int setId, int iraiDate, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
-            this.hpId = hpId;
-            this.userId = userId;
-            this.ptId = ptId;
-            this.setId = setId;
-            this.iraiDate = iraiDate;
-            this.startDate = iraiDate;
-            this.showAbnormalKbn = showAbnormalKbn;
-            this.sinDate = sinDate;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                currentPage = 1;
-                hasNextPage = true;
-                while (hasNextPage)
+                this.hpId = hpId;
+                this.userId = userId;
+                this.ptId = ptId;
+                this.setId = setId;
+                this.iraiDate = iraiDate;
+                this.startDate = iraiDate;
+                this.showAbnormalKbn = showAbnormalKbn;
+                this.sinDate = sinDate;
+                var getData = GetData();
+
+                if (getData)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    currentPage = 1;
+                    hasNextPage = true;
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                int i = 1;
+
+                foreach (var item in _setFieldData)
+                {
+                    item.Value.Clear();
+                    item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
+                    i++;
+                    if (i > pageIndex)
+                    {
+                        break;
+                    }
+                }
+
+                return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
             }
-
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            int i = 1;
-
-            foreach (var item in _setFieldData)
+            finally
             {
-                item.Value.Clear();
-                item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
-                i++;
-                if (i > pageIndex)
-                {
-                    break;
-                }
+                _coKensaHistoryFinder.ReleaseResource();
             }
-
-            return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
         private bool UpdateDrawForm()
@@ -271,7 +278,6 @@ namespace Reporting.KensaHistory.Service
                 }
             }
 
-            var iraiCds = listKensaInfDetailItemModels.Select(x => x.IraiCd).Distinct().ToList();
             var listKensaInfDetail = listKensaInfDetailItemModels.GroupBy(x => x.IraiCd);
 
             foreach (var item in listKensaInfDetail)

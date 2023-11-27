@@ -1,8 +1,9 @@
-﻿using Reporting.InDrug.Model;
+﻿using Domain.Common;
+using Reporting.InDrug.Model;
 
 namespace Reporting.InDrug.DB
 {
-    public interface ICoInDrugFinder
+    public interface ICoInDrugFinder : IRepositoryBase
     {
         /// <summary>
         /// 患者情報を取得する

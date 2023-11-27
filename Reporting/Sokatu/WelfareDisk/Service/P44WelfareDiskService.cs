@@ -42,125 +42,132 @@ namespace Reporting.Sokatu.WelfareDisk.Service
 
         public CommonExcelReportingModel GetDataP44WelfareDisk(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            this.hpId = hpId;
-            this.seikyuType = seikyuType;
-            this.seikyuYm = seikyuYm;
-            GetData();
-            List<string> retDatas = new List<string>();
-
-            if (GetData())
+            try
             {
-                //比較用の変数を初期化
-                long beforePtId = -1;
-                int beforeSinYm = -1;
-                string beforeHokensyaNo = "";
-                string beforeHonka = "";
+                this.hpId = hpId;
+                this.seikyuType = seikyuType;
+                this.seikyuYm = seikyuYm;
+                GetData();
+                List<string> retDatas = new List<string>();
 
-                foreach (var receInf in receInfs)
+                if (GetData())
                 {
-                    bikoKisai = "";
+                    //比較用の変数を初期化
+                    long beforePtId = -1;
+                    int beforeSinYm = -1;
+                    string beforeHokensyaNo = "";
+                    string beforeHonka = "";
 
-                    //2レコード以上ある場合
-                    if (((receInf.PtId == beforePtId) && (beforePtId != -1)) && ((receInf.SinYm == beforeSinYm) && (beforeSinYm != -1)))
+                    foreach (var receInf in receInfs)
                     {
-                        //保険者番号
-                        if (receInf.HokensyaNo != beforeHokensyaNo)
+                        bikoKisai = "";
+
+                        //2レコード以上ある場合
+                        if (((receInf.PtId == beforePtId) && (beforePtId != -1)) && ((receInf.SinYm == beforeSinYm) && (beforeSinYm != -1)))
                         {
-                            bikoKisai = "月途中で保険者番号が変更あり２レコード以上作成";
+                            //保険者番号
+                            if (receInf.HokensyaNo != beforeHokensyaNo)
+                            {
+                                bikoKisai = "月途中で保険者番号が変更あり２レコード以上作成";
+                            }
+
+                            //本人家族区分
+                            if (receInf.Honka != beforeHonka)
+                            {
+                                if (bikoKisai == "")
+                                {
+                                    bikoKisai = "月途中で本人家族区分が変更あり２レコード以上作成";
+                                }
+                                else
+                                {
+                                    bikoKisai = bikoKisai + "、" + "月途中で本人家族区分が変更あり";
+                                }
+                            }
                         }
 
-                        //本人家族区分
-                        if (receInf.Honka != beforeHonka)
+                        //公費が3つ以上
+                        if (receInf.KohiHoubetu(3) != null && receInf.KohiHoubetu(3) != "")
                         {
                             if (bikoKisai == "")
                             {
-                                bikoKisai = "月途中で本人家族区分が変更あり２レコード以上作成";
+                                bikoKisai = "公費番号" + receInf.KohiHoubetu(3) + "あり";
                             }
                             else
                             {
-                                bikoKisai = bikoKisai + "、" + "月途中で本人家族区分が変更あり";
+                                bikoKisai = bikoKisai + "、" + "公費番号" + receInf.KohiHoubetu(3) + "あり";
                             }
                         }
+
+                        if (receInf.KohiHoubetu(4) != null && receInf.KohiHoubetu(4) != "")
+                        {
+                            if (bikoKisai == "")
+                            {
+                                bikoKisai = "公費番号" + receInf.KohiHoubetu(4) + "あり";
+                            }
+                            else
+                            {
+                                bikoKisai = bikoKisai + "、" + "公費番号" + receInf.KohiHoubetu(4) + "あり";
+                            }
+                        }
+
+                        //特記事項が3つ以上
+                        if (receInf.Tokki(3) != "")
+                        {
+                            if (bikoKisai == "")
+                            {
+                                bikoKisai = "特記事項" + receInf.Tokki(3) + "あり";
+                            }
+                            else
+                            {
+                                bikoKisai = bikoKisai + "、" + "特記事項" + receInf.Tokki(3) + "あり";
+                            }
+                        }
+
+                        if (receInf.Tokki(4) != "")
+                        {
+                            if (bikoKisai == "")
+                            {
+                                bikoKisai = "特記事項" + receInf.Tokki(4) + "あり";
+                            }
+                            else
+                            {
+                                bikoKisai = bikoKisai + "、" + "特記事項" + receInf.Tokki(4) + "あり";
+                            }
+                        }
+
+                        if (receInf.Tokki(5) != "")
+                        {
+                            if (bikoKisai == "")
+                            {
+                                bikoKisai = "特記事項" + receInf.Tokki(5) + "あり";
+                            }
+                            else
+                            {
+                                bikoKisai = bikoKisai + "、" + "特記事項" + receInf.Tokki(5) + "あり";
+                            }
+                        }
+
+                        retDatas.Add(RecordData(receInf));
+
+                        //比較用に退避
+                        beforePtId = receInf.PtId;
+                        beforeSinYm = receInf.SinYm;
+                        beforeHokensyaNo = receInf.HokensyaNo;
+                        beforeHonka = receInf.Honka;
+
                     }
-
-                    //公費が3つ以上
-                    if (receInf.KohiHoubetu(3) != null && receInf.KohiHoubetu(3) != "")
-                    {
-                        if (bikoKisai == "")
-                        {
-                            bikoKisai = "公費番号" + receInf.KohiHoubetu(3) + "あり";
-                        }
-                        else
-                        {
-                            bikoKisai = bikoKisai + "、" + "公費番号" + receInf.KohiHoubetu(3) + "あり";
-                        }
-                    }
-
-                    if (receInf.KohiHoubetu(4) != null && receInf.KohiHoubetu(4) != "")
-                    {
-                        if (bikoKisai == "")
-                        {
-                            bikoKisai = "公費番号" + receInf.KohiHoubetu(4) + "あり";
-                        }
-                        else
-                        {
-                            bikoKisai = bikoKisai + "、" + "公費番号" + receInf.KohiHoubetu(4) + "あり";
-                        }
-                    }
-
-                    //特記事項が3つ以上
-                    if (receInf.Tokki(3) != "")
-                    {
-                        if (bikoKisai == "")
-                        {
-                            bikoKisai = "特記事項" + receInf.Tokki(3) + "あり";
-                        }
-                        else
-                        {
-                            bikoKisai = bikoKisai + "、" + "特記事項" + receInf.Tokki(3) + "あり";
-                        }
-                    }
-
-                    if (receInf.Tokki(4) != "")
-                    {
-                        if (bikoKisai == "")
-                        {
-                            bikoKisai = "特記事項" + receInf.Tokki(4) + "あり";
-                        }
-                        else
-                        {
-                            bikoKisai = bikoKisai + "、" + "特記事項" + receInf.Tokki(4) + "あり";
-                        }
-                    }
-
-                    if (receInf.Tokki(5) != "")
-                    {
-                        if (bikoKisai == "")
-                        {
-                            bikoKisai = "特記事項" + receInf.Tokki(5) + "あり";
-                        }
-                        else
-                        {
-                            bikoKisai = bikoKisai + "、" + "特記事項" + receInf.Tokki(5) + "あり";
-                        }
-                    }
-
-                    retDatas.Add(RecordData(receInf));
-
-                    //比較用に退避
-                    beforePtId = receInf.PtId;
-                    beforeSinYm = receInf.SinYm;
-                    beforeHokensyaNo = receInf.HokensyaNo;
-                    beforeHonka = receInf.Honka;
-
                 }
+
+                DateTime seiYm = CIUtil.IntToDate(seikyuYm * 100 + 1);
+                string houYm = seiYm.AddMonths(1).ToString("yyyyMM");
+                string sheetName = string.Format("{0}_{1}1{2}_{3}", houYm, hpInf.PrefNo.ToString().PadLeft(2, '0'), hpInf.HpCd.PadLeft(7, '0'), DateTime.Now.ToString("yyyyMMdd"));
+
+                return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
             }
-
-            DateTime seiYm = CIUtil.IntToDate(seikyuYm * 100 + 1);
-            string houYm = seiYm.AddMonths(1).ToString("yyyyMM");
-            string sheetName = string.Format("{0}_{1}1{2}_{3}", houYm, hpInf.PrefNo.ToString().PadLeft(2, '0'), hpInf.HpCd.PadLeft(7, '0'), DateTime.Now.ToString("yyyyMMdd"));
-
-            return new CommonExcelReportingModel(sheetName + ".xlsx", sheetName, retDatas);
+            finally
+            {
+                _welfareFinder.ReleaseResource();
+            }
         }
 
         #region SubMethod

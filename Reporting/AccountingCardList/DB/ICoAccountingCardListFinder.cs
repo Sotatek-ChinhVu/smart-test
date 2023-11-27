@@ -1,8 +1,9 @@
-﻿using Reporting.AccountingCardList.Model;
+﻿using Domain.Common;
+using Reporting.AccountingCardList.Model;
 
 namespace Reporting.AccountingCardList.DB;
 
-public interface ICoAccountingCardListFinder
+public interface ICoAccountingCardListFinder : IRepositoryBase
 {
     CoPtInfModel FindPtInf(int hpId, long ptId, int sinDate);
 

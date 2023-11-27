@@ -60,30 +60,37 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
         public CommonReportingRequestModel GetP24WelfareSyomeiReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, List<long> printPtIds)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.seikyuType = seikyuType;
-            this.printPtIds = printPtIds;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                foreach (var receInf in receInfs)
+                this.hpId = hpId;
+                this.seikyuYm = seikyuYm;
+                this.seikyuType = seikyuType;
+                this.printPtIds = printPtIds;
+                var getData = GetData();
+
+                if (getData)
                 {
-                    curReceInf = receInf;
-                    currentPage = 1;
-                    hasNextPage = true;
-                    while (getData && hasNextPage)
+                    foreach (var receInf in receInfs)
                     {
-                        UpdateDrawForm();
-                        currentPage++;
+                        curReceInf = receInf;
+                        currentPage = 1;
+                        hasNextPage = true;
+                        while (getData && hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            currentPage++;
+                        }
                     }
                 }
-            }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            }
+            finally
+            {
+                _welfareFinder.ReleaseResource();
+            }
         }
 
         #region Private function

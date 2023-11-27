@@ -1,8 +1,9 @@
-﻿using Reporting.Sokatu.Common.Models;
+﻿using Domain.Common;
+using Reporting.Sokatu.Common.Models;
 
 namespace Reporting.Sokatu.HikariDisk.DB;
 
-public interface ICoHikariDiskFinder
+public interface ICoHikariDiskFinder : IRepositoryBase
 {
     List<CoReceInfModel> GetReceInf(int hpId, int seikyuYm, int hokenKbn);
 

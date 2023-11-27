@@ -60,41 +60,48 @@ public class P29KoukiSeikyuCoReportService : IP29KoukiSeikyuCoReportService
     }
     public CommonReportingRequestModel GetP29KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if (seikyuYm >= 202210)
+        try
         {
-            _formFileName = "p29KoukiSeikyu_2210";
-        }
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
 
-        if(getData)
-        {
-            for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
+            if (seikyuYm >= 202210)
             {
-                printZaiiso = zaiFlg == 1;
-                foreach (string currentNo in hokensyaNos)
-                {
-                    currentHokensyaNo = currentNo;
-                    curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == currentHokensyaNo).ToList();
-                    if (curReceInfs.Count() == 0) continue;
+                _formFileName = "p29KoukiSeikyu_2210";
+            }
 
-                    hasNextPage = true;
-                    currentPage = 1;
-                    while (getData && hasNextPage)
+            if (getData)
+            {
+                for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
+                {
+                    printZaiiso = zaiFlg == 1;
+                    foreach (string currentNo in hokensyaNos)
                     {
-                        UpdateDrawForm();
-                        currentPage++;
+                        currentHokensyaNo = currentNo;
+                        curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == currentHokensyaNo).ToList();
+                        if (curReceInfs.Count() == 0) continue;
+
+                        hasNextPage = true;
+                        currentPage = 1;
+                        while (getData && hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            currentPage++;
+                        }
                     }
                 }
             }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
-        
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        finally
+        {
+            _kokhofinder.ReleaseResource();
+        }
     }
     private void UpdateDrawForm()
     {

@@ -78,49 +78,56 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
 
     public CommonReportingRequestModel GetP22WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, int welfareType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        this.welfareType = welfareType;
-
-        switch (welfareType)
+        try
         {
-            //こども医療費
-            case 0: kohiHoubetus = new List<string> { "83" }; break;
-            //母子障害
-            case 1: kohiHoubetus = new List<string> { "84", "85" }; break;
-        }
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            this.welfareType = welfareType;
 
-        var getData = GetData();
-
-        if (welfareType == 1)
-        {
-            _formFileName = "p22WelfareSeikyu84.rse";
-        }
-
-        if(getData)
-        {
-            foreach ((int currentYm, string currentCode, string currentCity) in cityNames)
+            switch (welfareType)
             {
-                totalData = new countData();
+                //こども医療費
+                case 0: kohiHoubetus = new List<string> { "83" }; break;
+                //母子障害
+                case 1: kohiHoubetus = new List<string> { "84", "85" }; break;
+            }
 
-                currentFutansyaNo = currentCode;
-                currentCityName = currentCity;
-                currentSinYm = currentYm;
-                currentPage = 1;
-                hasNextPage = true;
+            var getData = GetData();
 
-                while (getData && hasNextPage)
+            if (welfareType == 1)
+            {
+                _formFileName = "p22WelfareSeikyu84.rse";
+            }
+
+            if (getData)
+            {
+                foreach ((int currentYm, string currentCode, string currentCity) in cityNames)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    totalData = new countData();
+
+                    currentFutansyaNo = currentCode;
+                    currentCityName = currentCity;
+                    currentSinYm = currentYm;
+                    currentPage = 1;
+                    hasNextPage = true;
+
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        }
+        finally
+        {
+            _welfareFinder.ReleaseResource();
+        }
     }
 
     #region Private function

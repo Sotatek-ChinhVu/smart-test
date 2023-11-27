@@ -21,6 +21,12 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         _configuration = configuration;
     }
 
+    public void ReleaseResource()
+    {
+        _systemConfRepository.ReleaseResource();
+        DisposeDataContext();
+    }
+
     public PathConf GetPathConf(int grpCode)
     {
         var pathConfs = NoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == grpCode);

@@ -2800,6 +2800,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
     public void ReleaseResource()
     {
+        _hpInfFinder.ReleaseResource();
+        _systemConfig.ReleaseResource();
         DisposeDataContext();
     }
 }

@@ -44,27 +44,34 @@ public class SyahoCoReportService : ISyahoCoReportService
 
     public CommonReportingRequestModel GetSyahoPrintData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        currentPage = 1;
-        hasNextPage = true;
-        var getData = GetData();
-
-        if(getData)
+        try
         {
-            while (hasNextPage && getData)
-            {
-                UpdateDrawForm();
-                currentPage++;
-            }
-        }
-        
-        _extralData.Add("totalPage", (currentPage - 1).ToString());
-        _fileNamePageMap.Add("1", "p99SyahoSokatuP1.rse");
-        _fileNamePageMap.Add("2", "p99SyahoSokatuP2.rse");
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            currentPage = 1;
+            hasNextPage = true;
+            var getData = GetData();
 
-        return new SyahoMapper(_singleFieldData, _visibleFieldList, _setFieldData, _listTextData, _extralData, _fileNamePageMap).GetData();
+            if (getData)
+            {
+                while (hasNextPage && getData)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            _extralData.Add("totalPage", (currentPage - 1).ToString());
+            _fileNamePageMap.Add("1", "p99SyahoSokatuP1.rse");
+            _fileNamePageMap.Add("2", "p99SyahoSokatuP2.rse");
+
+            return new SyahoMapper(_singleFieldData, _visibleFieldList, _setFieldData, _listTextData, _extralData, _fileNamePageMap).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private void UpdateDrawForm()

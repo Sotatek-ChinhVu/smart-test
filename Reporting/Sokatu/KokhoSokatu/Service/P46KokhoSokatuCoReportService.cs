@@ -281,44 +281,51 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
         public CommonReportingRequestModel GetP46KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.seikyuType = seikyuType;
-            var getData = GetData();
-            int indexPage = 1;
-            var fileName = new Dictionary<string, string>();
-
-            if (getData)
+            try
             {
-                for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
+                this.hpId = hpId;
+                this.seikyuYm = seikyuYm;
+                this.seikyuType = seikyuType;
+                var getData = GetData();
+                int indexPage = 1;
+                var fileName = new Dictionary<string, string>();
+
+                if (getData)
                 {
-                    prefInOut = prefCnt == 0 ? "In" : "Out";
-
-                    curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn && !r.IsKumiai : !r.IsPrefIn || r.IsKumiai).ToList();
-                    if (!curReceInfs.Any()) continue;
-                    currentPage = 1;
-                    hasNextPage = true;
-
-                    while (getData && hasNextPage)
+                    for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
                     {
-                        UpdateDrawForm();
-                        if (currentPage != 1)
+                        prefInOut = prefCnt == 0 ? "In" : "Out";
+
+                        curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn && !r.IsKumiai : !r.IsPrefIn || r.IsKumiai).ToList();
+                        if (!curReceInfs.Any()) continue;
+                        currentPage = 1;
+                        hasNextPage = true;
+
+                        while (getData && hasNextPage)
                         {
-                            fileName.Add(indexPage.ToString(), _formFileNameP2);
+                            UpdateDrawForm();
+                            if (currentPage != 1)
+                            {
+                                fileName.Add(indexPage.ToString(), _formFileNameP2);
+                            }
+                            else
+                            {
+                                fileName.Add(indexPage.ToString(), _formFileNameP1);
+                            }
+                            currentPage++;
+                            indexPage++;
                         }
-                        else
-                        {
-                            fileName.Add(indexPage.ToString(), _formFileNameP1);
-                        }
-                        currentPage++;
-                        indexPage++;
                     }
                 }
-            }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new P08KokhoSeikyuMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new P08KokhoSeikyuMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
+            }
+            finally
+            {
+                _kokhoFinder.ReleaseResource();
+            }
         }
 
         private void SetFieldData(string field, string value)

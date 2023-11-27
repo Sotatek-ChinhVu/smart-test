@@ -45,6 +45,21 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         _tenantSinKouiDetail = tenantSinKouiDetail.GetNoTrackingDataContext();
         _tenantJihiSbtMst = tenantJihiSbtMst.GetNoTrackingDataContext();
     }
+
+    public void ReleaseResource()
+    {
+        _hpInfFinder.ReleaseResource();
+        _tenantSinKouiRpInf.Dispose();
+        _tenantKaikeiInf.Dispose();
+        _tenantPtInf.Dispose();
+        _tenantRaiinInf.Dispose();
+        _tenantKaMst.Dispose();
+        _tenantUserMst.Dispose();
+        _tenantSinKouiDetail.Dispose();
+        _tenantJihiSbtMst.Dispose();
+        DisposeDataContext();
+    }
+
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
     {
         return _hpInfFinder.GetHpInf(hpId, sinDate);

@@ -1,8 +1,9 @@
-﻿using Reporting.OutDrug.Model;
+﻿using Domain.Common;
+using Reporting.OutDrug.Model;
 
 namespace Reporting.OutDrug.DB;
 
-public interface ICoOutDrugFinder
+public interface ICoOutDrugFinder : IRepositoryBase
 {
     /// <summary>
     /// オーダー情報データを取得する
