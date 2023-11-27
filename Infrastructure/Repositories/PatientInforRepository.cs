@@ -2202,6 +2202,7 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+            _receptionRepository.ReleaseResource();
         }
 
         public List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize)
