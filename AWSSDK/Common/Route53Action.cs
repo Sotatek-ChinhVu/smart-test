@@ -74,6 +74,7 @@ namespace AWSSDK.Common
                 return false;
             }
         }
+
         public static async Task<bool> DeleteTenantDomain(string tenantId)
         {
             try
@@ -116,12 +117,19 @@ namespace AWSSDK.Common
                 });
 
                 // Return true if the status code is OK (successful)
-                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception($"Delete Tenant Domain. Code: {response?.HttpStatusCode}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Delete Tenant Domain. {ex.Message}");
             }
         }
 

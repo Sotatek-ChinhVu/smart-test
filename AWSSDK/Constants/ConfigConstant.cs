@@ -30,11 +30,11 @@ namespace AWSSDK.Constants
             {"modifying", 3},
             {"deleting", 4},
             {"backing-up", 5},
-            {"restoring", 6},
+            {"upgrading", 6},
             {"failed", 7},
             {"inaccessible-encryption-credentials",8},
             {"storage-full", 9},
-            {"restore-failed", 10},
+            {"upgrade-failed", 10},
             {"terminating", 11},
             {"terminated", 12},
             {"terminate-failed", 13}

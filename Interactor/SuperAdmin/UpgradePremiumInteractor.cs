@@ -72,92 +72,96 @@ namespace Interactor.SuperAdmin
                         return new UpgradePremiumOutputData(false, UpgradePremiumStatus.NewDomainAleadyExist);
                     }
                 }
-
-                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restoring"]);
+                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrading"]);
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(async () =>
                 {
-                    // Create SnapShot
-                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier);
-
-                    if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
+                    try
                     {
-                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.SuperAdmin);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, oldTenant);
-                        cts.Cancel();
-                        return;
-                    }
+                        // Create SnapShot
+                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier);
 
-                    // Create New subdomain
-                    if (oldTenant.SubDomain != inputData.SubDomain)
-                    {
-                        if (await Route53Action.CreateTenantDomain(inputData.SubDomain) != null)
+                        if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
                         {
-                            await Route53Action.DeleteTenantDomain(oldTenant.SubDomain);
+                            throw new Exception("Snapshot is not Available");
                         }
+
+                        // Create New subdomain
+                        if (oldTenant.SubDomain != inputData.SubDomain)
+                        {
+                            if (await Route53Action.CreateTenantDomain(inputData.SubDomain) != null)
+                            {
+                                await Route53Action.DeleteTenantDomain(oldTenant.SubDomain);
+                            }
+                            else
+                            {
+                                throw new Exception("Create New subdomain failed");
+                            }
+                        }
+
+                        // Restore DB Instance from snapshot
+                        Console.WriteLine($"Start Restore");
+
+                        string rString = CommonConstants.GenerateRandomString(6);
+                        var dbInstanceIdentifier = $"develop-smartkarte-logging-{rString}";
+                        Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
+
+                        var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+
+                        // Check Restore success 
+                        var endpoint = await CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId);
+
+
+                        //Delete list Db without tenantDB in new RDS
+                        Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
+                        var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, oldTenant.Db);
+
+
+                        // Delete DB in old RDS
+                        var listTenantDb = await RDSAction.GetListDatabase(oldTenant.EndPointDb);
+                        Console.WriteLine($"listTenantDb: {listTenantDb}");
+                        // Connect RDS delete TenantDb
+                        if (listTenantDb.Count > 1)
+                        {
+                            Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
+                            _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db);
+                        }
+
+                        // Deleted RDS
                         else
                         {
-                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                            _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.SuperAdmin);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, oldTenant);
+                            Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
+                            await RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                        }
+
+                        // Update endpoint, dbInstanceIdentifier, status tenant available 
+                        var tenantUpgrade = _tenantRepository.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address, inputData.SubDomain, inputData.Size, inputData.SizeType);
+
+                        // Finished upgrade
+                        if (tenantUpgrade != null)
+                        {
+                            var messenge = $"{oldTenant.EndSubDomain} is upgrade premium successfully.";
+                            var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
+                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                             cts.Cancel();
                             return;
                         }
+                        else
+                        {
+                            throw new Exception("Update new data tenant failed");
+                        }
                     }
-
-                    // Restore DB Instance from snapshot
-                    Console.WriteLine($"Start Restore");
-
-                    string rString = CommonConstants.GenerateRandomString(6);
-                    var dbInstanceIdentifier = $"develop-smartkarte-logging-{rString}";
-                    Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
-
-                    var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
-
-                    // Check Restore success 
-                    var endpoint = await CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId);
-                    if (!isSuccessRestoreInstance || endpoint == null || string.IsNullOrEmpty(endpoint?.Address))
+                    catch (Exception ex)
                     {
-                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["restore-failed"], FunctionCodes.SuperAdmin);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, oldTenant);
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
+                        // Notification  upgrade failed
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
+                        var messenge = $"{oldTenant.EndSubDomain} is upgrade premium failed. Error: {ex.Message}.";
+                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
                     }
-
-                    // Update endpoint, dbInstanceIdentifier, status tenant available 
-                    var tenantUpgrade = _tenantRepository.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address, inputData.SubDomain, inputData.Size, inputData.SizeType);
-
-                    // Finished upgrade
-                    if (tenantUpgrade != null)
-                    {
-                        _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], FunctionCodes.SuperAdmin);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, tenantUpgrade);
-                    }
-
-                    //Delete list Db without tenantDB in new RDS
-                    Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
-                    var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, oldTenant.Db);
-
-
-                    // Delete DB in old RDS
-                    var listTenantDb = await RDSAction.GetListDatabase(oldTenant.EndPointDb);
-
-                    // Connect RDS delete TenantDb
-                    if (listTenantDb.Count > 1)
-                    {
-                        _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db);
-                    }
-
-                    // Deleted RDS
-                    else
-                    {
-                        await RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
-                    }
-
-                    cts.Cancel();
-                    return;
                 });
 
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
@@ -165,10 +169,11 @@ namespace Interactor.SuperAdmin
             finally
             {
                 _tenantRepository.ReleaseResource();
+                _notificationRepository.ReleaseResource();
             }
         }
 
-        public bool ConnectAndDeleteDatabases(string serverEndpoint, string tennantDB)
+        public  bool ConnectAndDeleteDatabases(string serverEndpoint, string tennantDB)
         {
             try
             {
@@ -179,10 +184,15 @@ namespace Interactor.SuperAdmin
 
                 // Connection string format for SQL Server
                 string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
-                var withOutDb = ConfigConstant.LISTSYSTEMDB;
-                withOutDb.Add(tennantDB);
-                string strWithoutDb = string.Join(", ", withOutDb);
-                strWithoutDb = "'" + strWithoutDb.Replace(", ", "', '") + "'";
+                var listTenantDb = RDSAction.GetListDatabase(serverEndpoint).Result;
+                if (listTenantDb.Contains(tennantDB))
+                {
+                    listTenantDb.Remove(tennantDB);
+                }
+                else
+                {
+                    throw new Exception($"Connec tAndDelete Databases. tennantDB doesn't exists");
+                }
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -195,17 +205,10 @@ namespace Interactor.SuperAdmin
                         using (NpgsqlCommand command = new NpgsqlCommand())
                         {
                             command.Connection = connection;
-                            command.CommandText = @$"
-                                                        DO $$ 
-                                                        DECLARE 
-                                                            db_name text; 
-                                                        BEGIN 
-                                                            FOR db_name IN (SELECT datname FROM pg_catalog.pg_database WHERE datname NOT IN ({strWithoutDb}) AND NOT datistemplate) 
-                                                            LOOP 
-                                                                EXECUTE 'DROP DATABASE IF EXISTS ' || quote_ident(db_name); 
-                                                            END LOOP; 
-                                                        END $$;
-                                                        ";
+                            foreach (var item in listTenantDb)
+                            {
+                                command.CommandText += $"DROP DATABASE {item};";
+                            }
                             command.ExecuteNonQuery();
                         }
 
@@ -214,7 +217,7 @@ namespace Interactor.SuperAdmin
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
-                        return false;
+                        throw new Exception($"Connect And Delete Databases Failed. {ex.Message}");
                     }
                 }
 
@@ -223,7 +226,7 @@ namespace Interactor.SuperAdmin
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Delete redundant Databases in new RDS. {ex.Message}");
             }
         }
 
@@ -275,7 +278,7 @@ namespace Interactor.SuperAdmin
                     else
                     {
                         running = false;
-                        return new Endpoint();
+                        throw new Exception($"Checking Restored Instance Available. DB instance doesn't exists");
                     }
 
                     // Check if more than timeout
@@ -283,7 +286,7 @@ namespace Interactor.SuperAdmin
                     {
                         Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                         running = false;
-                        return new Endpoint();
+                        throw new Exception($"Checking Restored Instance Available. Timeout");
                     }
 
                     // Wait for 5 seconds before the next attempt
@@ -296,7 +299,7 @@ namespace Interactor.SuperAdmin
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new Endpoint();
+                throw new Exception($"Checking Restored Instance Available. {ex.Message}");
             }
         }
     }
