@@ -39,15 +39,16 @@ namespace Interactor.PatientInfor
         [Obsolete]
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
         {
-            PatientInforModel patientInforModel = new();
-            bool cloneByomei = CloneByomei(inputData);
-            var validations = Validation(inputData);
-            if (validations.Any() || (!inputData.ReactSave.ConfirmCloneByomei && cloneByomei))
-            {
-                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, cloneByomei);
-            }
             try
             {
+                PatientInforModel patientInforModel = new();
+                bool cloneByomei = CloneByomei(inputData);
+                var validations = Validation(inputData);
+                if (validations.Any() || (!inputData.ReactSave.ConfirmCloneByomei && cloneByomei))
+                {
+                    return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0, patientInforModel, cloneByomei);
+                }
+
                 IEnumerable<InsuranceScanModel> HandlerInsuranceScan(int hpId, long ptNum, long ptId)
                 {
                     var listReturn = new List<InsuranceScanModel>();
@@ -126,6 +127,9 @@ namespace Interactor.PatientInfor
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+                _ptDiseaseRepository.ReleaseResource();
+                _tenantProvider.DisposeDataContext();
+                _amazonS3Service.Dispose();
                 _loggingHandler.Dispose();
             }
         }

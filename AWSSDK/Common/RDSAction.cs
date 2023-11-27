@@ -357,70 +357,6 @@ namespace AWSSDK.Common
             return dbSnapshotIdentifier;
         }
 
-        public static async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier)
-        {
-            try
-            {
-                DateTime startTime = DateTime.Now;
-                bool running = true;
-
-                while (running)
-                {
-                    var rdsClient = new AmazonRDSClient();
-
-                    // Create a request to describe DB instances
-                    var describeInstancesRequest = new DescribeDBInstancesRequest
-                    {
-                        DBInstanceIdentifier = dbInstanceIdentifier
-                    };
-
-                    // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
-                    var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
-
-                    // Check if the DB instance exists
-                    var dbInstances = describeInstancesResponse.DBInstances;
-                    if (dbInstances.Count == 1)
-                    {
-                        var dbInstance = dbInstances[0];
-                        var status = dbInstance.DBInstanceStatus;
-
-                        Console.WriteLine($"DB Instance status: {status}");
-
-                        // Check if the DB instance is in the "available" state
-                        if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
-                        {
-                            running = false;
-                            return describeInstancesResponse.DBInstances[0].Endpoint;
-                        }
-                    }
-                    else
-                    {
-                        running = false;
-                        return new Endpoint();
-                    }
-
-                    // Check if more than timeout
-                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
-                    {
-                        Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                        running = false;
-                        return new Endpoint();
-                    }
-
-                    // Wait for 5 seconds before the next attempt
-                    Thread.Sleep(5000);
-                }
-
-                // Return an empty Endpoint if the loop exits without finding an available instance
-                return new Endpoint();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return new Endpoint();
-            }
-        }
-
         public static async Task<List<string>> GetListDatabase(string serverEndpoint)
         {
             try
@@ -430,8 +366,10 @@ namespace AWSSDK.Common
                 string password = "Emr!23456789";
                 int port = 5432;
                 // Connection string format for PostgreSQL
-                string connectionString = $"host={serverEndpoint};port={port};userid={username};password={password};";
-
+                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                var withOutDb = ConfigConstant.LISTSYSTEMDB;
+                string strWithoutDb = string.Join(", ", withOutDb);
+                strWithoutDb = "'" + strWithoutDb.Replace(", ", "', '") + "'";
                 List<string> databaseList = new List<string>();
 
                 // Create and open a connection
@@ -442,7 +380,7 @@ namespace AWSSDK.Common
                         connection.Open();
 
                         // Select databases
-                        using (NpgsqlCommand command = new NpgsqlCommand("SELECT datname FROM pg_catalog.pg_database;", connection))
+                        using (NpgsqlCommand command = new NpgsqlCommand($"SELECT datname FROM pg_catalog.pg_database WHERE datname NOT IN ({strWithoutDb}) AND NOT datistemplate", connection))
                         using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
@@ -476,8 +414,10 @@ namespace AWSSDK.Common
                 var deleteRequest = new DeleteDBInstanceRequest
                 {
                     DBInstanceIdentifier = dbInstanceIdentifier,
-                    //SkipFinalSnapshot = true // Set this to true if you don't want to create a final DB snapshot
+                    SkipFinalSnapshot = false
                 };
+
+                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier);
 
                 var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
 

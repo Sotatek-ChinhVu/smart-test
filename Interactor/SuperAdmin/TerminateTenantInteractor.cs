@@ -31,7 +31,7 @@ namespace Interactor.SuperAdmin
                 return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
             }
 
-            var listTenantDb = RDSAction.GetListDatabase(tenant.RdsIdentifier).Result;
+            var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb).Result;
             // Check valid delete tennatDb
             if (listTenantDb == null || listTenantDb.Count() == 0 || !listTenantDb.Contains(tenant.Db))
             {
@@ -63,11 +63,13 @@ namespace Interactor.SuperAdmin
 
                 // Delete DNS
                 var deleteDNSAction = await Route53Action.DeleteTenantDomain(tenant.SubDomain);
-                // Delete could font
 
-                // Check action deleted  RDS, DNS, Could font
-                if (deleteRDSAction && deleteDNSAction)
+                // Delete item cname in cloud front
+                var deleteItemCnameAction = await CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain);  
+                // Check action deleted  RDS, DNS, Cloud front
+                if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
                 {
+                    // Check finshed terminate
                     if (await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier) && !await Route53Action.CheckSubdomainExistence(tenant.SubDomain))
                     {
                         _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
