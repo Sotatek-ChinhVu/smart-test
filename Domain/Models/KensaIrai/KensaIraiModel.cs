@@ -18,6 +18,23 @@ public class KensaIraiModel
         KensaIraiDetails = kensaIraiDetails;
     }
 
+    public KensaIraiModel(int sinDate, long raiinNo, long iraiCd, long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int tosekiKbn, int sikyuKbn, DateTime updateDate, List<KensaIraiDetailModel> kensaIraiDetails)
+    {
+        SinDate = sinDate;
+        RaiinNo = raiinNo;
+        IraiCd = iraiCd;
+        PtId = ptId;
+        PtNum = ptNum;
+        Name = name;
+        KanaName = kanaName;
+        Sex = sex;
+        Birthday = birthday;
+        TosekiKbn = tosekiKbn;
+        SikyuKbn = sikyuKbn;
+        UpdateDate = updateDate;
+        KensaIraiDetails = kensaIraiDetails;
+    }
+
     public KensaIraiModel(int sinDate, long raiinNo, long iraiCd, long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int tosekiKbn, int sikyuKbn, int kaId, List<KensaIraiDetailModel> kensaIraiDetails)
     {
         SinDate = sinDate;
@@ -65,6 +82,8 @@ public class KensaIraiModel
     public int SikyuKbn { get; private set; }
 
     public int KaId { get; private set; }
+
+    public DateTime UpdateDate { get; private set; }
 
     public List<KensaIraiDetailModel> KensaIraiDetails { get; private set; }
 }

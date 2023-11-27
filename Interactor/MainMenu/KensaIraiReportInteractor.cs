@@ -125,6 +125,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 raiinInf?.TantoName ?? string.Empty,
                 raiinInf?.TantoKanaName ?? string.Empty,
                 raiinInf?.KaSName ?? string.Empty,
+                kensaIrai.UpdateDate.ToString("HH:mm"),
             AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails)));
         }
         return kensaIraiList;
