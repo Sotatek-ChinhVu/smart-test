@@ -57,4 +57,6 @@ public class SaveMedicalRequest
     public List<UpsertFlowSheetItemInputData> FlowSheetItems { get; set; } = new();
 
     public MonshinInforModel Monshin { get; set; } = new();
+
+    public MedicalStateChanged StateChanged { get; set; } = new();
 }
