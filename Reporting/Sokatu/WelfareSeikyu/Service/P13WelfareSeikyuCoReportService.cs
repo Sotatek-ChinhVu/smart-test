@@ -110,6 +110,7 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         }
         finally
         {
+            _systemConfig.ReleaseResource();
             _welfareFinder.ReleaseResource();
         }
     }

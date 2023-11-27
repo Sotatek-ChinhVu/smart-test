@@ -35,6 +35,7 @@ public class MedicalRecordWebIdReportService : IMedicalRecordWebIdReportService
             {
                 finder.ReleaseResource();
                 _tenantProvider.DisposeDataContext();
+                _systemConfig.ReleaseResource();
             }
         }
     }

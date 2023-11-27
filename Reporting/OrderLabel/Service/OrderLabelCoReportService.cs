@@ -63,6 +63,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             {
                 finder.ReleaseResource();
                 _tenantProvider.DisposeDataContext();
+                _systemConfig.ReleaseResource();
             }
         }
     }

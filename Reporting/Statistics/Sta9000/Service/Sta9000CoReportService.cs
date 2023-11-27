@@ -740,6 +740,10 @@ public class Sta9000CoReportService : ISta9000CoReportService
             Console.WriteLine(ex);
             return (string.Empty, CoPrintExitCode.EndError, new());
         }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private bool GetData(int hpId, List<long> ptIds)

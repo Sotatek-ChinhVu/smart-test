@@ -77,10 +77,9 @@ public class Karte3CoReportService : IKarte3CoReportService
             _extralData.Add("dataRowCount", dataRowCount.ToString());
             return new Karte3Mapper(_singleFieldData, _listTextData, _extralData).GetData();
         }
-        catch (Exception)
+        finally
         {
-
-            throw;
+            _finder.ReleaseResource();
         }
     }
 

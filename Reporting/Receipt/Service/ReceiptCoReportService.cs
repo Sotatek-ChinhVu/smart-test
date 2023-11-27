@@ -124,75 +124,85 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
 
     public CommonReportingRequestModel GetReceiptDataFromAccounting(int hpId, long ptId, int sinYm, int hokenId, bool isIncludeOutDrug, bool isModePrint)
     {
-        ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
-
-        receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
-
-        var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
-        if (receSeikyu != null)
+        try
         {
-            if (receSeikyu.SeikyuYm != 999999)
+            ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
+
+            receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm);
+
+            var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
+            if (receSeikyu != null)
             {
-                var receInf = CoModelFinder.GetReceInf(hpId, ptId, hokenId, sinYm, receSeikyu.SeikyuYm);
-                if (receInf == null)
+                if (receSeikyu.SeikyuYm != 999999)
                 {
-                    receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, receSeikyu.SeikyuYm);
-                    HokenId = hokenId;
-                    SeikyuYm = receSeikyu.SeikyuYm;
+                    var receInf = CoModelFinder.GetReceInf(hpId, ptId, hokenId, sinYm, receSeikyu.SeikyuYm);
+                    if (receInf == null)
+                    {
+                        receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, receSeikyu.SeikyuYm);
+                        HokenId = hokenId;
+                        SeikyuYm = receSeikyu.SeikyuYm;
+                    }
+                }
+                else
+                {
+                    var receInfModels = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+                    var receFutanKbnModels = receFutanViewModel.ReceFutanKbns;
+                    var receInf = receInfModels.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
+                    if (receInf != null)
+                    {
+                        ReceFutanKbnModels = receFutanKbnModels;
+                        ReceInf = receInf;
+                        HokenId = hokenId;
+                        SinYm = sinYm;
+                        SeikyuYm = sinYm;
+
+                    }
                 }
             }
             else
             {
-                var receInfModels = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
-                var receFutanKbnModels = receFutanViewModel.ReceFutanKbns;
-                var receInf = receInfModels.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
-                if (receInf != null)
-                {
-                    ReceFutanKbnModels = receFutanKbnModels;
-                    ReceInf = receInf;
-                    HokenId = hokenId;
-                    SinYm = sinYm;
-                    SeikyuYm = sinYm;
-
-                }
+                HokenId = hokenId;
+                SinYm = sinYm;
+                SeikyuYm = sinYm;
             }
+
+            bool isNoCreatingReceData = true;
+
+            var listReceInf = CoModelFinder.GetReceInf(hpId, ptId);
+            // If ReceInf is not null
+            // It indecates that, we want to create in-memory rece data
+            if (listReceInf.Count <= 0 && ReceInf == null)
+            {
+                return new();
+            }
+
+            // In case in-memory rece data is going to be created
+            // ReceInf will not be NULL
+            if (ReceInf == null)
+            {
+                var receInf = listReceInf.FirstOrDefault(item => item.HpId == Session.HospitalID &&
+                item.SeikyuYm == SeikyuYm &&
+                item.PtId == ptId &&
+                item.SinYm == sinYm &&
+                (item.HokenId == hokenId || item.HOkenId2 == hokenId));
+
+                if (receInf == null) return new();
+
+                ReceInf = new ReceFutanReceInfModel(receInf.ReceInf);
+                isNoCreatingReceData = false;
+            }
+
+            var recePreview = new RecePreviewModel(ReceInf.ReceInf);
+            return GetReceiptData(hpId, recePreview.PtId, recePreview.SinYm, recePreview.SeikyuYm, recePreview.HokenId, recePreview.HokenKbn, isNoCreatingReceData, isIncludeOutDrug, isModePrint);
         }
-        else
+        finally
         {
-            HokenId = hokenId;
-            SinYm = sinYm;
-            SeikyuYm = sinYm;
+            _tenantProvider.DisposeDataContext();
+            _systemConfigProvider.ReleaseResource();
+            _systemConfRepository.ReleaseResource();
+            _accountingRepository.ReleaseResource();
+            CoModelFinder.ReleaseResource();
         }
-
-        bool isNoCreatingReceData = true;
-
-        var listReceInf = CoModelFinder.GetReceInf(hpId, ptId);
-        // If ReceInf is not null
-        // It indecates that, we want to create in-memory rece data
-        if (listReceInf.Count <= 0 && ReceInf == null)
-        {
-            return new();
-        }
-
-        // In case in-memory rece data is going to be created
-        // ReceInf will not be NULL
-        if (ReceInf == null)
-        {
-            var receInf = listReceInf.FirstOrDefault(item => item.HpId == Session.HospitalID &&
-            item.SeikyuYm == SeikyuYm &&
-            item.PtId == ptId &&
-            item.SinYm == sinYm &&
-            (item.HokenId == hokenId || item.HOkenId2 == hokenId));
-
-            if (receInf == null) return new();
-
-            ReceInf = new ReceFutanReceInfModel(receInf.ReceInf);
-            isNoCreatingReceData = false;
-        }
-
-        var recePreview = new RecePreviewModel(ReceInf.ReceInf);
-        return GetReceiptData(hpId, recePreview.PtId, recePreview.SinYm, recePreview.SeikyuYm, recePreview.HokenId, recePreview.HokenKbn, isNoCreatingReceData, isIncludeOutDrug, isModePrint);
-
     }
 
     public CommonReportingRequestModel GetReceiptDataFromReceCheck(int hpId, long ptId, int sinYm, int seikyuYm, int hokenId, int hokenKbn, bool isIncludeOutDrug, bool isModePrint)

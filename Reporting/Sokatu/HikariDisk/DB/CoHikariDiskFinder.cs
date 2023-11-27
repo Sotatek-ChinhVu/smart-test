@@ -17,6 +17,7 @@ public class CoHikariDiskFinder : RepositoryBase, ICoHikariDiskFinder
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _hpInfFinder.ReleaseResource();
     }
 
     public CoHpInfModel GetHpInf(int hpId, int seikyuYm)

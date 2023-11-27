@@ -29,6 +29,7 @@ namespace Reporting.Receipt.DB
         public void ReleaseResource()
         {
             DisposeDataContext();
+            _systemConfRepository.ReleaseResource();
         }
 
         public HpInfModel FindHpInf(int hpId, int sinDate)

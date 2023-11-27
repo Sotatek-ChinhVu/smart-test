@@ -20,6 +20,7 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _systemConfig.ReleaseResource();
     }
 
     public List<ReceiptListModel> AdvancedSearchReceList(int hpId, int sinym)

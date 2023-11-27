@@ -61,5 +61,7 @@ public class CoSta1002Finder : RepositoryBase, ICoSta1002Finder
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _sta1001Finder.ReleaseResource();
+        _hpInfFinder.ReleaseResource();
     }
 }

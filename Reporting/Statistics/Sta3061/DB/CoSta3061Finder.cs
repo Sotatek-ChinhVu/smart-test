@@ -49,6 +49,14 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
     public void ReleaseResource()
     {
         _hpInfFinder.ReleaseResource();
+        _tenantSinKouiRpInf.Dispose();
+        _tenantKaikeiInf.Dispose();
+        _tenantPtInf.Dispose();
+        _tenantRaiinInf.Dispose();
+        _tenantKaMst.Dispose();
+        _tenantUserMst.Dispose();
+        _tenantSinKouiDetail.Dispose();
+        _tenantJihiSbtMst.Dispose();
         DisposeDataContext();
     }
 
