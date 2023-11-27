@@ -97,7 +97,7 @@ namespace Interactor.SuperAdmin
 
                     if (dbInstances.Count != 1)
                     {
-                        throw new Exception("More than one Database Shard returned; this should never happen");
+                        throw new Exception("More than one Database Instance returned; this should never happen");
                     }
 
                     var dbInstance = dbInstances[0];
@@ -128,6 +128,7 @@ namespace Interactor.SuperAdmin
                     {
                         Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                         running = false;
+                        throw new Exception($"CheckingRDSStatus. Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                     }
                 }
 
@@ -136,7 +137,7 @@ namespace Interactor.SuperAdmin
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"CheckingRDSStatus. {ex.Message}");
             }
         }
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
@@ -165,18 +166,26 @@ namespace Interactor.SuperAdmin
                             var rdsInfo = await RDSAction.GetRDSInformation();
                             if (rdsInfo.ContainsKey(dbIdentifier))
                             {
+                                var id = _tenantRepository.CreateTenant(model);
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
-                                    var id = _tenantRepository.CreateTenant(model);
-                                    model.ChangeRdsIdentifier(dbIdentifier);
-                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    if (!string.IsNullOrEmpty(host))
+                                    try
                                     {
-                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                        RDSAction.CreateTables(host, subDomain, dataMigration);
+                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                            RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                        }
                                     }
-
+                                    catch (Exception ex)
+                                    {
+                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                                    }
                                 });
                             }
                             else
@@ -186,12 +195,21 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
-                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    if (!string.IsNullOrEmpty(host))
+                                    try
                                     {
-                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                        RDSAction.CreateTables(host, subDomain, dataMigration);
+                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                            RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                                     }
                                 });
 
@@ -212,12 +230,21 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
-                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    if (!string.IsNullOrEmpty(host))
+                                    try
                                     {
-                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                        RDSAction.CreateTables(host, subDomain, dataMigration);
+                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                            RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                                     }
                                 });
                             }
@@ -233,14 +260,24 @@ namespace Interactor.SuperAdmin
                                         model.ChangeRdsIdentifier(dbIdentifier);
                                         _ = Task.Run(async () =>
                                         {
-                                            var id = _tenantRepository.CreateTenant(model);
-                                            host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                            if (!string.IsNullOrEmpty(host))
+                                            try
                                             {
-                                                var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                                RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                                RDSAction.CreateTables(host, subDomain, dataMigration);
+                                                var id = _tenantRepository.CreateTenant(model);
+                                                host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                                if (!string.IsNullOrEmpty(host))
+                                                {
+                                                    var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                                    RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                                    RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                                }
                                             }
+                                            catch (Exception ex)
+                                            {
+                                                var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                                            }
+
                                         });
                                         break;
                                     }
@@ -253,12 +290,21 @@ namespace Interactor.SuperAdmin
                                     model.ChangeRdsIdentifier(dbIdentifierNew);
                                     _ = Task.Run(async () =>
                                     {
-                                        host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
-                                        if (!string.IsNullOrEmpty(host))
+                                        try
                                         {
-                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                            RDSAction.CreateTables(host, subDomain, dataMigration);
+                                            host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
+                                            if (!string.IsNullOrEmpty(host))
+                                            {
+                                                var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                                RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
+                                                RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                            var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                            await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                                         }
                                     });
                                 }
@@ -267,6 +313,13 @@ namespace Interactor.SuperAdmin
                     }
                     await Route53Action.CreateTenantDomain(subDomain);
                     await CloudFrontAction.UpdateNewTenantAsync(subDomain);
+
+                    var checkSubdomain = await Route53Action.CheckSubdomainExistence(subDomain);
+                    if (!checkSubdomain)
+                    {
+                        throw new Exception($"CheckSubdomainExistence (Sub domain not exists");
+                    }
+
                 }
                 else // Return landing page url by default
                 {
@@ -285,7 +338,7 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                    var message = $"{subDomain} is created failed. Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return new Dictionary<string, string> { { "Error", ex.Message } };

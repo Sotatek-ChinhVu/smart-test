@@ -55,24 +55,32 @@ namespace AWSSDK.Common
 
         public static async Task<bool> CheckSubdomainExistence(string subdomainToCheck)
         {
-            using (var route53Client = new AmazonRoute53Client())
+            try
             {
-                var listResourceRecordSetsRequest = new ListResourceRecordSetsRequest
+                using (var route53Client = new AmazonRoute53Client())
                 {
-                    HostedZoneId = ConfigConstant.HostedZoneId
-                };
+                    var listResourceRecordSetsRequest = new ListResourceRecordSetsRequest
+                    {
+                        HostedZoneId = ConfigConstant.HostedZoneId
+                    };
 
-                var listResourceRecordSetsResponse = await route53Client.ListResourceRecordSetsAsync(listResourceRecordSetsRequest);
+                    var listResourceRecordSetsResponse = await route53Client.ListResourceRecordSetsAsync(listResourceRecordSetsRequest);
 
-                bool subdomainExists = listResourceRecordSetsResponse.ResourceRecordSets
-                    .Any(recordSet => recordSet.Name == $"{subdomainToCheck}.{ConfigConstant.Domain}.");
+                    bool subdomainExists = listResourceRecordSetsResponse.ResourceRecordSets
+                        .Any(recordSet => recordSet.Name == $"{subdomainToCheck}.{ConfigConstant.Domain}.");
 
-                if (subdomainExists)
-                {
-                    return true;
+                    if (subdomainExists)
+                    {
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
             }
+            catch (Exception ex)
+            {
+                throw new Exception($"CheckSubdomainExistence. {ex.Message}");
+            }
+
         }
         public static async Task<bool> DeleteTenantDomain(string tenantId)
         {

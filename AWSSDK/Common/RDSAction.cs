@@ -39,7 +39,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new Dictionary<string, RDSInformation>();
+                throw new Exception($"GetRDSInformation. {ex.Message}");
             }
         }
 
@@ -91,11 +91,12 @@ namespace AWSSDK.Common
             {
                 if (e.ErrorCode == "DBInstanceAlreadyExists")
                 {
-                    Console.WriteLine($"Database Shard {dbIdentifier} exists already, continuing to poll ...");
+                    Console.WriteLine($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
+                    throw new Exception($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
                 }
                 else
                 {
-                    throw;
+                    throw new Exception($"CreateNewShardAsync. {e.Message}");
                 }
             }
         }
@@ -190,14 +191,14 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"CreateDatabase. {ex.Message}");
             }
         }
 
-        public static void CreateTables(string host, string tenantId, List<string> listMigration)
+        public static void CreateDatas(string host, string tenantId, List<string> listMigration)
         {
             try
             {
-                var dataMasterFileName = "data-master";
                 var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -206,59 +207,170 @@ namespace AWSSDK.Common
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-
-                        var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin", "Template");
-
-                        if (Directory.Exists(folderPath))
-                        {
-                            var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-
-                            if (sqlFiles.Length > 0)
-                            {
-                                var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                                if (fileNames.Contains(dataMasterFileName))
-                                {
-                                    fileNames.Remove(dataMasterFileName);
-                                }
-                                var uniqueFileNames = fileNames.Except(listMigration).ToList();
-
-                                // insert table
-                                foreach (var fileName in uniqueFileNames)
-                                {
-                                    var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                    if (File.Exists(filePath))
-                                    {
-                                        var sqlScript = File.ReadAllText(filePath);
-                                        command.CommandText = sqlScript;
-                                        command.ExecuteNonQuery();
-                                    }
-                                }
-                                // insert data master
-                                var filePathMaster = Path.Combine(folderPath, $"{dataMasterFileName}.sql");
-                                if (File.Exists(filePathMaster) && !listMigration.Contains(dataMasterFileName))
-                                {
-                                    var sqlScript = File.ReadAllText(filePathMaster);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                }
-
-                                Console.WriteLine("SQL scripts executed successfully.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Info create table: No SQL files found in the specified folder.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Info create table: Specified folder not found");
-                        }
+                        _CreateTable(command, listMigration);
+                        _CreateFunction(command, listMigration);
+                        _CreateTrigger(command, listMigration);
+                        _CreateDataMaster(command, listMigration);
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Create Data.  {ex.Message}");
+            }
+        }
+        private static void _CreateTable(NpgsqlCommand command, List<string> listMigration)
+        {
+            var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Table");
+
+            if (Directory.Exists(folderPath))
+            {
+                var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+
+                if (sqlFiles.Length > 0)
+                {
+                    var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                    var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                    // insert table
+                    if (uniqueFileNames.Any())
+                    {
+                        foreach (var fileName in uniqueFileNames)
+                        {
+                            var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                            if (File.Exists(filePath))
+                            {
+                                var sqlScript = File.ReadAllText(filePath);
+                                command.CommandText = sqlScript;
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        Console.WriteLine("SQL scripts trigger executed successfully.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Info create table: No SQL files found in the specified folder.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Info create table: Specified folder not found");
+            }
+        }
+
+        private static void _CreateDataMaster(NpgsqlCommand command, List<string> listMigration)
+        {
+            var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "DataMaster");
+
+            if (Directory.Exists(folderPath))
+            {
+                var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+
+                if (sqlFiles.Length > 0)
+                {
+                    var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                    var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                    // insert data master
+                    if (uniqueFileNames.Any())
+                    {
+                        foreach (var fileName in uniqueFileNames)
+                        {
+                            var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                            if (File.Exists(filePath))
+                            {
+                                var sqlScript = File.ReadAllText(filePath);
+                                command.CommandText = sqlScript;
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        Console.WriteLine("SQL scripts trigger executed successfully.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Info create data master: No SQL files found in the specified folder.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Info create data master: Specified folder not found");
+            }
+        }
+
+        private static void _CreateFunction(NpgsqlCommand command, List<string> listMigration)
+        {
+            var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Function");
+            if (Directory.Exists(folderPath))
+            {
+                var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+                if (sqlFiles.Length > 0)
+                {
+                    var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                    var uniqueFileNames = fileNames.Except(listMigration).ToList();
+                    // insert function
+                    if (uniqueFileNames.Any())
+                    {
+                        foreach (var fileName in uniqueFileNames)
+                        {
+                            var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                            if (File.Exists(filePath))
+                            {
+                                var sqlScript = File.ReadAllText(filePath);
+                                command.CommandText = sqlScript;
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        Console.WriteLine("SQL scripts trigger executed successfully.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Info create function: No SQL files found in the specified folder.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Info create function: Specified folder not found");
+            }
+        }
+
+        private static void _CreateTrigger(NpgsqlCommand command, List<string> listMigration)
+        {
+            var folderFunctionPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Trigger");
+            if (Directory.Exists(folderFunctionPath))
+            {
+                var sqlFiles = Directory.GetFiles(folderFunctionPath, "*.sql");
+                if (sqlFiles.Length > 0)
+                {
+                    var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                    var uniqueFileNames = fileNames.Except(listMigration).ToList();
+                    // insert trigger
+                    if (uniqueFileNames.Any())
+                    {
+                        foreach (var fileName in uniqueFileNames)
+                        {
+                            var filePath = Path.Combine(folderFunctionPath, $"{fileName}.sql");
+                            if (File.Exists(filePath))
+                            {
+                                var sqlScript = File.ReadAllText(filePath);
+                                command.CommandText = sqlScript;
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        Console.WriteLine("SQL scripts trigger executed successfully.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Info create trigger: No SQL files found in the specified folder.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Info create trigger: Specified folder not found");
             }
         }
 
