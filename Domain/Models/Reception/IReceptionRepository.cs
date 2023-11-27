@@ -40,8 +40,6 @@ namespace Domain.Models.Reception
 
         bool CheckListNo(List<long> raininNos);
 
-        bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
-
         int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate);
 
         ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
