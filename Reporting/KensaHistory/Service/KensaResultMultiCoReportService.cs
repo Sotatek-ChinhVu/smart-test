@@ -480,7 +480,6 @@ namespace Reporting.KensaHistory.Service
 
             List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
             Dictionary<int, CoKensaResultMultiModel> parents = new();
-            List<CoKensaResultMultiModel> Parents = new();
 
             if (showAbnormalKbn)
             {
