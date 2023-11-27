@@ -18,6 +18,8 @@ namespace AWSSDK.Constants
         public static int TypeDedicate = 1;
         public static int SizeTypeMB = 1;
         public static int SizeTypeGB = 2;
+        public static byte StatusNotiSuccess = 1;
+        public static byte StatusNotifailure = 0;
         public static List<string> LISTSYSTEMDB = new List<string>() { "rdsadmin, postgres" };
 
         public static Dictionary<string, byte> StatusTenantDictionary()
