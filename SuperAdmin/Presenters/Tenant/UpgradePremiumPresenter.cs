@@ -28,6 +28,13 @@ namespace SuperAdminAPI.Presenters.Tenant
             UpgradePremiumStatus.Successed => ResponseMessage.Success,
             UpgradePremiumStatus.Failed => ResponseMessage.Fail,
             UpgradePremiumStatus.InvalidTenantId => ResponseMessage.InvalidTenantId,
+            UpgradePremiumStatus.InvalidSize => ResponseMessage.InvalidSize,
+            UpgradePremiumStatus.InvalidSizeType => ResponseMessage.InvalidSizeType,
+            UpgradePremiumStatus.InvalidDomain => ResponseMessage.InvalidDomain,
+            UpgradePremiumStatus.NewDomainAleadyExist => ResponseMessage.NewDomainAleadyExist,
+            UpgradePremiumStatus.RdsDoesNotExist => ResponseMessage.TenantDbDoesNotExistInRDS,
+            UpgradePremiumStatus.TenantDoesNotExist => ResponseMessage.TenantDoesNotExist,
+            UpgradePremiumStatus.FailedTenantIsPremium => ResponseMessage.FailedTenantIsPremium,
             _ => string.Empty
         };
     }

@@ -649,7 +649,8 @@ namespace Infrastructure.Repositories
                             t3.InoutKbn,
                             t3.Status,
                             DeleteTypes.None,
-                            t1.SeqGroupNo
+                            t1.SeqGroupNo,
+                            ""
                         )).AsEnumerable();
 
             if (showAbnormalKbn)
@@ -1013,7 +1014,8 @@ namespace Infrastructure.Repositories
                             t3.InoutKbn,
                             t3.Status,
                             DeleteTypes.None,
-                            t1.SeqGroupNo
+                            t1.SeqGroupNo,
+                            ""
                         )).ToList();
             return data;
         }

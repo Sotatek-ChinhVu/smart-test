@@ -5,6 +5,7 @@ using Helper.Common;
 using Reporting.KensaHistory.DB;
 using Reporting.KensaHistory.Mapper;
 using Reporting.Mappers.Common;
+using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Reporting.KensaHistory.Service
 {
@@ -212,8 +213,53 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             kensaInfDetailModel = _coKensaHistoryFinder.GetListKensaInf(hpId, userId, ptId, setId, 0, false, showAbnormalKbn, startDate);
-            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray).ToList();
 
+            var kensaInfDetailItems = kensaInfDetailModel.KensaInfDetailData.ToList();
+            List<KensaInfDetailDataModel> KensaInfDetailDataAbnormal = new();
+            Dictionary<int, KensaInfDetailDataModel> parents = new();
+
+            if (showAbnormalKbn)
+            {
+                foreach (var item in kensaInfDetailItems)
+                {
+                    if (item.DynamicArray.Where(x => x.AbnormalKbn == "").Count() == item.DynamicArray.Count())
+                    {
+                        KensaInfDetailDataAbnormal.Add(item);
+                    }
+                }
+
+                foreach (var item in KensaInfDetailDataAbnormal)
+                {
+                    kensaInfDetailItems.Remove(item);
+                }
+
+                foreach (var item in KensaInfDetailDataAbnormal.Where(x => x.SeqParentNo == 0))
+                {
+                    var childrens = kensaInfDetailItems.Where(x => x.SeqParentNo > 0 && item.RowSeqId.Contains(x.SeqParentNo.ToString()));
+
+                    if (childrens != null)
+                    {
+                        var index = 99999999;
+                        foreach (var itemChildren in childrens)
+                        {
+                            var indexNew = kensaInfDetailItems.IndexOf(itemChildren);
+                            if (indexNew < index)
+                            {
+                                index = indexNew;
+                            }
+                        }
+                        parents.Add(index, item);
+                    }
+                }
+
+                foreach (var item in parents)
+                {
+                    kensaInfDetailItems.Insert(item.Key, item.Value);
+                }
+            }
+
+            var kensaInfDetails = kensaInfDetailItems.Select(x => x.DynamicArray).ToList();
+            
             foreach (var item in kensaInfDetails)
             {
                 foreach (var index in item)
@@ -232,7 +278,7 @@ namespace Reporting.KensaHistory.Service
             {
                 foreach (var index in item)
                 {
-                    listKensaInfDetailItemModelItems.Add(new ListKensaInfDetailItemModel(index.IraiCd, index.KensaName, index.ResultVal, index.AbnormalKbn, index.Unit, index.MaleStd, index.FemaleStd, index.ResultType));
+                    listKensaInfDetailItemModelItems.Add(new ListKensaInfDetailItemModel(index.IraiCd, index.KensaName, index.ResultVal, index.AbnormalKbn, index.Unit, index.MaleStd, index.FemaleStd, index.ResultType, index.RowSeqId, index.SeqParentNo));
                 }
             }
 

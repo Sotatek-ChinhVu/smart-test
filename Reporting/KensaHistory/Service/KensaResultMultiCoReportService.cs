@@ -479,6 +479,7 @@ namespace Reporting.KensaHistory.Service
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
 
             List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
+            Dictionary<int, CoKensaResultMultiModel> parents = new();
 
             if (showAbnormalKbn)
             {
@@ -498,11 +499,34 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
                 }
-            }
 
-            foreach (var item in coKensaResultMultiModels)
-            {
-                data.Item1.Remove(item);
+                foreach (var item in coKensaResultMultiModels)
+                {
+                    data.Item1.Remove(item);
+                }
+
+                foreach (var item in coKensaResultMultiModels.Where(x => x.SeqParentNo == 0))
+                {
+                    var childrens = data.Item1.Where(x => x.SeqParentNo > 0 && item.RowSeqId.Contains(x.SeqParentNo.ToString()));
+                    if (childrens != null)
+                    {
+                        var index = 99999999;
+                        foreach (var itemChildren in childrens)
+                        {
+                            var indexNew = data.Item1.IndexOf(itemChildren);
+                            if (indexNew < index)
+                            {
+                                index = indexNew;
+                            }
+                        }
+                        parents.Add(index, item);
+                    }
+                }
+
+                foreach (var item in parents)
+                {
+                    data.Item1.Insert(item.Key, item.Value);
+                }
             }
 
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);

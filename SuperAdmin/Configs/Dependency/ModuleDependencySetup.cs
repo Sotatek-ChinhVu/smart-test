@@ -3,8 +3,10 @@ using AWSSDK.Interfaces;
 using AWSSDK.Services;
 using Domain.SuperAdminModels.Admin;
 using Domain.SuperAdminModels.Logger;
+using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using EmrCloudApi.ScheduleTask;
 using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -14,16 +16,21 @@ using Infrastructure.SuperAdminRepositories;
 using Interactor.Realtime;
 using Interactor.SuperAdmin;
 using Interactor.SuperAdmin.AuditLog;
+using Interactor.SystemStartDbs;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using SuperAdminAPI.Services;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
 using UseCase.SuperAdmin.GetNotification;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.RevokeInsertPermission;
 using UseCase.SuperAdmin.TenantOnboard;
+using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
+using UseCase.SystemStartDbs;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -61,10 +68,11 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAwsSdkService, AwsSdkService>();
             services.AddTransient<IWebSocketService, WebSocketService>();
 
+
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
 
-            //services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            services.AddScoped<ISystemStartDbService, SystemStartDbService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -72,6 +80,10 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAdminRepository, AdminRepository>();
             services.AddTransient<ITenantRepository, TenantRepository>();
             services.AddTransient<IAdminAuditLogRepository, AdminAuditLogRepository>();
+            services.AddTransient<IMigrationTenantHistoryRepository, MigrationTenantHistoryRepository>();
+
+            services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
+
             services.AddTransient<INotificationRepository, NotificationRepository>();
         }
 
@@ -84,6 +96,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
+            busBuilder.RegisterUseCase<TerminateTenantInputData, TerminateTenantInteractor>();
             busBuilder.RegisterUseCase<GetTenantInputData, GetTenantInteractor>();
             busBuilder.RegisterUseCase<GetTenantDetailInputData, GetTenantDetailInteractor>();
             busBuilder.RegisterUseCase<GetNotificationInputData, GetNotificationInteractor>();
@@ -91,6 +104,8 @@ namespace SuperAdmin.Configs.Dependency
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
+
+            busBuilder.RegisterUseCase<RevokeInsertPermissionInputData, RevokeInsertPermissionInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
