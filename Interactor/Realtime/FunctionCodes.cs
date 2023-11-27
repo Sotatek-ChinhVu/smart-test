@@ -4,4 +4,5 @@
 public static class FunctionCodes
 {
     public const string SuperAdmin = "SuperAdmin";
+    public const string UpdateNotification = "UpdateNotification";
 }
