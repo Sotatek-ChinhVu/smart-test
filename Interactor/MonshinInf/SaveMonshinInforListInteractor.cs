@@ -33,9 +33,6 @@ namespace Interactor.MonshinInf
                         var validationStatus = item.Validation();
                         if (validationStatus != ValidationStatus.Valid)
                             return new SaveMonshinOutputData(ConvertStatus(validationStatus));
-
-                        if (!_receptionRepository.CheckExistReception(item.HpId, item.PtId, item.SinDate, item.RaiinNo))
-                            return new SaveMonshinOutputData(SaveMonshinStatus.InputDataDoesNotExists);
                     }
                 }
                 else
