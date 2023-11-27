@@ -41,9 +41,10 @@ namespace CommonChecker.Models.OrdInf
             {
                 if (OrdInfDetails == null)
                 {
-                    return new List<OrdInfoDetailModel>();
+                    return new();
                 }
-                return new List<OrdInfoDetailModel>(OrdInfDetails.Where(o => !o.IsEmpty).ToList());
+                var result = OrdInfDetails.Where(o => !o.IsEmpty).ToList();
+                return new List<OrdInfoDetailModel>(result ?? new());
             }
         }
     }

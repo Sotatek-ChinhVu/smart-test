@@ -1,6 +1,8 @@
-﻿namespace Reporting.Calculate.Interface
+﻿using Domain.Common;
+
+namespace Reporting.Calculate.Interface
 {
-    public interface ISystemConfigProvider
+    public interface ISystemConfigProvider : IRepositoryBase
     {
         int GetJibaiJunkyo();
 

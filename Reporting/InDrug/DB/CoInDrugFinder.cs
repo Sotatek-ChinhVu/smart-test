@@ -19,6 +19,11 @@ namespace Reporting.InDrug.DB
         { 
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public CoPtInfModel FindPtInf(int hpId, long ptId, int sinDate)
         {
 

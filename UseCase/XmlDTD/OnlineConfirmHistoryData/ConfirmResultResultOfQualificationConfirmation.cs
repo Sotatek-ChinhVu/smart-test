@@ -12,81 +12,81 @@ namespace UseCase.XmlDTD.OnlineConfirmHistoryData
     public class ConfirmResultResultOfQualificationConfirmation
     {
         [XmlElement(ElementName = "InsuredCardClassification")]
-        public string InsuredCardClassification { get; set; }
+        public string InsuredCardClassification { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsurerNumber")]
-        public string InsurerNumber { get; set; }
+        public string InsurerNumber { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredCardSymbol")]
-        public string InsuredCardSymbol { get; set; }
+        public string InsuredCardSymbol { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredIdentificationNumber")]
-        public string InsuredIdentificationNumber { get; set; }
+        public string InsuredIdentificationNumber { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredBranchNumber")]
-        public string InsuredBranchNumber { get; set; }
+        public string InsuredBranchNumber { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "PersonalFamilyClassification")]
-        public string PersonalFamilyClassification { get; set; }
+        public string PersonalFamilyClassification { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredName")]
-        public string InsuredName { get; set; }
+        public string InsuredName { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "Name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "NameOfOther")]
-        public string NameOfOther { get; set; }
+        public string NameOfOther { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "NameKana")]
-        public string NameKana { get; set; }
+        public string NameKana { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "NameOfOtherKana")]
-        public string NameOfOtherKana { get; set; }
+        public string NameOfOtherKana { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "Sex1")]
-        public string Sex1 { get; set; }
+        public string Sex1 { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "Sex2")]
-        public string Sex2 { get; set; }
+        public string Sex2 { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "Birthdate")]
-        public string Birthdate { get; set; }
+        public string Birthdate { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "Address")]
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "PostNumber")]
-        public string PostNumber { get; set; }
+        public string PostNumber { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredCertificateIssuanceDate")]
-        public string InsuredCertificateIssuanceDate { get; set; }
+        public string InsuredCertificateIssuanceDate { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredCardValidDate")]
-        public string InsuredCardValidDate { get; set; }
+        public string InsuredCardValidDate { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredCardExpirationDate")]
-        public string InsuredCardExpirationDate { get; set; }
+        public string InsuredCardExpirationDate { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsuredPartialContributionRatio")]
-        public string InsuredPartialContributionRatio { get; set; }
+        public string InsuredPartialContributionRatio { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "PreschoolClassification")]
-        public string PreschoolClassification { get; set; }
+        public string PreschoolClassification { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "ReasonOfLoss")]
-        public string ReasonOfLoss { get; set; }
+        public string ReasonOfLoss { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "InsurerName")]
-        public string InsurerName { get; set; }
+        public string InsurerName { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "ElderlyRecipientCertificateInfo")]
-        public ConfirmResultElderlyRecipientCertificateInfo ElderlyRecipientCertificateInfo { get; set; }
+        public ConfirmResultElderlyRecipientCertificateInfo ElderlyRecipientCertificateInfo { get; set; } = new();
 
         [XmlElement(ElementName = "LimitApplicationCertificateChanged")]
-        public string LimitApplicationCertificateChanged { get; set; }
+        public string LimitApplicationCertificateChanged { get; set; } = string.Empty;
 
         [XmlElement(ElementName = "ReferenceNumber")]
-        public string ReferenceNumber { get; set; }
+        public string ReferenceNumber { get; set; } = string.Empty;
     }
 }

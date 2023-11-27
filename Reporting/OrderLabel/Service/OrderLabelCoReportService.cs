@@ -41,21 +41,30 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
         using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
         {
             var finder = new CoOrderLabelFinder(_tenantProvider);
-            if (mode == 0)
+            try
             {
-                _coModel = GetData(hpId, ptId, sinDate, raiinNo, odrKouiKbns, finder);
-            }
-            else
-            {
-                _coModel = GetDataYoyakuOrder(hpId, ptId, odrKouiKbns, rsvKrtOdrInfModels, finder);
-            }
-            if (_coModel == null)
-            {
+                if (mode == 0)
+                {
+                    _coModel = GetData(hpId, ptId, sinDate, raiinNo, odrKouiKbns, finder);
+                }
+                else
+                {
+                    _coModel = GetDataYoyakuOrder(hpId, ptId, odrKouiKbns, rsvKrtOdrInfModels, finder);
+                }
+                if (_coModel == null)
+                {
+                    return new OrderLabelMapper(_printOutData).GetData();
+                }
+                _userMsts = finder.FindUserMst(hpId);
+                MakeOdrDtlList(sinDate);
                 return new OrderLabelMapper(_printOutData).GetData();
             }
-            _userMsts = finder.FindUserMst(hpId);
-            MakeOdrDtlList(sinDate);
-            return new OrderLabelMapper(_printOutData).GetData();
+            finally
+            {
+                finder.ReleaseResource();
+                _tenantProvider.DisposeDataContext();
+                _systemConfig.ReleaseResource();
+            }
         }
     }
 

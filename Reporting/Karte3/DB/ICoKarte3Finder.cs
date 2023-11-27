@@ -1,8 +1,9 @@
-﻿using Reporting.Karte3.Model;
+﻿using Domain.Common;
+using Reporting.Karte3.Model;
 
 namespace Reporting.Karte3.DB;
 
-public interface ICoKarte3Finder
+public interface ICoKarte3Finder : IRepositoryBase
 {
     CoPtInfModel FindPtInf(int hpId, long ptId);
 

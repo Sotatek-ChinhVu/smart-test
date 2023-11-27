@@ -120,24 +120,11 @@ namespace Infrastructure.Repositories
 
         public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom, bool isContiFiltered, bool isInMonthFiltered)
         {
-            IQueryable<PtByomei> ptByomeiListQueryable;
-            if (openFrom == DiseaseViewType.FromReceiptCheck)
-            {
-                ptByomeiListQueryable = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId &&
+            IQueryable<PtByomei> ptByomeiListQueryable = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId &&
                                                                               p.PtId == ptId &&
                                                                               p.IsDeleted != 1 &&
                                                                               (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued ||
                                                                               (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
-            }
-            else
-            {
-                ptByomeiListQueryable = NoTrackingDataContext.PtByomeis
-                .Where(p => p.HpId == hpId &&
-                            p.PtId == ptId &&
-                            p.IsDeleted != 1 &&
-                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued ||
-                                                                           (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
-            }
 
             if (hokenId > 0)
             {

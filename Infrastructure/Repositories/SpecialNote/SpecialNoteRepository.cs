@@ -159,11 +159,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.UpdateId = userId;
             }
-            if (updateAlrgyFoodList != null && updateAlrgyFoodList.Any())
+            if (updateAlrgyFoodList.Any())
             {
                 TrackingDataContext.PtAlrgyFoods.UpdateRange(updateAlrgyFoodList);
             }
-            if (addAlrgyFoodList != null && addAlrgyFoodList.Any(x => x.SeqNo == 0))
+            if (addAlrgyFoodList.Any(x => x.SeqNo == 0))
             {
                 TrackingDataContext.PtAlrgyFoods.AddRange(addAlrgyFoodList);
             }
@@ -211,11 +211,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateId = userId;
             }
 
-            if (updateAlrgyElseList != null && updateAlrgyElseList.Any())
+            if (updateAlrgyElseList.Any())
             {
                 TrackingDataContext.PtAlrgyElses.UpdateRange(updateAlrgyElseList);
             }
-            if (addAlrgyElseList != null && addAlrgyElseList.Any(x => x.SeqNo == 0))
+            if (addAlrgyElseList.Any(x => x.SeqNo == 0))
             {
                 TrackingDataContext.PtAlrgyElses.AddRange(addAlrgyElseList);
             }
@@ -265,12 +265,12 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateId = userId;
             }
 
-            if (updateAlrgyDrugList != null && updateAlrgyDrugList.Any())
+            if (updateAlrgyDrugList.Any())
             {
                 TrackingDataContext.PtAlrgyDrugs.UpdateRange(updateAlrgyDrugList);
                 TrackingDataContext.SaveChanges();
             }
-            if (addAlrgyDrugList != null && addAlrgyDrugList.Any(a => a.SeqNo == 0))
+            if (addAlrgyDrugList.Any(a => a.SeqNo == 0))
             {
                 TrackingDataContext.PtAlrgyDrugs.AddRange(addAlrgyDrugList);
             }
@@ -317,11 +317,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateId = userId;
             }
 
-            if (updatekioRekiList != null && updatekioRekiList.Any())
+            if (updatekioRekiList.Any())
             {
                 TrackingDataContext.PtKioRekis.UpdateRange(updatekioRekiList);
             }
-            if (addkioRekiList != null && addkioRekiList.Any(a => a.SeqNo == 0))
+            if (addkioRekiList.Any(a => a.SeqNo == 0))
             {
                 TrackingDataContext.PtKioRekis.AddRange(addkioRekiList);
             }
@@ -369,11 +369,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateId = userId;
             }
 
-            if (updateInfectionList != null && updateInfectionList.Any())
+            if (updateInfectionList.Any())
             {
                 TrackingDataContext.PtInfection.UpdateRange(updateInfectionList);
             }
-            if (addInfectionList != null && addInfectionList.Any(a => a.SeqNo == 0))
+            if (addInfectionList.Any(a => a.SeqNo == 0))
             {
                 TrackingDataContext.PtInfection.AddRange(addInfectionList);
             }
@@ -420,11 +420,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateId = userId;
             }
 
-            if (updateOtherDrugList != null && updateOtherDrugList.Any())
+            if (updateOtherDrugList.Any())
             {
                 TrackingDataContext.PtOtherDrug.UpdateRange(updateOtherDrugList);
             }
-            if (addOtherDrugList != null && addOtherDrugList.Any(x => x.SeqNo == 0))
+            if (addOtherDrugList.Any(x => x.SeqNo == 0))
             {
                 TrackingDataContext.PtOtherDrug.AddRange(addOtherDrugList);
             }
@@ -471,11 +471,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateId = userId;
             }
 
-            if (updateOtcDrugList != null && updateOtcDrugList.Any())
+            if (updateOtcDrugList.Any())
             {
                 TrackingDataContext.PtOtcDrug.UpdateRange(updateOtcDrugList);
             }
-            if (addOtcDrugList != null && addOtcDrugList.Any(a => a.SeqNo == 0))
+            if (addOtcDrugList.Any(a => a.SeqNo == 0))
             {
                 TrackingDataContext.PtOtcDrug.AddRange(addOtcDrugList);
             }
@@ -500,7 +500,7 @@ namespace Infrastructure.Repositories.SpecialNote
                                         Cmt = x.Cmt,
                                         IsDeleted = x.IsDeleted,
                                     }).ToList();
-            var updateSuppleList = new List<PtSupple>();
+            List<PtSupple> updateSuppleList = new();
             foreach (var item in suppleList)
             {
                 var updateSupple = suppleItemUpdates.FirstOrDefault(a => a.HpId == item.HpId && a.PtId == item.PtId && a.SeqNo == item.SeqNo);
@@ -522,11 +522,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateId = userId;
             }
 
-            if (updateSuppleList != null && updateSuppleList.Any())
+            if (updateSuppleList.Any())
             {
                 TrackingDataContext.PtSupples.UpdateRange(updateSuppleList);
             }
-            if (addSuppleList != null && addSuppleList.Any(s => s.SeqNo == 0))
+            if (addSuppleList.Any(s => s.SeqNo == 0))
             {
                 TrackingDataContext.PtSupples.AddRange(addSuppleList);
             }
@@ -671,7 +671,7 @@ namespace Infrastructure.Repositories.SpecialNote
             }
 
             var raiinNo = kensaInfDetailModels.Select(k => k.RaiinNo).Distinct().FirstOrDefault();
-            EntityEntry<KensaInf> entryKensaInf = TrackingDataContext.KensaInfs.Add(new KensaInf()
+            TrackingDataContext.KensaInfs.Add(new KensaInf()
             {
                 HpId = hpId,
                 PtId = ptId,
@@ -729,11 +729,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.UpdateId = userId;
             }
-            if (updateKensaInfDetailList != null && updateKensaInfDetailList.Any())
+            if (updateKensaInfDetailList.Any())
             {
                 TrackingDataContext.KensaInfDetails.UpdateRange(updateKensaInfDetailList);
             }
-            if (addKensaInfDetailList != null && addKensaInfDetailList.Any(a => a.SeqNo == 0))
+            if (addKensaInfDetailList.Any(a => a.SeqNo == 0))
             {
                 TrackingDataContext.KensaInfDetails.AddRange(addKensaInfDetailList);
             }

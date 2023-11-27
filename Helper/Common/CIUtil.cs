@@ -1,5 +1,6 @@
 using Helper.Constants;
 using Helper.Extension;
+using Microsoft.Extensions.Primitives;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -28,7 +29,7 @@ namespace Helper.Common
         //convert yyyyMMddHHmmss to yyyy/MM/dd HH:mm:ss
         public static DateTime StrDateToDate(string sDate, string format = "yyyyMMddHHmmss")
         {
-            var dateTimeResult = CIUtil.GetJapanDateTimeNow();
+            DateTime dateTimeResult;
 
             format = "yyyyMMddHHmmss";
             DateTime.TryParseExact(sDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeResult);
@@ -79,7 +80,7 @@ namespace Helper.Common
 
             if (ymd <= 0 || ymd == 99999999)
             {
-                return "";
+                return string.Empty;
             }
 
             try
@@ -93,7 +94,7 @@ namespace Helper.Common
             }
             catch
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -101,7 +102,7 @@ namespace Helper.Common
         {
             double ret;
 
-            if (double.TryParse(str, out ret) == false)
+            if (!double.TryParse(str, out ret))
             {
                 ret = defaultVal;
             }
@@ -146,7 +147,7 @@ namespace Helper.Common
             #region Local Method
             string _GengoId(string gengo)
             {
-                string gengoId = "";
+                string gengoId = string.Empty;
 
                 switch (gengo)
                 {
@@ -219,7 +220,6 @@ namespace Helper.Common
             {
                 for (int i = 0; i < stTarget.Length; i++)
                 {
-                    //Console.Write(stTarget[i]);
                     ret += LenB(stTarget[i]);
                 }
             }
@@ -259,9 +259,9 @@ namespace Helper.Common
         /// <returns></returns>
         public static string GetDspPostCd(string postcd)
         {
-            string ret = postcd ?? "";
+            string ret = postcd ?? string.Empty;
 
-            if (ret.Length > 5 && ret.Contains("-") == false)
+            if (ret.Length > 5 && !ret.Contains("-"))
             {
                 ret = $"{ret.Substring(0, 3)}-{ret.Substring(3, ret.Length - 3)}";
             }
@@ -270,13 +270,13 @@ namespace Helper.Common
 
         public struct WarekiYmd
         {
-            public string Ymd;
-            public string GYmd;
-            public string Gengo;
-            public int GengoId;
-            public int Year;
-            public int Month;
-            public int Day;
+            public string Ymd { get; set; }
+            public string GYmd { get; set; }
+            public string Gengo { get; set; }
+            public int GengoId { get; set; }
+            public int Year { get; set; }
+            public int Month { get; set; }
+            public int Day { get; set; }
         }
 
         //Calculate age from yyyymmdd format
@@ -287,14 +287,10 @@ namespace Helper.Common
         private const int REIWA_START_YEAR = 2019;
 
         //OpenScreenStatus
-        public static byte NoPaymentInfo = 0;
-        public static byte TryAgainLater = 2;
-        public static byte Successed = 1;
+        public static readonly byte NoPaymentInfo = 0;
+        public static readonly byte TryAgainLater = 2;
+        public static readonly byte Successed = 1;
 
-        private static T As<T>(this object obj)
-        {
-            return (T)obj;
-        }
 
         public static string Substring(string input, int startIndex, int endIndex)
         {
@@ -359,12 +355,12 @@ namespace Helper.Common
         public static double RoundUp(double x, int Factor)
         {
             double dFactor = IntPower(10, Factor);
-            if (Factor < 0) Factor = Factor + 1;
             if (x >= 0)
-                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+                return Math.Round(((x * dFactor + 0.9) / dFactor), 3);
             else
-                return Math.Round((double)(x * dFactor / dFactor), 3);
+                return Math.Round((x * dFactor / dFactor), 3);
         }
+
         private static double IntPower(int baseValue, int exponent)
         {
             return Math.Pow(baseValue, exponent);
@@ -376,11 +372,10 @@ namespace Helper.Common
             Double dFactor;
             Factor = Factor - 1;
             dFactor = IntPower(10, Factor);
-            if (Factor < 0) Factor = Factor + 1;
             if (x >= 0)
-                return Math.Round((double)(x * dFactor / dFactor), 3);
+                return Math.Round((x * dFactor / dFactor), 3);
             else
-                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+                return Math.Round(((x * dFactor + 0.9) / dFactor), 3);
         }
 
         public static string ToHalfsize(string value)
@@ -1055,8 +1050,8 @@ namespace Helper.Common
             DateTime workDate;
 
             WarekiYmd warekiYmd = new WarekiYmd();
-            warekiYmd.Ymd = "";
-            warekiYmd.Gengo = "";
+            warekiYmd.Ymd = string.Empty;
+            warekiYmd.Gengo = string.Empty;
             warekiYmd.Year = 0;
             warekiYmd.Month = 0;
             warekiYmd.Day = 0;
@@ -1064,7 +1059,7 @@ namespace Helper.Common
             // Do not convert before 1968/09/08
             if (ymd < 18680908 || ymd == 99999999)
             {
-                return "";
+                return string.Empty;
             }
 
             // Zero padding if neccessary
@@ -1072,7 +1067,7 @@ namespace Helper.Common
             if (!DateTime.TryParseExact(workString, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out workDate))
             {
                 // Input string is not a validated date
-                return "";
+                return string.Empty;
             }
 
             //明治
@@ -1120,7 +1115,7 @@ namespace Helper.Common
         private static string getWareki(int Ymd, int fmtReki = 0)
         {
             int WrkInt;
-            string Result = "";
+            string Result = string.Empty;
 
             if (Ymd < 18680908 || Ymd == 99999999)
             {
@@ -1218,7 +1213,7 @@ namespace Helper.Common
         /// and no-one has period longer than 99 years.
         /// So, for the input of more than six characters, or less
         /// than five characters will returns an invalid year
-        /// (string.empty).
+        /// (string.Empty).
         /// 
         /// </summary>
         /// <param name="inputString">integer format</param>
@@ -1241,7 +1236,7 @@ namespace Helper.Common
         /// and no-one has period longer than 99 years.
         /// So, for the input of more than six characters, or less
         /// than five characters will returns an invalid year
-        /// (string.empty).
+        /// (string.Empty).
         /// 
         /// </summary>
         /// <param name="inputString">Six-characters string</param>
@@ -1266,7 +1261,7 @@ namespace Helper.Common
 
         public static string HourAndMinuteFormat(string value)
         {
-            string sResult = "";
+            string sResult = string.Empty;
             if (!string.IsNullOrEmpty(value) && value.AsInteger() != 0)
             {
                 if (value.Length > 4)
@@ -1319,9 +1314,9 @@ namespace Helper.Common
             // 一文字は当月のその日
             if (wYmd.Length < 2)
             {
-                if (wYmd != "")
+                if (wYmd != string.Empty)
                 {
-                    wYmd = currentDate.Year + ""
+                    wYmd = currentDate.Year + string.Empty
                            + currentDate.Month.ToString("D2")
                            + wYmd.AsInteger().ToString("D2");
                     if (DateTime.TryParseExact(wYmd, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtResult))
@@ -1450,7 +1445,7 @@ namespace Helper.Common
                     // Year is equal to 0, then error
                     if (sTemp == "0" || sTemp == "00")
                     {
-                        wYmd = "";
+                        wYmd = string.Empty;
                     }
                     else
                     {
@@ -1485,7 +1480,7 @@ namespace Helper.Common
                         }
                         catch
                         {
-                            wYmd = "";
+                            wYmd = string.Empty;
                         }
                     }
                 }
@@ -1515,7 +1510,7 @@ namespace Helper.Common
                 // Length = 7 or Length > 9 is error
                 if (wYmd.Length == 7 || wYmd.Length >= 9)
                 {
-                    wYmd = "";
+                    wYmd = string.Empty;
                 }
                 else if (wYmd.Length == 8)
                 {
@@ -1531,7 +1526,7 @@ namespace Helper.Common
 
                     if (wYmd[0] == '0' && wYmd[1] == '0')
                     {
-                        wYmd = "";
+                        wYmd = string.Empty;
                     }
                     else
                     {
@@ -1543,7 +1538,7 @@ namespace Helper.Common
                         }
                         catch
                         {
-                            wYmd = "";
+                            wYmd = string.Empty;
                         }
                     }
                 }
@@ -1571,7 +1566,7 @@ namespace Helper.Common
                     }
                     else
                     {
-                        wYmd = "";
+                        wYmd = string.Empty;
                     }
                 }
             }
@@ -1656,7 +1651,7 @@ namespace Helper.Common
             #region Local Method
             string _GengoId(string gengo)
             {
-                string gengoId = "";
+                string gengoId = string.Empty;
 
                 switch (gengo)
                 {
@@ -1743,9 +1738,9 @@ namespace Helper.Common
             DateTime workDate;
 
             WarekiYmd warekiYmd = new WarekiYmd();
-            warekiYmd.Ymd = "";
-            warekiYmd.GYmd = "";
-            warekiYmd.Gengo = "";
+            warekiYmd.Ymd = string.Empty;
+            warekiYmd.GYmd = string.Empty;
+            warekiYmd.Gengo = string.Empty;
             warekiYmd.GengoId = 0;
             warekiYmd.Year = 0;
             warekiYmd.Month = 0;
@@ -1870,14 +1865,14 @@ namespace Helper.Common
         /// <returns></returns>
         public static string ToWide(string s, bool dakuten = true)
         {
-            string ret = "";
-            string dummy1 = "";
-            string dummy2 = "";
-            string? val = "";
+            string ret = string.Empty;
+            string dummy1 = string.Empty;
+            string dummy2 = string.Empty;
+            string? val = string.Empty;
 
             Dictionary<string, string> replaceChar;
 
-            if (dakuten == false)
+            if (!dakuten)
             {
                 replaceChar
                    = new Dictionary<string, string>()
@@ -1923,27 +1918,29 @@ namespace Helper.Common
                };
             }
 
-            CultureInfo jaJP = new CultureInfo("ja-JP");
             int i = 0;
             if (s != null)
             {
                 while (i < s.Length)
                 {
+                    StringBuilder retStringBuilder = new();
+                    retStringBuilder.Append(ret);
                     if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
-                        ret += val ?? string.Empty;
+                        retStringBuilder.Append(val ?? string.Empty);
                         i = i + 2;
                         continue;
                     }
                     else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
                     {
-                        ret += HenkanJ.Instance.ToFullsize(s.Substring(i, 1));
+                        retStringBuilder.Append(HenkanJ.Instance.ToFullsize(s.Substring(i, 1)));
                     }
                     else
                     {
-                        ret += s.Substring(i, 1);
+                        retStringBuilder.Append(s.Substring(i, 1));
                     }
                     i++;
+                    ret = retStringBuilder.ToString();
                 }
             }
             return ret;
@@ -1977,8 +1974,8 @@ namespace Helper.Common
         {
             bool retHantei = true;
 
-            retText = "";
-            badText = "";
+            retText = string.Empty;
+            badText = string.Empty;
 
             // 文字エンコーディングに「iso-2022-jp」を指定
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -1992,19 +1989,9 @@ namespace Helper.Common
                 // 対象の部分文字列を取得
                 string targetSubString = target.Substring(i, 1);
 
-                // 改行コードの場合
-                if (targetSubString == "\r" || targetSubString == "\n")
-                {
-
-                }
-                // 半角英数字記号の場合
-                else if (IsASCII(targetSubString) == true)
-                {
-                    //continue;
-                }
                 // 漢字第二水準までに半角カタカナを含まずかつ対象の部分文字列が半角カタカナの場合
-                else if (containsHalfKatakana == false &&
-                    IsHalfKatakanaPunctuation(targetSubString) == true)
+                if (!containsHalfKatakana &&
+                   IsHalfKatakanaPunctuation(targetSubString))
                 {
                     hantei = false;
                 }
@@ -2018,21 +2005,27 @@ namespace Helper.Common
                         hantei = false;
                     }
                     // 文字コードバイト配列がJIS X 0208 漢字第二水準外の場合
-                    if (IsUntilJISKanjiLevel2(targetBytes) == false)
+                    if (!IsUntilJISKanjiLevel2(targetBytes))
                     {
                         hantei = false;
                     }
                 }
 
+                StringBuilder retTextStringBuilder = new();
+                StringBuilder badTextStringBuilder = new();
+                retTextStringBuilder.Append(retText);
+                badTextStringBuilder.Append(badText);
                 if (hantei)
                 {
-                    retText += targetSubString;
+                    retTextStringBuilder.Append(targetSubString);
                 }
                 else
                 {
-                    badText += targetSubString;
+                    badTextStringBuilder.Append(targetSubString);
                     retHantei = false;
                 }
+                retText = retTextStringBuilder.ToString();
+                badText = badTextStringBuilder.ToString();
             }
             return retHantei;
         }
@@ -2050,6 +2043,7 @@ namespace Helper.Common
         {
             return IsUntilJISKanjiLevel2(target, true, ref retText, ref badText);
         }
+
         /// <summary>
         /// 文字コードバイト配列がJIS X 0208 漢字第二水準までであるかを判定します
         /// </summary>
@@ -2194,13 +2188,10 @@ namespace Helper.Common
                             return true;
                         }
                     }
-                    else if (row == 84) // 84区の場合
+                    else if (row == 84 && 1 <= cell && cell <= 6) // 84区の場合
                     {
-                        if (1 <= cell && cell <= 6)
-                        {
-                            // 1点～6点の場合
-                            return true;
-                        }
+                        // 1点～6点の場合
+                        return true;
                     }
                     break;
             }
@@ -2271,7 +2262,7 @@ namespace Helper.Common
         }
         public static string MinuteToShowHour(int minute)
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (minute >= 60)
             {
@@ -2557,27 +2548,30 @@ namespace Helper.Common
             int i;
             int WLen;
 
-            string Result = Copy(S, Index, Count);
+            string result = Copy(S, Index, Count);
 
-            WLen = Result.Length;
+            WLen = result.Length;
             //長さが長くなった分
             if (WLen < Count)
             {
+                StringBuilder resultStringBuilder = new();
+                resultStringBuilder.Append(result);
                 for (i = WLen; i < Count; i++)
                 {
-                    Result += "0";
+                    resultStringBuilder.Append("0");
                 }
+                result = resultStringBuilder.ToString();
             }
 
             //スペースの分
-            for (i = 0; i < Result.Length; i++)
+            for (i = 0; i < result.Length; i++)
             {
-                if (Result[i].ToString() == " ")
+                if (result[i].ToString() == " ")
                 {
-                    Result = Result.Substring(0, i) + "0" + Result.Substring(i + 1);
+                    result = result.Substring(0, i) + "0" + result.Substring(i + 1);
                 }
             }
-            return Result;
+            return result;
         }
 
         //------------------------------------------------------------------------------
@@ -2588,24 +2582,24 @@ namespace Helper.Common
         //------------------------------------------------------------------------------
         public static string CiCopyStrWidth(string Src, int Index, int Count, int FmtFg = 0)
         {
-            string Result = "";
+            string result = string.Empty;
             string sSrcStr = Src;
 
             if (Index == 1 && MecsStringWidth(sSrcStr) < Count)
             {
                 //長さが指定文字数以下ならそのまま返す
-                Result = sSrcStr;
+                result = sSrcStr;
                 if (FmtFg == 1)
                 {
-                    Result = Result + StringOfChar(" ", Count - MecsStringWidth(Result));
+                    result = result + StringOfChar(" ", Count - MecsStringWidth(result));
                 }
             }
             else
             {
                 if (Index > MecsStringWidth(sSrcStr))
                 {
-                    Result = "";
-                    return Result;
+                    result = string.Empty;
+                    return result;
                 }
                 //開始位置を調べる
                 int iIndex = 0;
@@ -2650,6 +2644,8 @@ namespace Helper.Common
                 int iWord = 0;
 
                 //開始位置から文字列終了までループ
+                StringBuilder resultStringBuilder = new();
+                resultStringBuilder.Append(result);
                 for (int i = iIndex; i <= sSrcStr.Length; i++)
                 {
                     //１文字ずつ取得
@@ -2663,16 +2659,17 @@ namespace Helper.Common
                     }
 
                     //切り取った文字列
-                    Result = Result + sBuf;
+                    resultStringBuilder.Append(sBuf);
                 }
+                result = resultStringBuilder.ToString();
             }
-            return Result;
+            return result;
         }
 
         public static int MecsStringWidth(string text)
         {
             int width = 0;
-            if (string.IsNullOrEmpty(text) == false)
+            if (!string.IsNullOrEmpty(text))
             {
                 foreach (char c in text)
                 {
@@ -2691,12 +2688,12 @@ namespace Helper.Common
 
         public static string StringOfChar(string character, int count)
         {
-            string result = String.Empty;
+            StringBuilder resultStringBuilder = new();
             for (int i = 0; i < count; i++)
             {
-                result = result + character;
+                resultStringBuilder.Append(character);
             }
-            return result;
+            return resultStringBuilder.ToString();
         }
 
         public static bool MecsIsFullWidth(char cValue)
@@ -2771,7 +2768,7 @@ namespace Helper.Common
         /// <returns></returns>
         public static string GetEraRekiFromDate(int Ymd, int fmtReki = 0)
         {
-            string Result = "";
+            string Result = string.Empty;
 
             if (Ymd < 18680908 || Ymd == 99999999)
             {
@@ -2869,13 +2866,14 @@ namespace Helper.Common
         //----------------------------------------------------------------------------//
         public static string Chk_JISKj(string sIn, out string sOut)
         {
-            string strErr = "";
-            sOut = "";
+            StringBuilder strErrStringBuilder = new();
+            StringBuilder sOutStringBuilder = new();
+            sOut = string.Empty;
 
             // タブ、改行コードは除去しておく
             // Trim Tab & New-line character
-            sIn = sIn.Replace("\t", "");
-            sIn = sIn.Replace(Environment.NewLine, "");
+            sIn = sIn.Replace("\t", string.Empty);
+            sIn = sIn.Replace(Environment.NewLine, string.Empty);
 
             TextElementEnumerator textEnum = StringInfo.GetTextElementEnumerator(sIn);
 
@@ -2884,14 +2882,13 @@ namespace Helper.Common
                 // サロゲートペア文字の存在チェック
                 if (textEnum.GetTextElement().Length > 1)
                 {
-                    strErr = strErr + CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
-
+                    strErrStringBuilder.Append(Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length));
                 }
 
                 else
                 {
                     //チェック対象文字をunicode　→ Ansiに変換
-                    string strChkString = CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
+                    string strChkString = Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
                     byte[] asciiBytes = UTF16CharToBytes(strChkString[0]);
 
                     if (asciiBytes.Length == 1)
@@ -2906,30 +2903,24 @@ namespace Helper.Common
                                 // 0x3F = 63 = ? character
                                 // Check string is not "?"
                                 // Then can not convert to ISO 2022 JP = 第3水準，第4水準漢字等
-                                strErr += strChkString;
+                                strErrStringBuilder.Append(strChkString);
 
                             }
                             else
                             {
-                                sOut += strChkString;
+                                sOutStringBuilder.Append(strChkString);
                             }
                         }
-                        {
-                            //制御文字
-                            //見えないので、追加は必要ない
-                        }
-
                     }
                     else if (asciiBytes.Length == 8)
                     {
                         //Convert from asciiBytes to 区点 in JIS
 
                         int ku = asciiBytes[3] - 32;
-                        int ten = asciiBytes[4] - 32;
                         //13区（環境依存文字）はエラーとする
                         if (ku == 13)
                         {
-                            strErr += strChkString;
+                            strErrStringBuilder.Append(strChkString);
                         }
                         else
                         {
@@ -2940,23 +2931,19 @@ namespace Helper.Common
                                 (16 <= ku && ku <= 84))
                             {
                                 //全角ひらがな、かたかな、第1水準、第2水準漢字
-                                sOut += strChkString;
+                                sOutStringBuilder.Append(strChkString);
                             }
                             else
                             {
-                                strErr += strChkString;
+                                strErrStringBuilder.Append(strChkString);
                             }
                         }
-                    }
-                    else
-                    {
-                        //外字??
                     }
                 }
 
             }
-
-            return strErr;
+            sOut = sOutStringBuilder.ToString();
+            return strErrStringBuilder.ToString();
         }
 
         public static byte[] UTF16CharToBytes(char utf16Char)
@@ -2989,42 +2976,14 @@ namespace Helper.Common
         }
 
         /// <summary>
-        /// 半角カタカナ以外を除去する
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public static string GetKatakana(string target)
-        {
-            string ret = "";
-
-            for (int i = 0; i < target.Length; i++)
-            {
-                if ((IsHalfKatakanaPunctuation(target.Substring(i, 1))) ||
-                    (IsFullKatakana(target.Substring(i, 1))) ||
-                   (target.Substring(i, 1) == " ") ||
-                   (target.Substring(i, 1) == "　") ||
-                   (target.Substring(i, 1) == "゛"))
-                {
-                    if (target.Substring(i, 1) != "･" &&
-                       target.Substring(i, 1) != "・")
-                    {
-                        ret += target.Substring(i, 1);
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-        /// <summary>
         /// ひらがなの濁点を結合
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
         public static string ReplaceHiraDakuten(string s)
         {
-            string ret = "";
-            string? val = "";
+            string ret = string.Empty;
+            string? val = string.Empty;
 
             Dictionary<string, string> replaceChar
                    = new Dictionary<string, string>()
@@ -3040,20 +2999,23 @@ namespace Helper.Common
             int i = 0;
             if (s != null)
             {
+                StringBuilder retStringBuilder = new();
+                retStringBuilder.Append(ret);
                 while (i < s.Length)
                 {
                     if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
-                        ret += val ?? string.Empty;
+                        retStringBuilder.Append(val ?? string.Empty);
                         i = i + 2;
                         continue;
                     }
                     else
                     {
-                        ret += s.Substring(i, 1);
+                        retStringBuilder.Append(s.Substring(i, 1));
                     }
                     i++;
                 }
+                ret = retStringBuilder.ToString();
             }
 
             return ret;
@@ -3062,7 +3024,7 @@ namespace Helper.Common
         {
             string ret = value;
 
-            List<(string oldstr, string newstr)> replaceStrings = new List<(string, string)>()
+            List<(string oldstr, string newstr)> replaceStrings = new()
             {
                 {("¹", "１")}, {("²", "２")}, {("³", "３")}, {("⁴", "４")}, {("⁵", "５")}, {("⁶", "６")}, {("⁷", "７")}, {("⁸", "８")}, {("⁹", "９")}, {("⁰", "０")},
                 {("₁", "１")}, {("₂", "２")}, {("₃", "３")}, {("₄", "４")}, {("₅", "５")}, {("₆", "６")}, {("₇", "７")}, {("₈", "８")}, {("₉", "９")}, {("₀", "０")},
@@ -3087,7 +3049,7 @@ namespace Helper.Common
         /// <returns>0, nullの場合は空文字、>0の場合は数値を文字列に変換した値を返す</returns>
         public static string ToStringIgnoreZero(int val, string format = "")
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (val > 0)
             {
@@ -3096,24 +3058,25 @@ namespace Helper.Common
 
             return ret;
         }
+
         public static string ToStringIgnoreZero(int? val)
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (val == null)
             {
-                ret = "";
+                ret = string.Empty;
             }
             else if (val > 0)
             {
-                ret = val?.ToString() ?? "";
+                ret = val?.ToString() ?? string.Empty;
             }
 
             return ret;
         }
         public static string ToStringIgnoreZero(long val, string format = "")
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (val > 0)
             {
@@ -3122,9 +3085,10 @@ namespace Helper.Common
 
             return ret;
         }
+
         public static string ToStringIgnoreZero(double val, string format = "")
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (val != 0)
             {
@@ -3141,11 +3105,11 @@ namespace Helper.Common
         /// <returns>nullの場合は空文字、>=0の場合は数値を文字列に変換した値を返す</returns>
         public static string ToStringIgnoreNull(int? val)
         {
-            string ret = "";
+            string ret = string.Empty;
 
             if (val != null)
             {
-                ret = val?.ToString() ?? "";
+                ret = val?.ToString() ?? string.Empty;
             }
 
             return ret;
@@ -3180,6 +3144,11 @@ namespace Helper.Common
         public static string ToNarrow(string s)
         {
             return HenkanJ.Instance.ToHalfsize(s);
+        }
+
+        public static string ToNarrowWithOutToLower(string s)
+        {
+            return HenkanJ.Instance.ToHalfsizeWithOutToLower(s);
         }
 
         /// <summary>
@@ -3345,19 +3314,19 @@ namespace Helper.Common
         // yyyymmをyyyy/mmに変換
         public static String SMonthToShowSMonth(int tgtYm)
         {
-            string rs = "";
+            string rs = string.Empty;
             string sTgtYm = tgtYm.ToString();
-            sTgtYm = sTgtYm.Replace("/", "");
-            if (sTgtYm.Length != 6) return "";
+            sTgtYm = sTgtYm.Replace("/", string.Empty);
+            if (sTgtYm.Length != 6) return string.Empty;
             int iBuf = 0;
             bool isInt = int.TryParse(sTgtYm, out iBuf);
             if (isInt)
             {
                 if (iBuf.ToString().Length != 6)
-                    return "";
+                    return string.Empty;
                 string sBuf = SDateToShowSDate(iBuf * 100 + 1);
-                if (sBuf == "")
-                    return "";
+                if (sBuf == string.Empty)
+                    return string.Empty;
                 var dtBuf = DateTime.Parse(sBuf);
                 return dtBuf.ToString("yyyy/MM");
             }
@@ -3384,7 +3353,7 @@ namespace Helper.Common
                 return result;
             }
 
-            if (wYm.IndexOf('.') > 0 || wYm.IndexOf('/') > 0)
+            if (wYm.Contains('.') || wYm.Contains('/'))
             {
                 delimiterCount = 1;
             }
@@ -3396,7 +3365,7 @@ namespace Helper.Common
                 // Replace [.] character with [/]
                 wYm = wYm.Replace(".", "/");
 
-                if (wYm.IndexOf('/') > 0)
+                if (wYm.Contains('/'))
                 {
                     // Character [/] exists
                     // Get year part
@@ -3404,7 +3373,7 @@ namespace Helper.Common
                     // Year is equal to 0, then error
                     if (sTemp == "0" || sTemp == "00")
                     {
-                        wYm = "";
+                        wYm = string.Empty;
                     }
                     else
                     {
@@ -3428,7 +3397,7 @@ namespace Helper.Common
                 // Length != 6 is error
                 if (wYm.Length != 6)
                 {
-                    wYm = "";
+                    wYm = string.Empty;
                 }
             }
 
@@ -3464,7 +3433,7 @@ namespace Helper.Common
         /// </returns>
         public static string GetYobi(int baseDate)
         {
-            string week = "";
+            string week = string.Empty;
             switch (GetWeek(baseDate))
             {
                 case 0:
@@ -3516,45 +3485,6 @@ namespace Helper.Common
         }
 
         /// <summary>
-        /// 分割調剤の分割数量取得
-        /// </summary>
-        public static string GetBunkatuStr(string str, int kouiCd)
-        {
-            string ret = "";
-            string sTgt = str;
-            string sTani;
-
-            if (kouiCd == 21)
-            {
-                //内服
-                sTani = "日分";
-            }
-            else
-            {
-                sTani = "回分";
-            }
-
-            string[] bunkatuKaisus = sTgt.Split('+');
-
-            foreach (string bunkatuKaisu in bunkatuKaisus)
-            {
-                if (ret != "")
-                {
-                    ret += "、";
-                }
-
-                ret = bunkatuKaisu + sTani;
-            }
-
-            if (ret != "")
-            {
-                ret = $"({ret})";
-            }
-
-            return ret;
-        }
-
-        /// <summary>
         /// JANコード（標準13桁）のチェックデジット計算
         /// </summary>
         /// <param name="code"></param>
@@ -3566,7 +3496,7 @@ namespace Helper.Common
 
             string ret = "0";
 
-            if ((code.Length != 12) || (CIUtil.StrToIntDef(code, -1) == -1)) return "";
+            if ((code.Length != 12) || (StrToIntDef(code, -1) == -1)) return string.Empty;
 
             iEven = 0;
             iOdd = 0;
@@ -3684,26 +3614,26 @@ namespace Helper.Common
         //------------------------------------------------------------------------------
         public static string CiCopyStrWidthDst(string Src, int Index, int Count, int FmtFg, ref string Dst)
         {
-            string Result = "";
+            string result = string.Empty;
             string sSrcStr = Src;
             Dst = sSrcStr;
 
             if (Index == 1 && MecsStringWidth(sSrcStr) < Count)
             {
                 //長さが指定文字数以下ならそのまま返す
-                Result = sSrcStr;
+                result = sSrcStr;
                 if (FmtFg == 1)
                 {
-                    Result = Result + StringOfChar(" ", Count - MecsStringWidth(Result));
+                    result = result + StringOfChar(" ", Count - MecsStringWidth(result));
                 }
-                Dst = "";
+                Dst = string.Empty;
             }
             else
             {
                 if (Index > MecsStringWidth(sSrcStr))
                 {
-                    Result = "";
-                    return Result;
+                    result = string.Empty;
+                    return result;
                 }
                 //開始位置を調べる
                 int iIndex = 0;
@@ -3747,6 +3677,8 @@ namespace Helper.Common
 
                 int iWord = 0;
                 int iBuf = 0;
+                StringBuilder resultStringBuilder = new();
+                resultStringBuilder.Append(result);
                 //開始位置から文字列終了までループ
                 for (int i = iIndex; i <= sSrcStr.Length; i++)
                 {
@@ -3757,21 +3689,22 @@ namespace Helper.Common
                     if (iWord > Count)
                     {
                         //指定エレメント数を超えた場合
-                        iBuf = Result.Length + iIndex;
+                        iBuf = result.Length + iIndex;
                         //切り取った残りの文字列
                         Dst = MecsCopy(sSrcStr, iBuf, sSrcStr.Length - iBuf + 1);
                         break;
                     }
 
                     //切り取った文字列
-                    Result = Result + sBuf;
+                    resultStringBuilder.Append(sBuf);
 
                     //切り取った残りの文字列
-                    iBuf = MecsLength(Result) + 1;
+                    iBuf = MecsLength(result) + 1;
                     Dst = MecsCopy(sSrcStr, iBuf, MecsLength(sSrcStr) - iBuf + 1);
                 }
+                result = resultStringBuilder.ToString();
             }
-            return Result;
+            return result;
         }
 
         public static int MecsLength(string value)
@@ -3781,12 +3714,79 @@ namespace Helper.Common
 
         public static string GetDisplayGender(int sex)
         {
-            return sex == 1 ? "男" : sex == 2 ? "女" : "未設定";
+            switch (sex)
+            {
+                case 1:
+                    return "男";
+                case 2:
+                    return "女";
+                default:
+                    return "未設定";
+            }
         }
 
-        public static String GetComputerName()
+        public static string GetComputerName()
         {
             return Environment.MachineName;
+        }
+
+        /// <summary>
+        /// 半角カタカナ以外を除去する
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static string GetKatakana(string target)
+        {
+            StringBuilder ret = new();
+
+            for (int i = 0; i < target.Length; i++)
+            {
+                if (((IsHalfKatakanaPunctuation(target.Substring(i, 1))) ||
+                    (IsFullKatakana(target.Substring(i, 1))) ||
+                   (target.Substring(i, 1) == " ") ||
+                   (target.Substring(i, 1) == "　") ||
+                   (target.Substring(i, 1) == "゛")) && target.Substring(i, 1) != "･" &&
+                       target.Substring(i, 1) != "・")
+                {
+                    ret.Append(target.Substring(i, 1));
+                }
+            }
+
+            return ret.ToString();
+        }
+
+        /// <summary>
+        /// 分割調剤の分割数量取得
+        /// </summary>
+        public static string GetBunkatuStr(string str, int kouiCd)
+        {
+            string ret = string.Empty;
+            string sTgt = str;
+            string sTani;
+
+            if (kouiCd == 21)
+            {
+                //内服
+                sTani = "日分";
+            }
+            else
+            {
+                sTani = "回分";
+            }
+
+            string[] bunkatuKaisus = sTgt.Split('+');
+
+            foreach (string bunkatuKaisu in bunkatuKaisus)
+            {
+                ret = bunkatuKaisu + sTani;
+            }
+
+            if (ret != string.Empty)
+            {
+                ret = $"({ret})";
+            }
+
+            return ret;
         }
     }
 }

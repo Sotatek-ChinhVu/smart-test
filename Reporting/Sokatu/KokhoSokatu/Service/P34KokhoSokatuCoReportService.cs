@@ -64,31 +64,38 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
 
     public CommonReportingRequestModel GetP34KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if (getData)
+        try
         {
-            for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
-            {
-                curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
-                if (curReceInfs.Count() == 0) continue;
-                hasNextPage = true;
-                currentPage = 1;
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
 
-                while (getData && hasNextPage)
+            if (getData)
+            {
+                for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+                    if (curReceInfs.Count() == 0) continue;
+                    hasNextPage = true;
+                    currentPage = 1;
+
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     private bool UpdateDrawForm()

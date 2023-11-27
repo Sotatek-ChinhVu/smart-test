@@ -61,26 +61,33 @@ namespace Reporting.Sokatu.WelfareDisk.Service
 
         public CommonExcelReportingModel GetDataP43Amakusa41Disk(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            this.hpId = hpId;
-            this.seikyuType = seikyuType;
-            this.seikyuYm = seikyuYm;
-            GetData();
-            if (GetData())
+            try
             {
-                retDatas = new List<string>
+                this.hpId = hpId;
+                this.seikyuType = seikyuType;
+                this.seikyuYm = seikyuYm;
+                GetData();
+                if (GetData())
+                {
+                    retDatas = new List<string>
                 {
                     "\"" + string.Join("\",\"", csvTitles) + "\""
                 };
 
-                foreach (var receInf in receInfs)
-                {
-                    retDatas.Add(RecordData(receInf));
+                    foreach (var receInf in receInfs)
+                    {
+                        retDatas.Add(RecordData(receInf));
+                    }
                 }
+
+                string sheetName = string.Format("天草市子ども医療費請求書_{0}", seikyuYm);
+
+                return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
             }
-
-            string sheetName = string.Format("天草市子ども医療費請求書_{0}", seikyuYm);
-
-            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+            finally
+            {
+                _welfareFinder.ReleaseResource();
+            }
         }
 
         #region SubMethod

@@ -9,7 +9,7 @@ using Helper.Extension;
 
 namespace Domain.Converter
 {
-    public class PatientInfoConverter
+    public static class PatientInfoConverter
     {
         public static List<HokenConfirmationModel> GetHokenConfirmationModels(HokenInfModel HokenInf, ResultOfQualificationConfirmation resultOfQualification, int birthDay, int sinDate)
         {
@@ -26,7 +26,7 @@ namespace Domain.Converter
                 new HokenConfirmationModel(HokenConfOnlQuaConst.END_DATE, HokenInf.EndDate.AsString(), resultOfQualification.InsuredCardExpirationDate, sinDate: sinDate),
                 new HokenConfirmationModel(HokenConfOnlQuaConst.KOGAKU_KBN
                                         , HokenInf.KogakuKbn.AsString()
-                                        , resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag
+                                        , resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag??string.Empty
                                         , age, sinDate: sinDate, onlineKogakuHelper: new OnlineKogakuHelper(resultOfQualification, age)),
                  new HokenConfirmationModel(HokenConfOnlQuaConst.CREDENTIAL
                                         , (HokenInf.HokenNo == 68 && HokenInf.HokenEdaNo == 0) ? "該当" : string.Empty

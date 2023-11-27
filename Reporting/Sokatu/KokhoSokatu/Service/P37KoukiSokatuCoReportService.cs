@@ -65,40 +65,47 @@ public class P37KoukiSokatuCoReportService : IP37KoukiSokatuCoReportService
 
     public CommonReportingRequestModel GetP37KoukiSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        currentPage = 1;
-        var getData = GetData();
-        hasNextPage = true;
-
-        if (getData)
+        try
         {
-            for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            currentPage = 1;
+            var getData = GetData();
+            hasNextPage = true;
+
+            if (getData)
             {
-                if (prefCnt == 0)
+                for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
                 {
-                    prefInOut = "（県内）";
-                }
-                else
-                {
-                    prefInOut = "（県外）";
-                }
+                    if (prefCnt == 0)
+                    {
+                        prefInOut = "（県内）";
+                    }
+                    else
+                    {
+                        prefInOut = "（県外）";
+                    }
 
-                curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
-                if (curReceInfs.Count() == 0) continue;
+                    curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+                    if (curReceInfs.Count() == 0) continue;
 
-                while (getData && hasNextPage)
-                {
-                    UpdateDrawForm();
-                    currentPage++;
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
     #region Private function
     private bool UpdateDrawForm()

@@ -47,11 +47,11 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
         {
             drugUsageHistoryList = drugUsageHistoryList.Where(item => item.SinDate >= startDate && item.SinDate <= endDate).ToList();
         }
-        var kouiKbnMstList = _drugInforRepository.GetKouiKbnMstList(hpId).Where(item => kouiKbnIdList.Contains(item.KouiKbnId)).ToList();
+        var allKouiKbnMstList = _drugInforRepository.GetKouiKbnMstList(hpId);
         if (grpId > 0)
         {
             var sinrekiFilter = _drugInforRepository.GetSinrekiFilterMst(hpId, grpId);
-            drugUsageHistoryList = FilterData(drugUsageHistoryList, sinrekiFilter.SinrekiFilterMstKouiList, kouiKbnMstList);
+            drugUsageHistoryList = FilterData(drugUsageHistoryList, sinrekiFilter.SinrekiFilterMstKouiList, allKouiKbnMstList);
             drugUsageHistoryList = FilterData(drugUsageHistoryList, sinrekiFilter.SinrekiFilterMstDetailList);
         }
 
@@ -80,10 +80,11 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                                      actionGraphList));
         }
 
-        var result = GroupItemByOdrKouiKbn(kouiKbnMstList.Where(item => item.OyaKouiKbnId > 0).ToList(), ref drugUsageHistory);
+        var kouiKbnGroupList = allKouiKbnMstList.Where(item => kouiKbnIdList.Contains(item.KouiKbnId)).ToList();
+        var result = GroupItemByOdrKouiKbn(kouiKbnGroupList.Where(item => item.OyaKouiKbnId > 0).ToList(), ref drugUsageHistory);
         if (drugUsageHistory.Any())
         {
-            result.AddRange(GroupItemByOdrKouiKbn(kouiKbnMstList.Where(item => item.OyaKouiKbnId == 0).ToList(), ref drugUsageHistory));
+            result.AddRange(GroupItemByOdrKouiKbn(kouiKbnGroupList.Where(item => item.OyaKouiKbnId == 0).ToList(), ref drugUsageHistory));
         }
 
         // SortData
@@ -157,13 +158,35 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
         List<ActionGraph> actionGraphList = new();
         List<DrugUsageHistoryModel> drugUsageList;
 
+        if (drugUsageHistory.OdrKouiKbn == 21)
+        {
+            drugUsageList = listDrugUsageHistory.Where(item => item.SinDate < fromDate
+                                                               && item.EndDate >= fromDate
+                                                               && item.OdrKouiKbn == drugUsageHistory.OdrKouiKbn
+                                                               && item.ItemCd == drugUsageHistory.ItemCd
+                                                               && item.Quantity.AsString() == drugUsageHistory.Quantity.AsString())
+                                                .OrderByDescending(item => item.EndDate)
+                                                .ToList();
+
+            foreach (var drugUsage in drugUsageList)
+            {
+                actionGraphList.Add(new ActionGraph(
+                                        ActionType.Nai,
+                                        drugUsage.SinDate,
+                                        fromDate,
+                                        drugUsage.EndDate,
+                                        drugUsage.DaysCnt,
+                                        string.Format($"{CIUtil.SDateToShowSDate(drugUsage.SinDate)} ～ {CIUtil.SDateToShowSDate(drugUsage.EndDate)} ({drugUsage.DaysCnt}日間)")));
+            }
+        }
+
         drugUsageList = listDrugUsageHistory.Where(item => item.SinDate >= fromDate
-                                                           && item.SinDate <= toDate
-                                                           && item.OdrKouiKbn == drugUsageHistory.OdrKouiKbn
-                                                           && item.ItemCd == drugUsageHistory.ItemCd
-                                                           && item.Quantity.AsString() == drugUsageHistory.Quantity.AsString())
-                                            .OrderBy(item => item.SinDate)
-                                            .ToList();
+                                                               && item.SinDate <= toDate
+                                                               && item.OdrKouiKbn == drugUsageHistory.OdrKouiKbn
+                                                               && item.ItemCd == drugUsageHistory.ItemCd
+                                                               && item.Quantity.AsString() == drugUsageHistory.Quantity.AsString())
+                                                .OrderBy(item => item.SinDate)
+                                                .ToList();
 
         foreach (var drugUsage in drugUsageList)
         {
@@ -172,6 +195,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                 actionGraphList.Add(new ActionGraph(
                                         ActionType.Nai,
                                         drugUsage.SinDate,
+                                        fromDate,
                                         drugUsage.EndDate,
                                         drugUsage.DaysCnt,
                                         string.Format($"{CIUtil.SDateToShowSDate(drugUsage.SinDate)} ～ {CIUtil.SDateToShowSDate(drugUsage.EndDate)} ({drugUsage.DaysCnt}日間)")));
@@ -181,6 +205,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                 actionGraphList.Add(new ActionGraph(
                                         ActionType.Gai,
                                         drugUsage.SinDate,
+                                        fromDate,
                                         drugUsage.EndDate,
                                         drugUsage.DaysCnt,
                                         string.Format($"{CIUtil.SDateToShowSDate(drugUsage.SinDate)} ({drugUsage.DaysCnt}回)")));
@@ -190,6 +215,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                 actionGraphList.Add(new ActionGraph(
                                         ActionType.Ton,
                                         drugUsage.SinDate,
+                                        fromDate,
                                         drugUsage.EndDate,
                                         drugUsage.DaysCnt,
                                         string.Format($"{CIUtil.SDateToShowSDate(drugUsage.SinDate)} ({drugUsage.DaysCnt}回)")));
@@ -201,6 +227,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                     actionGraphList.Add(new ActionGraph(
                                             ActionType.Item,
                                             drugUsage.SinDate,
+                                            fromDate,
                                             drugUsage.EndDate,
                                             drugUsage.DaysCnt,
                                             CIUtil.SDateToShowSDate(drugUsage.SinDate)));
@@ -229,6 +256,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                 actionGraphList.Add(new ActionGraph(
                                         ActionType.TimeSeriesDrug,
                                         drugUsage.SinDate,
+                                        fromDate,
                                         drugUsage.EndDate,
                                         drugUsage.DaysCnt,
                                         string.Format($"{CIUtil.SDateToShowSDate(drugUsage.SinDate)} ～ {CIUtil.SDateToShowSDate(drugUsage.EndDate)} ({drugUsage.DaysCnt}日間)")));
@@ -240,6 +268,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                     actionGraphList.Add(new ActionGraph(
                                             ActionType.TimeSeriesMultiDay,
                                             drugUsage.SinDate,
+                                            fromDate,
                                             drugUsage.EndDate,
                                             drugUsage.DaysCnt,
                                             string.Format($"{CIUtil.SDateToShowSDate(drugUsage.SinDate)} ({drugUsage.DaysCnt}回)")));
@@ -249,6 +278,7 @@ public class GetContentDrugUsageHistoryInteractor : IGetContentDrugUsageHistoryI
                     actionGraphList.Add(new ActionGraph(
                                             ActionType.TimeSeries,
                                             drugUsage.SinDate,
+                                            fromDate,
                                             drugUsage.EndDate,
                                             drugUsage.DaysCnt,
                                             CIUtil.SDateToShowSDate(drugUsage.SinDate)));

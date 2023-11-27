@@ -15,11 +15,9 @@ public class UploadTemplateToCategoryInteractor : IUploadTemplateToCategoryInput
     private readonly IDocumentRepository _documentRepository;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IHpInfRepository _hpInfRepository;
-    private readonly AmazonS3Options _options;
 
-    public UploadTemplateToCategoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository)
+    public UploadTemplateToCategoryInteractor(IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository)
     {
-        _options = optionsAccessor.Value;
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _hpInfRepository = hpInfRepository;

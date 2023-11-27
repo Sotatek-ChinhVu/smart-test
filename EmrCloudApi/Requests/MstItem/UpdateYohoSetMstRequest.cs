@@ -2,15 +2,15 @@
 {
     public class UpdateYohoSetMstRequest
     {
-        public List<YohoSetMstRequest> YohoSetMsts { get; set; }
+        public List<YohoSetMstRequest> YohoSetMsts { get; set; } = new();
     }
     public class YohoSetMstRequest
     {
-        public string Itemname { get; set; }
+        public string Itemname { get; set; } = string.Empty;
         public int YohoKbn { get; set; }
         public int SetId { get; set; }
         public int UserId { get; set; }
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID

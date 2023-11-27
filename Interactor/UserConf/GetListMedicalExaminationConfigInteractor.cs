@@ -338,11 +338,11 @@ public class GetListMedicalExaminationConfigInteractor : IGetListMedicalExaminat
 
         List<int> listHeader1 = new();
         List<int> listHeader2 = new();
-        foreach (var item in header1Param.ToCharArray())
+        foreach (var item in header1Param)
         {
             listHeader1.Add(ConvertStringToIntHeaderConfiguration(item.ToString()));
         }
-        foreach (var item in header2Param.ToCharArray())
+        foreach (var item in header2Param)
         {
             listHeader2.Add(ConvertStringToIntHeaderConfiguration(item.ToString()));
         }
@@ -375,7 +375,7 @@ public class GetListMedicalExaminationConfigInteractor : IGetListMedicalExaminat
             colorCode.Add(item.GrpItemCd, item.Param);
         }
 
-        foreach (var item in isSelectedPropertieParam.ToCharArray())
+        foreach (var item in isSelectedPropertieParam)
         {
             isSelectedProperties.Add(ConvertStringToIntSummaryConfiguration(item.ToString()));
         }
@@ -611,7 +611,6 @@ public class GetListMedicalExaminationConfigInteractor : IGetListMedicalExaminat
         bool isCheckedSecondCharParam = (!string.IsNullOrEmpty(param) && param.Length >= 2) && param[1].AsInteger() == 1;
         bool isCheckedThirdCharParam = (!string.IsNullOrEmpty(param) && param.Length >= 3) && param[2].AsInteger() == 1;
         bool isCheckedFourthCharParam = (!string.IsNullOrEmpty(param) && param.Length >=4) && param[3].AsInteger() == 1;
-        //bool isCheckedFifthCharParam = !string.IsNullOrEmpty(param) && param[4].AsInteger() == 1;
         return new ConfigCheckboxSubItem(
                                             isCheckedFirstCharParam,
                                             isCheckedSecondCharParam,

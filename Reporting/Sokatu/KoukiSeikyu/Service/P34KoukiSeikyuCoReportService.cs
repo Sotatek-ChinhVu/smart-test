@@ -69,35 +69,42 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
 
     public CommonReportingRequestModel GetP34KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if (seikyuYm >= 202210)
+        try
         {
-            _formFileName = "p34KoukiSeikyu_2210.rse";
-        }
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
 
-        if(getData)
-        {
-            foreach (string currentNo in hokensyaNos)
+            if (seikyuYm >= 202210)
             {
-                currentPage = 1;
-                currentHokensyaNo = currentNo;
-                hasNextPage = true;
-                while (getData && hasNextPage)
+                _formFileName = "p34KoukiSeikyu_2210.rse";
+            }
+
+            if (getData)
+            {
+                foreach (string currentNo in hokensyaNos)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    currentPage = 1;
+                    currentHokensyaNo = currentNo;
+                    hasNextPage = true;
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }
-        
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
 
-        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+
+            return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function

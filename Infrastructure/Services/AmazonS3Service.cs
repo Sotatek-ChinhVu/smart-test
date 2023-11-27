@@ -45,6 +45,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     public void Dispose()
     {
         _s3Client.Dispose();
+        _tenantProvider.DisposeDataContext();
     }
 
     private string GetAccessUrl(string key)
@@ -150,7 +151,8 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
                 InputStream = memoryStream,
             };
             var response = await _s3Client.PutObjectAsync(request);
-            return response.HttpStatusCode == HttpStatusCode.OK ? getOnlyId ? request.Key : GetAccessUrl(request.Key) : string.Empty;
+            var checkOnlyId = getOnlyId ? request.Key : GetAccessUrl(request.Key);
+            return response.HttpStatusCode == HttpStatusCode.OK ? checkOnlyId ?? string.Empty : string.Empty;
         }
         catch (AmazonS3Exception)
         {

@@ -9,5 +9,7 @@ namespace EmrCloudApi.Requests.MedicalExamination
         public List<ChildKensaMstInputItem> ChildKensaMstItems { get; set; } = new();
 
         public List<TenMstInputItem> TenMstItems { get; set; } = new();
+
+        public List<TenMstInputItem> TenMstListGenDate { get; set; } = new();
     }
 }

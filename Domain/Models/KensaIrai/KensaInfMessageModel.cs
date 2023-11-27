@@ -2,10 +2,11 @@
 
 public class KensaInfMessageModel
 {
-    public KensaInfMessageModel(long ptId, long iraiCd, long ptNum, string ptName, List<KensaInfDetailMessageModel> kensaInfDetailList)
+    public KensaInfMessageModel(long ptId, long iraiCd, string iraiDate, long ptNum, string ptName, List<KensaInfDetailMessageModel> kensaInfDetailList)
     {
         PtId = ptId;
         IraiCd = iraiCd;
+        IraiDate = iraiDate;
         PtNum = ptNum;
         PtName = ptName;
         KensaInfDetailList = kensaInfDetailList;
@@ -13,6 +14,8 @@ public class KensaInfMessageModel
     public long PtId { get; private set; }
 
     public long IraiCd { get; private set; }
+
+    public string IraiDate { get; private set; }
 
     public long PtNum { get; private set; }
 

@@ -61,52 +61,59 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
         public CommonReportingRequestModel GetP14WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, int welfareType)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.seikyuType = seikyuType;
-
-            switch (welfareType)
+            try
             {
-                //障害者医療費助成事業請求書
-                case 0: kohiHoubetus = new List<string> { "80" }; break;
-                //小児医療費助成事業請求書
-                case 1: kohiHoubetus = new List<string> { "81" }; break;
-                //ひとり親家庭等医療費助成事業請求書
-                case 2: kohiHoubetus = new List<string> { "85" }; break;
-                //小児ぜん息患者医療費支給事業請求書
-                case 3: kohiHoubetus = new List<string> { "88" }; break;
-                //成人ぜん息患者医療費助成事業請求書
-                case 4: kohiHoubetus = new List<string> { "89" }; break;
-            }
+                this.hpId = hpId;
+                this.seikyuYm = seikyuYm;
+                this.seikyuType = seikyuType;
 
-            var getData = GetData();
-
-            string _formFileName = "";
-            switch (welfareType)
-            {
-                case 0: _formFileName = "p14WelfareSeikyu80.rse"; break;
-                case 1: _formFileName = "p14WelfareSeikyu81.rse"; break;
-                case 2: _formFileName = "p14WelfareSeikyu85.rse"; break;
-                case 3: _formFileName = "p14WelfareSeikyu88.rse"; break;
-                case 4: _formFileName = "p14WelfareSeikyu89.rse"; break;
-            }
-
-            currentPage = 1;
-            hasNextPage = true;
-
-            if (getData)
-            {
-                while (getData && hasNextPage)
+                switch (welfareType)
                 {
-                    if (_formFileName == "") continue;
-                    UpdateDrawForm();
-                    currentPage++;
+                    //障害者医療費助成事業請求書
+                    case 0: kohiHoubetus = new List<string> { "80" }; break;
+                    //小児医療費助成事業請求書
+                    case 1: kohiHoubetus = new List<string> { "81" }; break;
+                    //ひとり親家庭等医療費助成事業請求書
+                    case 2: kohiHoubetus = new List<string> { "85" }; break;
+                    //小児ぜん息患者医療費支給事業請求書
+                    case 3: kohiHoubetus = new List<string> { "88" }; break;
+                    //成人ぜん息患者医療費助成事業請求書
+                    case 4: kohiHoubetus = new List<string> { "89" }; break;
                 }
-            }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+                var getData = GetData();
+
+                string _formFileName = "";
+                switch (welfareType)
+                {
+                    case 0: _formFileName = "p14WelfareSeikyu80.rse"; break;
+                    case 1: _formFileName = "p14WelfareSeikyu81.rse"; break;
+                    case 2: _formFileName = "p14WelfareSeikyu85.rse"; break;
+                    case 3: _formFileName = "p14WelfareSeikyu88.rse"; break;
+                    case 4: _formFileName = "p14WelfareSeikyu89.rse"; break;
+                }
+
+                currentPage = 1;
+                hasNextPage = true;
+
+                if (getData)
+                {
+                    while (getData && hasNextPage)
+                    {
+                        if (_formFileName == "") continue;
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
+                }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            }
+            finally
+            {
+                _welfareFinder.ReleaseResource();
+            }
         }
 
         #region Private function

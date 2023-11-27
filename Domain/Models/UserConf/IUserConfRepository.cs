@@ -8,6 +8,8 @@ public interface IUserConfRepository : IRepositoryBase
 
     List<UserConfModel> GetList(int hpId, int userId, List<int> grpCodes);
 
+    List<UserConfModel> GetList(int hpId, int userId);
+
     Dictionary<string, int> GetDic(int hpId, int userId);
 
     List<UserConfModel> GetListUserConf(int hpId, int userId, int groupCd);
@@ -27,7 +29,6 @@ public interface IUserConfRepository : IRepositoryBase
     string GetSettingParam(int hpId, int userId, int groupCd, int grpItemCd = 0, string defaultValue = "");
 
     bool UpsertUserConfs(int hpId, int userId, List<UserConfModel> userConfs);
-    List<UserConfModel> GetListSettingParam(int hpId, int userId, List<Tuple<int, int>> groupCode, string defaultValue = "");
 
-    List<UserConfModel> GetList(int hpId, int userId);
+    List<UserConfModel> GetListSettingParam(int hpId, int userId, List<Tuple<int, int>> groupCode, string defaultValue = "");
 }

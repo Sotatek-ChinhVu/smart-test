@@ -9,13 +9,11 @@ namespace Interactor.ChartApproval
     {
         private readonly IApprovalInfRepository _approvalInfRepository;
         private readonly ILoggingHandler _loggingHandler;
-        private readonly ITenantProvider _tenantProvider;
 
         public SaveApprovalInfListInteractor(ITenantProvider tenantProvider, IApprovalInfRepository approvalInfRepository)
         {
             _approvalInfRepository = approvalInfRepository;
-            _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public SaveApprovalInfListOutputData Handle(SaveApprovalInfListInputData input)

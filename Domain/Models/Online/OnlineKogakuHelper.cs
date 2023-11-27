@@ -6,8 +6,8 @@ namespace Domain.Models.Online
 {
     public class OnlineKogakuHelper
     {
-        private ResultOfQualificationConfirmation _resultOfQualification;
-        private int Age;
+        private readonly ResultOfQualificationConfirmation _resultOfQualification;
+        private readonly int Age;
         public OnlineKogakuHelper(ResultOfQualificationConfirmation resultOfQualification, int age)
         {
             _resultOfQualification = resultOfQualification;
@@ -21,7 +21,7 @@ namespace Domain.Models.Online
 
         public string GetXmlDisplay(string currentKogakuKbnDisplay, bool isMyNumberProcess = false)
         {
-            string limitCertificateFlag = _resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag;
+            string limitCertificateFlag = _resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag ?? string.Empty;
             if (string.IsNullOrEmpty(limitCertificateFlag))
             {
                 string InsurerNumber = _resultOfQualification.InsurerNumber;
@@ -65,7 +65,7 @@ namespace Domain.Models.Online
                         }
                     }
                 }
-                string elderlyRecipientCertificateInfo = _resultOfQualification.ElderlyRecipientCertificateInfo?.ElderlyRecipientContributionRatio;
+                string elderlyRecipientCertificateInfo = _resultOfQualification.ElderlyRecipientCertificateInfo?.ElderlyRecipientContributionRatio ?? string.Empty;
                 if (!string.IsNullOrEmpty(elderlyRecipientCertificateInfo))
                 {
                     switch (elderlyRecipientCertificateInfo)
@@ -100,7 +100,7 @@ namespace Domain.Models.Online
 
         public string GetXmlValue()
         {
-            string limitCertificateFlag = _resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag;
+            string limitCertificateFlag = _resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag ?? string.Empty;
             if (string.IsNullOrEmpty(limitCertificateFlag))
             {
                 string InsurerNumber = _resultOfQualification.InsurerNumber;
@@ -121,7 +121,7 @@ namespace Domain.Models.Online
                     }
                 }
 
-                string elderlyRecipientCertificateInfo = _resultOfQualification.ElderlyRecipientCertificateInfo?.ElderlyRecipientContributionRatio;
+                string elderlyRecipientCertificateInfo = _resultOfQualification.ElderlyRecipientCertificateInfo?.ElderlyRecipientContributionRatio ?? string.Empty;
                 if (!string.IsNullOrEmpty(elderlyRecipientCertificateInfo))
                 {
                     switch (elderlyRecipientCertificateInfo)
@@ -140,7 +140,7 @@ namespace Domain.Models.Online
 
         public bool IsReflect(int currentKogakuKbn, string currentKogakuKbnDisplay)
         {
-            string limitCertificateFlag = _resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag;
+            string limitCertificateFlag = _resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag ?? string.Empty;
             if (string.IsNullOrEmpty(limitCertificateFlag))
             {
                 string InsurerNumber = _resultOfQualification.InsurerNumber;
@@ -172,7 +172,7 @@ namespace Domain.Models.Online
                         }
                     }
                 }
-                string elderlyRecipientCertificateInfo = _resultOfQualification.ElderlyRecipientCertificateInfo?.ElderlyRecipientContributionRatio;
+                string elderlyRecipientCertificateInfo = _resultOfQualification.ElderlyRecipientCertificateInfo?.ElderlyRecipientContributionRatio ?? string.Empty;
                 if (!string.IsNullOrEmpty(elderlyRecipientCertificateInfo))
                 {
                     switch (elderlyRecipientCertificateInfo)

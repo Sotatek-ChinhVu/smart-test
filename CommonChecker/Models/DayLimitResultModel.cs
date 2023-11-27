@@ -4,10 +4,10 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 {
     public class DayLimitResultModel : OrderInforResultModel
     {
-        public string YjCd = string.Empty;
-        public double UsingDay;
-        public double LimitDay;
-        public string ItemName = string.Empty;
-        public string ItemCd = string.Empty;
+        public string YjCd { get; set; } = string.Empty;
+        public double UsingDay { get; set; }
+        public double LimitDay { get; set; }
+        public string ItemName { get; set; } = string.Empty;
+        public string ItemCd { get; set; } = string.Empty;
     }
 }

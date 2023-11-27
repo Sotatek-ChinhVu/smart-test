@@ -79,45 +79,53 @@ namespace Reporting.Yakutai.Service
 
         public CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo)
         {
-            _hpId = hpId;
-            _ptId = ptId;
-            _sinDate = sinDate;
-            _raiinNo = raiinNo;
-            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
-            coModels = GetData();
-            _currentPage = 1;
-
-            if (coModels != null && coModels.Any())
+            try
             {
-                foreach (CoYakutaiModel coYakutaiModel in coModels)
+                _hpId = hpId;
+                _ptId = ptId;
+                _sinDate = sinDate;
+                _raiinNo = raiinNo;
+                _printoutDateTime = CIUtil.GetJapanDateTimeNow();
+                coModels = GetData();
+                _currentPage = 1;
+
+                if (coModels != null && coModels.Any())
                 {
-                    try
+                    foreach (CoYakutaiModel coYakutaiModel in coModels)
                     {
-                        coModel = coYakutaiModel;
-
-                        _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
-                        AddFileNamePageMap("1", _formFileName);
-                        _hasNextPage = true;
-
-                        GetRowCount(_formFileName);
-                        MakeOdrDtlList();
-                        //印刷
-                        while (_hasNextPage)
+                        try
                         {
-                            UpdateDrawForm();
-                            _currentPage++;
+                            coModel = coYakutaiModel;
+
+                            _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
+                            AddFileNamePageMap("1", _formFileName);
+                            _hasNextPage = true;
+
+                            GetRowCount(_formFileName);
+                            MakeOdrDtlList();
+                            //印刷
+                            while (_hasNextPage)
+                            {
+                                UpdateDrawForm();
+                                _currentPage++;
+                            }
+                        }
+                        finally
+                        {
+                            _currentPage = 1;
                         }
                     }
-                    finally
-                    {
-                        _currentPage = 1;
-                    }
                 }
-            }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new YakutaiMapper(_singleFieldData, _fileNamePageMap, string.Empty, _singleFieldDataM, _listTextData, _extralData).GetData();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new YakutaiMapper(_singleFieldData, _fileNamePageMap, string.Empty, _singleFieldDataM, _listTextData, _extralData).GetData();
+            }
+            finally
+            {
+                _systemConfig.ReleaseResource();
+                _finder.ReleaseResource();
+            }
         }
         #endregion
 
@@ -568,38 +576,34 @@ namespace Reporting.Yakutai.Service
             List<CoSingleDoseMstModel> singleDoses = _finder.FindSingleDoseMst(_hpId);
 
             // 一包化指示項目を含むかどうか
-            List<CoOdrInfModel> appendOdrInfs = new List<CoOdrInfModel>();
-            List<CoOdrInfDetailModel> appendOdrDtls = new List<CoOdrInfDetailModel>();
+            List<CoOdrInfModel> appendOdrInfs = new();
+            List<CoOdrInfDetailModel> appendOdrDtls = new ();
 
             foreach (CoOdrInfModel odrInf in odrInfs.OrderBy(p => p.OdrKouiKbn).ThenBy(p => p.SortNo).ThenBy(p => p.RpNo).ThenBy(p => p.RpEdaNo))
             {
-                List<int> fukuyojis = new List<int>()
+                List<int> fukuyojis = new ()
                 {
                     0,0,0,0,0
                 };
 
-                bool ippo =
-                    string.IsNullOrEmpty(_systemConfig.YakutaiFukuyojiIppokaItemCd()) == false &&
+                bool ippo = !string.IsNullOrEmpty(_systemConfig.YakutaiFukuyojiIppokaItemCd()) &&
                     odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.ItemCd == _systemConfig.YakutaiFukuyojiIppokaItemCd());
 
                 // 用法の服用時設定を確認
-                if (ippo)
+                if (ippo && odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1))
                 {
-                    if (odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1))
+                    var yohoOdrDtl = odrInfDtls.First(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1);
+                    if (yohoOdrDtl.FukuyoRise + yohoOdrDtl.FukuyoMorning + yohoOdrDtl.FukuyoDaytime + yohoOdrDtl.FukuyoNight + yohoOdrDtl.FukuyoSleep <= 0)
                     {
-                        CoOdrInfDetailModel yohoOdrDtl = odrInfDtls.Find(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1);
-                        if (yohoOdrDtl.FukuyoRise + yohoOdrDtl.FukuyoMorning + yohoOdrDtl.FukuyoDaytime + yohoOdrDtl.FukuyoNight + yohoOdrDtl.FukuyoSleep <= 0)
-                        {
-                            ippo = false;
-                        }
-                        else
-                        {
-                            fukuyojis[0] = yohoOdrDtl.FukuyoRise;
-                            fukuyojis[1] = yohoOdrDtl.FukuyoMorning;
-                            fukuyojis[2] = yohoOdrDtl.FukuyoDaytime;
-                            fukuyojis[3] = yohoOdrDtl.FukuyoNight;
-                            fukuyojis[4] = yohoOdrDtl.FukuyoSleep;
-                        }
+                        ippo = false;
+                    }
+                    else
+                    {
+                        fukuyojis[0] = yohoOdrDtl.FukuyoRise;
+                        fukuyojis[1] = yohoOdrDtl.FukuyoMorning;
+                        fukuyojis[2] = yohoOdrDtl.FukuyoDaytime;
+                        fukuyojis[3] = yohoOdrDtl.FukuyoNight;
+                        fukuyojis[4] = yohoOdrDtl.FukuyoSleep;
                     }
                 }
 

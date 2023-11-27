@@ -24,10 +24,19 @@ public class MedicalRecordWebIdReportService : IMedicalRecordWebIdReportService
         {
             var finder = new CoMedicalRecordWebIdFinder(_tenantProvider);
 
-            // データ取得
-            var coModel = GetData(finder, hpId, sinDate, ptId);
+            try
+            {
+                // データ取得
+                var coModel = GetData(finder, hpId, sinDate, ptId);
 
-            return new CoMedicalRecordWebIdMapper(coModel).GetData();
+                return new CoMedicalRecordWebIdMapper(coModel).GetData();
+            }
+            finally
+            {
+                finder.ReleaseResource();
+                _tenantProvider.DisposeDataContext();
+                _systemConfig.ReleaseResource();
+            }
         }
     }
 

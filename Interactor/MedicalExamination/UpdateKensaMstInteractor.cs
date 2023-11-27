@@ -27,7 +27,7 @@ namespace Interactor.MedicalExamination
                     }
                 }
 
-                if(_mstItemRepository.UpdateKensaMst(inputData.HpId, inputData.UserId, inputData.KensaMsts, inputData.TenMsts, inputData.ChildKensaMsts))
+                if(_mstItemRepository.UpdateKensaMst(inputData.HpId, inputData.UserId, inputData.KensaMsts, inputData.TenMsts, inputData.ChildKensaMsts, inputData.TenMstListGenDate))
                 {
                     return new UpdateKensaMstOutputData(UpdateKensaMstStatus.Success);
                 }
