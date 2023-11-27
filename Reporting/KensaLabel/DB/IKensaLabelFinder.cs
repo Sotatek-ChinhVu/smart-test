@@ -1,8 +1,9 @@
-﻿using Reporting.KensaLabel.Model;
+﻿using Domain.Common;
+using Reporting.KensaLabel.Model;
 
 namespace Reporting.KensaLabel.DB
 {
-    public interface IKensaLabelFinder
+    public interface IKensaLabelFinder : IRepositoryBase
     {
         PtInfModel GetPtInfModel(int hpId, long ptId);
     }

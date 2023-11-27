@@ -1,8 +1,9 @@
-﻿using Reporting.Accounting.Model;
+﻿using Domain.Common;
+using Reporting.Accounting.Model;
 
 namespace Reporting.Accounting.DB;
 
-public interface ICoAccountingFinder
+public interface ICoAccountingFinder : IRepositoryBase
 {
     /// <summary>
     /// 医療機関情報取得

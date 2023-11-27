@@ -2,16 +2,9 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
-using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Statistics.Sta3071.DB;
 
@@ -24,6 +17,11 @@ public class CoSta3071Finder : RepositoryBase, ICoSta3071Finder
         _hpInfFinder = hpInfFinder;
     }
 
+    public void ReleaseResource()
+    {
+        _hpInfFinder.ReleaseResource();
+        DisposeDataContext();
+    }
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
     {
         return _hpInfFinder.GetHpInf(hpId, sinDate);

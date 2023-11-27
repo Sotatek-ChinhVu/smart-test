@@ -66,30 +66,37 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
         public CommonReportingRequestModel GetP26WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.seikyuType = seikyuType;
-            var getData = GetData();
-            hasNextPage = true;
-            this.currentPage = 1;
-            totalTensu = 0;
-            totalKohiFutan = 0;
-            ptIndex = 0;
-            rowIndex = 1;
-            rowCount = 0;
-
-            if (getData)
+            try
             {
-                while (getData && hasNextPage)
-                {
-                    UpdateDrawForm();
-                    currentPage++;
-                }
-            }
+                this.hpId = hpId;
+                this.seikyuYm = seikyuYm;
+                this.seikyuType = seikyuType;
+                var getData = GetData();
+                hasNextPage = true;
+                this.currentPage = 1;
+                totalTensu = 0;
+                totalKohiFutan = 0;
+                ptIndex = 0;
+                rowIndex = 1;
+                rowCount = 0;
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+                if (getData)
+                {
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
+                }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            }
+            finally
+            {
+                _welfareFinder.ReleaseResource();
+            }
         }
 
         #region Private function

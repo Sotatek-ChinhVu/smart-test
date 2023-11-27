@@ -19,6 +19,12 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
         _hpInfFinder = hpInfFinder;
     }
 
+    public void ReleaseResource()
+    {
+        _hpInfFinder.ReleaseResource();
+        DisposeDataContext();
+    }
+
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
     {
         return _hpInfFinder.GetHpInf(hpId, sinDate);

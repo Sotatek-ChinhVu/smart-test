@@ -64,46 +64,55 @@ public class AccountingCardListCoReportService : IAccountingCardListCoReportServ
 
     public CommonReportingRequestModel GetAccountingCardListData(int hpId, List<TargetItem> targets, bool includeOutDrug, string kaName, string tantoName, string uketukeSbt, string hoken)
     {
-        this.hpId = hpId;
-        this.targets = targets;
-        this.includeOutDrug = includeOutDrug;
-        this.kaName = kaName;
-        this.tantoName = tantoName;
-        this.uketukeSbt = uketukeSbt;
-        this.hoken = hoken;
-        var targetSinYms = this.targets.GroupBy(p => p.SinYm).Select(p => p.Key).OrderBy(p => p).ToList();
-
-        printPage = 1;
-        coModels = GetData();
-        if (coModels.Any())
+        try
         {
-            GetRowCount();
-            foreach (int sinYmItem in targetSinYms)
+            this.hpId = hpId;
+            this.targets = targets;
+            this.includeOutDrug = includeOutDrug;
+            this.kaName = kaName;
+            this.tantoName = tantoName;
+            this.uketukeSbt = uketukeSbt;
+            this.hoken = hoken;
+            var targetSinYms = this.targets.GroupBy(p => p.SinYm).Select(p => p.Key).OrderBy(p => p).ToList();
+
+            printPage = 1;
+            coModels = GetData();
+            if (coModels.Any())
             {
-                //グリッドのパラメータ取得
-                printoutDateTime = CIUtil.GetJapanDateTimeNow();
-
-                // 診療明細データを作成する
-                MakePrintDataList(sinYmItem);
-
-                // 診療年月をメンバ変数へ渡しておく
-                sinYm = sinYmItem;
-
-                currentPage = 1;
-                hasNextPage = true;
-
-                while (hasNextPage)
+                GetRowCount();
+                foreach (int sinYmItem in targetSinYms)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
-                    printPage++;
+                    //グリッドのパラメータ取得
+                    printoutDateTime = CIUtil.GetJapanDateTimeNow();
+
+                    // 診療明細データを作成する
+                    MakePrintDataList(sinYmItem);
+
+                    // 診療年月をメンバ変数へ渡しておく
+                    sinYm = sinYmItem;
+
+                    currentPage = 1;
+                    hasNextPage = true;
+
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                        printPage++;
+                    }
                 }
             }
-        }
 
-        _extralData.Add("totalPage", (printPage - 1).ToString());
-        _extralData.Add("dataRowCount", dataRowCount.ToString());
-        return new CoAccountingCardListMapper(_setFieldData, _listTextData, _extralData).GetData();
+            _extralData.Add("totalPage", (printPage - 1).ToString());
+            _extralData.Add("dataRowCount", dataRowCount.ToString());
+            return new CoAccountingCardListMapper(_setFieldData, _listTextData, _extralData).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
+            _systemConfigProvider.ReleaseResource();
+        }
     }
 
     private void MakePrintDataList(int sinYm)

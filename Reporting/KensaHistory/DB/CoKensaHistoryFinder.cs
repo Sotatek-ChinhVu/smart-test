@@ -16,6 +16,11 @@ namespace Reporting.KensaHistory.DB
         {
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public HpInfModel GetHpInf(int hpId, int sinDate)
         {
             var hpInf = NoTrackingDataContext.HpInfs.Where(item => item.HpId == hpId && item.StartDate < sinDate).OrderBy(x => x.StartDate).First();

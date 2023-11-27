@@ -1,8 +1,9 @@
-﻿using Reporting.ReceiptList.Model;
+﻿using Domain.Common;
+using Reporting.ReceiptList.Model;
 
 namespace Reporting.ReceiptList.DB;
 
-public interface ICoReceiptListFinder
+public interface ICoReceiptListFinder : IRepositoryBase
 {
     List<ReceiptListModel> AdvancedSearchReceList(int hpId, int sinym);
 

@@ -146,26 +146,33 @@ public class Sta1010CoReportService : ISta1010CoReportService
 
     public CommonReportingRequestModel GetSta1010ReportingData(CoSta1010PrintConf printConf, int hpId)
     {
-        _printConf = printConf;
-        string formFileName = _printConf.FormFileName;
-
-        // get data to print
-        GetFieldNameList(formFileName);
-        GetRowCount(formFileName);
-        if (GetData(hpId))
+        try
         {
-            _hasNextPage = true;
-            _currentPage = 1;
+            _printConf = printConf;
+            string formFileName = _printConf.FormFileName;
 
-            //印刷
-            while (_hasNextPage)
+            // get data to print
+            GetFieldNameList(formFileName);
+            GetRowCount(formFileName);
+            if (GetData(hpId))
             {
-                UpdateDrawForm();
-                _currentPage++;
-            }
-        }
+                _hasNextPage = true;
+                _currentPage = 1;
 
-        return new Sta1010Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
+                //印刷
+                while (_hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
+            }
+
+            return new Sta1010Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, formFileName).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private void UpdateDrawForm()

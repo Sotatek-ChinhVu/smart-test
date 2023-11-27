@@ -1,9 +1,10 @@
-﻿using Entity.Tenant;
+﻿using Domain.Common;
+using Entity.Tenant;
 using Reporting.Byomei.Model;
 
 namespace Reporting.Byomei.DB;
 
-public interface ICoPtByomeiFinder
+public interface ICoPtByomeiFinder : IRepositoryBase
 {
     PtInf FindPtInf(int hpId, long ptId);
 

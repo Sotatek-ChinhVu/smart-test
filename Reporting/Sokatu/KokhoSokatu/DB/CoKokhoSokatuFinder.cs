@@ -52,5 +52,13 @@ namespace Reporting.Sokatu.KokhoSokatu.DB
                     mainHokensyaNo: mainHokensyaNo
                 );
         }
+
+        public void ReleaseResource()
+        {
+            _hpInfFinder.ReleaseResource();
+            _hokensyaMstFinder.ReleaseResource();
+            _kokhoSeikyuFinder.ReleaseResource();
+            _hokenMstFinder.ReleaseResource();
+        }
     }
 }

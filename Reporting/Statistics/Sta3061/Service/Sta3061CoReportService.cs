@@ -189,27 +189,34 @@ public class Sta3061CoReportService : ISta3061CoReportService
 
     public CommonReportingRequestModel GetSta3061ReportingData(CoSta3061PrintConf printConf, int hpId)
     {
-        this.printConf = printConf;
-        string formFileName = printConf.FormFileName;
-
-        // get data to print
-        GetFieldNameList(formFileName);
-        GetRowCount();
-
-        if (GetData(hpId))
+        try
         {
-            hasNextPage = true;
-            currentPage = 1;
+            this.printConf = printConf;
+            string formFileName = printConf.FormFileName;
 
-            //印刷
-            while (hasNextPage)
+            // get data to print
+            GetFieldNameList(formFileName);
+            GetRowCount();
+
+            if (GetData(hpId))
             {
-                UpdateDrawForm();
-                currentPage++;
-            }
-        }
+                hasNextPage = true;
+                currentPage = 1;
 
-        return new Sta3061Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
+                //印刷
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            return new Sta3061Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private void UpdateDrawForm()

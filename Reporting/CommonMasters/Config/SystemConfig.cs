@@ -12,6 +12,11 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     private static readonly object _threadsafelock = new object();
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public SystemConfig(ITenantProvider tenantProvider) : base(tenantProvider)
     {
         RefreshData();

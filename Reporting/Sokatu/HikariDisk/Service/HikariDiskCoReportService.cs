@@ -37,25 +37,33 @@ public class HikariDiskCoReportService : IHikariDiskCoReportService
 
     public CommonReportingRequestModel GetHikariDiskPrintData(int hpId, int seikyuYm, int hokenKbn, int diskKind, int diskCnt)
     {
-        this.seikyuYm = seikyuYm;
-        this.hokenKbn = hokenKbn;
-        this.diskKind = diskKind;
-        this.diskCnt = diskCnt;
-        this.hpId = hpId;
-
-        //印
-        _visibleFieldList.Add("inkan", seikyuYm < KaiseiDate.m202210);
-        _visibleFieldList.Add("inkanMaru", seikyuYm < KaiseiDate.m202210);
-        GetData();
-        UpdateDrawForm();
-
-        string formFileName = "p99HikariDisk.rse";
-        if (hpInf.PrefNo == PrefCode.Ibaraki)
+        try
         {
-            formFileName = "p08HikariDisk.rse";
-        }
+            this.seikyuYm = seikyuYm;
+            this.hokenKbn = hokenKbn;
+            this.diskKind = diskKind;
+            this.diskCnt = diskCnt;
+            this.hpId = hpId;
 
-        return new HikariDiskMapper(_singleFieldData, _visibleFieldList, formFileName).GetData();
+            //印
+            _visibleFieldList.Add("inkan", seikyuYm < KaiseiDate.m202210);
+            _visibleFieldList.Add("inkanMaru", seikyuYm < KaiseiDate.m202210);
+            GetData();
+            UpdateDrawForm();
+
+            string formFileName = "p99HikariDisk.rse";
+            if (hpInf.PrefNo == PrefCode.Ibaraki)
+            {
+                formFileName = "p08HikariDisk.rse";
+            }
+
+            return new HikariDiskMapper(_singleFieldData, _visibleFieldList, formFileName).GetData();
+        }
+        finally
+        {
+            _systemConfig.ReleaseResource();
+            _finder.ReleaseResource();
+        }
     }
 
     private void UpdateDrawForm()

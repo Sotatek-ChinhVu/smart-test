@@ -89,24 +89,31 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
     public CommonReportingRequestModel GetSta1002ReportingData(CoSta1002PrintConf printConf, int hpId)
     {
-        _printConf = printConf;
-        // get data to print
-        GetFieldNameList();
-        GetRowCount();
-        if (GetData(hpId))
+        try
         {
-            _hasNextPage = true;
-
-            _currentPage = 1;
-
-            //印刷
-            while (_hasNextPage)
+            _printConf = printConf;
+            // get data to print
+            GetFieldNameList();
+            GetRowCount();
+            if (GetData(hpId))
             {
-                UpdateDrawForm();
-                _currentPage++;
+                _hasNextPage = true;
+
+                _currentPage = 1;
+
+                //印刷
+                while (_hasNextPage)
+                {
+                    UpdateDrawForm();
+                    _currentPage++;
+                }
             }
+            return new Sta1002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
         }
-        return new Sta1002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private bool GetData(int hpId)

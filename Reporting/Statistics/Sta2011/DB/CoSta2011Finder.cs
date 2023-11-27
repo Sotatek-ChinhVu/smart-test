@@ -20,6 +20,13 @@ namespace Reporting.Statistics.Sta2011.DB
             _sta2010Finder = sta2010Finder;
         }
 
+        public void ReleaseResource()
+        {
+            _hpInfFinder.ReleaseResource();
+            _sta2010Finder.ReleaseResource();
+            DisposeDataContext();
+        }
+
         public CoHpInfModel GetHpInf(int hpId, int sinDate)
         {
             return _hpInfFinder.GetHpInf(hpId, sinDate);

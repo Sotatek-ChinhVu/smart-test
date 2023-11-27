@@ -87,27 +87,34 @@ namespace Reporting.Statistics.Sta2002.Service
 
         public CommonReportingRequestModel GetSta2002ReportingData(CoSta2002PrintConf printConf, int hpId)
         {
-            this.hpId = hpId;
-            _printConf = printConf;
-            // get data to print
-            GetFieldNameList();
-            GetRowCount();
-            if (GetData(hpId))
+            try
             {
-                _hasNextPage = true;
-
-                _currentPage = 1;
-
-                //印刷
-                while (_hasNextPage)
+                this.hpId = hpId;
+                _printConf = printConf;
+                // get data to print
+                GetFieldNameList();
+                GetRowCount();
+                if (GetData(hpId))
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
+                    _hasNextPage = true;
+
+                    _currentPage = 1;
+
+                    //印刷
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
                 }
+
+
+                return new Sta2002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
             }
-
-
-            return new Sta2002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+            finally
+            {
+                _staFinder.ReleaseResource();
+            }
         }
 
         #region UpdateDrawForm

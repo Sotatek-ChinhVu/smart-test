@@ -1,6 +1,8 @@
-﻿namespace Reporting.CommonMasters.Config;
+﻿using Domain.Common;
 
-public interface ISystemConfig
+namespace Reporting.CommonMasters.Config;
+
+public interface ISystemConfig : IRepositoryBase
 {
     int OrderLabelKaPrint();
     int OrderLabelSyosaiPrint();
