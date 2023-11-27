@@ -14,6 +14,12 @@ namespace Reporting.Sijisen.DB
         public CoSijisenFinder(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         /// <summary>
         /// 患者情報を取得する
         /// </summary>

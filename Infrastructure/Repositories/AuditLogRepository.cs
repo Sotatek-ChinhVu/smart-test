@@ -1,4 +1,5 @@
-﻿using Domain.Models.AuditLog;
+﻿using Amazon;
+using Domain.Models.AuditLog;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
@@ -66,6 +67,40 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
                 TrackingDataContext.SaveChanges();
             }
         }
+    }
+
+    public void AddListAuditTrailLog(int hpId, int userId, List<ArgumentModel> args)
+    {
+        var eventMsts = GetEventMstModel();
+
+        foreach (var arg in args)
+        {
+            if (eventMsts.Any(p => p.EventCd == arg.EventCd && p.AuditTrailing == 1))
+            {
+                var auditTrailLog = new AuditTrailLog();
+
+                auditTrailLog.HpId = hpId;
+                auditTrailLog.PtId = arg.PtId;
+                auditTrailLog.SinDay = arg.SinDate;
+                auditTrailLog.UserId = userId;
+                auditTrailLog.RaiinNo = arg.RaiinNo;
+                auditTrailLog.EventCd = arg.EventCd;
+                auditTrailLog.LogDate = CIUtil.GetJapanDateTimeNow();
+
+                TrackingDataContext.AuditTrailLogs.Add(auditTrailLog);
+                TrackingDataContext.SaveChanges();
+
+                if (!string.IsNullOrEmpty(arg.Hosoku))
+                {
+                    var auditTrailLogDetail = new AuditTrailLogDetail();
+                    auditTrailLogDetail.LogId = auditTrailLog.LogId;
+                    auditTrailLogDetail.Hosoku = arg.Hosoku;
+                    TrackingDataContext.AuditTrailLogDetails.Add(auditTrailLogDetail);
+                    TrackingDataContext.SaveChanges();
+                }
+            }
+        }
+        
     }
 
     private List<EventMstModel> GetEventMstModel()

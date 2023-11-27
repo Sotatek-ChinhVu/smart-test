@@ -61,83 +61,97 @@ public class ReceiptCheckCoReportService : RepositoryBase, IReceiptCheckCoReport
 
     public CommonReportingRequestModel GetReceiptCheckCoReportingData(int hpId, List<long> ptIds, int seikyuYm)
     {
-        ptIds = ptIds.OrderBy(x => x).ToList();
-        StringBuilder extendKey = new();
-        extendKey.Append(seikyuYm);
-        extendKey.Append("_");
-        foreach (var item in ptIds)
+        try
         {
-            extendKey.Append(item + "_");
-        }
-        var finalKey = key + "_" + extendKey.ToString();
-        if (_cache.KeyExists(finalKey))
-        {
-            var results = _cache.StringGet(finalKey);
-            var json = results.AsString();
-            _cache.KeyDelete(finalKey);
-            if (!string.IsNullOrEmpty(json))
+            ptIds = ptIds.OrderBy(x => x).ToList();
+            StringBuilder extendKey = new();
+            extendKey.Append(seikyuYm);
+            extendKey.Append("_");
+            foreach (var item in ptIds)
             {
-                return new CommonReportingRequestModel()
-                {
-                    DataJsonConverted = json
-                };
+                extendKey.Append(item + "_");
             }
-        }
-
-        using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
-        {
-            var finder = new CoReceiptCheckFinder(_tenantProvider);
-
-            // データ取得
-            _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
-            if (_coModels != null && _coModels.Any())
+            var finalKey = key + "_" + extendKey.ToString();
+            if (_cache.KeyExists(finalKey))
             {
-                // レセプト印刷
-                while (_hasNextPage)
+                var results = _cache.StringGet(finalKey);
+                var json = results.AsString();
+                _cache.KeyDelete(finalKey);
+                if (!string.IsNullOrEmpty(json))
                 {
-                    UpdateDrawForm(seikyuYm);
+                    return new CommonReportingRequestModel()
+                    {
+                        DataJsonConverted = json
+                    };
                 }
             }
-            _extralData.Add("totalPage", currentPage.ToString());
-            return new CoReceiptCheckMapper(_setFieldData, _singleFieldData, _listTextData, _extralData).GetData();
+
+            using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
+            {
+                var finder = new CoReceiptCheckFinder(_tenantProvider);
+
+                // データ取得
+                _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
+                if (_coModels != null && _coModels.Any())
+                {
+                    // レセプト印刷
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm(seikyuYm);
+                    }
+                }
+                _extralData.Add("totalPage", currentPage.ToString());
+                return new CoReceiptCheckMapper(_setFieldData, _singleFieldData, _listTextData, _extralData).GetData();
+            }
+        }
+        finally
+        {
+            _tenantProvider.DisposeDataContext();
         }
     }
 
     public bool CheckOpenReceiptCheck(int hpId, List<long> ptIds, int seikyuYm)
     {
-        ptIds = ptIds.OrderBy(x => x).ToList();
-        StringBuilder extendKey = new();
-        extendKey.Append(seikyuYm);
-        extendKey.Append("_");
-        foreach (var item in ptIds)
+        try
         {
-            extendKey.Append(item + "_");
-        }
-        var finalKey = key + "_" + extendKey.ToString();
-
-        if (_cache.KeyExists(finalKey))
-        {
-            _cache.KeyDelete(finalKey);
-        }
-        using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
-        {
-            var finder = new CoReceiptCheckFinder(_tenantProvider);
-            // データ取得
-            _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
-            bool exist = _coModels != null && _coModels.Any();
-            if (exist)
+            ptIds = ptIds.OrderBy(x => x).ToList();
+            StringBuilder extendKey = new();
+            extendKey.Append(seikyuYm);
+            extendKey.Append("_");
+            foreach (var item in ptIds)
             {
-                // レセプト印刷
-                while (_hasNextPage)
-                {
-                    UpdateDrawForm(seikyuYm);
-                }
-                _extralData.Add("totalPage", currentPage.ToString());
-                var result = new CoReceiptCheckMapper(_setFieldData, _singleFieldData, _listTextData, _extralData).GetData();
-                var json = JsonSerializer.Serialize(result);
-                _cache.StringSet(finalKey, json);
+                extendKey.Append(item + "_");
             }
-            return exist;
+            var finalKey = key + "_" + extendKey.ToString();
+
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
+            }
+            using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
+            {
+                var finder = new CoReceiptCheckFinder(_tenantProvider);
+                // データ取得
+                _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
+                bool exist = _coModels != null && _coModels.Any();
+                if (exist)
+                {
+                    // レセプト印刷
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm(seikyuYm);
+                    }
+                    _extralData.Add("totalPage", currentPage.ToString());
+                    var result = new CoReceiptCheckMapper(_setFieldData, _singleFieldData, _listTextData, _extralData).GetData();
+                    var json = JsonSerializer.Serialize(result);
+                    _cache.StringSet(finalKey, json);
+                }
+                return exist;
+            }
+        }
+        finally
+        {
+            _tenantProvider.DisposeDataContext();
         }
     }
 

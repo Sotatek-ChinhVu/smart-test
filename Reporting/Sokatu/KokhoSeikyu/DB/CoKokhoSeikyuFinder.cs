@@ -171,6 +171,9 @@ namespace Reporting.Sokatu.KokhoSeikyu.DB
         public void ReleaseResource()
         {
             DisposeDataContext();
+            _hokenMstFinder.ReleaseResource();
+            _hpInfFinder.ReleaseResource();
+            _hokensyaMstFinder.ReleaseResource();
         }
     }
 }

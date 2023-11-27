@@ -435,37 +435,44 @@ public class Sta9000CoReportService : ISta9000CoReportService
             CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
             CoSta9000KensaConf? kensaConf)
     {
-        this.reportType = new int[] { 0, 1, 2, 3 }.Contains(reportType) ? reportType : 0;
-        this.sortOrder = sortOrder;
-        this.sortOrder2 = sortOrder2;
-        this.sortOrder3 = sortOrder3;
-        this.ptConf = ptConf;   
-        this.hokenConf = hokenConf;
-        this.byomeiConf = byomeiConf;
-        this.raiinConf = raiinConf;
-        this.sinConf = sinConf;
-        this.karteConf = karteConf;
-        this.kensaConf = kensaConf;
-
-        // get data to print
-        outputDataType = 0;
-        hasNextPage = true;
-        string formFileName = reportInfs[reportType].FormFileName;
-        int maxRow = reportInfs[reportType].MaxRow;
-        GetFieldNameList(formFileName);
-        _extralData.Add("maxRow", maxRow.ToString());
-        currentPage = 1;
-
-        if (GetData(hpId))
+        try
         {
-            while (hasNextPage)
-            {
-                UpdateDrawForm();
-                currentPage++;
-            }
-        }
+            this.reportType = new int[] { 0, 1, 2, 3 }.Contains(reportType) ? reportType : 0;
+            this.sortOrder = sortOrder;
+            this.sortOrder2 = sortOrder2;
+            this.sortOrder3 = sortOrder3;
+            this.ptConf = ptConf;
+            this.hokenConf = hokenConf;
+            this.byomeiConf = byomeiConf;
+            this.raiinConf = raiinConf;
+            this.sinConf = sinConf;
+            this.karteConf = karteConf;
+            this.kensaConf = kensaConf;
 
-        return new Sta9000Mapper(_singleFieldData, _tableFieldData, _extralData, formFileName).GetData();
+            // get data to print
+            outputDataType = 0;
+            hasNextPage = true;
+            string formFileName = reportInfs[reportType].FormFileName;
+            int maxRow = reportInfs[reportType].MaxRow;
+            GetFieldNameList(formFileName);
+            _extralData.Add("maxRow", maxRow.ToString());
+            currentPage = 1;
+
+            if (GetData(hpId))
+            {
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            return new Sta9000Mapper(_singleFieldData, _tableFieldData, _extralData, formFileName).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     public (string, CoPrintExitCode, List<string>) OutPutFile(int hpId, List<string> outputColumns, bool isPutColName, CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
@@ -732,6 +739,10 @@ public class Sta9000CoReportService : ISta9000CoReportService
             //Log.WriteLogError(ModuleName, this, nameof(outPutFile), ex);
             Console.WriteLine(ex);
             return (string.Empty, CoPrintExitCode.EndError, new());
+        }
+        finally
+        {
+            _finder.ReleaseResource();
         }
     }
 

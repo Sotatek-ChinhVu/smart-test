@@ -12,6 +12,14 @@ public class NotificationModel
         CreateDate = createDate;
     }
 
+    public NotificationModel(int id, bool isDeleted, bool isRead)
+    {
+        Id = id;
+        IsDeleted = isDeleted;
+        IsRead = isRead;
+        Message = string.Empty;
+    }
+
     public int Id { get; private set; }
 
     public byte Status { get; private set; }

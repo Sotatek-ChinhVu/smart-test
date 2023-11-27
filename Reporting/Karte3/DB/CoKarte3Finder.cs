@@ -11,6 +11,11 @@ public class CoKarte3Finder : RepositoryBase, ICoKarte3Finder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     /// <summary>
     /// 患者情報を取得する
     /// </summary>

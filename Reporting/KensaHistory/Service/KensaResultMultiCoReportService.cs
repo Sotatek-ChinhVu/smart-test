@@ -62,44 +62,52 @@ namespace Reporting.KensaHistory.Service
 
         public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
-
-            this.hpId = hpId;
-            this.userId = userId;
-            this.ptId = ptId;
-            this.setId = setId;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.showAbnormalKbn = showAbnormalKbn;
-            this.sinDate = sinDate;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                currentPage = 1;
-                hasNextPage = true;
-                while (hasNextPage)
+                this.hpId = hpId;
+                this.userId = userId;
+                this.ptId = ptId;
+                this.setId = setId;
+                this.startDate = startDate;
+                this.endDate = endDate;
+                this.showAbnormalKbn = showAbnormalKbn;
+                this.sinDate = sinDate;
+                var getData = GetData();
+
+                if (getData)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    currentPage = 1;
+                    hasNextPage = true;
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                int i = 1;
+
+                foreach (var item in _setFieldData)
+                {
+                    item.Value.Clear();
+                    item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
+                    i++;
+                    if (i > pageIndex)
+                    {
+                        break;
+                    }
+                }
+
+                return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+
             }
-
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            int i = 1;
-
-            foreach (var item in _setFieldData)
+            finally
             {
-                item.Value.Clear();
-                item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
-                i++;
-                if (i > pageIndex)
-                {
-                    break;
-                }
+                _kokhoFinder.ReleaseResource();
+                _coKensaHistoryFinder.ReleaseResource();
             }
-
-            return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
         private bool UpdateDrawForm()

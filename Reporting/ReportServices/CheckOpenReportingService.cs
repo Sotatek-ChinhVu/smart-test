@@ -23,44 +23,72 @@ public class CheckOpenReportingService : ICheckOpenReportingService
 
     public bool CheckOpenAccountingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
     {
-        return _accountingCoReportService.CheckOpenReportingForm(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
+        try
+        {
+            return _accountingCoReportService.CheckOpenReportingForm(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
+        }
+        finally
+        {
+            _coAccountingFinder.ReleaseResource();
+        }
     }
 
     public bool CheckExistTemplate(string templateName, int printType)
     {
-        return _accountingCoReportService.CheckExistTemplate(templateName, printType);
+        try
+        {
+            return _accountingCoReportService.CheckExistTemplate(templateName, printType);
+        }
+        finally
+        {
+            _coAccountingFinder.ReleaseResource();
+        }
     }
 
     public bool CheckOpenAccountingForm(int hpId, ConfirmationMode mode, long ptId, List<CoAccountDueListModel> multiAccountDueListModels, bool isPrintMonth, bool ryoshusho, bool meisai)
     {
-        List<CoAccountingParamModel> requestAccountting = new();
-
-        List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
-        List<int> months = new();
-        foreach (var model in multiAccountDueListModels)
+        try
         {
-            var selectedAccountDueListModel = model;
-            var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
-            if (isPrintMonth)
+            List<CoAccountingParamModel> requestAccountting = new();
+
+            List<CoAccountDueListModel> nyukinModels = _coAccountingFinder.GetAccountDueList(hpId, ptId);
+            List<int> months = new();
+            foreach (var model in multiAccountDueListModels)
             {
-                if (!months.Contains(model.SinDate / 100))
+                var selectedAccountDueListModel = model;
+                var accountDueListModels = nyukinModels.FindAll(p => p.SinDate / 100 == model.SinDate / 100);
+                if (isPrintMonth)
                 {
-                    var printItem = _reportService.PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo, accountDueListModels);
+                    if (!months.Contains(model.SinDate / 100))
+                    {
+                        var printItem = _reportService.PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo, accountDueListModels);
+                        requestAccountting.AddRange(printItem);
+                        months.Add(model.SinDate / 100);
+                    }
+                }
+                else
+                {
+                    var printItem = _reportService.PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo);
                     requestAccountting.AddRange(printItem);
-                    months.Add(model.SinDate / 100);
                 }
             }
-            else
-            {
-                var printItem = _reportService.PrintWithoutThread(ryoshusho, meisai, mode, ptId, accountDueListModels, selectedAccountDueListModel, isPrintMonth, model.SinDate, model.OyaRaiinNo);
-                requestAccountting.AddRange(printItem);
-            }
+            return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
         }
-        return _accountingCoReportService.CheckOpenReportingForm(hpId, requestAccountting);
+        finally
+        {
+            _coAccountingFinder.ReleaseResource();
+        }
     }
 
     public bool CheckOpenReceiptCheck(int hpId, List<long> ptIds, int seikyuYm)
     {
-        return _receiptCheckCoReportService.CheckOpenReceiptCheck(hpId, ptIds, seikyuYm);
+        try
+        {
+            return _receiptCheckCoReportService.CheckOpenReceiptCheck(hpId, ptIds, seikyuYm);
+        }
+        finally
+        {
+            _coAccountingFinder.ReleaseResource();
+        }
     }
 }

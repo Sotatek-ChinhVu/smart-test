@@ -1,8 +1,9 @@
-﻿using Reporting.OrderLabel.Model;
+﻿using Domain.Common;
+using Reporting.OrderLabel.Model;
 
 namespace Reporting.OrderLabel.DB
 {
-    public interface ICoOrderLabelFinder
+    public interface ICoOrderLabelFinder : IRepositoryBase
     {
         /// <summary>
         /// 患者情報を取得する

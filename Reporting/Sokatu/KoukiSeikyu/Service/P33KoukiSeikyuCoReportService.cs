@@ -65,29 +65,36 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
 
     public CommonReportingRequestModel GetP33KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if(getData)
+        try
         {
-            foreach (string currentNo in hokensyaNos)
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
+
+            if (getData)
             {
-                currentHokensyaNo = currentNo;
-                hasNextPage = true;
-                currentPage = 1;
-                while (getData && hasNextPage)
+                foreach (string currentNo in hokensyaNos)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    currentHokensyaNo = currentNo;
+                    hasNextPage = true;
+                    currentPage = 1;
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function

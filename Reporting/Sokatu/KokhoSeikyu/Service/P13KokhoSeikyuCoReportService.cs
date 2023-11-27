@@ -62,29 +62,36 @@ public class P13KokhoSeikyuCoReportService : IP13KokhoSeikyuCoReportService
 
     public CommonReportingRequestModel GetP13KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> printHokensyaNos)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if (getData)
+        try
         {
-            foreach (string currentNo in hokensyaNos)
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
+
+            if (getData)
             {
-                currentHokensyaNo = currentNo;
-                currentPage = 1;
-                hasNextPage = true;
-                while (getData && hasNextPage)
+                foreach (string currentNo in hokensyaNos)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    currentHokensyaNo = currentNo;
+                    currentPage = 1;
+                    hasNextPage = true;
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function

@@ -82,34 +82,44 @@ namespace Reporting.AccountingCard.Service
 
         public CommonReportingRequestModel GetAccountingCardReportingData(int hpId, long ptId, int sinYm, int hokenId, bool includeOutDrug)
         {
-            _hpId = hpId;
-            _ptId = ptId;
-            _sinYm = sinYm;
-            _hokenId = hokenId;
-            _includeOutDrug = includeOutDrug;
-            _printoutDateTime = CIUtil.GetJapanDateTimeNow();
-            byomeiModels = new List<CoReceiptByomeiModel>();
-            tekiyoModels = new List<CoReceiptTekiyoModel>();
-            coModel = GetData();
-            if (coModel != null && coModel.PtInfModel != null)
+            try
             {
-                _currentPage = 1;
-                hasNextPage = true;
-                GetRowCount("fmAccountingCard.rse");
-                MakeByoList();
-
-                MakeTekiyoList();
-
-                while (hasNextPage)
+                _hpId = hpId;
+                _ptId = ptId;
+                _sinYm = sinYm;
+                _hokenId = hokenId;
+                _includeOutDrug = includeOutDrug;
+                _printoutDateTime = CIUtil.GetJapanDateTimeNow();
+                byomeiModels = new List<CoReceiptByomeiModel>();
+                tekiyoModels = new List<CoReceiptTekiyoModel>();
+                coModel = GetData();
+                if (coModel != null && coModel.PtInfModel != null)
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
-            }
+                    _currentPage = 1;
+                    hasNextPage = true;
+                    GetRowCount("fmAccountingCard.rse");
+                    MakeByoList();
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new CommonMapper(_singleFieldDataM, _listTextData, _extralData, "fmAccountingCard.rse", _singleFieldData, _visibleFieldData, (int)CoReportType.AccountingCard, "会計カード").GetData();
+                    MakeTekiyoList();
+
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+                }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new CommonMapper(_singleFieldDataM, _listTextData, _extralData, "fmAccountingCard.rse", _singleFieldData, _visibleFieldData, (int)CoReportType.AccountingCard, "会計カード").GetData();
+            }
+            finally
+            {
+                _finder.ReleaseResource();
+                _systemConfigProvider.ReleaseResource();
+                _tenantProvider.DisposeDataContext();
+            }
+            
         }
         #endregion
 

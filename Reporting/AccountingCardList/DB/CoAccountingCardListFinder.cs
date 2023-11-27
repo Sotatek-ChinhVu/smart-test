@@ -11,6 +11,11 @@ public class CoAccountingCardListFinder : RepositoryBase, ICoAccountingCardListF
     public CoAccountingCardListFinder(ITenantProvider tenantProvider) : base(tenantProvider)
     { }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     /// <summary>
     /// 患者情報取得
     /// </summary>

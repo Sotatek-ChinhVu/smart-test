@@ -25,26 +25,33 @@ namespace Reporting.Statistics.Sta2010.Service
 
         public CommonReportingRequestModel GetSta2010ReportingData(CoSta2010PrintConf printConf, int hpId)
         {
-            HpId = hpId;
-            _printConf = printConf;
-            // get data to print
-            GetFieldNameList();
-            GetRowCount();
-
-            if (GetData())
+            try
             {
-                _hasNextPage = true;
-                _currentPage = 1;
+                HpId = hpId;
+                _printConf = printConf;
+                // get data to print
+                GetFieldNameList();
+                GetRowCount();
 
-                //印刷
-                while (_hasNextPage)
+                if (GetData())
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
-            }
+                    _hasNextPage = true;
+                    _currentPage = 1;
 
-            return new Sta2010Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+                    //印刷
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+                }
+
+                return new Sta2010Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+            }
+            finally
+            {
+                _staFinder.ReleaseResource();
+            }
         }
 
         #region Constant

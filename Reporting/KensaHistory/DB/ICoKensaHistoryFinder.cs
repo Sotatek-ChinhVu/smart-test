@@ -1,11 +1,12 @@
-﻿using Domain.Models.HpInf;
+﻿using Domain.Common;
+using Domain.Models.HpInf;
 using Domain.Models.KensaIrai;
 using Entity.Tenant;
 using Reporting.KensaHistory.Models;
 
 namespace Reporting.KensaHistory.DB
 {
-    public interface ICoKensaHistoryFinder
+    public interface ICoKensaHistoryFinder : IRepositoryBase
     {
         HpInfModel GetHpInf(int hpId, int sinDate);
 

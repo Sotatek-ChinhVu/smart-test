@@ -491,7 +491,8 @@ namespace EmrCloudApi.Controllers
                                                     HpId
                                 )).ToList(),
                 request.FlowSheetItems,
-                request.Monshin
+                request.Monshin,
+                request.StateChanged
             );
             var output = _bus.Handle(input);
 

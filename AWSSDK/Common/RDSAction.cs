@@ -246,12 +246,12 @@ namespace AWSSDK.Common
                             }
                             else
                             {
-                                Console.WriteLine("Error: No SQL files found in the specified folder.");
+                                Console.WriteLine("Info create table: No SQL files found in the specified folder.");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Error: Specified folder not found");
+                            Console.WriteLine("Info create table: Specified folder not found");
                         }
                     }
                 }

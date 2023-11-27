@@ -11,6 +11,11 @@ public class SpecialNoteFinder : RepositoryBase, ISpecialNoteFinder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public List<GcStdInfModel> GetStdPoint(int hpId)
     {
         var list = NoTrackingDataContext.GcStdMsts.Where(item => item.HpId == hpId)

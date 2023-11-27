@@ -18,6 +18,12 @@ public class CoSyahoFinder : RepositoryBase, ICoSyahoFinder
         _hpInfFinder = hpInfFinder;
     }
 
+    public void ReleaseResource()
+    {
+        _hpInfFinder.ReleaseResource();
+        DisposeDataContext();
+    }
+
     public CoHpInfModel GetHpInf(int hpId, int seikyuYm)
     {
         return _hpInfFinder.GetHpInf(hpId, seikyuYm);
