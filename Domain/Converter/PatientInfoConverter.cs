@@ -9,7 +9,7 @@ using Helper.Extension;
 
 namespace Domain.Converter
 {
-    public class PatientInfoConverter
+    public static class PatientInfoConverter
     {
         public static List<HokenConfirmationModel> GetHokenConfirmationModels(HokenInfModel HokenInf, ResultOfQualificationConfirmation resultOfQualification, int birthDay, int sinDate)
         {
@@ -26,26 +26,11 @@ namespace Domain.Converter
                 new HokenConfirmationModel(HokenConfOnlQuaConst.END_DATE, HokenInf.EndDate.AsString(), resultOfQualification.InsuredCardExpirationDate, sinDate: sinDate),
                 new HokenConfirmationModel(HokenConfOnlQuaConst.KOGAKU_KBN
                                         , HokenInf.KogakuKbn.AsString()
-                                        , resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag
+                                        , resultOfQualification.LimitApplicationCertificateRelatedInfo?.LimitApplicationCertificateClassificationFlag??string.Empty
                                         , age, sinDate: sinDate, onlineKogakuHelper: new OnlineKogakuHelper(resultOfQualification, age)),
                  new HokenConfirmationModel(HokenConfOnlQuaConst.CREDENTIAL
                                         , (HokenInf.HokenNo == 68 && HokenInf.HokenEdaNo == 0) ? "該当" : string.Empty
                                         , (resultOfQualification.InsuredCardClassification.AsInteger() == 5) ?  "該当" : string.Empty, sinDate: sinDate)
-            };
-            return list;
-        }
-
-        public static List<PtInfConfirmationModel> GetPtInfConfirmationModels(PatientInforModel patientInf, ResultOfQualificationConfirmation resultOfQualification)
-        {
-            var list = new List<PtInfConfirmationModel>
-            {
-                new PtInfConfirmationModel(PtInfOQConst.KANA_NAME, patientInf.KanaName, resultOfQualification.NameKana),
-                new PtInfConfirmationModel(PtInfOQConst.KANJI_NAME, patientInf.Name, resultOfQualification.Name),
-                new PtInfConfirmationModel(PtInfOQConst.SEX, patientInf.Sex.AsString(), string.IsNullOrEmpty(resultOfQualification.Sex2) ? resultOfQualification.Sex1: resultOfQualification.Sex2),
-                new PtInfConfirmationModel(PtInfOQConst.BIRTHDAY, patientInf.Birthday.AsString(), resultOfQualification.Birthdate.AsString()),
-                new PtInfConfirmationModel(PtInfOQConst.SETANUSI, patientInf.Setanusi, resultOfQualification.InsuredName),
-                new PtInfConfirmationModel(PtInfOQConst.HOME_ADDRESS, patientInf.HomeAddress1, resultOfQualification.Address),
-                new PtInfConfirmationModel(PtInfOQConst.HOME_POST, patientInf.HomePost, resultOfQualification.PostNumber),
             };
             return list;
         }

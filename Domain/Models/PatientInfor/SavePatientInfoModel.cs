@@ -16,10 +16,10 @@ namespace Domain.Models.PatientInfor
         }
 
         public PatientInforSaveModel Patient { get; private set; }
-        public List<PtKyuseiModel> PtKyuseis { get; private set; } = new List<PtKyuseiModel>();
-        public List<CalculationInfModel> PtSanteis { get; private set; } = new List<CalculationInfModel>();
-        public List<InsuranceModel> Insurances { get; private set; } = new List<InsuranceModel>();
-        public List<GroupInfModel> PtGrpInfs { get; private set; } = new List<GroupInfModel>();
-        
+        public List<PtKyuseiModel> PtKyuseis { get; private set; }
+        public List<CalculationInfModel> PtSanteis { get; private set; }
+        public List<InsuranceModel> Insurances { get; private set; }
+        public List<GroupInfModel> PtGrpInfs { get; private set; }
+
     }
 }

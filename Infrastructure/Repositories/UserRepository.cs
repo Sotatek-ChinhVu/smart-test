@@ -156,47 +156,62 @@ namespace Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
-        public void Upsert(List<UserMstModel> upsertUserList, int userId)
+        public bool Upsert(List<UserMstModel> upsertUserList, int userId)
         {
-            foreach (var inputData in upsertUserList)
+            try
             {
-                if (inputData.IsDeleted == DeleteTypes.Deleted)
+                foreach (var inputData in upsertUserList)
                 {
-                    var userMsts = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id);
-                    if (userMsts != null)
+                    if (inputData.IsDeleted == DeleteTypes.Deleted)
                     {
-                        userMsts.IsDeleted = DeleteTypes.Deleted;
-                    }
-                }
-                else
-                {
-                    var userMst = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
-                    if (userMst != null)
-                    {
-                        userMst.JobCd = inputData.JobCd;
-                        userMst.ManagerKbn = inputData.ManagerKbn;
-                        userMst.KaId = inputData.KaId;
-                        userMst.KanaName = inputData.KanaName ?? string.Empty;
-                        userMst.Name = inputData.Name ?? string.Empty;
-                        userMst.Sname = inputData.Sname ?? string.Empty;
-                        userMst.DrName = inputData.DrName ?? string.Empty;
-                        userMst.LoginPass = inputData.LoginPass ?? string.Empty;
-                        userMst.MayakuLicenseNo = inputData.MayakuLicenseNo ?? string.Empty;
-                        userMst.StartDate = inputData.StartDate;
-                        userMst.EndDate = inputData.EndDate;
-                        userMst.SortNo = inputData.SortNo;
-                        userMst.RenkeiCd1 = inputData.RenkeiCd1 ?? string.Empty;
-                        userMst.IsDeleted = inputData.IsDeleted;
-                        userMst.UpdateId = userId;
-                        userMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        var userMsts = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id);
+                        if (userMsts != null)
+                        {
+                            userMsts.IsDeleted = DeleteTypes.Deleted;
+                        }
                     }
                     else
                     {
-                        TrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
+                        var userMst = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                        if (userMst != null)
+                        {
+                            userMst.JobCd = inputData.JobCd;
+                            userMst.ManagerKbn = inputData.ManagerKbn;
+                            userMst.KaId = inputData.KaId;
+                            userMst.KanaName = inputData.KanaName ?? string.Empty;
+                            userMst.Name = inputData.Name ?? string.Empty;
+                            userMst.Sname = inputData.Sname ?? string.Empty;
+                            userMst.DrName = inputData.DrName ?? string.Empty;
+                            userMst.LoginPass = inputData.LoginPass ?? string.Empty;
+                            userMst.MayakuLicenseNo = inputData.MayakuLicenseNo ?? string.Empty;
+                            userMst.StartDate = inputData.StartDate;
+                            userMst.EndDate = inputData.EndDate;
+                            userMst.SortNo = inputData.SortNo;
+                            userMst.RenkeiCd1 = inputData.RenkeiCd1 ?? string.Empty;
+                            userMst.IsDeleted = inputData.IsDeleted;
+                            userMst.UpdateId = userId;
+                            userMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        }
+                        else
+                        {
+                            TrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
+                        }
                     }
                 }
+                TrackingDataContext.SaveChanges();
+                return true;
             }
-            TrackingDataContext.SaveChanges();
+            catch (Exception ex)
+            {
+                var error = ex.InnerException?.Message ?? string.Empty;
+                if (error.Contains("23505: duplicate key value violates unique constraint \"IX_USER_MST_USER_ID\""))
+                {
+                    return false;
+                }
+                throw;
+
+            }
+
         }
 
         private static UserMstModel ToModel(UserMst u, List<KaMst> listKaMsts)
@@ -278,15 +293,8 @@ namespace Infrastructure.Repositories
 
         public bool MigrateDatabase()
         {
-            try
-            {
-                TrackingDataContext.Database.Migrate();
-                return true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            TrackingDataContext.Database.Migrate();
+            return true;
         }
 
         public void ReleaseResource()
@@ -623,7 +631,7 @@ namespace Infrastructure.Repositories
                         update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = currentUser;
                     }
-                    
+
                 }
             }
             return TrackingDataContext.SaveChanges() > 0;

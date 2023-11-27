@@ -5,6 +5,7 @@ using Helper.Common;
 using Reporting.KensaHistory.DB;
 using Reporting.KensaHistory.Mapper;
 using Reporting.Mappers.Common;
+using static Domain.Models.KensaIrai.ListKensaInfDetailModel;
 
 namespace Reporting.KensaHistory.Service
 {
@@ -23,6 +24,7 @@ namespace Reporting.KensaHistory.Service
         private PtInf ptInf;
         private ListKensaInfDetailModel kensaInfDetailModel;
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModels = new();
+        private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModelItems = new();
         private bool hasNextPage;
         private int currentPage;
         private int totalPage;
@@ -72,6 +74,19 @@ namespace Reporting.KensaHistory.Service
 
             var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
             _extralData.Add("totalPage", pageIndex.ToString());
+            int i = 1;
+
+            foreach (var item in _setFieldData)
+            {
+                item.Value.Clear();
+                item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
+                i++;
+                if (i > pageIndex)
+                {
+                    break;
+                }
+            }
+
             return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
@@ -90,7 +105,7 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("ptNum", ptInf.PtNum.ToString());
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiDate", CIUtil.SDateToShowSDate(iraiDate));
-                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString());
+                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd HH:mm:ss"));
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
@@ -108,26 +123,23 @@ namespace Reporting.KensaHistory.Service
                 Dictionary<string, string> fieldDataPerPage = new();
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
-                short maxRow = 33;
+                short maxRow = 20;
                 int rowNo = 0;
 
                 if (currentPage == 1)
                 {
-                    foreach (var item in listKensaInfDetailItemModels)
+                    foreach (var item in listKensaInfDetailItemModelItems)
                     {
-                        switch (item.ResultType)
-                        {
-                            case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
-                            case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
-                            case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
-                            default: break;
-                        }
-
                         listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                         listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                         listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
                         listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
-                        listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
+
+                        switch (ptInf.Sex)
+                        {
+                            case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
+                            case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
+                        }
                         rowNo++;
                         if (rowNo == maxRow)
                         {
@@ -135,7 +147,7 @@ namespace Reporting.KensaHistory.Service
                         }
                     }
 
-                    if (listKensaInfDetailItemModels.Count < maxRow)
+                    if (listKensaInfDetailItemModelItems.Count <= maxRow)
                     {
                         _listTextData.Add(pageIndex, listDataPerPage);
                         hasNextPage = false;
@@ -144,30 +156,28 @@ namespace Reporting.KensaHistory.Service
                     else
                     {
                         hasNextPage = true;
-                        listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                        listKensaInfDetailItemModelItems.RemoveRange(0, maxRow);
                         _listTextData.Add(pageIndex, listDataPerPage);
                         return 1;
                     }
                 }
 
                 rowNo = 0;
-                int count = listKensaInfDetailItemModels.Count;
+                int count = listKensaInfDetailItemModelItems.Count;
 
-                foreach (var item in listKensaInfDetailItemModels)
+                foreach (var item in listKensaInfDetailItemModelItems)
                 {
-                    switch (item.ResultType)
-                    {
-                        case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
-                        case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
-                        case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
-                        default: break;
-                    }
-
                     listDataPerPage.Add(new("itemName", 0, rowNo, item.KensaName));
                     listDataPerPage.Add(new("resultValue", 0, rowNo, item.ResultVal));
                     listDataPerPage.Add(new("abnormalFlag", 0, rowNo, item.AbnormalKbn));
                     listDataPerPage.Add(new("unit", 0, rowNo, item.Unit));
-                    listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd));
+
+                    switch (ptInf.Sex)
+                    {
+                        case 1: listDataPerPage.Add(new("standardValue", 0, rowNo, item.MaleStd)); break;
+                        case 2: listDataPerPage.Add(new("standardValue", 0, rowNo, item.FemaleStd)); break;
+                    }
+
                     rowNo++;
                     if (rowNo == maxRow)
                     {
@@ -177,7 +187,7 @@ namespace Reporting.KensaHistory.Service
 
                 if (count > maxRow)
                 {
-                    listKensaInfDetailItemModels.RemoveRange(0, maxRow);
+                    listKensaInfDetailItemModelItems.RemoveRange(0, maxRow);
                 }
                 else
                 {
@@ -203,8 +213,53 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             kensaInfDetailModel = _coKensaHistoryFinder.GetListKensaInf(hpId, userId, ptId, setId, 0, false, showAbnormalKbn, startDate);
-            var kensaInfDetails = kensaInfDetailModel.KensaInfDetailData.Select(x => x.DynamicArray).ToList();
 
+            var kensaInfDetailItems = kensaInfDetailModel.KensaInfDetailData.ToList();
+            List<KensaInfDetailDataModel> KensaInfDetailDataAbnormal = new();
+            Dictionary<int, KensaInfDetailDataModel> parents = new();
+
+            if (showAbnormalKbn)
+            {
+                foreach (var item in kensaInfDetailItems)
+                {
+                    if (item.DynamicArray.Where(x => x.AbnormalKbn == "").Count() == item.DynamicArray.Count())
+                    {
+                        KensaInfDetailDataAbnormal.Add(item);
+                    }
+                }
+
+                foreach (var item in KensaInfDetailDataAbnormal)
+                {
+                    kensaInfDetailItems.Remove(item);
+                }
+
+                foreach (var item in KensaInfDetailDataAbnormal.Where(x => x.SeqParentNo == 0))
+                {
+                    var childrens = kensaInfDetailItems.Where(x => x.SeqParentNo > 0 && item.RowSeqId.Contains(x.SeqParentNo.ToString()));
+
+                    if (childrens != null)
+                    {
+                        var index = 99999999;
+                        foreach (var itemChildren in childrens)
+                        {
+                            var indexNew = kensaInfDetailItems.IndexOf(itemChildren);
+                            if (indexNew < index)
+                            {
+                                index = indexNew;
+                            }
+                        }
+                        parents.Add(index, item);
+                    }
+                }
+
+                foreach (var item in parents)
+                {
+                    kensaInfDetailItems.Insert(item.Key, item.Value);
+                }
+            }
+
+            var kensaInfDetails = kensaInfDetailItems.Select(x => x.DynamicArray).ToList();
+            
             foreach (var item in kensaInfDetails)
             {
                 foreach (var index in item)
@@ -215,9 +270,30 @@ namespace Reporting.KensaHistory.Service
                     }
                 }
             }
-            totalPage = (listKensaInfDetailItemModels.Count / 30) + 1;
 
-            return listKensaInfDetailItemModels.Count > 0;
+            var iraiCds = listKensaInfDetailItemModels.Select(x => x.IraiCd).Distinct().ToList();
+            var listKensaInfDetail = listKensaInfDetailItemModels.GroupBy(x => x.IraiCd);
+
+            foreach (var item in listKensaInfDetail)
+            {
+                foreach (var index in item)
+                {
+                    listKensaInfDetailItemModelItems.Add(new ListKensaInfDetailItemModel(index.IraiCd, index.KensaName, index.ResultVal, index.AbnormalKbn, index.Unit, index.MaleStd, index.FemaleStd, index.ResultType, index.RowSeqId, index.SeqParentNo));
+                }
+            }
+
+            foreach (var item in listKensaInfDetailItemModelItems)
+            {
+                switch (item.ResultType)
+                {
+                    case "E": item.ChangeResultVal(item.ResultVal + "以下"); break;
+                    case "L": item.ChangeResultVal(item.ResultVal + "未満"); break;
+                    case "U": item.ChangeResultVal(item.ResultVal + "以上"); break;
+                    default: break;
+                }
+            }
+
+            return listKensaInfDetailItemModelItems.Count > 0;
         }
 
         private void SetFieldData(string field, string value)

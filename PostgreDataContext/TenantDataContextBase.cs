@@ -6,27 +6,27 @@ namespace PostgreDataContext
 {
     public class TenantDataContext : DbContext
     {
-        private readonly string _connectionString;
+        ///private readonly string _connectionString;
         public TenantDataContext(DbContextOptions options)
         : base(options)
         {
-            _connectionString = string.Empty;
+            ///_connectionString = string.Empty;
         }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!string.IsNullOrEmpty(_connectionString))
-        //    {
-        //        optionsBuilder.UseNpgsql(_connectionString, buider =>
-        //        {
-        //            buider.EnableRetryOnFailure(maxRetryCount: 3);
-        //        }).LogTo(Console.WriteLine, LogLevel.Information);
-        //    }
-        //    else
-        //    {
-        //        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
-        //    }
-        //}
+        ///protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        ///{
+        ///    if (!string.IsNullOrEmpty(_connectionString))
+        ///    {
+        ///        optionsBuilder.UseNpgsql(_connectionString, buider =>
+        ///        {
+        ///            buider.EnableRetryOnFailure(maxRetryCount: 3);
+        ///        }).LogTo(Console.WriteLine, LogLevel.Information);
+        ///    }
+        ///    else
+        ///    {
+        ///        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        ///    }
+        ///}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,7 +101,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<KarteKbnMst>().HasKey(o => new { o.HpId, o.KarteKbn });
             modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.PtId, r.SeqNo });
             modelBuilder.Entity<PtSanteiConf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
-            modelBuilder.Entity<KensaInfDetail>().HasKey(r => new { r.HpId, r.PtId, r.IraiCd, r.SeqNo });
+            modelBuilder.Entity<KensaInfDetail>().HasKey(r => new { r.HpId, r.SeqNo });
             modelBuilder.Entity<KensaMst>().HasKey(r => new { r.HpId, r.KensaItemCd, r.KensaItemSeqNo });
             modelBuilder.Entity<PtAlrgyDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
             modelBuilder.Entity<PtAlrgyElse>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
@@ -444,6 +444,7 @@ namespace PostgreDataContext
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
             modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
+            modelBuilder.Entity<UserMst>().HasIndex(u => new {u.UserId}).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

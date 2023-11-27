@@ -11,7 +11,8 @@ namespace Domain.Models.Online.QualificationConfirmation;
 public class QCXmlMsgResponse
 {
     [XmlElement(ElementName = "MessageHeader")]
-    public MessageHeader MessageHeader { get; set; }
+    public MessageHeader MessageHeader { get; set; } = new();
+
     [XmlElement(ElementName = "MessageBody")]
-    public MessageBody MessageBody { get; set; }
+    public MessageBody MessageBody { get; set; } = new();
 }

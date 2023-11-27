@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+﻿using Amazon.Runtime.Internal.Util;
+using Domain.Models.Diseases;
 using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
@@ -7,8 +8,11 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using StackExchange.Redis;
 using System.Data;
@@ -22,16 +26,20 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     private readonly string defaultSetName = "新規セット";
     private readonly string defaultGroupName = "新規グループ";
     private readonly int tryCountSave = 10;
+    private readonly IAmazonS3Service _amazonS3Service;
     private readonly string key;
     private readonly IDatabase _cache;
     private readonly IConfiguration _configuration;
+    private readonly AmazonS3Options _options;
 
-    public SetMstRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+    public SetMstRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider, IConfiguration configuration, IAmazonS3Service amazonS3Service) : base(tenantProvider)
     {
         key = GetCacheKey() + "SetMst";
         _configuration = configuration;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
+        _amazonS3Service = amazonS3Service;
+        _options = optionsAccessor.Value;
     }
 
     public void GetRedis()
@@ -74,6 +82,12 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModelList;
     }
 
+    public void DeleteKey(int generationId)
+    {
+        var finalKey = key + "_" + generationId;
+        _cache.KeyDelete(finalKey);
+    }
+
     private IEnumerable<SetMstModel> ReadCache(int generationId)
     {
         var finalKey = key + "_" + generationId;
@@ -95,7 +109,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             setMstModelList = ReadCache(generationId);
         }
-
         List<SetMstModel> result;
         if (string.IsNullOrEmpty(textSearch))
         {
@@ -297,10 +310,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         var keys = NoTrackingDataContext.SetOdrInf.Where(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted != 1).Select(s => new { s.RpNo, s.RpEdaNo }).ToList();
         var allOrderDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).ToList();
         Dictionary<long, List<OrderTooltipModel>> dicOrders = new();
-        foreach (var key in keys)
+        foreach (var keyItem in keys)
         {
-            var orderDetailPerRpNo = allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? string.Empty, item.Suryo, item.UnitName ?? string.Empty)).ToList();
-            dicOrders.Add(key.RpNo, orderDetailPerRpNo);
+            var orderDetailPerRpNo = allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && keyItem.RpNo == item.RpNo && keyItem.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? string.Empty, item.Suryo, item.UnitName ?? string.Empty)).ToList();
+            dicOrders.Add(keyItem.RpNo, orderDetailPerRpNo);
         }
 
         return new SetMstTooltipModel(listKarteNames, dicOrders, byomeiNameList);
@@ -390,18 +403,15 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     {
                         flag = false;
                         innerException = tryEx.InnerException?.ToString() ?? string.Empty;
-                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
-                            if (HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
-                            {
-                                count++;
-                                //RetrySaveSetMst(setMst);
-                                continue;
-                            }
+                        if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint") && HandleException(ex) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
+                        {
+                            count++;
+                            continue;
+                        }
                         break;
                     }
                 }
             }
-            //Console.WriteLine(ex.Message);
             if (!flag)
             {
                 RetrySaveSetMst(setMst);
@@ -1056,10 +1066,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                                         innerException = tryEx.InnerException?.ToString() ?? string.Empty;
                                         if (HandleException(tryEx) == "23505" && innerException.Contains("23505") && innerException.Contains("unique constraint"))
                                         {
-                                            //RetryCopyPasteSetMst(copyItem, pasteItem, listPasteItems);
-
-                                            //TrackingDataContext.SaveChanges();
-                                            //transaction.Commit();
                                             count++;
                                             continue;
                                         }
@@ -1310,6 +1316,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     private void AddNewItemToSave(int userId, List<int> listCopySetCds, Dictionary<int, SetMst> dictionarySetMstMap)
     {
         listCopySetCds = listCopySetCds.Distinct().ToList();
+
         // Order inf
         var listCopySetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetOrderInfs = new List<SetOdrInf>();
@@ -1352,17 +1359,66 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
         TrackingDataContext.SetKarteInf.AddRange(listPasteSetKarteInfs);
 
-        // Karte Image inf
+        #region Karte File Inf
         var listCopySetKarteImageInfs = NoTrackingDataContext.SetKarteImgInf.Where(item => listCopySetCds.Contains(item.SetCd)).ToList();
-        var listPasteSetKarteImageInfs = new List<SetKarteImgInf>();
-        foreach (var item in listCopySetKarteImageInfs)
+        List<SetKarteImgInf> listPasteSetKarteImageInfs = new();
+        string baseAccessUrl = _options.BaseAccessUrl;
+        foreach (var copySetCd in listCopySetCds)
         {
-            SetKarteImgInf karteImage = item.DeepClone();
-            karteImage.SetCd = dictionarySetMstMap[karteImage.SetCd].SetCd;
-            karteImage.Id = 0;
-            listPasteSetKarteImageInfs.Add(karteImage);
+            var seqNoBySetCdList = listCopySetKarteImageInfs.Where(item => item.SetCd == copySetCd).Select(item => item.SeqNo).Distinct().ToList();
+            if (!seqNoBySetCdList.Any())
+            {
+                continue;
+            }
+            long maxSeqNo = seqNoBySetCdList!.Max();
+            var listCopySetKarteFileBySetCd = listCopySetKarteImageInfs.Where(item => item.SetCd == copySetCd && maxSeqNo == item.SeqNo).ToList();
+            foreach (var sourceSetFile in listCopySetKarteFileBySetCd)
+            {
+                List<string> listSourceFolder = new()
+                {
+                    CommonConstants.Store,
+                    CommonConstants.Karte,
+                    CommonConstants.SetPic,
+                    sourceSetFile.SetCd.ToString()
+                };
+
+                string path = _amazonS3Service.GetFolderUploadOther(listSourceFolder);
+                var karteImageEntity = listCopySetKarteFileBySetCd.FirstOrDefault(item => item.SetCd == sourceSetFile.SetCd
+                                                                                          && item.FileName == sourceSetFile.FileName);
+                if (karteImageEntity == null)
+                {
+                    continue;
+                }
+                SetKarteImgInf newSetFile = sourceSetFile.DeepClone();
+                newSetFile.SetCd = dictionarySetMstMap[newSetFile.SetCd].SetCd;
+                newSetFile.Id = 0;
+                newSetFile.SeqNo = 1;
+
+                var fileName = new StringBuilder();
+                fileName.Append(baseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
+                fileName.Append(karteImageEntity.FileName);
+                string oldFileName = fileName.ToString();
+
+                List<string> listNewFolder = new()
+                {
+                    CommonConstants.Store,
+                    CommonConstants.Karte,
+                    CommonConstants.SetPic,
+                    newSetFile.SetCd.ToString()
+                };
+                string newFile = baseAccessUrl + $"/" + _amazonS3Service.GetFolderUploadOther(listNewFolder) + _amazonS3Service.GetUniqueFileNameKey(karteImageEntity.FileName!.Trim());
+                var copySuccess = _amazonS3Service.CopyObjectAsync(oldFileName.Replace(baseAccessUrl, string.Empty), newFile.Replace(baseAccessUrl, string.Empty)).Result;
+                if (copySuccess)
+                {
+                    newSetFile.FileName = newFile.Replace(baseAccessUrl + "/" + _amazonS3Service.GetFolderUploadOther(listNewFolder), string.Empty);
+                    listPasteSetKarteImageInfs.Add(newSetFile);
+                }
+            }
         }
-        TrackingDataContext.SetKarteInf.AddRange(listPasteSetKarteInfs);
+        TrackingDataContext.SetKarteImgInf.AddRange(listPasteSetKarteImageInfs);
+        #endregion
 
         // Set byomei
         var listCopySetByomeies = NoTrackingDataContext.SetByomei.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
@@ -1402,7 +1458,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
                 }
-                //LevelDown(1, userId, listUpdateLevel1);
                 LevelDown(1, userId, listUpdateLevel1);
                 TrackingDataContext.SaveChanges();
 
@@ -1480,7 +1535,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             dragItem.Level2 = dropItem.Level2;
             dragItem.Level3 = 1;
             dragItem.IsDeleted = DeleteTypes.Deleted;
-            //LevelDown(3, userId, listUpdateLevel3);
             foreach (var item in listUpdateLevel3SkipLast)
             {
                 item.IsDeleted = DeleteTypes.Deleted;
@@ -1563,7 +1617,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 var rootMaxDropUpdateLevel2 = maxDropUpdateLevel2.FirstOrDefault(m => m.Level3 == 0);
                 var listDropUpdateLevel2ExceptMaxLevel = listDropUpdateLevel2.Where(l => !maxDropUpdateLevel2.Contains(l)).ToList();
                 int dropItemLevel1 = dropItem.Level1;
-                //LevelDown(2, userId, listDropUpdateLevel2);
                 var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
                 foreach (var item in listDrag)
                 {
@@ -1635,7 +1688,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         item.UpdateId = userId;
                         item.IsDeleted = DeleteTypes.Deleted;
                     }
-                    //LevelDown(2, userId, listUpdateLevel2);
                     LevelDown(2, userId, listUpdateLevel2);
                     foreach (var item in listUpdateLevel2)
                     {
@@ -1695,7 +1747,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 var listUpdateLevel3 = listSetMsts?.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList() ?? new();
                 var maxUpdateLevel3 = listUpdateLevel3.OrderByDescending(mst => mst.Level3).FirstOrDefault();
                 var listUpdateLevel3ExceptMaxLevel = listUpdateLevel3.Where(mst => mst != maxUpdateLevel3).ToList();
-                //LevelDown(3, userId, listUpdateLevel3);
                 LevelDown(3, userId, listUpdateLevel3ExceptMaxLevel);
                 foreach (var item in listUpdateLevel3ExceptMaxLevel)
                 {
@@ -1763,7 +1814,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var maxDropUpdateLevel2 = listUpdateLevel2.Where(m => m.Level2 == maxLevel2).ToList();
             var rootMaxDropUpdateLevel2 = maxDropUpdateLevel2.FirstOrDefault(m => m.Level3 == 0);
             var listDropUpdateLevel2ExceptMaxLevel = listUpdateLevel2.Where(l => !maxDropUpdateLevel2.Contains(l)).ToList();
-            //LevelDown(2, userId, listUpdateLevel2);
             LevelDown(2, userId, listDropUpdateLevel2ExceptMaxLevel);
             foreach (var item in listDropUpdateLevel2ExceptMaxLevel)
             {
@@ -1817,7 +1867,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             if (dragItem.Level1 == dropItem.Level1 && dragItem.Level2 == dropItem.Level2)
             {
                 var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).OrderByDescending(mst => mst.Level3).ToList();
-                //LevelDown(3, userId, listUpdateLevel3);
                 LevelDown(3, userId, listUpdateLevel3);
                 foreach (var item in listUpdateLevel3)
                 {
@@ -1853,7 +1902,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
                 }
-                //LevelDown(3, userId, listDropUpdateLevel3);
 
                 dragItem.Level1 = dropItem.Level1;
                 dragItem.Level2 = dropItem.Level2;
@@ -1893,7 +1941,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 if (dragItem.Level3 > dropItem.Level3)
                 {
                     var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > dropItem.Level3 && mst.Level3 < dragItem.Level3).ToList();
-                    //LevelDown(3, userId, listDropUpdateLevel3);
                     LevelDown(3, userId, listDropUpdateLevel3);
                     foreach (var item in listDropUpdateLevel3)
                     {
@@ -1952,7 +1999,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0 && mst.Level1 < dragItem.Level1).ToList();
             var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1).ToList();
-            //LevelDown(1, userId, listUpdateLevel1);
             LevelDown(1, userId, listUpdateLevel1);
             foreach (var item in listUpdateLevel1)
             {
@@ -1983,7 +2029,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var maxDropUpdateLevel1 = listUpdateLevel1.Where(m => m.Level1 == maxLevel1).ToList();
             var rootMaxDropUpdateLevel1 = maxDropUpdateLevel1.FirstOrDefault(m => m.Level2 == 0 && m.Level3 == 0);
             var listDropUpdateLevel1ExceptMaxLevel = listUpdateLevel1.Where(l => !maxDropUpdateLevel1.Contains(l)).ToList();
-            //LevelDown(1, userId, listUpdateLevel1);
             LevelDown(1, userId, listDropUpdateLevel1ExceptMaxLevel);
             foreach (var item in listDropUpdateLevel1ExceptMaxLevel)
             {
@@ -2056,7 +2101,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var maxDropUpdateLevel1 = listUpdateLevel1.Where(m => m.Level1 == maxLevel1).ToList();
             var rootMaxDropUpdateLevel1 = maxDropUpdateLevel1.FirstOrDefault(m => m.Level2 == 0 && m.Level3 == 0);
             var listDropUpdateLevel1ExceptMaxLevel = listUpdateLevel1.Where(l => !maxDropUpdateLevel1.Contains(l)).ToList();
-            //LevelDown(1, userId, listUpdateLevel1);
             LevelDown(1, userId, listDropUpdateLevel1ExceptMaxLevel);
             foreach (var item in listDropUpdateLevel1ExceptMaxLevel)
             {
@@ -2154,8 +2198,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         {
                             count++;
                             continue;
-                            //LevelDown(3, userId, listUpdate);
-                            //TrackingDataContext.SaveChanges();
                         }
                         break;
                     }
@@ -2166,7 +2208,6 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 LevelDown(level, userId, listUpdate);
                 TrackingDataContext.SaveChanges();
             }
-            //Console.WriteLine(ex.Message);
         }
     }
 
@@ -2397,19 +2438,13 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     [Obsolete]
     private static string HandleException(Exception exception)
     {
-        if (exception is DbUpdateConcurrencyException concurrencyEx)
+        if (exception is DbUpdateConcurrencyException)
         {
             return "0";
         }
-        else if (exception is DbUpdateException dbUpdateEx)
+        else if (exception is DbUpdateException dbUpdateEx && dbUpdateEx.InnerException is PostgresException postgreException)
         {
-            if (dbUpdateEx.InnerException != null)
-            {
-                if (dbUpdateEx.InnerException is PostgresException postgreException)
-                {
-                    return postgreException.Code ?? string.Empty;
-                }
-            }
+            return postgreException.Code ?? string.Empty;
         }
 
         return "0";

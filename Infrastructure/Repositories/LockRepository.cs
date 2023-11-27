@@ -364,6 +364,8 @@ namespace Infrastructure.Repositories
 
         public List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo)
         {
+            var stopwatch = Stopwatch.StartNew();
+            Console.WriteLine("Get Info after Remove Lock");
             List<ResponseLockModel> result = new();
             List<long> raiinNoList = new();
             List<RaiinInf> raiinInfList = new();
@@ -413,6 +415,7 @@ namespace Infrastructure.Repositories
                                RaiinState.Examining
                            ));
             }
+            Console.WriteLine($"Stop Get Info after Remove Lock {stopwatch.ElapsedMilliseconds}");
             return result;
         }
 
@@ -514,8 +517,8 @@ namespace Infrastructure.Repositories
 
             var listFunctMst = NoTrackingDataContext.FunctionMsts.Select(f => new { f.FunctionCd, f.FunctionName });
             var listPtInf = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None).Select(pt => new { pt.PtId, pt.PtNum });
-            //var listCalcStatus = NoTrackingDataContext.CalcStatus.Where(cal => cal.HpId == hpId && !string.IsNullOrEmpty(cal.CreateMachine) && (cal.Status == 0 || cal.Status == 1));
-            var listDocInf = NoTrackingDataContext.DocInfs.Where(d => d.HpId == hpId && d.IsLocked == 1 && !string.IsNullOrEmpty(d.LockMachine) && d.IsDeleted == DeleteStatus.None);
+            ///var listCalcStatus = NoTrackingDataContext.CalcStatus.Where(cal => cal.HpId == hpId && !string.IsNullOrEmpty(cal.CreateMachine) && (cal.Status == 0 || cal.Status == 1));
+            var listDocInf = NoTrackingDataContext.DocInfs.Where(d => d.HpId == hpId && d.IsLocked == 1 && !string.IsNullOrEmpty(d.LockMachine) && d.IsDeleted == DeleteStatus.None && (managerKbn != 0 || d.LockId == userId));
 
             var lockInfQuerry = (from lockInf in listLock
                                  join functMst in listFunctMst on lockInf.FunctionCd equals functMst.FunctionCd
@@ -535,25 +538,25 @@ namespace Infrastructure.Repositories
                                     PtNum = ptInf.PtNum,
                                 }).ToList();
 
-            //var calcStatusQuerry = (from calcStatus in listCalcStatus
-            //                        join ptInf in listPtInf on calcStatus.PtId equals ptInf.PtId
-            //                        select new
-            //                        {
-            //                            CalcStatus = calcStatus,
-            //                            PtNum = ptInf.PtNum,
-            //                        }).ToList();
+            ///var calcStatusQuerry = (from calcStatus in listCalcStatus
+            ///                        join ptInf in listPtInf on calcStatus.PtId equals ptInf.PtId
+            ///                        select new
+            ///                        {
+            ///                            CalcStatus = calcStatus,
+            ///                            PtNum = ptInf.PtNum,
+            ///                        }).ToList();
 
             result.AddRange(lockInfQuerry.AsEnumerable().Select(l => new LockInfModel(
                 new LockPtInfModel(l.LockInf.PtId, l.FunctName, l.PtNum, l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo, l.LockInf.UserId)
             )).ToList());
 
             result.AddRange(docInfQuerry.AsEnumerable().Select(doc => new LockInfModel(
-                new LockDocInfModel(doc.DocInf.PtId, doc.PtNum, doc.DocInf.SinDate, doc.DocInf.RaiinNo, doc.DocInf.SeqNo, doc.DocInf.CategoryCd, doc.DocInf.FileName ?? string.Empty, doc.DocInf.DspFileName ?? string.Empty, doc.DocInf.IsLocked, (DateTime)doc.DocInf.LockDate, doc.DocInf.LockId, doc.DocInf.LockMachine ?? string.Empty, doc.DocInf.IsDeleted)
+                new LockDocInfModel(doc.DocInf.PtId, doc.PtNum, doc.DocInf.SinDate, doc.DocInf.RaiinNo, doc.DocInf.SeqNo, doc.DocInf.CategoryCd, doc.DocInf.FileName ?? string.Empty, doc.DocInf.DspFileName ?? string.Empty, doc.DocInf.IsLocked, (doc.DocInf.LockDate ?? DateTime.MinValue), doc.DocInf.LockId, doc.DocInf.LockMachine ?? string.Empty, doc.DocInf.IsDeleted)
             )).ToList());
 
-            //result.AddRange(calcStatusQuerry.AsEnumerable().Select(cal => new LockInfModel(
-            //    new LockCalcStatusModel(cal.CalcStatus.CalcId, cal.CalcStatus.PtId, cal.PtNum, cal.CalcStatus.SinDate, cal.CalcStatus.CreateDate, cal.CalcStatus.CreateMachine ?? string.Empty, cal.CalcStatus.CreateId)
-            //)));
+            ///result.AddRange(calcStatusQuerry.AsEnumerable().Select(cal => new LockInfModel(
+            ///    new LockCalcStatusModel(cal.CalcStatus.CalcId, cal.CalcStatus.PtId, cal.PtNum, cal.CalcStatus.SinDate, cal.CalcStatus.CreateDate, cal.CalcStatus.CreateMachine ?? string.Empty, cal.CalcStatus.CreateId)
+            ///)));
 
             return result;
 
@@ -589,35 +592,28 @@ namespace Infrastructure.Repositories
 
         public bool Unlock(int hpId, int userId, List<LockInfModel> lockInfModels, int managerKbn)
         {
-            try
-            {
-                //bool result = true;
-                List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.Machine)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
-                List<LockPtInfModel> listLockPtInfModel = lockInfModels.Where(u => u.PatientInfoModels != null && !u.CheckDefaultValue()).Select(u => u.PatientInfoModels).ToList();
-                //List<LockCalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.CalcStatusModels != null && !u.CheckDefaultValue()).Select(u => u.CalcStatusModels).ToList();
-                List<LockDocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.DocInfModels != null && !u.CheckDefaultValue()).Select(u => u.DocInfModels).ToList();
-                UnlockSessionInf(hpId, listMachineLock);
-                UnlockPtInf(hpId, userId, listLockPtInfModel);
-                //UnlockCalcStatusInf(hpId, userId, listLockCalcStatusModel);
-                UnlockDocInf(hpId, userId, listLockDocInfModel);
+            ///bool result = true;
+            List<string> listMachineLock = lockInfModels.Where(u => !string.IsNullOrEmpty(u.Machine)).Select(u => u.Machine).GroupBy(u => u).Select(u => u.First()).ToList();
+            List<LockPtInfModel> listLockPtInfModel = lockInfModels.Where(u => u.PatientInfoModels != null && !u.CheckDefaultValue()).Select(u => u.PatientInfoModels).ToList();
+            ///List<LockCalcStatusModel> listLockCalcStatusModel = lockInfModels.Where(u => u.CalcStatusModels != null && !u.CheckDefaultValue()).Select(u => u.CalcStatusModels).ToList();
+            List<LockDocInfModel> listLockDocInfModel = lockInfModels.Where(u => u.DocInfModels != null && !u.CheckDefaultValue()).Select(u => u.DocInfModels).ToList();
+            UnlockSessionInf(hpId, listMachineLock);
+            UnlockPtInf(hpId, userId, listLockPtInfModel);
+            ///UnlockCalcStatusInf(hpId, userId, listLockCalcStatusModel);
+            UnlockDocInf(hpId, userId, listLockDocInfModel);
 
-                TrackingDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
 
-                return true;
-                //if (TrackingDataContext.SaveChanges() >= 1)
-                //{
-                //    result = true;
-                //}
-                //else
-                //{
-                //    result = false;
-                //}
-                //return result;
-            }
-            catch
-            {
-                throw;
-            }
+            return true;
+            ///if (TrackingDataContext.SaveChanges() >= 1)
+            ///{
+            ///    result = true;
+            ///}
+            ///else
+            ///{
+            ///    result = false;
+            ///}
+            ///return result;
         }
 
         public void UnlockSessionInf(int hpId, List<string> listMachineToUnlock)
@@ -679,22 +675,21 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void UnlockCalcStatusInf(int hpId, int userId, List<LockCalcStatusModel> listLockCalcStatusModels)
-        {
-            foreach (var listLockCalcStatusModel in listLockCalcStatusModels)
-            {
-                var calcStatus = NoTrackingDataContext.CalcStatus.FirstOrDefault(x => x.HpId == hpId && x.PtId == listLockCalcStatusModel.PtId);
-                if (calcStatus != null)
-                {
-                    calcStatus.CreateMachine = string.Empty;
-                    calcStatus.Status = 8;
-                    calcStatus.UpdateId = userId;
-                    calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                }
-
-                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", listLockCalcStatusModel.PtId, listLockCalcStatusModel.SinDate, 0, "", "CALC_STATUS:" + listLockCalcStatusModel.CalcId));
-            }
-        }
+        ///private void UnlockCalcStatusInf(int hpId, int userId, List<LockCalcStatusModel> listLockCalcStatusModels)
+        ///{
+        ///    foreach (var listLockCalcStatusModel in listLockCalcStatusModels)
+        ///    {
+        ///        var calcStatus = NoTrackingDataContext.CalcStatus.FirstOrDefault(x => x.HpId == hpId && x.PtId == listLockCalcStatusModel.PtId);
+        ///        if (calcStatus != null)
+        ///        {
+        ///            calcStatus.CreateMachine = string.Empty;
+        ///            calcStatus.Status = 8;
+        ///            calcStatus.UpdateId = userId;
+        ///            calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        ///        }
+        ///        _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", listLockCalcStatusModel.PtId, listLockCalcStatusModel.SinDate, 0, "", "CALC_STATUS:" + listLockCalcStatusModel.CalcId));
+        ///    }
+        ///}
 
         private void UnlockDocInf(int hpId, int userId, List<LockDocInfModel> listLockDocInfModel)
         {

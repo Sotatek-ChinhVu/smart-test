@@ -61,6 +61,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         {
             _systemConfRepository.ReleaseResource();
             _coDrugInfFinder.ReleaseResource();
+            _amazonS3Service.Dispose();
         }
     }
 

@@ -43,89 +43,83 @@ namespace Infrastructure.Repositories
         public bool SaveListPatientGroup(int hpId, int userId, List<PatientGroupMstModel> patientGroupMstModels)
         {
             bool status = false;
-            try
+            // list get in datatacontext
+            var groupMstLists = TrackingDataContext.PtGrpNameMsts.Where(mst => mst.IsDeleted == 0 && mst.HpId == hpId).ToList();
+            var groupDetailLists = TrackingDataContext.PtGrpItems.Where(detail => detail.IsDeleted == 0 && detail.HpId == hpId).ToList();
+
+            List<long> listDetailSeqNoModel = new();
+            List<PtGrpNameMst> listAddNewGroupMsts = new();
+            List<PtGrpItem> listAddNewGroupItemMsts = new();
+
+            foreach (var model in patientGroupMstModels)
             {
-                // list get in datatacontext
-                var groupMstLists = TrackingDataContext.PtGrpNameMsts.Where(mst => mst.IsDeleted == 0 && mst.HpId == hpId).ToList();
-                var groupDetailLists = TrackingDataContext.PtGrpItems.Where(detail => detail.IsDeleted == 0 && detail.HpId == hpId).ToList();
-
-                List<long> listDetailSeqNoModel = new();
-                List<PtGrpNameMst> listAddNewGroupMsts = new();
-                List<PtGrpItem> listAddNewGroupItemMsts = new();
-
-                foreach (var model in patientGroupMstModels)
+                var groupMst = groupMstLists.FirstOrDefault(x => x.GrpId == model.GroupId);
+                if (groupMst != null)
                 {
-                    var groupMst = groupMstLists.FirstOrDefault(x => x.GrpId == model.GroupId);
-                    if (groupMst != null)
+                    groupMst.GrpName = model.GroupName;
+                    int sortNo = 1;
+                    foreach (var detail in model.Details)
                     {
-                        groupMst.GrpName = model.GroupName;
-                        int sortNo = 1;
-                        foreach (var detail in model.Details)
+                        var groupDetail = groupDetailLists.FirstOrDefault(x => x.SeqNo == detail.SeqNo && x.GrpId == model.GroupId);
+                        if (groupDetail != null)
                         {
-                            var groupDetail = groupDetailLists.FirstOrDefault(x => x.SeqNo == detail.SeqNo && x.GrpId == model.GroupId);
-                            if (groupDetail != null)
-                            {
-                                groupDetail.GrpCode = detail.GroupCode;
-                                groupDetail.GrpCodeName = detail.GroupDetailName;
-                                groupDetail.SortNo = sortNo;
-                                groupDetail.UpdateId = userId;
-                                groupDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            }
-                            else
-                            {
-                                listAddNewGroupItemMsts.Add(ConvertToPtGrpItem(hpId, userId, sortNo, 0, new PtGrpItem(), detail, true));
-                            }
-                            sortNo++;
+                            groupDetail.GrpCode = detail.GroupCode;
+                            groupDetail.GrpCodeName = detail.GroupDetailName;
+                            groupDetail.SortNo = sortNo;
+                            groupDetail.UpdateId = userId;
+                            groupDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         }
-                    }
-                    else
-                    {
-                        listAddNewGroupMsts.Add(ConvertToPtGrpNameMst(hpId, userId, 0, new PtGrpNameMst(), model, true));
-                        int sortNo = 1;
-                        foreach (var detail in model.Details)
+                        else
                         {
                             listAddNewGroupItemMsts.Add(ConvertToPtGrpItem(hpId, userId, sortNo, 0, new PtGrpItem(), detail, true));
-                            sortNo++;
                         }
+                        sortNo++;
                     }
-                    listDetailSeqNoModel.AddRange(model.Details.Select(x => x.SeqNo).ToList());
                 }
-
-                TrackingDataContext.PtGrpNameMsts.AddRange(listAddNewGroupMsts);
-                TrackingDataContext.PtGrpItems.AddRange(listAddNewGroupItemMsts);
-
-                // delete Group
-                var listGroupDeletes = groupMstLists.Where(mst => !patientGroupMstModels.Select(x => x.GroupId).ToList().Contains(mst.GrpId)).ToList();
-                if (listGroupDeletes != null && listGroupDeletes.Count > 0)
+                else
                 {
-                    foreach (var item in listGroupDeletes)
+                    listAddNewGroupMsts.Add(ConvertToPtGrpNameMst(hpId, userId, 0, new PtGrpNameMst(), model, true));
+                    int sortNo = 1;
+                    foreach (var detail in model.Details)
                     {
-                        item.IsDeleted = 1;
-                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        item.UpdateId = userId;
+                        listAddNewGroupItemMsts.Add(ConvertToPtGrpItem(hpId, userId, sortNo, 0, new PtGrpItem(), detail, true));
+                        sortNo++;
                     }
                 }
-
-                // delete Detail
-                var listDetailDeletes = groupDetailLists.Where(mst => !listDetailSeqNoModel.Contains(mst.SeqNo)).ToList();
-                if (listDetailDeletes != null && listDetailDeletes.Count > 0)
-                {
-                    foreach (var item in listDetailDeletes)
-                    {
-                        item.IsDeleted = 1;
-                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        item.UpdateId = userId;
-                    }
-                }
-
-                TrackingDataContext.SaveChanges();
-                status = true;
-                return status;
+                listDetailSeqNoModel.AddRange(model.Details.Select(x => x.SeqNo).ToList());
             }
-            catch (Exception)
+
+            TrackingDataContext.PtGrpNameMsts.AddRange(listAddNewGroupMsts);
+            TrackingDataContext.PtGrpItems.AddRange(listAddNewGroupItemMsts);
+
+            // delete Group
+            var listGroupDeletes = groupMstLists.Where(mst => !patientGroupMstModels.Select(x => x.GroupId).ToList().Contains(mst.GrpId)).ToList();
+            if (listGroupDeletes != null && listGroupDeletes.Count > 0)
             {
-                throw;
+                foreach (var item in listGroupDeletes)
+                {
+                    item.IsDeleted = 1;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    item.UpdateId = userId;
+                }
             }
+
+            // delete Detail
+            var listDetailDeletes = groupDetailLists.Where(mst => !listDetailSeqNoModel.Contains(mst.SeqNo)).ToList();
+            if (listDetailDeletes != null && listDetailDeletes.Count > 0)
+            {
+                foreach (var item in listDetailDeletes)
+                {
+                    item.IsDeleted = 1;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    item.UpdateId = userId;
+                }
+            }
+
+            TrackingDataContext.SaveChanges();
+            status = true;
+            return status;
+
         }
 
         private PtGrpNameMst ConvertToPtGrpNameMst(int hpId, int userId, int isDelete, PtGrpNameMst entity, PatientGroupMstModel model, bool? isAddNew = false)

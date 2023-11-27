@@ -34,33 +34,33 @@
 
         public int SinKouiKbn { get; private set; }
 
-        public string MasterSbt { get; private set; } = string.Empty;
+        public string MasterSbt { get; private set; }
 
-        public string ItemCd { get; private set; } = string.Empty;
+        public string ItemCd { get; private set; }
 
-        public string KensaItemCd { get; private set; } = string.Empty;
+        public string KensaItemCd { get; private set; }
 
         public int KensaItemSeqNo { get; private set; }
 
         public double Ten { get; private set; }
 
-        public string Name { get; private set; } = string.Empty;
+        public string Name { get; private set; }
 
-        public string ReceName { get; private set; } = string.Empty;
+        public string ReceName { get; private set; }
 
-        public string KanaName1 { get; private set; } = string.Empty;
+        public string KanaName1 { get; private set; }
 
-        public string KanaName2 { get; private set; } = string.Empty;
+        public string KanaName2 { get; private set; }
 
-        public string KanaName3 { get; private set; } = string.Empty;
+        public string KanaName3 { get; private set; }
 
-        public string KanaName4 { get; private set; } = string.Empty;
+        public string KanaName4 { get; private set; }
 
-        public string KanaName5 { get; private set; } = string.Empty;
+        public string KanaName5 { get; private set; }
 
-        public string KanaName6 { get; private set; } = string.Empty;
+        public string KanaName6 { get; private set; }
 
-        public string KanaName7 { get; private set; } = string.Empty;
+        public string KanaName7 { get; private set; }
 
         public int StartDate { get; private set; }
 
@@ -68,9 +68,9 @@
 
         public double DefaultValue { get; private set; }
 
-        public string OdrUnitName { get; private set; } = string.Empty;
+        public string OdrUnitName { get; private set; }
 
-        public string SanteiItemCd { get; private set; } = string.Empty;
+        public string SanteiItemCd { get; private set; }
 
         public int SanteigaiKbn { get; private set; }
 

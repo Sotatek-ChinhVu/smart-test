@@ -53,45 +53,44 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
                 throw;
             }
         }
-        //Temp no update status in here
-        //void UpdateCalulateStatus()
-        //{
-        //    try
-        //    {
-        //        string sql = "UPDATE \"public\".\"CALC_STATUS\"  SET  \"STATUS\" = 8"
-        //                                              + " WHERE  \"HP_ID\" = @hpId"
-        //                                              + "        AND  \"STATUS\" in (0, 1)"
-        //                                              + "        AND \"CREATE_DATE\" < @createDate";
-        //        TrackingDataContext.Database.SetCommandTimeout(1800);
-        //        TrackingDataContext.Database.ExecuteSqlRaw(sql,
-        //                new NpgsqlParameter("@hpId", hpId),
-        //                new NpgsqlParameter("@createDate", CIUtil.IntToDate(dateDelete)));
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        _loggingHandler.WriteLogExceptionAsync(e, ModuleName);
-        //    }
-        //}
-        //Temp no delete lock in here
-        //void DeleteLockInf()
-        //{
-        //    try
-        //    {
-        //        string sql = "DELETE FROM \"public\".\"LOCK_INF\" "
-        //                            + " WHERE  \"HP_ID\" = @hpId"
-        //                            + "        AND  \"SIN_DATE\" < @sinDate"
-        //                            + "        AND  \"MACHINE\" = @computerName";
-
-        //        dbConnection.ExecuteNonQuery(sql,
-        //            new NpgsqlParameter("@hpId", hpCd),
-        //            new NpgsqlParameter("@sinDate", dateDelete),
-        //            new NpgsqlParameter("@computerName", CIUtil.GetComputerName()));
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Log.WriteLogError(ModuleName, this, nameof(DeleteLockInf), e);
-        //    }
-        //}
+        ///Temp no update status in here
+        ///void UpdateCalulateStatus()
+        ///{
+        ///    try
+        ///    {
+        ///        string sql = "UPDATE \"public\".\"CALC_STATUS\"  SET  \"STATUS\" = 8"
+        ///                                              + " WHERE  \"HP_ID\" = @hpId"
+        ///                                              + "        AND  \"STATUS\" in (0, 1)"
+        ///                                              + "        AND \"CREATE_DATE\" < @createDate";
+        ///        TrackingDataContext.Database.SetCommandTimeout(1800);
+        ///        TrackingDataContext.Database.ExecuteSqlRaw(sql,
+        ///                new NpgsqlParameter("@hpId", hpId),
+        ///                new NpgsqlParameter("@createDate", CIUtil.IntToDate(dateDelete)));
+        ///    }
+        ///    catch (Exception e)
+        ///    {
+        ///        _loggingHandler.WriteLogExceptionAsync(e, ModuleName);
+        ///    }
+        ///}
+        ///Temp no delete lock in here
+        ///void DeleteLockInf()
+        ///{
+        ///    try
+        ///    {
+        ///        string sql = "DELETE FROM \"public\".\"LOCK_INF\" "
+        ///                            + " WHERE  \"HP_ID\" = @hpId"
+        ///                            + "        AND  \"SIN_DATE\" < @sinDate"
+        ///                            + "        AND  \"MACHINE\" = @computerName";
+        ///        dbConnection.ExecuteNonQuery(sql,
+        ///            new NpgsqlParameter("@hpId", hpCd),
+        ///            new NpgsqlParameter("@sinDate", dateDelete),
+        ///            new NpgsqlParameter("@computerName", CIUtil.GetComputerName()));
+        ///    }
+        ///    catch (Exception e)
+        ///    {
+        ///        Log.WriteLogError(ModuleName, this, nameof(DeleteLockInf), e);
+        ///    }
+        ///}
 
         void DeleteRenkeiReq()
         {
@@ -122,8 +121,8 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
                      DeleteCalulateStatus();
                      DeleteBackUpReq();
                      DeleteRenkeiReq();
-                     //DeleteLockInf();
-                     //UpdateCalulateStatus();
+                     ///DeleteLockInf();
+                     ///UpdateCalulateStatus();
                      transaction.Commit();
                  }
                  catch (Exception e)

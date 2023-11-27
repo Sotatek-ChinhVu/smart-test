@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+
+using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.HpInf;
@@ -350,14 +351,16 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             if (saveMedicalSuccess)
             {
-                Task.Run(() =>
+                Task.Run(() =>{
                _calculateService.RunCalculate(new RecaculationInputDto(
                         hpId,
-                        ptId,
-                        sinDate,
+                      ptId,
+                       sinDate,
                         inputDatas.IsSagaku ? 1 : 0,
                         ""
-                    )));
+                    ));
+                _calculateService.ReleaseSource();
+                   });
             }
 
             if (saveMedicalSuccess)
@@ -850,14 +853,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return (dicValidation, allOdrInfs);
     }
 
-    private void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
-    {
-        lock (obj)
-        {
-            dicValidation.Add(key, status);
-        }
-    }
-
     private List<FamilyModel> ConvertToFamilyList(List<FamilyItem> familyInputList)
     {
         List<FamilyModel> result = new();
@@ -891,9 +886,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
     private UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
     {
-        foreach (var flowSheet in flowSheets)
+        foreach (var tagNo in flowSheets.Select(item => item.TagNo).ToList())
         {
-            if (flowSheet.TagNo < -1 || flowSheet.TagNo > 7)
+            if (tagNo < -1 || tagNo > 7)
             {
                 return UpsertFlowSheetStatus.TagNoNoValid;
             }

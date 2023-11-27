@@ -1,4 +1,4 @@
-﻿using Domain.Models.Diseases;
+using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.KarteInfs;

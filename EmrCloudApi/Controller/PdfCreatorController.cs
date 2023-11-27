@@ -6,6 +6,7 @@ using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.PatientManagement;
+using EmrCloudApi.Responses;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.DrugInfor.CommonDrugInf;
@@ -28,6 +29,8 @@ using System.Text.Json;
 using System.Web;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
+using StackExchange.Redis;
+using Helper.Redis;
 
 namespace EmrCloudApi.Controller;
 
@@ -40,6 +43,11 @@ public class PdfCreatorController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IHistoryCommon _historyCommon;
     private readonly IGetCommonDrugInf _commonDrugInf;
+    private readonly IDatabase _cache;
+    private readonly string NoDataMessage = @"<meta charset=""utf-8"">
+                                              <title>印刷対象が見つかりません。</title>
+                                              <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+                                              ";
 
     public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf)
     {
@@ -47,6 +55,17 @@ public class PdfCreatorController : ControllerBase
         _configuration = configuration;
         _historyCommon = historyCommon;
         _commonDrugInf = commonDrugInf;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    private void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -162,11 +181,6 @@ public class PdfCreatorController : ControllerBase
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
-
-        //public async Task<IActionResult> GenerateAccountingReport([FromBody] AccountingCoReportModelRequest request)
-        //{
-        //    var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
-
         var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
@@ -327,6 +341,24 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
+    [HttpGet(ApiPath.SetDownloadNameReport)]
+    public IActionResult SetDownloadNameReportReportingData([FromQuery] SetDownloadNameReportRequest request)
+    {
+        string key = "KensaIraiPdfReport_" + request.KeyReport;
+        ContentDisposition cd = new ContentDisposition
+        {
+            FileName = HttpUtility.UrlEncode(request.DownloadName),
+            Inline = true  // false = prompt the user for downloading;  true = browser to try to show the file inline
+        };
+        Response.Headers.Add("Content-Disposition", cd.ToString());
+        if (!_cache.KeyExists(key))
+        {
+            return Content(NoDataMessage, "text/html");
+        }
+        var result = _cache.StringGet(key);
+        return File(Convert.FromBase64String(result.AsString()), "application/pdf");
+    }
+
     [HttpGet(ApiPath.ExportKarte2)]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
@@ -373,7 +405,6 @@ public class PdfCreatorController : ControllerBase
 
                 using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
                 {
-                    PdfReader pdfReader = new PdfReader(streamingData);
                     var byteData = streamingData.ToArray();
                     var result = SetTitleMetadata(byteData, "カルテ２号紙.pdf");
                     ContentDisposition cd = new ContentDisposition
@@ -397,13 +428,13 @@ public class PdfCreatorController : ControllerBase
         string htmlData = string.Empty;
         switch (inputData.Type)
         {
-            case TypeHTMLEnum.ShowProductInf:
+            case TypeHTMLObject.ShowProductInf:
                 htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
-            case TypeHTMLEnum.ShowKanjaMuke:
+            case TypeHTMLObject.ShowKanjaMuke:
                 htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
-            case TypeHTMLEnum.ShowMdbByomei:
+            case TypeHTMLObject.ShowMdbByomei:
                 htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
         }
@@ -448,7 +479,6 @@ public class PdfCreatorController : ControllerBase
 
                 using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
                 {
-                    PdfReader pdfReader = new PdfReader(streamingData);
                     var byteData = streamingData.ToArray();
                     var result = SetTitleMetadata(byteData, "医薬品情報.pdf");
                     ContentDisposition cd = new ContentDisposition
@@ -550,15 +580,9 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> ActionReturnPDF(bool returnNoData, object data, ReportType reportType, string fileName)
     {
-        var json = JsonSerializer.Serialize(data);
-        //Console.WriteLine("DataJsonTestPdfString: " + json);
         if (returnNoData)
         {
-            return Content(@"
-            <meta charset=""utf-8"">
-            <title>印刷対象が見つかりません。</title>
-            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
-            ", "text/html");
+            return Content(NoDataMessage, "text/html");
         }
 
         StringContent jsonContent = (reportType == ReportType.DrugInfo)
@@ -610,11 +634,7 @@ public class PdfCreatorController : ControllerBase
         var dataList = dataModel.Data;
         if (!dataList.Any())
         {
-            return Content(@"
-            <meta charset=""utf-8"">
-            <title>印刷対象が見つかりません。</title>
-            <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
-            ", "text/html");
+            return Content(NoDataMessage, "text/html");
         }
         var csv = new StringBuilder();
 

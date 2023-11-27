@@ -68,7 +68,7 @@ namespace Reporting.InDrug.Service
         private readonly Dictionary<string, bool> _visibleFieldData;
         private readonly Dictionary<string, bool> _visibleAtPrint;
         private readonly IReadRseReportFileService _readRseReportFileService;
-        private string _formFileName = "fmInDrug.rse";
+        private readonly string _formFileName = "fmInDrug.rse";
 
         #region Constructor and Init
         public InDrugCoReportService(ICoInDrugFinder indrugFinder, IReadRseReportFileService readRseReportFileService)
@@ -119,7 +119,7 @@ namespace Reporting.InDrug.Service
                         UpdateDrawForm();
                         currentPage++;
                     }
-                };
+                }
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
                 _extralData.Add("totalPage", pageIndex.ToString());
@@ -338,7 +338,7 @@ namespace Reporting.InDrug.Service
         /// <returns></returns>
         int _getPrintedLineCount()
         {
-            return printOutData.Count() % dataRowCount;
+            return printOutData.Count % dataRowCount;
         }
 
         /// <summary>

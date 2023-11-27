@@ -8,11 +8,8 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Globalization;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -24,7 +21,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public ReceptionModel Get(long raiinNo, bool flag)
+        public ReceptionModel Get(long raiinNo, bool flag = false)
         {
             var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && (!flag || r.IsDeleted == 0));
             var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
@@ -215,7 +212,7 @@ namespace Infrastructure.Repositories
                         }
 
                         var confirmedFlgRaiinInfs = raiinInfsInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
-                        int infConsFlg = confirmedFlgRaiinInfs.Count() == 0 ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg[flgIdx].AsInteger());
+                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
                         infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
                     }
                     //Update PharmacistsInfoConsFlg
@@ -245,7 +242,7 @@ namespace Infrastructure.Repositories
                         }
 
                         var confirmedFlgRaiinInfs = onlineConfirmationHistoryInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
-                        int infConsFlg = confirmedFlgRaiinInfs.Count() == 0 ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg[flgIdx].AsInteger());
+                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
                         infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
                     }
                     //Update PharmacistsInfoConsFlg
@@ -473,20 +470,43 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
+        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
+                r.HpId == hpId
+                && r.RaiinNo == raiinNo).FirstOrDefault();
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            updateEntity(raiinInf);
+            return NoTrackingDataContext.SaveChanges() > 0;
+        }
+
+        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity, int userId)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
+                r.HpId == hpId
+                && r.RaiinNo == raiinNo
+                && r.IsDeleted == DeleteTypes.None).FirstOrDefault();
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            updateEntity(raiinInf);
+            raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            raiinInf.UpdateId = userId;
+            NoTrackingDataContext.SaveChanges();
+            return true;
+        }
+
         private void SaveInsuraceConfirmationHistories(IEnumerable<InsuranceDto> insurances, long ptId, int hpId, int userId)
         {
             if (insurances.Any())
             {
                 List<PtHokenCheck> listHokenCheckAddNew = new();
-
-                var hokenIds = insurances.Select(i => i.HokenId).Distinct();
-                var oldHokenCheckDB = TrackingDataContext.PtHokenChecks
-                                            .Where(item =>
-                                                            hokenIds.Contains(item.HokenId)
-                                                            && item.HpId == hpId
-                                                            && item.PtID == ptId
-                                                            && item.IsDeleted == 0
-                                            ).ToList();
 
                 foreach (var insuranceItem in insurances)
                 {
@@ -922,7 +942,7 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
                 };
 
-            var raiins = raiinQuery.ToList().DistinctBy(r => r.raiinInf.RaiinNo).ToList();
+            var raiins = raiinQuery.AsEnumerable().DistinctBy(r => r.raiinInf.RaiinNo).ToList();
             var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
@@ -1030,41 +1050,9 @@ namespace Infrastructure.Repositories
             return Update(hpId, raiinNo, r => r.KaId = kaId, userId);
         }
 
-        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity, int userId)
-        {
-            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
-                r.HpId == hpId
-                && r.RaiinNo == raiinNo
-                && r.IsDeleted == DeleteTypes.None).FirstOrDefault();
-            if (raiinInf is null)
-            {
-                return false;
-            }
-
-            updateEntity(raiinInf);
-            raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            raiinInf.UpdateId = userId;
-            NoTrackingDataContext.SaveChanges();
-            return true;
-        }
-
         public bool UpdateIsDeleted(int hpId, long raiinNo)
         {
             return Update(hpId, raiinNo, r => r.IsDeleted = 0);
-        }
-
-        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
-        {
-            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
-                r.HpId == hpId
-                && r.RaiinNo == raiinNo).FirstOrDefault();
-            if (raiinInf is null)
-            {
-                return false;
-            }
-
-            updateEntity(raiinInf);
-            return NoTrackingDataContext.SaveChanges() > 0;
         }
 
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
@@ -1163,8 +1151,6 @@ namespace Infrastructure.Repositories
         {
             var isDoctor = NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
             var doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
-            //if (tantoId <= 0 || !doctors.Any(p => p.Id == tantoId))
-            //{
             // if have only 1 doctor in user list
             if (doctors.Count == 2)
             {
@@ -1227,11 +1213,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            //if DefaultDoctorSetting = 0
             return doctors.Count > 0 ? doctors[0].Id : 0;
-            //}
-
-            //return 0;
         }
 
         public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)
@@ -1476,10 +1458,10 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, bool isAll)
+        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted, bool isAll = false)
         {
             List<ReceptionModel> result = new();
-            var raiinInfs = new List<RaiinInf>();
+            List<RaiinInf> raiinInfs;
             if (isAll)
             {
                 raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
@@ -1874,7 +1856,7 @@ namespace Infrastructure.Repositories
 
         public int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo)
         {
-            var raiinInf = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId 
+            var raiinInf = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                          && item.SinDate == sindate
                                                                          && (!(uketukeMode == 1 || uketukeMode == 3) || item.UketukeSbt == infKbn)
                                                                          && (!(uketukeMode == 2 || uketukeMode == 3) || item.KaId == kaId)
@@ -1886,6 +1868,64 @@ namespace Infrastructure.Repositories
                 return raiinInf.UketukeNo + 1 < defaultUkeNo ? defaultUkeNo : raiinInf.UketukeNo + 1;
             }
             return defaultUkeNo > 0 ? defaultUkeNo : 1;
+        }
+
+        public RaiinInfModel? GetRaiinInf(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.SinDate == sinDate &&
+                p.RaiinNo == raiinNo &&
+                p.IsDeleted == DeleteTypes.None
+            );
+
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(p =>
+                p.HpId == hpId &&
+                p.IsDeleted == DeleteStatus.None
+            );
+
+            var userMsts = NoTrackingDataContext.UserMsts.Where(p =>
+                p.HpId == hpId &&
+                p.IsDeleted == DeleteStatus.None
+            );
+
+            var join = (
+                from raiinInf in raiinInfs
+                join kaMst in kaMsts on
+                    new { raiinInf.HpId, raiinInf.KaId } equals
+                    new { kaMst.HpId, kaMst.KaId } into joinKaMsts
+                from joinKaMst in joinKaMsts.DefaultIfEmpty()
+                join userMst in userMsts on
+                    new { raiinInf.HpId, raiinInf.TantoId } equals
+                    new { userMst.HpId, TantoId = userMst.UserId } into joinUserMsts
+                from joinUserMst in joinUserMsts.DefaultIfEmpty()
+                select new
+                {
+                    raiinInf,
+                    joinKaMst,
+                    joinUserMst
+                }
+                ).ToList();
+
+            RaiinInfModel? result = null;
+
+            if (join != null && join.Any())
+            {
+                result = new RaiinInfModel(join.First().raiinInf.PtId,
+                                           join.First().raiinInf.SinDate,
+                                           join.First().raiinInf.RaiinNo,
+                                           join.First().raiinInf.KaId,
+                                           join.First().joinKaMst.KaName ?? string.Empty,
+                                           join.First().raiinInf.TantoId,
+                                           join.First().joinUserMst.DrName ?? string.Empty,
+                                           join.First().joinUserMst.Name ?? string.Empty,
+                                           join.First().joinUserMst.KanaName ?? string.Empty,
+                                           join.First().joinKaMst.KaSname ?? string.Empty
+                                        );
+            }
+
+            return result;
         }
 
     }
