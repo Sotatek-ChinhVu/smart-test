@@ -37,7 +37,8 @@ namespace AWSSDK.Constants
             {"upgrade-failed", 10},
             {"terminating", 11},
             {"terminated", 12},
-            {"terminate-failed", 13}
+            {"terminate-failed", 13},
+            {"stoped", 14}
         };
 
             return rdsStatusDictionary;
