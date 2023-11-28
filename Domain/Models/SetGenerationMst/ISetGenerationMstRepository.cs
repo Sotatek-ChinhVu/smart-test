@@ -37,6 +37,8 @@ namespace Domain.Models.SetGenerationMst
 
         AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId);
 
+        void RestoreByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId);
+
         List<ListSetGenerationMstModel> GetAll(int hpId);
 
         IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false);

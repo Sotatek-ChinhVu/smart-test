@@ -122,6 +122,8 @@ namespace Interactor.SetSendaiGeneration
                             var saveSetKbn = _setGenerationMstRepository.SaveCloneOdrInfCmt(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add OdrInfCmt Successs!" : $"Add OdrInfCmt Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
+
+                        _setGenerationMstRepository.RestoreByomeiSetGeneration(inputData.HpId, inputData.UserId, result.TargetGeneration, result.SourceGeneration);
                     }
                     else
                     {
