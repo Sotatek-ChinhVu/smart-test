@@ -13,6 +13,11 @@ public class CoPtByomeiFinder : RepositoryBase, ICoPtByomeiFinder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public PtInf FindPtInf(int hpId, long ptId)
     {
         return NoTrackingDataContext.PtInfs.Where(p =>

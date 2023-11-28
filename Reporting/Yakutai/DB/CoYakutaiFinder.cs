@@ -13,6 +13,13 @@ namespace Reporting.Yakutai.DB
         {
             _systemConfig = systemConfig;
         }
+
+        public void ReleaseResource()
+        {
+            _systemConfig.ReleaseResource();
+            DisposeDataContext();
+        }
+
         /// <summary>
         /// 医療機関情報を取得する
         /// </summary>

@@ -1,9 +1,10 @@
-﻿using Entity.Tenant;
+﻿using Domain.Common;
+using Entity.Tenant;
 using Reporting.GrowthCurve.Model;
 
 namespace Reporting.GrowthCurve.DB;
 
-public interface ISpecialNoteFinder
+public interface ISpecialNoteFinder : IRepositoryBase
 {
     List<GcStdInfModel> GetStdPoint(int hpId);
 

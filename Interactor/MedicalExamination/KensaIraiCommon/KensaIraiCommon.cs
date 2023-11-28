@@ -114,6 +114,7 @@ public class KensaIraiCommon : IKensaIraiCommon
             _ordInfRepository.ReleaseResource();
             _groupInfRepository.ReleaseResource();
             _loggingHandler.Dispose();
+            _coKensaIraiFinder.ReleaseResource();
         }
     }
 

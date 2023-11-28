@@ -12,6 +12,12 @@ namespace Reporting.AccountingCard.DB
         public CoAccountingCardFinder(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         /// <summary>
         /// 患者情報取得
         /// </summary>

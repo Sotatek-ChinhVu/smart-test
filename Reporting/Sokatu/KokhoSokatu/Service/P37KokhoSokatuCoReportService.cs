@@ -65,51 +65,58 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
 
     public CommonReportingRequestModel GetP37KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-        int indexPage = 1;
-        var fileName = new Dictionary<string, string>();
-
-        if (getData)
+        try
         {
-            for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
+            int indexPage = 1;
+            var fileName = new Dictionary<string, string>();
+
+            if (getData)
             {
-                if (prefCnt == 0)
+                for (int prefCnt = 0; prefCnt <= 1; prefCnt++)
                 {
-                    prefInOut = "（県内）";
-                }
-                else
-                {
-                    prefInOut = "（県外）";
-                }
-
-                curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
-                if (curReceInfs.Count() == 0) continue;
-
-                hasNextPage = true;
-                this.currentPage = 1;
-                while (getData && hasNextPage)
-                {
-                    UpdateDrawForm();
-                    if (currentPage == 2)
+                    if (prefCnt == 0)
                     {
-                        fileName.Add(indexPage.ToString(), _formFileName2);
+                        prefInOut = "（県内）";
                     }
                     else
                     {
-                        fileName.Add(indexPage.ToString(), _formFileName1);
+                        prefInOut = "（県外）";
                     }
-                    currentPage++;
-                    indexPage++;
+
+                    curReceInfs = receInfs.Where(r => prefCnt == 0 ? r.IsPrefIn : !r.IsPrefIn).ToList();
+                    if (curReceInfs.Count() == 0) continue;
+
+                    hasNextPage = true;
+                    this.currentPage = 1;
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        if (currentPage == 2)
+                        {
+                            fileName.Add(indexPage.ToString(), _formFileName2);
+                        }
+                        else
+                        {
+                            fileName.Add(indexPage.ToString(), _formFileName1);
+                        }
+                        currentPage++;
+                        indexPage++;
+                    }
                 }
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new P14KokhoSokatuCoReportServiceMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new P14KokhoSokatuCoReportServiceMapper(_setFieldData, _listTextData, _extralData, fileName, _singleFieldData, _visibleFieldData).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function

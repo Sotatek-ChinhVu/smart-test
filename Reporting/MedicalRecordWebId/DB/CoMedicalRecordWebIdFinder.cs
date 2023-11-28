@@ -11,6 +11,11 @@ public class CoMedicalRecordWebIdFinder : RepositoryBase, ICoMedicalRecordWebIdF
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
     {
         return new CoHpInfModel(NoTrackingDataContext.HpInfs

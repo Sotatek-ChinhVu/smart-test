@@ -18,6 +18,13 @@ public class CoSta2003Finder : RepositoryBase, ICoSta2003Finder
         _sta1001Finder = sta1001Finder;
     }
 
+    public void ReleaseResource()
+    {
+        _hpInfFinder.ReleaseResource();
+        _sta1001Finder.ReleaseResource();
+        DisposeDataContext();
+    }
+
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
     {
         return _hpInfFinder.GetHpInf(hpId, sinDate);

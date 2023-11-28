@@ -67,30 +67,37 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
         public CommonReportingRequestModel GetP11KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            _hpId = hpId;
-            _seikyuYm = seikyuYm;
-            _seikyuType = seikyuType;
-            currentKbnIndex = 0;
-            currentHokIndex = 0;
-            currentPrefIndex = 0;
-            currentKohiIndex = 0;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                _hasNextPage = true;
-                _currentPage = 1;
+                _hpId = hpId;
+                _seikyuYm = seikyuYm;
+                _seikyuType = seikyuType;
+                currentKbnIndex = 0;
+                currentHokIndex = 0;
+                currentPrefIndex = 0;
+                currentKohiIndex = 0;
+                var getData = GetData();
 
-                while (getData && _hasNextPage)
+                if (getData)
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
-            }
+                    _hasNextPage = true;
+                    _currentPage = 1;
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+                    while (getData && _hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+                }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            }
+            finally
+            {
+                _kokhoFinder.ReleaseResource();
+            }
         }
 
         private void UpdateDrawForm()

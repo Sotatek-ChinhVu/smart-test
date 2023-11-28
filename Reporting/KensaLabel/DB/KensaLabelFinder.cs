@@ -12,6 +12,11 @@ namespace Reporting.KensaLabel.DB
         {
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public PtInfModel GetPtInfModel(int hpId, long ptId)
         {
             int printDate = CIUtil.DateTimeToInt(DateTime.Now);

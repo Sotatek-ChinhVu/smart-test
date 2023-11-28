@@ -86,25 +86,32 @@ namespace Reporting.Statistics.Sta2011.Service
 
         public CommonReportingRequestModel GetSta2011ReportingData(CoSta2011PrintConf printConf, int hpId)
         {
-            HpId = hpId;
-            _printConf = printConf;
-            // get data to print
-            GetFieldNameList();
-            GetRowCount();
-            if (GetData())
+            try
             {
-                _hasNextPage = true;
-                _currentPage = 1;
-
-                //印刷
-                while (_hasNextPage)
+                HpId = hpId;
+                _printConf = printConf;
+                // get data to print
+                GetFieldNameList();
+                GetRowCount();
+                if (GetData())
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
-            }
+                    _hasNextPage = true;
+                    _currentPage = 1;
 
-            return new Sta2011Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+                    //印刷
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+                }
+
+                return new Sta2011Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+            }
+            finally
+            {
+                _staFinder.ReleaseResource();
+            }
         }
 
         #region Get Data

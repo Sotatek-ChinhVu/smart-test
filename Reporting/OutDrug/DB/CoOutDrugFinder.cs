@@ -13,6 +13,12 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
     public CoOutDrugFinder(ITenantProvider tenantProvider) : base(tenantProvider)
     {
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     /// <summary>
     /// オーダー情報取得
     /// </summary>

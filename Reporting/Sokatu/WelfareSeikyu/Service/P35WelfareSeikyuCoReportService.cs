@@ -69,32 +69,39 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
         public CommonReportingRequestModel GetP35WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.seikyuType = seikyuType;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                foreach ((string currentCode, string currentCity) in cityNames)
-                {
-                    currentFutansyaNo = currentCode;
-                    currentCityName = currentCity;
-                    VisibleAtPrint("Frame", true);
-                    currentPage = 1;
-                    hasNextPage = true;
+                this.hpId = hpId;
+                this.seikyuYm = seikyuYm;
+                this.seikyuType = seikyuType;
+                var getData = GetData();
 
-                    while (getData && hasNextPage)
+                if (getData)
+                {
+                    foreach ((string currentCode, string currentCity) in cityNames)
                     {
-                        UpdateDrawForm();
-                        currentPage++;
+                        currentFutansyaNo = currentCode;
+                        currentCityName = currentCity;
+                        VisibleAtPrint("Frame", true);
+                        currentPage = 1;
+                        hasNextPage = true;
+
+                        while (getData && hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            currentPage++;
+                        }
                     }
                 }
-            }
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            }
+            finally
+            {
+                _welfareFinder.ReleaseResource();
+            }
         }
 
         #region Private function

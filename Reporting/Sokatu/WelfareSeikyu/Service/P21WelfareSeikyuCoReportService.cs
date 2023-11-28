@@ -72,30 +72,37 @@ public class P21WelfareSeikyuCoReportService : IP21WelfareSeikyuCoReportService
 
     public CommonReportingRequestModel GetP21WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-        currentPage = 1;
-        hasNextPage = true;
-
-        if (seikyuYm >= 202303)
+        try
         {
-            _formFileName = "p21WelfareSeikyu_2303.rse";
-        }
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
+            currentPage = 1;
+            hasNextPage = true;
 
-        if (getData)
-        {
-            while (getData && hasNextPage)
+            if (seikyuYm >= 202303)
             {
-                UpdateDrawForm();
-                currentPage++;
+                _formFileName = "p21WelfareSeikyu_2303.rse";
             }
-        }
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            if (getData)
+            {
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        }
+        finally
+        {
+            _welfareFinder.ReleaseResource();
+        }
     }
 
     #region Private function

@@ -67,39 +67,46 @@ public class P21KokhoSeikyuCoReportService : IP21KokhoSeikyuCoReportService
 
     public CommonReportingRequestModel GetP21KokhoSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if (getData)
+        try
         {
-            foreach (string currentNo in hokensyaNos)
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
+
+            if (getData)
             {
-                currentHokensyaNo = currentNo;
-
-                //国保一般と退職は別に請求書を作成する
-                for (short kokhoKbn = 0; kokhoKbn <= 1; kokhoKbn++)
+                foreach (string currentNo in hokensyaNos)
                 {
-                    printKokhoKbn = kokhoKbn;
+                    currentHokensyaNo = currentNo;
 
-                    curReceInfs = receInfs.Where(r => (kokhoKbn == 0 ? r.IsNrAll : r.IsRetAll) && r.HokensyaNo == currentHokensyaNo).ToList();
-                    if (curReceInfs.Count() == 0) continue;
-
-                    currentPage = 1;
-                    hasNextPage = true;
-                    while (getData && hasNextPage)
+                    //国保一般と退職は別に請求書を作成する
+                    for (short kokhoKbn = 0; kokhoKbn <= 1; kokhoKbn++)
                     {
-                        UpdateDrawForm();
-                        currentPage++;
+                        printKokhoKbn = kokhoKbn;
+
+                        curReceInfs = receInfs.Where(r => (kokhoKbn == 0 ? r.IsNrAll : r.IsRetAll) && r.HokensyaNo == currentHokensyaNo).ToList();
+                        if (curReceInfs.Count() == 0) continue;
+
+                        currentPage = 1;
+                        hasNextPage = true;
+                        while (getData && hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            currentPage++;
+                        }
                     }
                 }
             }
-        }  
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function
