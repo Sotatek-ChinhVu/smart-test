@@ -227,12 +227,27 @@ namespace Infrastructure.CommonDB
             var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value;
             if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
             {
-                return string.Empty;
+                return GetDomainFromCookie();
             }
 
             var clientDomain = SubStringToGetParam(queryString);
 
             return clientDomain ?? string.Empty;
+        }
+
+        public string GetDomainFromCookie()
+        {
+            string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies.FirstOrDefault().Value ?? string.Empty;
+            if (!string.IsNullOrEmpty(cookieValue))
+            {
+                var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
+                if (cookie == null)
+                {
+                    return string.Empty;
+                }
+                return cookie.Domain;
+            }
+            return string.Empty;
         }
 
         public string SubStringToGetParam(string queryString)

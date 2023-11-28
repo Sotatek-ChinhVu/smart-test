@@ -6,7 +6,6 @@ using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.PatientManagement;
-using EmrCloudApi.Responses;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.DrugInfor.CommonDrugInf;
@@ -31,12 +30,13 @@ using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using StackExchange.Redis;
 using Helper.Redis;
+using Infrastructure.Common;
 
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PdfCreatorController : ControllerBase
+public class PdfCreatorController : CookieController
 {
     private static HttpClient _httpClient = new HttpClient();
     private readonly IReportService _reportService;
@@ -49,7 +49,7 @@ public class PdfCreatorController : ControllerBase
                                               <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
                                               ";
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _reportService = reportService;
         _configuration = configuration;
@@ -71,7 +71,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ExportKarte1)]
     public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
     {
-        var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
+        var karte1Data = _reportService.GetKarte1ReportingData(HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
         return await RenderPdf(karte1Data, ReportType.Common, karte1Data.JobName);
     }
 
@@ -85,14 +85,14 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ExportDrugInfo)]
     public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
     {
-        var drugInfo = _reportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var drugInfo = _reportService.SetOrderInfo(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(drugInfo, ReportType.DrugInfo, "薬情.pdf");
     }
 
     [HttpGet(ApiPath.ExportByomei)]
     public async Task<IActionResult> GenerateByomeiReport([FromQuery] ByomeiExportRequest request)
     {
-        var byomeiData = _reportService.GetByomeiReportingData(request.HpId, request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
+        var byomeiData = _reportService.GetByomeiReportingData(HpId, request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
         return await RenderPdf(byomeiData, ReportType.Common, byomeiData.JobName);
     }
 
@@ -104,7 +104,7 @@ public class PdfCreatorController : ControllerBase
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
-        var data = _reportService.GetOrderLabelReportingData(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, new());
+        var data = _reportService.GetOrderLabelReportingData(0, HpId, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, new());
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -116,28 +116,28 @@ public class PdfCreatorController : ControllerBase
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
-        var sijisenData = _reportService.GetSijisenReportingData(request.HpId, request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
+        var sijisenData = _reportService.GetSijisenReportingData(HpId, request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
         return await RenderPdf(sijisenData, ReportType.Common, sijisenData.JobName);
     }
 
     [HttpGet(ApiPath.MedicalRecordWebId)]
     public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
     {
-        var data = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
+        var data = _reportService.GetMedicalRecordWebIdReportingData(HpId, request.PtId, request.SinDate);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.OutDrug)]
     public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
     {
-        var data = _reportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var data = _reportService.GetOutDrugReportingData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.OutDug, "院外処方箋.pdf");
     }
 
     [HttpGet(ApiPath.ReceiptCheck)]
     public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
     {
-        var data = _reportService.GetReceiptCheckCoReportService(request.HpId, request.PtIds, request.SeikyuYm);
+        var data = _reportService.GetReceiptCheckCoReportService(HpId, request.PtIds, request.SeikyuYm);
         if (string.IsNullOrEmpty(data.DataJsonConverted))
         {
             return await RenderPdf(data, ReportType.Common, data.JobName);
@@ -157,7 +157,7 @@ public class PdfCreatorController : ControllerBase
                                                                          item.HokenId))
                                                      .ToList();
 
-        var data = _reportService.GetReceiptListReportingData(request.HpId, request.SeikyuYm, receInputList);
+        var data = _reportService.GetReceiptListReportingData(HpId, request.SeikyuYm, receInputList);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -171,7 +171,7 @@ public class PdfCreatorController : ControllerBase
         {
             grpConditions.Add(new(item.GrpId, item.GrpCd));
         }
-        var data = _reportService.GetPeriodPrintData(request.HpId, request.StartDate, request.EndDate, request.SourcePt, grpConditions, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.NyukinBase);
+        var data = _reportService.GetPeriodPrintData(HpId, request.StartDate, request.EndDate, request.SourcePt, grpConditions, request.PrintSort, request.IsPrintList, request.PrintByMonth, request.PrintByGroup, request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn, request.HakkoDay, request.Memo, request.FormFileName, request.NyukinBase);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
@@ -181,14 +181,14 @@ public class PdfCreatorController : ControllerBase
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
-        var data = _reportService.GetAccountingData(request.HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
+        var data = _reportService.GetAccountingData(HpId, request.Mode, request.PtId, multiAccountDueListModels, request.IsPrintMonth, request.Ryoshusho, request.Meisai);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
     [HttpGet(ApiPath.ReceiptReport)]
     public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
-        var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
+        var data = _reportService.GetAccountingReportingData(HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
 
@@ -198,11 +198,11 @@ public class PdfCreatorController : ControllerBase
         CommonReportingRequestModel data;
         if (request.Type == 0)
         {
-            data = _reportService.GetGrowthCurveA5PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+            data = _reportService.GetGrowthCurveA5PrintData(HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
         }
         else
         {
-            data = _reportService.GetGrowthCurveA4PrintData(request.HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
+            data = _reportService.GetGrowthCurveA4PrintData(HpId, new GrowthCurveConfig(request.PtNum, request.PtId, request.PtName, request.Sex, request.BirthDay, request.PrintMode, request.PrintDate, request.WeightVisible, request.HeightVisible, request.Per50, request.Per25, request.Per10, request.Per3, request.SDAvg, request.SD1, request.SD2, request.SD25, request.Legend, request.Scope));
         }
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -210,7 +210,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
-        var data = _reportService.GetStatisticReportingData(request.HpId, request.FormName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType, request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo);
+        var data = _reportService.GetStatisticReportingData(HpId, request.FormName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType, request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -219,14 +219,14 @@ public class PdfCreatorController : ControllerBase
     {
         var request = JsonSerializer.Deserialize<PatientManagementRequest>(requestString.StringJson) ?? new();
         PatientManagementModel patientManagementModel = ConvertToPatientManagementModel(request.PatientManagement);
-        var data = _reportService.GetPatientManagement(request.HpId, patientManagementModel);
+        var data = _reportService.GetPatientManagement(HpId, patientManagementModel);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.SeiKyuYm, request.HokenKbn, request.IsIncludeOutDrug, request.IsModePrint, request.isOpenedFromAccounting);
+        var data = _reportService.GetReceiptData(HpId, request.PtId, request.SinYm, request.HokenId, request.SeiKyuYm, request.HokenKbn, request.IsIncludeOutDrug, request.IsModePrint, request.isOpenedFromAccounting);
         var result = await RenderPdf(data, ReportType.Common, data.JobName);
         return result;
     }
@@ -234,14 +234,14 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.SyojyoSyoki)]
     public async Task<IActionResult> SyojyoSyoki([FromQuery] SyojyoSyokiRequest request)
     {
-        var data = _reportService.GetSyojyoSyokiReportingData(request.HpId, request.PtId, request.SeiKyuYm, request.HokenId);
+        var data = _reportService.GetSyojyoSyokiReportingData(HpId, request.PtId, request.SeiKyuYm, request.HokenId);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.Kensalrai)]
     public async Task<IActionResult> Kensalrai([FromQuery] KensalraiRequest request)
     {
-        var data = _reportService.GetKensalraiData(request.HpId, request.SystemDate, request.FromDate, request.ToDate, request.CenterCd);
+        var data = _reportService.GetKensalraiData(HpId, request.SystemDate, request.FromDate, request.ToDate, request.CenterCd);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -250,12 +250,12 @@ public class PdfCreatorController : ControllerBase
     {
         if (request.PrintType == 0)
         {
-            var data = _reportService.GetReceiptPrint(request.HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos, request.HokenKbn, request.SelectedReseputoShubeusu, request.DepartmentId, request.DoctorId, request.PrintNoFrom, request.PrintNoTo, request.IncludeTester, request.IsIncludeOutDrug, request.Sort, request.PrintPtIds);
+            var data = _reportService.GetReceiptPrint(HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos, request.HokenKbn, request.SelectedReseputoShubeusu, request.DepartmentId, request.DoctorId, request.PrintNoFrom, request.PrintNoTo, request.IncludeTester, request.IsIncludeOutDrug, request.Sort, request.PrintPtIds);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
         else
         {
-            var data = _reportService.GetReceiptPrintExcel(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
+            var data = _reportService.GetReceiptPrintExcel(HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.SeikyuYm);
             return RenderCsv(data);
         }
     }
@@ -265,12 +265,12 @@ public class PdfCreatorController : ControllerBase
     {
         if (request.IraiDate != 0)
         {
-            var data = _reportService.GetKensaHistoryPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate);
+            var data = _reportService.GetKensaHistoryPrint(HpId, request.UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
         else
         {
-            var data = _reportService.GetKensaResultMultiPrint(request.HpId, request.UserId, request.PtId, request.SetId, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate);
+            var data = _reportService.GetKensaResultMultiPrint(HpId, request.UserId, request.PtId, request.SetId, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate);
             return await RenderPdf(data, ReportType.Common, data.JobName);
         }
     }
@@ -286,42 +286,42 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceTarget)]
     public async Task<IActionResult> ReceTarget([FromQuery] ReceTargetRequest request)
     {
-        var data = _reportService.GetReceTargetPrint(request.HpId, request.SeikyuYm);
+        var data = _reportService.GetReceTargetPrint(HpId, request.SeikyuYm);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.DrugNoteSeal)]
     public async Task<IActionResult> GetDrugNoteSealPrintData([FromQuery] DrugNoteSealPrintDataRequest request)
     {
-        var data = _reportService.GetDrugNoteSealPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var data = _reportService.GetDrugNoteSealPrintData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.InDrug)]
     public async Task<IActionResult> GetInDrugPrintData([FromQuery] InDrugPrintDataRequest request)
     {
-        var data = _reportService.GetInDrugPrintData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var data = _reportService.GetInDrugPrintData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.Yakutai)]
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
-        var data = _reportService.GetYakutaiReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var data = _reportService.GetYakutaiReportingData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.KensaLabel)]
     public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
     {
-        var data = _reportService.GetKensaLabelPrintData(request.HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.InoutKbn, request.OdrKouiKbn));
+        var data = _reportService.GetKensaLabelPrintData(HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.InoutKbn, request.OdrKouiKbn));
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
     [HttpGet(ApiPath.AccountingCard)]
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
-        var data = _reportService.GetAccountingCardReportingData(request.HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
+        var data = _reportService.GetAccountingCardReportingData(HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
 
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -329,7 +329,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ExportKarte3)]
     public async Task<IActionResult> GetKarte3ReportingData([FromQuery] Karte3ReportingRequest request)
     {
-        var data = _reportService.GetKarte3ReportingData(request.HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
+        var data = _reportService.GetKarte3ReportingData(HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -337,7 +337,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GetAccountingCardListReportingData([FromForm] StringObjectRequest requestString)
     {
         var request = JsonSerializer.Deserialize<AccountingCardListRequest>(requestString.StringJson) ?? new();
-        var data = _reportService.GetAccountingCardListReportingData(request.HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
+        var data = _reportService.GetAccountingCardListReportingData(HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -362,7 +362,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ExportKarte2)]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
-        var inputData = new GetDataPrintKarte2InputData(request.PtId, request.HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder, request.EmptyMode);
+        var inputData = new GetDataPrintKarte2InputData(request.PtId, HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder, request.EmptyMode);
 
         var outputData = _historyCommon.GetDataKarte2(inputData);
 
@@ -422,7 +422,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.GetDataPrintDrugInfo)]
     public async Task<IActionResult> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
     {
-        var inputData = new GetDataPrintDrugInfoInputData(request.HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
+        var inputData = new GetDataPrintDrugInfoInputData(HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
 
         var drugInfo = _commonDrugInf.GetDrugInforModel(inputData.HpId, inputData.SinDate, inputData.ItemCd);
         string htmlData = string.Empty;
@@ -491,6 +491,17 @@ public class PdfCreatorController : ControllerBase
                 }
             }
         }
+    }
+
+    [HttpGet("GetCookie")]
+    public void GetCookie()
+    {
+        CookieOptions options = new();
+        options.Expires = DateTime.Now.AddMinutes(30);
+        options.Path = "/";
+        options.Secure = true;
+        var cookieObject = JsonSerializer.Serialize(new CookieModel(1, "uat-tenant.smartkarte.org"));
+        Response.Cookies.Append("CookieObject", cookieObject, options);
     }
 
     #region private function
@@ -745,5 +756,15 @@ public class PdfCreatorController : ControllerBase
         result.ListPtNums = requestItem.ListPtNums;
         return result;
     }
+
+    //private CookieModel GetCookieModel()
+    //{
+    //    string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies.FirstOrDefault().Value ?? string.Empty;
+    //    if (!string.IsNullOrEmpty(cookieValue))
+    //    {
+    //        return JsonSerializer.Deserialize<CookieModel>(cookieValue) ?? new();
+    //    }
+    //    return new();
+    //}
     #endregion
 }
