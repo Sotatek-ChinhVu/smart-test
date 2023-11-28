@@ -659,6 +659,7 @@ namespace Reporting.KensaHistory.DB
             else
             {
                 var kensasetDetail = NoTrackingDataContext.KensaSetDetails.Where(x => x.SetId == setId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.SortNo).ToList();
+
                 foreach (var cunrentItemSet in kensasetDetail)
                 {
                     var lastItemSet = kensasetDetail.LastOrDefault(x => x.KensaItemCd == cunrentItemSet.KensaItemCd);
@@ -699,8 +700,18 @@ namespace Reporting.KensaHistory.DB
             }
             #endregion
 
-            var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailRows, totalCol);
-            return result;
+            if (kensaInfDetailRows.Count() != 0)
+            {
+                var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailRows, totalCol);
+
+                return result;
+            }
+            else
+            {
+                var result = new ListKensaInfDetailModel(kensaInfDetailCol.ToList(), kensaInfDetailData, totalCol);
+
+                return result;
+            }
         }
     }
 }

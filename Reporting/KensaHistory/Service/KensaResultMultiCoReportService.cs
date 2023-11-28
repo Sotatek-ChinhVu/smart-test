@@ -505,6 +505,9 @@ namespace Reporting.KensaHistory.Service
                     data.Item1.Remove(item);
                 }
 
+
+                int i = 0;
+
                 foreach (var item in coKensaResultMultiModels.Where(x => x.SeqParentNo == 0))
                 {
                     var childrens = data.Item1.Where(x => x.SeqParentNo > 0 && item.RowSeqId.Contains(x.SeqParentNo.ToString()));
@@ -514,12 +517,25 @@ namespace Reporting.KensaHistory.Service
                         foreach (var itemChildren in childrens)
                         {
                             var indexNew = data.Item1.IndexOf(itemChildren);
-                            if (indexNew < index)
+
+                            if(childrens.Count() > 1)
+                            {
+                                if (indexNew < index)
+                                {
+                                    index = indexNew;
+                                }
+                            }
+                            else
                             {
                                 index = indexNew;
                             }
                         }
-                        parents.Add(index, item);
+
+                        if(index != 99999999)
+                        {
+                            parents.Add(index + i, item);
+                            i++;
+                        }
                     }
                 }
 

@@ -233,6 +233,8 @@ namespace Reporting.KensaHistory.Service
                     kensaInfDetailItems.Remove(item);
                 }
 
+                int i = 0;
+
                 foreach (var item in KensaInfDetailDataAbnormal.Where(x => x.SeqParentNo == 0))
                 {
                     var childrens = kensaInfDetailItems.Where(x => x.SeqParentNo > 0 && item.RowSeqId.Contains(x.SeqParentNo.ToString()));
@@ -243,12 +245,25 @@ namespace Reporting.KensaHistory.Service
                         foreach (var itemChildren in childrens)
                         {
                             var indexNew = kensaInfDetailItems.IndexOf(itemChildren);
-                            if (indexNew < index)
+
+                            if (childrens.Count() > 1)
+                            {
+                                if (indexNew < index)
+                                {
+                                    index = indexNew;
+                                }
+                            }
+                            else
                             {
                                 index = indexNew;
                             }
                         }
-                        parents.Add(index, item);
+
+                        if (index != 99999999)
+                        {
+                            parents.Add(index + i, item);
+                            i++;
+                        }
                     }
                 }
 
@@ -259,7 +274,7 @@ namespace Reporting.KensaHistory.Service
             }
 
             var kensaInfDetails = kensaInfDetailItems.Select(x => x.DynamicArray).ToList();
-            
+
             foreach (var item in kensaInfDetails)
             {
                 foreach (var index in item)
