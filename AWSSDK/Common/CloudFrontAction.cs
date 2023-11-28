@@ -145,7 +145,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"UpdateAlterCNAME. {ex.Message}");
             }
         }
 
@@ -195,6 +195,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"UpdateAlterCNAME. {ex.Message}");
             }
         }
 

@@ -36,6 +36,7 @@ namespace Interactor.SuperAdmin
         {
             try
             {
+                var dbName = CommonConstants.RemoveSpecialCharacters(inputData.SubDomain);
                 if (inputData.Size <= 0)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
@@ -48,12 +49,16 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
+                else if (string.IsNullOrEmpty(dbName))
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                }
                 var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
                 if (checkSubDomain)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomString(6));
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomString(6));
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -314,11 +319,6 @@ namespace Interactor.SuperAdmin
                     await Route53Action.CreateTenantDomain(subDomain);
                     await CloudFrontAction.UpdateNewTenantAsync(subDomain);
 
-                    var checkSubdomain = await Route53Action.CheckSubdomainExistence(subDomain);
-                    if (!checkSubdomain)
-                    {
-                        throw new Exception($"CheckSubdomainExistence (Sub domain not exists");
-                    }
 
                 }
                 else // Return landing page url by default
@@ -338,7 +338,7 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                    var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                var message = $"{subDomain} is created failed. Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return new Dictionary<string, string> { { "Error", ex.Message } };
