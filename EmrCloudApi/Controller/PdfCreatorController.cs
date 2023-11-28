@@ -756,15 +756,5 @@ public class PdfCreatorController : CookieController
         result.ListPtNums = requestItem.ListPtNums;
         return result;
     }
-
-    //private CookieModel GetCookieModel()
-    //{
-    //    string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies.FirstOrDefault().Value ?? string.Empty;
-    //    if (!string.IsNullOrEmpty(cookieValue))
-    //    {
-    //        return JsonSerializer.Deserialize<CookieModel>(cookieValue) ?? new();
-    //    }
-    //    return new();
-    //}
     #endregion
 }
