@@ -785,31 +785,27 @@ namespace Infrastructure.Repositories
                 var targetSetMsts = TrackingDataContext.ByomeiSetMsts.Where(x =>
                             x.HpId == hpId &&
                             x.GenerationId == targetGeneration).ToList();
-                var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-                executionStrategy.Execute(
-                () =>
+
+                using (var transaction = TrackingDataContext.Database.BeginTransaction())
                 {
-                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        targetSetMsts.ForEach(byomeiSetMst =>
                         {
-                            targetSetMsts.ForEach(byomeiSetMst =>
-                            {
-                                byomeiSetMst.IsDeleted = 1;
-                                byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                byomeiSetMst.UpdateId = userId;
-                                byomeiSetMst.UpdateMachine = "SmartKarte";
-                            });
-                            TrackingDataContext.SaveChanges();
-                            transaction.Commit();
-                        }
-                        catch (Exception)
-                        {
-                            transaction.Rollback();
-                            throw;
-                        }
+                            byomeiSetMst.IsDeleted = 1;
+                            byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            byomeiSetMst.UpdateId = userId;
+                            byomeiSetMst.UpdateMachine = "SmartKarte";
+                        });
+                        TrackingDataContext.SaveChanges();
+                        transaction.Commit();
                     }
-                });
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
                 return targetSetMsts.Count;
             });
             deleteTask.ContinueWith((action) =>
@@ -865,47 +861,78 @@ namespace Infrastructure.Repositories
             });
         }
 
-        public void RestoreListSetGeneration(int targetGeneration, int sourceGenerationId)
+        public void RestoreListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId)
         {
-            IsCanceled = false;
-            watch = System.Diagnostics.Stopwatch.StartNew();
             Task<int> deleteTask = Task<int>.Factory.StartNew(() =>
             {
-                var localContext = new DBContextFactory();
-                using (var transaction = localContext.BeginTransaction())
+                using (var transaction = TrackingDataContext.Database.BeginTransaction())
                 {
-                    if (IsCanceled) return 0;
-                    var targetSetMsts = localContext.ListSetMstRepository.FindList(x =>
-                        x.HpId == Session.HospitalID &&
-                        x.GenerationId == targetGeneration);
+                    var targetSetMsts = TrackingDataContext.ListSetMsts.Where(x =>
+                        x.HpId == hpId &&
+                        x.GenerationId == targetGeneration).ToList();
                     try
                     {
                         targetSetMsts.ForEach(listSetMst =>
                         {
                             listSetMst.IsDeleted = 1;
-                            listSetMst.UpdateDate = DateTime.Now;
-                            listSetMst.UpdateId = Session.UserID;
+                            listSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            listSetMst.UpdateId = userId;
                             listSetMst.UpdateMachine = CIUtil.GetComputerName();
                         });
-                        localContext.SaveChanged();
+                        TrackingDataContext.SaveChanges();
                         transaction.Commit();
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         transaction.Rollback();
-                        Log.WriteLogError(_moduleName, this, nameof(RestoreListSetGeneration), e);
                     }
-                    finally
-                    {
-                        localContext.Dispose();
-                    }
+
                     return targetSetMsts.Count;
                 }
             });
             deleteTask.ContinueWith((action) =>
             {
-                if (IsCanceled) return;
-                CloneListSetGeneration(targetGeneration, sourceGenerationId, action.Result);
+                CloneListSetGeneration(hpId, userId, targetGeneration, sourceGenerationId, action.Result);
+            });
+        }
+
+        private void CloneListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0)
+        {
+            var setMstsBackuped = TrackingDataContext.ListSetMsts.Where(x =>
+                x.HpId == hpId &&
+                x.GenerationId == sourceGenerationId).ToList();
+            int stepCount = setMstsBackuped.Count;
+            if (stepCount == 0)
+            {
+                return;
+            }
+
+            var backupTask = Task.Factory.StartNew(() =>
+            {
+                using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        setMstsBackuped.ForEach(x =>
+                        {
+                            x.SetId = 0;
+                            x.GenerationId = targetGeneration;
+                            x.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            x.CreateId = userId;
+                            x.CreateMachine = "SmartKarte";
+                            x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            x.UpdateId = userId;
+                            x.UpdateMachine = "SmartKarte";
+                        });
+                        TrackingDataContext.ListSetMsts.AddRange(setMstsBackuped);
+                        TrackingDataContext.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception e)
+                    {
+                        transaction.Rollback();
+                    }
+                }
             });
         }
 
