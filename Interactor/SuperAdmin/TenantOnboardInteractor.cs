@@ -8,6 +8,7 @@ using UseCase.SuperAdmin.TenantOnboard;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Interactor.Realtime;
 using Domain.SuperAdminModels.Notification;
+using Npgsql;
 
 namespace Interactor.SuperAdmin
 {
@@ -80,6 +81,8 @@ namespace Interactor.SuperAdmin
             }
         }
 
+        #region private Function
+
         private async Task<string> CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
         {
             try
@@ -148,6 +151,7 @@ namespace Interactor.SuperAdmin
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
             string subDomain = model.SubDomain;
+            string dbName = model.Db;
             int size = model.Size;
             int sizeType = model.SizeType;
             int tier = model.Type;
@@ -181,8 +185,8 @@ namespace Interactor.SuperAdmin
                                         if (!string.IsNullOrEmpty(host))
                                         {
                                             var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                            RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                            CreateDatas(host, subDomain, dataMigration, id);
                                         }
                                     }
                                     catch (Exception ex)
@@ -206,8 +210,8 @@ namespace Interactor.SuperAdmin
                                         if (!string.IsNullOrEmpty(host))
                                         {
                                             var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                            RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                            CreateDatas(host, subDomain, dataMigration, id);
                                         }
                                     }
                                     catch (Exception ex)
@@ -241,8 +245,8 @@ namespace Interactor.SuperAdmin
                                         if (!string.IsNullOrEmpty(host))
                                         {
                                             var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                            RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                            CreateDatas(host, subDomain, dataMigration, id);
                                         }
                                     }
                                     catch (Exception ex)
@@ -272,8 +276,8 @@ namespace Interactor.SuperAdmin
                                                 if (!string.IsNullOrEmpty(host))
                                                 {
                                                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                                    RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                                    RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                                    RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                                    CreateDatas(host, subDomain, dataMigration, id);
                                                 }
                                             }
                                             catch (Exception ex)
@@ -301,8 +305,8 @@ namespace Interactor.SuperAdmin
                                             if (!string.IsNullOrEmpty(host))
                                             {
                                                 var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                                RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                                RDSAction.CreateDatas(host, subDomain, dataMigration);
+                                                RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                                CreateDatas(host, subDomain, dataMigration, id);
                                             }
                                         }
                                         catch (Exception ex)
@@ -344,5 +348,201 @@ namespace Interactor.SuperAdmin
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
+
+
+        private void CreateDatas(string host, string subDomain, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var connectionString = $"Host={host};Database={subDomain};Username=postgres;Password=Emr!23456789;Port=5432";
+
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        _CreateTable(command, listMigration, tenantId);
+                        _CreateFunction(command, listMigration, tenantId);
+                        _CreateTrigger(command, listMigration, tenantId);
+                        _CreateDataMaster(command, listMigration, tenantId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create data: {ex.Message}");
+                throw new Exception($"Error create Data.  {ex.Message}");
+            }
+        }
+        private void _CreateTable(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Table");
+                if (Directory.Exists(folderPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                        // insert table
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create table: {ex.Message}");
+                throw new Exception($"Error create table.  {ex.Message}");
+            }
+        }
+
+        private void _CreateDataMaster(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "DataMaster");
+                if (Directory.Exists(folderPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                        // insert data master
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create data master: {ex.Message}");
+                throw new Exception($"Error create data master.  {ex.Message}");
+            }
+        }
+
+        private void _CreateFunction(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Function");
+                if (Directory.Exists(folderPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+                        // insert function
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create function: {ex.Message}");
+                throw new Exception($"Error create function.  {ex.Message}");
+            }
+        }
+
+        private void _CreateTrigger(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderFunctionPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Trigger");
+                if (Directory.Exists(folderFunctionPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderFunctionPath, "*.sql");
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+                        // insert trigger
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderFunctionPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create trigger: {ex.Message}");
+                throw new Exception($"Error create trigger.  {ex.Message}");
+            }
+        }
+
+        #endregion
     }
 }
