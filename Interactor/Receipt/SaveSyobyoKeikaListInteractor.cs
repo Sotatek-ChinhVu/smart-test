@@ -98,18 +98,19 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         {
             return SaveSyobyoKeikaListStatus.Failed;
         }
-        else if (hokenKbn == 13 && inputData.SyobyoKeikaList.Any(item => item.SinDay > 31 || item.SinDay < 1))
+        else if (hokenKbn == 13 && inputData.SyobyoKeikaList.Any(item => item.SinDay > 31
+        || item.SinDay < 0))
         {
             return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }
-        else if ((hokenKbn == 11 || hokenKbn == 12) && (inputData.SyobyoKeikaList.Count > 1 || inputData.SyobyoKeikaList.Any(item => item.SinDay != 0)))
-        {
-            return SaveSyobyoKeikaListStatus.InvalidSinDay;
-        }
-        else if ((hokenKbn == 13) && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.Keika == string.Empty))
-        {
-            return SaveSyobyoKeikaListStatus.InvalidKeika;
-        }
+        //else if ((hokenKbn == 11 || hokenKbn == 12) && (inputData.SyobyoKeikaList.Count > 1 || inputData.SyobyoKeikaList.Any(item => item.SinDay != 0)))
+        //{
+        //    return SaveSyobyoKeikaListStatus.InvalidSinDay;
+        //}
+        //else if ((hokenKbn == 13) && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.Keika == string.Empty))
+        //{
+        //    return SaveSyobyoKeikaListStatus.InvalidKeika;
+        //}
         return SaveSyobyoKeikaListStatus.ValidateSuccess;
     }
 }
