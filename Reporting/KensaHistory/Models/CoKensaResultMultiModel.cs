@@ -2,8 +2,9 @@
 {
     public class CoKensaResultMultiModel
     {
-        public CoKensaResultMultiModel(string itemName, string unit, string standardValue, List<KensaResultMultiItem> kensaResultMultiItems, List<long> date, long seqParentNo, string rowSeqId)
+        public CoKensaResultMultiModel(long iraiDate, string itemName, string unit, string standardValue, List<KensaResultMultiItem> kensaResultMultiItems, List<long> date, long seqParentNo, string rowSeqId)
         {
+            IraiDate = iraiDate;
             ItemName = itemName;
             Unit = unit;
             StandardValue = standardValue;
@@ -13,6 +14,7 @@
             RowSeqId = rowSeqId;
         }
 
+        public long IraiDate { get; private set; }
 
         public List<KensaResultMultiItem> KensaResultMultiItems { get; private set; }
 

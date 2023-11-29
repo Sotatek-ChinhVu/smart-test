@@ -181,7 +181,10 @@ namespace Reporting.KensaHistory.DB
 
             var kensaIraiCdSet = new HashSet<long>(kensaInfDetailCol.Select(item => item.IraiCd));
 
-            data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd) && x.IraiDate >= startDate && x.IraiDate <= endDate);
+            if (!showAbnormalKbn)
+            {
+                data = data.Where(x => kensaIraiCdSet.Contains(x.IraiCd) && x.IraiDate >= startDate && x.IraiDate <= endDate);
+            }
 
             var kensaItemDuplicate = data.GroupBy(x => new { x.KensaItemCd, x.KensaName, x.Unit, x.MaleStd, x.FemaleStd, x.IraiCd }).SelectMany(group => group.Skip(1)).Select(x => x);
 
@@ -389,8 +392,8 @@ namespace Reporting.KensaHistory.DB
             {
                 switch (ptInf?.Sex)
                 {
-                    case 1: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.MaleStd, new(), new(), item.SeqParentNo, item.RowSeqId)); break;
-                    case 2: result.Add(new CoKensaResultMultiModel(item.KensaName, item.Unit, item.FemaleStd, new(), new(), item.SeqParentNo, item.RowSeqId)); break;
+                    case 1: result.Add(new CoKensaResultMultiModel(item.IraiDate, item.KensaName, item.Unit, item.MaleStd, new(), new(), item.SeqParentNo, item.RowSeqId)); break;
+                    case 2: result.Add(new CoKensaResultMultiModel(item.IraiDate, item.KensaName, item.Unit, item.FemaleStd, new(), new(), item.SeqParentNo, item.RowSeqId)); break;
                 }
 
             }
@@ -399,7 +402,7 @@ namespace Reporting.KensaHistory.DB
             {
                 foreach (var kensaResultMultiItem in item.DynamicArray)
                 {
-                    kensaResultMultiItems.Add(new KensaResultMultiItem(kensaResultMultiItem.ResultVal, kensaResultMultiItem.AbnormalKbn, kensaResultMultiItem.ResultType));
+                    kensaResultMultiItems.Add(new KensaResultMultiItem(kensaResultMultiItem.IraiDate, kensaResultMultiItem.ResultVal, kensaResultMultiItem.AbnormalKbn, kensaResultMultiItem.ResultType));
                 }
             }
 
@@ -433,7 +436,7 @@ namespace Reporting.KensaHistory.DB
                 date = date.OrderByDescending(x => x).ToList();
             }
 
-            result.Add(new CoKensaResultMultiModel("", "", "", new(), date, 0, ""));
+            result.Add(new CoKensaResultMultiModel(0, "", "", "", new(), date, 0, ""));
 
             return (result, date);
         }
