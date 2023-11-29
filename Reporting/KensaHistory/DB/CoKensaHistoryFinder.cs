@@ -259,6 +259,7 @@ namespace Reporting.KensaHistory.DB
                      kensaInfDetailDataItem?.Unit ?? string.Empty,
                      kensaInfDetailDataItem?.MaleStd ?? string.Empty,
                      kensaInfDetailDataItem?.FemaleStd ?? string.Empty,
+                     item.Key.IraiDate,
                      item.Key.KensaKana,
                      item.Key.SortNo,
                      item.Key.SeqNo,
