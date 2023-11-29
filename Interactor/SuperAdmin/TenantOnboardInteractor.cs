@@ -16,12 +16,14 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantRepository _tenant2Repository;
         private readonly IMigrationTenantHistoryRepository _migrationTenantHistoryRepository;
         private readonly IWebSocketService _iWebSocketService;
         private readonly INotificationRepository _notificationRepository;
         public TenantOnboardInteractor(
             IAwsSdkService awsSdkService,
             ITenantRepository tenantRepository,
+            ITenantRepository tenant2Repository,
             IMigrationTenantHistoryRepository migrationTenantHistoryRepository,
             IWebSocketService iWebSocketService,
             INotificationRepository notificationRepository
@@ -32,6 +34,7 @@ namespace Interactor.SuperAdmin
             _migrationTenantHistoryRepository = migrationTenantHistoryRepository;
             _iWebSocketService = iWebSocketService;
             _notificationRepository = notificationRepository;
+            _tenant2Repository = tenant2Repository;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -50,7 +53,7 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
-                else if (string.IsNullOrEmpty(dbName))
+                else if (string.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
                 }
@@ -59,7 +62,7 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomString(6));
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -81,7 +84,120 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        #region private Function
+        #region private Function        
+
+        private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
+        {
+            string subDomain = model.SubDomain;
+            string dbName = model.Db;
+            int size = model.Size;
+            int sizeType = model.SizeType;
+            int tier = model.Type;
+            string rString = CommonConstants.GenerateRandomString(6);
+            string tenantUrl = "";
+
+            try
+            {
+                // Provisioning SubDomain for new tenants
+                tenantUrl = $"{subDomain}.{ConfigConstant.Domain}";
+                // Checking Available RDS Cluster
+                if (subDomain.Length > 0)
+                {
+                    // Checking tenant tier, if dedicated, provision new RDS instance
+                    if (tier == ConfigConstant.TypeDedicate)
+                    {
+                        string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
+                        var rdsInfo = await RDSAction.GetRDSInformation();
+                        if (rdsInfo.ContainsKey(dbIdentifier))
+                        {
+                            var id = _tenantRepository.CreateTenant(model);
+                            model.ChangeRdsIdentifier(dbIdentifier);
+                            _ = Task.Run(async () =>
+                            {
+                                await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                            });
+                        }
+                        else
+                        {
+                            var id = _tenantRepository.CreateTenant(model);
+                            await RDSAction.CreateNewShardAsync(dbIdentifier);
+                            model.ChangeRdsIdentifier(dbIdentifier);
+                            _ = Task.Run(async () =>
+                            {
+                                await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                            });
+                        }
+                    }
+                    else // In the rest cases, checking available RDS for new Tenant
+                    {
+                        var card = await CloudWatchAction.GetSummaryCardAsync();
+                        List<string> availableIdentifier = card.Keys.Where(ids => card[ids]["available"] == "yes").ToList();
+
+                        // If there's not any available RDS Cluster, provision new RDS cluster
+                        if (availableIdentifier.Count == 0)
+                        {
+                            string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
+                            var id = _tenantRepository.CreateTenant(model);
+                            await RDSAction.CreateNewShardAsync(dbIdentifier);
+                            model.ChangeRdsIdentifier(dbIdentifier);
+                            _ = Task.Run(async () =>
+                            {
+                                await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                            });
+                        }
+                        else // Else, returning the first available RDS Cluster in the list
+                        {
+                            bool checkAvailableIdentifier = false;
+                            foreach (var dbIdentifier in availableIdentifier)
+                            {
+                                var sumSubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(dbIdentifier);
+                                if (sumSubDomainToDbIdentifier <= 3)
+                                {
+                                    checkAvailableIdentifier = true;
+                                    model.ChangeRdsIdentifier(dbIdentifier);
+                                    var id = _tenantRepository.CreateTenant(model);
+                                    _ = Task.Run(async () =>
+                                    {
+                                        await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                    });
+                                    break;
+                                }
+                            }
+                            if (!checkAvailableIdentifier)
+                            {
+                                string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
+                                var id = _tenantRepository.CreateTenant(model);
+                                await RDSAction.CreateNewShardAsync(dbIdentifierNew);
+                                model.ChangeRdsIdentifier(dbIdentifierNew);
+                                _ = Task.Run(async () =>
+                                {
+                                    await AddData(id, tenantUrl, dbName, model, dbIdentifierNew);
+                                });
+                            }
+                        }
+                    }
+                }
+                await Route53Action.CreateTenantDomain(subDomain);
+                await CloudFrontAction.UpdateNewTenantAsync(subDomain);
+
+                // Return message for Super Admin
+                Dictionary<string, string> result = new Dictionary<string, string>
+                {
+                    { "message", "Please wait for 15 minutes for all resources to be available" }
+                };
+                var message = $"{subDomain} is created successfuly.";
+                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
+                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                return new Dictionary<string, string> { { "Error", ex.Message } };
+            }
+        }
 
         private async Task<string> CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
         {
@@ -116,7 +232,7 @@ namespace Interactor.SuperAdmin
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                         {
-                            var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
+                            var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
                         }
                     }
 
@@ -128,7 +244,7 @@ namespace Interactor.SuperAdmin
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        var updateStatus = _tenantRepository.UpdateInfTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
                         running = false;
                     }
                     // Check if more than timeout
@@ -148,213 +264,38 @@ namespace Interactor.SuperAdmin
                 throw new Exception($"CheckingRDSStatus. {ex.Message}");
             }
         }
-        private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
-        {
-            string subDomain = model.SubDomain;
-            string dbName = model.Db;
-            int size = model.Size;
-            int sizeType = model.SizeType;
-            int tier = model.Type;
-            string rString = CommonConstants.GenerateRandomString(6);
-            string tenantUrl = "";
-            string host = "";
 
+        private async Task AddData(int tenantId, string tenantUrl, string dbName, TenantModel model, string dbIdentifier)
+        {
             try
             {
-                // Provisioning SubDomain for new tenants
-                if (!string.IsNullOrEmpty(subDomain))
+                string host = await CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
+                if (!string.IsNullOrEmpty(host))
                 {
-                    tenantUrl = $"{subDomain}.{ConfigConstant.Domain}";
-                    // Checking Available RDS Cluster
-                    if (subDomain.Length > 0)
-                    {
-                        // Checking tenant tier, if dedicated, provision new RDS instance
-                        if (tier == ConfigConstant.TypeDedicate)
-                        {
-                            string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                            var rdsInfo = await RDSAction.GetRDSInformation();
-                            if (rdsInfo.ContainsKey(dbIdentifier))
-                            {
-                                var id = _tenantRepository.CreateTenant(model);
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(async () =>
-                                {
-                                    try
-                                    {
-                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                        if (!string.IsNullOrEmpty(host))
-                                        {
-                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                                            CreateDatas(host, subDomain, dataMigration, id);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
-                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                var id = _tenantRepository.CreateTenant(model);
-                                await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(async () =>
-                                {
-                                    try
-                                    {
-                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                        if (!string.IsNullOrEmpty(host))
-                                        {
-                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                                            CreateDatas(host, subDomain, dataMigration, id);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
-                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-                                    }
-                                });
-
-
-                            }
-                        }
-                        else // In the rest cases, checking available RDS for new Tenant
-                        {
-                            var card = await CloudWatchAction.GetSummaryCardAsync();
-                            List<string> availableIdentifier = card.Keys.Where(ids => card[ids]["available"] == "yes").ToList();
-
-                            // If there's not any available RDS Cluster, provision new RDS cluster
-                            if (availableIdentifier.Count == 0)
-                            {
-                                string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                                var id = _tenantRepository.CreateTenant(model);
-                                await RDSAction.CreateNewShardAsync(dbIdentifier);
-                                model.ChangeRdsIdentifier(dbIdentifier);
-                                _ = Task.Run(async () =>
-                                {
-                                    try
-                                    {
-                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                        if (!string.IsNullOrEmpty(host))
-                                        {
-                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                                            CreateDatas(host, subDomain, dataMigration, id);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
-                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-                                    }
-                                });
-                            }
-                            else // Else, returning the first available RDS Cluster in the list
-                            {
-                                bool checkAvailableIdentifier = false;
-                                foreach (var dbIdentifier in availableIdentifier)
-                                {
-                                    var sumSubDomainToDbIdentifier = _tenantRepository.SumSubDomainToDbIdentifier(dbIdentifier);
-                                    if (sumSubDomainToDbIdentifier <= 3)
-                                    {
-                                        checkAvailableIdentifier = true;
-                                        model.ChangeRdsIdentifier(dbIdentifier);
-                                        _ = Task.Run(async () =>
-                                        {
-                                            try
-                                            {
-                                                var id = _tenantRepository.CreateTenant(model);
-                                                host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                                if (!string.IsNullOrEmpty(host))
-                                                {
-                                                    var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                                    RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                                                    CreateDatas(host, subDomain, dataMigration, id);
-                                                }
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                var message = $"{subDomain} is created failed. Error: {ex.Message}";
-                                                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                                                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-                                            }
-
-                                        });
-                                        break;
-                                    }
-                                }
-                                if (!checkAvailableIdentifier)
-                                {
-                                    string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
-                                    var id = _tenantRepository.CreateTenant(model);
-                                    await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                    model.ChangeRdsIdentifier(dbIdentifierNew);
-                                    _ = Task.Run(async () =>
-                                    {
-                                        try
-                                        {
-                                            host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
-                                            if (!string.IsNullOrEmpty(host))
-                                            {
-                                                var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                                RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                                                CreateDatas(host, subDomain, dataMigration, id);
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            var message = $"{subDomain} is created failed. Error: {ex.Message}";
-                                            var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                                            await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    await Route53Action.CreateTenantDomain(subDomain);
-                    await CloudFrontAction.UpdateNewTenantAsync(subDomain);
-
-
+                    var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
+                    RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                    CreateDatas(host, dbName, dataMigration, tenantId);
                 }
-                else // Return landing page url by default
-                {
-                    tenantUrl = "landingpage.smartkarte.org";
-                }
-
-                // Return message for Super Admin
-                Dictionary<string, string> result = new Dictionary<string, string>
-                {
-                    { "message", "Please wait for 15 minutes for all resources to be available" }
-                };
-                var message = $"{subDomain} is created successfuly.";
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-                return result;
             }
             catch (Exception ex)
             {
-                var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                var message = $"{tenantUrl} is created failed. Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-                return new Dictionary<string, string> { { "Error", ex.Message } };
+            }
+            finally
+            {
+                _tenant2Repository.ReleaseResource();
+                _migrationTenantHistoryRepository.ReleaseResource();
+                _notificationRepository.ReleaseResource();
             }
         }
 
-
-        private void CreateDatas(string host, string subDomain, List<string> listMigration, int tenantId)
+        private void CreateDatas(string host, string dbName, List<string> listMigration, int tenantId)
         {
             try
             {
-                var connectionString = $"Host={host};Database={subDomain};Username=postgres;Password=Emr!23456789;Port=5432";
+                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
 
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
@@ -363,9 +304,12 @@ namespace Interactor.SuperAdmin
                     {
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
+                        command.CommandText = $"GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
+                        command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
                         _CreateDataMaster(command, listMigration, tenantId);
+
                     }
                 }
             }

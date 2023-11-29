@@ -24,5 +24,9 @@ namespace Infrastructure.SuperAdminRepositories
             TrackingDataContext.MigrationTenantHistories.Add(migrationHistory);
             return TrackingDataContext.SaveChanges() > 0;
         }
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }
