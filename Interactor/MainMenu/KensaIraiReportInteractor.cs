@@ -105,7 +105,6 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
         foreach (var kensaIrai in source)
         {
             var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaIrai.PtId, kensaIrai.SinDate);
-
             var raiinInf = _receptionRepository.GetRaiinInf(hpId, kensaIrai.PtId, kensaIrai.SinDate, kensaIrai.RaiinNo);
             kensaIraiList.Add(new Reporting.Kensalrai.Model.KensaIraiModel(
                 kensaIrai.SinDate,
@@ -125,7 +124,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 raiinInf?.TantoName ?? string.Empty,
                 raiinInf?.TantoKanaName ?? string.Empty,
                 raiinInf?.KaSName ?? string.Empty,
-                kensaIrai.UpdateDate.ToString("HH:mm"),
+                kensaIrai.UpdateDate.ToString("HHmm"),
             AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails)));
         }
         return kensaIraiList;

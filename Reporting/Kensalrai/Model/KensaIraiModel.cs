@@ -54,7 +54,7 @@ namespace Reporting.Kensalrai.Model
             TantoName = tantoName;
             TantoKanaName = tantoKanaName;
             KaSName = kaSName;
-            UpdateTime = UpdateTime;
+            UpdateTime = updateTime;
             if (Details != null)
             {
                 Details = Details.FindAll(p => p.IsSelected);
