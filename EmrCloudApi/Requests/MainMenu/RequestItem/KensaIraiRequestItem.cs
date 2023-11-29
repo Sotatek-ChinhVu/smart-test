@@ -24,5 +24,7 @@ public class KensaIraiRequestItem
 
     public int SikyuKbn { get; set; }
 
+    public DateTime UpdateDate { get; set; }
+
     public List<KensaIraiDetailRequestItem> KensaIraiDetails { get; set; } = new();
 }

@@ -307,6 +307,7 @@ public class MainMenuController : AuthorizeControllerBase
                    request.Birthday,
                    request.TosekiKbn,
                    request.SikyuKbn,
+                   request.UpdateDate,
                    kensaIraiDetailList);
     }
 
@@ -345,6 +346,7 @@ public class MainMenuController : AuthorizeControllerBase
                                                         item.Birthday,
                                                         item.TosekiKbn,
                                                         item.SikyuKbn,
+                                                        item.UpdateDate,
                                                         item.KensaIraiDetailList.Select(detail => new KensaIraiDetailModel(
                                                                                                       detail.RpNo,
                                                                                                       detail.RpEdaNo,
