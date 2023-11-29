@@ -307,7 +307,7 @@ namespace Interactor.SuperAdmin
                         var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
                         var sqlInsertUser = string.Format(ConfigConstant.SqlUser, model.AdminId, model.Password);
                         var sqlInsertUserPermission = ConfigConstant.SqlUserPermission;
-                        command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
+                        command.CommandText = sqlGrant /*+ sqlInsertUser*/ + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
