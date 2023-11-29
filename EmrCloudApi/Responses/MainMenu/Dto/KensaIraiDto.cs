@@ -19,6 +19,7 @@ public class KensaIraiDto
         TosekiKbn = model.TosekiKbn;
         SikyuKbn = model.SikyuKbn;
         KaId = model.KaId;
+        UpdateDate = model.UpdateDate;
         KensaIraiDetails = model.KensaIraiDetails.Select(item => new KensaIraiDetailDto(item)).ToList();
     }
 
@@ -45,6 +46,8 @@ public class KensaIraiDto
     public int SikyuKbn { get; private set; }
 
     public int KaId { get; private set; }
+
+    public DateTime UpdateDate { get; private set; }
 
     public List<KensaIraiDetailDto> KensaIraiDetails { get; private set; }
 
