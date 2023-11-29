@@ -274,7 +274,7 @@ namespace Interactor.SuperAdmin
                 {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                    CreateDatas(host, dbName, dataMigration, tenantId);
+                    CreateDatas(host, dbName, dataMigration, tenantId, model);
                 }
             }
             catch (Exception ex)
@@ -291,7 +291,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void CreateDatas(string host, string dbName, List<string> listMigration, int tenantId)
+        private void CreateDatas(string host, string dbName, List<string> listMigration, int tenantId, TenantModel model)
         {
             try
             {
@@ -304,7 +304,10 @@ namespace Interactor.SuperAdmin
                     {
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
-                        command.CommandText = $"GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
+                        var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
+                        var sqlInsertUser = string.Format(ConfigConstant.SqlUser, model.AdminId, model.Password);
+                        var sqlInsertUserPermission = ConfigConstant.SqlUserPermission;
+                        command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
