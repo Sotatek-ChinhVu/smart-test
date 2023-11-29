@@ -493,17 +493,6 @@ public class PdfCreatorController : CookieController
         }
     }
 
-    [HttpGet("GetCookie")]
-    public void GetCookie()
-    {
-        CookieOptions options = new();
-        options.Expires = DateTime.Now.AddMinutes(30);
-        options.Path = "/";
-        options.Secure = true;
-        var cookieObject = JsonSerializer.Serialize(new CookieModel(1, "uat-tenant.smartkarte.org"));
-        Response.Cookies.Append("CookieObject", cookieObject, options);
-    }
-
     #region private function
     private byte[] SetTitleMetadata(byte[] pdf, string title)
     {
