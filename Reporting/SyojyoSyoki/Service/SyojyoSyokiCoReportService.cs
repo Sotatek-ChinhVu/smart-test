@@ -45,6 +45,9 @@ namespace Reporting.SyojyoSyoki.Service
         {
             _readRseReportFileService = readRseReportFileService;
             _finder = finder;
+            coModel = new();
+            coModels = new();
+            _syojyoSyokiList = new();
         }
 
         public CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seiKyuYm, int hokenId)

@@ -7,6 +7,10 @@
             MenuId = menuId;
         }
 
+        public CoSta2011PrintConf()
+        {
+        }
+
         /// <summary>
         /// STA_MENU.MENU_ID
         /// </summary>

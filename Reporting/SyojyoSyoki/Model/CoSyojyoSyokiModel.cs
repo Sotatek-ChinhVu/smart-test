@@ -27,6 +27,19 @@ namespace Reporting.SyojyoSyoki.Model
             PtKohi4 = ptKohi4;
         }
 
+        public CoSyojyoSyokiModel()
+        {
+            HpInf = new();
+            SyoukiInfs = new();
+            ReceInf = new();
+            PtInf = new();
+            PtHokenInf = new();
+            PtKohi1 = new();
+            PtKohi2 = new();
+            PtKohi3 = new();
+            PtKohi4 = new();
+        }
+
         /// <summary>
         /// 患者番号
         /// </summary>
@@ -40,7 +53,7 @@ namespace Reporting.SyojyoSyoki.Model
         }
         public string PtName
         {
-            get => PtInf == null ? "" : PtInf.Name;
+            get => PtInf == null ? string.Empty : PtInf.Name ?? string.Empty;
         }
         public int Birthday
         {
@@ -65,21 +78,21 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string HpCd
         {
-            get => HpInf == null ? "" : HpInf.HpCd;
+            get => HpInf == null ? string.Empty : HpInf.HpCd ?? string.Empty;
         }
         /// <summary>
         /// 医療機関名称
         /// </summary>
         public string HpName
         {
-            get => HpInf == null ? "" : HpInf.HpName;
+            get => HpInf == null ? string.Empty : HpInf.HpName ?? string.Empty;
         }
         /// <summary>
         /// レセ種別
         /// </summary>
         public string ReceiptSbt
         {
-            get => ReceInf == null ? "" : ReceInf.ReceSbt;
+            get => ReceInf == null ? string.Empty : ReceInf.ReceSbt ?? string.Empty;
         }
         /// <summary>
         /// 保険区分
@@ -101,28 +114,28 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string HokensyaNo
         {
-            get => PtHokenInf == null ? "" : PtHokenInf.HokensyaNo;
+            get => PtHokenInf == null ? string.Empty : PtHokenInf.HokensyaNo ?? string.Empty;
         }
         /// <summary>
         /// 記号
         /// </summary>
         public string Kigo
         {
-            get => PtHokenInf == null ? "" : PtHokenInf.Kigo;
+            get => PtHokenInf == null ? string.Empty : PtHokenInf.Kigo ?? string.Empty;
         }
         /// <summary>
         /// 番号
         /// </summary>
         public string Bango
         {
-            get => PtHokenInf == null ? "" : PtHokenInf.Bango;
+            get => PtHokenInf == null ? string.Empty : PtHokenInf.Bango ?? string.Empty;
         }
         /// <summary>
         /// 枝番
         /// </summary>
         public string EdaNo
         {
-            get => PtHokenInf == null ? "" : PtHokenInf.EdaNo;
+            get => PtHokenInf == null ? string.Empty : PtHokenInf.EdaNo ?? string.Empty;
         }
         /// <summary>
         /// 負担者番号
@@ -131,24 +144,23 @@ namespace Reporting.SyojyoSyoki.Model
         /// <returns></returns>
         public string KohiFutansyaNo(int index)
         {
-            string ret = "";
+            string ret = string.Empty;
 
             switch (index)
             {
                 case 1:
-                    ret = PtKohi1.FutansyaNo;
+                    ret = PtKohi1.FutansyaNo ?? string.Empty;
                     break;
                 case 2:
-                    ret = PtKohi2.FutansyaNo;
+                    ret = PtKohi2.FutansyaNo ?? string.Empty;
                     break;
                 case 3:
-                    ret = PtKohi3.FutansyaNo;
+                    ret = PtKohi3.FutansyaNo ?? string.Empty;
                     break;
                 case 4:
-                    ret = PtKohi4.FutansyaNo;
+                    ret = PtKohi4.FutansyaNo ?? string.Empty;
                     break;
             }
-
             return ret;
         }
         /// <summary>
@@ -158,24 +170,23 @@ namespace Reporting.SyojyoSyoki.Model
         /// <returns></returns>
         public string KohiJyukyusyaNo(int index)
         {
-            string ret = "";
+            string ret = string.Empty;
 
             switch (index)
             {
                 case 1:
-                    ret = PtKohi1.JyukyusyaNo;
+                    ret = PtKohi1.JyukyusyaNo ?? string.Empty;
                     break;
                 case 2:
-                    ret = PtKohi2.JyukyusyaNo;
+                    ret = PtKohi2.JyukyusyaNo ?? string.Empty;
                     break;
                 case 3:
-                    ret = PtKohi3.JyukyusyaNo;
+                    ret = PtKohi3.JyukyusyaNo ?? string.Empty;
                     break;
                 case 4:
-                    ret = PtKohi4.JyukyusyaNo;
+                    ret = PtKohi4.JyukyusyaNo ?? string.Empty;
                     break;
             }
-
             return ret;
         }
 

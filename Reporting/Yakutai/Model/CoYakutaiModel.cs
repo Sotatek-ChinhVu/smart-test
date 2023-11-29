@@ -1,26 +1,24 @@
-﻿using Reporting.CommonMasters.Config;
-
-namespace Reporting.Yakutai.Model
+﻿namespace Reporting.Yakutai.Model
 {
     public class CoYakutaiModel
     {
         // 医療機関情報
-        public CoHpInfModel HpInfModel;
+        public CoHpInfModel HpInfModel { get; set; }
 
         // 患者情報
-        public CoPtInfModel PtInfModel;
+        public CoPtInfModel PtInfModel { get; set; }
 
         // 来院情報
-        public CoRaiinInfModel RaiinInfModel;
+        public CoRaiinInfModel RaiinInfModel { get; set; }
 
         // オーダー情報
-        public List<CoOdrInfModel> OdrInfModels;
+        public List<CoOdrInfModel> OdrInfModels { get; set; }
 
         // オーダー情報詳細
-        public List<CoOdrInfDetailModel> OdrInfDetailModels;
+        public List<CoOdrInfDetailModel> OdrInfDetailModels { get; set; }
 
         // 1回量表示単位マスタ
-        public List<CoSingleDoseMstModel> SingleDoseMstModels;
+        public List<CoSingleDoseMstModel> SingleDoseMstModels { get; set; }
         public CoYakutaiModel(CoHpInfModel hpInf, CoPtInfModel ptInf, CoRaiinInfModel raiinInf,
             List<CoOdrInfModel> odrInfs, List<CoOdrInfDetailModel> odrDtls, List<CoSingleDoseMstModel> singleDoses)
         {
@@ -30,8 +28,22 @@ namespace Reporting.Yakutai.Model
             OdrInfModels = odrInfs;
             OdrInfDetailModels = odrDtls;
             SingleDoseMstModels = singleDoses;
+            YohoComments = new();
+            Yoho = string.Empty;
+            YohoTani = string.Empty;
+        }
 
-            YohoComments = new List<string>();
+        public CoYakutaiModel()
+        {
+            HpInfModel = new();
+            PtInfModel = new();
+            RaiinInfModel = new();
+            OdrInfModels = new();
+            OdrInfDetailModels = new();
+            SingleDoseMstModels = new();
+            YohoComments = new();
+            Yoho = string.Empty;
+            YohoTani = string.Empty;
         }
 
         /// <summary>
@@ -184,18 +196,15 @@ namespace Reporting.Yakutai.Model
 
                     void _checkSetFukuyoryo(double fukuyoryo)
                     {
-                        if (ret == false)
+                        if (!ret && fukuyoryo > 0)
                         {
-                            if (fukuyoryo > 0)
+                            if (tmp == 0)
                             {
-                                if (tmp == 0)
-                                {
-                                    tmp = fukuyoryo;
-                                }
-                                else if (tmp != fukuyoryo)
-                                {
-                                    ret = true;
-                                }
+                                tmp = fukuyoryo;
+                            }
+                            else if (tmp != fukuyoryo)
+                            {
+                                ret = true;
                             }
                         }
                     }
@@ -225,7 +234,7 @@ namespace Reporting.Yakutai.Model
             {
                 double ret = 0;
 
-                CoOdrInfDetailModel odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
+                var odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
 
                 if (odrDtl != null)
                 {
@@ -250,9 +259,9 @@ namespace Reporting.Yakutai.Model
             {
                 double ret = 0;
 
-                if (IsFukinto == false)
+                if (!IsFukinto)
                 {
-                    CoOdrInfDetailModel odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
+                    var odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
 
                     if (odrDtl != null)
                     {
@@ -294,11 +303,11 @@ namespace Reporting.Yakutai.Model
                 if (CnvToOnceValue > 0 &&
                     SingleDoseMstModels != null &&
                     SingleDoseMstModels.Any() &&
-                    IsFukinto == false)
+                    !IsFukinto)
                 {
                     foreach (CoOdrInfDetailModel odrDtl in OdrInfDetailModels.FindAll(p => p.DrugKbn > 0))
                     {
-                        if (SingleDoseMstModels.Any(p => p.UnitName == odrDtl.UnitNameDsp) == false)
+                        if (!SingleDoseMstModels.Any(p => p.UnitName == odrDtl.UnitNameDsp))
                         {
                             ret = false;
                             break;
@@ -326,11 +335,13 @@ namespace Reporting.Yakutai.Model
 
                 if (OdrInfDetailModels.Any(p => p.YohoKbn == 1))
                 {
-                    yohoSuryo = OdrInfDetailModels.Find(p => p.YohoKbn == 1).Suryo;
+                    yohoSuryo = OdrInfDetailModels.Find(p => p.YohoKbn == 1)?.Suryo ?? 0;
                 }
 
-                foreach (CoOdrInfDetailModel odrDtl in OdrInfDetailModels.FindAll(p => p.DrugKbn > 0))
+                List<CoOdrInfDetailModel> list = OdrInfDetailModels.FindAll(p => p.DrugKbn > 0);
+                for (int i = 0; i < list.Count; i++)
                 {
+                    CoOdrInfDetailModel odrDtl = list[i];
                     if (new List<int> { 21, 22 }.Contains(DrugKbnCd))
                     {
                         // 内服薬・頓服
