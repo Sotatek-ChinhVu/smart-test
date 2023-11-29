@@ -485,9 +485,9 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
-
             List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
             Dictionary<int, CoKensaResultMultiModel> parents = new();
+            List<long> dateItem = new();
 
             if (showAbnormalKbn)
             {
@@ -556,6 +556,19 @@ namespace Reporting.KensaHistory.Service
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
 
+            foreach (var item in date)
+            {
+                if (!(item >= startDate && item <= endDate))
+                {
+                    dateItem.Add(item);
+                }
+            }
+
+            foreach (var item in dateItem)
+            {
+                date.Remove(item);
+            }
+
             if (kensaInfDetails.Count > 0 && date.Count > 0)
             {
                 iraiStart = date.First();
@@ -574,6 +587,27 @@ namespace Reporting.KensaHistory.Service
                         case "U": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以上"); break;
                         default: break;
                     }
+                }
+            }
+
+            List<KensaResultMultiItem> kensaResultMulti = new();
+
+            foreach (var item in kensaInfDetails)
+            {
+                foreach (var kensaResultMultiItem in item.KensaResultMultiItems)
+                {
+                    if (!date.Contains(kensaResultMultiItem.IraiDate))
+                    {
+                        kensaResultMulti.Add(kensaResultMultiItem);
+                    }
+                }
+            }
+
+            foreach (var item in kensaResultMulti)
+            {
+                foreach (var kensaInfDetailsItem in kensaInfDetails)
+                {
+                    kensaInfDetailsItem.KensaResultMultiItems.Remove(item);
                 }
             }
 
