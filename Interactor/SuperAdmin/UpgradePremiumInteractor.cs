@@ -5,6 +5,7 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using Entity.SuperAdmin;
 using Interactor.Realtime;
 using Npgsql;
 using UseCase.SuperAdmin.UpgradePremium;
@@ -79,7 +80,7 @@ namespace Interactor.SuperAdmin
                     try
                     {
                         // Create SnapShot
-                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier);
+                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpgrade);
 
                         if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
                         {
@@ -103,7 +104,7 @@ namespace Interactor.SuperAdmin
                         Console.WriteLine($"Start Restore");
 
                         string rString = CommonConstants.GenerateRandomString(6);
-                        var dbInstanceIdentifier = $"develop-smartkarte-logging-{rString}";
+                        var dbInstanceIdentifier = $"{inputData.SubDomain}-{rString}";
                         Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
 
                         var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);

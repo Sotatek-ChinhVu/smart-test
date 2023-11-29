@@ -33,7 +33,7 @@ namespace Interactor.SuperAdmin
                 var tenant = _tenantRepository.Get(inputData.TenantId);
                 if (tenant == null)
                 {
-                    return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantDoesNotExist);
                 }
 
                 var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb).Result;

@@ -280,7 +280,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
             try
             {
@@ -290,7 +290,7 @@ namespace AWSSDK.Common
                 // Create a request to create a DB snapshot
                 var createSnapshotRequest = new CreateDBSnapshotRequest
                 {
-                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier),
+                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, snapshotType),
                     DBInstanceIdentifier = dbInstanceIdentifier
                 };
 
@@ -346,11 +346,11 @@ namespace AWSSDK.Common
             }
         }
 
-        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier)
+        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier, string snapshotType)
         {
             string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-Snapshot-{timestamp}";
+            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-{snapshotType}-{timestamp}";
 
             dbSnapshotIdentifier = string.Join("", dbSnapshotIdentifier.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
 
@@ -424,7 +424,7 @@ namespace AWSSDK.Common
                     SkipFinalSnapshot = false
                 };
 
-                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier);
+                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, ConfigConstant.RdsSnapshotBackupTermiante);
 
                 var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
 
@@ -488,6 +488,41 @@ namespace AWSSDK.Common
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 throw new Exception($"Checking Deleted RDSInstance. {ex.Message}");
+            }
+        }
+
+       public static async Task<string> GetLastSnapshot(string dbInstanceIdentifier)
+        {
+            try
+            {
+                // Create an RDS client
+                var rdsClient = new AmazonRDSClient();
+
+                // Create a request to describe DB snapshots
+                var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    MaxRecords = 20,  // Limit 20 to get the latest snapshot
+                };
+
+                // Call DescribeDBSnapshots to get information about the snapshots
+                var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
+
+                // Extract information about the latest snapshot
+                var snapshot = describeSnapshotsResponse.DBSnapshots.OrderByDescending(x=> x.SnapshotCreateTime).FirstOrDefault();
+                if (snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase))
+                {
+                    return snapshot.DBSnapshotIdentifier;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Get Last Snapshot. {ex.Message}");
             }
         }
     }
