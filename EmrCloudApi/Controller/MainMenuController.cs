@@ -307,6 +307,7 @@ public class MainMenuController : AuthorizeControllerBase
                    request.Birthday,
                    request.TosekiKbn,
                    request.SikyuKbn,
+                   request.UpdateDate,
                    kensaIraiDetailList);
     }
 
