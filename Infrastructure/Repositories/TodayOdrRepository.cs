@@ -3413,6 +3413,12 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                                                                   && item.SinDate < sinDate)
                                                    .OrderByDescending(x => x.SinDate)
                                                    .ToList();
+        var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                     && item.StartDate <= sinDate
+                                                                     && item.EndDate >= sinDate
+                                                                     && itemCdList.Contains(item.ItemCd)
+                                                                     && item.IsDeleted == 0)
+                                                       .ToList();
         var raiinNoList = odrInfs.Select(item => item.RaiinNo).Distinct().ToList();
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
                                                                               && item.PtId == ptId
@@ -3435,14 +3441,15 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         List<OdrDateInfModel> result = new();
         foreach (var odrDate in odrDateInfs)
         {
-            var odrDateDetailItemList = odrDateDetails.Where(item => item.GrpId == odrDate.GrpId)
-                                                      .Select(item => new OdrDateDetailModel(
-                                                                          item.GrpId,
-                                                                          item.SeqNo,
-                                                                          item.ItemCd ?? string.Empty,
-                                                                          string.Empty,
-                                                                          item.SortNo))
-                                                      .ToList();
+            var odrDateDetailItemList = (from detailDate in odrDateDetails.Where(item => item.GrpId == odrDate.GrpId)
+                                         join tenMst in tenMstList on detailDate.ItemCd equals tenMst.ItemCd
+                                         select new OdrDateDetailModel(
+                                                    detailDate.GrpId,
+                                                    detailDate.SeqNo,
+                                                    detailDate.ItemCd ?? string.Empty,
+                                                    tenMst.Name ?? string.Empty,
+                                                    detailDate.SortNo))
+                                        .ToList();
             var itemCdItemList = odrDateDetailItemList.Select(item => item.ItemCd).Distinct().ToList();
             var odrInfDetailList = queryOdrInf.SelectMany(item => item.details)
                                               .Where(item => item.ItemCd != null
