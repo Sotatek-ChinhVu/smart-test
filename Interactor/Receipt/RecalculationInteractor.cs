@@ -173,9 +173,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private bool CheckAllowNextStep()
     {
         var allowNextStep = _messenger!.SendAsync(new AllowNextStepStatus());
-        var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
-        isStopCalc = statusCallBack.Result.Result;
-        return allowNextStep.Result.Result || isStopCalc;
+        return allowNextStep.Result.Result;
     }
 
     private void AddAuditLog(int hpId, int userId, int sinDate, bool recalculation, bool receiptAggregation, bool isCheckError, bool isSpecifiedPt)
