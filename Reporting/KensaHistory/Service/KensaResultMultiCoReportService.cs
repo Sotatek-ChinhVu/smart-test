@@ -596,7 +596,7 @@ namespace Reporting.KensaHistory.Service
             {
                 foreach (var kensaResultMultiItem in item.KensaResultMultiItems)
                 {
-                    if (!date.Contains(kensaResultMultiItem.IraiDate))
+                    if (kensaResultMultiItem.IraiDate != 0 && !date.Contains(kensaResultMultiItem.IraiDate))
                     {
                         kensaResultMulti.Add(kensaResultMultiItem);
                     }
