@@ -137,7 +137,7 @@ namespace AWSSDK.Common
                     if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
                     {
                         Console.WriteLine($"Timeout: Snapshot not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                        running = false;
+                        throw new Exception("Checking Snapshot Available timeout");
                     }
 
                     // Wait for 5 seconds before the next attempt
@@ -149,7 +149,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Check Snapshot Available. {ex.Message}");
             }
         }
 
@@ -305,13 +305,13 @@ namespace AWSSDK.Common
                 else
                 {
                     Console.WriteLine($"DB snapshot creation failed. Response: {response}");
-                    return string.Empty;
+                    throw new Exception($"Create DB Snapshot. Code: {response?.HttpStatusCode}");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return string.Empty;
+                throw new Exception($"Create DB Snapshot: {ex.Message}");
             }
         }
 
@@ -330,12 +330,19 @@ namespace AWSSDK.Common
                         VpcSecurityGroupIds = vpcSecurityGroupIds,  // Todo update
                         DBInstanceClass = "db.t4g.micro" // Todo update
                     });
-                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception($"Restore DBInstance From Snapshot. Code: {response?.HttpStatusCode}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Restore DBInstance From Snapshot. {ex.Message}");
             }
         }
 
@@ -392,7 +399,7 @@ namespace AWSSDK.Common
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
+                        Console.WriteLine($"Get List Database connection  failed: {ex.Message}");
                     }
                 }
 
@@ -401,7 +408,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new List<string>();
+                throw new Exception($"Get List Database. {ex.Message}");
             }
         }
 
@@ -422,13 +429,19 @@ namespace AWSSDK.Common
                 var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
 
                 // Check if the HTTP status code indicates success
-                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception($"Delete RDS Instance. Code: {response?.HttpStatusCode}");
+                }
             }
             catch (Exception ex)
             {
-                // TODO: Log the exception details
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                Console.WriteLine($"Error: Delete RDS Instance. {ex.Message}");
+                throw new Exception($"Delete RDS Instance. {ex.Message}");
             }
         }
 
@@ -469,12 +482,12 @@ namespace AWSSDK.Common
                 }
 
                 // If the loop runs for the entire timeout duration, return false
-                return false;
+                throw new Exception("Checking Deleted RDSInstance timeout");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Checking Deleted RDSInstance. {ex.Message}");
             }
         }
     }

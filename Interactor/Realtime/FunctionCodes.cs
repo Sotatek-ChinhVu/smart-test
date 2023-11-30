@@ -4,7 +4,5 @@
 public static class FunctionCodes
 {
     public const string SuperAdmin = "SuperAdmin";
-    public const string FailedUpgradePremium = "FailedUpgradePremium";
-    public const string FinishedUpgradePremium = "FinishedUpgradePremium";
     public const string UpdateNotification = "UpdateNotification";
 }
