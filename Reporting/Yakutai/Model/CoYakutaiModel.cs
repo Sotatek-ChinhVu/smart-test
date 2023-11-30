@@ -65,28 +65,28 @@
         /// </summary>
         public string PtName
         {
-            get => PtInfModel.Name ?? "";
+            get => PtInfModel.Name ?? string.Empty;
         }
         /// <summary>
         /// 患者カナ氏名
         /// </summary>
         public string PtKanaName
         {
-            get => PtInfModel.KanaName ?? "";
+            get => PtInfModel.KanaName ?? string.Empty;
         }
         /// <summary>
         /// 診療科名
         /// </summary>
         public string KaName
         {
-            get => RaiinInfModel != null ? RaiinInfModel.KaName : "";
+            get => RaiinInfModel != null ? RaiinInfModel.KaName : string.Empty;
         }
         /// <summary>
         /// 担当医氏名
         /// </summary>
         public string TantoName
         {
-            get => RaiinInfModel != null ? RaiinInfModel.TantoName : "";
+            get => RaiinInfModel != null ? RaiinInfModel.TantoName : string.Empty;
         }
         /// <summary>
         /// 受付番号
@@ -100,41 +100,41 @@
         /// </summary>
         public string HpName
         {
-            get => HpInfModel != null ? HpInfModel.HpName : "";
+            get => HpInfModel != null ? HpInfModel.HpName : string.Empty;
         }
         /// <summary>
         /// 医療機関電話番号
         /// </summary>
         public string HpTel
         {
-            get => HpInfModel != null ? HpInfModel.Tel : "";
+            get => HpInfModel != null ? HpInfModel.Tel : string.Empty;
         }
 
         public string HpAddress
         {
-            get => HpInfModel != null ? HpInfModel.Address : "";
+            get => HpInfModel != null ? HpInfModel.Address : string.Empty;
         }
         public string HpPostCd
         {
-            get => HpInfModel != null ? HpInfModel.PostCd : "";
+            get => HpInfModel != null ? HpInfModel.PostCd : string.Empty;
         }
         public string HpPostCdDsp
         {
-            get => HpInfModel != null ? HpInfModel.PostCdDsp : "";
+            get => HpInfModel != null ? HpInfModel.PostCdDsp : string.Empty;
         }
         public string HpFaxNo
         {
-            get => HpInfModel != null ? HpInfModel.FaxNo : "";
+            get => HpInfModel != null ? HpInfModel.FaxNo : string.Empty;
         }
         public string HpOtherContacts
         {
-            get => HpInfModel != null ? HpInfModel.OtherContacts : "";
+            get => HpInfModel != null ? HpInfModel.OtherContacts : string.Empty;
         }
         public string DrugKbn
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 switch (DrugKbnCd)
                 {

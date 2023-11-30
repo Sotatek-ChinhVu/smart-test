@@ -736,7 +736,6 @@ public class Sta9000CoReportService : ISta9000CoReportService
         }
         catch (Exception ex)
         {
-            //Log.WriteLogError(ModuleName, this, nameof(outPutFile), ex);
             Console.WriteLine(ex);
             return (string.Empty, CoPrintExitCode.EndError, new());
         }
@@ -752,12 +751,12 @@ public class Sta9000CoReportService : ISta9000CoReportService
         void MakePrintData()
         {
 
-            var ptInfs = _coSta9000Finder.GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds);
+            var ptInfList = _coSta9000Finder.GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds);
 
             printDatas = new List<CoSta9000PrintData>();
 
             //ソート順
-            ptInfs = (ptInfs ?? new())
+            ptInfList = (ptInfList ?? new())
                     .OrderBy(p => sortOrder == 1 ? p.KanaName :
                     p.PtNum.ToString().PadLeft(10, '0'))
                     .ThenBy(p => sortOrder2 == 1 ? p.KanaName :
@@ -766,10 +765,10 @@ public class Sta9000CoReportService : ISta9000CoReportService
                     p.PtNum.ToString().PadLeft(10, '0'))
                     .ToList();
 
-            var primaryDoctorIdList = ptInfs.Select(item => item.PrimaryDoctor).Distinct().ToList();
+            var primaryDoctorIdList = ptInfList.Select(item => item.PrimaryDoctor).Distinct().ToList();
             var primaryDoctorDic = _finder.GetUserSNameByUserIdDictionary(hpId, primaryDoctorIdList);
 
-            foreach (var ptInf in ptInfs)
+            foreach (var ptInf in ptInfList)
             {
                 CoSta9000PrintData printData = new CoSta9000PrintData();
 
@@ -777,8 +776,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 printData.PtName = ptInf.PtName.TrimEnd() + (reportType == 2 ? "　様" : string.Empty);
                 printData.KanaName = ptInf.KanaName;
                 printData.Sex = ptInf.Sex;
-                // todo: anh.vu3
-                //printData.Birthday = outputFileType == CoFileType.Csv ? ptInf.Birthday.ToString() : CIUtil.SDateToShowSDate(ptInf.Birthday);
+                /// todo: anh.vu3
+                ///printData.Birthday = outputFileType == CoFileType.Csv ? ptInf.Birthday.ToString() : CIUtil.SDateToShowSDate(ptInf.Birthday);
                 printData.Birthday = CIUtil.SDateToShowSDate(ptInf.Birthday);
                 printData.BirthdayW = CIUtil.SDateToShowWDate(ptInf.Birthday);
                 printData.BirthdayWS = CIUtil.SDateToShowSWDate(ptInf.Birthday);
@@ -799,8 +798,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
                     printData.AgeBaseDate = ptInf.DeathDate;
                 }
 
-                // todo: anh.vu3
-                //printData.DeathDate = outputFileType == CoFileType.Csv ? ptInf.DeathDate.ToString() : CIUtil.SDateToShowSDate(ptInf.DeathDate);
+                /// todo: anh.vu3
+                ///printData.DeathDate = outputFileType == CoFileType.Csv ? ptInf.DeathDate.ToString() : CIUtil.SDateToShowSDate(ptInf.DeathDate);
                 printData.DeathDate = CIUtil.SDateToShowSDate(ptInf.DeathDate);
                 printData.HomePostMark = ptInf.HomePost.AsString() == string.Empty ? string.Empty : "〒";
                 printData.HomePost = ptInf.HomePost;
@@ -829,9 +828,9 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 printData.IsTester = ptInf.IsTester.ToString();
                 printData.CreateDate = ptInf.CreateDate.ToString("yyyy/MM/dd");
 
-                // todo: anh.vu3
-                //printData.FirstVisitDate = outputFileType == CoFileType.Csv ? ptInf.FirstVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.FirstVisitDate);
-                //printData.LastVisitDate = outputFileType == CoFileType.Csv ? ptInf.LastVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.LastVisitDate);
+                /// todo: anh.vu3
+                ///printData.FirstVisitDate = outputFileType == CoFileType.Csv ? ptInf.FirstVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.FirstVisitDate);
+                ///printData.LastVisitDate = outputFileType == CoFileType.Csv ? ptInf.LastVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.LastVisitDate);
                 printData.FirstVisitDate = CIUtil.SDateToShowSDate(ptInf.FirstVisitDate);
                 printData.LastVisitDate = CIUtil.SDateToShowSDate(ptInf.LastVisitDate);
                 printData.PtCmt = ptInf.PtCmt;
@@ -873,8 +872,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
                         printData.Suryo = drugOdr.Suryo.ToString("#,0.00");
                         printData.UnitName = drugOdr.UnitName;
 
-                        // todo: anh.vu3
-                        //printData.SinDate = outputFileType == CoFileType.Csv ? drugOdr.SinDate.ToString() : CIUtil.SDateToShowSDate(drugOdr.SinDate);
+                        /// todo: anh.vu3
+                        ///printData.SinDate = outputFileType == CoFileType.Csv ? drugOdr.SinDate.ToString() : CIUtil.SDateToShowSDate(drugOdr.SinDate);
                         printData.SinDate = CIUtil.SDateToShowSDate(drugOdr.SinDate);
 
                         printDatas.Add(printData);
@@ -1185,8 +1184,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
                     printData.AgeBaseDate = ptInf.DeathDate;
                 }
 
-                // todo: anh.vu3
-                //printData.DeathDate = outputFileType == CoFileType.Csv ? ptInf.DeathDate.ToString() : CIUtil.SDateToShowSDate(ptInf.DeathDate);
+                /// todo: anh.vu3
+                ///printData.DeathDate = outputFileType == CoFileType.Csv ? ptInf.DeathDate.ToString() : CIUtil.SDateToShowSDate(ptInf.DeathDate);
                 printData.DeathDate = CIUtil.SDateToShowSDate(ptInf.DeathDate);
                 printData.HomePostMark = ptInf.HomePost.AsString() == string.Empty ? string.Empty : "〒";
                 printData.HomePost = ptInf.HomePost;
@@ -1215,9 +1214,9 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 printData.IsTester = ptInf.IsTester.ToString();
                 printData.CreateDate = ptInf.CreateDate.ToString("yyyy/MM/dd");
 
-                // todo: anh.vu3
-                //printData.FirstVisitDate = outputFileType == CoFileType.Csv ? ptInf.FirstVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.FirstVisitDate);
-                //printData.LastVisitDate = outputFileType == CoFileType.Csv ? ptInf.LastVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.LastVisitDate);
+                /// todo: anh.vu3
+                ///printData.FirstVisitDate = outputFileType == CoFileType.Csv ? ptInf.FirstVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.FirstVisitDate);
+                ///printData.LastVisitDate = outputFileType == CoFileType.Csv ? ptInf.LastVisitDate.ToString() : CIUtil.SDateToShowSDate(ptInf.LastVisitDate);
                 printData.FirstVisitDate = CIUtil.SDateToShowSDate(ptInf.FirstVisitDate);
                 printData.LastVisitDate = CIUtil.SDateToShowSDate(ptInf.LastVisitDate);
                 printData.PtCmt = ptInf.PtCmt;
@@ -1259,8 +1258,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
                         printData.Suryo = drugOdr.Suryo.ToString("#,0.00");
                         printData.UnitName = drugOdr.UnitName;
 
-                        // todo: anh.vu3
-                        //printData.SinDate = outputFileType == CoFileType.Csv ? drugOdr.SinDate.ToString() : CIUtil.SDateToShowSDate(drugOdr.SinDate);
+                        /// todo: anh.vu3
+                        ///printData.SinDate = outputFileType == CoFileType.Csv ? drugOdr.SinDate.ToString() : CIUtil.SDateToShowSDate(drugOdr.SinDate);
                         printData.SinDate = CIUtil.SDateToShowSDate(drugOdr.SinDate);
 
                         printDatas.Add(printData);

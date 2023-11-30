@@ -4,7 +4,7 @@ namespace Reporting.SyojyoSyoki.Model
 {
     public class CoSyojyoSyokiModel
     {
-        public HpInf HpInf { get; private set; }
+        public HpInf? HpInf { get; private set; }
         public List<CoSyoukiInfModel> SyoukiInfs { get; private set; }
         public ReceInf ReceInf { get; private set; }
         public PtInf PtInf { get; private set; }
@@ -14,7 +14,7 @@ namespace Reporting.SyojyoSyoki.Model
         public PtKohi PtKohi3 { get; private set; }
         public PtKohi PtKohi4 { get; private set; }
 
-        public CoSyojyoSyokiModel(HpInf hpInf, List<CoSyoukiInfModel> syoukiInfs, ReceInf receInf, PtInf ptInf, PtHokenInf ptHokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4)
+        public CoSyojyoSyokiModel(HpInf? hpInf, List<CoSyoukiInfModel> syoukiInfs, ReceInf receInf, PtInf ptInf, PtHokenInf ptHokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4)
         {
             HpInf = hpInf;
             SyoukiInfs = syoukiInfs;
@@ -29,7 +29,6 @@ namespace Reporting.SyojyoSyoki.Model
 
         public CoSyojyoSyokiModel()
         {
-            HpInf = new();
             SyoukiInfs = new();
             ReceInf = new();
             PtInf = new();
