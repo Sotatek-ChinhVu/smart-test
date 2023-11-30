@@ -1135,7 +1135,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <returns>true: 幼児（6歳未満）</returns>
         public bool IsYoJi
         {
-            get { return ptInf.IsYoJi; }
+            get { return false; }
         }
 
         /// <summary>

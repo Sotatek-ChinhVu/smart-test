@@ -1699,7 +1699,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             {
                 ret = (CIUtil.StrToIntDef(AgekasanMax, 999) > _ptInf.Age);
             }
-
+            ret = false;
             return ret;
         }
 

@@ -22,6 +22,7 @@ namespace EmrCalculateApi.Ika.Models
 
             _ageKbn = 9;
 
+            ptInf.Birthday = 20150101;
             _ageYear = 0;
             _ageMonth = 0;
             _ageDay = 0;
@@ -51,6 +52,7 @@ namespace EmrCalculateApi.Ika.Models
             _isStudent = CIUtil.IsStudent(PtInf.Birthday, sinDate);
 
             _isElder = CIUtil.AgeChk(PtInf.Birthday, sinDate, 70);
+            //_ageKbn = 3;
         }
 
         /// <summary>

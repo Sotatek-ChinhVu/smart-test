@@ -2488,12 +2488,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                 {
                     string itemCd = ChoiceItemCdNyuNinpu("", ItemCdConst.SaisinNyu, ItemCdConst.SaisinNinpu);
 
-                    if (itemCd != "")
-                    {
+                    //if (itemCd != "")
+                    //{
                         _common.Wrk.AppendNewWrkSinKouiDetail(itemCd, autoAdd: 1);
                         // オーダーから削除
                         _common.Odr.RemoveOdrDtlByItemCd(itemCd);
-                    }
+                    //}
                 }
             }
         }
