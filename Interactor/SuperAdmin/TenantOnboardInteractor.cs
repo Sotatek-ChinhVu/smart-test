@@ -122,7 +122,7 @@ namespace Interactor.SuperAdmin
                             var id = _tenantRepository.CreateTenant(model);
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
                             model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(async () =>
+                            _ = Task.Run(() =>
                             {
                                 AddData(id, tenantUrl, dbName, model, dbIdentifier);
                             });
