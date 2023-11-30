@@ -415,6 +415,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     }
 
                     UpdateOdrKarteEvent(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    _auditLogRepository.ReleaseResource();
                 });
                 
                 return new SaveMedicalOutputData(
@@ -471,7 +472,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _tenantProvider.DisposeDataContext();
             _loggingHandler.Dispose();
             _saveMedicalRepository.ReleaseResource();
-            _auditLogRepository.ReleaseResource();
         }
     }
 

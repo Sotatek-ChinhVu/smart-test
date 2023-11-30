@@ -506,6 +506,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                      kensaInf.TosekiKbn,
                                      kensaInf.SikyuKbn,
                                      raiinInf.KaId,
+                                     kensaInf.UpdateDate,
                                      kensaIraiDetailList
                                 ));
         }
@@ -598,6 +599,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                              odrInf.TosekiKbn,
                                              odrInf.SikyuKbn,
                                              raiinInf.KaId,
+                                             odrInf.UpdateDate,
                                              kensaIraiDetailList));
                 }
             }

@@ -39,7 +39,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new Dictionary<string, RDSInformation>();
+                throw new Exception($"GetRDSInformation. {ex.Message}");
             }
         }
 
@@ -91,11 +91,12 @@ namespace AWSSDK.Common
             {
                 if (e.ErrorCode == "DBInstanceAlreadyExists")
                 {
-                    Console.WriteLine($"Database Shard {dbIdentifier} exists already, continuing to poll ...");
+                    Console.WriteLine($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
+                    throw new Exception($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
                 }
                 else
                 {
-                    throw;
+                    throw new Exception($"CreateNewShardAsync. {e.Message}");
                 }
             }
         }
@@ -153,7 +154,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void CreateDatabase(string host, string subDomain, string passwordConnect)
+        public static void CreateDatabase(string host, string dbName, string passwordConnect)
         {
             try
             {
@@ -167,13 +168,13 @@ namespace AWSSDK.Common
                     using (var checkCommand = new NpgsqlCommand())
                     {
                         checkCommand.Connection = connection;
-                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{subDomain}'";
+                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{dbName}'";
 
                         var existingDatabase = checkCommand.ExecuteScalar();
 
-                        if (existingDatabase != null && existingDatabase.ToString() == subDomain)
+                        if (existingDatabase != null && existingDatabase.ToString() == dbName)
                         {
-                            Console.WriteLine($"Database '{subDomain}' already exists.");
+                            Console.WriteLine($"Database '{dbName}' already exists.");
                             return;
                         }
                     }
@@ -181,86 +182,18 @@ namespace AWSSDK.Common
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        command.CommandText = $"CREATE DATABASE {subDomain}; CREATE ROLE {subDomain} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {subDomain};";
+                        command.CommandText = $"CREATE DATABASE {dbName}; CREATE ROLE {dbName} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
                         command.ExecuteNonQuery();
-                        Console.WriteLine($"Database '{subDomain}' created successfully.");
+                        Console.WriteLine($"Database '{dbName}' created successfully.");
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"CreateDatabase. {ex.Message}");
             }
-        }
-
-        public static void CreateTables(string host, string tenantId, List<string> listMigration)
-        {
-            try
-            {
-                var dataMasterFileName = "data-master";
-                var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
-
-                using (var connection = new NpgsqlConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-
-                        var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin", "Template");
-
-                        if (Directory.Exists(folderPath))
-                        {
-                            var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-
-                            if (sqlFiles.Length > 0)
-                            {
-                                var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                                if (fileNames.Contains(dataMasterFileName))
-                                {
-                                    fileNames.Remove(dataMasterFileName);
-                                }
-                                var uniqueFileNames = fileNames.Except(listMigration).ToList();
-
-                                // insert table
-                                foreach (var fileName in uniqueFileNames)
-                                {
-                                    var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                    if (File.Exists(filePath))
-                                    {
-                                        var sqlScript = File.ReadAllText(filePath);
-                                        command.CommandText = sqlScript;
-                                        command.ExecuteNonQuery();
-                                    }
-                                }
-                                // insert data master
-                                var filePathMaster = Path.Combine(folderPath, $"{dataMasterFileName}.sql");
-                                if (File.Exists(filePathMaster) && !listMigration.Contains(dataMasterFileName))
-                                {
-                                    var sqlScript = File.ReadAllText(filePathMaster);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                }
-
-                                Console.WriteLine("SQL scripts executed successfully.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Info create table: No SQL files found in the specified folder.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Info create table: Specified folder not found");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-        }
+        }        
 
         public static void GenerateDumpfile(string tenantId)
         {
