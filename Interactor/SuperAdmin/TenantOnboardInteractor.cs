@@ -8,6 +8,7 @@ using UseCase.SuperAdmin.TenantOnboard;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Interactor.Realtime;
 using Domain.SuperAdminModels.Notification;
+using Npgsql;
 
 namespace Interactor.SuperAdmin
 {
@@ -36,6 +37,7 @@ namespace Interactor.SuperAdmin
         {
             try
             {
+                var dbName = CommonConstants.RemoveSpecialCharacters(inputData.SubDomain);
                 if (inputData.Size <= 0)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
@@ -48,12 +50,16 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
+                else if (string.IsNullOrEmpty(dbName))
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                }
                 var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
                 if (checkSubDomain)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, inputData.SubDomain, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomString(6));
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomString(6));
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -74,6 +80,8 @@ namespace Interactor.SuperAdmin
                 _tenantRepository.ReleaseResource();
             }
         }
+
+        #region private Function
 
         private async Task<string> CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
         {
@@ -97,7 +105,7 @@ namespace Interactor.SuperAdmin
 
                     if (dbInstances.Count != 1)
                     {
-                        throw new Exception("More than one Database Shard returned; this should never happen");
+                        throw new Exception("More than one Database Instance returned; this should never happen");
                     }
 
                     var dbInstance = dbInstances[0];
@@ -128,6 +136,7 @@ namespace Interactor.SuperAdmin
                     {
                         Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                         running = false;
+                        throw new Exception($"CheckingRDSStatus. Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
                     }
                 }
 
@@ -136,12 +145,13 @@ namespace Interactor.SuperAdmin
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"CheckingRDSStatus. {ex.Message}");
             }
         }
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
             string subDomain = model.SubDomain;
+            string dbName = model.Db;
             int size = model.Size;
             int sizeType = model.SizeType;
             int tier = model.Type;
@@ -165,18 +175,26 @@ namespace Interactor.SuperAdmin
                             var rdsInfo = await RDSAction.GetRDSInformation();
                             if (rdsInfo.ContainsKey(dbIdentifier))
                             {
+                                var id = _tenantRepository.CreateTenant(model);
+                                model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
-                                    var id = _tenantRepository.CreateTenant(model);
-                                    model.ChangeRdsIdentifier(dbIdentifier);
-                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    if (!string.IsNullOrEmpty(host))
+                                    try
                                     {
-                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                        RDSAction.CreateTables(host, subDomain, dataMigration);
+                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                            CreateDatas(host, subDomain, dataMigration, id);
+                                        }
                                     }
-
+                                    catch (Exception ex)
+                                    {
+                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                                    }
                                 });
                             }
                             else
@@ -186,12 +204,21 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
-                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    if (!string.IsNullOrEmpty(host))
+                                    try
                                     {
-                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                        RDSAction.CreateTables(host, subDomain, dataMigration);
+                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                            CreateDatas(host, subDomain, dataMigration, id);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                                     }
                                 });
 
@@ -212,12 +239,21 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(async () =>
                                 {
-                                    host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                    if (!string.IsNullOrEmpty(host))
+                                    try
                                     {
-                                        var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                        RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                        RDSAction.CreateTables(host, subDomain, dataMigration);
+                                        host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                        if (!string.IsNullOrEmpty(host))
+                                        {
+                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                            RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                            CreateDatas(host, subDomain, dataMigration, id);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                        await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                                     }
                                 });
                             }
@@ -233,14 +269,24 @@ namespace Interactor.SuperAdmin
                                         model.ChangeRdsIdentifier(dbIdentifier);
                                         _ = Task.Run(async () =>
                                         {
-                                            var id = _tenantRepository.CreateTenant(model);
-                                            host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
-                                            if (!string.IsNullOrEmpty(host))
+                                            try
                                             {
-                                                var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                                RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                                RDSAction.CreateTables(host, subDomain, dataMigration);
+                                                var id = _tenantRepository.CreateTenant(model);
+                                                host = await CheckingRDSStatusAsync(dbIdentifier, id, tenantUrl);
+                                                if (!string.IsNullOrEmpty(host))
+                                                {
+                                                    var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                                    RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                                    CreateDatas(host, subDomain, dataMigration, id);
+                                                }
                                             }
+                                            catch (Exception ex)
+                                            {
+                                                var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                                            }
+
                                         });
                                         break;
                                     }
@@ -253,12 +299,21 @@ namespace Interactor.SuperAdmin
                                     model.ChangeRdsIdentifier(dbIdentifierNew);
                                     _ = Task.Run(async () =>
                                     {
-                                        host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
-                                        if (!string.IsNullOrEmpty(host))
+                                        try
                                         {
-                                            var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
-                                            RDSAction.CreateDatabase(host, subDomain, model.PasswordConnect);
-                                            RDSAction.CreateTables(host, subDomain, dataMigration);
+                                            host = await CheckingRDSStatusAsync(dbIdentifierNew, id, tenantUrl);
+                                            if (!string.IsNullOrEmpty(host))
+                                            {
+                                                var dataMigration = _migrationTenantHistoryRepository.GetMigration(id);
+                                                RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
+                                                CreateDatas(host, subDomain, dataMigration, id);
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                                            var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                                            await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                                         }
                                     });
                                 }
@@ -267,6 +322,8 @@ namespace Interactor.SuperAdmin
                     }
                     await Route53Action.CreateTenantDomain(subDomain);
                     await CloudFrontAction.UpdateNewTenantAsync(subDomain);
+
+
                 }
                 else // Return landing page url by default
                 {
@@ -291,5 +348,201 @@ namespace Interactor.SuperAdmin
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
+
+
+        private void CreateDatas(string host, string subDomain, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var connectionString = $"Host={host};Database={subDomain};Username=postgres;Password=Emr!23456789;Port=5432";
+
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        _CreateTable(command, listMigration, tenantId);
+                        _CreateFunction(command, listMigration, tenantId);
+                        _CreateTrigger(command, listMigration, tenantId);
+                        _CreateDataMaster(command, listMigration, tenantId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create data: {ex.Message}");
+                throw new Exception($"Error create Data.  {ex.Message}");
+            }
+        }
+        private void _CreateTable(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Table");
+                if (Directory.Exists(folderPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                        // insert table
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create table: {ex.Message}");
+                throw new Exception($"Error create table.  {ex.Message}");
+            }
+        }
+
+        private void _CreateDataMaster(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "DataMaster");
+                if (Directory.Exists(folderPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+
+                        // insert data master
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create data master: {ex.Message}");
+                throw new Exception($"Error create data master.  {ex.Message}");
+            }
+        }
+
+        private void _CreateFunction(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Function");
+                if (Directory.Exists(folderPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+                        // insert function
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create function: {ex.Message}");
+                throw new Exception($"Error create function.  {ex.Message}");
+            }
+        }
+
+        private void _CreateTrigger(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        {
+            try
+            {
+                var folderFunctionPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Trigger");
+                if (Directory.Exists(folderFunctionPath))
+                {
+                    var sqlFiles = Directory.GetFiles(folderFunctionPath, "*.sql");
+                    if (sqlFiles.Length > 0)
+                    {
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
+                        // insert trigger
+                        if (uniqueFileNames.Any())
+                        {
+                            foreach (var fileName in uniqueFileNames)
+                            {
+                                var filePath = Path.Combine(folderFunctionPath, $"{fileName}.sql");
+                                if (File.Exists(filePath))
+                                {
+                                    var sqlScript = File.ReadAllText(filePath);
+                                    command.CommandText = sqlScript;
+                                    command.ExecuteNonQuery();
+                                    if (!string.IsNullOrEmpty(fileName))
+                                    {
+                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
+                                    }
+                                }
+                            }
+                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error create trigger: {ex.Message}");
+                throw new Exception($"Error create trigger.  {ex.Message}");
+            }
+        }
+
+        #endregion
     }
 }
