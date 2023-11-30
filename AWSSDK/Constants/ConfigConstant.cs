@@ -21,6 +21,9 @@ namespace AWSSDK.Constants
         public static byte StatusNotiSuccess = 1;
         public static byte StatusNotifailure = 0;
         public static List<string> LISTSYSTEMDB = new List<string>() { "rdsadmin, postgres" };
+        public static string RdsSnapshotBackupTermiante = "Bak-Termiante";
+        public static string RdsSnapshotUpgrade = "Upgrade";
+        public static string RdsSnapshotBackupRestore = "Bak-Restore";
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>
@@ -38,7 +41,9 @@ namespace AWSSDK.Constants
             {"terminating", 11},
             {"terminated", 12},
             {"terminate-failed", 13},
-            {"stoped", 14}
+            {"stoped", 14},
+            {"restoring", 15},
+            {"restore-failed", 16}
         };
 
             return rdsStatusDictionary;

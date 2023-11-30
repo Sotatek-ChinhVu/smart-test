@@ -6,7 +6,7 @@ namespace AWSSDK.Interfaces
     {
         Task<Dictionary<string, Dictionary<string, string>>> SummaryCard();
         Task<List<string>> GetAvailableIdentifiersAsync();
-        Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier);
+        Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType);
         Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier);
         Task<bool> CheckSubdomainExistenceAsync(string subdomainToCheck);
         Task<bool> IsDedicatedTypeAsync(string dbIdentifier);

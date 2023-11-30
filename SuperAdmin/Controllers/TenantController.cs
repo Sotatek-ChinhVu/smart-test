@@ -8,6 +8,7 @@ using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
+using UseCase.SuperAdmin.RestoreTenant;
 using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
@@ -82,7 +83,7 @@ namespace SuperAdminAPI.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<TerminateTenantResponse>>(presenter.Result);
         }
-        
+
         #region 
         private SearchTenantModel GetSearchTenantModel(SearchTenantRequestItem requestItem)
         {
@@ -104,6 +105,16 @@ namespace SuperAdminAPI.Controllers
             var presenter = new StopedTenantPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<StopedTenantResponse>>(presenter.Result);
+        }
+
+        [HttpPost("RestoreTenant")]
+        public ActionResult<Response<RestoreTenantResponse>> RestoreTenant([FromBody] RestoreTenantRequest request)
+        {
+            var input = new RestoreTenantInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new RestoreTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
         }
     }
 }
