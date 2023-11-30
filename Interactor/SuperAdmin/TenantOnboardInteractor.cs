@@ -112,9 +112,9 @@ namespace Interactor.SuperAdmin
                         {
                             var id = _tenantRepository.CreateTenant(model);
                             model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(async () =>
+                            _ = Task.Run(() =>
                             {
-                                await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
                             });
                         }
                         else
@@ -122,9 +122,9 @@ namespace Interactor.SuperAdmin
                             var id = _tenantRepository.CreateTenant(model);
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
                             model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(async () =>
+                            _ = Task.Run(() =>
                             {
-                                await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
                             });
                         }
                     }
@@ -140,9 +140,9 @@ namespace Interactor.SuperAdmin
                             var id = _tenantRepository.CreateTenant(model);
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
                             model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(async () =>
+                            _ = Task.Run(() =>
                             {
-                                await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
                             });
                         }
                         else // Else, returning the first available RDS Cluster in the list
@@ -156,9 +156,9 @@ namespace Interactor.SuperAdmin
                                     checkAvailableIdentifier = true;
                                     model.ChangeRdsIdentifier(dbIdentifier);
                                     var id = _tenantRepository.CreateTenant(model);
-                                    _ = Task.Run(async () =>
+                                    _ = Task.Run(() =>
                                     {
-                                        await AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                        AddData(id, tenantUrl, dbName, model, dbIdentifier);
                                     });
                                     break;
                                 }
@@ -169,9 +169,9 @@ namespace Interactor.SuperAdmin
                                 var id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifierNew);
                                 model.ChangeRdsIdentifier(dbIdentifierNew);
-                                _ = Task.Run(async () =>
+                                _ = Task.Run(() =>
                                 {
-                                    await AddData(id, tenantUrl, dbName, model, dbIdentifierNew);
+                                    AddData(id, tenantUrl, dbName, model, dbIdentifierNew);
                                 });
                             }
                         }
@@ -185,9 +185,6 @@ namespace Interactor.SuperAdmin
                 {
                     { "message", "Please wait for 15 minutes for all resources to be available" }
                 };
-                var message = $"{subDomain} is created successfuly.";
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return result;
             }
             catch (Exception ex)
@@ -199,7 +196,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private async Task<string> CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
+        private string CheckingRDSStatusAsync(string dbIdentifier, int tenantId, string tenantUrl)
         {
             try
             {
@@ -212,10 +209,10 @@ namespace Interactor.SuperAdmin
                 {
                     var rdsClient = new AmazonRDSClient();
 
-                    var response = await rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
+                    var response = rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
                     {
                         DBInstanceIdentifier = dbIdentifier
-                    });
+                    }).Result;
 
                     var dbInstances = response.DBInstances;
 
@@ -228,6 +225,7 @@ namespace Interactor.SuperAdmin
                     var checkStatus = dbInstance.DBInstanceStatus;
                     if (status != checkStatus)
                     {
+                        Console.WriteLine($"Last Database Shard status: {checkStatus}");
                         status = checkStatus;
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
@@ -236,7 +234,6 @@ namespace Interactor.SuperAdmin
                         }
                     }
 
-                    Console.WriteLine($"Last Database Shard status: {checkStatus}");
                     Thread.Sleep(5000);
 
                     if (checkStatus == "available")
@@ -265,23 +262,26 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private async Task AddData(int tenantId, string tenantUrl, string dbName, TenantModel model, string dbIdentifier)
+        private void AddData(int tenantId, string tenantUrl, string dbName, TenantModel model, string dbIdentifier)
         {
             try
             {
-                string host = await CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
+                string host = CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
                 if (!string.IsNullOrEmpty(host))
                 {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
                     CreateDatas(host, dbName, dataMigration, tenantId, model);
+                    var message = $"{tenantUrl} is created successfuly.";
+                    var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
+                    _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 }
             }
             catch (Exception ex)
             {
-                var message = $"{tenantUrl} is created failed. Error: {ex.Message}";
+                var message = $"{tenantUrl} is created failed. Add data Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
             }
             finally
             {
@@ -357,6 +357,11 @@ namespace Interactor.SuperAdmin
                         }
                     }
                 }
+                else
+                {
+                    Console.WriteLine($"Error create table: no files found");
+                    throw new Exception($"Error create table. No files found");
+                }
             }
             catch (Exception ex)
             {
@@ -399,6 +404,10 @@ namespace Interactor.SuperAdmin
                             Console.WriteLine("SQL scripts trigger executed successfully.");
                         }
                     }
+                    else
+                    {
+                        Console.WriteLine($"Create data master: no files found");
+                    }
                 }
             }
             catch (Exception ex)
@@ -440,6 +449,10 @@ namespace Interactor.SuperAdmin
                             Console.WriteLine("SQL scripts trigger executed successfully.");
                         }
                     }
+                    else
+                    {
+                        Console.WriteLine($"Create function: no files found");
+                    }
                 }
             }
             catch (Exception ex)
@@ -480,6 +493,10 @@ namespace Interactor.SuperAdmin
                             }
                             Console.WriteLine("SQL scripts trigger executed successfully.");
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Create trigger: no files found");
                     }
                 }
             }
