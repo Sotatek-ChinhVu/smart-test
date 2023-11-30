@@ -6,6 +6,10 @@ using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
 using UseCase.SuperAdmin.RestoreTenant;
 
 namespace Interactor.SuperAdmin
@@ -16,16 +20,27 @@ namespace Interactor.SuperAdmin
         private readonly ITenantRepository _tenantRepository;
         private readonly IWebSocketService _webSocketService;
         private readonly INotificationRepository _notificationRepository;
-        public RestoreTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository)
+        private readonly IConfiguration _configuration;
+        public RestoreTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository, IConfiguration configuration)
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _webSocketService = webSocketService;
             _notificationRepository = notificationRepository;
+            _configuration = configuration;
+
         }
 
         public RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
         {
+            string pathFileDumpRestore = _configuration["PathFileDumpRestore"];
+
+            if (string.IsNullOrEmpty(pathFileDumpRestore))
+            {
+                return new RestoreTenantOutputData(false, RestoreTenantStatus.PathFileDumpRestoreNotAvailable);
+            }
+            //var c = new CommonHub();
+            //c.OnConnectedAsync();
             //string rString2 = CommonConstants.GenerateRandomString(6);
             //var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync("develop-smartkarte-postgres-nnefqy", ConfigConstant.RdsSnapshotBackupRestore);
             try
@@ -36,11 +51,13 @@ namespace Interactor.SuperAdmin
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
-                if (tenant == null)
+                PostgreSqlDump(@$"{pathFileDumpRestore}\{tenant.Db}.sql", tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
+
+                if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
                 }
-
+                return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
                 // Get laster snapshot restore to tmp tenant 
                 var lastSnapshotIdentifier = RDSAction.GetLastSnapshot(tenant.RdsIdentifier).Result;
                 if (string.IsNullOrEmpty(lastSnapshotIdentifier))
@@ -56,9 +73,13 @@ namespace Interactor.SuperAdmin
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restoring"]);
                         Console.WriteLine($"Start  restore  tenant. RdsIdentifier: {tenant.RdsIdentifier}");
 
+                        // Create snapshot backup
+                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier, ConfigConstant.RdsSnapshotBackupRestore);
 
-
-                        Console.WriteLine($"Start Restore: {tenant.RdsIdentifier}");
+                        if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
+                        {
+                            throw new Exception("Snapshot is not Available");
+                        }
 
                         // Create tmp RDS from snapshot
                         string rString = CommonConstants.GenerateRandomString(6);
@@ -69,15 +90,12 @@ namespace Interactor.SuperAdmin
                         // Restore tenant dedicate
                         if (tenant.Type == ConfigConstant.TypeDedicate)
                         {
-                            // Create snapshot backup
-                            var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier, ConfigConstant.RdsSnapshotBackupRestore);
-
-                            if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
-                            {
-                                throw new Exception("Snapshot is not Available");
-                            }
-
                             // Update data enpoint
+                            var updateEndPoint = _tenantRepository.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
+                            if (updateEndPoint)
+                            {
+                                throw new Exception("Update end sub domain failed");
+                            }
 
                             // Finished restore
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
@@ -91,7 +109,12 @@ namespace Interactor.SuperAdmin
                         // Restore tenant sharing
                         else
                         {
-                            // dump data, delete old db
+                            // dump data,
+                            await PostgreSqlDump(@$"{pathFileDumpRestore}\{tenant.Db}.sql", endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
+
+                            // restore db 
+                            // delete old db
+
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
                             var messenge = $"{tenant.EndSubDomain} is restore successfully.";
                             var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
@@ -121,6 +144,85 @@ namespace Interactor.SuperAdmin
                 _notificationRepository.ReleaseResource();
             }
         }
+
+        private async Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
+        {
+            host = "localhost";
+            port = 22;
+            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+
+            string dumpCommand =
+                 $"{Set} PGPASSWORD={password}\n" +
+                 $"pg_dump" + " -Fc" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
+
+            string batchContent = "" + dumpCommand + "  > " + "\"" + outFile + "\"" + "\n";
+            if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
+
+            await Execute(batchContent);
+        }
+
+        private Task Execute(string dumpCommand)
+        {
+            return Task.Run(() =>
+            {
+                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"));
+                try
+                {
+                    string batchContent = "";
+                    batchContent += $"{dumpCommand}";
+
+                    System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
+
+                    ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+
+                    using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
+
+
+                    proc.WaitForExit();
+                    var exit = proc.ExitCode;
+
+
+                    proc.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    throw new Exception($"Execute sql Dump. {ex.Message}");
+
+                }
+                finally
+                {
+                    if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
+                }
+            });
+        }
+
+        private static ProcessStartInfo ProcessInfoByOS(string batFilePath)
+        {
+            ProcessStartInfo info;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                info = new ProcessStartInfo(batFilePath)
+                {
+                    Arguments = $"{batFilePath}"
+                };
+            }
+            else
+            {
+                info = new ProcessStartInfo("sh")
+                {
+                    Arguments = $"{batFilePath}"
+                };
+            }
+            //info.EnvironmentVariables.Add("PGPASSWORD", "1234$");
+            info.CreateNoWindow = true;
+            info.UseShellExecute = false;
+            info.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            info.RedirectStandardError = true;
+
+            return info;
+        }
+
 
         public async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier, int tenantId)
         {

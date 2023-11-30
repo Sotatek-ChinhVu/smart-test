@@ -8,6 +8,7 @@ public class CommonHub : Hub<ICommonClient>
     {
         await IfTenantIdExists(tenantId =>
         {
+            Console.WriteLine($"ConnectionId: {Context.ConnectionId}");
             return Groups.AddToGroupAsync(Context.ConnectionId, tenantId);
         });
 
