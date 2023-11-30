@@ -789,10 +789,8 @@ namespace Infrastructure.Repositories
                             x.GenerationId = targetGeneration;
                             x.CreateDate = CIUtil.GetJapanDateTimeNow();
                             x.CreateId = userId;
-                            x.CreateMachine = "SmartKarte";
                             x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             x.UpdateId = userId;
-                            x.UpdateMachine = "SmartKarte";
                         });
                         TrackingDataContext.ByomeiSetMsts.AddRange(setMstsBackuped);
                         TrackingDataContext.SaveChanges();
@@ -895,6 +893,21 @@ namespace Infrastructure.Repositories
                   ).ToList();
             return listSetGenerationMstList;
         }
+
+        public bool AddSetGenerationMst(int hpId, int userId, int startDate)
+        {
+            var targetByomeiSet = new ByomeiSetGenerationMst();
+
+            targetByomeiSet.HpId = hpId;
+            targetByomeiSet.StartDate = startDate;
+            targetByomeiSet.CreateDate = CIUtil.GetJapanDateTimeNow();
+            targetByomeiSet.CreateId = userId;
+            targetByomeiSet.CreateDate = CIUtil.GetJapanDateTimeNow();
+            targetByomeiSet.UpdateId = userId;
+
+            TrackingDataContext.Add(targetByomeiSet);
+        }
+
 
         public void ReleaseResource()
         {

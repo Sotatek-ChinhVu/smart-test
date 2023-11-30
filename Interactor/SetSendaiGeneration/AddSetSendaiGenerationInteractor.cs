@@ -1,13 +1,7 @@
 ﻿using Domain.Models.SetGenerationMst;
 using Helper.Messaging;
 using Helper.Messaging.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.SetSendaiGeneration.Add;
-using UseCase.SetSendaiGeneration.Delete;
 
 namespace Interactor.SetSendaiGeneration
 {
@@ -44,6 +38,7 @@ namespace Interactor.SetSendaiGeneration
                 var result = _setGenerationMstRepository.AddSetSendaiGeneration(inputData.UserId, inputData.HpId, inputData.StartDate);
                 if (result != null)
                 {
+                    #region BackupSetGeneration
                     // Process Clone
                     var getCountProcess = _setGenerationMstRepository.GetCountStepProcess(result.TargetGeneration, result.SourceGeneration, inputData.HpId, inputData.UserId);
                     if (getCountProcess != null && getCountProcess.TotalCount > 0)
@@ -122,6 +117,13 @@ namespace Interactor.SetSendaiGeneration
                             var saveSetKbn = _setGenerationMstRepository.SaveCloneOdrInfCmt(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add OdrInfCmt Successs!" : $"Add OdrInfCmt Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
+                        #endregion
+
+                    #region BackupByomeiSet
+                        // Add ByomeiSetGenerationMst
+
+
+                    #endregion
                     }
                     else
                     {
