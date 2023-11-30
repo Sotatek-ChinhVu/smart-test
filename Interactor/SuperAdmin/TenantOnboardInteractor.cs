@@ -184,10 +184,7 @@ namespace Interactor.SuperAdmin
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
                     { "message", "Please wait for 15 minutes for all resources to be available" }
-                };
-                var message = $"{subDomain} is created successfuly.";
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                };                
                 return result;
             }
             catch (Exception ex)
@@ -228,6 +225,7 @@ namespace Interactor.SuperAdmin
                     var checkStatus = dbInstance.DBInstanceStatus;
                     if (status != checkStatus)
                     {
+                        Console.WriteLine($"Last Database Shard status: {checkStatus}");
                         status = checkStatus;
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
@@ -235,8 +233,7 @@ namespace Interactor.SuperAdmin
                             var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
                         }
                     }
-
-                    Console.WriteLine($"Last Database Shard status: {checkStatus}");
+                   
                     Thread.Sleep(5000);
 
                     if (checkStatus == "available")
@@ -275,11 +272,14 @@ namespace Interactor.SuperAdmin
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
                     CreateDatas(host, dbName, dataMigration, tenantId, model);
+                    var message = $"{tenantUrl} is created successfuly.";
+                    var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
+                    await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 }
             }
             catch (Exception ex)
             {
-                var message = $"{tenantUrl} is created failed. Error: {ex.Message}";
+                var message = $"{tenantUrl} is created failed. Add data Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
             }
