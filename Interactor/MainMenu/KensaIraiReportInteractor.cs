@@ -368,7 +368,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 // 加古川
                 if (kensaIrai.SikyuKbn == 0)
                 {
-                    o1 += adjStr("0", 1);
+                    o1 += adjStr(" ", 1);
                 }
                 else
                 {
@@ -377,14 +377,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             }
             else
             {
-                if (kensaIrai.SikyuKbn == 0)
-                {
-                    o1 += adjStr(" ", 1);
-                }
-                else
-                {
-                    o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1);
-                }
+                o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1);
             }
 
             // 依頼コメント内容     20桁 ※未使用

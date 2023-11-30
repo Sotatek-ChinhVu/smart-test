@@ -1909,12 +1909,12 @@ namespace Infrastructure.Repositories
                                            join.First().raiinInf.SinDate,
                                            join.First().raiinInf.RaiinNo,
                                            join.First().raiinInf.KaId,
-                                           join.First().joinKaMst.KaName ?? string.Empty,
+                                           join.First().joinKaMst != null ? join.First().joinKaMst.KaName ?? string.Empty : string.Empty,
                                            join.First().raiinInf.TantoId,
-                                           join.First().joinUserMst.DrName ?? string.Empty,
-                                           join.First().joinUserMst.Name ?? string.Empty,
-                                           join.First().joinUserMst.KanaName ?? string.Empty,
-                                           join.First().joinKaMst.KaSname ?? string.Empty
+                                           join.First().joinUserMst != null ? join.First().joinUserMst.DrName ?? string.Empty : string.Empty,
+                                           join.First().joinUserMst != null ? join.First().joinUserMst.Name ?? string.Empty : string.Empty,
+                                           join.First().joinUserMst != null ? join.First().joinUserMst.KanaName ?? string.Empty : string.Empty,
+                                           join.First().joinKaMst != null ? join.First().joinKaMst.KaSname ?? string.Empty : string.Empty
                                         );
             }
 
