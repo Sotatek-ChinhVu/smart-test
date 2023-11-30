@@ -8,6 +8,7 @@ using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
+using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpgradePremium;
@@ -94,5 +95,15 @@ namespace SuperAdminAPI.Controllers
                        requestItem.StorageFull);
         }
         #endregion
+
+        [HttpPost("StopedTenant")]
+        public ActionResult<Response<StopedTenantResponse>> StopedTenant([FromBody] StopedTenantRequest request)
+        {
+            var input = new StopedTenantInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new StopedTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<StopedTenantResponse>>(presenter.Result);
+        }
     }
 }
