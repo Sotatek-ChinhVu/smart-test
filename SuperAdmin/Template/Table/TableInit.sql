@@ -8577,3 +8577,16 @@ VALUES ('20231117012805_ChangeKeyTableKensaInfDetail', '7.0.1');
 
 COMMIT;
 
+START TRANSACTION;
+
+ALTER TABLE "USER_MST" ADD "HPKI_ISSUER_DN" character varying(100) NULL;
+
+ALTER TABLE "USER_MST" ADD "HPKI_SN" character varying(100) NULL;
+
+ALTER TABLE "USER_MST" ADD "LOGIN_TYPE" integer NOT NULL DEFAULT 0;
+
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20231130024656_addColumnTableUserMst', '7.0.1');
+
+COMMIT;
+

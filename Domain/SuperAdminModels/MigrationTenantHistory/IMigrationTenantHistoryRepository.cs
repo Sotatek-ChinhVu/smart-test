@@ -10,5 +10,6 @@ namespace Domain.SuperAdminModels.MigrationTenantHistory
     {
         List<string> GetMigration(int tenantId);
         bool AddMigrationHistory(int tenantId, string migrationId);
+        void ReleaseResource();
     }
 }
