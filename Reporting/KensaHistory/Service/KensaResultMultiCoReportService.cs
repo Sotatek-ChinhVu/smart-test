@@ -485,9 +485,9 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
-
             List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
             Dictionary<int, CoKensaResultMultiModel> parents = new();
+            List<long> dateItem = new();
 
             if (showAbnormalKbn)
             {
@@ -513,6 +513,9 @@ namespace Reporting.KensaHistory.Service
                     data.Item1.Remove(item);
                 }
 
+
+                int i = 0;
+
                 foreach (var item in coKensaResultMultiModels.Where(x => x.SeqParentNo == 0))
                 {
                     var childrens = data.Item1.Where(x => x.SeqParentNo > 0 && item.RowSeqId.Contains(x.SeqParentNo.ToString()));
@@ -522,12 +525,25 @@ namespace Reporting.KensaHistory.Service
                         foreach (var itemChildren in childrens)
                         {
                             var indexNew = data.Item1.IndexOf(itemChildren);
-                            if (indexNew < index)
+
+                            if(childrens.Count() > 1)
+                            {
+                                if (indexNew < index)
+                                {
+                                    index = indexNew;
+                                }
+                            }
+                            else
                             {
                                 index = indexNew;
                             }
                         }
-                        parents.Add(index, item);
+
+                        if(index != 99999999)
+                        {
+                            parents.Add(index + i, item);
+                            i++;
+                        }
                     }
                 }
 
@@ -539,6 +555,19 @@ namespace Reporting.KensaHistory.Service
 
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
+
+            foreach (var item in date)
+            {
+                if (!(item >= startDate && item <= endDate))
+                {
+                    dateItem.Add(item);
+                }
+            }
+
+            foreach (var item in dateItem)
+            {
+                date.Remove(item);
+            }
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)
             {
@@ -558,6 +587,27 @@ namespace Reporting.KensaHistory.Service
                         case "U": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以上"); break;
                         default: break;
                     }
+                }
+            }
+
+            List<KensaResultMultiItem> kensaResultMulti = new();
+
+            foreach (var item in kensaInfDetails)
+            {
+                foreach (var kensaResultMultiItem in item.KensaResultMultiItems)
+                {
+                    if (!date.Contains(kensaResultMultiItem.IraiDate))
+                    {
+                        kensaResultMulti.Add(kensaResultMultiItem);
+                    }
+                }
+            }
+
+            foreach (var item in kensaResultMulti)
+            {
+                foreach (var kensaInfDetailsItem in kensaInfDetails)
+                {
+                    kensaInfDetailsItem.KensaResultMultiItems.Remove(item);
                 }
             }
 
