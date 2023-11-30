@@ -221,5 +221,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
                     p.IsDeleted == 0
                 ).Count >= 1;
         }
+
+        public void ReleaseResource()
+        {
+            _hpInfFinder.ReleaseResource();
+            _hokensyaMstFinder.ReleaseResource();
+            _hokenMstFinder.ReleaseResource();
+            DisposeDataContext();
+        }
     }
 }

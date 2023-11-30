@@ -19,5 +19,6 @@ public class WebSocketService : IWebSocketService
     {
         var tenantId = _tenantProvider.GetClinicID();
         await _hubContext.Clients.Group(tenantId).ReceiveMessage(functionCode, message);
+        _tenantProvider.DisposeDataContext();
     }
 }

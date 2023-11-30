@@ -63,48 +63,56 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
 
     public CommonReportingRequestModel GetP13WelfareSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType, int welfareType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-
-        switch (welfareType)
+        try
         {
-            //負担医療費請求書
-            case 0: kohiHoubetus = new List<string> { "82" }; break;
-            //難病医療費請求書
-            case 1: kohiHoubetus = new List<string> { "83" }; break;
-        }
-        var getData = GetData();
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
 
-        string _formFileName = "";
-        switch (welfareType)
-        {
-            case 0: _formFileName = "p13WelfareSeikyuGreen.rse"; break;
-            case 1: _formFileName = "p13WelfareSeikyuBlue.rse"; break;
-        }
-
-        switch (welfareType)
-        {
-            case 0: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareGreenSeikyuType() == 0); break;
-            case 1: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareBlueSeikyuType() == 0); break;
-        }
-
-        currentPage = 1;
-        hasNextPage = true;
-
-        if(getData)
-        {
-            while (getData && hasNextPage)
+            switch (welfareType)
             {
-                if (_formFileName == "") continue;
-                UpdateDrawForm();
-                currentPage++;
+                //負担医療費請求書
+                case 0: kohiHoubetus = new List<string> { "82" }; break;
+                //難病医療費請求書
+                case 1: kohiHoubetus = new List<string> { "83" }; break;
             }
-        }
+            var getData = GetData();
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            string _formFileName = "";
+            switch (welfareType)
+            {
+                case 0: _formFileName = "p13WelfareSeikyuGreen.rse"; break;
+                case 1: _formFileName = "p13WelfareSeikyuBlue.rse"; break;
+            }
+
+            switch (welfareType)
+            {
+                case 0: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareGreenSeikyuType() == 0); break;
+                case 1: _visibleAtPrint.Add("Frame", _systemConfig.P13WelfareBlueSeikyuType() == 0); break;
+            }
+
+            currentPage = 1;
+            hasNextPage = true;
+
+            if (getData)
+            {
+                while (getData && hasNextPage)
+                {
+                    if (_formFileName == "") continue;
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        }
+        finally
+        {
+            _systemConfig.ReleaseResource();
+            _welfareFinder.ReleaseResource();
+        }
     }
 
     #region Private function

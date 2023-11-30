@@ -199,23 +199,31 @@ namespace Reporting.Statistics.Sta1001.Service
 
         public CommonReportingRequestModel GetSta1001ReportingData(CoSta1001PrintConf printConf, int hpId)
         {
-            _printConf = printConf;
-
-            HpId = hpId;
-            GetFieldNameList();
-            GetRowCount();
-            putCurColumns.AddRange(putColumns);
-            if (GetData())
+            try
             {
-                _hasNextPage = true;
-                _currentPage = 1;
-                while (_hasNextPage)
+                _printConf = printConf;
+
+                HpId = hpId;
+                GetFieldNameList();
+                GetRowCount();
+                putCurColumns.AddRange(putColumns);
+                if (GetData())
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
+                    _hasNextPage = true;
+                    _currentPage = 1;
+                    while (_hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
                 }
+                return new Sta1001Mapper(_extralData, SingleData, CellData, _rowCountFieldName).GetData();
             }
-            return new Sta1001Mapper(_extralData, SingleData, CellData, _rowCountFieldName).GetData();
+            finally
+            {
+                _sta1001Finder.ReleaseResource();
+                _dailyStatisticCommandFinder.ReleaseResource();
+            }
         }
 
         private void GetFieldNameList()

@@ -10,6 +10,11 @@ public class CoReceiptCheckFinder : RepositoryBase, ICoReceiptCheckFinder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public List<CoReceiptCheckModel> GetCoReceiptChecks(int hpId, List<long> ptIds, int sinYm)
     {
         var listReceCheckErr = NoTrackingDataContext.ReceCheckErrs;

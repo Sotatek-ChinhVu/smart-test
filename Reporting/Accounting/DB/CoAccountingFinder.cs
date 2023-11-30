@@ -13,6 +13,11 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     /// <summary>
     /// 医療機関情報を取得する
     /// </summary>

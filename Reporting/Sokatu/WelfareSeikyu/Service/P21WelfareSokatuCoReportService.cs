@@ -58,27 +58,34 @@ public class P21WelfareSokatuCoReportService : IP21WelfareSokatuCoReportService
 
     public CommonReportingRequestModel GetP21WelfareSokatuCoReportService(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        currentPage = 1;
-        hasNextPage = true;
-
-        if (getData)
+        try
         {
-            while (getData && hasNextPage)
-            {
-                if (_formFileName == "") continue;
-                UpdateDrawForm();
-                currentPage++;
-            }
-        }
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            currentPage = 1;
+            hasNextPage = true;
+
+            if (getData)
+            {
+                while (getData && hasNextPage)
+                {
+                    if (_formFileName == "") continue;
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new WelfareSeikyuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        }
+        finally
+        {
+            _welfareFinder.ReleaseResource();
+        }
     }
 
     #region Private function

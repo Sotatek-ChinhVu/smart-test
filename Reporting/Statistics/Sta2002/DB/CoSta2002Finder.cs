@@ -19,6 +19,13 @@ namespace Reporting.Statistics.Sta2002.DB
             _coSta1001Finder = coSta1001Finder;
         }
 
+        public void ReleaseResource()
+        {
+            _coHpInfFinder.ReleaseResource();
+            _coSta1001Finder.ReleaseResource();
+            DisposeDataContext();
+        }
+
         public CoHpInfModel GetHpInf(int hpId, int sinDate)
         {
             return _coHpInfFinder.GetHpInf(hpId, sinDate);

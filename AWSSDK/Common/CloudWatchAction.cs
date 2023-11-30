@@ -349,7 +349,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"GetSummaryCardAsync. {ex.Message}");
             }
         }
     }

@@ -32,19 +32,26 @@ public class AfterCareSeikyuCoReportService : IAfterCareSeikyuCoReportService
 
     public CommonReportingRequestModel GetAfterCareSeikyuPrintData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        this.hpId = hpId;
+        try
+        {
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            this.hpId = hpId;
 
-        //印
-        _visibleAtPrint.Add("Frame", true);
+            //印
+            _visibleAtPrint.Add("Frame", true);
 
-        GetData();
-        UpdateDrawForm();
+            GetData();
+            UpdateDrawForm();
 
-        string formFileName = "p99AfterCareSeikyu.rse";
+            string formFileName = "p99AfterCareSeikyu.rse";
 
-        return new AfterCareSeikyuMapper(_singleFieldData, _visibleAtPrint, formFileName).GetData();
+            return new AfterCareSeikyuMapper(_singleFieldData, _visibleAtPrint, formFileName).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     #region Private function

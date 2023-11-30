@@ -1,10 +1,11 @@
-﻿using Reporting.Sokatu.Common.Models;
+﻿using Domain.Common;
+using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
 
 namespace Reporting.Sokatu.WelfareSeikyu.DB;
 
-public interface ICoWelfareSeikyuFinder
+public interface ICoWelfareSeikyuFinder : IRepositoryBase
 {
     /// <summary>
     /// 福祉請求書

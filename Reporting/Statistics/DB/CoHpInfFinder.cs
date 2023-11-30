@@ -11,6 +11,11 @@ public class CoHpInfFinder : RepositoryBase, ICoHpInfFinder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
     {
         int wrkDate = sinDate;

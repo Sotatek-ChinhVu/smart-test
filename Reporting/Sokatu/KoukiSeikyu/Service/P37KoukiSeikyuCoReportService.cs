@@ -1,10 +1,7 @@
 ﻿using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore.Internal;
 using Reporting.CommonMasters.Constants;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
@@ -72,33 +69,40 @@ public class P37KoukiSeikyuCoReportService : IP37KoukiSeikyuCoReportService
 
     public CommonReportingRequestModel GetP37KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if(getData)
+        try
         {
-            foreach (string currentNo in hokensyaNos)
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
+
+            if (getData)
             {
-                currentPage = 1;
-                currentHokensyaNo = currentNo;
-                hasNextPage = true;
-                while (getData && hasNextPage)
+                foreach (string currentNo in hokensyaNos)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    currentPage = 1;
+                    currentHokensyaNo = currentNo;
+                    hasNextPage = true;
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
             }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
-        
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function
-     private bool UpdateDrawForm()
+    private bool UpdateDrawForm()
     {
         #region SubMethod
 
@@ -186,7 +190,7 @@ public class P37KoukiSeikyuCoReportService : IP37KoukiSeikyuCoReportService
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
-;                hasNextPage = false;
+                ; hasNextPage = false;
                 return 1;
             }
 
@@ -219,7 +223,7 @@ public class P37KoukiSeikyuCoReportService : IP37KoukiSeikyuCoReportService
                     break;
                 }
             }
-            
+
             _listTextData.Add(pageIndex, listDataPerPage);
             #endregion
 

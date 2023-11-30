@@ -173,26 +173,33 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
         public CommonReportingRequestModel GetP26KoukiSokatuInReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            this.hpId = hpId;
-            this.seikyuYm = seikyuYm;
-            this.seikyuType = seikyuType;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                currentPage = 1;
-                hasNextPage = true;
+                this.hpId = hpId;
+                this.seikyuYm = seikyuYm;
+                this.seikyuType = seikyuType;
+                var getData = GetData();
 
-                while (getData && hasNextPage)
+                if (getData)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
-                }
-            }
+                    currentPage = 1;
+                    hasNextPage = true;
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+                    while (getData && hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
+                }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            }
+            finally
+            {
+                _kokhoFinder.ReleaseResource();
+            }
         }
 
         private void SetFieldData(string field, string value)

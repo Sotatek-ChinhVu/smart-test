@@ -89,27 +89,34 @@ namespace Reporting.Statistics.Sta3001.Service
 
         public CommonReportingRequestModel GetSta3001ReportingData(CoSta3001PrintConf printConf, int hpId)
         {
-            HpId = hpId;
-            _printConf = printConf;
-            // get data to print
-            GetFieldNameList();
-            GetColRowCount();
-
-            _hasNextPage = true;
-
-            _currentPage = 1;
-            var getData = GetData();
-            if (getData)
+            try
             {
-                while (_hasNextPage && getData)
-                {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
-            }
-            //印刷
+                HpId = hpId;
+                _printConf = printConf;
+                // get data to print
+                GetFieldNameList();
+                GetColRowCount();
 
-            return new Sta3001Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+                _hasNextPage = true;
+
+                _currentPage = 1;
+                var getData = GetData();
+                if (getData)
+                {
+                    while (_hasNextPage && getData)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+                }
+                //印刷
+
+                return new Sta3001Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+            }
+            finally
+            {
+                _sta3001Finder.ReleaseResource();
+            }
         }
         #region Get Data
         private bool GetData()

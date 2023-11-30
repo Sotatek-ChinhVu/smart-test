@@ -1,17 +1,21 @@
-﻿using Amazon.S3.Model.Internal.MarshallTransformations;
-using Reporting.Calculate.Interface;
-using Entity.Tenant;
+﻿using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
+using Reporting.Calculate.Interface;
 
 namespace Reporting.Calculate.Implementation
 {
-    public class SystemConfigProvider : ISystemConfigProvider
+    public class SystemConfigProvider : RepositoryBase, ISystemConfigProvider
     {
         private readonly List<SystemConf> _systemConfigs;
-        public SystemConfigProvider(ITenantProvider tenantProvider)
+        public SystemConfigProvider(ITenantProvider tenantProvider) : base(tenantProvider)
         {
             _systemConfigs = tenantProvider.GetNoTrackingDataContext().SystemConfs.ToList();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
 
         public int GetChokiDateRange()
@@ -74,17 +78,17 @@ namespace Reporting.Calculate.Implementation
         {
             return (int)GetSettingValue(3017, 0);
         }
-        public int GetKensaMarumeBuntenKokuho() 
+        public int GetKensaMarumeBuntenKokuho()
         {
-            return (int) GetSettingValue(3017, 1);
+            return (int)GetSettingValue(3017, 1);
         }
         public int GetReceNoDspComment()
         {
-            return (int)GetSettingValue(3012, 0, 0); 
+            return (int)GetSettingValue(3012, 0, 0);
         }
         public int GetOutDrugYohoDsp()
         {
-            return (int)GetSettingValue(3005, 0, 1); 
+            return (int)GetSettingValue(3005, 0, 1);
         }
         public int GetSyohoRinjiDays()
         {

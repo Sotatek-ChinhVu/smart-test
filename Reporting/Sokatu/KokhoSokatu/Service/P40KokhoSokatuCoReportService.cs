@@ -67,25 +67,32 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
     #endregion
     public CommonReportingRequestModel GetP40KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        currentPage = 1;
-        var getData = GetData();
-        hasNextPage = true;
-
-        if (getData)
+        try
         {
-            while (getData && hasNextPage)
-            {
-                UpdateDrawForm();
-                currentPage++;
-            }
-        }
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            currentPage = 1;
+            var getData = GetData();
+            hasNextPage = true;
 
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+            if (getData)
+            {
+                while (getData && hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KokhoSokatuMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData).GetData();
+        }
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function

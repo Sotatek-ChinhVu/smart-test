@@ -21,6 +21,12 @@ namespace Reporting.Statistics.Sta2020.DB
             _hpInfFinder = hpInfFinder;
         }
 
+        public void ReleaseResource()
+        {
+            _hpInfFinder.ReleaseResource();
+            DisposeDataContext();
+        }
+
         public CoHpInfModel GetHpInf(int hpId, int sinYm)
         {
             return _hpInfFinder.GetHpInf(hpId, sinYm * 100 + 1);

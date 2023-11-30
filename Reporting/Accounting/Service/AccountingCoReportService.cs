@@ -356,22 +356,32 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     public AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
     {
-        List<CoAccountingParamModel> coAccountingParamModels = new();
-        var raiinInfModelList = _finder.GetOyaRaiinInfList(hpId, raiinNoList, ptId);
-        var raiinInfModelPayList = _finder.GetOyaRaiinInfList(hpId, raiinNoPayList, ptId);
+        try
+        {
+            List<CoAccountingParamModel> coAccountingParamModels = new();
+            var raiinInfModelList = _finder.GetOyaRaiinInfList(hpId, raiinNoList, ptId);
+            var raiinInfModelPayList = _finder.GetOyaRaiinInfList(hpId, raiinNoPayList, ptId);
 
-        if (printTypeInput == 4)
-        {
-            for (int printTypeCheck = 0; printTypeCheck <= 1; printTypeCheck++)
+            if (printTypeInput == 4)
             {
-                coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeCheck, raiinInfModelList, raiinInfModelPayList));
+                for (int printTypeCheck = 0; printTypeCheck <= 1; printTypeCheck++)
+                {
+                    coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeCheck, raiinInfModelList, raiinInfModelPayList));
+                }
             }
+            else
+            {
+                coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
+            }
+            return GetAccountingReportingData(hpId, coAccountingParamModels);
         }
-        else
+        finally
         {
-            coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
+            _systemConfig.ReleaseResource();
+            _finder.ReleaseResource();
+            _systemConfigProvider.ReleaseResource();
+            _tenantProvider.DisposeDataContext();
         }
-        return GetAccountingReportingData(hpId, coAccountingParamModels);
     }
 
     private List<CoAccountingParamModel> ConvertToCoAccountingParamModelList(long ptId, bool isCalculateProcess, int printTypeInput, List<RaiinInfModel> raiinInfModelList, List<RaiinInfModel> raiinInfModelPayList)

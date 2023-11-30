@@ -276,10 +276,6 @@ namespace TenantMigration.Migrations.SuperAdmin
 
                     b.HasKey("TenantId");
 
-                    b.HasIndex("AdminId")
-                        .IsUnique()
-                        .HasFilter("\"IS_DELETED\" = 0");
-
                     b.HasIndex("Db")
                         .IsUnique()
                         .HasFilter("\"IS_DELETED\" = 0");

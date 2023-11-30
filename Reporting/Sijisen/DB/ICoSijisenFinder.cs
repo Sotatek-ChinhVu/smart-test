@@ -1,8 +1,9 @@
-﻿using Reporting.Sijisen.Model;
+﻿using Domain.Common;
+using Reporting.Sijisen.Model;
 
 namespace Reporting.Sijisen.DB;
 
-public interface ICoSijisenFinder
+public interface ICoSijisenFinder : IRepositoryBase
 {
     /// <summary>
     /// 患者情報を取得する

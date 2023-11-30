@@ -49,31 +49,40 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"CreateTenantDomain. {ex.Message}");
             }
         }
 
         public static async Task<bool> CheckSubdomainExistence(string subdomainToCheck)
         {
-            using (var route53Client = new AmazonRoute53Client())
+            try
             {
-                var listResourceRecordSetsRequest = new ListResourceRecordSetsRequest
+                using (var route53Client = new AmazonRoute53Client())
                 {
-                    HostedZoneId = ConfigConstant.HostedZoneId
-                };
+                    var listResourceRecordSetsRequest = new ListResourceRecordSetsRequest
+                    {
+                        HostedZoneId = ConfigConstant.HostedZoneId
+                    };
 
-                var listResourceRecordSetsResponse = await route53Client.ListResourceRecordSetsAsync(listResourceRecordSetsRequest);
+                    var listResourceRecordSetsResponse = await route53Client.ListResourceRecordSetsAsync(listResourceRecordSetsRequest);
 
-                bool subdomainExists = listResourceRecordSetsResponse.ResourceRecordSets
-                    .Any(recordSet => recordSet.Name == $"{subdomainToCheck}.{ConfigConstant.Domain}.");
+                    bool subdomainExists = listResourceRecordSetsResponse.ResourceRecordSets
+                        .Any(recordSet => recordSet.Name == $"{subdomainToCheck}.{ConfigConstant.Domain}.");
 
-                if (subdomainExists)
-                {
-                    return true;
+                    if (subdomainExists)
+                    {
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
             }
+            catch (Exception ex)
+            {
+                throw new Exception($"CheckSubdomainExistence. {ex.Message}");
+            }
+
         }
+
         public static async Task<bool> DeleteTenantDomain(string tenantId)
         {
             try
@@ -116,12 +125,19 @@ namespace AWSSDK.Common
                 });
 
                 // Return true if the status code is OK (successful)
-                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception($"Delete Tenant Domain. Code: {response?.HttpStatusCode}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Delete Tenant Domain. {ex.Message}");
             }
         }
 

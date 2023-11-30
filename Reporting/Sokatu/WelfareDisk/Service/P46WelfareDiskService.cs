@@ -43,45 +43,52 @@ namespace Reporting.Sokatu.WelfareDisk.Service
 
         public CommonExcelReportingModel GetDataP46WelfareDisk(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
-            this.hpId = hpId;
-            this.seikyuType = seikyuType;
-            this.seikyuYm = seikyuYm;
-            GetData();
-
-            #region Header
-            List<string> headerDatas = new List<string>();
-            //データ区分
-            headerDatas.Add("1");
-            //診療年月
-            string seiYm = CIUtil.SDateToWDate(seikyuYm * 100 + 1).ToString();
-            headerDatas.Add(seiYm.Substring(0, 5));
-            //医療機関番号
-            string hpCd = "\"" + "46" + "1" + hpInf.HpCd + "\"";
-            headerDatas.Add(hpCd);
-            //事業番号
-            headerDatas.Add("1");
-            //件数
-            int count = receInfs.Count();
-            headerDatas.Add(count.ToString());
-            //医療機関名称
-            headerDatas.Add("\"" + CIUtil.Copy(hpInf.ReceHpName, 1, 30) + "\"");
-            #endregion
-
-            List<string> retDatas = new();
-
-            if (GetData())
+            try
             {
-                retDatas.Add(string.Join(",", headerDatas));
+                this.hpId = hpId;
+                this.seikyuType = seikyuType;
+                this.seikyuYm = seikyuYm;
+                GetData();
 
-                foreach (var receInf in receInfs)
+                #region Header
+                List<string> headerDatas = new List<string>();
+                //データ区分
+                headerDatas.Add("1");
+                //診療年月
+                string seiYm = CIUtil.SDateToWDate(seikyuYm * 100 + 1).ToString();
+                headerDatas.Add(seiYm.Substring(0, 5));
+                //医療機関番号
+                string hpCd = "\"" + "46" + "1" + hpInf.HpCd + "\"";
+                headerDatas.Add(hpCd);
+                //事業番号
+                headerDatas.Add("1");
+                //件数
+                int count = receInfs.Count();
+                headerDatas.Add(count.ToString());
+                //医療機関名称
+                headerDatas.Add("\"" + CIUtil.Copy(hpInf.ReceHpName, 1, 30) + "\"");
+                #endregion
+
+                List<string> retDatas = new();
+
+                if (GetData())
                 {
-                    retDatas.Add(RecordData(receInf));
-                }
-            }
+                    retDatas.Add(string.Join(",", headerDatas));
 
-            CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")));
-            string sheetName = string.Format("461{0}-1-{1}{2}", hpInf.HpCd, wrkYmd.Year.ToString("D2"), wrkYmd.Month.ToString("D2"));
-            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+                    foreach (var receInf in receInfs)
+                    {
+                        retDatas.Add(RecordData(receInf));
+                    }
+                }
+
+                CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")));
+                string sheetName = string.Format("461{0}-1-{1}{2}", hpInf.HpCd, wrkYmd.Year.ToString("D2"), wrkYmd.Month.ToString("D2"));
+                return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+            }
+            finally
+            {
+                _welfareFinder.ReleaseResource();
+            }
         }
 
         #region SubMethod

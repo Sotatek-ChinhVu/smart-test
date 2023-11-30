@@ -7,7 +7,6 @@ using Infrastructure.Interfaces;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
-using System.Text.Json;
 
 namespace Reporting.Statistics.Sta1001.DB;
 
@@ -18,6 +17,12 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
     public CoSta1001Finder(ITenantProvider tenantProvider, ICoHpInfFinder hpInfFinder) : base(tenantProvider)
     {
         _hpInfFinder = hpInfFinder;
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+        _hpInfFinder.ReleaseResource();
     }
 
     public CoHpInfModel GetHpInf(int hpId, int sinDate)
@@ -218,7 +223,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 NewSeikyuTensu = syunoSeikyu.NewSeikyuTensu,
                 SeikyuGaku = syunoSeikyu.SeikyuGaku,
                 NewSeikyuGaku = syunoSeikyu.NewSeikyuGaku,
-                PtFutan = (int?) kaikeiFutanj.PtFutan ?? 0,
+                PtFutan = (int?)kaikeiFutanj.PtFutan ?? 0,
                 JihiFutan = (int?)kaikeiFutanj.JihiFutan ?? 0,
                 JihiTax = (int?)kaikeiFutanj.JihiTax ?? 0,
                 KaikeiAdjustFutan = (int?)-kaikeiFutanj.AdjustFutan ?? 0,

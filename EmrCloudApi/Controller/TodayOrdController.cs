@@ -3,12 +3,15 @@ using Domain.Models.MstItem;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
+using EmrCloudApi.Presenters.LastDayInformation;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Insurance;
+using EmrCloudApi.Requests.LastDayInformation;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.InsuranceList;
+using EmrCloudApi.Responses.LastDayInformation;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
@@ -17,6 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.LastDayInformation.GetLastDayInfoList;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.AutoCheckOrder;
 using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
@@ -501,6 +505,19 @@ namespace EmrCloudApi.Controller
             }
 
             return result;
+        }
+
+
+        [HttpGet(ApiPath.GetLastDayInfoList)]
+        public ActionResult<Response<GetLastDayInfoListResponse>> GetLastDayInfoListOrder([FromQuery] GetLastDayInfoListRequest request)
+        {
+            var input = new GetLastDayInfoListInputData(HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLastDayInfoListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLastDayInfoListResponse>>(presenter.Result);
         }
     }
 }

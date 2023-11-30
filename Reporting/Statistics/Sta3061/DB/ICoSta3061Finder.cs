@@ -1,9 +1,10 @@
-﻿using Reporting.Statistics.Model;
+﻿using Domain.Common;
+using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3061.Models;
 
 namespace Reporting.Statistics.Sta3061.DB;
 
-public interface ICoSta3061Finder
+public interface ICoSta3061Finder : IRepositoryBase
 {
     List<CoKouiTensuModel> GetKouiTensu(int hpId,CoSta3061PrintConf printConf);
 

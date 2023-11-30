@@ -14,5 +14,7 @@ namespace Reporting.Sokatu.KokhoSokatu.DB
         List<CoHokensyaMstModel> GetHokensyaName(int hpId, List<string> hokensyaNos);
 
         List<CoKohiHoubetuMstModel> GetKohiHoubetuMst(int hpId, int seikyuYm);
+
+        void ReleaseResource();
     }
 }

@@ -114,6 +114,7 @@ public class KensaIraiCommon : IKensaIraiCommon
             _ordInfRepository.ReleaseResource();
             _groupInfRepository.ReleaseResource();
             _loggingHandler.Dispose();
+            _coKensaIraiFinder.ReleaseResource();
         }
     }
 
@@ -450,6 +451,7 @@ public class KensaIraiCommon : IKensaIraiCommon
                         raiinInf?.TantoName ?? string.Empty,
                         raiinInf?.TantoKanaName ?? string.Empty,
                         raiinInf?.KaSName ?? string.Empty,
+                        kensaInf.UpdateDate.ToString("HHmm"),
                         addKensaIraiDtls);
                 addKensaIrai.UpdateTime = kensaInf.UpdateDate.ToString("HHmm");
 

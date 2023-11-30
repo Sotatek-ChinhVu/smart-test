@@ -49,40 +49,47 @@ namespace Reporting.SyojyoSyoki.Service
 
         public CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seiKyuYm, int hokenId)
         {
-            _hpId = hpId;
-            _ptId = ptId;
-            _seiKyuYm = seiKyuYm;
-            _hokenId = hokenId;
-            GetRowCount();
-            coModels = GetData();
-
-            if (coModels != null && coModels.Any()) 
+            try
             {
-                foreach (CoSyojyoSyokiModel model in coModels)
+                _hpId = hpId;
+                _ptId = ptId;
+                _seiKyuYm = seiKyuYm;
+                _hokenId = hokenId;
+                GetRowCount();
+                coModels = GetData();
+
+                if (coModels != null && coModels.Any())
                 {
-                    coModel = model;
-
-                    if (coModel != null && coModel.ReceInf != null)
+                    foreach (CoSyojyoSyokiModel model in coModels)
                     {
-                        _hasNextPage = true;
-                        _currentPage = 1;
+                        coModel = model;
 
-                        // 症状詳記リスト
-                        _syojyoSyokiList = new List<string>();
-
-                        MakeSyojyoSyokiList();
-
-                        while (_hasNextPage)
+                        if (coModel != null && coModel.ReceInf != null)
                         {
-                            _hasNextPage = UpdateDrawForm();
-                            _currentPage++;
-                        }
+                            _hasNextPage = true;
+                            _currentPage = 1;
 
+                            // 症状詳記リスト
+                            _syojyoSyokiList = new List<string>();
+
+                            MakeSyojyoSyokiList();
+
+                            while (_hasNextPage)
+                            {
+                                _hasNextPage = UpdateDrawForm();
+                                _currentPage++;
+                            }
+
+                        }
                     }
                 }
-            }
 
-            return new SyojyoSyokiMapper(_singleFieldData, _tableFieldData, _rowCountFieldName).GetData();
+                return new SyojyoSyokiMapper(_singleFieldData, _tableFieldData, _rowCountFieldName).GetData();
+            }
+            finally
+            {
+                _finder.ReleaseResource();
+            }
         }
 
         private List<CoSyojyoSyokiModel> GetData()

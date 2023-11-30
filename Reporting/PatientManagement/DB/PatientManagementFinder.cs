@@ -14,6 +14,11 @@ public class PatientManagementFinder : RepositoryBase, IPatientManagementFinder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public List<GroupInfoSearchPatientModel> GetListGroupInfo(int hpId)
     {
         List<GroupInfoSearchPatientModel> result;

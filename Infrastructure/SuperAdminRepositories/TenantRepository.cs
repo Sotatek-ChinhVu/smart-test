@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Domain.SuperAdminModels.Tenant;
+﻿using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
 using Helper.Common;
 using Helper.Enum;
@@ -143,7 +142,7 @@ namespace Infrastructure.SuperAdminRepositories
                 var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
                 if (tenant == null)
                 {
-                    return false;
+                    throw new Exception("Tenant does not exist");
                 }
                 tenant.Status = status;
                 TrackingDataContext.SaveChanges();
@@ -179,7 +178,7 @@ namespace Infrastructure.SuperAdminRepositories
                 return new();
             }
         }
-        
+
         public void RevokeInsertPermission()
         {
             //check status tenant = available
