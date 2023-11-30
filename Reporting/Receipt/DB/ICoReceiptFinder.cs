@@ -1,4 +1,5 @@
-﻿using Domain.Models.Accounting;
+﻿using Domain.Common;
+using Domain.Models.Accounting;
 using Entity.Tenant;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Receipt.Models;
@@ -6,7 +7,7 @@ using Reporting.Receipt.Models;
 
 namespace Reporting.Receipt.DB
 {
-    public interface ICoReceiptFinder
+    public interface ICoReceiptFinder : IRepositoryBase
     {
         HpInfModel FindHpInf(int hpId, int sinDate);
 

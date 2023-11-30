@@ -32,6 +32,15 @@ namespace Entity.SuperAdmin
         [Column("SIZE")]
         public int Size { get; set; }
 
+        /// <summary>
+        /// 1: MB; 2: GB
+        /// </summary>
+        [Column("SIZE_TYPE")]
+        public int SizeType { get; set; }
+
+        /// <summary>
+        /// 0: sharing; 1: dedicate(premium)
+        /// </summary>
         [Column("TYPE")]
         public byte Type { get; set; }
 
@@ -49,6 +58,15 @@ namespace Entity.SuperAdmin
 
         [Column("SCHEDULE_TIME")]
         public int ScheduleTime { get; set; }
+
+        [Column("RDS_IDENTIFIER")]
+        public string RdsIdentifier { get; set; } = string.Empty;
+
+        [Column("USER_CONNECT")]
+        public string UserConnect { get; set; } = string.Empty;
+
+        [Column("PASSWORD_CONNECT")]
+        public string PasswordConnect { get; set; } = string.Empty;
 
         [Column("IS_DELETED")]
         public int IsDeleted { get; set; }

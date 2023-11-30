@@ -64,6 +64,23 @@ namespace Helper.Common
             return result;
         }
 
+        public string ToHalfsizeWithOutToLower(string result)
+        {
+            string fullsize = string.Empty;
+            string halfsize = string.Empty;
+
+            foreach (string row in _japaneseCharacterList)
+            {
+                var split = row.Split('@');
+                fullsize = split[0];
+                halfsize = split[1];
+
+                result = result.Replace(fullsize, halfsize);
+            }
+
+            return result;
+        }
+
         public string ToFullsize(string value)
         {
             string result = value.ToLower();

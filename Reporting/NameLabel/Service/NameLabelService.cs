@@ -1,5 +1,4 @@
-﻿using Infrastructure.Interfaces;
-using Reporting.Mappers.Common;
+﻿using Reporting.Mappers.Common;
 using Reporting.NameLabel.DB;
 using Reporting.NameLabel.Mapper;
 using Reporting.NameLabel.Models;
@@ -8,29 +7,31 @@ namespace Reporting.NameLabel.Service;
 
 public class NameLabelService : INameLabelService
 {
-    private readonly ITenantProvider _tenantProvider;
+    private readonly ICoNameLabelFinder _coNameLabelFinder;
 
-    public NameLabelService(ITenantProvider tenantProvider)
+    public NameLabelService(ICoNameLabelFinder coNameLabelFinder)
     {
-        _tenantProvider = tenantProvider;
+        _coNameLabelFinder = coNameLabelFinder;
     }
 
     public CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate)
     {
-        CoNameLabelModel coModel = GetData(ptId, kanjiName, sinDate);
-        return new NameLabelMapper(coModel).GetData();
+        try
+        {
+            CoNameLabelModel coModel = GetData(ptId, kanjiName, sinDate);
+            return new NameLabelMapper(coModel).GetData();
+        }
+        finally
+        {
+            _coNameLabelFinder.ReleaseResource();
+        }
     }
 
     private CoNameLabelModel GetData(long ptId, string kanjiName, int sinDate)
     {
-        using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
-        {
-            var finder = new CoNameLabelFinder(noTrackingDataContext);
+        // 患者情報
+        var ptInf = _coNameLabelFinder.FindPtInf(ptId);
 
-            // 患者情報
-            var ptInf = finder.FindPtInf(ptId);
-
-            return new CoNameLabelModel(ptInf, kanjiName, sinDate);
-        }
+        return new CoNameLabelModel(ptInf, kanjiName, sinDate);
     }
 }

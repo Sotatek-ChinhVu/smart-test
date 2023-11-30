@@ -92,27 +92,34 @@ namespace Reporting.Statistics.Sta2020.Service
 
         public CommonReportingRequestModel GetSta2020ReportingData(CoSta2020PrintConf printConf, int hpId)
         {
-            HpId = hpId;
-            _printConf = printConf;
-            // get data to print
-            GetFieldNameList();
-            GetRowCount();
-
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                _hasNextPage = true;
+                HpId = hpId;
+                _printConf = printConf;
+                // get data to print
+                GetFieldNameList();
+                GetRowCount();
 
-                _currentPage = 1;
-                while (_hasNextPage && getData)
+                var getData = GetData();
+
+                if (getData)
                 {
-                    UpdateDrawForm();
-                    _currentPage++;
-                }
-            }
+                    _hasNextPage = true;
 
-            return new Sta2020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+                    _currentPage = 1;
+                    while (_hasNextPage && getData)
+                    {
+                        UpdateDrawForm();
+                        _currentPage++;
+                    }
+                }
+
+                return new Sta2020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+            }
+            finally
+            {
+                _staFinder.ReleaseResource();
+            }
         }
 
         #region Get  Data

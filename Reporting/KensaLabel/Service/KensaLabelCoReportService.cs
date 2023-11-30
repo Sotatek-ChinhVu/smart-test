@@ -38,18 +38,25 @@ namespace Reporting.KensaLabel.Service
 
         public CommonReportingRequestModel GetKensaLabelPrintData(int hpId, long ptId, long raiinNo, int sinDate, KensaPrinterModel printerModel)
         {
-            this.hpId = hpId;
-            this.ptId = ptId;
-            this.raiinNo = raiinNo;
-            this.sinDate = sinDate;
-            this.kensaPrinter = printerModel;
+            try
+            {
+                this.hpId = hpId;
+                this.ptId = ptId;
+                this.raiinNo = raiinNo;
+                this.sinDate = sinDate;
+                this.kensaPrinter = printerModel;
 
-            ptInfModel = _finder.GetPtInfModel(hpId, ptId);
-            UpdateDrawForm();
+                ptInfModel = _finder.GetPtInfModel(hpId, ptId);
+                UpdateDrawForm();
 
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            return new KensaLabelMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                return new KensaLabelMapper(_setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+            }
+            finally
+            {
+                _finder.ReleaseResource();
+            }
         }
 
         private bool UpdateDrawForm()

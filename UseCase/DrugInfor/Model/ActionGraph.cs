@@ -2,10 +2,11 @@
 
 public class ActionGraph
 {
-    public ActionGraph(ActionType actionType, int sinDate, int endDate, int dayCount, string tooltip)
+    public ActionGraph(ActionType actionType, int sinDate, int startDate, int endDate, int dayCount, string tooltip)
     {
         ActionType = actionType;
         SinDate = sinDate;
+        StartDate = sinDate < startDate ? startDate : sinDate;
         EndDate = endDate;
         DayCount = dayCount;
         Tooltip = tooltip;
@@ -14,6 +15,8 @@ public class ActionGraph
     public ActionType ActionType { get; private set; }
 
     public int SinDate { get; private set; }
+
+    public int StartDate { get; private set; }
 
     public int EndDate { get; private set; }
 

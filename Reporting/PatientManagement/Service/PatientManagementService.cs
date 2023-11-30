@@ -20,15 +20,22 @@ public class PatientManagementService : IPatientManagementService
 
     public CommonReportingRequestModel PrintData(int hpId, PatientManagementModel patientManagementModel)
     {
-        var groupInfos = _finder.GetListGroupInfo(hpId);
-        var coSta9000PtConf = patientManagementModel.IsDefaultPtConfInView() ? null : patientManagementModel?.AsCoSta9000PtConf(groupInfos.Where(x => x.GroupItemSelected != null && !string.IsNullOrEmpty(x.GroupCodeSelected)).Select(x => new PtGrp(x.GroupId, x.GroupCodeSelected)).ToList());
-        var coSta9000HokenConf = patientManagementModel!.IsDefaultHokenConfInView() ? null : patientManagementModel?.AsCoSta9000HokenConf();
-        var coSta9000ByomeiConf = patientManagementModel!.IsDefaultByomeiConfInView() ? null : patientManagementModel?.AsCoSta9000ByomeiConf();
-        var coSta9000KarteConf = patientManagementModel!.IsDefaultKarteConfInView() ? null : patientManagementModel?.AsCoSta9000KarteConf();
-        var coSta9000SinConf = patientManagementModel!.IsDefaultSinConfInView() ? null : patientManagementModel?.AsCoSta9000SinConf();
-        var coSta9000KensaConf = patientManagementModel!.IsDefaultKensaConfInView() ? null : patientManagementModel?.AsCoSta9000KensaConf();
-        var coSta9000RaiinConf = patientManagementModel!.IsDefaultRaiinConfInView() ? null : patientManagementModel?.AsCoSta9000RaiinConf();
-        return _sta9000CoReportService.GetSta9000ReportingData(hpId, patientManagementModel!.ReportType, patientManagementModel.OutputOrder, patientManagementModel.OutputOrder2, patientManagementModel.OutputOrder3,
-                                                               coSta9000PtConf, coSta9000HokenConf, coSta9000ByomeiConf, coSta9000RaiinConf, coSta9000SinConf, coSta9000KarteConf, coSta9000KensaConf);
+        try
+        {
+            var groupInfos = _finder.GetListGroupInfo(hpId);
+            var coSta9000PtConf = patientManagementModel.IsDefaultPtConfInView() ? null : patientManagementModel?.AsCoSta9000PtConf(groupInfos.Where(x => x.GroupItemSelected != null && !string.IsNullOrEmpty(x.GroupCodeSelected)).Select(x => new PtGrp(x.GroupId, x.GroupCodeSelected)).ToList());
+            var coSta9000HokenConf = patientManagementModel!.IsDefaultHokenConfInView() ? null : patientManagementModel?.AsCoSta9000HokenConf();
+            var coSta9000ByomeiConf = patientManagementModel!.IsDefaultByomeiConfInView() ? null : patientManagementModel?.AsCoSta9000ByomeiConf();
+            var coSta9000KarteConf = patientManagementModel!.IsDefaultKarteConfInView() ? null : patientManagementModel?.AsCoSta9000KarteConf();
+            var coSta9000SinConf = patientManagementModel!.IsDefaultSinConfInView() ? null : patientManagementModel?.AsCoSta9000SinConf();
+            var coSta9000KensaConf = patientManagementModel!.IsDefaultKensaConfInView() ? null : patientManagementModel?.AsCoSta9000KensaConf();
+            var coSta9000RaiinConf = patientManagementModel!.IsDefaultRaiinConfInView() ? null : patientManagementModel?.AsCoSta9000RaiinConf();
+            return _sta9000CoReportService.GetSta9000ReportingData(hpId, patientManagementModel!.ReportType, patientManagementModel.OutputOrder, patientManagementModel.OutputOrder2, patientManagementModel.OutputOrder3,
+                                                                   coSta9000PtConf, coSta9000HokenConf, coSta9000ByomeiConf, coSta9000RaiinConf, coSta9000SinConf, coSta9000KarteConf, coSta9000KensaConf);
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 }

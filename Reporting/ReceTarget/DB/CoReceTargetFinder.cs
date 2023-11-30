@@ -11,6 +11,11 @@ public class CoReceTargetFinder : RepositoryBase, ICoReceTargetFinder
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public CoReceTargetModel FindReceInf(int hpId, int seikyuYm)
     {
         var receInfs = NoTrackingDataContext.ReceInfs.Where(item =>

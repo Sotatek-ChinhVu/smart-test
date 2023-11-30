@@ -21,7 +21,7 @@
 
         public long RaiinNo { get; private set; }
 
-        public List<OdrInfItem> OrderInfoList { get; private set; } = new List<OdrInfItem>();
+        public List<OdrInfItem> OrderInfoList { get; private set; }
 
         public ReceptionItem Reception { get; private set; }
 

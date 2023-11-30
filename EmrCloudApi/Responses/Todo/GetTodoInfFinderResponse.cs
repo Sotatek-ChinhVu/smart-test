@@ -9,6 +9,6 @@ namespace EmrCloudApi.Responses.Todo
             TodoInfList = todoInfList;
         }
 
-        public List<GetListTodoInfFinderOutputItem> TodoInfList { get; private set; } = new List<GetListTodoInfFinderOutputItem>();
+        public List<GetListTodoInfFinderOutputItem> TodoInfList { get; private set; }
     }
 }

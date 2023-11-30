@@ -37,7 +37,7 @@ namespace Interactor.MstItem
             if (listSetNameMnt.Count <= 0)
                 return;
 
-            SetNameMntModel setNameMntAbove = null;
+            SetNameMntModel setNameMntAbove;
             SetNameMntModel setNameMnt = listSetNameMnt[0];
 
             setNameMnt.SetCategory = GetNameCategory(setNameMnt.SetKbn, hpId);
@@ -78,7 +78,7 @@ namespace Interactor.MstItem
                 {
                     setNameMnt.Level3Binding = setNameMnt.Level3.AsString();
                 }
-                if (setNameMnt.IsSetOdrInfDetail == false)
+                if (!setNameMnt.IsSetOdrInfDetail)
                 {
                     setNameMnt.IsSetString = "○";
                     if (setNameMnt.Level3 > 0)
@@ -100,7 +100,7 @@ namespace Interactor.MstItem
                 {
                     setNameMnt.ItemNameBinding = "　　　" + setNameMnt.ItemName;
                     setNameMnt.ItemNameTenMstBinding = setNameMnt.ItemNameTenMst;
-                    if (CheckItemNameAndTenMstName(GetItemName(setNameMnt), setNameMnt.ItemNameTenMst) == true)
+                    if (CheckItemNameAndTenMstName(GetItemName(setNameMnt), setNameMnt.ItemNameTenMst))
                     {
                         setNameMnt.SetFlag = "ー";
                     }
@@ -122,6 +122,7 @@ namespace Interactor.MstItem
 
             return true;
         }
+
         private string GetItemName(SetNameMntModel setNameMnt)
         {
             return setNameMnt.IsCommentMaster

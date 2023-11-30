@@ -1,4 +1,5 @@
-﻿using Domain.Models.Diseases;
+using Domain.Models.AuditLog;
+using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.HpInf;
@@ -65,9 +66,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly ITenantProvider _tenantProvider;
     private readonly IKensaIraiCommon _kensaIraiCommon;
     private readonly ISystemConfRepository _systemConfRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository, IKensaIraiCommon kensaIraiCommon, ISystemConfRepository systemConfRepository)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ITenantProvider tenantProvider, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, ISummaryInfRepository summaryInfRepository, IKensaIraiCommon kensaIraiCommon, ISystemConfRepository systemConfRepository, IAuditLogRepository auditLogRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -90,6 +92,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         _kensaIraiCommon = kensaIraiCommon;
         _systemConfRepository = systemConfRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -351,13 +354,16 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             if (saveMedicalSuccess)
             {
                 Task.Run(() =>
-               _calculateService.RunCalculate(new RecaculationInputDto(
-                        hpId,
-                        ptId,
-                        sinDate,
-                        inputDatas.IsSagaku ? 1 : 0,
-                        ""
-                    )));
+                {
+                    _calculateService.RunCalculate(new RecaculationInputDto(
+                             hpId,
+                           ptId,
+                            sinDate,
+                             inputDatas.IsSagaku ? 1 : 0,
+                             ""
+                         ));
+                    _calculateService.ReleaseSource();
+                });
             }
 
             if (saveMedicalSuccess)
@@ -391,6 +397,27 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         kensaInfResult = _kensaIraiCommon.SaveKensaIraiAction(hpId, inputDatas.UserId, ptId, sinDate, raiinNo);
                     }
                 }
+                //Add AuditTrailLog
+
+                Task.Run(() =>
+                {
+                    if (inputDatas.Status == (byte)ModeSaveData.KaikeiSave)
+                    {
+                        AddAuditKaikeiSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    }
+                    else if (inputDatas.Status == (byte)ModeSaveData.KeisanSave)
+                    {
+                        AddAuditKeisanSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    }
+                    else if (inputDatas.Status == (byte)ModeSaveData.TempSave)
+                    {
+                        AddAuditTempSaveData(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    }
+
+                    UpdateOdrKarteEvent(inputDatas.HpId, inputDatas.UserId, inputDatas.PtId, inputDatas.SinDate, inputDatas.RaiinNo, inputDatas.StateChanged);
+                    _auditLogRepository.ReleaseResource();
+                });
+                
                 return new SaveMedicalOutputData(
                          SaveMedicalStatus.Successed,
                          RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
@@ -850,14 +877,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return (dicValidation, allOdrInfs);
     }
 
-    private void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
-    {
-        lock (obj)
-        {
-            dicValidation.Add(key, status);
-        }
-    }
-
     private List<FamilyModel> ConvertToFamilyList(List<FamilyItem> familyInputList)
     {
         List<FamilyModel> result = new();
@@ -891,9 +910,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
     private UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
     {
-        foreach (var flowSheet in flowSheets)
+        foreach (var tagNo in flowSheets.Select(item => item.TagNo).ToList())
         {
-            if (flowSheet.TagNo < -1 || flowSheet.TagNo > 7)
+            if (tagNo < -1 || tagNo > 7)
             {
                 return UpsertFlowSheetStatus.TagNoNoValid;
             }
@@ -972,4 +991,491 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertPtDiseaseListStatus.Valid;
     }
 
+    private void AddAuditKaikeiSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    {
+        var args = new List<ArgumentModel>();
+
+        #region Kaikei Save Data
+        args.Add(new ArgumentModel(
+                        EventCode.SavePress,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+
+        if (stateChanged.OdrOrSyosaisinChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.SavePressOrderChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty
+            ));
+
+        }
+
+        if (stateChanged.TodayKarteChanged)
+        {
+            args.Add(new ArgumentModel(
+               EventCode.SavePressKarteChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty
+            ));
+        }
+
+        if (stateChanged.NextOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+              EventCode.SavePressNextOdrChanged,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+           ));
+        }
+
+        if (stateChanged.PeriodicOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.SavePressPeriodicOdrChanged,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+           ));
+        }
+
+        if (!stateChanged.FromRece)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.SavePressReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+           ));
+
+            if (stateChanged.OdrOrSyosaisinChanged)
+            {
+                args.Add(new ArgumentModel(
+                       EventCode.SavePressOrderChangedReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+                ));
+
+            }
+            if (stateChanged.TodayKarteChanged)
+            {
+                args.Add(new ArgumentModel(
+                       EventCode.SavePressKarteChangedReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       string.Empty
+                ));
+            }
+        }
+
+        #endregion
+
+        _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
+    }
+
+    private void AddAuditKeisanSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    {
+        var args = new List<ArgumentModel>();
+
+        args.Add(new ArgumentModel(
+                        EventCode.KeisanSavePress,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+
+        if (stateChanged.OdrOrSyosaisinChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.KeisanSavePressOrderChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "0"));
+        }
+        if (stateChanged.TodayKarteChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.KeisanSavePressKarteChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "0"));
+        }
+
+        if (stateChanged.NextOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.KeisanSavePressNextOdrChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "0"));
+        }
+
+        if (stateChanged.PeriodicOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.SavePressPeriodicOdrChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "0"));
+        }
+
+        if (!stateChanged.FromRece)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.KeisanSavePressReceExclude,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "0"));
+            if (stateChanged.OdrOrSyosaisinChanged)
+            {
+                args.Add(new ArgumentModel(
+                        EventCode.KeisanSavePressOrderChangedReceExclude,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "0"));
+            }
+            if (stateChanged.TodayKarteChanged)
+            {
+                args.Add(new ArgumentModel(
+                        EventCode.KeisanSavePressKarteChangedReceExclude,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "0"));
+            }
+        }
+        _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
+    }
+
+    private void AddAuditTempSaveData(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    {
+        var args = new List<ArgumentModel>();
+
+        args.Add(new ArgumentModel(
+                        EventCode.TempSavePress,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+
+        if (stateChanged.OdrOrSyosaisinChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.TempSavePressOrderChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+        }
+        if (stateChanged.TodayKarteChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.TempSavePressKarteChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+        }
+
+        if (stateChanged.NextOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.TempSavePressNextOdrChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+        }
+
+        if (stateChanged.PeriodicOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.TempSavePressPeriodicOdrChanged,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+        }
+
+        if (!stateChanged.FromRece)
+        {
+            args.Add(new ArgumentModel(
+                        EventCode.TempSavePressReceExclude,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+
+            if (stateChanged.OdrOrSyosaisinChanged)
+            {
+                args.Add(new ArgumentModel(
+                        EventCode.TempSavePressOrderChangedReceExclude,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+            }
+            if (stateChanged.TodayKarteChanged)
+            {
+                args.Add(new ArgumentModel(
+                        EventCode.TempSavePressKarteChangedReceExclude,
+                        ptId,
+                        sinDate,
+                        raiinNo,
+                        0,
+                        0,
+                        0,
+                        0,
+                        string.Empty));
+            }
+        }
+
+        _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
+    }
+
+    private void UpdateOdrKarteEvent(int hpId, int userId, long ptId, int sinDate, long raiinNo, MedicalStateChanged stateChanged)
+    {
+        var args = new List<ArgumentModel>();
+
+        #region Update Odr Karte
+        // Check change order
+        if (stateChanged.OdrOrSyosaisinChanged)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.OrderUpdate,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+
+            if (!stateChanged.FromRece)
+            {
+                args.Add(new ArgumentModel(
+                       EventCode.OrderUpdateReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+            }
+        }
+
+        // Check change karte
+        if (stateChanged.TodayKarteChanged)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.KarteUpdate,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+
+            if (!stateChanged.FromRece)
+            {
+                args.Add(new ArgumentModel(
+                       EventCode.KarteUpdateReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+            }
+        }
+
+        // Check change order in
+        if (stateChanged.OdrDrugInChanged)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.OdrDrugInUpdate,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+
+            if (!stateChanged.FromRece)
+            {
+                args.Add(new ArgumentModel(
+                       EventCode.OdrDrugInUpdateReceExclude,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+            }
+        }
+
+        // Check change next order
+        if (stateChanged.NextOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.NextOdrUpdate,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+        }
+
+        // Check change periodic order
+        if (stateChanged.PeriodicOdrChanged)
+        {
+            args.Add(new ArgumentModel(
+                       EventCode.PeriodicOdrUpdate,
+                       ptId,
+                       sinDate,
+                       raiinNo,
+                       0,
+                       0,
+                       0,
+                       0,
+                       "0"
+                       ));
+        }
+
+        #endregion
+
+        _auditLogRepository.AddListAuditTrailLog(hpId, userId, args);
+    }
 }

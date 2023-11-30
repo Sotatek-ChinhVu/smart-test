@@ -54,5 +54,13 @@ namespace Infrastructure.Interfaces
         SuperAdminNoTrackingContext GetSuperAdminNoTrackingDataContext();
 
         SuperAdminContext GetSuperAdminTrackingTenantDataContext();
+
+        AdminDataContext CreateNewAuditLogTrackingDataContext();
+
+        AdminNoTrackingContext CreateNewAuditLogNoTrackingDataContext();
+
+        AdminNoTrackingContext GetAuditLogNoTrackingDataContext();
+
+        AdminDataContext GetAuditLogTrackingDataContext();
     }
 }

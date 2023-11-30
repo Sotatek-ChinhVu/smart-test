@@ -2,13 +2,13 @@
 {
     public class DrugInfo
     {
-        public string Id = string.Empty;
-        public string ItemCD = string.Empty;
-        public string ItemName = string.Empty;
-        public double Suryo;
-        public string UnitName = string.Empty;
-        public double TermVal;
-        public int SinKouiKbn;
-        public double UsageQuantity;
+        public string Id { get; set; } = string.Empty;
+        public string ItemCD { get; set; } = string.Empty;
+        public string ItemName { get; set; } = string.Empty;
+        public double Suryo { get; set; }
+        public string UnitName { get; set; } = string.Empty;
+        public double TermVal { get; set; }
+        public int SinKouiKbn { get; set; }
+        public double UsageQuantity { get; set; }
     }
 }

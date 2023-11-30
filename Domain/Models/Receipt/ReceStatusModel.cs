@@ -27,7 +27,7 @@ public class ReceStatusModel
 
     public ReceStatusModel(int isPaperRece)
     {
-        IsPaperRece = isPaperRece == 1 ? true : false;
+        IsPaperRece = isPaperRece == 1;
     }
 
     public long PtId { get; private set; }

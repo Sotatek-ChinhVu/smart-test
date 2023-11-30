@@ -18,8 +18,8 @@ namespace SuperAdmin.Controllers
             _bus = bus;
         }
 
-        [HttpGet("Login")]
-        public ActionResult<Response<LoginResponse>> GetListMst([FromQuery] LoginRequest request)
+        [HttpPost("Login")]
+        public ActionResult<Response<LoginResponse>> Login([FromBody] LoginRequest request)
         {
             var input = new LoginInputData(request.LoginId, request.Password);
             var output = _bus.Handle(input);

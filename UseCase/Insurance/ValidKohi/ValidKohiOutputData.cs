@@ -7,7 +7,7 @@ namespace UseCase.Insurance.ValidKohi
     {
         public bool Result { get => !ValidateDetails.Any(); }
 
-        public List<ResultValidateInsurance<ValidKohiStatus>> ValidateDetails { get; private set; } = new List<ResultValidateInsurance<ValidKohiStatus>>();
+        public List<ResultValidateInsurance<ValidKohiStatus>> ValidateDetails { get; private set; }
 
         public ValidKohiOutputData(List<ResultValidateInsurance<ValidKohiStatus>> details)
         {

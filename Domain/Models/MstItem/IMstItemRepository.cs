@@ -39,7 +39,7 @@ namespace Domain.Models.MstItem
 
         bool UpdateKensaStdMst(int hpId, int userId, List<KensaStdMstModel> kensaStdMstModels);
 
-        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMsts, List<TenItemModel> tenMsts, List<KensaMstModel> childKensaMsts);
+        bool UpdateKensaMst(int hpId, int userId, List<KensaMstModel> kensaMstModels, List<TenItemModel> tenMstModels, List<KensaMstModel> childKensaMsts, List<TenItemModel> tenMstListGenDate);
 
         List<KensaMstModel> GetParrentKensaMstModels(int hpId, string keyWord, string itemCd);
 
@@ -57,9 +57,11 @@ namespace Domain.Models.MstItem
 
         List<SearchSupplementModel> GetListSupplement(string searchValue);
 
-        (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, bool isDeleted, List<int> KouiKbns, List<int> drugKbns, string masterSBT);
+        (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, bool isDeleted, List<int> kouiKbns, List<int> drugKbns, string masterSBT);
 
         TenItemModel GetTenMst(int hpId, int sinDate, string itemCd);
+
+        TenItemModel GetTenMst(int hpId, string itemCd, int sinDate);
 
         bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId);
 
@@ -173,7 +175,7 @@ namespace Domain.Models.MstItem
 
         (int, List<PostCodeMstModel>) SearchAddress(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
-        (List<KensaMstModel>, int) GetListKensaMst(int hpId, string searchValue, int pageIndex, int pageSize);
+        (List<KensaMstModel>, int) GetListKensaMst(int hpId, string keyWord, int pageIndex, int pageSize);
 
         string GetDrugAction(string yjCd);
 
@@ -184,8 +186,6 @@ namespace Domain.Models.MstItem
         bool SaveAddressMaster(List<PostCodeMstModel> postCodes, int hpId, int userId);
 
         bool CheckPostCodeExist(int hpId, string zipCD);
-
-        TenItemModel GetTenMst(int hpId, string itemCd, int sinDate);
 
         List<SingleDoseMstModel> GetListSingleDoseModel(int hpId);
 

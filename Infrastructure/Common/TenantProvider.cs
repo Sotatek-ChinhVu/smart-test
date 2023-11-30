@@ -45,9 +45,7 @@ namespace Infrastructure.CommonDB
             {
                 return dbSample;
             }
-            string result = clientDomainInConfig ?? string.Empty;
-
-            return result;
+            return clientDomainInConfig;
         }
         public string GetAdminConnectionString()
         {
@@ -69,7 +67,6 @@ namespace Infrastructure.CommonDB
         private int _hpId;
         private int _userId;
         private int _departmentId;
-        private string _loginKey = string.Empty;
 
         public async Task<string> GetRequestInfoAsync()
         {
@@ -245,7 +242,18 @@ namespace Infrastructure.CommonDB
                 var indexStart = queryString.IndexOf(ParamConstant.Domain);
                 var indexSub = indexStart > 0 ? indexStart + 7 : 0;
                 var tempInedexEnd = queryString.IndexOf("&", indexStart);
-                var indexEndSub = indexStart > 0 ? tempInedexEnd == -1 ? queryString.Length : tempInedexEnd : 0;
+                var indexEndSub = 0;
+                if (indexStart > 0)
+                {
+                    if (tempInedexEnd == -1)
+                    {
+                        indexEndSub = queryString.Length;
+                    }
+                    else
+                    {
+                        indexEndSub = tempInedexEnd;
+                    }
+                }
                 var length = indexEndSub > indexSub ? indexEndSub - indexSub : 0;
                 return queryString.Substring(indexSub, length);
             }
@@ -329,12 +337,12 @@ namespace Infrastructure.CommonDB
 
         public TenantDataContext CreateNewTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
                     {
                         buider.EnableRetryOnFailure(maxRetryCount: 3);
                     })
-                    .UseLoggerFactory(loggerFactory)
+                    //.UseLoggerFactory(loggerFactory)
                     .Options;
             var factory = new PooledDbContextFactory<TenantDataContext>(options);
             return factory.CreateDbContext();
@@ -342,12 +350,12 @@ namespace Infrastructure.CommonDB
 
         public TenantNoTrackingDataContext CreateNewNoTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
                 {
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
                 })
-                .UseLoggerFactory(loggerFactory)
+                //.UseLoggerFactory(loggerFactory)
                 .Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
@@ -355,12 +363,12 @@ namespace Infrastructure.CommonDB
 
         public SuperAdminContext CreateNewSuperAdminTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<SuperAdminContext>().UseNpgsql(GetConnectionStringForSuperAdmin(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                    .UseLoggerFactory(loggerFactory)
+                    //.UseLoggerFactory(loggerFactory)
                     .Options;
             var factory = new PooledDbContextFactory<SuperAdminContext>(options);
             return factory.CreateDbContext();
@@ -368,12 +376,12 @@ namespace Infrastructure.CommonDB
 
         public SuperAdminNoTrackingContext CreateNewSuperAdminNoTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<SuperAdminNoTrackingContext>().UseNpgsql(GetConnectionStringForSuperAdmin(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                .UseLoggerFactory(loggerFactory)
+                //.UseLoggerFactory(loggerFactory)
                 .Options;
             var factory = new PooledDbContextFactory<SuperAdminNoTrackingContext>(options);
             return factory.CreateDbContext();
@@ -381,12 +389,12 @@ namespace Infrastructure.CommonDB
 
         public DbContextOptions CreateNewTrackingAdminDbContextOption()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetAdminConnectionString(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                    .UseLoggerFactory(loggerFactory)
+                    //.UseLoggerFactory(loggerFactory)
                     .Options;
             return options;
         }
@@ -403,6 +411,60 @@ namespace Infrastructure.CommonDB
         {
             _trackingDataContext?.Dispose();
             _noTrackingDataContext?.Dispose();
+            _superAdminNoTrackingDataContext?.Dispose();
+            _superAdminTrackingDataContext?.Dispose();
+        }
+
+        public AdminDataContext CreateNewAuditLogTrackingDataContext()
+        {
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetConnectionStringForAuditLog(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                    //.UseLoggerFactory(loggerFactory)
+                    .Options;
+            var factory = new PooledDbContextFactory<AdminDataContext>(options);
+            return factory.CreateDbContext();
+        }
+
+        public AdminNoTrackingContext CreateNewAuditLogNoTrackingDataContext()
+        {
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            var options = new DbContextOptionsBuilder<AdminNoTrackingContext>().UseNpgsql(GetConnectionStringForAuditLog(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
+                //.UseLoggerFactory(loggerFactory)
+                .Options;
+            var factory = new PooledDbContextFactory<AdminNoTrackingContext>(options);
+            return factory.CreateDbContext();
+        }
+
+        private AdminNoTrackingContext? _auditLogNoTrackingDataContext;
+        public AdminNoTrackingContext GetAuditLogNoTrackingDataContext()
+        {
+            if (_auditLogNoTrackingDataContext == null)
+            {
+                _auditLogNoTrackingDataContext = CreateNewAuditLogNoTrackingDataContext();
+            }
+            return _auditLogNoTrackingDataContext;
+        }
+
+        private AdminDataContext? _auditLogTrackingDataContext;
+        public AdminDataContext GetAuditLogTrackingDataContext()
+        {
+            if (_auditLogTrackingDataContext == null)
+            {
+                _auditLogTrackingDataContext = CreateNewAuditLogTrackingDataContext();
+            }
+            return _auditLogTrackingDataContext;
+        }
+
+        public string GetConnectionStringForAuditLog()
+        {
+            string dbSample = _configuration["AuditLogDb"] ?? string.Empty;
+            return dbSample;
         }
     }
 }

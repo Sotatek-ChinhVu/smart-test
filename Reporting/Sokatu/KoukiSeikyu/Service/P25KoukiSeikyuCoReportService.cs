@@ -73,48 +73,55 @@ public class P25KoukiSeikyuCoReportService : IP25KoukiSeikyuCoReportService
 
     public CommonReportingRequestModel GetP25KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuYm = seikyuYm;
-        this.seikyuType = seikyuType;
-        var getData = GetData();
-
-        if (this.seikyuYm >= 202210)
+        try
         {
-            _formFileName = "p25KoukiSeikyu_2210.rse";
-        }
+            this.hpId = hpId;
+            this.seikyuYm = seikyuYm;
+            this.seikyuType = seikyuType;
+            var getData = GetData();
 
-        if(getData)
-        {
-            for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
+            if (this.seikyuYm >= 202210)
             {
-                printZaiiso = zaiFlg == 1;
-                foreach (string currentNo in hokensyaNos)
+                _formFileName = "p25KoukiSeikyu_2210.rse";
+            }
+
+            if (getData)
+            {
+                for (int zaiFlg = 0; zaiFlg <= 1; zaiFlg++)
                 {
-                    currentPage = 1;
-                    currentHokensyaNo = currentNo;
-                    hasNextPage = true;
-                    if (this.seikyuYm >= KaiseiDate.m202210)
+                    printZaiiso = zaiFlg == 1;
+                    foreach (string currentNo in hokensyaNos)
                     {
-                        if (printZaiiso) continue;
-                        curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo).ToList();
-                    }
-                    else
-                    {
-                        curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == currentHokensyaNo).ToList();
-                    }
-                    if (curReceInfs.Count() == 0) continue;
-                    while (getData && hasNextPage)
-                    {
-                        UpdateDrawForm();
-                        currentPage++;
+                        currentPage = 1;
+                        currentHokensyaNo = currentNo;
+                        hasNextPage = true;
+                        if (this.seikyuYm >= KaiseiDate.m202210)
+                        {
+                            if (printZaiiso) continue;
+                            curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo).ToList();
+                        }
+                        else
+                        {
+                            curReceInfs = receInfs.Where(r => r.IsZaiiso == zaiFlg && r.HokensyaNo == currentHokensyaNo).ToList();
+                        }
+                        if (curReceInfs.Count() == 0) continue;
+                        while (getData && hasNextPage)
+                        {
+                            UpdateDrawForm();
+                            currentPage++;
+                        }
                     }
                 }
             }
+
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+            _extralData.Add("totalPage", pageIndex.ToString());
+            return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
-        
-        var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-        _extralData.Add("totalPage", pageIndex.ToString());
-        return new KoukiSeikyuMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+        finally
+        {
+            _kokhoFinder.ReleaseResource();
+        }
     }
 
     #region Private function

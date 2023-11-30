@@ -1,6 +1,6 @@
 ﻿namespace Helper.Constants;
 
-public class PtInfOQConst
+public static class PtInfOQConst
 {
     public const string KANJI_NAME = "氏名";
     public const string KANA_NAME = "氏名カナ";

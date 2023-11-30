@@ -18,6 +18,11 @@ public class CoAfterCareSeikyuFinder : RepositoryBase, ICoAfterCareSeikyuFinder
         _hpInfFinder = coHpInfFinder;
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public CoHpInfModel GetHpInf(int hpId, int seikyuYm)
     {
         return _hpInfFinder.GetHpInf(hpId, seikyuYm);

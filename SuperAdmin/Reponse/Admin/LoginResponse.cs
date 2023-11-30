@@ -3,11 +3,14 @@ namespace SuperAdmin.Responses.Admin
 {
     public class LoginResponse
     {
-        public LoginResponse(bool result)
+        public LoginResponse ( string token, int userId)
         {
-            Result = result;
+            Token = token;
+            UserId = userId;
         }
 
-        public bool Result { get; private set; }
+        public string  Token { get; private set; }
+
+        public int UserId { get; private set; }
     }
 }
