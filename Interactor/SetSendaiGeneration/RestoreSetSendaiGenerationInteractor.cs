@@ -127,6 +127,8 @@ namespace Interactor.SetSendaiGeneration
                         }
 
                         _setGenerationMstRepository.RestoreByomeiSetGeneration(inputData.HpId, inputData.UserId, result.TargetGeneration, result.SourceGeneration);
+
+                        _setGenerationMstRepository.RestoreListSetGeneration(inputData.HpId, inputData.UserId, result.TargetGeneration, result.SourceGeneration);
                     }
                     else
                     {

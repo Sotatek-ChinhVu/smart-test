@@ -39,6 +39,8 @@ namespace Domain.Models.SetGenerationMst
 
         void RestoreByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId);
 
+        void RestoreListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId);
+
         List<ListSetGenerationMstModel> GetAll(int hpId);
 
         IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false);

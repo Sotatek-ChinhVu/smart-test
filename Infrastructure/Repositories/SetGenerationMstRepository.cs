@@ -704,24 +704,22 @@ namespace Infrastructure.Repositories
                     setKarteInf.UpdateMachine = "SmartKarte";
                 });
 
-                    targetSetOdrInfs.ForEach(setOdrInf =>
-                    {
-                        setOdrInf.IsDeleted = 1;
-                        setOdrInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        setOdrInf.UpdateId = userId;
-                        setOdrInf.UpdateMachine = "SmartKarte";
-                    });
-                    TrackingDataContext.SetOdrInfCmt.RemoveRange(targetSetOdrInfCmtSource);
-                    TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
-                    TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
-                    TrackingDataContext.SaveChanges();
-                    // clone data from newest to restore item
-                    return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
-                }
-                catch (Exception)
+                targetSetOdrInfs.ForEach(setOdrInf =>
                 {
-                    throw;
-                }
+                    setOdrInf.IsDeleted = 1;
+                    setOdrInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    setOdrInf.UpdateId = userId;
+                    setOdrInf.UpdateMachine = "SmartKarte";
+                });
+                TrackingDataContext.SetKbnMsts.RemoveRange(setKbnMstSource);
+                TrackingDataContext.SetKarteInf.RemoveRange(targetSetKarteInfs);
+                TrackingDataContext.SetOdrInfCmt.RemoveRange(targetSetOdrInfCmtSource);
+                TrackingDataContext.SetKarteImgInf.RemoveRange(targetSetKarteImgInfs);
+                TrackingDataContext.SetOdrInfDetail.RemoveRange(targetSetOdrInfDetails);
+                TrackingDataContext.SetMsts.RemoveRange(targetSetMsts);
+                TrackingDataContext.SaveChanges();
+                // clone data from newest to restore item
+                return new AddSetSendaiModel(itemNewest.GenerationId, restoreGenerationId);
             }
 
             return null;
