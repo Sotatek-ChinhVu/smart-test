@@ -55,6 +55,14 @@ public class RecalculationInteractor : IRecalculationInputPort
                 }
             }
 
+            // Check is stop progerss
+            var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+            isStopCalc = statusCallBack.Result.Result;
+            if (isStopCalc)
+            {
+                success = false;
+            }
+
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
@@ -68,6 +76,14 @@ public class RecalculationInteractor : IRecalculationInputPort
                         break;
                     }
                 }
+            }
+
+            // Check is stop progerss
+            statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+            isStopCalc = statusCallBack.Result.Result;
+            if (isStopCalc)
+            {
+                success = false;
             }
 
             // check error in month
@@ -157,7 +173,9 @@ public class RecalculationInteractor : IRecalculationInputPort
     private bool CheckAllowNextStep()
     {
         var allowNextStep = _messenger!.SendAsync(new AllowNextStepStatus());
-        return allowNextStep.Result.Result;
+        var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+        isStopCalc = statusCallBack.Result.Result;
+        return allowNextStep.Result.Result || isStopCalc;
     }
 
     private void AddAuditLog(int hpId, int userId, int sinDate, bool recalculation, bool receiptAggregation, bool isCheckError, bool isSpecifiedPt)

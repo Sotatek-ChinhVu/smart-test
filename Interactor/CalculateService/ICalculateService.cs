@@ -21,9 +21,13 @@ namespace Interactor.CalculateService
 
         bool RunCalculateOne(CalculateOneRequest inputData);
 
-        bool ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken);
+        bool ReceFutanCalculateMain(ReceCalculateRequest inputData);
 
-        bool RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken);
+        Task<bool> ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken);
+
+        bool RunCalculateMonth(CalculateMonthRequest inputData);
+
+        Task<bool> RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken);
 
         SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData);
 

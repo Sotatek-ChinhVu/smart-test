@@ -259,13 +259,14 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             CalculatedCount = 0;
             for (int rCnt = ReceInfs.Count - 1; rCnt >= 0 && !IsStopCalc; rCnt--)
             {
-                //if (AllowSendProgress)
-                //{
-                //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                //    IsStopCalc = statusCallBack.Result.Result;
-                //}
+                if (AllowSendProgress)
+                {
+                    var statusCallBack = _messenger.SendAsync(new StopCalcStatus());
+                    IsStopCalc = statusCallBack.Result.Result;
+                }
                 if (IsStopCalc)
                 {
+                    SendMessager(new RecalculationStatus(false, CalculateStatusConstant.Invalid, AllCalcCount, CalculatedCount, "Progress Cancelled!", UniqueKey));
                     return;
                 }
                 if (CancellationToken.IsCancellationRequested) return;

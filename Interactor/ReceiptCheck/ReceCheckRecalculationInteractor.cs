@@ -43,10 +43,10 @@ namespace Interactor.ReceiptCheck
                         SeikyuYm = inputData.SeikyuYm,
                         PtIds = inputData.PtIds,
                         PreFix = inputData.UserId.ToString(),
-                    }, CancellationToken.None);
+                    });
 
                 SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.ReceiptAggregationCheckBox, 0, 0, "レセ集計中・・・", "NotConnectSocket"));
-                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty), CancellationToken.None);
+                _calculateService.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIds, inputData.SeikyuYm, string.Empty));
 
                 SendMessenger(new RecalculationStatus(false, CalculateStatusConstant.CheckErrorCheckBox, 0, 0, "レセチェック中・・・", "NotConnectSocket"));
 

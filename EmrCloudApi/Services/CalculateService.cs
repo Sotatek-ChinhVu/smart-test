@@ -234,7 +234,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken)
+        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData)
         {
             try
             {
@@ -254,7 +254,22 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken)
+        public async Task<bool> ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData, cancellationToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function ReceFutanCalculateMain " + ex);
+                await _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
+        }
+
+        public bool RunCalculateMonth(CalculateMonthRequest inputData)
         {
             try
             {
@@ -270,6 +285,21 @@ namespace EmrCloudApi.Services
             {
                 Console.WriteLine("Function RunCalculateMonth " + ex);
                 _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
+        }
+
+        public async Task<bool> RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await CallCalculate(CalculateApiPath.RunCalculateMonth, inputData, cancellationToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function RunCalculateMonth " + ex);
+                await _loggingHandler.WriteLogExceptionAsync(ex);
                 throw;
             }
         }
