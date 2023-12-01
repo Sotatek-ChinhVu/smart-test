@@ -51,13 +51,12 @@ namespace Interactor.SuperAdmin
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
-                PostgreSqlDump(@$"{pathFileDumpRestore}\{tenant.Db}.sql", tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
 
                 if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
                 }
-                return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
+
                 // Get laster snapshot restore to tmp tenant 
                 var lastSnapshotIdentifier = RDSAction.GetLastSnapshot(tenant.RdsIdentifier).Result;
                 if (string.IsNullOrEmpty(lastSnapshotIdentifier))
@@ -90,12 +89,16 @@ namespace Interactor.SuperAdmin
                         // Restore tenant dedicate
                         if (tenant.Type == ConfigConstant.TypeDedicate)
                         {
+                            // check valid new RDS
+
                             // Update data enpoint
                             var updateEndPoint = _tenantRepository.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
                             if (updateEndPoint)
                             {
                                 throw new Exception("Update end sub domain failed");
                             }
+
+                            // delete old RDS
 
                             // Finished restore
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
@@ -147,8 +150,8 @@ namespace Interactor.SuperAdmin
 
         private async Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
         {
-            host = "localhost";
-            port = 22;
+            //host = "localhost";
+            //port = 22;
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
 
             string dumpCommand =
@@ -157,6 +160,22 @@ namespace Interactor.SuperAdmin
 
             string batchContent = "" + dumpCommand + "  > " + "\"" + outFile + "\"" + "\n";
             if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
+
+            await Execute(batchContent);
+        }
+
+        private async Task PostgreSqlRestore(string pathFileDump, string host, int port, string database, string user, string password)
+        {
+            host = "localhost";
+            port = 22;
+            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+
+            string dumpCommand =
+                 $"{Set} PGPASSWORD={password}\n" +
+                 $"pg_restore" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
+
+            string batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
+           // if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
 
             await Execute(batchContent);
         }
