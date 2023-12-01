@@ -71,7 +71,7 @@ namespace Reporting.Statistics.Sta2011.Service
         private List<CoZaiReceInfModel> receInfs;
         private CoHpInfModel hpInf;
         private bool _hasNextPage;
-        private readonly List<PutColumn> putCurColumns = new List<PutColumn>();
+        private readonly List<PutColumn> putCurColumns = new();
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();

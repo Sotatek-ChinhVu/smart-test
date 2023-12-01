@@ -16,7 +16,7 @@ namespace Reporting.Statistics.Sta3020.Service
         #region Constant
         private int maxRow = 40;
 
-        private List<PutColumn> putColumns = new List<PutColumn>
+        private readonly List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("SetKbn", "セット区分"),
             new PutColumn("SetKbnName", "セット区分名称"),
@@ -62,16 +62,19 @@ namespace Reporting.Statistics.Sta3020.Service
         private CoSta3020PrintConf _printConf;
         private CoFileType? coFileType;
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
-        private readonly Dictionary<string, bool> _visibleFieldData = new Dictionary<string, bool>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
-        // private BackgroundWorker _backgroundWorker = null;
         #endregion
 
         public Sta3020CoReportService(ICoSta3020Finder sta3020Finder, IReadRseReportFileService readRseReportFileService)
         {
             _sta3020Finder = sta3020Finder;
             _readRseReportFileService = readRseReportFileService;
+            _hpInf = new();
+            listSets = new();
+            printDatas = new();
+            _objectRseList = new();
+            _printConf = new();
         }
 
         public CommonReportingRequestModel GetSta3020ReportingData(CoSta3020PrintConf printConf, int hpId)
@@ -114,7 +117,7 @@ namespace Reporting.Statistics.Sta3020.Service
                 bool pbSetKbn = new int[] { _printConf.PageBreak1 }.Contains(1);
 
                 //ソート順
-                listSets = listSets.OrderBy(x => x.SetKbn)
+                listSets = listSets!.OrderBy(x => x.SetKbn)
                     .ThenBy(x => x.Level1)
                     .ThenBy(x => x.Level2)
                     .ThenBy(x => x.Level3)
@@ -131,7 +134,6 @@ namespace Reporting.Statistics.Sta3020.Service
                 foreach (var listSet in listSets)
                 {
                     CoSta3020PrintData printData = new CoSta3020PrintData();
-                    CoSta3020PrintData prePrintData = printDatas.Count >= 1 ? printDatas.Last() : new CoSta3020PrintData();
 
                     //改ページ
                     if ((pbSetKbn && (preListSet?.SetKbn ?? -1) != listSet.SetKbn && rowCnt > 0) || rowCnt >= maxRow)
@@ -231,7 +233,7 @@ namespace Reporting.Statistics.Sta3020.Service
                     printData.CenterItemCd = listSet.CenterItemCd;
                     printData.EndDate = listSet.EndDate;
                     printData.Expired = listSet.EndDate < _printConf.StdDate ? "*" : "";
-                    printData.RenNo = printDatas.Where(x => x.RowType == RowType.Data).Count() + 1;
+                    printData.RenNo = printDatas.Count(x => x.RowType == RowType.Data) + 1;
 
                     printDatas.Add(printData);
                     rowCnt++;
@@ -252,13 +254,13 @@ namespace Reporting.Statistics.Sta3020.Service
             return printDatas.Count > 0;
         }
 
-        private bool UpdateDrawForm()
+        private void UpdateDrawForm()
         {
             _hasNextPage = true;
 
             #region SubMethod
             #region Header
-            int UpdateFormHeader()
+            void UpdateFormHeader()
             {
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
@@ -279,12 +281,11 @@ namespace Reporting.Statistics.Sta3020.Service
                 SetFieldData("StandardDate", string.Format("基準日: {0}　",
                         _printConf.StdDate > 0 ? CIUtil.SDateToShowSWDate(_printConf.StdDate, 0, 1) : ""));
 
-                return 1;
             }
             #endregion
 
             #region Body
-            int UpdateFormBody()
+            void UpdateFormBody()
             {
                 int ptIndex = (_currentPage - 1) * maxRow;
                 int lineCount = 0;
@@ -302,8 +303,8 @@ namespace Reporting.Statistics.Sta3020.Service
                     //明細データ出力
                     foreach (var colName in existsCols)
                     {
-                        var value = typeof(CoSta3020PrintData).GetProperty(colName).GetValue(printData);
-                        AddListData(ref data, colName, value == null ? "" : value.ToString());
+                        var value = typeof(CoSta3020PrintData).GetProperty(colName)?.GetValue(printData);
+                        AddListData(ref data, colName, value == null ? "" : value.ToString()??string.Empty);
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
@@ -336,25 +337,12 @@ namespace Reporting.Statistics.Sta3020.Service
                         break;
                     }
                 }
-
-                return ptIndex;
             }
             #endregion
             #endregion
 
-            try
-            {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-            return true;
+            UpdateFormHeader();
+            UpdateFormBody();
         }
 
         #region get data java
@@ -421,7 +409,6 @@ namespace Reporting.Statistics.Sta3020.Service
             }
 
             //データ
-            int totalRow = csvDatas.Count;
             int rowOutputed = 0;
             foreach (var csvData in csvDatas)
             {
@@ -431,11 +418,11 @@ namespace Reporting.Statistics.Sta3020.Service
 
             string RecordData(CoSta3020PrintData csvData)
             {
-                List<string> colDatas = new List<string>();
+                List<string> colDatas = new();
 
                 foreach (var column in putColumns)
                 {
-                    var value = typeof(CoSta3020PrintData).GetProperty(column.ColName).GetValue(csvData);
+                    var value = typeof(CoSta3020PrintData).GetProperty(column.ColName)?.GetValue(csvData);
                     colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
                 }
 
