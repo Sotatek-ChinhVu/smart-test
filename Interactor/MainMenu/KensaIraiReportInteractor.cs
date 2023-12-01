@@ -363,6 +363,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 透析前後     1桁  ※0はスペースで出力
             o1 += adjStr(CIUtil.ToStringIgnoreZero(kensaIrai.TosekiKbn), 1);
             // 至急報告     1桁
+            //Fix SMAR-6347 Setting Val = 1 SikyuKbn is empty when SikyuKbn = 0
             if (odrKensaIraiFileType == 1)
             {
                 // 加古川
