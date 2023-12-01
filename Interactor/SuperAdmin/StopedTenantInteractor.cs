@@ -75,6 +75,7 @@ namespace Interactor.SuperAdmin
                     finally
                     {
                         _tenantRepositoryRunTask.ReleaseResource();
+                        _notificationRepositoryRunTask.ReleaseResource();
                     }
                 });
 
