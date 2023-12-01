@@ -145,7 +145,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"UpdateAlterCNAME. {ex.Message}");
             }
         }
 
@@ -195,6 +195,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"UpdateAlterCNAME. {ex.Message}");
             }
         }
 
@@ -220,14 +221,21 @@ namespace AWSSDK.Common
                         Console.WriteLine("CNAME removed successfully!");
                         return true;
                     }
+                    else
+                    {
+                        throw new Exception($"Remove Item Cname. Code: {resUpdate?.HttpStatusCode}");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Remove Item Cname. Distribution info empty");
                 }
 
-                return false; // Return false if there was an issue or if the update was not successful
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Remove Item Cname. {ex.Message}");
             }
         }
     }

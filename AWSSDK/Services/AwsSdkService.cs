@@ -19,9 +19,9 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
-            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
+            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier, snapshotType);
         }
 
         public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
@@ -50,6 +50,7 @@ namespace AWSSDK.Services
             }
             return false;
         }
+
         public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
         {
             try
@@ -79,8 +80,8 @@ namespace AWSSDK.Services
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        return false;
+                        Console.WriteLine($"Error: Delete TenantDb {ex.Message}");
+                        throw new Exception($"Error: Delete TenantDb {ex.Message}");
                     }
                 }
 

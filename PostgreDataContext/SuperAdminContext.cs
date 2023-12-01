@@ -21,7 +21,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<MigrationTenantHistory>().HasKey(a => new { a.Id });
 
             modelBuilder.Entity<Admin>().HasIndex(a => new { a.LoginId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
-            modelBuilder.Entity<Tenant>().HasIndex(a => new { a.AdminId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.Hospital }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.SubDomain }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.EndSubDomain }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
