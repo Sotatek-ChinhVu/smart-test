@@ -549,7 +549,6 @@ namespace EmrCloudApi.Controller
                                             item.SaveOdrDateDetailItems.Select(x => new OdrDateDetailModel(x.GrpId,
                                                                                                                 x.SeqNo,
                                                                                                                 x.ItemCd,
-                                                                                                                x.ItemName,
                                                                                                                 x.SortNo,
                                                                                                                 x.IsDeleted)).ToList()
                                         );

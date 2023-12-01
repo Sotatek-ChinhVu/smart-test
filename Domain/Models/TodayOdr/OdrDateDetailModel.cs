@@ -11,14 +11,14 @@ public class OdrDateDetailModel
         SortNo = sortNo;
     }
 
-    public OdrDateDetailModel(int grpId, int seqNo, string itemCd, string itemName, int sortNo, int isDeleted)
+    public OdrDateDetailModel(int grpId, int seqNo, string itemCd, int sortNo, int isDeleted)
     {
         GrpId = grpId;
         SeqNo = seqNo;
         ItemCd = itemCd;
-        ItemName = itemName;
         SortNo = sortNo;
         IsDeleted = isDeleted;
+        ItemName = string.Empty;
     }
 
     public int GrpId { get; set; }

@@ -3502,14 +3502,11 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         int maxGrpIdModel = odrDateInfModels.Count > 0 ? odrDateInfModels.Max(x => x.GrpId) + 1 : 1;
         int maxGrpId = odrDateInfModels.Count > 0 ? odrDateInfModels.Max(x => x.GrpId) + 1 : 1;
-        int maxSortNo = odrDateInfModels.Count > 0 ? odrDateInfModels.Max(x => x.SortNo) + 1 : 1;
 
         foreach (var data in odrDateInfs)
         {
             data.GrpId = maxGrpId;
-            data.SortNo = maxSortNo;
             maxGrpId++;
-            maxSortNo++;
         }
 
         TrackingDataContext.OdrDateInfs.AddRange(odrDateInfs);
@@ -3527,8 +3524,6 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             maxGrpIdModel++;
         }
 
-        TrackingDataContext.SaveChanges();
-
         int maxSeqNo = 0;
 
         foreach (var item in odrDateInfModels)
@@ -3538,7 +3533,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             if (maxSeqNo < localMaxSeqNo) maxSeqNo = localMaxSeqNo;
             foreach (var OdrDateDetailItem in item.OdrDateDetailList)
             {
-                if (OdrDateDetailItem.ItemCd == string.Empty) continue;
+                if (OdrDateDetailItem.ItemCd == "") continue;
 
                 if (OdrDateDetailItem.IsDeleted == 1)
                 {
@@ -3572,57 +3567,6 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         TrackingDataContext.OdrDateDetails.AddRange(odrDateDetails);
 
-        /*
-
-        foreach (var data in odrDateInfs)
-        {
-            data.GrpId = maxGrpId;
-            data.SortNo = maxSortNo;
-            maxGrpId++;
-            maxSortNo++;
-        }
-
-        int maxSeqNo = 0;
-
-        foreach (var item in odrDateInfModels)
-        {
-            int localMaxSeqNo = item.OdrDateDetailList.Count() > 0 ? item.OdrDateDetailList.Max(x => x.SeqNo) + 1 : 1;
-
-            if (maxSeqNo < localMaxSeqNo) maxSeqNo = localMaxSeqNo;
-            foreach (var OdrDateDetailItem in item.OdrDateDetailList)
-            {
-                if (OdrDateDetailItem.IsDeleted == 1)
-                {
-                    var odrDateDetail = TrackingDataContext.OdrDateDetails.FirstOrDefault(x => x.HpId == hpId && x.GrpId == OdrDateDetailItem.GrpId && x.SeqNo == OdrDateDetailItem.SeqNo);
-                    if (odrDateDetail != null)
-                    {
-                        odrDateDetail.IsDeleted = 1;
-                    }
-                }
-                else
-                {
-                    var odrDateDetail = TrackingDataContext.OdrDateDetails.FirstOrDefault(x => x.HpId == hpId && x.GrpId == OdrDateDetailItem.GrpId && x.SeqNo == OdrDateDetailItem.SeqNo);
-                    if (odrDateDetail != null)
-                    {
-                        odrDateDetail.ItemCd = OdrDateDetailItem.ItemCd;
-                    }
-                    else
-                    {
-                        OdrDateDetail odrdateDetailitem = ConvertOdrDateDetailList(hpId, userId, OdrDateDetailItem, item.GrpId, maxSeqNo, OdrDateDetailItem.SortNo);
-                        odrDateDetails.Add(odrdateDetailitem);
-                    }
-                }
-            }
-        }
-
-        foreach (var data in odrDateDetails)
-        {
-            data.SeqNo = maxSeqNo;
-            maxSeqNo++;
-        }
-
-        TrackingDataContext.OdrDateInfs.AddRange(odrDateInfs);*/
-
         return TrackingDataContext.SaveChanges() > 0; 
     }
 
@@ -3632,7 +3576,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         {
             HpId = hpId,
             GrpId = 0,
-            SortNo = 0,
+            SortNo = u.SortNo,
             GrpName = u.GrpName,
             IsDeleted = u.IsDeleted,
             CreateId = userId,
@@ -3651,7 +3595,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             SeqNo = seqNo,
             ItemCd = u.ItemCd,
             IsDeleted = u.IsDeleted,
-            SortNo = sortNo,
+            SortNo = u.SortNo,
             CreateId = userId,
             UpdateId = userId,
             CreateDate = CIUtil.GetJapanDateTimeNow(),
