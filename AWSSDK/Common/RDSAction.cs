@@ -190,7 +190,7 @@ namespace AWSSDK.Common
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Error CreateDatabase: {ex.Message}");
                 throw new Exception($"CreateDatabase. {ex.Message}");
             }
         }        
