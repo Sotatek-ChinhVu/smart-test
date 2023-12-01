@@ -153,8 +153,6 @@ namespace Interactor.SuperAdmin
 
         private async Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
         {
-            host = "localhost";
-            port = 22;
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
 
             string dumpCommand =
@@ -169,8 +167,6 @@ namespace Interactor.SuperAdmin
 
         private async Task PostgreSqlExcuteFileDump(string pathFileDump, string host, int port, string database, string user, string password)
         {
-            host = "localhost";
-            port = 22;
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
 
             string dumpCommand =
