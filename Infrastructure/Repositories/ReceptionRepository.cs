@@ -1905,7 +1905,7 @@ namespace Infrastructure.Repositories
 
             if (join != null && join.Any())
             {
-                //Fix SMAR-6347 check null refference exception cause leftjoin
+                //return RaiinInf with User and Ka info
                 result = new RaiinInfModel(join.First().raiinInf.PtId,
                                            join.First().raiinInf.SinDate,
                                            join.First().raiinInf.RaiinNo,
