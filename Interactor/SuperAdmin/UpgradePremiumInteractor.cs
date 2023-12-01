@@ -18,12 +18,23 @@ namespace Interactor.SuperAdmin
         private readonly ITenantRepository _tenantRepository;
         private readonly IWebSocketService _webSocketService;
         private readonly INotificationRepository _notificationRepository;
-        public UpgradePremiumInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository)
+        private readonly ITenantRepository _tenantRepositoryRunTask; 
+        private readonly INotificationRepository _notificationRepositoryRunTask;
+        public UpgradePremiumInteractor(
+            ITenantRepository tenantRepository,
+            IAwsSdkService awsSdkService,
+            IWebSocketService webSocketService, 
+            INotificationRepository notificationRepository,
+            ITenantRepository tenantRepositoryRunTask,
+            INotificationRepository notificationRepositoryRunTask
+            )
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _webSocketService = webSocketService;
             _notificationRepository = notificationRepository;
+            _tenantRepositoryRunTask = tenantRepositoryRunTask; 
+            _notificationRepositoryRunTask = notificationRepositoryRunTask;
         }
 
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
@@ -136,13 +147,13 @@ namespace Interactor.SuperAdmin
                         }
 
                         // Update endpoint, dbInstanceIdentifier, status tenant available 
-                        var tenantUpgrade = _tenantRepository.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address, inputData.SubDomain, inputData.Size, inputData.SizeType);
+                        var tenantUpgrade = _tenantRepositoryRunTask.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address, inputData.SubDomain, inputData.Size, inputData.SizeType);
 
                         // Finished upgrade
                         if (tenantUpgrade != null)
                         {
                             var messenge = $"{oldTenant.EndSubDomain} is upgrade premium successfully.";
-                            var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
+                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
                             await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                             cts.Cancel();
                             return;
@@ -156,12 +167,17 @@ namespace Interactor.SuperAdmin
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
                         // Notification  upgrade failed
-                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
+                        _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
                         var messenge = $"{oldTenant.EndSubDomain} is upgrade premium failed. Error: {ex.Message}.";
-                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                        var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                         await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
+                    }
+                    finally
+                    {
+                        _tenantRepositoryRunTask.ReleaseResource();
+                        _notificationRepositoryRunTask.ReleaseResource();
                     }
                 });
 
@@ -264,7 +280,7 @@ namespace Interactor.SuperAdmin
                             var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                             if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                             {
-                                _tenantRepository.UpdateStatusTenant(tenantId, statusTenant);
+                                _tenantRepositoryRunTask.UpdateStatusTenant(tenantId, statusTenant);
                             }
                         }
                         Console.WriteLine($"DB Instance status: {checkStatus}");

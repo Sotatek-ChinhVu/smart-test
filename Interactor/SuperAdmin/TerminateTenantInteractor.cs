@@ -14,12 +14,24 @@ namespace Interactor.SuperAdmin
         private readonly ITenantRepository _tenantRepository;
         private readonly IWebSocketService _webSocketService;
         private readonly INotificationRepository _notificationRepository;
-        public TerminateTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository)
+        private readonly ITenantRepository _tenantRepositoryRunTask;
+        private readonly INotificationRepository _notificationRepositoryRunTask;
+
+        public TerminateTenantInteractor(
+            ITenantRepository tenantRepository,
+            IAwsSdkService awsSdkService,
+            IWebSocketService webSocketService,
+            INotificationRepository notificationRepository,
+            ITenantRepository tenantRepositoryRunTask,
+            INotificationRepository notificationRepositoryRunTask
+            )
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _webSocketService = webSocketService;
             _notificationRepository = notificationRepository;
+            _tenantRepositoryRunTask = tenantRepositoryRunTask;
+            _notificationRepositoryRunTask = notificationRepositoryRunTask;
         }
         public TerminateTenantOutputData Handle(TerminateTenantInputData inputData)
         {
@@ -79,10 +91,10 @@ namespace Interactor.SuperAdmin
                             // Check finshed terminate
                             if (await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier) && !await Route53Action.CheckSubdomainExistence(tenant.SubDomain))
                             {
-                                _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
+                                _tenantRepositoryRunTask.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
                                 // Notification  terminating success
                                 var messenge = tenant.EndSubDomain + $"is teminate successfully. ";
-                                var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
                                 await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                                 cts.Cancel();
                                 return;
@@ -94,10 +106,15 @@ namespace Interactor.SuperAdmin
                         _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
                         // Notification  terminating failed
                         var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
-                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                        var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                         await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
+                    }
+                    finally
+                    {
+                        _tenantRepositoryRunTask.ReleaseResource();
+                        _notificationRepositoryRunTask.ReleaseResource();
                     }
                 });
                 return new TerminateTenantOutputData(true, TerminateTenantStatus.Successed);
