@@ -11,7 +11,7 @@ public class OdrDateDetailModel
         SortNo = sortNo;
     }
 
-    public OdrDateDetailModel(int grpId, int seqNo, string itemCd, string itemName, int sortNo, bool isDeleted)
+    public OdrDateDetailModel(int grpId, int seqNo, string itemCd, string itemName, int sortNo, int isDeleted)
     {
         GrpId = grpId;
         SeqNo = seqNo;
@@ -21,7 +21,7 @@ public class OdrDateDetailModel
         IsDeleted = isDeleted;
     }
 
-    public int GrpId { get; private set; }
+    public int GrpId { get; set; }
 
     public int SeqNo { get; private set; }
 
@@ -31,5 +31,5 @@ public class OdrDateDetailModel
 
     public int SortNo { get; private set; }
 
-    public bool IsDeleted { get; private set; }
+    public int IsDeleted { get; private set; }
 }
