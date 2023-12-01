@@ -1,9 +1,13 @@
-﻿using AWSSDK.Common;
+﻿using Amazon.RDS;
+using Amazon.RDS.Model;
+using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
-using System.Data.Common;
-using System.Data.SqlClient;
+using Entity.SuperAdmin;
+using Interactor.Realtime;
+using Npgsql;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
@@ -12,10 +16,14 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        public UpgradePremiumInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService)
+        private readonly IWebSocketService _webSocketService;
+        private readonly INotificationRepository _notificationRepository;
+        public UpgradePremiumInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository)
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
+            _webSocketService = webSocketService;
+            _notificationRepository = notificationRepository;
         }
 
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
@@ -27,68 +35,134 @@ namespace Interactor.SuperAdmin
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidTenantId);
                 }
 
-                var tenant = _tenantRepository.Get(inputData.TenantId);
+                if (inputData.Size <= 0)
+                {
+                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidSize);
+                }
 
-                if (tenant.Type == 1)
+                if (inputData.SizeType <= 0)
+                {
+                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidSizeType);
+                }
+
+                if (string.IsNullOrEmpty(inputData.SubDomain))
+                {
+                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidDomain);
+                }
+
+                var oldTenant = _tenantRepository.Get(inputData.TenantId);
+                if (oldTenant.TenantId <= 0)
+                {
+                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.TenantDoesNotExist);
+                }
+
+                if (oldTenant.Type == ConfigConstant.TypeDedicate)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
                 }
 
-                // Check exit domain 
-                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(tenant.SubDomain).Result;
-                if (checkSubDomain)
+                if (!_awsSdkService.CheckExitRDS(oldTenant.RdsIdentifier).Result)
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
+                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.RdsDoesNotExist);
                 }
 
+                if (oldTenant.SubDomain != inputData.SubDomain)
+                {
+                    if (Route53Action.CheckSubdomainExistence(inputData.SubDomain).Result)
+                    {
+                        return new UpgradePremiumOutputData(false, UpgradePremiumStatus.NewDomainAleadyExist);
+                    }
+                }
+                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrading"]);
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(async () =>
                 {
-                    // Create SnapShot
-                    var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync("develop-smartkarte-logging");
+                    try
+                    {
+                        // Create SnapShot
+                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpgrade);
 
-                    if (string.IsNullOrEmpty(snapshotIdentifier))
-                    {
-                        cts.Cancel();
-                    }
+                        if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
+                        {
+                            throw new Exception("Snapshot is not Available");
+                        }
 
-                    var isAvailableSnapShot = await RDSAction.CheckingSnapshotAvailableAsync(snapshotIdentifier);
-                    if (!isAvailableSnapShot)
-                    {
-                        cts.Cancel();
-                    }
+                        // Create New subdomain
+                        if (oldTenant.SubDomain != inputData.SubDomain)
+                        {
+                            if (await Route53Action.CreateTenantDomain(inputData.SubDomain) != null)
+                            {
+                                await Route53Action.DeleteTenantDomain(oldTenant.SubDomain);
+                            }
+                            else
+                            {
+                                throw new Exception("Create New subdomain failed");
+                            }
+                        }
 
-                    // Restore DB Instance from snapshot
-                    Console.WriteLine($"Start Restore");
+                        // Restore DB Instance from snapshot
+                        Console.WriteLine($"Start Restore");
 
-                    string rString = CommonConstants.GenerateRandomString(6);
-                    var dbInstanceIdentifier = $"develop-smartkarte-postgres-{rString}";
-                    Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
+                        string rString = CommonConstants.GenerateRandomString(6);
+                        var dbInstanceIdentifier = $"{inputData.SubDomain}-{rString}";
+                        Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
 
-                   var endpoint =  await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
-                    if (endpoint == null)
+                        var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+
+                        // Check Restore success 
+                        var endpoint = await CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId);
+
+
+                        //Delete list Db without tenantDB in new RDS
+                        Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
+                        var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, oldTenant.Db);
+
+
+                        // Delete DB in old RDS
+                        var listTenantDb = await RDSAction.GetListDatabase(oldTenant.EndPointDb);
+                        Console.WriteLine($"listTenantDb: {listTenantDb}");
+                        // Connect RDS delete TenantDb
+                        if (listTenantDb.Count > 1)
+                        {
+                            Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
+                            _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db);
+                        }
+
+                        // Deleted RDS
+                        else
+                        {
+                            Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
+                            await RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                        }
+
+                        // Update endpoint, dbInstanceIdentifier, status tenant available 
+                        var tenantUpgrade = _tenantRepository.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address, inputData.SubDomain, inputData.Size, inputData.SizeType);
+
+                        // Finished upgrade
+                        if (tenantUpgrade != null)
+                        {
+                            var messenge = $"{oldTenant.EndSubDomain} is upgrade premium successfully.";
+                            var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
+                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            cts.Cancel();
+                            return;
+                        }
+                        else
+                        {
+                            throw new Exception("Update new data tenant failed");
+                        }
+                    }
+                    catch (Exception ex)
                     {
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
+                        // Notification  upgrade failed
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
+                        var messenge = $"{oldTenant.EndSubDomain} is upgrade premium failed. Error: {ex.Message}.";
+                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
+                        return;
                     }
-                    // Check Restore success 
-                    var isAvailableRestoreInstance = await RDSAction.CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier);
-                    if (!isAvailableRestoreInstance)
-                    {
-                        cts.Cancel();
-                    }
-                    // Get list DB from Instance
-                    var databaseList = await RDSAction.GetDatabasesFromDBInstanceAsync(dbInstanceIdentifier);
-                    if (databaseList.Contains(tenant.Db))
-                    {
-                        databaseList.Remove(tenant.Db);
-                    }
-                    else
-                    {
-                        cts.Cancel();
-                    }
-                    // Delete list Db without tenant DB
-                    ConnectAndDeleteDatabases(endpoint.Address, endpoint.Port, databaseList);
-                    // Update  endpoint 
                 });
 
                 return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
@@ -96,57 +170,137 @@ namespace Interactor.SuperAdmin
             finally
             {
                 _tenantRepository.ReleaseResource();
+                _notificationRepository.ReleaseResource();
             }
         }
 
-        public bool ConnectAndDeleteDatabases(string serverEndpoint, int port, List<string> databaseNames)
+        public  bool ConnectAndDeleteDatabases(string serverEndpoint, string tennantDB)
         {
             try
             {
                 // Replace these values with your actual RDS information
-                string username = "YourUsername";
-                string password = "YourPassword";
+                string username = "postgres";
+                string password = "Emr!23456789";
+                int port = 5432;
 
                 // Connection string format for SQL Server
-                string connectionString = $"Server={serverEndpoint},{port};User Id={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                var listTenantDb = RDSAction.GetListDatabase(serverEndpoint).Result;
+                if (listTenantDb.Contains(tennantDB))
+                {
+                    listTenantDb.Remove(tennantDB);
+                }
+                else
+                {
+                    throw new Exception($"Connec tAndDelete Databases. tennantDB doesn't exists");
+                }
 
                 // Create and open a connection
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
                     try
                     {
                         connection.Open();
 
-                        foreach (var databaseName in databaseNames)
+                        // Delete database
+                        using (NpgsqlCommand command = new NpgsqlCommand())
                         {
-                            // Change database
-                            connection.ChangeDatabase(databaseName);
-
-                            // Delete database
-                            using (DbCommand command = connection.CreateCommand())
+                            command.Connection = connection;
+                            foreach (var item in listTenantDb)
                             {
-                                command.CommandText = $"DROP DATABASE [{databaseName}]";
-                                command.ExecuteNonQuery();
+                                command.CommandText += $"DROP DATABASE {item};";
                             }
-
-                            Console.WriteLine($"Database '{databaseName}' deleted successfully.");
+                            command.ExecuteNonQuery();
                         }
 
-                        Console.WriteLine("Connected to the database.");
+                        Console.WriteLine($"Database deleted successfully.");
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
+                        throw new Exception($"Connect And Delete Databases Failed. {ex.Message}");
                     }
                 }
 
-                
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Delete redundant Databases in new RDS. {ex.Message}");
+            }
+        }
+
+        public async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier, int tenantId)
+        {
+            try
+            {
+                DateTime startTime = DateTime.Now;
+                bool running = true;
+                string status = string.Empty;
+                while (running)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    // Create a request to describe DB instances
+                    var describeInstancesRequest = new DescribeDBInstancesRequest
+                    {
+                        DBInstanceIdentifier = dbInstanceIdentifier
+                    };
+
+                    // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
+                    var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
+
+                    // Check if the DB instance exists
+                    var dbInstances = describeInstancesResponse.DBInstances;
+                    if (dbInstances.Count == 1)
+                    {
+                        var dbInstance = dbInstances[0];
+                        var checkStatus = dbInstance.DBInstanceStatus;
+
+                        if (status != checkStatus)
+                        {
+                            status = checkStatus;
+                            var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
+                            if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
+                            {
+                                _tenantRepository.UpdateStatusTenant(tenantId, statusTenant);
+                            }
+                        }
+                        Console.WriteLine($"DB Instance status: {checkStatus}");
+
+                        // Check if the DB instance is in the "available" state
+                        if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
+                        {
+                            running = false;
+                            return describeInstancesResponse.DBInstances[0].Endpoint;
+                        }
+                    }
+                    else
+                    {
+                        running = false;
+                        throw new Exception($"Checking Restored Instance Available. DB instance doesn't exists");
+                    }
+
+                    // Check if more than timeout
+                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
+                    {
+                        Console.WriteLine($"Timeout: DB instance not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
+                        running = false;
+                        throw new Exception($"Checking Restored Instance Available. Timeout");
+                    }
+
+                    // Wait for 5 seconds before the next attempt
+                    Thread.Sleep(5000);
+                }
+
+                // Return an empty Endpoint if the loop exits without finding an available instance
+                return new Endpoint();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Checking Restored Instance Available. {ex.Message}");
             }
         }
     }

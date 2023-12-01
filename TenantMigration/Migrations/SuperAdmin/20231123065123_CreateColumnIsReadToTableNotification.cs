@@ -2,28 +2,28 @@
 
 #nullable disable
 
-namespace TenantMigration.Migrations
+namespace TenantMigration.Migrations.SuperAdmin
 {
     /// <inheritdoc />
-    public partial class addColumIsDeletedCONVERSIONITEMINF : Migration
+    public partial class CreateColumnIsReadToTableNotification : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "IS_DELETED",
-                table: "CONVERSION_ITEM_INF",
-                type: "integer",
+            migrationBuilder.AddColumn<byte>(
+                name: "IS_READ",
+                table: "NOTIFICATION",
+                type: "smallint",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: (byte)0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IS_DELETED",
-                table: "CONVERSION_ITEM_INF");
+                name: "IS_READ",
+                table: "NOTIFICATION");
         }
     }
 }

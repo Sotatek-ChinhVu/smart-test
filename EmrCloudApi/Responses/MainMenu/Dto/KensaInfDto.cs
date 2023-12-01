@@ -26,6 +26,7 @@ public class KensaInfDto
         PtName = model.PtName;
         KensaCenterName = model.KensaCenterName;
         CreateDate = model.CreateDate;
+        UpdateDate = model.UpdateDate;
         KensaInfDetailModelList = model.KensaInfDetailModelList.Select(item => new KensaInfDetailDto(item)).ToList();
     }
 
@@ -68,6 +69,8 @@ public class KensaInfDto
     public string KensaCenterName { get; private set; }
 
     public DateTime CreateDate { get; private set; }
+
+    public DateTime UpdateDate { get; private set; }
 
     public List<KensaInfDetailDto> KensaInfDetailModelList { get; private set; }
 }

@@ -56,37 +56,45 @@ public class SijisenReportService : ISijisenReportService
 
     public CommonReportingRequestModel GetSijisenReportingData(int hpId, int formType, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, bool printNoOdr)
     {
-        this.hpId = hpId;
-        this.ptId = ptId;
-        this.sinDate = sinDate;
-        this.formType = (CoSijisenFormType)formType;
-        this.raiinNo = raiinNo;
-        if (odrKouiKbns == null)
+        try
         {
-            this.odrKouiKbns = new();
-        }
-        else
-        {
-            this.odrKouiKbns = odrKouiKbns;
-        }
-        this.printNoOdr = printNoOdr;
-        printoutDateTime = CIUtil.GetJapanDateTimeNow();
-        currentPage = 1;
-
-        coModel = GetData() ?? new();
-        if (coModel != null)
-        {
-            GetRowCount();
-            MakeOdrDtlList();
-            hasNextPage = true;
-            while (hasNextPage)
+            this.hpId = hpId;
+            this.ptId = ptId;
+            this.sinDate = sinDate;
+            this.formType = (CoSijisenFormType)formType;
+            this.raiinNo = raiinNo;
+            if (odrKouiKbns == null)
             {
-                UpdateDrawForm();
-                currentPage++;
+                this.odrKouiKbns = new();
             }
-        }
+            else
+            {
+                this.odrKouiKbns = odrKouiKbns;
+            }
+            this.printNoOdr = printNoOdr;
+            printoutDateTime = CIUtil.GetJapanDateTimeNow();
+            currentPage = 1;
 
-        return new SijisenMapper(_singleFieldData, _tableFieldData, "lsOrder", GetJobName(formType, coModel!.PtNum), this.formType).GetData();
+            coModel = GetData() ?? new();
+            if (coModel != null)
+            {
+                GetRowCount();
+                MakeOdrDtlList();
+                hasNextPage = true;
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            return new SijisenMapper(_singleFieldData, _tableFieldData, "lsOrder", GetJobName(formType, coModel!.PtNum), this.formType).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+            _systemConfig.ReleaseResource();
+        }
     }
 
     private string GetJobName(int formType, long ptNum)

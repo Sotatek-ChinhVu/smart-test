@@ -10,6 +10,11 @@ public class CoDrugNoteSealFinder : RepositoryBase, ICoDrugNoteSealFinder
     public CoDrugNoteSealFinder(ITenantProvider tenantProvider) : base(tenantProvider)
     { }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     /// <summary>
     /// 医療機関情報を取得する
     /// </summary>

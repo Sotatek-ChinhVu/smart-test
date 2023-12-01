@@ -29,22 +29,29 @@ public class P24WelfareDiskService : IP24WelfareDiskService
 
     public CommonExcelReportingModel GetDataP24WelfareDisk(int hpId, int seikyuYm, SeikyuType seikyuType)
     {
-        this.hpId = hpId;
-        this.seikyuType = seikyuType;
-        this.seikyuYm = seikyuYm;
-        GetData();
-        List<string> retDatas = new();
-
-        if (GetData())
+        try
         {
-            foreach (var receInf in receInfs)
-            {
-                retDatas.Add(RecordData(receInf));
-            }
-        }
+            this.hpId = hpId;
+            this.seikyuType = seikyuType;
+            this.seikyuYm = seikyuYm;
+            GetData();
+            List<string> retDatas = new();
 
-        string sheetName = string.Format("FKS_241{0}", hpInf.HpCd.PadLeft(7, '0'));
-        return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+            if (GetData())
+            {
+                foreach (var receInf in receInfs)
+                {
+                    retDatas.Add(RecordData(receInf));
+                }
+            }
+
+            string sheetName = string.Format("FKS_241{0}", hpInf.HpCd.PadLeft(7, '0'));
+            return new CommonExcelReportingModel(sheetName + ".csv", sheetName, retDatas);
+        }
+        finally
+        {
+            _welfareFinder.ReleaseResource();
+        }
     }
 
     #region Private function

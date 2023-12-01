@@ -1,17 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Domain.SuperAdminModels.Tenant;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
+using UseCase.SuperAdmin.GetTenant;
+using UseCase.SuperAdmin.GetTenantDetail;
+using UseCase.SuperAdmin.RestoreTenant;
+using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
+using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdminAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TenantController : ControllerBase
     {
         private readonly UseCaseBus _bus;
@@ -23,11 +30,31 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("UpgradePremium")]
         public ActionResult<Response<UpgradePremiumResponse>> UpgradePremium([FromBody] UpgradePremiumRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId);
+            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.SizeType, request.Domain);
             var output = _bus.Handle(input);
             var presenter = new UpgradePremiumPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UpgradePremiumResponse>>(presenter.Result);
+        }
+
+        [HttpPost("GetTenant")]
+        public ActionResult<Response<GetTenantResponse>> GetTenant([FromBody] GetTenantRequest request)
+        {
+            var input = new GetTenantInputData(GetSearchTenantModel(request.SearchModel), request.SortDictionary, request.Skip, request.Take);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenantResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetTenantDetail")]
+        public ActionResult<Response<GetTenantDetailResponse>> GetTenantDetail([FromQuery] GetTenantDetailRequest request)
+        {
+            var input = new GetTenantDetailInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenantDetailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenantDetailResponse>>(presenter.Result);
         }
 
         [HttpPost("TenantOnboard")]
@@ -45,6 +72,49 @@ namespace SuperAdminAPI.Controllers
             var presenter = new TenantOnboardPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<TenantOnboardResponse>>(presenter.Result);
+        }
+
+        [HttpPost("TerminateTenant")]
+        public ActionResult<Response<TerminateTenantResponse>> TerminateTenant([FromBody] TerminateTenantRequest request)
+        {
+            var input = new TerminateTenantInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new TerminateTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<TerminateTenantResponse>>(presenter.Result);
+        }
+
+        #region 
+        private SearchTenantModel GetSearchTenantModel(SearchTenantRequestItem requestItem)
+        {
+            return new SearchTenantModel(
+                       requestItem.KeyWord,
+                       requestItem.FromDate,
+                       requestItem.ToDate,
+                       requestItem.Type,
+                       requestItem.Status,
+                       requestItem.StorageFull);
+        }
+        #endregion
+
+        [HttpPost("StopedTenant")]
+        public ActionResult<Response<StopedTenantResponse>> StopedTenant([FromBody] StopedTenantRequest request)
+        {
+            var input = new StopedTenantInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new StopedTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<StopedTenantResponse>>(presenter.Result);
+        }
+
+        [HttpPost("RestoreTenant")]
+        public ActionResult<Response<RestoreTenantResponse>> RestoreTenant([FromBody] RestoreTenantRequest request)
+        {
+            var input = new RestoreTenantInputData(request.TenantId);
+            var output = _bus.Handle(input);
+            var presenter = new RestoreTenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
         }
     }
 }

@@ -114,6 +114,7 @@ public class KensaIraiCommon : IKensaIraiCommon
             _ordInfRepository.ReleaseResource();
             _groupInfRepository.ReleaseResource();
             _loggingHandler.Dispose();
+            _coKensaIraiFinder.ReleaseResource();
         }
     }
 
@@ -249,7 +250,7 @@ public class KensaIraiCommon : IKensaIraiCommon
                                                                 string.Empty,
                                                                 string.Empty,
                                                                 string.Empty,
-                                                                true,
+                                                                false,
                                                                 createId);
                                 addkensaInf.IsAddNew = true;
                                 addkensaInf.KeyNo = keyNo;
@@ -428,6 +429,8 @@ public class KensaIraiCommon : IKensaIraiCommon
             if (addKensaIraiDtls.Any())
             {
                 var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaInf.PtId, raiinInfModel?.SinDate ?? 0);
+
+                var raiinInf = _receptionRepository.GetRaiinInf(hpId, kensaInf.PtId, raiinInfModel?.SinDate ?? 0, raiinInfModel?.RaiinNo ?? 0);
                 // 検査依頼データ生成
                 var addKensaIrai =
                     new Reporting.Kensalrai.Model.KensaIraiModel(
@@ -445,6 +448,10 @@ public class KensaIraiCommon : IKensaIraiCommon
                         raiinInfModel?.KaId ?? 0,
                         weightHeight.weight,
                         weightHeight.height,
+                        raiinInf?.TantoName ?? string.Empty,
+                        raiinInf?.TantoKanaName ?? string.Empty,
+                        raiinInf?.KaSName ?? string.Empty,
+                        kensaInf.UpdateDate.ToString("HHmm"),
                         addKensaIraiDtls);
                 addKensaIrai.UpdateTime = kensaInf.UpdateDate.ToString("HHmm");
 

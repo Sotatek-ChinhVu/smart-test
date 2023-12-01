@@ -2,6 +2,7 @@
 using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
@@ -142,7 +143,7 @@ namespace Infrastructure.Repositories
         public bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId)
         {
             var ListDataUpdate = new List<SetGenerationMst>();
-            var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.GenerationId == generationId);
+            var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.GenerationId == generationId && x.IsDeleted == DeleteTypes.None);
             if (setGenrationCurrent != null)
             {
                 // Update item delete
@@ -152,7 +153,7 @@ namespace Infrastructure.Repositories
                 setGenrationCurrent.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setGenrationCurrent.CreateDate);
                 ListDataUpdate.Add(setGenrationCurrent);
                 // Get Item Above and Update
-                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate >= setGenrationCurrent.StartDate && x.GenerationId > setGenrationCurrent.GenerationId).OrderBy(x => x.StartDate).ThenBy(x => x.GenerationId).FirstOrDefault();
+                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate >= setGenrationCurrent.StartDate && x.GenerationId > setGenrationCurrent.GenerationId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.StartDate).ThenBy(x => x.GenerationId).FirstOrDefault();
                 if (itemAbove != null)
                 {
                     itemAbove.StartDate = setGenrationCurrent.StartDate;

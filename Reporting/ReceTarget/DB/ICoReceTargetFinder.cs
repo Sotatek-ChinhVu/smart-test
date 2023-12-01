@@ -1,8 +1,9 @@
-﻿using Reporting.ReceTarget.Model;
+﻿using Domain.Common;
+using Reporting.ReceTarget.Model;
 
 namespace Reporting.ReceTarget.DB;
 
-public interface ICoReceTargetFinder
+public interface ICoReceTargetFinder : IRepositoryBase
 {
     CoReceTargetModel FindReceInf(int hpId, int seikyuYm);
 }

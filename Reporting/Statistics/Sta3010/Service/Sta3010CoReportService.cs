@@ -178,27 +178,34 @@ public class Sta3010CoReportService : ISta3010CoReportService
 
     public CommonReportingRequestModel GetSta3010ReportingData(CoSta3010PrintConf printConf, int hpId, CoFileType outputFileType)
     {
-        this.printConf = printConf;
-        this.outputFileType = outputFileType;
-        string formFileName = printConf.FormFileName;
-
-        // get data to print
-        GetFieldNameList(formFileName);
-        GetRowCount(formFileName);
-        if (GetData(hpId))
+        try
         {
-            hasNextPage = true;
-            currentPage = 1;
+            this.printConf = printConf;
+            this.outputFileType = outputFileType;
+            string formFileName = printConf.FormFileName;
 
-            //印刷
-            while (hasNextPage)
+            // get data to print
+            GetFieldNameList(formFileName);
+            GetRowCount(formFileName);
+            if (GetData(hpId))
             {
-                UpdateDrawForm();
-                currentPage++;
-            }
-        }
+                hasNextPage = true;
+                currentPage = 1;
 
-        return new Sta3010Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
+                //印刷
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
+            }
+
+            return new Sta3010Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
+        }
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private bool GetData(int hpId)

@@ -45,6 +45,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     public void Dispose()
     {
         _s3Client.Dispose();
+        _tenantProvider.DisposeDataContext();
     }
 
     private string GetAccessUrl(string key)

@@ -3,7 +3,9 @@ using Helper.Common;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PostgreDataContext;
+using System.Security.AccessControl;
 
 namespace Infrastructure.Logger
 {
@@ -143,6 +145,12 @@ namespace Infrastructure.Logger
                 AuditLogs.Add(audit);
             }
             return SaveChanges() > 0;
+        }
+
+        public void ReleaseResource()
+        {
+             Dispose();
+            _tenantProvider.DisposeDataContext();
         }
     }
 }

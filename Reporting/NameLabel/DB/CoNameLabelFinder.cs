@@ -1,19 +1,21 @@
-﻿using PostgreDataContext;
+﻿using Infrastructure.Base;
+using Infrastructure.Interfaces;
 using Reporting.NameLabel.Models;
 
 namespace Reporting.NameLabel.DB;
 
-public class CoNameLabelFinder
+public class CoNameLabelFinder : RepositoryBase, ICoNameLabelFinder
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    public CoNameLabelFinder(TenantNoTrackingDataContext tenantNoTrackingDataContext)
+    public CoNameLabelFinder(ITenantProvider tenantProvider) : base(tenantProvider) { }
+
+    public void ReleaseResource()
     {
-        _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
+        DisposeDataContext();
     }
 
     public CoPtInfModel FindPtInf(long ptId)
     {
-        var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where(p =>
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p =>
             p.HpId == 1 &&
             p.PtId == ptId &&
             p.IsDelete == 0

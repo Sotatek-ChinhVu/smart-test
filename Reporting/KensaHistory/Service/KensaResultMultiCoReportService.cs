@@ -62,44 +62,52 @@ namespace Reporting.KensaHistory.Service
 
         public CommonReportingRequestModel GetKensaResultMultiPrintData(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn, int sinDate)
         {
-
-            this.hpId = hpId;
-            this.userId = userId;
-            this.ptId = ptId;
-            this.setId = setId;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.showAbnormalKbn = showAbnormalKbn;
-            this.sinDate = sinDate;
-            var getData = GetData();
-
-            if (getData)
+            try
             {
-                currentPage = 1;
-                hasNextPage = true;
-                while (hasNextPage)
+                this.hpId = hpId;
+                this.userId = userId;
+                this.ptId = ptId;
+                this.setId = setId;
+                this.startDate = startDate;
+                this.endDate = endDate;
+                this.showAbnormalKbn = showAbnormalKbn;
+                this.sinDate = sinDate;
+                var getData = GetData();
+
+                if (getData)
                 {
-                    UpdateDrawForm();
-                    currentPage++;
+                    currentPage = 1;
+                    hasNextPage = true;
+                    while (hasNextPage)
+                    {
+                        UpdateDrawForm();
+                        currentPage++;
+                    }
                 }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+                int i = 1;
+
+                foreach (var item in _setFieldData)
+                {
+                    item.Value.Clear();
+                    item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
+                    i++;
+                    if (i > pageIndex)
+                    {
+                        break;
+                    }
+                }
+
+                return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
+
             }
-
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
-            _extralData.Add("totalPage", pageIndex.ToString());
-            int i = 1;
-
-            foreach (var item in _setFieldData)
+            finally
             {
-                item.Value.Clear();
-                item.Value.Add("pageNumber", i.ToString() + "/" + pageIndex.ToString());
-                i++;
-                if (i > pageIndex)
-                {
-                    break;
-                }
+                _kokhoFinder.ReleaseResource();
+                _coKensaHistoryFinder.ReleaseResource();
             }
-
-            return new KensaHistoryMapper(_reportConfigPerPage, _setFieldData, _listTextData, _extralData, _formFileName, _singleFieldData, _visibleFieldData, _visibleAtPrint).GetData();
         }
 
         private bool UpdateDrawForm()
@@ -117,7 +125,7 @@ namespace Reporting.KensaHistory.Service
                 SetFieldData("name", ptInf.Name ?? string.Empty);
                 SetFieldData("iraiStartDate", CIUtil.SDateToShowSDate(startDate.AsInteger()));
                 SetFieldData("iraiEndDate", CIUtil.SDateToShowSDate(endDate.AsInteger()));
-                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd hh:mm:ss"));
+                SetFieldData("issuedDate", CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd HH:mm:ss"));
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("pageNumber", pageIndex.ToString() + "/" + totalPage.ToString());
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
@@ -477,9 +485,89 @@ namespace Reporting.KensaHistory.Service
             hpInf = _coKensaHistoryFinder.GetHpInf(hpId, sinDate);
             ptInf = _coKensaHistoryFinder.GetPtInf(hpId, ptId);
             data = _coKensaHistoryFinder.GetListKensaInfDetail(hpId, userId, ptId, setId, startDate, endDate, showAbnormalKbn);
+            List<CoKensaResultMultiModel> coKensaResultMultiModels = new();
+            Dictionary<int, CoKensaResultMultiModel> parents = new();
+            List<long> dateItem = new();
+
+            if (showAbnormalKbn)
+            {
+                foreach (var item in data.Item1)
+                {
+                    int count = 0;
+                    foreach (var itemDynamicArray in item.KensaResultMultiItems)
+                    {
+                        if (itemDynamicArray.AbnormalKbn == "")
+                        {
+                            count++;
+                        }
+
+                        if (count == data.Item2.Count)
+                        {
+                            coKensaResultMultiModels.Add(item);
+                        }
+                    }
+                }
+
+                foreach (var item in coKensaResultMultiModels)
+                {
+                    data.Item1.Remove(item);
+                }
+
+
+                int i = 0;
+
+                foreach (var item in coKensaResultMultiModels.Where(x => x.SeqParentNo == 0))
+                {
+                    var childrens = data.Item1.Where(x => x.SeqParentNo > 0 && item.RowSeqId.Contains(x.SeqParentNo.ToString()));
+                    if (childrens != null)
+                    {
+                        var index = 99999999;
+                        foreach (var itemChildren in childrens)
+                        {
+                            var indexNew = data.Item1.IndexOf(itemChildren);
+
+                            if(childrens.Count() > 1)
+                            {
+                                if (indexNew < index)
+                                {
+                                    index = indexNew;
+                                }
+                            }
+                            else
+                            {
+                                index = indexNew;
+                            }
+                        }
+
+                        if(index != 99999999)
+                        {
+                            parents.Add(index + i, item);
+                            i++;
+                        }
+                    }
+                }
+
+                foreach (var item in parents)
+                {
+                    data.Item1.Insert(item.Key, item.Value);
+                }
+            }
+
             kensaInfDetails = new List<CoKensaResultMultiModel>(data.Item1);
-            kensaInfDetailsItem = new List<CoKensaResultMultiModel>(data.Item1);
             date = data.Item2;
+
+            foreach (var item in date)
+            {
+                if (!(item >= startDate && item <= endDate))
+                {
+                    dateItem.Add(item);
+                }
+            }
+
+            foreach (var item in dateItem)
+            {
+                date.Remove(item);
+            }
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)
             {
@@ -499,6 +587,27 @@ namespace Reporting.KensaHistory.Service
                         case "U": itemKensa.ChangeResultVal(itemKensa.ResultValue + "以上"); break;
                         default: break;
                     }
+                }
+            }
+
+            List<KensaResultMultiItem> kensaResultMulti = new();
+
+            foreach (var item in kensaInfDetails)
+            {
+                foreach (var kensaResultMultiItem in item.KensaResultMultiItems)
+                {
+                    if (!date.Contains(kensaResultMultiItem.IraiDate))
+                    {
+                        kensaResultMulti.Add(kensaResultMultiItem);
+                    }
+                }
+            }
+
+            foreach (var item in kensaResultMulti)
+            {
+                foreach (var kensaInfDetailsItem in kensaInfDetails)
+                {
+                    kensaInfDetailsItem.KensaResultMultiItems.Remove(item);
                 }
             }
 

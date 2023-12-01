@@ -39,7 +39,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"GetRDSInformation. {ex.Message}");
             }
         }
 
@@ -69,7 +69,7 @@ namespace AWSSDK.Common
                 {
                     DBInstanceIdentifier = dbIdentifier,
                     AllocatedStorage = 20,
-                    DBName = "smartkarte",
+                    //DBName = "smartkarte",
                     Engine = "postgres",
                     EngineVersion = "14.4",
                     StorageType = "gp2",
@@ -91,67 +91,22 @@ namespace AWSSDK.Common
             {
                 if (e.ErrorCode == "DBInstanceAlreadyExists")
                 {
-                    Console.WriteLine($"Database Shard {dbIdentifier} exists already, continuing to poll ...");
+                    Console.WriteLine($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
+                    throw new Exception($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
                 }
                 else
                 {
-                    throw;
+                    throw new Exception($"CreateNewShardAsync. {e.Message}");
                 }
             }
         }
 
-        public static async Task<string> CheckingRDSStatusAsync(string dbIdentifier)
-        {
-            try
-            {
-                string host = string.Empty;
-                bool running = true;
-
-                while (running)
-                {
-                    var rdsClient = new AmazonRDSClient();
-
-                    var response = await rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
-                    {
-                        DBInstanceIdentifier = dbIdentifier
-                    });
-
-                    var dbInstances = response.DBInstances;
-
-                    if (dbInstances.Count != 1)
-                    {
-                        throw new Exception("More than one Database Shard returned; this should never happen");
-                    }
-
-                    var dbInstance = dbInstances[0];
-                    var status = dbInstance.DBInstanceStatus;
-
-                    Console.WriteLine($"Last Database Shard status: {status}");
-
-                    Thread.Sleep(5000);
-
-                    if (status == "available")
-                    {
-                        var endpoint = dbInstance.Endpoint;
-                        host = endpoint.Address;
-                        running = false;
-                    }
-                }
-
-                return host;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return null;
-            }
-        }
-
-        public static async Task<bool> CheckingSnapshotAvailableAsync(string dbSnapshotIdentifier)
+        public static async Task<bool> CheckSnapshotAvailableAsync(string dbSnapshotIdentifier)
         {
             try
             {
                 bool available = false;
+                DateTime startTime = DateTime.Now;
                 bool running = true;
 
                 while (running)
@@ -179,6 +134,13 @@ namespace AWSSDK.Common
                         }
                     }
 
+                    // Check if more than Timeout
+                    if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
+                    {
+                        Console.WriteLine($"Timeout: Snapshot not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
+                        throw new Exception("Checking Snapshot Available timeout");
+                    }
+
                     // Wait for 5 seconds before the next attempt
                     Thread.Sleep(5000);
                 }
@@ -188,12 +150,11 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Check Snapshot Available. {ex.Message}");
             }
         }
 
-
-        public static void CreateDatabase(string host, string tenantId)
+        public static void CreateDatabase(string host, string dbName, string passwordConnect)
         {
             try
             {
@@ -202,53 +163,37 @@ namespace AWSSDK.Common
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
+
+                    // Check if the database with the given tenantId already exists
+                    using (var checkCommand = new NpgsqlCommand())
+                    {
+                        checkCommand.Connection = connection;
+                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{dbName}'";
+
+                        var existingDatabase = checkCommand.ExecuteScalar();
+
+                        if (existingDatabase != null && existingDatabase.ToString() == dbName)
+                        {
+                            Console.WriteLine($"Database '{dbName}' already exists.");
+                            return;
+                        }
+                    }
+                    // If everything is okay, create the database
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        command.CommandText = $"CREATE DATABASE {tenantId}";
+                        command.CommandText = $"CREATE DATABASE {dbName}; CREATE ROLE {dbName} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
                         command.ExecuteNonQuery();
+                        Console.WriteLine($"Database '{dbName}' created successfully.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Error CreateDatabase: {ex.Message}");
+                throw new Exception($"CreateDatabase. {ex.Message}");
             }
-        }
-
-        public static void CreateTables(string host, string tenantId)
-        {
-            try
-            {
-                var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
-
-                using (var connection = new NpgsqlConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-
-                        var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "template", "gdump.sql");
-
-                        if (File.Exists(filePath))
-                        {
-                            var sqlScript = File.ReadAllText(filePath);
-                            command.CommandText = sqlScript;
-                            command.ExecuteNonQuery();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error: SQL file not found");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-        }
+        }        
 
         public static void GenerateDumpfile(string tenantId)
         {
@@ -268,7 +213,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
             try
             {
@@ -278,7 +223,7 @@ namespace AWSSDK.Common
                 // Create a request to create a DB snapshot
                 var createSnapshotRequest = new CreateDBSnapshotRequest
                 {
-                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier),
+                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, snapshotType),
                     DBInstanceIdentifier = dbInstanceIdentifier
                 };
 
@@ -293,50 +238,52 @@ namespace AWSSDK.Common
                 else
                 {
                     Console.WriteLine($"DB snapshot creation failed. Response: {response}");
-                    return string.Empty;
+                    throw new Exception($"Create DB Snapshot. Code: {response?.HttpStatusCode}");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return string.Empty;
+                throw new Exception($"Create DB Snapshot: {ex.Message}");
             }
         }
 
-        public static async Task<Endpoint> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public static async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
             try
             {
                 var rdsClient = new AmazonRDSClient();
+                var vpcSecurityGroupIds = new List<string> { "sg-0cc9111542280b236" };
                 var response = await rdsClient.RestoreDBInstanceFromDBSnapshotAsync(
                     new RestoreDBInstanceFromDBSnapshotRequest
                     {
                         DBInstanceIdentifier = dbInstanceIdentifier,
                         DBSnapshotIdentifier = snapshotIdentifier,
+                        DBSubnetGroupName = "develop-smartkarte-rds-subnetgroup",  // Todo update
+                        VpcSecurityGroupIds = vpcSecurityGroupIds,  // Todo update
                         DBInstanceClass = "db.t4g.micro" // Todo update
                     });
-
-                if (response.DBInstance.DBInstanceStatus.Equals("available", StringComparison.OrdinalIgnoreCase))
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    return response.DBInstance.Endpoint;
+                    return true;
                 }
                 else
                 {
-                    return new();
+                    throw new Exception($"Restore DBInstance From Snapshot. Code: {response?.HttpStatusCode}");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new();
+                throw new Exception($"Restore DBInstance From Snapshot. {ex.Message}");
             }
         }
 
-        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier)
+        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier, string snapshotType)
         {
             string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-Snapshot-{timestamp}";
+            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-{snapshotType}-{timestamp}";
 
             dbSnapshotIdentifier = string.Join("", dbSnapshotIdentifier.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
 
@@ -350,123 +297,166 @@ namespace AWSSDK.Common
             return dbSnapshotIdentifier;
         }
 
-        public async static Task<bool> IsSnapshotAvailableAsync(string dbSnapshotIdentifier)
+        public static async Task<List<string>> GetListDatabase(string serverEndpoint)
         {
             try
             {
+                // Replace these values with your actual RDS information
+                string username = "postgres";
+                string password = "Emr!23456789";
+                int port = 5432;
+                // Connection string format for PostgreSQL
+                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                var withOutDb = ConfigConstant.LISTSYSTEMDB;
+                string strWithoutDb = string.Join(", ", withOutDb);
+                strWithoutDb = "'" + strWithoutDb.Replace(", ", "', '") + "'";
+                List<string> databaseList = new List<string>();
+
+                // Create and open a connection
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        // Select databases
+                        using (NpgsqlCommand command = new NpgsqlCommand($"SELECT datname FROM pg_catalog.pg_database WHERE datname NOT IN ({strWithoutDb}) AND NOT datistemplate", connection))
+                        using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                string dbName = reader.GetString(0);
+                                databaseList.Add(dbName);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Get List Database connection  failed: {ex.Message}");
+                    }
+                }
+
+                return databaseList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Get List Database. {ex.Message}");
+            }
+        }
+
+        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                var deleteRequest = new DeleteDBInstanceRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    SkipFinalSnapshot = false
+                };
+
+                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, ConfigConstant.RdsSnapshotBackupTermiante);
+
+                var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
+
+                // Check if the HTTP status code indicates success
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception($"Delete RDS Instance. Code: {response?.HttpStatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: Delete RDS Instance. {ex.Message}");
+                throw new Exception($"Delete RDS Instance. {ex.Message}");
+            }
+        }
+
+        public static async Task<bool> CheckRDSInstanceDeleted(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var startTime = DateTime.Now;
+                var timeout = TimeSpan.FromMinutes(ConfigConstant.TimeoutCheckingAvailable);
+                while ((DateTime.Now - startTime) < timeout)
+                {
+                    var rdsClient = new AmazonRDSClient();
+
+                    var describeRequest = new DescribeDBInstancesRequest
+                    {
+                        DBInstanceIdentifier = dbInstanceIdentifier
+                    };
+
+                    var describeResponse = await rdsClient.DescribeDBInstancesAsync(describeRequest);
+
+                    // Check if the instance doesn't exist (status will be null if it doesn't)
+                    if (!describeResponse.DBInstances.Any())
+                    {
+                        return true;
+                    }
+
+                    var instanceStatus = describeResponse.DBInstances[0].DBInstanceStatus;
+
+                    // Check if the status is "deleting" or "deleted"
+                    if (instanceStatus.Equals("deleting", StringComparison.OrdinalIgnoreCase) ||
+                        instanceStatus.Equals("deleted", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+
+                    // Wait for a short duration before the next attempt
+                    await Task.Delay(5000); // 5 seconds delay, adjust as needed
+                }
+
+                // If the loop runs for the entire timeout duration, return false
+                throw new Exception("Checking Deleted RDSInstance timeout");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Checking Deleted RDSInstance. {ex.Message}");
+            }
+        }
+
+       public static async Task<string> GetLastSnapshot(string dbInstanceIdentifier)
+        {
+            try
+            {
+                // Create an RDS client
                 var rdsClient = new AmazonRDSClient();
 
                 // Create a request to describe DB snapshots
                 var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
                 {
-                    DBSnapshotIdentifier = dbSnapshotIdentifier
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    MaxRecords = 20,  // Limit 20 to get the latest snapshot
                 };
 
-                // Call DescribeDBSnapshotsAsync to asynchronously get information about the snapshot
+                // Call DescribeDBSnapshots to get information about the snapshots
                 var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
 
-                // Check if the snapshot exists and is in the "available" state
-                var snapshot = describeSnapshotsResponse.DBSnapshots.FirstOrDefault();
-                return snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions (e.g., AWS service exceptions, network issues)
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
-            }
-        }
-
-        public static async Task<bool> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier)
-        {
-            try
-            {
-                bool available = false;
-                bool running = true;
-
-                while (running)
+                // Extract information about the latest snapshot
+                var snapshot = describeSnapshotsResponse.DBSnapshots.OrderByDescending(x=> x.SnapshotCreateTime).FirstOrDefault();
+                if (snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase))
                 {
-                    var rdsClient = new AmazonRDSClient();
-
-                    // Create a request to describe DB instances
-                    var describeInstancesRequest = new DescribeDBInstancesRequest
-                    {
-                        DBInstanceIdentifier = dbInstanceIdentifier
-                    };
-
-                    // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
-                    var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
-
-                    // Check if the DB instance exists
-                    var dbInstances = describeInstancesResponse.DBInstances;
-                    if (dbInstances.Count == 1)
-                    {
-                        var dbInstance = dbInstances[0];
-                        var status = dbInstance.DBInstanceStatus;
-
-                        Console.WriteLine($"DB Instance status: {status}");
-
-                        // Check if the DB instance is in the "available" state
-                        if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
-                        {
-                            available = true;
-                            running = false;
-                        }
-                    }
-
-                    // Wait for 5 seconds before the next attempt
-                    Thread.Sleep(5000);
-                }
-
-                return available;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
-            }
-        }
-
-        public static async Task<List<string>> GetDatabasesFromDBInstanceAsync(string dbInstanceIdentifier)
-        {
-            try
-            {
-                var rdsClient = new AmazonRDSClient();
-
-                // Create a request to describe DB instances
-                var describeInstancesRequest = new DescribeDBInstancesRequest
-                {
-                    DBInstanceIdentifier = dbInstanceIdentifier
-                };
-
-                // Call DescribeDBInstancesAsync to asynchronously get information about the DB instance
-                var describeInstancesResponse = await rdsClient.DescribeDBInstancesAsync(describeInstancesRequest);
-
-                // Check if the DB instance exists
-                var dbInstances = describeInstancesResponse.DBInstances;
-                if (dbInstances.Count == 1)
-                {
-                    var dbInstance = dbInstances[0];
-                    // Extract the list of database names from the DB instance
-                    var databases = dbInstance.DBName;
-
-                    // Convert the list to a string array or List<string> based on your needs
-                    var databaseList = databases.Split(',').Select(db => db.Trim()).ToList();
-
-                    return databaseList;
+                    return snapshot.DBSnapshotIdentifier;
                 }
                 else
                 {
-                    Console.WriteLine("DB instance not found or more than one instance returned.");
-                    return new List<string>();
+                    return string.Empty;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new List<string>();
+                throw new Exception($"Get Last Snapshot. {ex.Message}");
             }
         }
-
     }
 }

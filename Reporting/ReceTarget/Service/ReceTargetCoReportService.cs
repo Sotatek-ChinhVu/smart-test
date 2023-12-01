@@ -40,22 +40,29 @@ public class ReceTargetCoReportService : IReceTargetCoReportService
 
     public CommonReportingRequestModel GetReceTargetPrintData(int hpId, int seikyuYm)
     {
-        currentPage = 1;
-        hasNextPage = true;
-        printoutDateTime = CIUtil.GetJapanDateTimeNow();
-        GetRowCount();
-        coModel = GetData(hpId, seikyuYm);
-        if (coModel != null)
+        try
         {
-            MakePrintDataList();
-            while (hasNextPage)
+            currentPage = 1;
+            hasNextPage = true;
+            printoutDateTime = CIUtil.GetJapanDateTimeNow();
+            GetRowCount();
+            coModel = GetData(hpId, seikyuYm);
+            if (coModel != null)
             {
-                UpdateDrawForm(seikyuYm);
-                currentPage++;
+                MakePrintDataList();
+                while (hasNextPage)
+                {
+                    UpdateDrawForm(seikyuYm);
+                    currentPage++;
+                }
             }
+            _extralData.Add("totalPage", (currentPage - 1).ToString());
+            return new ReceTargetMapper(_singleFieldData, _listTextData, _extralData, formFileName).GetData();
         }
-        _extralData.Add("totalPage", (currentPage - 1).ToString());
-        return new ReceTargetMapper(_singleFieldData, _listTextData, _extralData, formFileName).GetData();
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private void MakePrintDataList()

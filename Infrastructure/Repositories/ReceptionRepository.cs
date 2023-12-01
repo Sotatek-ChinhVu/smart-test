@@ -8,11 +8,8 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Globalization;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -1089,13 +1086,6 @@ namespace Infrastructure.Repositories
                 DataRaiinInf.TantoId);
         }
 
-        public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
-        {
-            var check = NoTrackingDataContext.RaiinInfs
-                .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
-            return check;
-        }
-
         public ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor)
         {
             var tantoId = 0;
@@ -1871,6 +1861,64 @@ namespace Infrastructure.Repositories
                 return raiinInf.UketukeNo + 1 < defaultUkeNo ? defaultUkeNo : raiinInf.UketukeNo + 1;
             }
             return defaultUkeNo > 0 ? defaultUkeNo : 1;
+        }
+
+        public RaiinInfModel? GetRaiinInf(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.SinDate == sinDate &&
+                p.RaiinNo == raiinNo &&
+                p.IsDeleted == DeleteTypes.None
+            );
+
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(p =>
+                p.HpId == hpId &&
+                p.IsDeleted == DeleteStatus.None
+            );
+
+            var userMsts = NoTrackingDataContext.UserMsts.Where(p =>
+                p.HpId == hpId &&
+                p.IsDeleted == DeleteStatus.None
+            );
+
+            var join = (
+                from raiinInf in raiinInfs
+                join kaMst in kaMsts on
+                    new { raiinInf.HpId, raiinInf.KaId } equals
+                    new { kaMst.HpId, kaMst.KaId } into joinKaMsts
+                from joinKaMst in joinKaMsts.DefaultIfEmpty()
+                join userMst in userMsts on
+                    new { raiinInf.HpId, raiinInf.TantoId } equals
+                    new { userMst.HpId, TantoId = userMst.UserId } into joinUserMsts
+                from joinUserMst in joinUserMsts.DefaultIfEmpty()
+                select new
+                {
+                    raiinInf,
+                    joinKaMst,
+                    joinUserMst
+                }
+                ).ToList();
+
+            RaiinInfModel? result = null;
+
+            if (join != null && join.Any())
+            {
+                result = new RaiinInfModel(join.First().raiinInf.PtId,
+                                           join.First().raiinInf.SinDate,
+                                           join.First().raiinInf.RaiinNo,
+                                           join.First().raiinInf.KaId,
+                                           join.First().joinKaMst.KaName ?? string.Empty,
+                                           join.First().raiinInf.TantoId,
+                                           join.First().joinUserMst.DrName ?? string.Empty,
+                                           join.First().joinUserMst.Name ?? string.Empty,
+                                           join.First().joinUserMst.KanaName ?? string.Empty,
+                                           join.First().joinKaMst.KaSname ?? string.Empty
+                                        );
+            }
+
+            return result;
         }
 
     }

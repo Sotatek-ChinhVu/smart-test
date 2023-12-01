@@ -1,5 +1,6 @@
 ﻿using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using Helper.Common;
 
 namespace AWSSDK.Common
 {
@@ -9,7 +10,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                DateTime startTime = DateTime.UtcNow - TimeSpan.FromSeconds(300 * 12);
+                DateTime startTime = CIUtil.GetJapanDateTimeNow() - TimeSpan.FromSeconds(300 * 12);
 
                 var cloudWatch = new AmazonCloudWatchClient();
                 var metricDataQueries = new MetricDataQuery
@@ -39,7 +40,7 @@ namespace AWSSDK.Common
                 {
                     MetricDataQueries = new List<MetricDataQuery> { metricDataQueries },
                     StartTime = startTime,
-                    EndTime = DateTime.UtcNow,
+                    EndTime = CIUtil.GetJapanDateTimeNow(),
                     ScanBy = "TimestampDescending"
                 };
                 var response = await cloudWatch.GetMetricDataAsync(getMetricDataRequest);
@@ -57,7 +58,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                DateTime startTime = DateTime.UtcNow - TimeSpan.FromSeconds(300 * 12);
+                DateTime startTime = CIUtil.GetJapanDateTimeNow() - TimeSpan.FromSeconds(300 * 12);
 
                 var cloudWatch = new AmazonCloudWatchClient();
                 var metricDataQueries = new MetricDataQuery
@@ -87,7 +88,7 @@ namespace AWSSDK.Common
                 {
                     MetricDataQueries = new List<MetricDataQuery> { metricDataQueries },
                     StartTime = startTime,
-                    EndTime = DateTime.UtcNow,
+                    EndTime = CIUtil.GetJapanDateTimeNow(),
                     ScanBy = "TimestampDescending"
                 };
 
@@ -108,7 +109,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                DateTime startTime = DateTime.UtcNow - TimeSpan.FromSeconds(300 * 12);
+                DateTime startTime = CIUtil.GetJapanDateTimeNow() - TimeSpan.FromSeconds(300 * 12);
 
                 var cloudWatch = new AmazonCloudWatchClient();
                 var metricDataQueries = new MetricDataQuery
@@ -138,7 +139,7 @@ namespace AWSSDK.Common
                 {
                     MetricDataQueries = new List<MetricDataQuery> { metricDataQueries },
                     StartTime = startTime,
-                    EndTime = DateTime.UtcNow,
+                    EndTime = CIUtil.GetJapanDateTimeNow(),
                     ScanBy = "TimestampDescending"
                 };
 
@@ -159,7 +160,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                DateTime startTime = DateTime.UtcNow - TimeSpan.FromSeconds(300 * 12);
+                DateTime startTime = CIUtil.GetJapanDateTimeNow() - TimeSpan.FromSeconds(300 * 12);
 
                 var cloudWatch = new AmazonCloudWatchClient();
                 var metricDataQueries = new MetricDataQuery
@@ -189,7 +190,7 @@ namespace AWSSDK.Common
                 {
                     MetricDataQueries = new List<MetricDataQuery> { metricDataQueries },
                     StartTime = startTime,
-                    EndTime = DateTime.UtcNow,
+                    EndTime = CIUtil.GetJapanDateTimeNow(),
                     ScanBy = "TimestampDescending"
                 };
 
@@ -210,7 +211,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                DateTime startTime = DateTime.UtcNow - TimeSpan.FromSeconds(300 * 12);
+                DateTime startTime = CIUtil.GetJapanDateTimeNow() - TimeSpan.FromSeconds(300 * 12);
 
                 var cloudWatch = new AmazonCloudWatchClient();
                 var metricDataQueries = new MetricDataQuery
@@ -240,7 +241,7 @@ namespace AWSSDK.Common
                 {
                     MetricDataQueries = new List<MetricDataQuery> { metricDataQueries },
                     StartTime = startTime,
-                    EndTime = DateTime.UtcNow,
+                    EndTime = CIUtil.GetJapanDateTimeNow(),
                     ScanBy = "TimestampDescending"
                 };
 
@@ -261,7 +262,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                DateTime startTime = DateTime.UtcNow - TimeSpan.FromSeconds(300 * 12);
+                DateTime startTime = CIUtil.GetJapanDateTimeNow() - TimeSpan.FromSeconds(300 * 12);
 
                 var cloudWatch = new AmazonCloudWatchClient();
                 var metricDataQueries = new MetricDataQuery
@@ -291,7 +292,7 @@ namespace AWSSDK.Common
                 {
                     MetricDataQueries = new List<MetricDataQuery> { metricDataQueries },
                     StartTime = startTime,
-                    EndTime = DateTime.UtcNow,
+                    EndTime = CIUtil.GetJapanDateTimeNow(),
                     ScanBy = "TimestampDescending"
                 };
 
@@ -348,7 +349,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"GetSummaryCardAsync. {ex.Message}");
             }
         }
     }

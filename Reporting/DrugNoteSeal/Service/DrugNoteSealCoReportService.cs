@@ -43,26 +43,33 @@ public class DrugNoteSealCoReportService : IDrugNoteSealCoReportService
 
     public CommonReportingRequestModel GetDrugNoteSealPrintData(int hpId, long ptId, int sinDate, long raiinNo)
     {
-        this.hpId = hpId;
-        this.ptId = ptId;
-        this.sinDate = sinDate;
-        this.raiinNo = raiinNo;
-
-        GetRowCount();
-        currentPage = 1;
-        printoutDateTime = CIUtil.GetJapanDateTimeNow();
-        coModel = GetData();
-        string rowCountFieldName = "lsOrder";
-        if (coModel != null)
+        try
         {
-            MakeOdrDtlList();
-            while (hasNextPage)
+            this.hpId = hpId;
+            this.ptId = ptId;
+            this.sinDate = sinDate;
+            this.raiinNo = raiinNo;
+
+            GetRowCount();
+            currentPage = 1;
+            printoutDateTime = CIUtil.GetJapanDateTimeNow();
+            coModel = GetData();
+            string rowCountFieldName = "lsOrder";
+            if (coModel != null)
             {
-                UpdateDrawForm();
-                currentPage++;
+                MakeOdrDtlList();
+                while (hasNextPage)
+                {
+                    UpdateDrawForm();
+                    currentPage++;
+                }
             }
+            return new DrugNoteSealMapper(_singleFieldData, _tableFieldData, rowCountFieldName).GetData();
         }
-        return new DrugNoteSealMapper(_singleFieldData, _tableFieldData, rowCountFieldName).GetData();
+        finally
+        {
+            _finder.ReleaseResource();
+        }
     }
 
     private void UpdateDrawForm()

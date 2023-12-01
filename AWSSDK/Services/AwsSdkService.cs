@@ -1,8 +1,7 @@
-using Amazon.RDS;
-using Amazon.RDS.Model;
 using AWSSDK.Common;
-using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Npgsql;
+using System.Data.Common;
 
 namespace AWSSDK.Services
 {
@@ -18,63 +17,16 @@ namespace AWSSDK.Services
             var sumaryCard = await CloudWatchAction.GetSummaryCardAsync();
             var result = sumaryCard.Where(entry => entry.Value["available"] == "yes").Select(entry => entry.Key).ToList();
             return result;
-        }        
-
-        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
-        {
-            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
         }
 
-        public async Task<Endpoint> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
+        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
-           return await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier, snapshotType);
         }
 
-
-        public static async Task RestoreDBInstanceFromSnapshotAsync(string sourceDBInstanceIdentifier, string targetDBInstanceIdentifier, string dbSnapshotIdentifier)
+        public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
         {
-            try
-            {
-                // Assuming you have AWS credentials set up (access key and secret key)
-                var rdsClient = new AmazonRDSClient();
-
-                // Create a request to restore a DB instance from a DB snapshot
-                var restoreRequest = new RestoreDBInstanceFromDBSnapshotRequest
-                {
-                    DBInstanceIdentifier = targetDBInstanceIdentifier,
-                    DBSnapshotIdentifier = dbSnapshotIdentifier,
-                    DBInstanceClass = "db.t2.micro", // Replace with your desired instance class
-                    MultiAZ = false, // Set to true if you want a Multi-AZ deployment
-                    Engine = "mysql", // Replace with your database engine
-                    Port = 3306, // Replace with your desired port
-                    AutoMinorVersionUpgrade = true,
-                    LicenseModel = "general-public-license", // Replace with your license model
-                    PubliclyAccessible = true, // Set to true if the instance should be publicly accessible
-                    StorageType = "gp2", // Replace with your desired storage type
-                    VpcSecurityGroupIds = new List<string> { "your_security_group_id" }, // Replace with your security group IDs
-                };
-
-                // Call the RestoreDBInstanceFromDBSnapshotAsync method to asynchronously restore the DB instance
-                var response = await rdsClient.RestoreDBInstanceFromDBSnapshotAsync(restoreRequest);
-
-                // Check the response for success
-                if (response != null && response.HttpStatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    Console.WriteLine($"DB instance restoration started. Instance Identifier: {response.DBInstance.DBInstanceIdentifier}");
-                }
-                else
-                {
-                    Console.WriteLine($"DB instance restoration failed. Response: {response}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-        }
-        public async Task<bool> IsSnapshotAvailableAsync(string dbSnapshotIdentifier)
-        {
-            return await RDSAction.IsSnapshotAvailableAsync(dbSnapshotIdentifier);
+            return await RDSAction.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
         }
 
         public async Task<bool> CheckSubdomainExistenceAsync(string subdomainToCheck)
@@ -89,9 +41,57 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public Task<string> GetInfTenantByTenant(string Id)
+        public async Task<bool> CheckExitRDS(string dbIdentifier)
         {
-            throw new NotImplementedException();
+            var RDSInfs = await RDSAction.GetRDSInformation();
+            if (RDSInfs.ContainsKey(dbIdentifier))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
+        {
+            try
+            {
+                // Replace these values with your actual RDS information
+                string username = "postgres";
+                string password = "Emr!23456789";
+                int port = 5432;
+                // Connection string format for SQL Server
+                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+
+                // Create and open a connection
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        // Delete database
+                        using (DbCommand command = connection.CreateCommand())
+                        {
+                            command.CommandText = $"DROP DATABASE {tennantDB};";
+                            command.ExecuteNonQuery();
+                        }
+
+                        Console.WriteLine($"Database deleted successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: Delete TenantDb {ex.Message}");
+                        throw new Exception($"Error: Delete TenantDb {ex.Message}");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
         }
     }
 }
