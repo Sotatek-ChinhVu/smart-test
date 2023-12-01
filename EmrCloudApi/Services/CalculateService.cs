@@ -234,6 +234,7 @@ namespace EmrCloudApi.Services
             }
         }
 
+        // function calls ReceFutanCalculateMain to other functions
         public bool ReceFutanCalculateMain(ReceCalculateRequest inputData)
         {
             try
@@ -254,6 +255,7 @@ namespace EmrCloudApi.Services
             }
         }
 
+        // function calls ReceFutanCalculateMain only to calculate runs in month Rece
         public async Task<bool> ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken)
         {
             try
@@ -269,6 +271,7 @@ namespace EmrCloudApi.Services
             }
         }
 
+        // function calls RunCalculateMonth to other functions
         public bool RunCalculateMonth(CalculateMonthRequest inputData)
         {
             try
@@ -289,6 +292,7 @@ namespace EmrCloudApi.Services
             }
         }
 
+        // function calls RunCalculateMonth only to calculate runs in month Rece
         public async Task<bool> RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken)
         {
             try

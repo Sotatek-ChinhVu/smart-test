@@ -259,6 +259,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             CalculatedCount = 0;
             for (int rCnt = ReceInfs.Count - 1; rCnt >= 0 && !IsStopCalc; rCnt--)
             {
+                // check if the progress is canceled
                 if (AllowSendProgress)
                 {
                     var statusCallBack = _messenger.SendAsync(new StopCalcStatus());
@@ -266,6 +267,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 }
                 if (IsStopCalc)
                 {
+                    // if progress is canceled, send a socket to cloud api
                     SendMessager(new RecalculationStatus(false, CalculateStatusConstant.Invalid, AllCalcCount, CalculatedCount, "Progress Cancelled!", UniqueKey));
                     return;
                 }

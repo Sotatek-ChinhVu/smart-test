@@ -21,12 +21,16 @@ namespace Interactor.CalculateService
 
         bool RunCalculateOne(CalculateOneRequest inputData);
 
+        // function calls ReceFutanCalculateMain to other functions
         bool ReceFutanCalculateMain(ReceCalculateRequest inputData);
 
+        // function calls ReceFutanCalculateMain only to calculate runs in month Rece
         Task<bool> ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken);
 
+        // function calls RunCalculateMonth to other functions
         bool RunCalculateMonth(CalculateMonthRequest inputData);
 
+        // function calls RunCalculateMonth only to calculate runs in month Rece
         Task<bool> RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken);
 
         SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData);
