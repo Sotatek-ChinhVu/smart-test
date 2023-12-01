@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Domain.SuperAdminModels.Tenant;
+﻿using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
 using Helper.Common;
 using Helper.Enum;
@@ -143,7 +142,7 @@ namespace Infrastructure.SuperAdminRepositories
                 var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
                 if (tenant == null)
                 {
-                    return false;
+                    throw new Exception("Tenant does not exist");
                 }
                 tenant.Status = status;
                 TrackingDataContext.SaveChanges();
@@ -179,7 +178,7 @@ namespace Infrastructure.SuperAdminRepositories
                 return new();
             }
         }
-        
+
         public void RevokeInsertPermission()
         {
             //check status tenant = available
@@ -282,7 +281,9 @@ namespace Infrastructure.SuperAdminRepositories
                                                             tenant.ScheduleDate,
                                                             tenant.ScheduleTime,
                                                             tenant.CreateDate,
-                                                            tenant.RdsIdentifier))
+                                                            tenant.RdsIdentifier,
+                                                            tenant.UserConnect,
+                                                            tenant.PasswordConnect))
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
@@ -305,7 +306,9 @@ namespace Infrastructure.SuperAdminRepositories
                                             tenant.ScheduleDate,
                                             tenant.ScheduleTime,
                                             tenant.CreateDate,
-                                            tenant.RdsIdentifier))
+                                            tenant.RdsIdentifier,
+                                            tenant.UserConnect,
+                                            tenant.PasswordConnect))
                           .ToList();
             result = ChangeStorageFull(result);
             if (searchModel.StorageFull != StorageFullEnum.Empty)
@@ -712,8 +715,6 @@ namespace Infrastructure.SuperAdminRepositories
             double storageFull = 0;
             double storageInDB = 0;
             int port = 5432;
-            string id = "postgres";
-            string password = "Emr!23456789";
             StringBuilder connectionStringBuilder = new();
             connectionStringBuilder.Append("host=");
             connectionStringBuilder.Append(tenant.EndPointDb);
@@ -722,9 +723,9 @@ namespace Infrastructure.SuperAdminRepositories
             connectionStringBuilder.Append(";database=");
             connectionStringBuilder.Append(tenant.Db);
             connectionStringBuilder.Append(";user id=");
-            connectionStringBuilder.Append(id);
+            connectionStringBuilder.Append(tenant.UserConnect);
             connectionStringBuilder.Append(";password=");
-            connectionStringBuilder.Append(password);
+            connectionStringBuilder.Append(tenant.PasswordConnect);
             string connectionString = connectionStringBuilder.ToString();
             string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
             if (isClearCache)
@@ -800,7 +801,9 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.ScheduleDate,
                        tenant.ScheduleTime,
                        tenant.CreateDate,
-                       tenant.RdsIdentifier);
+                       tenant.RdsIdentifier,
+                       tenant.UserConnect,
+                       tenant.PasswordConnect);
         }
         #endregion
     }
