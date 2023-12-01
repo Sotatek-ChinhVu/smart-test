@@ -16,7 +16,7 @@ public class GetSyobyoKeikaListInteractor : IGetSyobyoKeikaListInputPort
     {
         try
         {
-            var result = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
+            var result = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId, inputData.HokenKbn);
             return new GetSyobyoKeikaListOutputData(result, GetSyobyoKeikaListStatus.Successed);
         }
         finally

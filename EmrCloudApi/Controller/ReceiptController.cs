@@ -118,7 +118,7 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetSyobyoKeikaList)]
     public ActionResult<Response<GetSyobyoKeikaListResponse>> GetListSyobyoKeika([FromQuery] GetSyobyoKeikaListRequest request)
     {
-        var input = new GetSyobyoKeikaListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var input = new GetSyobyoKeikaListInputData(HpId, request.SinYm, request.PtId, request.HokenId, request.HokenKbn);
         var output = _bus.Handle(input);
 
         var presenter = new GetSyobyoKeikaListPresenter();

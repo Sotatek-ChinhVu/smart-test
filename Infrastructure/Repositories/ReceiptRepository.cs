@@ -1393,11 +1393,20 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId)
+    /// <summary>
+    /// Get info Keika follow hokenKbn from frontend, no hoken new in db
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="hokenId"></param>
+    /// <param name="hokenKbn"></param>
+    /// <returns></returns>
+    public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId, int hokenKbn)
     {
         var hokenKbnList = new List<int> { 11, 12, 13 };
-        var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
-        var hokenKbn = ptHokenInf?.HokenKbn ?? 0;
+        //var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
+        //var hokenKbn = ptHokenInf?.HokenKbn ?? 0;
         if (!hokenKbnList.Contains(hokenKbn) && hokenId != 0)
         {
             return new();
