@@ -39,10 +39,6 @@ namespace Interactor.SuperAdmin
             {
                 return new RestoreTenantOutputData(false, RestoreTenantStatus.PathFileDumpRestoreNotAvailable);
             }
-            //var c = new CommonHub();
-            //c.OnConnectedAsync();
-            //string rString2 = CommonConstants.GenerateRandomString(6);
-            //var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync("develop-smartkarte-postgres-nnefqy", ConfigConstant.RdsSnapshotBackupRestore);
             try
             {
                 if (inputData.TenantId <= 0)
