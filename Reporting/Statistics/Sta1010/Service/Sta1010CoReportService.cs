@@ -25,9 +25,9 @@ public class Sta1010CoReportService : ISta1010CoReportService
     private List<CoSyunoInfModel>? _syunoInfs;
     private CoHpInfModel _hpInf;
     private CoFileType? coFileType;
-    private List<PutColumn> putCurColumns = new List<PutColumn>();
+    private readonly List<PutColumn> putCurColumns = new();
 
-    private List<PutColumn> csvTotalColumns = new List<PutColumn>
+    private readonly List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分"),
             new PutColumn("TotalCaption", "合計行"),
@@ -229,7 +229,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta1010PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta1010PrintData).GetProperty(colName)?.GetValue(printData);
 
                     string valueInput = value?.ToString() ?? string.Empty;
 
@@ -575,7 +575,6 @@ public class Sta1010CoReportService : ISta1010CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -589,7 +588,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
 
             foreach (var column in putCurColumns)
             {
-                var value = typeof(CoSta1010PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                var value = typeof(CoSta1010PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
                 if (csvData.RowType == RowType.Total && !column.IsTotal)
                 {
                     value = string.Empty;

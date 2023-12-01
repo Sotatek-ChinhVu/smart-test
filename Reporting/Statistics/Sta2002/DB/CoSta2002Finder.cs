@@ -10,8 +10,8 @@ namespace Reporting.Statistics.Sta2002.DB
 {
     public class CoSta2002Finder : RepositoryBase, ICoSta2002Finder
     {
-        private ICoHpInfFinder _coHpInfFinder;
-        private ICoSta1001Finder _coSta1001Finder;
+        private readonly ICoHpInfFinder _coHpInfFinder;
+        private readonly ICoSta1001Finder _coSta1001Finder;
 
         public CoSta2002Finder(ITenantProvider tenantProvider, ICoHpInfFinder coHpInfFinder, ICoSta1001Finder coSta1001Finder) : base(tenantProvider)
         {

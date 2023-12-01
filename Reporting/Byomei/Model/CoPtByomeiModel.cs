@@ -16,11 +16,12 @@ namespace Reporting.Byomei.Model
             FromDay = fromDate;
             ToDay = toDate;
         }
-        
+
         public CoPtByomeiModel()
         {
             PtHokenInfModel = new();
             ListByomei = new();
+            PtInf = new();
         }
 
         public int FromDay { get; set; }
