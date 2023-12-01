@@ -1402,7 +1402,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         {
             return new();
         }
-
+        
         var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
                                                                                && (sinYm == 0 || item.SinYm == sinYm)
                                                                                && item.PtId == ptId

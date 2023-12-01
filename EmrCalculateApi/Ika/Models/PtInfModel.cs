@@ -52,7 +52,7 @@ namespace EmrCalculateApi.Ika.Models
             _isStudent = CIUtil.IsStudent(PtInf.Birthday, sinDate);
 
             _isElder = CIUtil.AgeChk(PtInf.Birthday, sinDate, 70);
-            //_ageKbn = 3;
+            _ageKbn = 3;
         }
 
         /// <summary>

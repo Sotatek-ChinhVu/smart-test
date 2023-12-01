@@ -1570,23 +1570,23 @@ namespace EmrCalculateApi.Ika.ViewModels
                         itemCd = ItemCdConst.SyotiNyuYojiKasan2;
                     }
                     break;
-                case 3:
-                    if (_ptInf.IsYoJi)
-                    {
-                        itemCd = ItemCdConst.SyotiYojiKasan1;
-                    }
-                    break;
-                case 4:
-                    if (_ptInf.IsYoJi)
-                    {
-                        itemCd = ItemCdConst.SyotiYojiKasan2;
-                    }
-                    break;
-                case 5:
-                    if (_ptInf.IsYoJi)
-                    {
-                        itemCd = ItemCdConst.SyotiYojiKasan3;
-                    }
+                //case 3:
+                //    if (_ptInf.IsYoJi)
+                //    {
+                //        itemCd = ItemCdConst.SyotiYojiKasan1;
+                //    }
+                //    break;
+                //case 4:
+                //    if (_ptInf.IsYoJi)
+                //    {
+                //        itemCd = ItemCdConst.SyotiYojiKasan2;
+                //    }
+                //    break;
+                //case 5:
+                //    if (_ptInf.IsYoJi)
+                //    {
+                //        itemCd = ItemCdConst.SyotiYojiKasan3;
+                //    }
                     break;
             }
 
