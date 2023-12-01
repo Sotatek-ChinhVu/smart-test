@@ -11,25 +11,11 @@
             EndPointDb = string.Empty;
             EndSubDomain = string.Empty;
             RdsIdentifier = string.Empty;
+            UserConnect = string.Empty;
+            PasswordConnect = string.Empty;
         }
 
-        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
-        {
-            Hospital = hospital;
-            Status = status;
-            AdminId = adminId;
-            Password = password;
-            SubDomain = subDomain;
-            Db = db;
-            Size = size;
-            Type = type;
-            EndPointDb = endPointDb;
-            EndSubDomain = endSubDomain;
-            Action = action;
-            RdsIdentifier = rdsIdentifier;
-        }
-
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -48,6 +34,8 @@
             ScheduleTime = scheduleTime;
             CreateDate = createDate;
             RdsIdentifier = rdsIdentifier;
+            UserConnect = userConnect;
+            PasswordConnect = passwordConnect;
         }
 
         public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)

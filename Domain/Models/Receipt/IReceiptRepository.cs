@@ -20,7 +20,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId, bool isGetAll = false);
 
-    List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId);
+    //Get list keika for Save and View. View will get follow hokenKbn from frontend
+    List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId, int hokenKbn = 0);
 
     List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList);
 
