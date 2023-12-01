@@ -1,3 +1,4 @@
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using SuperAdmin.Configs.Dependency;
@@ -135,6 +136,13 @@ app.MapControllers();
 
 // SignalR Hub
 app.MapHub<CommonHub>("/CommonHub");
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+                Path.Combine(Directory.GetCurrentDirectory(), "Template")),
+    RequestPath = "/Template"
+});
 
 app.Run();
 
