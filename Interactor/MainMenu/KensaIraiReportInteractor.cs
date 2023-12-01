@@ -363,12 +363,13 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 透析前後     1桁  ※0はスペースで出力
             o1 += adjStr(CIUtil.ToStringIgnoreZero(kensaIrai.TosekiKbn), 1);
             // 至急報告     1桁
+            //Setting Val = 1 SikyuKbn is empty when SikyuKbn = 0
             if (odrKensaIraiFileType == 1)
             {
                 // 加古川
                 if (kensaIrai.SikyuKbn == 0)
                 {
-                    o1 += adjStr("0", 1);
+                    o1 += adjStr(" ", 1);
                 }
                 else
                 {
@@ -377,14 +378,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             }
             else
             {
-                if (kensaIrai.SikyuKbn == 0)
-                {
-                    o1 += adjStr(" ", 1);
-                }
-                else
-                {
-                    o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1);
-                }
+                o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1);
             }
 
             // 依頼コメント内容     20桁 ※未使用
