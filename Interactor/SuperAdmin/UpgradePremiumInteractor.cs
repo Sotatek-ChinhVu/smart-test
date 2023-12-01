@@ -6,6 +6,7 @@ using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
+using Entity.Tenant;
 using Interactor.Realtime;
 using Npgsql;
 using UseCase.SuperAdmin.UpgradePremium;
@@ -62,7 +63,7 @@ namespace Interactor.SuperAdmin
                 }
 
                 var oldTenant = _tenantRepository.Get(inputData.TenantId);
-                if (oldTenant.TenantId <= 0)
+                if (oldTenant.TenantId <= 0 || oldTenant.TenantId <= 0)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.TenantDoesNotExist);
                 }

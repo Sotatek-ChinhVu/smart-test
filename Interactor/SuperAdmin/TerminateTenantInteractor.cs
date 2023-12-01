@@ -43,7 +43,7 @@ namespace Interactor.SuperAdmin
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
-                if (tenant == null)
+                if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantDoesNotExist);
                 }

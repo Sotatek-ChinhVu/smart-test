@@ -37,7 +37,7 @@ namespace Interactor.SuperAdmin
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
 
-                if (tenant == null)
+                if (tenant == null || tenant.TenantId <=0)
                 {
                     return new StopedTenantOutputData(false, StopedTenantStatus.TenantDoesNotExist);
                 }
@@ -71,6 +71,10 @@ namespace Interactor.SuperAdmin
                         await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
+                    }
+                    finally
+                    {
+                        _tenantRepositoryRunTask.ReleaseResource();
                     }
                 });
 
