@@ -159,7 +159,6 @@ namespace AWSSDK.Common
                 {
                     Id = id
                 });
-                response.DistributionConfig.DefaultCacheBehavior.CachePolicyId = "Managed-CachingOptimized";
                 var distInfo = new Dictionary<string, object>
             {
                 { "ETag", response.ETag },
