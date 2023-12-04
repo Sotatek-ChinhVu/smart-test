@@ -17,6 +17,9 @@ namespace Entity.SuperAdmin
         [Column("STATUS")]
         public byte Status { get; set; }
 
+        [Column("STATUS_TENANT")]
+        public byte StatusTenant { get; set; }
+
         [Column("ADMIN_ID")]
         public int AdminId { get; set; }
 
