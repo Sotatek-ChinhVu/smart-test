@@ -117,6 +117,7 @@ namespace Interactor.SuperAdmin
                             {
                                 throw new Exception("File sql dump doesn't exits");
                             }
+
                             long length = new System.IO.FileInfo(pathFileDump).Length;
                             if (length <= 0)
                             {
@@ -193,7 +194,7 @@ namespace Interactor.SuperAdmin
         {
             return Task.Run(() =>
             {
-                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + ( false ? "bat" : "sh"));
+                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"));
                 try
                 {
                     string batchContent = "";
