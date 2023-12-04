@@ -203,7 +203,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                var distInfo = await GetDistributionConfigAsync("E1Q6ZVLBFAFBDX");
+                var distInfo = await GetDistributionConfigAsync(ConfigConstant.DistributionId);
 
                 if (distInfo != null)
                 {
