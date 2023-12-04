@@ -5,6 +5,8 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using Entity.SuperAdmin;
+using Entity.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
@@ -31,7 +33,7 @@ namespace Interactor.SuperAdmin
 
         }
 
-        public RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
+        public  RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
         {
             string pathFileDumpRestore = _configuration["PathFileDumpRestore"];
 
@@ -47,6 +49,10 @@ namespace Interactor.SuperAdmin
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
+                var pathFileDump2 = @$"{pathFileDumpRestore}\{"restore8"}.sql";
+                //PostgreSqlDump(pathFileDump2, tenant.EndPointDb, ConfigConstant.PgPostDefault, "restore8", "postgres", "Emr!23456789").Wait();
+                PostgreSqlExcuteFileDump(pathFileDump2, tenant.EndPointDb, ConfigConstant.PgPostDefault, "restore8", "postgres", "Emr!23456789").Wait();
+                return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
                 if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
@@ -84,8 +90,6 @@ namespace Interactor.SuperAdmin
                         // Restore tenant dedicate
                         if (tenant.Type == ConfigConstant.TypeDedicate)
                         {
-                            // check valid new RDS
-
                             // Update data enpoint
                             var updateEndPoint = _tenantRepository.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
                             if (!updateEndPoint)
@@ -113,8 +117,12 @@ namespace Interactor.SuperAdmin
                             await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
 
                             // check valid file sql dump
+                            if (!System.IO.File.Exists(pathFileDump))
+                            {
+                                throw new Exception("File sql dump doesn't exits");
+                            }
                             long length = new System.IO.FileInfo(pathFileDump).Length;
-                            if (!System.IO.File.Exists(pathFileDump) || length <= 0)
+                            if (length <= 0)
                             {
                                 throw new Exception("Invalid file sql dump");
                             }
@@ -159,6 +167,7 @@ namespace Interactor.SuperAdmin
         private async Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
         {
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+            outFile = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? outFile : outFile.Replace("\\", "/");
 
             string dumpCommand =
                  $"{Set} PGPASSWORD={password}\n" +
@@ -173,7 +182,7 @@ namespace Interactor.SuperAdmin
         private async Task PostgreSqlExcuteFileDump(string pathFileDump, string host, int port, string database, string user, string password)
         {
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
-
+            pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
             string dumpCommand =
                  $"{Set} PGPASSWORD={password}\n" +
                  $"pg_restore" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
@@ -188,7 +197,7 @@ namespace Interactor.SuperAdmin
         {
             return Task.Run(() =>
             {
-                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"));
+                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + ( false ? "bat" : "sh"));
                 try
                 {
                     string batchContent = "";
