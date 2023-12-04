@@ -1,9 +1,9 @@
+using Interactor.Realtime;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using SuperAdmin.Configs.Dependency;
 using SuperAdmin.Configs.Options;
-using SuperAdmin.Realtime;
 using SuperAdminAPI.Security;
 
 var builder = WebApplication.CreateBuilder(args);

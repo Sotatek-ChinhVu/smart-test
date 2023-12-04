@@ -72,11 +72,28 @@ namespace AWSSDK.Services
                         // Delete database
                         using (DbCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = $"DROP DATABASE {tennantDB};";
+                            command.CommandText = @$"
+                                                    DO $$ 
+                                                    DECLARE
+                                                        pid_list text;
+                                                        query_text text;
+                                                    BEGIN
+                                                        -- Get a comma-separated list of active process IDs (pids) for the specified database
+                                                        SELECT string_agg(pid::text, ',') INTO pid_list
+                                                        FROM pg_stat_activity
+                                                        WHERE datname = '{tennantDB}';
+
+                                                        -- Construct the query to terminate each connection
+                                                        query_text := 'SELECT pg_terminate_backend(' || pid_list || ')';
+
+                                                        -- Execute the query to terminate connections
+                                                        EXECUTE query_text;
+                                                    END $$;";
+                            command.CommandText += @$"DROP DATABASE {tennantDB};";
                             command.ExecuteNonQuery();
                         }
 
-                        Console.WriteLine($"Database deleted successfully.");
+                        Console.WriteLine($"Database: {tennantDB} deleted successfully.");
                     }
                     catch (Exception ex)
                     {
