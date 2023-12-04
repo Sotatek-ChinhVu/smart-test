@@ -1883,7 +1883,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds)
     {
         var result = new List<ItemCmtModel>();
-        //
+        // Get comment no follow Kbn
         var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(p => p.HpId == hpId &&
                                                                                 p.IsDeleted == DeleteTypes.None &&
                                                                                 itemCds.Contains(p.ItemCd));
