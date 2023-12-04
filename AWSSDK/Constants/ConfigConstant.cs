@@ -49,6 +49,21 @@ namespace AWSSDK.Constants
             return rdsStatusDictionary;
         }
 
+        public static Dictionary<byte, byte> StatusTenantDisplayDictionnary()
+        {
+            Dictionary<byte, byte> status = new Dictionary<byte, byte>
+            {
+                {2, 1}, {3, 1}, {5,1}, {6,1}, {8,1}, //pending
+                {7, 2}, {10, 2}, {13,2}, {16,2}, //failded
+                {1, 3}, {9,3}, //running
+                //stopping
+                {14, 5}, //stopped
+                {4, 6}, //sutting-down
+                {12, 7}, //teminated
+            };
+            return status;
+        }
+
         public static string SqlUserPermission = @"
                     INSERT INTO public.""USER_PERMISSION""
                     (""HP_ID"", ""USER_ID"", ""FUNCTION_CD"", ""PERMISSION"", ""CREATE_DATE"", ""CREATE_ID"", ""CREATE_MACHINE"", ""UPDATE_DATE"", ""UPDATE_ID"", ""UPDATE_MACHINE"")

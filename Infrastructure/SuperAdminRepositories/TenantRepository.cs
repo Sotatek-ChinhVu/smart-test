@@ -1,4 +1,5 @@
-﻿using Domain.SuperAdminModels.Tenant;
+﻿using AWSSDK.Constants;
+using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
 using Helper.Common;
 using Helper.Enum;
@@ -283,8 +284,7 @@ namespace Infrastructure.SuperAdminRepositories
                                                             tenant.CreateDate,
                                                             tenant.RdsIdentifier,
                                                             tenant.UserConnect,
-                                                            tenant.PasswordConnect,
-                                                            tenant.StatusTenant))
+                                                            tenant.PasswordConnect))
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
@@ -309,8 +309,7 @@ namespace Infrastructure.SuperAdminRepositories
                                             tenant.CreateDate,
                                             tenant.RdsIdentifier,
                                             tenant.UserConnect,
-                                            tenant.PasswordConnect,
-                                            tenant.StatusTenant))
+                                            tenant.PasswordConnect))
                           .ToList();
             result = ChangeStorageFull(result);
             if (searchModel.StorageFull.Any())
@@ -375,7 +374,9 @@ namespace Infrastructure.SuperAdminRepositories
             }
             if (searchModel.StatusTenant != 0)
             {
-                query = query.Where(item => item.StatusTenant == searchModel.StatusTenant);
+                var statusTenantDic = ConfigConstant.StatusTenantDisplayDictionnary();
+                var statusTenantQuery = statusTenantDic.Where(item => item.Value == searchModel.StatusTenant).Select(item => item.Key).Distinct().ToList();
+                query = query.Where(item => statusTenantQuery.Contains(item.Status));
             }
             return query;
         }
@@ -451,10 +452,10 @@ namespace Infrastructure.SuperAdminRepositories
                             case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
-                                    querySortList = querySortList.OrderByDescending(item => item.StatusTenant);
+                                    querySortList = querySortList.OrderByDescending(item => item.Status);
                                     continue;
                                 }
-                                querySortList = querySortList.ThenByDescending(item => item.StatusTenant);
+                                querySortList = querySortList.ThenByDescending(item => item.Status);
                                 break;
                         }
                         break;
@@ -807,8 +808,7 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.CreateDate,
                        tenant.RdsIdentifier,
                        tenant.UserConnect,
-                       tenant.PasswordConnect,
-                       tenant.StatusTenant);
+                       tenant.PasswordConnect);
         }
         #endregion
     }

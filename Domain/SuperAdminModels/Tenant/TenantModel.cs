@@ -1,4 +1,6 @@
-﻿namespace Domain.SuperAdminModels.Tenant
+﻿using AWSSDK.Constants;
+
+namespace Domain.SuperAdminModels.Tenant
 {
     public class TenantModel
     {
@@ -113,19 +115,8 @@
         {
             get
             {
-                return StatusTenantDictionary[Status];
+                return (byte)(ConfigConstant.StatusTenantDisplayDictionnary().ContainsKey(Status) ? ConfigConstant.StatusTenantDisplayDictionnary()[Status] : 0);
             }
         }
-
-        private static Dictionary<byte, byte> StatusTenantDictionary = new()
-        {
-            {2, 1}, {3, 1}, {5,1}, {6,1}, {8,1}, //pending
-            {7, 2}, {10, 2}, {13,2}, {16,2}, //failded
-            {1, 3}, {9,3}, //running
-            //stopping
-            {14, 5}, //stopped
-            {4, 6}, //sutting-down
-            {12, 7}, //teminated
-        };
     }
 }
