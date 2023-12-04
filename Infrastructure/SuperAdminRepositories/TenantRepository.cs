@@ -281,7 +281,9 @@ namespace Infrastructure.SuperAdminRepositories
                                                             tenant.ScheduleDate,
                                                             tenant.ScheduleTime,
                                                             tenant.CreateDate,
-                                                            tenant.RdsIdentifier))
+                                                            tenant.RdsIdentifier,
+                                                            tenant.UserConnect,
+                                                            tenant.PasswordConnect))
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
@@ -304,7 +306,9 @@ namespace Infrastructure.SuperAdminRepositories
                                             tenant.ScheduleDate,
                                             tenant.ScheduleTime,
                                             tenant.CreateDate,
-                                            tenant.RdsIdentifier))
+                                            tenant.RdsIdentifier,
+                                            tenant.UserConnect,
+                                            tenant.PasswordConnect))
                           .ToList();
             result = ChangeStorageFull(result);
             if (searchModel.StorageFull != StorageFullEnum.Empty)
@@ -711,8 +715,6 @@ namespace Infrastructure.SuperAdminRepositories
             double storageFull = 0;
             double storageInDB = 0;
             int port = 5432;
-            string id = "postgres";
-            string password = "Emr!23456789";
             StringBuilder connectionStringBuilder = new();
             connectionStringBuilder.Append("host=");
             connectionStringBuilder.Append(tenant.EndPointDb);
@@ -721,9 +723,9 @@ namespace Infrastructure.SuperAdminRepositories
             connectionStringBuilder.Append(";database=");
             connectionStringBuilder.Append(tenant.Db);
             connectionStringBuilder.Append(";user id=");
-            connectionStringBuilder.Append(id);
+            connectionStringBuilder.Append(tenant.UserConnect);
             connectionStringBuilder.Append(";password=");
-            connectionStringBuilder.Append(password);
+            connectionStringBuilder.Append(tenant.PasswordConnect);
             string connectionString = connectionStringBuilder.ToString();
             string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
             if (isClearCache)
@@ -799,7 +801,9 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.ScheduleDate,
                        tenant.ScheduleTime,
                        tenant.CreateDate,
-                       tenant.RdsIdentifier);
+                       tenant.RdsIdentifier,
+                       tenant.UserConnect,
+                       tenant.PasswordConnect);
         }
         #endregion
     }
