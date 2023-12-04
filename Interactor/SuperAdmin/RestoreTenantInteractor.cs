@@ -47,7 +47,6 @@ namespace Interactor.SuperAdmin
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
-
                 if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
@@ -89,13 +88,14 @@ namespace Interactor.SuperAdmin
 
                             // Update data enpoint
                             var updateEndPoint = _tenantRepository.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
-                            if (updateEndPoint)
+                            if (!updateEndPoint)
                             {
                                 throw new Exception("Update end sub domain failed");
                             }
 
                             // delete old RDS
-
+                            await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
+                            await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier);
                             // Finished restore
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
                             var messenge = $"{tenant.EndSubDomain} is restore successfully.";
@@ -109,11 +109,23 @@ namespace Interactor.SuperAdmin
                         else
                         {
                             // dump data,
-                            await PostgreSqlDump(@$"{pathFileDumpRestore}\{tenant.Db}.sql", endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
+                            var pathFileDump = @$"{pathFileDumpRestore}\{tenant.Db}.sql";
+                            await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
+
+                            // check valid file sql dump
+                            long length = new System.IO.FileInfo(pathFileDump).Length;
+                            if (!System.IO.File.Exists(pathFileDump) || length <= 0)
+                            {
+                                throw new Exception("Invalid file sql dump");
+                            }
 
                             // restore db 
-                            // delete old db
+                            await PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
 
+                            // delete Tmp db
+                            await RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier);
+                            await RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier);
+                            // Finished restore
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
                             var messenge = $"{tenant.EndSubDomain} is restore successfully.";
                             var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
@@ -146,8 +158,6 @@ namespace Interactor.SuperAdmin
 
         private async Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
         {
-            //host = "localhost";
-            //port = 22;
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
 
             string dumpCommand =
@@ -160,10 +170,8 @@ namespace Interactor.SuperAdmin
             await Execute(batchContent);
         }
 
-        private async Task PostgreSqlRestore(string pathFileDump, string host, int port, string database, string user, string password)
+        private async Task PostgreSqlExcuteFileDump(string pathFileDump, string host, int port, string database, string user, string password)
         {
-            host = "localhost";
-            port = 22;
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
 
             string dumpCommand =
@@ -171,7 +179,7 @@ namespace Interactor.SuperAdmin
                  $"pg_restore" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
 
             string batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
-           // if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
+            // if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
 
             await Execute(batchContent);
         }
@@ -274,8 +282,8 @@ namespace Interactor.SuperAdmin
                             {
                                 _tenantRepository.UpdateStatusTenant(tenantId, statusTenant);
                             }
+                            Console.WriteLine($"DB Instance status: {checkStatus}");
                         }
-                        Console.WriteLine($"DB Instance status: {checkStatus}");
 
                         // Check if the DB instance is in the "available" state
                         if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
