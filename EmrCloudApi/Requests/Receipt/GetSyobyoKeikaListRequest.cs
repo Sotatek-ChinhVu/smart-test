@@ -7,4 +7,6 @@ public class GetSyobyoKeikaListRequest
     public long PtId { get; set; }
 
     public int HokenId { get; set; }
+
+    public int HokenKbn { get; set; }
 }
