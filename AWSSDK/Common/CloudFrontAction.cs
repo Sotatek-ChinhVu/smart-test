@@ -94,7 +94,7 @@ namespace AWSSDK.Common
                                 Quantity = 0
                             },
                             FieldLevelEncryptionId = "",
-                            CachePolicyId = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                            CachePolicyId = ConfigConstant.ManagedCachingOptimized,
                             OriginRequestPolicyId = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
                         },
                         CacheBehaviors = new CacheBehaviors
@@ -159,7 +159,7 @@ namespace AWSSDK.Common
                 {
                     Id = id
                 });
-
+                response.DistributionConfig.DefaultCacheBehavior.CachePolicyId = "Managed-CachingOptimized";
                 var distInfo = new Dictionary<string, object>
             {
                 { "ETag", response.ETag },
