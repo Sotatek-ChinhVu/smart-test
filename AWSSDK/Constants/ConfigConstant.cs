@@ -24,6 +24,7 @@ namespace AWSSDK.Constants
         public static string RdsSnapshotBackupTermiante = "Bak-Termiante";
         public static string RdsSnapshotUpgrade = "Upgrade";
         public static string RdsSnapshotBackupRestore = "Bak-Restore";
+        public static int PgPostDefault = 5432;
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>

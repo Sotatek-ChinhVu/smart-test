@@ -12,6 +12,7 @@ namespace UseCase.SuperAdmin.RestoreTenant
         InvalidTenantId = 2,
         Failed = 3,
         TenantDoesNotExist = 4,
-        SnapshotNotAvailable = 5
+        SnapshotNotAvailable = 5,
+        PathFileDumpRestoreNotAvailable = 6
     }
 }
