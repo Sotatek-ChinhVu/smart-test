@@ -353,7 +353,7 @@ namespace Interactor.SuperAdmin
                                     }
                                 }
                             }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                            Console.WriteLine("SQL scripts table executed successfully.");
                         }
                     }
                 }
@@ -402,7 +402,7 @@ namespace Interactor.SuperAdmin
                                     }
                                 }
                             }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                            Console.WriteLine("SQL scripts data master executed successfully.");
                         }
                     }
                     else
@@ -448,7 +448,7 @@ namespace Interactor.SuperAdmin
                                     }
                                 }
                             }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                            Console.WriteLine("SQL scripts function executed successfully.");
                         }
                     }
                     else
