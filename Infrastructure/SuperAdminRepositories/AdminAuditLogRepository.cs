@@ -65,6 +65,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
         }
         if (!string.IsNullOrEmpty(requestModel.LogType))
         {
+            // if logType is equal "OK", query items match "START" or "END"
             string logType = requestModel.LogType;
             if (logType.ToUpper() == "OK")
             {
