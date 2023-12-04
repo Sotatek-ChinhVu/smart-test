@@ -21,9 +21,35 @@ namespace Interactor.CalculateService
 
         bool RunCalculateOne(CalculateOneRequest inputData);
 
-        bool ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken);
+        /// <summary>
+        /// function calls ReceFutanCalculateMain to other functions
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <returns></returns>
+        bool ReceFutanCalculateMain(ReceCalculateRequest inputData);
 
-        bool RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken);
+        /// <summary>
+        /// function calls ReceFutanCalculateMain only to calculate runs in month Rece
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<bool> ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// function calls RunCalculateMonth to other functions
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <returns></returns>
+        bool RunCalculateMonth(CalculateMonthRequest inputData);
+
+        /// <summary>
+        /// function calls RunCalculateMonth only to calculate runs in month Rece
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<bool> RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken);
 
         SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData);
 

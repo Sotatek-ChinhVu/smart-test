@@ -270,13 +270,16 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 要求がある限りループ
             while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, CalcKeyID))
             {
-                //if (AllowSendProgress)
-                //{
-                //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                //    IsStopCalc = statusCallBack.Result.Result;
-                //}
+                // check if the progress is canceled
+                if (AllowSendProgress)
+                {
+                    var statusCallBack = _messenger.SendAsync(new StopCalcStatus());
+                    IsStopCalc = statusCallBack.Result.Result;
+                }
                 if (IsStopCalc)
                 {
+                    // if progress is canceled, send a socket to cloud api
+                    SendMessager(new RecalculationStatus(false, CalculateStatusConstant.Invalid, AllCalcCount, successCount, "Progress Cancelled!", UniqueKey));
                     break;
                 }
 

@@ -55,6 +55,14 @@ public class RecalculationInteractor : IRecalculationInputPort
                 }
             }
 
+            // Check is stop progerss
+            var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+            isStopCalc = statusCallBack.Result.Result;
+            if (isStopCalc)
+            {
+                success = false;
+            }
+
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
@@ -68,6 +76,14 @@ public class RecalculationInteractor : IRecalculationInputPort
                         break;
                     }
                 }
+            }
+
+            // Check is stop progerss
+            statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+            isStopCalc = statusCallBack.Result.Result;
+            if (isStopCalc)
+            {
+                success = false;
             }
 
             // check error in month

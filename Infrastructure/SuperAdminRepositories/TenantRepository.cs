@@ -200,22 +200,22 @@ namespace Infrastructure.SuperAdminRepositories
                             if (databaseSize == null) continue;
                             if (tenant.SizeType == 1) //MB
                             {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect);
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect, tenant.Db);
                             }
                             else if (tenant.SizeType == 2) //GB
                             {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect);
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect, tenant.Db);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception: {ex.Message}");
+                    Console.WriteLine($"Exception Schedule Task: {ex.Message}");
                 }
             }
         }
-        private void GrantOrRevokeExecute(int size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role)
+        private void GrantOrRevokeExecute(int size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role, string dbName)
         {
             var sizeDatabase = Convert.ToInt64(databaseSize) / (1024 * 1024); //MB
             if (sizeType == 2)
@@ -229,7 +229,7 @@ namespace Infrastructure.SuperAdminRepositories
                     grantCommand.Connection = connection;
                     grantCommand.CommandText = $"GRANT INSERT ON ALL TABLES IN SCHEMA public TO {role}";
                     grantCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task: GRANT INSERT DATABASE SUCCESS");
+                    Console.WriteLine($"Schedule Task: GRANT INSERT DATABASE {dbName} SUCCESS");
                 }
             }
             else
@@ -239,7 +239,7 @@ namespace Infrastructure.SuperAdminRepositories
                     revokeCommand.Connection = connection;
                     revokeCommand.CommandText = $"REVOKE INSERT ON ALL TABLES IN SCHEMA public FROM {role}";
                     revokeCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task: REVOKE INSERT DATABASE SUCCESS");
+                    Console.WriteLine($"Schedule Task: REVOKE INSERT DATABASE {dbName} SUCCESS");
                 }
             }
         }
@@ -281,7 +281,9 @@ namespace Infrastructure.SuperAdminRepositories
                                                             tenant.ScheduleDate,
                                                             tenant.ScheduleTime,
                                                             tenant.CreateDate,
-                                                            tenant.RdsIdentifier))
+                                                            tenant.RdsIdentifier,
+                                                            tenant.UserConnect,
+                                                            tenant.PasswordConnect))
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
@@ -304,7 +306,9 @@ namespace Infrastructure.SuperAdminRepositories
                                             tenant.ScheduleDate,
                                             tenant.ScheduleTime,
                                             tenant.CreateDate,
-                                            tenant.RdsIdentifier))
+                                            tenant.RdsIdentifier,
+                                            tenant.UserConnect,
+                                            tenant.PasswordConnect))
                           .ToList();
             result = ChangeStorageFull(result);
             if (searchModel.StorageFull != StorageFullEnum.Empty)
@@ -711,8 +715,6 @@ namespace Infrastructure.SuperAdminRepositories
             double storageFull = 0;
             double storageInDB = 0;
             int port = 5432;
-            string id = "postgres";
-            string password = "Emr!23456789";
             StringBuilder connectionStringBuilder = new();
             connectionStringBuilder.Append("host=");
             connectionStringBuilder.Append(tenant.EndPointDb);
@@ -721,9 +723,9 @@ namespace Infrastructure.SuperAdminRepositories
             connectionStringBuilder.Append(";database=");
             connectionStringBuilder.Append(tenant.Db);
             connectionStringBuilder.Append(";user id=");
-            connectionStringBuilder.Append(id);
+            connectionStringBuilder.Append(tenant.UserConnect);
             connectionStringBuilder.Append(";password=");
-            connectionStringBuilder.Append(password);
+            connectionStringBuilder.Append(tenant.PasswordConnect);
             string connectionString = connectionStringBuilder.ToString();
             string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
             if (isClearCache)
@@ -799,7 +801,9 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.ScheduleDate,
                        tenant.ScheduleTime,
                        tenant.CreateDate,
-                       tenant.RdsIdentifier);
+                       tenant.RdsIdentifier,
+                       tenant.UserConnect,
+                       tenant.PasswordConnect);
         }
         #endregion
     }

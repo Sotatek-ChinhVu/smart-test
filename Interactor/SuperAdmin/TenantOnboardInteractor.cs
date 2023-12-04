@@ -318,15 +318,15 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error create data: {ex.Message}");
-                throw new Exception($"Error create Data.  {ex.Message}");
+                throw new Exception($"{ex.Message}");
             }
         }
         private void _CreateTable(NpgsqlCommand command, List<string> listMigration, int tenantId)
         {
             try
             {
-                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Table");
+                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
+                string folderPath = Path.Combine(templatePath, "Table");
                 if (Directory.Exists(folderPath))
                 {
                     var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
@@ -353,7 +353,7 @@ namespace Interactor.SuperAdmin
                                     }
                                 }
                             }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                            Console.WriteLine("SQL scripts table executed successfully.");
                         }
                     }
                 }
@@ -374,7 +374,8 @@ namespace Interactor.SuperAdmin
         {
             try
             {
-                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "DataMaster");
+                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
+                string folderPath = Path.Combine(templatePath, "DataMaster");
                 if (Directory.Exists(folderPath))
                 {
                     var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
@@ -401,7 +402,7 @@ namespace Interactor.SuperAdmin
                                     }
                                 }
                             }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                            Console.WriteLine("SQL scripts data master executed successfully.");
                         }
                     }
                     else
@@ -421,7 +422,8 @@ namespace Interactor.SuperAdmin
         {
             try
             {
-                var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Function");
+                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
+                string folderPath = Path.Combine(templatePath, "Function");
                 if (Directory.Exists(folderPath))
                 {
                     var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
@@ -446,7 +448,7 @@ namespace Interactor.SuperAdmin
                                     }
                                 }
                             }
-                            Console.WriteLine("SQL scripts trigger executed successfully.");
+                            Console.WriteLine("SQL scripts function executed successfully.");
                         }
                     }
                     else
@@ -466,10 +468,11 @@ namespace Interactor.SuperAdmin
         {
             try
             {
-                var folderFunctionPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin\\Template", "Trigger");
-                if (Directory.Exists(folderFunctionPath))
+                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
+                string folderPath = Path.Combine(templatePath, "Trigger");
+                if (Directory.Exists(folderPath))
                 {
-                    var sqlFiles = Directory.GetFiles(folderFunctionPath, "*.sql");
+                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
                     if (sqlFiles.Length > 0)
                     {
                         var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
@@ -479,7 +482,7 @@ namespace Interactor.SuperAdmin
                         {
                             foreach (var fileName in uniqueFileNames)
                             {
-                                var filePath = Path.Combine(folderFunctionPath, $"{fileName}.sql");
+                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
                                 if (File.Exists(filePath))
                                 {
                                     var sqlScript = File.ReadAllText(filePath);
