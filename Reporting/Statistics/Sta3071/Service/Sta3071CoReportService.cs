@@ -245,7 +245,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
                     }
                     else
                     {
-                        var value = typeof(CoSta3071PrintData).GetProperty(colName).GetValue(printData);
+                        var value = typeof(CoSta3071PrintData).GetProperty(colName)?.GetValue(printData);
                         AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
                     }
 
@@ -346,7 +346,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
             if (repKbn > CoRaiinInfModel.PtGrtStartIdx)
             {
                 //患者グループ
-                string ptGrpCdName = wrkData.PtGrps?.Find(p => p.GrpId == (repKbn - CoRaiinInfModel.PtGrtStartIdx) && p.GrpCode == kbnVal).GrpCodeName;
+                string ptGrpCdName = wrkData.PtGrps?.Find(p => p.GrpId == (repKbn - CoRaiinInfModel.PtGrtStartIdx) && p.GrpCode == kbnVal).GrpCodeName ?? string.Empty;
                 retA1Name = kbnVal;
                 retA2Name = ptGrpCdName;
                 retBName = string.Format("{0}.{1}", kbnVal, ptGrpCdName);
@@ -431,10 +431,10 @@ public class Sta3071CoReportService : ISta3071CoReportService
         List<MidasiTitle> GetRecTitles()
         {
             List<MidasiTitle> titles = new List<MidasiTitle>();
-            var hVals = raiinInfs.GroupBy(r => r.ReportKbnHValue).OrderBy(r => r.Key).Select(r => r.Key).ToList();
+            var hVals = raiinInfs?.GroupBy(r => r.ReportKbnHValue).OrderBy(r => r.Key).Select(r => r.Key).ToList() ?? new();
             foreach (var hVal in hVals)
             {
-                var hData = raiinInfs.Where(s => s.ReportKbnHValue == hVal).FirstOrDefault();
+                var hData = raiinInfs?.FirstOrDefault(s => s.ReportKbnHValue == hVal) ?? new();
                 titles.Add(new MidasiTitle
                 {
                     TitleValue = hVal,
@@ -442,7 +442,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
                     TitleA2Name = GetTitle(hData, 1, 1),
                     TitleBName = GetTitle(hData, 1, 2)
                 });
-            };
+            }
 
             if (outputFileType != CoFileType.Csv || coFileType == CoFileType.Csv || isPutTotalRow)
             {
@@ -468,7 +468,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
                 if (i == 0 || outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                 {
                     //行タイトル
-                    printData.RowTitle = isTotal ? "合計" : GetTitle(syukeiData.FirstOrDefault(), 0, 2);
+                    printData.RowTitle = isTotal ? "合計" : GetTitle(syukeiData.FirstOrDefault() ?? new(), 0, 2);
                 }
                 printData.SyosaiMidasi = syosaiMidasi[i];
                 #endregion
@@ -534,15 +534,15 @@ public class Sta3071CoReportService : ISta3071CoReportService
             colTitles = GetRecTitles();
 
             //縦に集計
-            var vVals = raiinInfs.GroupBy(r => r.ReportKbnVValue).OrderBy(r => r.Key).Select(r => r.Key).ToList();
+            var vVals = raiinInfs?.GroupBy(r => r.ReportKbnVValue).OrderBy(r => r.Key).Select(r => r.Key).ToList() ?? new();
             foreach (var vVal in vVals)
             {
-                var vData = raiinInfs.Where(s => s.ReportKbnVValue == vVal).ToList();
+                var vData = raiinInfs?.Where(s => s.ReportKbnVValue == vVal).ToList() ?? new();
                 SetPrintData(vData);
             }
 
             //縦の合計 
-            SetPrintData(raiinInfs, true);
+            SetPrintData(raiinInfs ?? new(), true);
         }
 
         //データ取得
@@ -608,7 +608,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
         if (!GetData(hpId)) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
         var csvDatas = printDatas.Where(p => p.RowType == RowType.Data || (isPutTotalRow && p.RowType == RowType.Total)).ToList();
-        if (csvDatas.Count == 0) new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
+        if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
         //出力フィールド
         List<string> wrkTitles = new List<string> { "見出し", "初再診見出し" }; //列タイトルは、見出し分を2列ずらす
@@ -623,7 +623,6 @@ public class Sta3071CoReportService : ISta3071CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -635,9 +634,9 @@ public class Sta3071CoReportService : ISta3071CoReportService
         {
             List<string> colDatas = new List<string>();
 
-            foreach (var column in putColumns)
+            foreach (var colName in putColumns.Select(item => item.ColName).ToList())
             {
-                if (column.ColName == "MainVals")
+                if (colName == "MainVals")
                 {
                     foreach (var val in csvData.MainVals)
                     {
@@ -646,7 +645,7 @@ public class Sta3071CoReportService : ISta3071CoReportService
                 }
                 else
                 {
-                    var value = typeof(CoSta3071PrintData).GetProperty(column.ColName).GetValue(csvData);
+                    var value = typeof(CoSta3071PrintData).GetProperty(colName)?.GetValue(csvData);
                     colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
                 }
 

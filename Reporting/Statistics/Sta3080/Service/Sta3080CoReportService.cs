@@ -45,7 +45,6 @@ public class Sta3080CoReportService : ISta3080CoReportService
 
     #region Private properties
     private CoHpInfModel hpInf;
-    private List<string> headerR;
     private List<CoSeisinDayCareInf> seisinDayCareInfs;
     private List<CoSta3080PrintData> printDatas;
     private CoFileType? coFileType;
@@ -80,7 +79,6 @@ public class Sta3080CoReportService : ISta3080CoReportService
         printConf = new();
         seisinDayCareInfs = new();
         printDatas = new();
-        headerR = new();
         rowCountFieldName = string.Empty;
     }
 
@@ -216,7 +214,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                 foreach (var colName in existsCols)
                 {
 
-                    var value = typeof(CoSta3080PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta3080PrintData).GetProperty(colName)?.GetValue(printData);
                     AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                     if (baseListName == string.Empty && objectRseList.Contains(colName))
@@ -261,7 +259,6 @@ public class Sta3080CoReportService : ISta3080CoReportService
             printDatas = new List<CoSta3080PrintData>();
             CoSeisinDayCareInf? preSeisinDayCareInf = null;
 
-            headerR = new List<string>();
             int rowCount = 0;
             int pageCount = 1;
             int ptTotalOdrCnt = 0;
@@ -391,7 +388,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                         new CoSta3080PrintData(RowType.Total)
                         {
                             TotalKbn = "◆合計",
-                            TotalCaption = string.Format("月14回以上精神科デイ・ケア等を実施する患者の割合")
+                            TotalCaption = "月14回以上精神科デイ・ケア等を実施する患者の割合"
                         }
                     );
 
@@ -453,7 +450,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                     printDatas.Add(
                         new CoSta3080PrintData(RowType.Total)
                         {
-                            TotalCaption = string.Format("精神科デイ・ケア等の平均実施期間")
+                            TotalCaption = "精神科デイ・ケア等の平均実施期間"
                         }
                     );
 
@@ -742,7 +739,6 @@ public class Sta3080CoReportService : ISta3080CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -757,7 +753,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
             foreach (var column in putColumns)
             {
 
-                var value = typeof(CoSta3080PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                var value = typeof(CoSta3080PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
                 colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
             }
 

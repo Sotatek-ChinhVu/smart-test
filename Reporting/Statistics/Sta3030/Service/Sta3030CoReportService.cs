@@ -376,9 +376,8 @@ public class Sta3030CoReportService : ISta3030CoReportService
                 int omit = 0;
                 if ((outputFileType != CoFileType.Csv && coFileType != CoFileType.Csv) && (rowCount > 0))
                 {
-                    omit = (ptNumPgBreak || new int[] { 1, 4 }.Contains(printConf.SortOrder1)) && (ptByomeiInf.PtNum == prePtNum) ? 1
-                        : (!ptNumPgBreak && printConf.SortOrder1 == 2) && (ptByomeiInf.Byomei == preByomei) ? 2
-                        : 0;
+                    var conditionOmit2 = (!ptNumPgBreak && printConf.SortOrder1 == 2) && (ptByomeiInf.Byomei == preByomei) ? 2 : 0;
+                    omit = (ptNumPgBreak || new int[] { 1, 4 }.Contains(printConf.SortOrder1)) && (ptByomeiInf.PtNum == prePtNum) ? 1 : conditionOmit2;
                 }
 
                 AddMeisaiRecord(ptByomeiInf, omit);
