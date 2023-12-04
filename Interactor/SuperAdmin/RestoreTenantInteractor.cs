@@ -115,7 +115,7 @@ namespace Interactor.SuperAdmin
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
                             {
-                                throw new Exception("File sql dump doesn't exits");
+                                throw new Exception("File sql dump doesn't exist");
                             }
 
                             long length = new System.IO.FileInfo(pathFileDump).Length;
