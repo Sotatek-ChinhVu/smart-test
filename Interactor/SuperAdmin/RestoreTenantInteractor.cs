@@ -113,6 +113,11 @@ namespace Interactor.SuperAdmin
                             await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
 
                             // check valid file sql dump
+                            long length = new System.IO.FileInfo(pathFileDump).Length;
+                            if (!System.IO.File.Exists(pathFileDump) || length <= 0)
+                            {
+                                throw new Exception("Invalid file sql dump");
+                            }
 
                             // restore db 
                             await PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
