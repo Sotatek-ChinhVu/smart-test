@@ -15,7 +15,7 @@
             PasswordConnect = string.Empty;
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect, byte statusTenant)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -36,7 +36,6 @@
             RdsIdentifier = rdsIdentifier;
             UserConnect = userConnect;
             PasswordConnect = passwordConnect;
-            StatusTenant = statusTenant;
         }
 
         public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
@@ -110,6 +109,23 @@
 
         public string PasswordConnect { get; private set; }
 
-        public byte StatusTenant { get; private set; }
+        public byte StatusTenant
+        {
+            get
+            {
+                return StatusTenantDictionary[Status];
+            }
+        }
+
+        private static Dictionary<byte, byte> StatusTenantDictionary = new()
+        {
+            {2, 1}, {3, 1}, {5,1}, {6,1}, {8,1}, //pending
+            {7, 2}, {10, 2}, {13,2}, {16,2}, //failded
+            {1, 3}, {9,3}, //running
+            //stopping
+            {14, 5}, //stopped
+            {4, 6}, //sutting-down
+            {12, 7}, //teminated
+        };
     }
 }
