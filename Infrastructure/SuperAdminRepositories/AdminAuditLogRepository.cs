@@ -65,8 +65,16 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
         }
         if (!string.IsNullOrEmpty(requestModel.LogType))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.LogType)
-                         .Matches(requestModel.LogType));
+            string logType = requestModel.LogType;
+            if (logType.ToUpper() == "OK")
+            {
+                query = query.Where(item => item.LogType == "START" || item.LogType == "END");
+            }
+            else
+            {
+                query = query.Where(p => EF.Functions.ToTsVector("english", p.LogType)
+                             .Matches(logType));
+            }
         }
         if (!string.IsNullOrEmpty(requestModel.LoginKey))
         {
