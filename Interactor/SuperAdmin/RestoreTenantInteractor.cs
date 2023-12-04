@@ -111,7 +111,7 @@ namespace Interactor.SuperAdmin
                             // dump data,
                             var pathFileDump = @$"{pathFileDumpRestore}\{tenant.Db}.sql";
                             await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
-                            
+
                             // check valid file sql dump
 
                             // restore db 
@@ -277,8 +277,8 @@ namespace Interactor.SuperAdmin
                             {
                                 _tenantRepository.UpdateStatusTenant(tenantId, statusTenant);
                             }
+                            Console.WriteLine($"DB Instance status: {checkStatus}");
                         }
-                        Console.WriteLine($"DB Instance status: {checkStatus}");
 
                         // Check if the DB instance is in the "available" state
                         if (status.Equals("available", StringComparison.OrdinalIgnoreCase))
