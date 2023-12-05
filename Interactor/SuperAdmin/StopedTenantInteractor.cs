@@ -37,7 +37,7 @@ namespace Interactor.SuperAdmin
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
 
-                if (tenant == null || tenant.TenantId <=0)
+                if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new StopedTenantOutputData(false, StopedTenantStatus.TenantDoesNotExist);
                 }
@@ -47,7 +47,7 @@ namespace Interactor.SuperAdmin
                     return new StopedTenantOutputData(false, StopedTenantStatus.TenantNotAvailable);
                 }
 
-
+                _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["stopping"]);
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>
                 {
