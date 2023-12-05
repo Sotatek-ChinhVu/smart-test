@@ -78,14 +78,16 @@ namespace Infrastructure.CommonDB
 
         public int GetTenantId()
         {
-            string key = "cache_tenantId_" + GetDomainName();
+            // get domain then get tenantId from Tenant table
+            string domain = GetDomainName();
+            string key = "cache_tenantId_" + domain;
             int tenantId = 0;
             if (_cache.KeyExists(key))
             {
                 return _cache.StringGet(key).AsInteger();
             }
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
-            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.SubDomain == key)?.TenantId ?? 0;
+            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.SubDomain == domain)?.TenantId ?? 0;
             _cache.StringSet(key, tenantId.ToString());
             return tenantId;
         }
