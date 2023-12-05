@@ -269,10 +269,13 @@ namespace Interactor.SuperAdmin
             {
                 string host = CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
                 if (!string.IsNullOrEmpty(host))
-                {
+                {                    
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
                     CreateDatas(host, dbName, dataMigration, tenantId, model);
+                    
+                    // create folder S3
+                    _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
                     _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
@@ -280,7 +283,7 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                var message = $"{tenantUrl} is created failed. Add data Error: {ex.Message}";
+                var message = $"{tenantUrl} is created failed: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
             }

@@ -1,5 +1,8 @@
+using Amazon.S3;
 using AWSSDK.Common;
+using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data.Common;
 
@@ -7,7 +10,11 @@ namespace AWSSDK.Services
 {
     public class AwsSdkService : IAwsSdkService
     {
-        public AwsSdkService() { }
+        private readonly IConfiguration _configuration;
+        public AwsSdkService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public async Task<Dictionary<string, Dictionary<string, string>>> SummaryCard()
         {
             return await CloudWatchAction.GetSummaryCardAsync();
@@ -109,6 +116,27 @@ namespace AWSSDK.Services
                 Console.WriteLine($"Error: {ex.Message}");
                 return false;
             }
+        }
+
+        public async Task CreateFolderAsync(string bucketName, string folderName)
+        {
+            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
+            await S3Action.CreateFolderAsync(sourceS3Client, bucketName, folderName);
+        }
+
+        public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
+        {
+            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
+            await S3Action.DeleteObjectsInFolderAsync(sourceS3Client, bucketName, folderKey);
+        }
+
+        private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
         }
     }
 }
