@@ -202,6 +202,33 @@ namespace Interactor.SuperAdmin
 
                     System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
 
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        // Grant execute permissions using chmod
+                        ProcessStartInfo chmodInfo = new ProcessStartInfo
+                        {
+                            FileName = "chmod",
+                            Arguments = $"+x {batFilePath}",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+
+                        using (System.Diagnostics.Process chmodProc = System.Diagnostics.Process.Start(chmodInfo))
+                        {
+                            chmodProc.WaitForExit();
+
+                            if (chmodProc.ExitCode != 0)
+                            {
+                                // Handle chmod error, if any
+                                string errorOutput = chmodProc.StandardError.ReadToEnd();
+                                Console.WriteLine($"chmod error: {errorOutput}");
+                                throw new Exception($"Failed to grant execute permissions to the script: {errorOutput}");
+                            }
+                        }
+                    }
+
                     ProcessStartInfo info = ProcessInfoByOS(batFilePath);
 
                     using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
