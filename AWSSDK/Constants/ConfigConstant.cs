@@ -28,8 +28,6 @@ namespace AWSSDK.Constants
         public static string ManagedCachingOptimized = "658327ea-f89d-4fab-a63d-7e88639e58f6";
         public static int PgPostDefault = 5432;
 
-        public static string SourceAccessKey = "AKIAXSCVMXDLRLYZGZ6Q";
-        public static string SourceSecretKey = "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";
         public static string DestinationBucketName = "phuc-test-s3";
         public static RegionEndpoint RegionDestination = RegionEndpoint.GetBySystemName("ap-northeast-1");
         public static Dictionary<string, byte> StatusTenantDictionary()
