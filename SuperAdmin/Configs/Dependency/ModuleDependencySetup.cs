@@ -30,6 +30,8 @@ using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
+using UseCase.UserToken.GetInfoRefresh;
+using UseCase.UserToken.SiginRefresh;
 using UseCase.SystemStartDbs;
 
 namespace SuperAdmin.Configs.Dependency
@@ -101,6 +103,8 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenantDetailInputData, GetTenantDetailInteractor>();
             busBuilder.RegisterUseCase<GetNotificationInputData, GetNotificationInteractor>();
             busBuilder.RegisterUseCase<UpdateNotificationInputData, UpdateNotificationInteractor>();
+            busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
+            busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
