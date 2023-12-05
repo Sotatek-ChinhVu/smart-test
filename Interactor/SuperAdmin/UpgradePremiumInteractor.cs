@@ -17,14 +17,12 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        private readonly IWebSocketService _webSocketService;
         private readonly INotificationRepository _notificationRepository;
         private readonly ITenantRepository _tenantRepositoryRunTask; 
         private readonly INotificationRepository _notificationRepositoryRunTask;
         public UpgradePremiumInteractor(
             ITenantRepository tenantRepository,
             IAwsSdkService awsSdkService,
-            IWebSocketService webSocketService, 
             INotificationRepository notificationRepository,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask
@@ -32,7 +30,6 @@ namespace Interactor.SuperAdmin
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
-            _webSocketService = webSocketService;
             _notificationRepository = notificationRepository;
             _tenantRepositoryRunTask = tenantRepositoryRunTask; 
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
@@ -42,6 +39,8 @@ namespace Interactor.SuperAdmin
         {
             try
             {
+                IWebSocketService _webSocketService;
+                _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 if (inputData.TenantId <= 0)
                 {
                     return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidTenantId);

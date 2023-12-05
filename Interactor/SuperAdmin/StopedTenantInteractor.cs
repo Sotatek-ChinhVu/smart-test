@@ -9,19 +9,16 @@ namespace Interactor.SuperAdmin
     public class StopedTenantInteractor : IStopedTenantInputPort
     {
         private readonly ITenantRepository _tenantRepository;
-        private readonly IWebSocketService _webSocketService;
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
 
         public StopedTenantInteractor(
             ITenantRepository tenantRepository,
-            IWebSocketService webSocketService,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask
             )
         {
             _tenantRepository = tenantRepository;
-            _webSocketService = webSocketService;
             _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
         }
@@ -30,6 +27,9 @@ namespace Interactor.SuperAdmin
         {
             try
             {
+                IWebSocketService _webSocketService;
+                _webSocketService = (IWebSocketService)inputData.WebSocketService;
+
                 if (inputData.TenantId <= 0)
                 {
                     return new StopedTenantOutputData(false, StopedTenantStatus.InvalidTenantId);

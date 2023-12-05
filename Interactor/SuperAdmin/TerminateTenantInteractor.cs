@@ -3,6 +3,7 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using Entity.SuperAdmin;
 using Interactor.Realtime;
 using UseCase.SuperAdmin.TerminateTenant;
 
@@ -12,7 +13,6 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        private readonly IWebSocketService _webSocketService;
         private readonly INotificationRepository _notificationRepository;
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
@@ -20,7 +20,6 @@ namespace Interactor.SuperAdmin
         public TerminateTenantInteractor(
             ITenantRepository tenantRepository,
             IAwsSdkService awsSdkService,
-            IWebSocketService webSocketService,
             INotificationRepository notificationRepository,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask
@@ -28,7 +27,6 @@ namespace Interactor.SuperAdmin
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
-            _webSocketService = webSocketService;
             _notificationRepository = notificationRepository;
             _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
@@ -37,6 +35,8 @@ namespace Interactor.SuperAdmin
         {
             try
             {
+                IWebSocketService _webSocketService;
+                _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 if (inputData.TenantId <= 0)
                 {
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
