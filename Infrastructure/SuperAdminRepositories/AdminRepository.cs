@@ -1,9 +1,7 @@
 ﻿using Domain.Models.AccountDue;
+using Domain.Models.UserToken;
 using Domain.SuperAdminModels.Admin;
 using Entity.SuperAdmin;
-using Entity.Tenant;
-using Helper.Common;
-using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -33,6 +31,51 @@ public class AdminRepository : SuperAdminRepositoryBase, IAdminRepository
                 admin.CreateDate,
                 admin.UpdateDate
             );
+    }
+
+
+    public bool SignInRefreshToken(int userId, string refreshToken, DateTime expirateToken)
+    {
+        TrackingDataContext.UserTokens.Add(new UserToken()
+        {
+            RefreshToken = refreshToken,
+            RefreshTokenExpiryTime = expirateToken,
+            UserId = userId
+        });
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew)
+    {
+        var instance = TrackingDataContext.UserTokens.FirstOrDefault(x => x.UserId == userId && x.RefreshToken.Equals(refreshToken));
+        if (instance is null)
+            return new UserTokenModel();
+
+        UserTokenModel info = new UserTokenModel(instance.UserId, instance.RefreshToken, instance.RefreshTokenExpiryTime, instance.RefreshTokenIsUsed);
+        var expiredToken = DateTime.UtcNow.AddHours(8);
+        if (!info.RefreshTokenIsValid)
+            return info;
+        else
+        {
+            instance.RefreshTokenIsUsed = true;
+            TrackingDataContext.UserTokens.Add(new UserToken()
+            {
+                RefreshToken = refreshTokenNew,
+                RefreshTokenExpiryTime = expiredToken,
+                UserId = userId
+            });
+
+            var refreshTokenExpireds = TrackingDataContext.UserTokens.Where(u => u.UserId == userId && u.RefreshTokenExpiryTime < DateTime.UtcNow);
+            if (refreshTokenExpireds != null)
+            {
+                TrackingDataContext.RemoveRange(refreshTokenExpireds);
+            }
+
+            if (TrackingDataContext.SaveChanges() > 0)
+                return new UserTokenModel(instance.UserId, refreshTokenNew, expiredToken, false);
+            else
+                return new UserTokenModel();
+        }
     }
 
     public void ReleaseResource()
