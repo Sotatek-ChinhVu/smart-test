@@ -51,6 +51,13 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             _extralData = new();
             _listTextData = new();
             _visibleFieldData = new();
+            hpInf = new();
+            hokensyaNos = new();
+            receInfs = new();
+            currentHokensyaNo = "";
+            printHokensyaNos = new();
+            hokensyaNames = new();
+            curReceInfs = new();
         }
         #endregion
 
@@ -192,7 +199,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                     //1枚目のみ記載する
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (rowNo)
                         {
                             //一般

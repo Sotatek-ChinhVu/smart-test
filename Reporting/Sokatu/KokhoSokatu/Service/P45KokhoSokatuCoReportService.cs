@@ -48,6 +48,10 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
+        curReceInfs = new();
     }
     #endregion
 
@@ -168,7 +172,7 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = curReceInfs.Where(r => r.IsNrAll).ToList(); break;

@@ -65,6 +65,16 @@ public class P24KoukiSeikyuCoReportService : IP24KoukiSeikyuCoReportService
         _extralData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        hokensyaNos = new();
+        kohiHoubetuMsts = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
+        tokuyohiReceInfs = new();
+        kaMsts = new();
     }
     #endregion
 
@@ -159,7 +169,7 @@ public class P24KoukiSeikyuCoReportService : IP24KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //国保
@@ -190,7 +200,7 @@ public class P24KoukiSeikyuCoReportService : IP24KoukiSeikyuCoReportService
             const int maxKohiRow = 5;
             int kohiIndex = (currentPage - 1) * maxKohiRow;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);

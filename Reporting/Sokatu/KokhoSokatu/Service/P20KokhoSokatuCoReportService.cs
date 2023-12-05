@@ -62,6 +62,12 @@ public class P20KokhoSokatuCoReportService : IP20KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kaMsts = new();
+        hokensyaNos = new();
+        curReceInfs = new();
     }
     #endregion
 

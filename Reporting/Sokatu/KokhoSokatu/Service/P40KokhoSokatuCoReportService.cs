@@ -55,6 +55,10 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
+        welfareInfs = new();
     }
     #endregion
 
@@ -144,7 +148,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = receInfs.Where(r => r.IsNrAll).ToList(); break;
@@ -211,7 +215,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
 
                     for (short colNo = 0; colNo <= 1; colNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (colNo)
                         {
                             case 0: wrkReces = receInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex] && r.IsNrAll).ToList(); break;

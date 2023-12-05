@@ -1,4 +1,5 @@
-﻿using Helper.Common;
+﻿using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Reporting.CommonMasters.Constants;
@@ -65,6 +66,14 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        hokensyaNos = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
+        kohiHoubetuMsts = new();
     }
     #endregion
     public CommonReportingRequestModel GetP08KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
@@ -163,7 +172,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //国保
@@ -193,7 +202,7 @@ public class P08KoukiSeikyuCoReportService : IP08KoukiSeikyuCoReportService
             const int maxKohiRow = 3;
             int kohiIndex = (currentPage - 1) * maxKohiRow;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);

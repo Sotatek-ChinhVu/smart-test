@@ -59,6 +59,12 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kaMsts = new();
+        hokensyaNos = new();
+        curReceInfs = new();
     }
     #endregion
 
@@ -152,7 +158,7 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
                     const int maxRow = 7;
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (rowNo)
                         {
                             //国保
@@ -222,7 +228,7 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
 
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (rowNo)
                         {
                             //国保

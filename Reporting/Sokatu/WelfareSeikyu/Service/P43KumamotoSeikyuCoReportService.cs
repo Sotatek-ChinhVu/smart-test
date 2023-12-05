@@ -12,7 +12,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
     {
         #region Constant
         private const int myPrefNo = 43;
-        private List<string> kohiHoubetus;
+        private List<string> kohiHoubetus = new();
 
         private struct countData
         {
@@ -30,8 +30,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP43WelfareReceInfModel> receInfs;
-        private CoHpInfModel hpInf;
+        private List<CoP43WelfareReceInfModel> receInfs = new();
+        private CoHpInfModel hpInf = new();
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;

@@ -48,6 +48,11 @@ public class P13KokhoSeikyuCoReportService : IP13KokhoSeikyuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        hokensyaNos = new();
+        receInfs = new();
+        currentHokensyaNo = "";
+        printHokensyaNos = new();
     }
     #endregion
 
@@ -150,7 +155,7 @@ public class P13KokhoSeikyuCoReportService : IP13KokhoSeikyuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     //国保

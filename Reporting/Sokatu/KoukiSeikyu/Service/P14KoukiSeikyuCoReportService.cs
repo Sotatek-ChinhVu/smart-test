@@ -64,6 +64,15 @@ public class P14KoukiSeikyuCoReportService : IP14KoukiSeikyuCoReportService
         _extralData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        hokensyaNos = new();
+        kohiHoubetuMsts = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
+        tokuyohiReceInfs = new();
     }
     #endregion
 
@@ -161,7 +170,7 @@ public class P14KoukiSeikyuCoReportService : IP14KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiUpper).ToList(); break;

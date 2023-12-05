@@ -50,6 +50,12 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        hokensyaNos = new();
+        receInfs = new();
+        currentHokensyaNo = "";
+        printHokensyaNos = new();
+        curReceInfs = new();
     }
     #endregion
 
@@ -160,7 +166,7 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 if (printKokhoKbn == 0)
                 {
                     //国保一般

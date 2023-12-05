@@ -47,6 +47,10 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
         _listTextData = new();
         _extralData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
+        curReceInfs = new();
     }
     #endregion
 
@@ -100,7 +104,7 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
 
     private bool UpdateDrawForm()
     {
-        bool _hasNextPage = true;
+        hasNextPage = true;
 
         #region SubMethod
 
@@ -169,7 +173,7 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
                 for (short rowNo = 0; rowNo <= 1; rowNo++)
                 {
                     //合計
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = curReceInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;

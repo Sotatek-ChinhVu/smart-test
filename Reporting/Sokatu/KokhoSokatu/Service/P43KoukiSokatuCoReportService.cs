@@ -52,6 +52,11 @@ public class P43KoukiSokatuCoReportService : IP43KoukiSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kaMsts = new();
+        hokensyaNos = new();
     }
     #endregion
     
@@ -146,7 +151,7 @@ public class P43KoukiSokatuCoReportService : IP43KoukiSokatuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = receInfs.Where(r => r.IsKoukiIppan).ToList(); break;
@@ -196,7 +201,7 @@ public class P43KoukiSokatuCoReportService : IP43KoukiSokatuCoReportService
 
                     for (short colNo = 0; colNo < maxHokensyaCol; colNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (colNo)
                         {
                             case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiIppan).ToList(); break;
@@ -229,7 +234,7 @@ public class P43KoukiSokatuCoReportService : IP43KoukiSokatuCoReportService
             int kohiIndex = (currentPage - 1) * maxKohiRow * maxKohiCol;
 
             var curHeiyoReceInfs = receInfs;
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curHeiyoReceInfs.ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curHeiyoReceInfs.ToList(), new());
 
             if (kohiHoubetus.Count != 0)
             {

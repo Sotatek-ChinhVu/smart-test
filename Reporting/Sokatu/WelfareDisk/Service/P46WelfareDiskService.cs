@@ -31,6 +31,8 @@ namespace Reporting.Sokatu.WelfareDisk.Service
         public P46WelfareDiskService(ICoWelfareSeikyuFinder welfareFinder)
         {
             _welfareFinder = welfareFinder;
+            hpInf = new();
+            receInfs = new();
         }
         #endregion
 

@@ -11,12 +11,12 @@ namespace Reporting.Sokatu.Common.Models
             HokensyaMst = hokensyaMst;
         }
 
-        public string HokensyaNo
+        public string? HokensyaNo
         {
             get => HokensyaMst.HokensyaNo;
         }
 
-        public string Name
+        public string? Name
         {
             get => HokensyaMst.Name;
         }

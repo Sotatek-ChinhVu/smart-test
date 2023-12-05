@@ -24,9 +24,9 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoWelfareReceInfModel> receInfs;
-        private List<CoWelfareReceInfModel> curReceInfs;
-        private CoHpInfModel hpInf;
+        private List<CoWelfareReceInfModel> receInfs = new();
+        private List<CoWelfareReceInfModel> curReceInfs = new();
+        private CoHpInfModel hpInf = new();
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -151,28 +151,28 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var curReceInf = curReceInfs[ptIndex];
 
                     //負担者番号
-                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(0, 2)));
-                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(4, 4)));
+                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf?.FutansyaNo(kohiHoubetus)?.Substring(0, 2) ?? string.Empty));
+                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf?.FutansyaNo(kohiHoubetus)?.Substring(4, 4) ?? string.Empty));
                     //受給者番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.JyukyusyaNo(kohiHoubetus)));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf?.JyukyusyaNo(kohiHoubetus) ?? string.Empty));
                     //保険者番号
-                    listDataPerPage.Add(new("hokensyaNo", 0, rowNo, string.Format("{0, 8}", curReceInf.HokensyaNo)));
+                    listDataPerPage.Add(new("hokensyaNo", 0, rowNo, string.Format("{0, 8}", curReceInf?.HokensyaNo ?? string.Empty)));
                     //氏名
-                    listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
+                    listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf?.PtName ?? string.Empty));
                     //生年月日
-                    listDataPerPage.Add(new("birthday", 0, rowNo, CIUtil.SDateToWDate(curReceInf.BirthDay).ToString()));
+                    listDataPerPage.Add(new("birthday", 0, rowNo, CIUtil.SDateToWDate((curReceInf?.BirthDay == null) ? 0 : curReceInf.BirthDay).ToString() ?? string.Empty));
                     //入外区分
                     listDataPerPage.Add(new("gairai", 0, rowNo, "○"));
                     //割合
-                    listDataPerPage.Add(new("hokenRate", 0, rowNo, (curReceInf.HokenRate / 10).ToString()));
+                    listDataPerPage.Add(new("hokenRate", 0, rowNo, ((curReceInf?.HokenRate == null) ? 0 : curReceInf.HokenRate / 10).ToString()));
                     //実日数
-                    listDataPerPage.Add(new("nissu", 0, rowNo, curReceInf.HokenNissu.ToString()));
+                    listDataPerPage.Add(new("nissu", 0, rowNo, curReceInf?.HokenNissu.ToString() ?? string.Empty));
                     //合計点数
-                    totalData.Tensu += curReceInf.Tensu;
-                    listDataPerPage.Add(new("tensu", 0, rowNo, curReceInf.Tensu.ToString()));
+                    totalData.Tensu += (curReceInf?.Tensu == null) ? 0 : curReceInf.Tensu;
+                    listDataPerPage.Add(new("tensu", 0, rowNo, curReceInf?.Tensu.ToString() ?? string.Empty));
                     //一部自己負担
-                    totalData.Futan += curReceInf.PtFutan;
-                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.PtFutan.ToString()));
+                    totalData.Futan += (curReceInf?.PtFutan == null) ? 0 : curReceInf.PtFutan;
+                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf?.PtFutan.ToString() ?? string.Empty));
                     //長
                     listDataPerPage.Add(new("choki", 0, rowNo, curReceInf.IsChoki ? "○" : ""));
                     //診療年月

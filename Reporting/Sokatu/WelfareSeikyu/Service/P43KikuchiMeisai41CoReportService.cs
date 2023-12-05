@@ -43,9 +43,9 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP43WelfareReceInfModel> receInfs;
-        private List<CoP43WelfareReceInfModel> curReceInfs;
-        private CoHpInfModel hpInf;
+        private List<CoP43WelfareReceInfModel> receInfs = new();
+        private List<CoP43WelfareReceInfModel> curReceInfs = new();
+        private CoHpInfModel hpInf = new();
 
         private pageType curPgType = 0;
         private List<pageType> tgtPgType = new List<pageType>();
@@ -95,7 +95,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     {
                         // 国保/社保・２割/３割に分けて作成
                         curPgType = pgType;
-                        curReceInfs = null;
+                        
                         switch (curPgType)
                         {
                             case pageType.Kokuho20:

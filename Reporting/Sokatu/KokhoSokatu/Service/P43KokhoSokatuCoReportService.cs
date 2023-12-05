@@ -50,6 +50,11 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kaMsts = new();
+        hokensyaNos = new();
     }
     #endregion
 
@@ -142,7 +147,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = receInfs.Where(r => r.IsNrElderIppan).ToList(); break;
@@ -198,7 +203,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
 
                     for (short colNo = 0; colNo < maxHokensyaCol; colNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (colNo)
                         {
                             //国保
@@ -226,7 +231,6 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                 hokensyaIndex++;
                 if (hokensyaIndex >= hokensyaNos.Count)
                 {
-                    //_listTextData.Add(pageIndex, listDataPerPage);
                     flgNextPage = false;
                     break;
                 }
@@ -239,7 +243,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
             int kohiIndex = (currentPage - 1) * maxKohiRow * maxKohiCol;
 
             var curHeiyoReceInfs = receInfs;
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curHeiyoReceInfs.ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curHeiyoReceInfs.ToList(), new());
 
             if (kohiHoubetus.Count != 0)
             {

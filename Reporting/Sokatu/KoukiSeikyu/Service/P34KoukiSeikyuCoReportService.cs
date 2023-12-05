@@ -65,6 +65,11 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
         _visibleFieldData = new();
         _visibleAtPrint = new();
         _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNos = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
     }
 
     public CommonReportingRequestModel GetP34KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
@@ -164,7 +169,7 @@ public class P34KoukiSeikyuCoReportService : IP34KoukiSeikyuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiIppan).ToList(); break;

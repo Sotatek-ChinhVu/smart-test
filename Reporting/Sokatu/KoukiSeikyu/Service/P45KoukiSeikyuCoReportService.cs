@@ -52,6 +52,12 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNos = new();
+        kohiHoubetuMsts = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
     }
     #endregion
 
@@ -163,7 +169,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     //国保
@@ -192,7 +198,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
             const int maxKohiRow = 4;
             int kohiIndex = 0;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
@@ -246,7 +252,7 @@ public class P45KoukiSeikyuCoReportService : IP45KoukiSeikyuCoReportService
             const int maxKohiRow = 7;
             int kohiIndex = (currentPage - 2) * maxKohiRow + 4;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count <= 4)
             {
                 hasNextPage = false;

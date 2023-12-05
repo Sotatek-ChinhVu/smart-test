@@ -42,6 +42,11 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
         _visibleFieldData = new();
         _visibleAtPrint = new();
         _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNos = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
     }
     #endregion
 
@@ -158,7 +163,7 @@ public class P40KoukiSeikyuCoReportService : IP40KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //国保

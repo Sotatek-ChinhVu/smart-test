@@ -59,6 +59,11 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kaMsts = new();
+        printUnits = new();
     }
     #endregion
 
@@ -150,7 +155,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
                 //1枚目のみ記載する
                 for (short i = 0; i <= 1; i++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     //国保＋退職の合計と後期の合計
                     switch (i)
                     {
@@ -217,7 +222,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
 
                     for (short colNo = 0; colNo <= 2; colNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         wrkReces = receInfs.Where(r => r.HokensyaNo == printUnits[hokIndex].HokensyaNo && (printUnits[hokIndex].HokenRate == -1 || r.HokenRate == printUnits[hokIndex].HokenRate)).ToList();
 
                         //国保・退職・後期それぞれの列に印字する

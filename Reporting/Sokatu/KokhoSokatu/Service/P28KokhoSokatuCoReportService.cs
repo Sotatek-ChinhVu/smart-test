@@ -53,6 +53,11 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _listTextData = new();
             _extralData = new();
             _visibleFieldData = new();
+            hpInf = new();
+            receInfs = new();
+            hokensyaNames = new();
+            kaMsts = new();
+            hokensyaNos = new();
         }
         #endregion
 
@@ -150,7 +155,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                     //1枚目のみ記載する
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (rowNo)
                         {
                             //国保

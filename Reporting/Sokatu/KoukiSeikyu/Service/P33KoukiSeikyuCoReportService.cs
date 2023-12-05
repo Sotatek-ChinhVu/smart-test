@@ -61,6 +61,12 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
         _visibleFieldData = new();
         _visibleAtPrint = new();
         _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNos = new();
+        kohiHoubetuMsts = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
     }
 
     public CommonReportingRequestModel GetP33KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
@@ -152,7 +158,7 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //国保
@@ -182,7 +188,7 @@ public class P33KoukiSeikyuCoReportService : IP33KoukiSeikyuCoReportService
             const int maxKohiRow = 5;
             int kohiIndex = (currentPage - 1) * maxKohiRow;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count == 0)
             {
                 hasNextPage = false;

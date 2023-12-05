@@ -50,6 +50,13 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             _extralData = new();
             _visibleFieldData = new();
             _listTextData = new();
+            hpInf = new();
+            hokensyaNos = new();
+            receInfs = new();
+            currentHokensyaNo = "";
+            printHokensyaNos = new();
+            hokensyaNames = new();
+            kaMsts = new();
         }
         #endregion
 
@@ -171,7 +178,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        wrkReces = null;
+                        wrkReces = new();
                         switch (rowNo)
                         {
                             //国保
@@ -237,12 +244,11 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         listDataPerPage.Add(new("kohiTensu", 0, rowNo, wrkData.Tensu.ToString()));
                         listDataPerPage.Add(new("kohiFutan", 0, rowNo, wrkData.Futan.ToString()));
                     }
-                    _hasNextPage = !curReceInfs.FirstOrDefault().IsPrefIn;
+                    _hasNextPage = !curReceInfs.ToList().FirstOrDefault().IsPrefIn;
                 }
 
                 _listTextData.Add(pageIndex, listDataPerPage);
                 //県外保険者は2ページ目も印刷する
-
 
                 return 1;
             }

@@ -48,6 +48,12 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _extralData = new();
             _listTextData = new();
             _visibleFieldData = new();
+            hpInf = new();
+            receInfs = new();
+            kaMsts = new();
+            curReceInfs = new();
+            kohiHoubetuMsts = new();
+            prefInOut = "";
         }
         #endregion
 
@@ -101,7 +107,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 List<ListTextObject> listDataPerPage = new();
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 const int maxRow = 9;
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
 
                 #region CountPages
                 int maxKohi = 0;
@@ -138,7 +144,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                     {
                         foreach (string eachHokensyaNo in hokenshaList)
                         {
-                            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(wrkReces.Where(r => r.HokensyaNo == eachHokensyaNo && r.IsHeiyo).ToList(), null);
+                            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(wrkReces.Where(r => r.HokensyaNo == eachHokensyaNo && r.IsHeiyo).ToList(), new());
                             //2ページ目以降の枚数計算
                             int addPage = Math.Max((int)Math.Ceiling((double)kohiHoubetus.Count() / maxKohi) - adjPage, 0);
                             wrkCount += 1 + addPage;
@@ -202,7 +208,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 const int maxKohiRow = 10;
                 int kohiIndex = (currentPage - 2) * maxKohiRow;
 
-                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo && !r.IsKoukiAll).ToList(), null);
+                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo && !r.IsKoukiAll).ToList(), new());
                 if (kohiHoubetus.Count == 0 || kohiHoubetus.Count <= kohiIndex)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);

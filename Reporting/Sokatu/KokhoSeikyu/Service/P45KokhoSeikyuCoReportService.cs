@@ -47,6 +47,12 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             _extralData = new();
             _listTextData = new();
             _visibleFieldData = new();
+            hpInf = new();
+            hokensyaNos = new();
+            receInfs = new();
+            currentHokensyaNo = "";
+            printHokensyaNos = new();
+            hokensyaNames = new();
         }
         #endregion
 
@@ -94,7 +100,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
                 //県内・県外
                 var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 wrkReces = curReceInfs.Where(r => r.IsPrefIn).ToList();
                 if (wrkReces.Count == 0)
                 {
@@ -134,7 +140,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //国保
@@ -170,7 +176,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 kohiIndex = 0;
                 kohiHoubetusIndex = 0;
 
-                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
                 if (kohiHoubetus.Count == 0)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);
@@ -258,7 +264,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                 const int maxKohiRow = 7;
 
-                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
                 if (kohiIndex >= kohiTotalCnt)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);

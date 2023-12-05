@@ -53,6 +53,13 @@ public class P42KokhoSeikyuCoReportService : IP42KokhoSeikyuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        hokensyaNos = new();
+        receInfs = new();
+        currentHokensyaNo = "";
+        printHokensyaNos = new();
+        hokensyaNames = new();
+        kohiHoubetuMsts = new();
     }
     #endregion
 
@@ -158,7 +165,7 @@ public class P42KokhoSeikyuCoReportService : IP42KokhoSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //一般

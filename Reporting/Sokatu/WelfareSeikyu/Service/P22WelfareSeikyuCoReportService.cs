@@ -33,13 +33,13 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
     /// <summary>
     /// CoReport Model
     /// </summary>
-    private List<CoP22WelfareReceInfModel> receInfs = null;
+    private List<CoP22WelfareReceInfModel> receInfs = new();
     private CoHpInfModel hpInf;
 
-    private List<(int sinym, string code, string name)> cityNames;
+    private List<(int sinym, string code, string name)> cityNames = new();
     private int currentSinYm;
-    private string currentFutansyaNo;
-    private string currentCityName;
+    private string currentFutansyaNo = "";
+    private string currentCityName = "";
     private List<CoHokensyaMstModel> hokensyaNames;
     private List<CoKohiHoubetuMstModel> kohiHoubetuMsts;
 
@@ -64,6 +64,11 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kohiHoubetuMsts = new();
+        kohiHoubetus = new();
     }
     #endregion
 
@@ -220,7 +225,7 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
                 totalData.RecordCount++;
 
                 //受給者証番号
-                listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareTokusyuNo));
+                listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareTokusyuNo ?? string.Empty));
                 //氏名
                 listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
                 //生年月日

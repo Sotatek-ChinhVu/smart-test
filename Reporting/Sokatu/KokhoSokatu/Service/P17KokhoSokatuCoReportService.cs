@@ -57,6 +57,9 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
     }
     #endregion
 
@@ -136,7 +139,7 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsNrAll).ToList(); break;
@@ -151,7 +154,7 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
                 if (rowNo == 4)
                 {
                     //公費
-                    var prefAllHoubetus = SokatuUtil.GetKohiHoubetu(receInfs.Where(r => r.IsHeiyo).ToList(), null);
+                    var prefAllHoubetus = SokatuUtil.GetKohiHoubetu(receInfs.Where(r => r.IsHeiyo).ToList(), new());
                     foreach (var prefAllHoubetu in prefAllHoubetus)
                     {
                         wrkReces = receInfs.Where(r => r.IsHeiyo && r.IsKohi(prefAllHoubetu)).ToList();

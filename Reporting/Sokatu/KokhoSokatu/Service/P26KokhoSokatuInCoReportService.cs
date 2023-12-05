@@ -1,4 +1,5 @@
-﻿using Helper.Common;
+﻿using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
@@ -46,6 +47,8 @@ public class P26KokhoSokatuInCoReportService : IP26KokhoSokatuInCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
     }
     #endregion
 
@@ -131,7 +134,7 @@ public class P26KokhoSokatuInCoReportService : IP26KokhoSokatuInCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsNrElderIppan || r.IsNrElderUpper || r.IsRetElderIppan || r.IsRetElderUpper).ToList(); break;

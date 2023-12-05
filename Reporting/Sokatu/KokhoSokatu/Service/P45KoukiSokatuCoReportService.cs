@@ -48,6 +48,10 @@ public class P45KoukiSokatuCoReportService : IP45KoukiSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
+        curReceInfs = new();
     }
     #endregion
 

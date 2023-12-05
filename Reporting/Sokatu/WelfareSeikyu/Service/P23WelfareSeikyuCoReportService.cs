@@ -35,13 +35,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP23WelfareReceInfModel> receInfs;
-        private CoHpInfModel hpInf;
+        private List<CoP23WelfareReceInfModel> receInfs = new();
+        private CoHpInfModel hpInf = new();
 
-        private List<string> cityNames;
-        private string currentCityName;
-        private List<CoHokensyaMstModel> hokensyaNames;
-        private List<CoKohiHoubetuMstModel> kohiHoubetuMsts;
+        private List<string> cityNames = new();
+        private string currentCityName = "";
+        private List<CoHokensyaMstModel> hokensyaNames = new();
+        private List<CoKohiHoubetuMstModel> kohiHoubetuMsts = new();
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;

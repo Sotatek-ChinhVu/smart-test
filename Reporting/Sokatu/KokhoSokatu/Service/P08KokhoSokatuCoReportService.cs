@@ -56,6 +56,8 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
     }
     #endregion
 
@@ -130,7 +132,7 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsNrAll).ToList(); break;

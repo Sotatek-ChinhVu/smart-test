@@ -49,6 +49,12 @@ public class P27KokhoSeikyuInCoReportService : IP27KokhoSeikyuInCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        hokensyaNos = new();
+        receInfs = new();
+        currentHokensyaNo = "";
+        printHokensyaNos = new();
+        hokensyaNames = new();
     }
     #endregion
 
@@ -153,7 +159,7 @@ public class P27KokhoSeikyuInCoReportService : IP27KokhoSeikyuInCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     //退職

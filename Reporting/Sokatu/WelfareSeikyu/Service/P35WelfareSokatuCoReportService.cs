@@ -26,8 +26,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// CoReport Model
         /// </summary>
         private List<CoWelfareReceInfModel> receInfs;
-        private CoHpInfModel hpInf;
-        private List<string> futansyaNos;
+        private CoHpInfModel hpInf = new();
+        private List<string> futansyaNos = new();
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -48,6 +48,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             _listTextData = new();
             _visibleFieldData = new();
             _visibleAtPrint = new();
+            receInfs = new();
         }
         #endregion
 

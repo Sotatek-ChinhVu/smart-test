@@ -50,6 +50,12 @@ public class P26KokhoSeikyuOutCoReportService : IP26KokhoSeikyuOutCoReportServic
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        hokensyaNos = new();
+        receInfs = new();
+        currentHokensyaNo = "";
+        printHokensyaNos = new();
+        hokensyaNames = new();
     }
     #endregion
 
@@ -158,7 +164,7 @@ public class P26KokhoSeikyuOutCoReportService : IP26KokhoSeikyuOutCoReportServic
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //国保
@@ -208,7 +214,7 @@ public class P26KokhoSeikyuOutCoReportService : IP26KokhoSeikyuOutCoReportServic
             #endregion
 
             #region 公費負担医療
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
