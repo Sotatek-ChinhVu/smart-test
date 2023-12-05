@@ -162,7 +162,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
     public string GetFolderUploadToPtNum(List<string> folders, long ptNum)
     {
-        var tenantId = _tenantProvider.GetClinicID();
+        var tenantId = _tenantProvider.GetDomainName();
         var ptNumString = ptNum.ToString();
         if (ptNum.ToString().Length < 4)
         {
@@ -201,7 +201,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
     public string GetFolderUploadOther(List<string> folders)
     {
-        var tenantId = _tenantProvider.GetClinicID();
+        var tenantId = _tenantProvider.GetDomainName();
         StringBuilder result = new();
         result.Append(tenantId);
         result.Append("/");

@@ -107,7 +107,7 @@ namespace Interactor.SuperAdmin
                         else
                         {
                             // dump data,
-                            var pathFileDump = @$"{pathFileDumpRestore}\{tenant.Db}.sql";
+                            var pathFileDump = @$"{pathFileDumpRestore}{tenant.Db}.sql"; // path save file sql dump
                             await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
 
                             // check valid file sql dump
