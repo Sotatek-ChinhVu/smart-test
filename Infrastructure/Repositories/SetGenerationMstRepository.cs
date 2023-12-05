@@ -751,49 +751,55 @@ namespace Infrastructure.Repositories
             return null;
         }
 
+        /// <summary>
+        /// Delete ByomiSetGeneraion
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="targetGeneration"></param>
+        /// <param name="sourceGenerationId"></param>
         public void RestoreByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId)
         {
             var targetSetMsts = TrackingDataContext.ByomeiSetMsts.Where(x =>
                             x.HpId == hpId &&
                             x.GenerationId == targetGeneration).ToList();
 
-            Task<int> deleteTask = Task<int>.Factory.StartNew(() =>
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+            executionStrategy.Execute(
+            () =>
             {
-                var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-                executionStrategy.Execute(
-                () =>
+                using (var transaction = TrackingDataContext.Database.BeginTransaction())
                 {
-                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        targetSetMsts.ForEach(byomeiSetMst =>
                         {
-                            targetSetMsts.ForEach(byomeiSetMst =>
-                            {
-                                byomeiSetMst.IsDeleted = 1;
-                                byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                byomeiSetMst.UpdateId = userId;
-                                byomeiSetMst.UpdateMachine = "SmartKarte";
-                            });
-                            TrackingDataContext.SaveChanges();
-                            transaction.Commit();
-                        }
-                        catch (Exception)
-                        {
-                            transaction.Rollback();
-                            throw;
-                        }
+                            byomeiSetMst.IsDeleted = 1;
+                            byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            byomeiSetMst.UpdateId = userId;
+                        });
+                        TrackingDataContext.SaveChanges();
+                        transaction.Commit();
                     }
-                });
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            });
 
-                return targetSetMsts.Count;
-            });
-            deleteTask.ContinueWith(async (action) =>
-            {
-                CloneByomeiSetGeneration(hpId, userId, targetGeneration, sourceGenerationId, action.Result);
-            });
+            CloneByomeiSetGeneration(hpId, userId, targetGeneration, sourceGenerationId);
         }
 
-        public void CloneByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0)
+        /// <summary>
+        /// Update GenerationId of ByomeiSetMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="targetGeneration"></param>
+        /// <param name="sourceGenerationId"></param>
+        public void CloneByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId)
         {
             var setMstsBackuped = TrackingDataContext.ByomeiSetMsts.Where(x =>
                 x.HpId == hpId &&
@@ -803,7 +809,7 @@ namespace Infrastructure.Repositories
             {
                 return;
             }
-            stepCount += stepExcuted;
+
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
             executionStrategy.Execute(
             () =>
@@ -833,53 +839,61 @@ namespace Infrastructure.Repositories
                         transaction.Rollback();
                         throw;
                     }
-                    return targetSetMsts.Count;
+
                 }
             });
         }
 
+        /// <summary>
+        /// Delete ListSetMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="targetGeneration"></param>
+        /// <param name="sourceGenerationId"></param>
         public void RestoreListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId)
         {
             var targetSetMsts = TrackingDataContext.ListSetMsts.Where(x =>
                             x.HpId == hpId &&
                             x.GenerationId == targetGeneration).ToList();
-            Task<int> deleteTask = Task<int>.Factory.StartNew(() =>
-            {
-                var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-                executionStrategy.Execute(
-                () =>
-                {
-                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            targetSetMsts.ForEach(listSetMst =>
-                            {
-                                listSetMst.HpId = hpId;
-                                listSetMst.IsDeleted = 1;
-                                listSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                listSetMst.UpdateId = userId;
-                                listSetMst.UpdateMachine = CIUtil.GetComputerName();
-                            });
-                            TrackingDataContext.SaveChanges();
-                            transaction.Commit();
-                        }
-                        catch (Exception)
-                        {
-                            transaction.Rollback();
-                        }
-                    }
-                });
 
-                return targetSetMsts.Count;
-            });
-            deleteTask.ContinueWith((action) =>
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+            executionStrategy.Execute(
+            () =>
             {
-                CloneListSetGeneration(hpId, userId, targetGeneration, sourceGenerationId, action.Result);
+                using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        targetSetMsts.ForEach(listSetMst =>
+                        {
+                            listSetMst.HpId = hpId;
+                            listSetMst.IsDeleted = 1;
+                            listSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            listSetMst.UpdateId = userId;
+                            listSetMst.UpdateMachine = CIUtil.GetComputerName();
+                        });
+                        TrackingDataContext.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                    }
+                }
             });
+
+            CloneListSetGeneration(hpId, userId, targetGeneration, sourceGenerationId);
         }
 
-        public void CloneListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0)
+        /// <summary>
+        /// Update Generation Id of ListSetMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="targetGeneration"></param>
+        /// <param name="sourceGenerationId"></param>
+        public void CloneListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId)
         {
             var setMstsBackuped = TrackingDataContext.ListSetMsts.Where(x =>
                 x.HpId == hpId &&
@@ -890,38 +904,33 @@ namespace Infrastructure.Repositories
                 return;
             }
 
-            stepCount += stepExcuted;
-            var backupTask = Task.Factory.StartNew(() =>
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+            executionStrategy.Execute(
+            () =>
             {
-                var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-                executionStrategy.Execute(
-                () =>
+                using (var transaction = TrackingDataContext.Database.BeginTransaction())
                 {
-                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        setMstsBackuped.ForEach(x =>
                         {
-                            setMstsBackuped.ForEach(x =>
-                            {
-                                x.HpId = hpId;
-                                x.SetId = 0;
-                                x.GenerationId = targetGeneration;
-                                x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                                x.CreateId = userId;
-                                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                x.UpdateId = userId;
-                            });
-                            TrackingDataContext.ListSetMsts.AddRange(setMstsBackuped);
-                            TrackingDataContext.SaveChanges();
-                            transaction.Commit();
-                        }
-                        catch (Exception e)
-                        {
-                            transaction.Rollback();
-                        }
+                            x.HpId = hpId;
+                            x.SetId = 0;
+                            x.GenerationId = targetGeneration;
+                            x.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            x.CreateId = userId;
+                            x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            x.UpdateId = userId;
+                        });
+                        TrackingDataContext.ListSetMsts.AddRange(setMstsBackuped);
+                        TrackingDataContext.SaveChanges();
+                        transaction.Commit();
                     }
-                });
-
+                    catch (Exception e)
+                    {
+                        transaction.Rollback();
+                    }
+                }
             });
         }
 
@@ -938,7 +947,13 @@ namespace Infrastructure.Repositories
             return listSetGenerationMstList;
         }
 
-
+        /// <summary>
+        /// Insert Data to ByomeiSetGenerationMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="startDate"></param>
+        /// <returns></returns>
         public AddSetSendaiModel? AddByomeiSetGenerationMst(int hpId, int userId, int startDate)
         {
             // get SendaiGeneration newest
@@ -987,6 +1002,13 @@ namespace Infrastructure.Repositories
             return null;
         }
 
+        /// <summary>
+        /// Insert Data To ListSetGenerationMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="startDate"></param>
+        /// <returns></returns>
         public AddSetSendaiModel? AddListSetGenerationMst(int hpId, int userId, int startDate)
         {
             // get ListSetGenerationMst newest
