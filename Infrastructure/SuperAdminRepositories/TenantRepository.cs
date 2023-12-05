@@ -1,7 +1,7 @@
-﻿using AWSSDK.Constants;
-using Domain.SuperAdminModels.Tenant;
+﻿using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Helper.Redis;
@@ -374,8 +374,7 @@ namespace Infrastructure.SuperAdminRepositories
             }
             if (searchModel.StatusTenant != 0)
             {
-                var statusTenantDic = ConfigConstant.StatusTenantDisplayDictionnary();
-                var statusTenantQuery = statusTenantDic.Where(item => item.Value == searchModel.StatusTenant).Select(item => item.Key).Distinct().ToList();
+                var statusTenantQuery = StatusTenantDisplayConst.StatusTenantDisplayDictionnary.Where(item => item.Value == searchModel.StatusTenant).Select(item => item.Key).Distinct().ToList();
                 query = query.Where(item => statusTenantQuery.Contains(item.Status));
             }
             return query;

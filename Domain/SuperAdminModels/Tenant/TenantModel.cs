@@ -1,4 +1,4 @@
-﻿using AWSSDK.Constants;
+﻿using Helper.Constants;
 
 namespace Domain.SuperAdminModels.Tenant
 {
@@ -115,7 +115,7 @@ namespace Domain.SuperAdminModels.Tenant
         {
             get
             {
-                return (byte)(ConfigConstant.StatusTenantDisplayDictionnary().ContainsKey(Status) ? ConfigConstant.StatusTenantDisplayDictionnary()[Status] : 0);
+                return (byte)(StatusTenantDisplayConst.StatusTenantDisplayDictionnary.ContainsKey(Status) ? StatusTenantDisplayConst.StatusTenantDisplayDictionnary[Status] : 0);
             }
         }
     }
