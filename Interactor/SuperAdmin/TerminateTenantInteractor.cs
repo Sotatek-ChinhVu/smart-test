@@ -87,7 +87,7 @@ namespace Interactor.SuperAdmin
                         var deleteItemCnameAction = await CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain);
 
                         //Delete folder S3
-                        await S3Action.DeleteObjectsInFolderAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain);
+                        await _awsSdkService.DeleteObjectsInFolderAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain);
 
                         // Check action deleted  RDS, DNS, Cloud front
                         if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)

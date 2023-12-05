@@ -6,11 +6,10 @@ namespace AWSSDK.Common
 {
     public static class S3Action
     {
-        public static async Task CreateFolderAsync(string bucketName, string folderName)
+        public static async Task CreateFolderAsync(AmazonS3Client sourceS3Client, string bucketName, string folderName)
         {
             try
             {
-                var sourceS3Client = new AmazonS3Client(ConfigConstant.SourceAccessKey, ConfigConstant.SourceSecretKey, ConfigConstant.RegionDestination);
                 if (!folderName.EndsWith("/"))
                 {
                     folderName += "/";
@@ -33,11 +32,10 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error creating folder: '{ex.Message}'");
             }
         }
-        public static async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
+        public static async Task DeleteObjectsInFolderAsync(AmazonS3Client sourceS3Client, string bucketName, string folderKey)
         {
             try
             {
-                var sourceS3Client = new AmazonS3Client(ConfigConstant.SourceAccessKey, ConfigConstant.SourceSecretKey, ConfigConstant.RegionDestination);
                 ListObjectsV2Request request = new ListObjectsV2Request
                 {
                     BucketName = bucketName,

@@ -274,7 +274,7 @@ namespace Interactor.SuperAdmin
                     CreateDatas(host, dbName, dataMigration, tenantId, model);
                     
                     // create folder S3
-                    S3Action.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
+                    _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
                     _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);

@@ -12,5 +12,7 @@ namespace AWSSDK.Interfaces
         Task<bool> IsDedicatedTypeAsync(string dbIdentifier);
         Task<bool> CheckExitRDS(string dbIdentifier);
         bool DeleteTenantDb(string serverEndpoint, string tennantDB);
+        Task CreateFolderAsync(string bucketName, string folderName);
+        Task DeleteObjectsInFolderAsync(string bucketName, string folderKey);
     }
 }
