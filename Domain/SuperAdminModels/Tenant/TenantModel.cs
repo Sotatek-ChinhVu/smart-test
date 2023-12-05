@@ -1,4 +1,6 @@
-﻿namespace Domain.SuperAdminModels.Tenant
+﻿using Helper.Constants;
+
+namespace Domain.SuperAdminModels.Tenant
 {
     public class TenantModel
     {
@@ -104,7 +106,20 @@
         public string RdsIdentifier { get; private set; }
 
         public double StorageFull { get; private set; }
+
         public string UserConnect { get; private set; }
+
         public string PasswordConnect { get; private set; }
+
+        /// <summary>
+        /// Return StatusTenant to FE
+        /// </summary>
+        public byte StatusTenant
+        {
+            get
+            {
+                return (byte)(StatusTenantDisplayConst.StatusTenantDisplayDictionnary.ContainsKey(Status) ? StatusTenantDisplayConst.StatusTenantDisplayDictionnary[Status] : 0);
+            }
+        }
     }
 }
