@@ -4,13 +4,13 @@ namespace Domain.SuperAdminModels.Tenant;
 
 public class SearchTenantModel
 {
-    public SearchTenantModel(string keyWord, DateTime? fromDate, DateTime? toDate, int type, int status, StorageFullEnum storageFull)
+    public SearchTenantModel(string keyWord, DateTime? fromDate, DateTime? toDate, int type, int statusTenant, List<StorageFullEnum> storageFull)
     {
         KeyWord = keyWord;
         FromDate = fromDate;
         ToDate = toDate;
         Type = type;
-        Status = status;
+        StatusTenant = statusTenant;
         StorageFull = storageFull;
     }
 
@@ -22,16 +22,16 @@ public class SearchTenantModel
 
     public int Type { get; private set; }
 
-    public int Status { get; private set; }
+    public int StatusTenant { get; private set; }
 
-    public StorageFullEnum StorageFull { get; private set; }
+    public List<StorageFullEnum> StorageFull { get; private set; }
 
     public bool IsEmptyModel
     {
         get
         {
-            return StorageFull == StorageFullEnum.Empty
-                   && Status == -1
+            return !StorageFull.Any()
+                   && StatusTenant == -1
                    && Type == -1
                    && FromDate == null
                    && ToDate == null

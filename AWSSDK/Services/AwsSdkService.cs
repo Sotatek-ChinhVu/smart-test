@@ -19,9 +19,9 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
-            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
+            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier, snapshotType);
         }
 
         public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
@@ -50,6 +50,7 @@ namespace AWSSDK.Services
             }
             return false;
         }
+
         public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
         {
             try
@@ -71,16 +72,33 @@ namespace AWSSDK.Services
                         // Delete database
                         using (DbCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = $"DROP DATABASE {tennantDB};";
+                            command.CommandText = @$"
+                                                    DO $$ 
+                                                    DECLARE
+                                                        pid_list text;
+                                                        query_text text;
+                                                    BEGIN
+                                                        -- Get a comma-separated list of active process IDs (pids) for the specified database
+                                                        SELECT string_agg(pid::text, ',') INTO pid_list
+                                                        FROM pg_stat_activity
+                                                        WHERE datname = '{tennantDB}';
+
+                                                        -- Construct the query to terminate each connection
+                                                        query_text := 'SELECT pg_terminate_backend(' || pid_list || ')';
+
+                                                        -- Execute the query to terminate connections
+                                                        EXECUTE query_text;
+                                                    END $$;";
+                            command.CommandText += @$"DROP DATABASE {tennantDB};";
                             command.ExecuteNonQuery();
                         }
 
-                        Console.WriteLine($"Database deleted successfully.");
+                        Console.WriteLine($"Database: {tennantDB} deleted successfully.");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        return false;
+                        Console.WriteLine($"Error: Delete TenantDb {ex.Message}");
+                        throw new Exception($"Error: Delete TenantDb {ex.Message}");
                     }
                 }
 
