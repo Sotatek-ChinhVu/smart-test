@@ -5,8 +5,6 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
-using Entity.SuperAdmin;
-using Entity.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
@@ -33,7 +31,7 @@ namespace Interactor.SuperAdmin
 
         }
 
-        public  RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
+        public RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
         {
             string pathFileDumpRestore = _configuration["PathFileDumpRestore"];
 
@@ -49,6 +47,10 @@ namespace Interactor.SuperAdmin
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
+                var pathFileDump2 = @$"{pathFileDumpRestore}\{"restore8"}.sql";
+                PostgreSqlDump(pathFileDump2, tenant.EndPointDb, ConfigConstant.PgPostDefault, "restore8", "postgres", "Emr!23456789").Wait();
+                PostgreSqlExcuteFileDump(pathFileDump2, tenant.EndPointDb, ConfigConstant.PgPostDefault, "restore8", "postgres", "Emr!23456789").Wait();
+                return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
                 if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
@@ -165,12 +167,20 @@ namespace Interactor.SuperAdmin
         {
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             outFile = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? outFile : outFile.Replace("\\", "/");
+            string batchContent;
 
             string dumpCommand =
                  $"{Set} PGPASSWORD={password}\n" +
                  $"pg_dump" + " -Fc" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
 
-            string batchContent = "" + dumpCommand + "  > " + "\"" + outFile + "\"" + "\n";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                batchContent = "" + dumpCommand + "  > " + "\"" + outFile + "\"" + "\n";
+            }
+            else
+            {
+                batchContent = "" + dumpCommand + "  > " + outFile + "\n";
+            }
             if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
 
             await Execute(batchContent);
@@ -180,12 +190,19 @@ namespace Interactor.SuperAdmin
         {
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
+            string batchContent;
             string dumpCommand =
                  $"{Set} PGPASSWORD={password}\n" +
                  $"pg_restore" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
 
-            string batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
-            // if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
+            }
+            else
+            {
+                batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + "\n";
+            }
 
             await Execute(batchContent);
         }
