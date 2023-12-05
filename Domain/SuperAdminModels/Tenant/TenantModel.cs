@@ -111,6 +111,9 @@ namespace Domain.SuperAdminModels.Tenant
 
         public string PasswordConnect { get; private set; }
 
+        /// <summary>
+        /// Return StatusTenant to FE
+        /// </summary>
         public byte StatusTenant
         {
             get

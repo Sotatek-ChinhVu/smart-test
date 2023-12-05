@@ -374,6 +374,7 @@ namespace Infrastructure.SuperAdminRepositories
             }
             if (searchModel.StatusTenant != 0)
             {
+                // if filter by statusTenant, get real status in the database
                 var statusTenantQuery = StatusTenantDisplayConst.StatusTenantDisplayDictionnary.Where(item => item.Value == searchModel.StatusTenant).Select(item => item.Key).Distinct().ToList();
                 query = query.Where(item => statusTenantQuery.Contains(item.Status));
             }

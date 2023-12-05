@@ -1,8 +1,11 @@
 ﻿namespace Helper.Constants;
 
-public class StatusTenantDisplayConst
+public static class StatusTenantDisplayConst
 {
-    public static Dictionary<byte, byte> StatusTenantDisplayDictionnary = new()
+    /// <summary>
+    /// StatusTenantDisplayDictionnary to FE
+    /// </summary>
+    private static readonly Dictionary<byte, byte> statusTenantDisplayDictionnary = new()
     {
         {2, 1}, {3, 1}, {5,1}, {6,1}, {8,1}, //pending
         {7, 2}, {10, 2}, {13,2}, {16,2}, //failded
@@ -12,4 +15,6 @@ public class StatusTenantDisplayConst
         {4, 6}, //sutting-down
         {12, 7}, //teminated
     };
+
+    public static Dictionary<byte, byte> StatusTenantDisplayDictionnary => statusTenantDisplayDictionnary;
 }
