@@ -411,6 +411,18 @@ public class Sta9000CoReportService : ISta9000CoReportService
         _finder = finder;
         _readRseReportFileService = readRseReportFileService;
         _coSta9000Finder = coSta9000Finder;
+        printDatas = new();
+        ptInfs = new();
+        hpInf = new();
+        drugOdrs = new();
+        ptByomeis = new();
+        ptHokens = new();
+        raiinInfs = new();
+        objectRseList = new();
+        kensaInfs = new();
+        karteInfs = new();
+        sinKouis = new();
+        odrInfs = new();
     }
 
     private int reportType;
@@ -1162,8 +1174,8 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 printData.PtName = ptInf.PtName.TrimEnd() + (reportType == 2 ? "　様" : string.Empty);
                 printData.KanaName = ptInf.KanaName;
                 printData.Sex = ptInf.Sex;
-                // todo: anh.vu3
-                //printData.Birthday = outputFileType == CoFileType.Csv ? ptInf.Birthday.ToString() : CIUtil.SDateToShowSDate(ptInf.Birthday);
+                /// todo: anh.vu3
+                ///printData.Birthday = outputFileType == CoFileType.Csv ? ptInf.Birthday.ToString() : CIUtil.SDateToShowSDate(ptInf.Birthday);
                 printData.Birthday = CIUtil.SDateToShowSDate(ptInf.Birthday);
                 printData.BirthdayW = CIUtil.SDateToShowWDate(ptInf.Birthday);
                 printData.BirthdayWS = CIUtil.SDateToShowSWDate(ptInf.Birthday);
@@ -1555,7 +1567,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
             for (short rowNo = 0; rowNo < reportInfs[reportType].MaxRow; rowNo++)
             {
                 Dictionary<string, CellModel> data = new();
-               
+
                 var printData = printDatas[ptIndex];
                 string baseListName = string.Empty;
 
@@ -1571,7 +1583,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta9000PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta9000PrintData).GetProperty(colName)?.GetValue(printData);
                     AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                     if (baseListName == string.Empty && objectRseList.Contains(colName))
@@ -1635,7 +1647,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta9000PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta9000PrintData).GetProperty(colName)?.GetValue(printData);
                     SetFieldData(string.Format("{0}_{1:D2}", colName, rowNo), value == null ? string.Empty : value.ToString() ?? string.Empty);
                 }
                 _tableFieldData.Add(data);
@@ -1666,7 +1678,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    object value = null;
+                    object? value = null;
                     System.Reflection.PropertyInfo propertyInfo;
                     propertyInfo = typeof(CoRaiinInfModel).GetProperty(colName);
                     if (propertyInfo != null && printData.RaiinInf != null)
@@ -1679,7 +1691,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                         value = propertyInfo.GetValue(printData);
                     }
 
-                    AddListData(ref data, colName, value == null ? string.Empty : value.ToString());
+                    AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                     if (baseListName == string.Empty && objectRseList.Contains(colName))
                     {
