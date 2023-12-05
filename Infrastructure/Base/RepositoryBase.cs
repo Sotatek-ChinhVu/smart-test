@@ -13,7 +13,7 @@ namespace Infrastructure.Base
 
         public string GetCacheKey()
         {
-            return _tenantProvider.GetClinicID() + "-" + this.GetType().Name;
+            return _tenantProvider.GetDomainName() + "-" + this.GetType().Name;
         }
 
         private TenantDataContext? _trackingDataContext;

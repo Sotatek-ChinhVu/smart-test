@@ -12,8 +12,8 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations.AdminData
 {
     [DbContext(typeof(AdminDataContext))]
-    [Migration("20231115133733_firstMigrationAdminTenant")]
-    partial class firstMigrationAdminTenant
+    [Migration("20231120042719_AddTableAuditLogToAdminDataContex")]
+    partial class AddTableAuditLogToAdminDataContex
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,88 +26,6 @@ namespace TenantMigration.Migrations.AdminData
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Entity.Logger.AuditLog", b =>
-                {
-                    b.Property<long>("LogId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
-
-                    b.Property<string>("ClientIP")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Desciption")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
-
-                    b.Property<string>("Domain")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("EventCd")
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)");
-
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("LogDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LogType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("LoginKey")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
-
-                    b.Property<string>("Path")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("RaiinNo")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("RequestInfo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("SinDay")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("ThreadId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("LogId");
-
-                    b.ToTable("AuditLogs");
-                });
-
-            modelBuilder.Entity("Entity.Logger.NewAuditLog", b =>
                 {
                     b.Property<long>("LogId")
                         .ValueGeneratedOnAdd()
@@ -176,7 +94,7 @@ namespace TenantMigration.Migrations.AdminData
 
                     b.HasKey("LogId", "TenantId");
 
-                    b.ToTable("NewAuditLogs");
+                    b.ToTable("AuditLogs");
                 });
 #pragma warning restore 612, 618
         }
