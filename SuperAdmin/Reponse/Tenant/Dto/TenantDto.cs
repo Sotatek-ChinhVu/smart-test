@@ -9,6 +9,7 @@ public class TenantDto
         TenantId = model.TenantId;
         Hospital = model.Hospital;
         Status = model.Status;
+        StatusTenant = model.StatusTenant;
         AdminId = model.AdminId;
         Password = model.Password;
         SubDomain = model.SubDomain;
@@ -31,6 +32,8 @@ public class TenantDto
     public string Hospital { get; private set; }
 
     public byte Status { get; private set; }
+
+    public byte StatusTenant { get; private set; }
 
     public int AdminId { get; private set; }
 

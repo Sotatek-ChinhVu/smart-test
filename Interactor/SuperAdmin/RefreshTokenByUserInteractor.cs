@@ -2,7 +2,7 @@
 using Domain.SuperAdminModels.Admin;
 using UseCase.UserToken.GetInfoRefresh;
 
-namespace Interactor.UserToken
+namespace Interactor.SuperAdmin
 {
     public class RefreshTokenByUserInteractor : IRefreshTokenByUserInputPort
     {

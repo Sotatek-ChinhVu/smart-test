@@ -1883,13 +1883,14 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds)
     {
         var result = new List<ItemCmtModel>();
-        var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(p => p.KarteKbn == KarteConst.KarteKbn && p.HpId == hpId &&
+        // Get comment no follow Kbn
+        var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(p => p.HpId == hpId &&
                                                                                 p.IsDeleted == DeleteTypes.None &&
                                                                                 itemCds.Contains(p.ItemCd));
 
         foreach (var itemCd in itemCds)
         {
-            var entities = cmtCheckMsts.Where(p => p.ItemCd == itemCd).OrderBy(p => p.SortNo);
+            var entities = cmtCheckMsts.Where(p => p.ItemCd == itemCd).OrderBy(p => p.KarteKbn).ThenBy(p => p.SortNo);
             if (entities == null) continue;
             foreach (var entity in entities)
             {
