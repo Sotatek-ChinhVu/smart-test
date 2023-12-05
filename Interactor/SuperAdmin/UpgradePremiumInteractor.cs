@@ -5,8 +5,6 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
-using Entity.SuperAdmin;
-using Entity.Tenant;
 using Interactor.Realtime;
 using Npgsql;
 using UseCase.SuperAdmin.UpgradePremium;
@@ -18,7 +16,7 @@ namespace Interactor.SuperAdmin
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
         private readonly INotificationRepository _notificationRepository;
-        private readonly ITenantRepository _tenantRepositoryRunTask; 
+        private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
         public UpgradePremiumInteractor(
             ITenantRepository tenantRepository,
@@ -31,7 +29,7 @@ namespace Interactor.SuperAdmin
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _notificationRepository = notificationRepository;
-            _tenantRepositoryRunTask = tenantRepositoryRunTask; 
+            _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
         }
 
@@ -86,14 +84,14 @@ namespace Interactor.SuperAdmin
                 }
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrading"]);
                 CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run(async () =>
+                _ = Task.Run(() =>
                 {
                     try
                     {
                         // Create SnapShot
-                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpgrade);
+                        var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpgrade).Result;
 
-                        if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
+                        if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
                         {
                             throw new Exception("Snapshot is not Available");
                         }
@@ -101,9 +99,9 @@ namespace Interactor.SuperAdmin
                         // Create New subdomain
                         if (oldTenant.SubDomain != inputData.SubDomain)
                         {
-                            if (await Route53Action.CreateTenantDomain(inputData.SubDomain) != null)
+                            if (Route53Action.CreateTenantDomain(inputData.SubDomain).Result != null)
                             {
-                                await Route53Action.DeleteTenantDomain(oldTenant.SubDomain);
+                                var actionDeleteDomain = Route53Action.DeleteTenantDomain(oldTenant.SubDomain).Result;
                             }
                             else
                             {
@@ -118,10 +116,10 @@ namespace Interactor.SuperAdmin
                         var dbInstanceIdentifier = $"{inputData.SubDomain}-{rString}";
                         Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
 
-                        var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier);
+                        var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier).Result;
 
                         // Check Restore success 
-                        var endpoint = await CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId);
+                        var endpoint = CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId).Result;
 
 
                         //Delete list Db without tenantDB in new RDS
@@ -130,7 +128,7 @@ namespace Interactor.SuperAdmin
 
 
                         // Delete DB in old RDS
-                        var listTenantDb = await RDSAction.GetListDatabase(oldTenant.EndPointDb);
+                        var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb).Result;
                         Console.WriteLine($"listTenantDb: {listTenantDb}");
                         // Connect RDS delete TenantDb
                         if (listTenantDb.Count > 1)
@@ -143,7 +141,7 @@ namespace Interactor.SuperAdmin
                         else
                         {
                             Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
-                            await RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                            var actionDeleteRDS = RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
                         }
 
                         // Update endpoint, dbInstanceIdentifier, status tenant available 
@@ -154,7 +152,7 @@ namespace Interactor.SuperAdmin
                         {
                             var messenge = $"{oldTenant.EndSubDomain} is upgrade premium successfully.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                             cts.Cancel();
                             return;
                         }
@@ -170,7 +168,7 @@ namespace Interactor.SuperAdmin
                         _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
                         var messenge = $"{oldTenant.EndSubDomain} is upgrade premium failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
                     }
@@ -190,7 +188,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public  bool ConnectAndDeleteDatabases(string serverEndpoint, string tennantDB)
+        public bool ConnectAndDeleteDatabases(string serverEndpoint, string tennantDB)
         {
             try
             {
