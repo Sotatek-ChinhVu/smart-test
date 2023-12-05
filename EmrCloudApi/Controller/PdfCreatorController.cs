@@ -128,7 +128,7 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpGet(ApiPath.OutDrug)]
-    public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
+    public async Task<IActionResult> GetOutDrugReportingData([FromQuery] OutDrugRequest request)
     {
         var data = _reportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.OutDug, "院外処方箋.pdf");

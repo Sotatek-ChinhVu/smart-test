@@ -1,7 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Constants;
 using Reporting.CommonMasters.Enums;
@@ -9,13 +8,12 @@ using Reporting.Mappers.Common;
 using Reporting.OutDrug.DB;
 using Reporting.OutDrug.Model;
 using System.Text;
-using System.Text.Json;
 using Reporting.OutDrug.Model.Output;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.OutDrug.Utils;
 using HokenSbtKbn = Reporting.CommonMasters.Constants.HokenSbtKbn;
-using System.Linq;
+using Emr.Report.OutDrug.Model;
 
 namespace Reporting.OutDrug.Service;
 
