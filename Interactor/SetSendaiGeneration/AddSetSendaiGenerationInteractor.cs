@@ -35,10 +35,10 @@ namespace Interactor.SetSendaiGeneration
                     return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.InvalidUserId);
                 }
 
+                #region BackupSetGeneration
                 var result = _setGenerationMstRepository.AddSetSendaiGeneration(inputData.UserId, inputData.HpId, inputData.StartDate);
                 if (result != null)
                 {
-                    #region BackupSetGeneration
                     // Process Clone
                     var getCountProcess = _setGenerationMstRepository.GetCountStepProcess(result.TargetGeneration, result.SourceGeneration, inputData.HpId, inputData.UserId);
                     if (getCountProcess != null && getCountProcess.TotalCount > 0)
@@ -117,23 +117,49 @@ namespace Interactor.SetSendaiGeneration
                             var saveSetKbn = _setGenerationMstRepository.SaveCloneOdrInfCmt(inputData.HpId, getCountProcess.ListSetMst, getCountProcess.ListDictContain);
                             _messenger.Send(new ProcessSetSendaiGenerationStatus(saveSetKbn ? $"Add OdrInfCmt Successs!" : $"Add OdrInfCmt Faid!", (int)Math.Round((double)(100 * countResult) / getCountProcess.TotalCount), false, false));
                         }
-                        #endregion
-
-                    #region BackupByomeiSet
-                        // Add ByomeiSetGenerationMst
-
-
-                    #endregion
                     }
                     else
                     {
                         // Update faild. Stop process
                         _messenger.Send(new ProcessSetSendaiGenerationStatus($"Add MstBackup Faild!", 0, false, false));
                     }
-                    _setGenerationMstRepository.ReloadCache(inputData.HpId, true);
-                    return new AddSetSendaiGenerationOutputData(true, AddSetSendaiGenerationStatus.Success);
                 }
-                return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                else
+                {
+                    return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                }
+
+                #endregion
+                #region BackupByomeiSet
+                // Add ByomeiSetGenerationMst
+                var byomeiSetGeneration = _setGenerationMstRepository.AddByomeiSetGenerationMst(inputData.HpId, inputData.UserId, inputData.StartDate);
+
+                if (byomeiSetGeneration != null)
+                {
+                    // Process Clone
+                    _setGenerationMstRepository.CloneByomeiSetGeneration(inputData.HpId, inputData.UserId, byomeiSetGeneration.TargetGeneration, byomeiSetGeneration.SourceGeneration);
+                }
+                else
+                {
+                    return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                }
+                #endregion
+
+                #region BackupListSet
+                var listSetGeneration = _setGenerationMstRepository.AddListSetGenerationMst(inputData.HpId, inputData.UserId, inputData.StartDate);
+
+                if (listSetGeneration != null)
+                {
+                    // Process Clone
+                    _setGenerationMstRepository.CloneListSetGeneration(inputData.UserId, inputData.HpId, listSetGeneration.TargetGeneration, listSetGeneration.SourceGeneration);
+                }
+                else
+                {
+                    return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                }
+                #endregion
+
+                return new AddSetSendaiGenerationOutputData(true, AddSetSendaiGenerationStatus.Success);
             }
             finally
             {

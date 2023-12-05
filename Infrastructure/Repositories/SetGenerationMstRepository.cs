@@ -140,6 +140,14 @@ namespace Infrastructure.Repositories
             return date.Year.ToString() + "/" + (date.Month > 9 ? date.Month.ToString() : "0" + date.Month.ToString()) + "/" + (date.Day > 9 ? date.Day.ToString() : "0" + date.Day.ToString());
         }
 
+        /// <summary>
+        /// Delete SetSenDai
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="generationId"></param>
+        /// <param name="userId"></param>
+        /// <param name="startDate"></param>
+        /// <returns></returns>
         public bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId, int startDate)
         {
             DeleteSetGeneration(hpId, generationId, userId);
@@ -158,10 +166,16 @@ namespace Infrastructure.Repositories
             return saveChanges;
         }
 
-        public void DeleteSetGeneration(int hpId, int generationId, int userId)
+        /// <summary>
+        /// Delete SetGenerationMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="generationId"></param>
+        /// <param name="userId"></param>
+        private void DeleteSetGeneration(int hpId, int generationId, int userId)
         {
             var ListDataUpdate = new List<SetGenerationMst>();
-            var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.GenerationId == generationId && x.IsDeleted == DeleteTypes.None);
+            var setGenrationCurrent = TrackingDataContext.SetGenerationMsts.FirstOrDefault(x => x.HpId == hpId && x.GenerationId == generationId && x.IsDeleted == DeleteTypes.None);
             if (setGenrationCurrent != null)
             {
                 // Update item delete
@@ -171,7 +185,7 @@ namespace Infrastructure.Repositories
                 setGenrationCurrent.CreateDate = TimeZoneInfo.ConvertTimeToUtc(setGenrationCurrent.CreateDate);
                 ListDataUpdate.Add(setGenrationCurrent);
                 // Get Item Above and Update
-                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.StartDate >= setGenrationCurrent.StartDate && x.GenerationId > setGenrationCurrent.GenerationId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.StartDate).ThenBy(x => x.GenerationId).FirstOrDefault();
+                var itemAbove = TrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.StartDate >= setGenrationCurrent.StartDate && x.GenerationId > setGenrationCurrent.GenerationId && x.IsDeleted == DeleteTypes.None).OrderBy(x => x.StartDate).ThenBy(x => x.GenerationId).FirstOrDefault();
                 if (itemAbove != null)
                 {
                     itemAbove.StartDate = setGenrationCurrent.StartDate;
@@ -188,7 +202,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public void DeleteByomeiSetGeneration(int hpId, int userId, int startDate)
+        /// <summary>
+        /// Detele ByomeiSetGenerationMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="startDate"></param>
+        private void DeleteByomeiSetGeneration(int hpId, int userId, int startDate)
         {
             var deleteByomeiSet = NoTrackingDataContext.ByomeiSetGenerationMsts.FirstOrDefault(x =>
                 x.HpId == hpId &&
@@ -221,7 +241,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public void DeleteListSetGeneration(int hpId, int userId, int startDate)
+        /// <summary>
+        /// Delete ListSetGenerationMsts
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="startDate"></param>
+        private void DeleteListSetGeneration(int hpId, int userId, int startDate)
         {
             var deleteListSet = NoTrackingDataContext.ListSetGenerationMsts.FirstOrDefault(x =>
                     x.HpId == hpId &&
@@ -727,41 +753,47 @@ namespace Infrastructure.Repositories
 
         public void RestoreByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId)
         {
-            Task<int> deleteTask = Task<int>.Factory.StartNew(() =>
-            {
-                var targetSetMsts = TrackingDataContext.ByomeiSetMsts.Where(x =>
+            var targetSetMsts = TrackingDataContext.ByomeiSetMsts.Where(x =>
                             x.HpId == hpId &&
                             x.GenerationId == targetGeneration).ToList();
 
-                using (var transaction = TrackingDataContext.Database.BeginTransaction())
+            Task<int> deleteTask = Task<int>.Factory.StartNew(() =>
+            {
+                var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+                executionStrategy.Execute(
+                () =>
                 {
-                    try
+                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
                     {
-                        targetSetMsts.ForEach(byomeiSetMst =>
+                        try
                         {
-                            byomeiSetMst.IsDeleted = 1;
-                            byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            byomeiSetMst.UpdateId = userId;
-                            byomeiSetMst.UpdateMachine = "SmartKarte";
-                        });
-                        TrackingDataContext.SaveChanges();
-                        transaction.Commit();
+                            targetSetMsts.ForEach(byomeiSetMst =>
+                            {
+                                byomeiSetMst.IsDeleted = 1;
+                                byomeiSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                byomeiSetMst.UpdateId = userId;
+                                byomeiSetMst.UpdateMachine = "SmartKarte";
+                            });
+                            TrackingDataContext.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
                     }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                }
+                });
+
                 return targetSetMsts.Count;
             });
-            deleteTask.ContinueWith((action) =>
+            deleteTask.ContinueWith(async (action) =>
             {
                 CloneByomeiSetGeneration(hpId, userId, targetGeneration, sourceGenerationId, action.Result);
             });
         }
 
-        private void CloneByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0)
+        public void CloneByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0)
         {
             var setMstsBackuped = TrackingDataContext.ByomeiSetMsts.Where(x =>
                 x.HpId == hpId &&
@@ -808,32 +840,38 @@ namespace Infrastructure.Repositories
 
         public void RestoreListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId)
         {
+            var targetSetMsts = TrackingDataContext.ListSetMsts.Where(x =>
+                            x.HpId == hpId &&
+                            x.GenerationId == targetGeneration).ToList();
             Task<int> deleteTask = Task<int>.Factory.StartNew(() =>
             {
-                using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+                executionStrategy.Execute(
+                () =>
                 {
-                    var targetSetMsts = TrackingDataContext.ListSetMsts.Where(x =>
-                        x.HpId == hpId &&
-                        x.GenerationId == targetGeneration).ToList();
-                    try
+                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
                     {
-                        targetSetMsts.ForEach(listSetMst =>
+                        try
                         {
-                            listSetMst.IsDeleted = 1;
-                            listSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            listSetMst.UpdateId = userId;
-                            listSetMst.UpdateMachine = CIUtil.GetComputerName();
-                        });
-                        TrackingDataContext.SaveChanges();
-                        transaction.Commit();
+                            targetSetMsts.ForEach(listSetMst =>
+                            {
+                                listSetMst.HpId = hpId;
+                                listSetMst.IsDeleted = 1;
+                                listSetMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                listSetMst.UpdateId = userId;
+                                listSetMst.UpdateMachine = CIUtil.GetComputerName();
+                            });
+                            TrackingDataContext.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                        }
                     }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                    }
+                });
 
-                    return targetSetMsts.Count;
-                }
+                return targetSetMsts.Count;
             });
             deleteTask.ContinueWith((action) =>
             {
@@ -841,7 +879,7 @@ namespace Infrastructure.Repositories
             });
         }
 
-        private void CloneListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0)
+        public void CloneListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0)
         {
             var setMstsBackuped = TrackingDataContext.ListSetMsts.Where(x =>
                 x.HpId == hpId &&
@@ -852,32 +890,38 @@ namespace Infrastructure.Repositories
                 return;
             }
 
+            stepCount += stepExcuted;
             var backupTask = Task.Factory.StartNew(() =>
             {
-                using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+                executionStrategy.Execute(
+                () =>
                 {
-                    try
+                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
                     {
-                        setMstsBackuped.ForEach(x =>
+                        try
                         {
-                            x.SetId = 0;
-                            x.GenerationId = targetGeneration;
-                            x.CreateDate = CIUtil.GetJapanDateTimeNow();
-                            x.CreateId = userId;
-                            x.CreateMachine = "SmartKarte";
-                            x.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            x.UpdateId = userId;
-                            x.UpdateMachine = "SmartKarte";
-                        });
-                        TrackingDataContext.ListSetMsts.AddRange(setMstsBackuped);
-                        TrackingDataContext.SaveChanges();
-                        transaction.Commit();
+                            setMstsBackuped.ForEach(x =>
+                            {
+                                x.HpId = hpId;
+                                x.SetId = 0;
+                                x.GenerationId = targetGeneration;
+                                x.CreateDate = CIUtil.GetJapanDateTimeNow();
+                                x.CreateId = userId;
+                                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                x.UpdateId = userId;
+                            });
+                            TrackingDataContext.ListSetMsts.AddRange(setMstsBackuped);
+                            TrackingDataContext.SaveChanges();
+                            transaction.Commit();
+                        }
+                        catch (Exception e)
+                        {
+                            transaction.Rollback();
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        transaction.Rollback();
-                    }
-                }
+                });
+
             });
         }
 
@@ -894,20 +938,102 @@ namespace Infrastructure.Repositories
             return listSetGenerationMstList;
         }
 
-        public bool AddSetGenerationMst(int hpId, int userId, int startDate)
+
+        public AddSetSendaiModel? AddByomeiSetGenerationMst(int hpId, int userId, int startDate)
         {
+            // get SendaiGeneration newest
+            var itemNewest = NoTrackingDataContext.ByomeiSetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
+            if (itemNewest?.StartDate == startDate)
+            {
+                var year = startDate / 10000;
+                var yearMonth = startDate / 100;
+                var month = yearMonth % year;
+                if (month == 12)
+                {
+                    startDate = (year + 1) * 10000 + 1 * 100 + 1;
+                }
+                else
+                {
+                    startDate += 100;
+                }
+            }
+
+            //insert data ByomeiSetGenerationMst
             var targetByomeiSet = new ByomeiSetGenerationMst();
 
             targetByomeiSet.HpId = hpId;
             targetByomeiSet.StartDate = startDate;
             targetByomeiSet.CreateDate = CIUtil.GetJapanDateTimeNow();
             targetByomeiSet.CreateId = userId;
-            targetByomeiSet.CreateDate = CIUtil.GetJapanDateTimeNow();
+            targetByomeiSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
             targetByomeiSet.UpdateId = userId;
+            TrackingDataContext.ByomeiSetGenerationMsts.Add(targetByomeiSet);
+            var isSaveChange = TrackingDataContext.SaveChanges() > 0;
 
-            TrackingDataContext.Add(targetByomeiSet);
+            if (!isSaveChange)
+            {
+                return null;
+            }
+            else
+            {
+                // Clone Generation
+                var itemAddGet = TrackingDataContext.ByomeiSetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
+                if (itemNewest != null && itemAddGet != null)
+                {
+                    return new AddSetSendaiModel(itemAddGet.GenerationId, itemNewest.GenerationId);
+                }
+            }
+
+            return null;
         }
 
+        public AddSetSendaiModel? AddListSetGenerationMst(int hpId, int userId, int startDate)
+        {
+            // get ListSetGenerationMst newest
+            var itemNewest = NoTrackingDataContext.ListSetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
+            if (itemNewest?.StartDate == startDate)
+            {
+                var year = startDate / 10000;
+                var yearMonth = startDate / 100;
+                var month = yearMonth % year;
+                if (month == 12)
+                {
+                    startDate = (year + 1) * 10000 + 1 * 100 + 1;
+                }
+                else
+                {
+                    startDate += 100;
+                }
+            }
+
+            //insert data ListSetGenerationMst
+            var targetListSet = new ListSetGenerationMst();
+
+            targetListSet.HpId = hpId;
+            targetListSet.StartDate = startDate;
+            targetListSet.CreateDate = CIUtil.GetJapanDateTimeNow();
+            targetListSet.CreateId = userId;
+            targetListSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            targetListSet.UpdateId = userId;
+            TrackingDataContext.ListSetGenerationMsts.Add(targetListSet);
+            var isSaveChange = TrackingDataContext.SaveChanges() > 0;
+
+            if (!isSaveChange)
+            {
+                return null;
+            }
+            else
+            {
+                // Clone ListSetGenerationMst
+                var itemAddGet = TrackingDataContext.ListSetGenerationMsts.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.StartDate == startDate).OrderByDescending(x => x.StartDate).ThenByDescending(s => s.GenerationId).FirstOrDefault();
+                if (itemNewest != null && itemAddGet != null)
+                {
+                    return new AddSetSendaiModel(itemAddGet.GenerationId, itemNewest.GenerationId);
+                }
+            }
+
+            return null;
+        }
 
         public void ReleaseResource()
         {

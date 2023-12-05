@@ -43,6 +43,14 @@ namespace Domain.Models.SetGenerationMst
 
         List<ListSetGenerationMstModel> GetAll(int hpId);
 
+        AddSetSendaiModel? AddByomeiSetGenerationMst(int hpId, int userId, int startDate);
+
+        AddSetSendaiModel? AddListSetGenerationMst(int hpId, int userId, int startDate);
+
+        void CloneByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0);
+
+        void CloneListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId, int stepExcuted = 0);
+
         IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false);
     }
 }
