@@ -47,10 +47,6 @@ namespace Interactor.SuperAdmin
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
-                var pathFileDump2 = @$"{pathFileDumpRestore}\{"restore8"}.sql";
-                PostgreSqlDump(pathFileDump2, tenant.EndPointDb, ConfigConstant.PgPostDefault, "restore8", "postgres", "Emr!23456789").Wait();
-                PostgreSqlExcuteFileDump(pathFileDump2, tenant.EndPointDb, ConfigConstant.PgPostDefault, "restore8", "postgres", "Emr!23456789").Wait();
-                return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
                 if (tenant == null || tenant.TenantId <= 0)
                 {
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.TenantDoesNotExist);
