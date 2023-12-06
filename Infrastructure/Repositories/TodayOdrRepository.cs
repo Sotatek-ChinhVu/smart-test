@@ -3471,8 +3471,29 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
     {
         var odrDateInfs = new List<OdrDateInf>();
         var odrDateDetails = new List<OdrDateDetail>();
-        var grpIdMax = NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Max(x => x.GrpId) + 1;
-        var seqNoMax = NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Max(x => x.SeqNo) +1;
+        var grpIdMax = 0;
+        var seqNoMax = 0;
+        var OdrDateInfList = NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).ToList();
+        var OdrDateDetailList = NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).ToList();
+
+        if (OdrDateInfList.Count != 0)
+        {
+            grpIdMax = NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Max(x => x.GrpId) + 1;
+        }
+        else
+        {
+            grpIdMax = 1;
+        }
+
+        if (OdrDateDetailList.Count != 0)
+        {
+            seqNoMax = NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Max(x => x.SeqNo) + 1;
+        }
+        else
+        {
+            seqNoMax = 1;
+        }
+
         foreach (var item in odrDateInfModels)
         {
             if (item.GrpName == string.Empty && item.GrpId == 0) continue;
@@ -3502,10 +3523,12 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             }
         }
 
+        var grpIdInfMax = grpIdMax;
+
         foreach (var data in odrDateInfs)
         {
-            data.GrpId = grpIdMax;
-            grpIdMax++;
+            data.GrpId = grpIdInfMax;
+            grpIdInfMax++;
         }
 
         TrackingDataContext.OdrDateInfs.AddRange(odrDateInfs);
