@@ -17,7 +17,7 @@ public class WebSocketService : IWebSocketService
 
     public async Task SendMessageAsync(string functionCode, object message)
     {
-        var tenantId = _tenantProvider.GetClinicID();
+        var tenantId = _tenantProvider.GetDomainName();
         await _hubContext.Clients.Group(tenantId).ReceiveMessage(functionCode, message);
         _tenantProvider.DisposeDataContext();
     }

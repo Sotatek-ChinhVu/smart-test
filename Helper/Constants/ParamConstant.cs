@@ -9,5 +9,6 @@
         public const string Domain = "domain";
         public const string LoginKey = "Login-Key";
         public const string Role = "Role";
+        public const string Name = "Name";
     }
 }
