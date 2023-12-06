@@ -86,7 +86,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAdminAuditLogRepository, AdminAuditLogRepository>();
             services.AddTransient<IMigrationTenantHistoryRepository, MigrationTenantHistoryRepository>();
 
-            services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
+            //services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
 
             services.AddTransient<INotificationRepository, NotificationRepository>();
         }
