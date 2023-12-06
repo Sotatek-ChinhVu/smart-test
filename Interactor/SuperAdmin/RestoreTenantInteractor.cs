@@ -18,14 +18,12 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        private readonly IWebSocketService _webSocketService;
         private readonly INotificationRepository _notificationRepository;
         private readonly IConfiguration _configuration;
-        public RestoreTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository, IConfiguration configuration)
+        public RestoreTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, INotificationRepository notificationRepository, IConfiguration configuration)
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
-            _webSocketService = webSocketService;
             _notificationRepository = notificationRepository;
             _configuration = configuration;
 
@@ -33,6 +31,8 @@ namespace Interactor.SuperAdmin
 
         public RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
         {
+            IWebSocketService _webSocketService;
+            _webSocketService = (IWebSocketService)inputData.WebSocketService;
             string pathFileDumpRestore = _configuration["PathFileDumpRestore"];
 
             if (string.IsNullOrEmpty(pathFileDumpRestore))
