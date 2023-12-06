@@ -186,7 +186,7 @@ namespace Interactor.Insurance
             }
             // Try parse to have not exception
             var checkFutansyaNo = Int32.TryParse(futansyaNo, out Int32 numberFutansyaNo);
-            if (!string.IsNullOrEmpty(futansyaNo) && checkFutansyaNo && numberFutansyaNo == 0)
+            if (!string.IsNullOrEmpty(futansyaNo) && numberFutansyaNo == 0)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "負担者番号は 0〜9の数字で入力してください。" };
                 message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
@@ -467,7 +467,7 @@ namespace Interactor.Insurance
                     }
                     //TryParse to have not exception
                     var checkJyukyusyaNo = Int32.TryParse(jyukyusyaNo, out Int32 numberJyukyusyaNo);
-                    if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && checkJyukyusyaNo && !CIUtil.HokenNumberCheckDigits(numberJyukyusyaNo))
+                    if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && !CIUtil.HokenNumberCheckDigits(numberJyukyusyaNo))
                     {
                         var paramsMessage = new string[] { "公費" + numberMessage + "受給者番号" };
                         message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
