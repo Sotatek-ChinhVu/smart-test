@@ -8,6 +8,7 @@ using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using UseCase.SuperAdmin.RestoreTenant;
 using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
@@ -115,6 +116,16 @@ namespace SuperAdminAPI.Controllers
             var presenter = new RestoreTenantPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
+        }
+
+        [HttpPost("RestoreObjectS3Tenant")]
+        public ActionResult<Response<RestoreObjectS3TenantResponse>> RestoreObjectS3Tenant([FromBody] RestoreObjectS3TenantRequest request)
+        {
+            var input = new RestoreObjectS3TenantInputData(request.ObjectName);
+            var output = _bus.Handle(input);
+            var presenter = new RestoreObjectS3TenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RestoreObjectS3TenantResponse>>(presenter.Result);
         }
     }
 }
