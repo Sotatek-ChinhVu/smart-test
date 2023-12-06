@@ -3471,6 +3471,8 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
     {
         var odrDateInfs = new List<OdrDateInf>();
         var odrDateDetails = new List<OdrDateDetail>();
+        var grpIdMax = NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Max(x => x.GrpId) + 1;
+        var seqNoMax = NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Max(x => x.SeqNo) +1;
         foreach (var item in odrDateInfModels)
         {
             if (item.GrpName == string.Empty && item.GrpId == 0) continue;
@@ -3500,13 +3502,10 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             }
         }
 
-        int maxGrpIdModel = odrDateInfModels.Count > 0 ? odrDateInfModels.Max(x => x.GrpId) + 1 : 1;
-        int maxGrpId = odrDateInfModels.Count > 0 ? odrDateInfModels.Max(x => x.GrpId) + 1 : 1;
-
         foreach (var data in odrDateInfs)
         {
-            data.GrpId = maxGrpId;
-            maxGrpId++;
+            data.GrpId = grpIdMax;
+            grpIdMax++;
         }
 
         TrackingDataContext.OdrDateInfs.AddRange(odrDateInfs);
@@ -3519,18 +3518,13 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             }
             else
             {
-                item.GrpId = maxGrpIdModel;
+                item.GrpId = grpIdMax;
+                grpIdMax++;
             }
-            maxGrpIdModel++;
         }
-
-        int maxSeqNo = 0;
 
         foreach (var item in odrDateInfModels)
         {
-            int localMaxSeqNo = item.OdrDateDetailList.Count() > 0 ? item.OdrDateDetailList.Max(x => x.SeqNo) + 1 : 1;
-
-            if (maxSeqNo < localMaxSeqNo) maxSeqNo = localMaxSeqNo;
             foreach (var OdrDateDetailItem in item.OdrDateDetailList)
             {
                 if (OdrDateDetailItem.ItemCd == "") continue;
@@ -3543,16 +3537,18 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                         odrDateDetail.IsDeleted = 1;
                     }
                 }
-                else
+                else 
                 {
                     var odrDateDetail = TrackingDataContext.OdrDateDetails.FirstOrDefault(x => x.HpId == hpId && x.GrpId == OdrDateDetailItem.GrpId && x.SeqNo == OdrDateDetailItem.SeqNo);
                     if (odrDateDetail != null)
                     {
                         odrDateDetail.ItemCd = OdrDateDetailItem.ItemCd;
+                        odrDateDetail.UpdateId = userId;
+                        odrDateDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                     else
                     {
-                        OdrDateDetail odrdateDetailitem = ConvertOdrDateDetailList(hpId, userId, OdrDateDetailItem, item.GrpId, maxSeqNo, OdrDateDetailItem.SortNo);
+                        OdrDateDetail odrdateDetailitem = ConvertOdrDateDetailList(hpId, userId, OdrDateDetailItem, item.GrpId);
                         odrDateDetails.Add(odrdateDetailitem);
                     }
                 }
@@ -3561,8 +3557,8 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         foreach (var data in odrDateDetails)
         {
-            data.SeqNo = maxSeqNo;
-            maxSeqNo++;
+            data.SeqNo = seqNoMax;
+            seqNoMax++;
         }
 
         TrackingDataContext.OdrDateDetails.AddRange(odrDateDetails);
@@ -3586,13 +3582,13 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         };
     }
 
-    private OdrDateDetail ConvertOdrDateDetailList(int hpId, int userId, OdrDateDetailModel u, int grpId, int seqNo, int sortNo)
+    private OdrDateDetail ConvertOdrDateDetailList(int hpId, int userId, OdrDateDetailModel u, int grpId)
     {
         return new OdrDateDetail
         {
             HpId = hpId,
             GrpId = grpId,
-            SeqNo = seqNo,
+            SeqNo = 0,
             ItemCd = u.ItemCd,
             IsDeleted = u.IsDeleted,
             SortNo = u.SortNo,
