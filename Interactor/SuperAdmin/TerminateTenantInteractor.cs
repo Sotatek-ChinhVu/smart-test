@@ -58,7 +58,7 @@ namespace Interactor.SuperAdmin
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run(async () =>
+                _ = Task.Run( () =>
                 {
                     try
                     {
@@ -77,29 +77,29 @@ namespace Interactor.SuperAdmin
                         // Deleted RDS
                         else
                         {
-                            deleteRDSAction = await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
+                            deleteRDSAction =  RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
                         }
 
                         // Delete DNS
-                        var deleteDNSAction = await Route53Action.DeleteTenantDomain(tenant.SubDomain);
+                        var deleteDNSAction =  Route53Action.DeleteTenantDomain(tenant.SubDomain).Result;
 
                         // Delete item cname in cloud front
-                        var deleteItemCnameAction = await CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain);
+                        var deleteItemCnameAction = CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain).Result;
 
                         //Delete folder S3
-                        await _awsSdkService.DeleteObjectsInFolderAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain);
+                        _awsSdkService.DeleteObjectsInFolderAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain).Wait();
 
                         // Check action deleted  RDS, DNS, Cloud front
                         if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
                         {
                             // Check finshed terminate
-                            if (await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier) && !await Route53Action.CheckSubdomainExistence(tenant.SubDomain))
+                            if (RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result && !Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result)
                             {
                                 _tenantRepositoryRunTask.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
                                 // Notification  terminating success
                                 var messenge = tenant.EndSubDomain + $"is teminate successfully. ";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                                await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                                 cts.Cancel();
                                 return;
                             }
@@ -111,7 +111,7 @@ namespace Interactor.SuperAdmin
                         // Notification  terminating failed
                         var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
                     }

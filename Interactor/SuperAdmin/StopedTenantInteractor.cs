@@ -49,7 +49,7 @@ namespace Interactor.SuperAdmin
 
 
                 CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run(async () =>
+                _ = Task.Run(() =>
                 {
                     try
                     {
@@ -58,7 +58,7 @@ namespace Interactor.SuperAdmin
                         {
                             var messenge = $"{tenant.EndSubDomain} is stoped successfully.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                             cts.Cancel();
                             return;
@@ -68,7 +68,7 @@ namespace Interactor.SuperAdmin
                     {
                         var messenge = $"{tenant.EndSubDomain} is stoped failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
                     }

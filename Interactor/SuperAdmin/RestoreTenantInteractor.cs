@@ -60,7 +60,7 @@ namespace Interactor.SuperAdmin
                 }
 
                 CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run(async () =>
+                _ = Task.Run(() =>
                 {
                     try
                     {
@@ -68,9 +68,9 @@ namespace Interactor.SuperAdmin
                         Console.WriteLine($"Start  restore  tenant. RdsIdentifier: {tenant.RdsIdentifier}");
 
                         // Create snapshot backup
-                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier, ConfigConstant.RdsSnapshotBackupRestore);
+                        var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier, ConfigConstant.RdsSnapshotBackupRestore).Result;
 
-                        if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
+                        if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
                         {
                             throw new Exception("Snapshot is not Available");
                         }
@@ -78,8 +78,8 @@ namespace Interactor.SuperAdmin
                         // Create tmp RDS from snapshot
                         string rString = CommonConstants.GenerateRandomString(6);
                         var dbInstanceIdentifier = $"{tenant.SubDomain}-{rString}";
-                        var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier);
-                        var endpoint = await CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId);
+                        var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier).Result;
+                        var endpoint = CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId).Result;
 
                         // Restore tenant dedicate
                         if (tenant.Type == ConfigConstant.TypeDedicate)
@@ -92,13 +92,13 @@ namespace Interactor.SuperAdmin
                             }
 
                             // delete old RDS
-                            await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
-                            await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier);
+                            var actionDeleteOldRDS = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
+                            var checkDeleteActionOldRDS = RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result;
                             // Finished restore
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
                             var messenge = $"{tenant.EndSubDomain} is restore successfully.";
                             var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                             cts.Cancel();
                             return;
                         }
@@ -108,7 +108,7 @@ namespace Interactor.SuperAdmin
                         {
                             // dump data,
                             var pathFileDump = @$"{pathFileDumpRestore}{tenant.Db}.sql"; // path save file sql dump
-                            await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
+                            PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
 
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
@@ -123,16 +123,16 @@ namespace Interactor.SuperAdmin
                             }
 
                             // restore db 
-                            await PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
+                            PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
 
-                            // delete Tmp db
-                            await RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier);
-                            await RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier);
+                            // delete Tmp RDS
+                            var actionDeleteTmpRDS = RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier).Result;
+                            var checkDeleteActionTmpRDS = RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier).Result;
                             // Finished restore
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
                             var messenge = $"{tenant.EndSubDomain} is restore successfully.";
                             var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                             cts.Cancel();
                             return;
                         }
@@ -145,7 +145,7 @@ namespace Interactor.SuperAdmin
                         // Notification  restore failed
                         var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
                         var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
                     }
