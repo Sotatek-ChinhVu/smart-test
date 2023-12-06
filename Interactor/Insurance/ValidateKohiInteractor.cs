@@ -42,7 +42,7 @@ namespace Interactor.Insurance
             {
                 _insuranceMstRepository.ReleaseResource();
             }
-            validateDetails = validateDetails.DistinctBy(v => v.Status).ToList();
+            validateDetails = validateDetails.DistinctBy(v => new { v.Status, v.Message }).ToList();
             return new ValidKohiOutputData(validateDetails);
         }
 
