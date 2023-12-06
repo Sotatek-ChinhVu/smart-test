@@ -36,7 +36,7 @@ public class DeleteSetSendaiGenerationInteractor : IDeleteSendaiGenerationInputP
                 return new DeleteSendaiGenerationOutputData(false, DeleteSendaiGenerationStatus.InvalidUserId);
             }
 
-            var result = _inputItemRepository.DeleteSetSenDaiGeneration(inputData.HpId, inputData.GenerationId, inputData.UserId);
+            var result = _inputItemRepository.DeleteSetSenDaiGeneration(inputData.HpId, inputData.GenerationId, inputData.UserId, inputData.StartDate);
             if (result)
             {
                 return new DeleteSendaiGenerationOutputData(result, DeleteSendaiGenerationStatus.Success);

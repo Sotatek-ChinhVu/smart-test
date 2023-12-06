@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        
+
         [Column("HP_ID", Order = 1)]
         //[Index("USER_MST_IDX01", 1)]
         public int HpId { get; set; }
@@ -184,9 +184,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        
+
         [Column("ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
+
+        [Column("LOGIN_TYPE")]
+        [CustomAttribute.DefaultValue(0)]
+        public int LoginType { get; set; }
+
+        [Column("HPKI_SN")]
+        [MaxLength(100)]
+        public string? HpkiSn { get; set; } = string.Empty;
+
+        [Column("HPKI_ISSUER_DN")]
+        [MaxLength(100)]
+        public string? HpkiIssuerDn { get; set; } = string.Empty;
     }
 }

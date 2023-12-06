@@ -24,11 +24,11 @@ public class LoginPresenter
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
             var token = AuthProvider.GenerateAccessToken(claims);
-            Result.Data = new LoginResponse(token, output.User.Id);
+            Result.Data = new LoginResponse();
         }
         else
         {
-            Result.Data = new LoginResponse(string.Empty, 0);
+            Result.Data = new LoginResponse();
         }
 
         Result.Message = GetMessage(output.Status);
