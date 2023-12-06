@@ -10,5 +10,5 @@ public enum TenantEnum
     Type = 6,
     Size = 7,
     StorageFull = 8,
-    Status = 9,
+    StatusTenant = 9,
 }

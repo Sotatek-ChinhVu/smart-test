@@ -1,13 +1,8 @@
 ﻿using Domain.Models.SetGenerationMst;
+using Helper.Common;
 using Helper.Messaging;
 using Helper.Messaging.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.SetSendaiGeneration.Add;
-using UseCase.SetSendaiGeneration.Delete;
 
 namespace Interactor.SetSendaiGeneration
 {
@@ -41,7 +36,10 @@ namespace Interactor.SetSendaiGeneration
                     return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.InvalidUserId);
                 }
 
-                var result = _setGenerationMstRepository.AddSetSendaiGeneration(inputData.UserId, inputData.HpId, inputData.StartDate);
+                var nextStartDate = GetNextStartDate(inputData.StartDate);
+
+                #region BackupSetGeneration
+                var result = _setGenerationMstRepository.AddSetSendaiGeneration(inputData.UserId, inputData.HpId, nextStartDate);
                 if (result != null)
                 {
                     // Process Clone
@@ -128,15 +126,60 @@ namespace Interactor.SetSendaiGeneration
                         // Update faild. Stop process
                         _messenger.Send(new ProcessSetSendaiGenerationStatus($"Add MstBackup Faild!", 0, false, false));
                     }
-                    _setGenerationMstRepository.ReloadCache(inputData.HpId, true);
-                    return new AddSetSendaiGenerationOutputData(true, AddSetSendaiGenerationStatus.Success);
                 }
-                return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                else
+                {
+                    return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                }
+
+                #endregion
+                #region BackupByomeiSet
+                // Add ByomeiSetGenerationMst
+                var byomeiSetGeneration = _setGenerationMstRepository.AddByomeiSetGenerationMst(inputData.HpId, inputData.UserId, nextStartDate);
+
+                if (byomeiSetGeneration != null)
+                {
+                    // Process Clone
+                    _setGenerationMstRepository.CloneByomeiSetGeneration(inputData.HpId, inputData.UserId, byomeiSetGeneration.TargetGeneration, byomeiSetGeneration.SourceGeneration);
+                }
+                else
+                {
+                    return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                }
+                #endregion
+
+                #region BackupListSet
+                // Add Data ListSetGenerationMst
+                var listSetGeneration = _setGenerationMstRepository.AddListSetGenerationMst(inputData.HpId, inputData.UserId, nextStartDate);
+
+                if (listSetGeneration != null)
+                {
+                    // Process Clone
+                    _setGenerationMstRepository.CloneListSetGeneration(inputData.UserId, inputData.HpId, listSetGeneration.TargetGeneration, listSetGeneration.SourceGeneration);
+                }
+                else
+                {
+                    return new AddSetSendaiGenerationOutputData(false, AddSetSendaiGenerationStatus.Faild);
+                }
+                #endregion
+
+                return new AddSetSendaiGenerationOutputData(true, AddSetSendaiGenerationStatus.Success);
             }
             finally
             {
                 _setGenerationMstRepository.ReleaseResource();
             }
+        }
+
+        /// <summary>
+        /// Start Date is next month of latest StartDate in DB
+        /// </summary>
+        /// <param name="startDateYM"></param>
+        /// <returns></returns>
+        private int GetNextStartDate(int startDateYM)
+        {
+            DateTime startDateTime = CIUtil.IntToDate(startDateYM);
+            return CIUtil.DateTimeToInt(startDateTime.AddMonths(1));
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Domain.SuperAdminModels.Tenant;
+﻿using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Helper.Redis;
@@ -143,7 +143,7 @@ namespace Infrastructure.SuperAdminRepositories
                 var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
                 if (tenant == null)
                 {
-                    return false;
+                    throw new Exception("Tenant does not exist");
                 }
                 tenant.Status = status;
                 TrackingDataContext.SaveChanges();
@@ -179,7 +179,7 @@ namespace Infrastructure.SuperAdminRepositories
                 return new();
             }
         }
-        
+
         public void RevokeInsertPermission()
         {
             //check status tenant = available
@@ -201,22 +201,22 @@ namespace Infrastructure.SuperAdminRepositories
                             if (databaseSize == null) continue;
                             if (tenant.SizeType == 1) //MB
                             {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect);
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect, tenant.Db);
                             }
                             else if (tenant.SizeType == 2) //GB
                             {
-                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect);
+                                GrantOrRevokeExecute(tenant.Size, tenant.SizeType, connection, databaseSize, tenant.UserConnect, tenant.Db);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception: {ex.Message}");
+                    Console.WriteLine($"Exception Schedule Task: {ex.Message}");
                 }
             }
         }
-        private void GrantOrRevokeExecute(int size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role)
+        private void GrantOrRevokeExecute(int size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role, string dbName)
         {
             var sizeDatabase = Convert.ToInt64(databaseSize) / (1024 * 1024); //MB
             if (sizeType == 2)
@@ -230,7 +230,7 @@ namespace Infrastructure.SuperAdminRepositories
                     grantCommand.Connection = connection;
                     grantCommand.CommandText = $"GRANT INSERT ON ALL TABLES IN SCHEMA public TO {role}";
                     grantCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task: GRANT INSERT DATABASE SUCCESS");
+                    Console.WriteLine($"Schedule Task: GRANT INSERT DATABASE {dbName} SUCCESS");
                 }
             }
             else
@@ -240,7 +240,7 @@ namespace Infrastructure.SuperAdminRepositories
                     revokeCommand.Connection = connection;
                     revokeCommand.CommandText = $"REVOKE INSERT ON ALL TABLES IN SCHEMA public FROM {role}";
                     revokeCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task: REVOKE INSERT DATABASE SUCCESS");
+                    Console.WriteLine($"Schedule Task: REVOKE INSERT DATABASE {dbName} SUCCESS");
                 }
             }
         }
@@ -261,7 +261,7 @@ namespace Infrastructure.SuperAdminRepositories
             }
 
             // sort data ignore storageFull
-            if (searchModel.StorageFull == StorageFullEnum.Empty && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
+            if (!searchModel.StorageFull.Any() && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
             {
                 var querySortList = SortTenantQuery(query, sortDictionary);
                 querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
@@ -282,7 +282,9 @@ namespace Infrastructure.SuperAdminRepositories
                                                             tenant.ScheduleDate,
                                                             tenant.ScheduleTime,
                                                             tenant.CreateDate,
-                                                            tenant.RdsIdentifier))
+                                                            tenant.RdsIdentifier,
+                                                            tenant.UserConnect,
+                                                            tenant.PasswordConnect))
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
@@ -305,25 +307,29 @@ namespace Infrastructure.SuperAdminRepositories
                                             tenant.ScheduleDate,
                                             tenant.ScheduleTime,
                                             tenant.CreateDate,
-                                            tenant.RdsIdentifier))
+                                            tenant.RdsIdentifier,
+                                            tenant.UserConnect,
+                                            tenant.PasswordConnect))
                           .ToList();
             result = ChangeStorageFull(result);
-            if (searchModel.StorageFull != StorageFullEnum.Empty)
+            if (searchModel.StorageFull.Any())
             {
-                switch (searchModel.StorageFull)
+                // filter StorageFull by multiple conditions
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Under70Percent))
                 {
-                    case StorageFullEnum.Under70Percent:
-                        result = result.Where(item => item.StorageFull <= 70).ToList();
-                        break;
-                    case StorageFullEnum.Over70Percent:
-                        result = result.Where(item => item.StorageFull >= 70).ToList();
-                        break;
-                    case StorageFullEnum.Over80Percent:
-                        result = result.Where(item => item.StorageFull >= 80).ToList();
-                        break;
-                    case StorageFullEnum.Over90Percent:
-                        result = result.Where(item => item.StorageFull >= 90).ToList();
-                        break;
+                    result = result.Where(item => item.StorageFull <= 70).ToList();
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over70Percent))
+                {
+                    result = result.Where(item => item.StorageFull >= 70).ToList();
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over80Percent))
+                {
+                    result = result.Where(item => item.StorageFull >= 80).ToList();
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over90Percent))
+                {
+                    result = result.Where(item => item.StorageFull >= 90).ToList();
                 }
             }
             result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
@@ -366,9 +372,11 @@ namespace Infrastructure.SuperAdminRepositories
             {
                 query = query.Where(item => item.Type == searchModel.Type);
             }
-            if (searchModel.Status != 0)
+            if (searchModel.StatusTenant != 0)
             {
-                query = query.Where(item => item.Status == searchModel.Status);
+                // if filter by statusTenant, get real status in the database
+                var statusTenantQuery = StatusTenantDisplayConst.StatusTenantDisplayDictionnary.Where(item => item.Value == searchModel.StatusTenant).Select(item => item.Key).Distinct().ToList();
+                query = query.Where(item => statusTenantQuery.Contains(item.Status));
             }
             return query;
         }
@@ -441,7 +449,7 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenByDescending(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
                                     querySortList = querySortList.OrderByDescending(item => item.Status);
@@ -511,7 +519,7 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenBy(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
                                     querySortList = querySortList.OrderBy(item => item.Status);
@@ -595,7 +603,7 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenByDescending(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
                                     querySortList = querySortList.OrderByDescending(item => item.Status);
@@ -673,13 +681,13 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenBy(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
-                                    querySortList = querySortList.OrderBy(item => item.Status);
+                                    querySortList = querySortList.OrderBy(item => item.StatusTenant);
                                     continue;
                                 }
-                                querySortList = querySortList.ThenBy(item => item.Status);
+                                querySortList = querySortList.ThenBy(item => item.StatusTenant);
                                 break;
                             case TenantEnum.StorageFull:
                                 if (firstSort)
@@ -712,8 +720,6 @@ namespace Infrastructure.SuperAdminRepositories
             double storageFull = 0;
             double storageInDB = 0;
             int port = 5432;
-            string id = "postgres";
-            string password = "Emr!23456789";
             StringBuilder connectionStringBuilder = new();
             connectionStringBuilder.Append("host=");
             connectionStringBuilder.Append(tenant.EndPointDb);
@@ -722,9 +728,9 @@ namespace Infrastructure.SuperAdminRepositories
             connectionStringBuilder.Append(";database=");
             connectionStringBuilder.Append(tenant.Db);
             connectionStringBuilder.Append(";user id=");
-            connectionStringBuilder.Append(id);
+            connectionStringBuilder.Append(tenant.UserConnect);
             connectionStringBuilder.Append(";password=");
-            connectionStringBuilder.Append(password);
+            connectionStringBuilder.Append(tenant.PasswordConnect);
             string connectionString = connectionStringBuilder.ToString();
             string finalKey = string.Format("{0}_{1}_{2}", connectionString, tenant.Size.ToString(), tenant.SizeType);
             if (isClearCache)
@@ -800,7 +806,9 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.ScheduleDate,
                        tenant.ScheduleTime,
                        tenant.CreateDate,
-                       tenant.RdsIdentifier);
+                       tenant.RdsIdentifier,
+                       tenant.UserConnect,
+                       tenant.PasswordConnect);
         }
         #endregion
     }

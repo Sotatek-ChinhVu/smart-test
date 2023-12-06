@@ -596,13 +596,14 @@ namespace Reporting.KensaHistory.Service
             {
                 foreach (var kensaResultMultiItem in item.KensaResultMultiItems)
                 {
-                    if (!date.Contains(kensaResultMultiItem.IraiDate))
+                    //only takes IraiDate != 0 and IraiDate exists in the Data list
+                    if (kensaResultMultiItem.IraiDate != 0 && !date.Contains(kensaResultMultiItem.IraiDate))
                     {
                         kensaResultMulti.Add(kensaResultMultiItem);
                     }
                 }
             }
-
+            
             foreach (var item in kensaResultMulti)
             {
                 foreach (var kensaInfDetailsItem in kensaInfDetails)
