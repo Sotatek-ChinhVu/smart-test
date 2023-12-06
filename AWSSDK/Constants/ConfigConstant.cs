@@ -29,6 +29,7 @@ namespace AWSSDK.Constants
         public static int PgPostDefault = 5432;
 
         public static string DestinationBucketName = "phuc-test-s3";
+        public static string RestoreBucketName = "phuc-test-s3";
         public static RegionEndpoint RegionDestination = RegionEndpoint.GetBySystemName("ap-northeast-1");
         public static Dictionary<string, byte> StatusTenantDictionary()
         {

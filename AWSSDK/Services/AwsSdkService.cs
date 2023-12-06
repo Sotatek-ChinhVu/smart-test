@@ -138,5 +138,21 @@ namespace AWSSDK.Services
         {
             return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
         }
+
+        public async Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder)
+        {
+            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
+            await S3Action.BackupFolderAsync(sourceS3Client, sourceBucket, sourceFolder, backupBucket, backupFolder);
+        }
+
+        public async Task UploadFileAsync(string bucketName, string folderName, string filePath)
+        {
+            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
+            await S3Action.UploadFileWithProgressAsync(sourceS3Client, bucketName, folderName, filePath);
+        }
     }
 }
