@@ -5,8 +5,6 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
-using Entity.SuperAdmin;
-using Entity.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
@@ -31,7 +29,7 @@ namespace Interactor.SuperAdmin
 
         }
 
-        public  RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
+        public RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
         {
             IWebSocketService _webSocketService;
             _webSocketService = (IWebSocketService)inputData.WebSocketService;
@@ -109,7 +107,7 @@ namespace Interactor.SuperAdmin
                         else
                         {
                             // dump data,
-                            var pathFileDump = @$"{pathFileDumpRestore}\{tenant.Db}.sql";
+                            var pathFileDump = @$"{pathFileDumpRestore}{tenant.Db}.sql"; // path save file sql dump
                             await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
 
                             // check valid file sql dump
@@ -161,35 +159,80 @@ namespace Interactor.SuperAdmin
             }
         }
 
+        /// <summary>
+        /// Genarate conent script dump db from tmp RDS
+        /// </summary>
+        /// <param name="outFile"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         private async Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
         {
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             outFile = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? outFile : outFile.Replace("\\", "/");
+            string batchContent;
 
             string dumpCommand =
                  $"{Set} PGPASSWORD={password}\n" +
                  $"pg_dump" + " -Fc" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
 
-            string batchContent = "" + dumpCommand + "  > " + "\"" + outFile + "\"" + "\n";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // path file windown
+                batchContent = "" + dumpCommand + "  > " + "\"" + outFile + "\"" + "\n";
+            }
+            else
+            {
+                // path file linux
+                batchContent = "" + dumpCommand + "  > " + outFile + "\n";
+            }
             if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
 
             await Execute(batchContent);
         }
 
+        /// <summary>
+        ///  Genarate conent script resore db from file sql dump
+        /// </summary>
+        /// <param name="pathFileDump"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         private async Task PostgreSqlExcuteFileDump(string pathFileDump, string host, int port, string database, string user, string password)
         {
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
+            string batchContent;
             string dumpCommand =
                  $"{Set} PGPASSWORD={password}\n" +
                  $"pg_restore" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
-
-            string batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
-            // if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
+            
+            
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // path file windown
+                batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
+            }
+            else
+            {   // path file linux
+                batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + "\n";
+            }
 
             await Execute(batchContent);
         }
 
+        /// <summary>
+        ///  Create file .sh / .bat to execute conent script sql
+        /// </summary>
+        /// <param name="dumpCommand"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private Task Execute(string dumpCommand)
         {
             return Task.Run(() =>
@@ -201,6 +244,34 @@ namespace Interactor.SuperAdmin
                     batchContent += $"{dumpCommand}";
 
                     System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
+
+                    // Create process Grant execute permissions to file .sh
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        // Grant execute permissions using chmod
+                        ProcessStartInfo chmodInfo = new ProcessStartInfo
+                        {
+                            FileName = "chmod",
+                            Arguments = $"+x {batFilePath}",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+
+                        using (System.Diagnostics.Process chmodProc = System.Diagnostics.Process.Start(chmodInfo))
+                        {
+                            chmodProc.WaitForExit();
+
+                            if (chmodProc.ExitCode != 0)
+                            {
+                                // Handle chmod error, if any
+                                string errorOutput = chmodProc.StandardError.ReadToEnd();
+                                Console.WriteLine($"chmod error: {errorOutput}");
+                                throw new Exception($"Failed to grant execute permissions to the script: {errorOutput}");
+                            }
+                        }
+                    }
 
                     ProcessStartInfo info = ProcessInfoByOS(batFilePath);
 
@@ -226,6 +297,11 @@ namespace Interactor.SuperAdmin
             });
         }
 
+        /// <summary>
+        /// Get process info
+        /// </summary>
+        /// <param name="batFilePath"></param>
+        /// <returns></returns>
         private static ProcessStartInfo ProcessInfoByOS(string batFilePath)
         {
             ProcessStartInfo info;

@@ -1,6 +1,7 @@
 ﻿using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Helper.Redis;
@@ -260,7 +261,7 @@ namespace Infrastructure.SuperAdminRepositories
             }
 
             // sort data ignore storageFull
-            if (searchModel.StorageFull == StorageFullEnum.Empty && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
+            if (!searchModel.StorageFull.Any() && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
             {
                 var querySortList = SortTenantQuery(query, sortDictionary);
                 querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
@@ -311,22 +312,24 @@ namespace Infrastructure.SuperAdminRepositories
                                             tenant.PasswordConnect))
                           .ToList();
             result = ChangeStorageFull(result);
-            if (searchModel.StorageFull != StorageFullEnum.Empty)
+            if (searchModel.StorageFull.Any())
             {
-                switch (searchModel.StorageFull)
+                // filter StorageFull by multiple conditions
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Under70Percent))
                 {
-                    case StorageFullEnum.Under70Percent:
-                        result = result.Where(item => item.StorageFull <= 70).ToList();
-                        break;
-                    case StorageFullEnum.Over70Percent:
-                        result = result.Where(item => item.StorageFull >= 70).ToList();
-                        break;
-                    case StorageFullEnum.Over80Percent:
-                        result = result.Where(item => item.StorageFull >= 80).ToList();
-                        break;
-                    case StorageFullEnum.Over90Percent:
-                        result = result.Where(item => item.StorageFull >= 90).ToList();
-                        break;
+                    result = result.Where(item => item.StorageFull <= 70).ToList();
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over70Percent))
+                {
+                    result = result.Where(item => item.StorageFull >= 70).ToList();
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over80Percent))
+                {
+                    result = result.Where(item => item.StorageFull >= 80).ToList();
+                }
+                if (searchModel.StorageFull.Contains(StorageFullEnum.Over90Percent))
+                {
+                    result = result.Where(item => item.StorageFull >= 90).ToList();
                 }
             }
             result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
@@ -369,9 +372,11 @@ namespace Infrastructure.SuperAdminRepositories
             {
                 query = query.Where(item => item.Type == searchModel.Type);
             }
-            if (searchModel.Status != 0)
+            if (searchModel.StatusTenant != 0)
             {
-                query = query.Where(item => item.Status == searchModel.Status);
+                // if filter by statusTenant, get real status in the database
+                var statusTenantQuery = StatusTenantDisplayConst.StatusTenantDisplayDictionnary.Where(item => item.Value == searchModel.StatusTenant).Select(item => item.Key).Distinct().ToList();
+                query = query.Where(item => statusTenantQuery.Contains(item.Status));
             }
             return query;
         }
@@ -444,7 +449,7 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenByDescending(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
                                     querySortList = querySortList.OrderByDescending(item => item.Status);
@@ -514,7 +519,7 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenBy(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
                                     querySortList = querySortList.OrderBy(item => item.Status);
@@ -598,7 +603,7 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenByDescending(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
                                     querySortList = querySortList.OrderByDescending(item => item.Status);
@@ -676,13 +681,13 @@ namespace Infrastructure.SuperAdminRepositories
                                 }
                                 querySortList = querySortList.ThenBy(item => item.Size);
                                 break;
-                            case TenantEnum.Status:
+                            case TenantEnum.StatusTenant:
                                 if (firstSort)
                                 {
-                                    querySortList = querySortList.OrderBy(item => item.Status);
+                                    querySortList = querySortList.OrderBy(item => item.StatusTenant);
                                     continue;
                                 }
-                                querySortList = querySortList.ThenBy(item => item.Status);
+                                querySortList = querySortList.ThenBy(item => item.StatusTenant);
                                 break;
                             case TenantEnum.StorageFull:
                                 if (firstSort)

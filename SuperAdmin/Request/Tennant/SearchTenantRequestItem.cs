@@ -12,7 +12,7 @@ public class SearchTenantRequestItem
 
     public int Type { get; set; }
 
-    public int Status { get; set; }
+    public int StatusTenant { get; set; }
 
-    public StorageFullEnum StorageFull { get; set; }
+    public List<StorageFullEnum> StorageFull { get; set; } = new();
 }
