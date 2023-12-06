@@ -104,7 +104,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("StopedTenant")]
         public ActionResult<Response<StopedTenantResponse>> StopedTenant([FromBody] StopedTenantRequest request)
         {
-            var input = new StopedTenantInputData(request.TenantId, _webSocketService);
+            var input = new StopedTenantInputData(request.TenantId, _webSocketService, request.Type);
             var output = _bus.Handle(input);
             var presenter = new StopedTenantPresenter();
             presenter.Complete(output);
