@@ -179,7 +179,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<AdminDataContext>();
 
     // Here is the migration executed
-    dbContext.Database.Migrate();
+    //dbContext.Database.Migrate();
 }
 
 //Add config from json file
