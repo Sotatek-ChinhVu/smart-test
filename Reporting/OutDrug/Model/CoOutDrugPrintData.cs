@@ -340,7 +340,7 @@ public class CoOutDrugPrintData
     /// <returns></returns>
     public string KohiFutansyaNo(int index)
     {
-        string ret = "";
+        string ret = string.Empty;
 
         CoPtKohiModel? kohi = PtKohi(index);
         if (kohi != null)

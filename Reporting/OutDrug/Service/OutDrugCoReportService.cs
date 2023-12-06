@@ -1,30 +1,38 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Infrastructure.Interfaces;
 using Reporting.CommonMasters.Config;
-using Reporting.CommonMasters.Constants;
 using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.OutDrug.DB;
 using Reporting.OutDrug.Model;
 using System.Text;
-using Reporting.OutDrug.Model.Output;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.OutDrug.Utils;
 using HokenSbtKbn = Reporting.CommonMasters.Constants.HokenSbtKbn;
 using Emr.Report.OutDrug.Model;
+using Reporting.OutDrug.Constants;
+using Helper.Extension;
+using Reporting.CommonMasters.Constants;
+using Reporting.OutDrug.Mapper;
 
 namespace Reporting.OutDrug.Service;
 
 public class OutDrugCoReportService : IOutDrugCoReportService
 {
+    private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
+    private readonly Dictionary<int, List<ListTextObject>> _listTextData;
+    private readonly Dictionary<int, ReportConfigModel> _reportConfigModel;
+    private readonly Dictionary<string, string> _fileNamePageMap;
+    private readonly Dictionary<string, string> _extralData;
+    private string _jobName;
     private List<CoOutDrugModel> _coModels { get; set; }
     private CoOutDrugModel _coModel;
     private readonly ISystemConfig _systemConfig;
     private readonly IReadRseReportFileService _readRseReportFileService;
     private readonly ICoOutDrugFinder _finder;
-    private int CurrentPage = 0;
+    private int pageIndex = 0;
+    private int currentPage = 0;
 
     public OutDrugCoReportService(ISystemConfig systemConfig, IReadRseReportFileService readRseReportFileService, ICoOutDrugFinder finder)
     {
@@ -34,6 +42,12 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         _dataList = new();
         _coModels = new();
         _coModel = new();
+        _setFieldData = new();
+        _listTextData = new();
+        _reportConfigModel = new();
+        _fileNamePageMap = new();
+        _jobName = "院外処方箋";
+        _extralData = new();
         _finder = finder;
     }
     /// <summary>
@@ -58,6 +72,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// 処方箋項目欄印字データ
     /// </summary>
     private List<PrintOutData> _dataList;
+
     /// <summary>
     /// 処方箋備考欄印字データ
     /// </summary>
@@ -73,24 +88,29 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
     /// <summary>
     /// 項目リストの幅
-    /// </summary>        
+    /// </summary>
     private int _dataCharCount;
+
     /// <summary>
     /// 数量リストの幅
     /// </summary>
     private int _suryoCharCount;
+
     /// <summary>
     /// 単位リストの幅
     /// </summary>
     private int _unitCharCount;
+
     /// <summary>
     /// 回数リストの幅
     /// </summary>
     private int _kaisuCharCount;
+
     /// <summary>
     /// 用法単位リストの幅
     /// </summary>
     private int _yohoUnitCharCount;
+
     /// <summary>
     /// 項目リストの行数
     /// </summary>
@@ -100,14 +120,17 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// 備考欄狭いほうの幅
     /// </summary>
     private int _bikoShortCharCount;
+
     /// <summary>
     /// 備考欄狭いほうの行数
     /// </summary>
     private int _bikoShortRowCount;
+
     /// <summary>
     /// 備考欄広い方の幅
     /// </summary>
     private int _bikoLongCharCount;
+
     /// <summary>
     /// 備考欄広い方の行数
     /// </summary>
@@ -117,21 +140,39 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// QRの印字に必要な行数
     /// </summary>
     private int _qrRowCount;
+
+    /// <summary>
+    /// QRChildCount
+    /// </summary>
+    private int _qRChildCount;
+
+    /// <summary>
+    /// QRVersion
+    /// </summary>
+    private int _qRVersion;
     #endregion
 
     #region Init properties
     /// <summary>
+    /// hopital Id
+    /// </summary>
+    private int hpId;
+
+    /// <summary>
     /// 患者ID
     /// </summary>
-    private long PtId;
+    private long ptId;
+
     /// <summary>
     /// 診療日
     /// </summary>
-    private int SinDate;
+    private int sinDate;
+
     /// <summary>
     /// 来院番号
     /// </summary>
-    private long RaiinNo;
+    private long raiinNo;
+
     /// <summary>
     /// 保険種別
     /// -1:全て
@@ -142,56 +183,25 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// 4:自費算定
     /// </summary>
     private int HokenGp = -1;
-
-    /// <summary>
-    /// パラメータセット
-    /// </summary>
-    /// <param name="ptId">患者ID</param>
-    /// <param name="sinDate">診療日</param>
-    /// <param name="raiinNo">来院番号</param>
-    /// <param name="printMode">
-    /// 印刷モード
-    /// 0:プリンタ　1:バイナリ　2:PDF
-    /// </param>
-    /// <param name="outputDirectory">
-    /// ファイル出力先フォルダのパス
-    /// ※PrintMode が、1,2のときに使用
-    /// </param>
-    /// <param name="outputFileName">
-    /// ファイル名
-    /// ※PrintMode が、1,2のときに使用
-    /// </param>
-    public void InitParam(long ptId, int sinDate, long raiinNo)
-    {
-        PtId = ptId;
-        SinDate = sinDate;
-        RaiinNo = raiinNo; ;
-    }
-
-    /// <summary>
-    /// パラメータセット
-    /// </summary>
-    /// <param name="ptId">患者ID</param>
-    /// <param name="sinDate">診療日</param>
-    /// <param name="raiinNo">来院番号</param>
-    /// <param name="hokenGp">保険グループ 0:健保 1:労災 2:自賠 3:自費保険 4:自費算定</param>
-    public void InitParam(long ptId, int sinDate, long raiinNo, int hokenGp)
-    {
-        PtId = ptId;
-        SinDate = sinDate;
-        RaiinNo = raiinNo;
-        HokenGp = hokenGp;
-    }
     #endregion
 
     #region Printer method
 
     /// <summary>
-    /// 印刷処理
+    /// GetOutDrugReportingData
     /// </summary>
-    /// <param name="printerName"></param>
-    private void _PrintOut()
+    /// <param name="hpId"></param>
+    /// <param name="ptId"></param>
+    /// <param name="sinDate"></param>
+    /// <param name="raiinNo"></param>
+    /// <returns></returns>
+    public CommonReportingRequestModel GetOutDrugReportingData(int hpId, long ptId, int sinDate, long raiinNo)
     {
+        this.hpId = hpId;
+        this.ptId = ptId;
+        this.sinDate = sinDate;
+        this.raiinNo = raiinNo;
+
         // 電子処方箋の処方内容控え印刷
         PrintOutEpsReference();
 
@@ -201,7 +211,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         if (_coModels == null || _coModels.Count == 0)
         {
             // 出力データなし
-            return;
+            return new();
         }
 
         string printDataId = string.Empty;
@@ -213,15 +223,14 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             // 控えを印刷する場合、2回実行する
             repeatMax = 2;
         }
-
+        pageIndex = 0;
         for (_repeatKai = 0; _repeatKai < repeatMax; _repeatKai++)
         {
             _printPage = 1;
 
             foreach (CoOutDrugModel coModelData in _coModels)
             {
-                bool initResult = false;
-
+                string formfile;
                 _coModel = coModelData;
                 if (_coModel.PrintData?.PrintDataID2 != printDataId2)
                 {
@@ -239,21 +248,15 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 {
                     if (_coModel.PrintData?.PrintType == OutDrugPrintOutType.Syohosen)
                     {
-                        string formfile = "fmOutDrug.rse";
+                        formfile = "fmOutDrug.rse";
                         if (coModelData.PrintData?.SinDate >= 20220401)
                         {
                             formfile = "fmOutDrug_202204.rse";
                         }
 
-                        initResult = CoInit(
-                            formfile,
-                            "院外処方箋"
-                            );
-
-                        if (!initResult) return;
-
+                        _jobName = "院外処方箋";
                         bool isNextPageExits = true;
-                        CurrentPage = 1;
+                        currentPage = 1;
 
                         // フォーム情報取得
                         GetFormParam(formfile);
@@ -270,8 +273,13 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                         while (isNextPageExits)
                         {
+                            pageIndex++;
+                            if (!_fileNamePageMap.ContainsKey(pageIndex.AsString()))
+                            {
+                                _fileNamePageMap.Add(pageIndex.AsString(), formfile);
+                            }
                             UpdateDrawForm(out isNextPageExits);
-                            CurrentPage++;
+                            currentPage++;
                             _printPage++;
                         }
 
@@ -279,34 +287,42 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         {
                             // QRを印字しきれなかった時は、QR印字用のページを印刷
                             _printoutType = OutDrugPrintOutType.QR;
-
-                            CoRep.OpenForm("fmOutDrug_P2.rse");
-
-                            if (!initResult) return;
+                            formfile = "fmOutDrug_P2.rse";
+                            if (!_fileNamePageMap.ContainsKey(pageIndex.AsString()))
+                            {
+                                _fileNamePageMap.Add(pageIndex.AsString(), formfile);
+                            }
+                            GetQRParam(formfile);
+                            UpdateDrawForm(out isNextPageExits);
                         }
                     }
                     else if (_coModel.PrintData?.PrintType == OutDrugPrintOutType.Bunkatu)
                     {
                         // 分割指示別紙
                         _printoutType = OutDrugPrintOutType.Bunkatu;
-
                         if (_coModel.PrintData.BunkatuMax > 1)
                         {
-                            initResult = CoInit(
-                                string.Format("fmOutDrug_Bunkatu{0}.rse", _coModel.PrintData.BunkatuMax),
-                                "分割指示に係る処方箋（別紙）"
-                                );
-                            if (!initResult) return;
+                            bool isNextPageExits;
+                            formfile = string.Format("fmOutDrug_Bunkatu{0}.rse", _coModel.PrintData.BunkatuMax);
+                            if (!_fileNamePageMap.ContainsKey(pageIndex.AsString()))
+                            {
+                                _fileNamePageMap.Add(pageIndex.AsString(), formfile);
+                            }
+                            _jobName = "分割指示に係る処方箋（別紙）";
+                            GetQRParam(formfile);
+                            UpdateDrawForm(out isNextPageExits);
                         }
                     }
                 }
                 finally
                 {
-                    CurrentPage = 1;
+                    currentPage = 1;
                 }
             }
         }
-        addAuditTrailLog();
+        _extralData.Add("maxRow", _dataRowCount.AsString());
+        _extralData.Add("totalPage", pageIndex.AsString());
+        return new OutDrugMapper(_setFieldData, _listTextData, _reportConfigModel, _fileNamePageMap, _extralData, _jobName).GetData();
     }
 
     /// <summary>
@@ -314,119 +330,51 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// </summary>
     private void PrintOutEpsReference()
     {
-        const string conFncName = nameof(PrintOutEpsReference);
-
-        if ((_systemConfig.ElectronicPrescriptionLicense == 0) || (HokenGp > 0))
+        if ((_systemConfig.ElectronicPrescriptionLicense() == 0) || (HokenGp > 0))
         {
             // 電子処方箋のライセンスなし、または、健保を印刷対象としない場合は処方内容控えを印刷しない
             return;
         }
 
         // データ取得
-        List<CoEpsReference> references = _finder.GetEpsReferences(PtId, RaiinNo);
+        List<CoEpsReference> references = _finder.GetEpsReferences(hpId, ptId, raiinNo);
 
-        PdfDocument doc = new PdfDocument();
-        doc.PrintSettings.PrinterName = PrinterName;
-        doc.PrintSettings.DocumentName = "処方内容控え";
-        // 画面に「印刷中」と表示せず、サイレント印刷する
-        doc.PrintSettings.PrintController = new StandardPrintController();
+        //PdfDocument doc = new PdfDocument();
+        //doc.PrintSettings.PrinterName = PrinterName;
+        //doc.PrintSettings.DocumentName = "処方内容控え";
+        //// 画面に「印刷中」と表示せず、サイレント印刷する
+        //doc.PrintSettings.PrintController = new StandardPrintController();
 
-        foreach (var reference in references)
-        {
-            try
-            {
-                Log.WriteLogMsg(ModuleName, this, conFncName,
-                    $"epsreference print ptid:{reference.PtId} sindate:{reference.SinDate} raiinno:{reference.RaiinNo} prescriptionId:{reference.PrescriptionId}");
+        //foreach (var reference in references)
+        //{
+        //    // デコード
+        //    byte[] pdfData = Convert.FromBase64String(reference.PrescriptionReferenceInformation);
+        //    doc.LoadFromBytes(pdfData);
 
-                // デコード
-                byte[] pdfData = Convert.FromBase64String(reference.PrescriptionReferenceInformation);
-                doc.LoadFromBytes(pdfData);
+        //    // 印刷
+        //    doc.Print();
+        //}
 
-                // 印刷
-                doc.Print();
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLogError(ModuleName, this, conFncName, ex);
-            }
-        }
-
-    }
-
-
-    /// <summary>
-    /// Co初期化処理
-    /// </summary>
-    /// <param name="page"></param>
-    /// <returns></returns>
-    private bool CoInit(string formFileName, string jobName)
-    {
-        bool initResult = false;
-
-        if (OutputMode == CoOutputMode.Print)
-        {
-            // プリンタに出力
-            initResult = CoRep.IniParamPrinter(Paths.OUTDRUG_FORM_PATH,
-                                  formFileName,
-                                  Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                                  PrinterName,
-                                  jobName);
-        }
-        else
-        {
-            // ファイルに出力
-            // 出力先フォルダがなかったら生成する
-            if (CIUtil.IsDirectoryExisting(OutputDirectory) == false) Directory.CreateDirectory(OutputDirectory);
-
-            initResult = CoRep.InitParamDocument(Paths.OUTDRUG_FORM_PATH,
-                                    formFileName,
-                                    OutputDirectory, OutputFileName, (Hos.CnDraw.Constants.ConFileType)FileType);
-        }
-
-        return initResult;
     }
     #endregion
 
     #region Private function
     /// <summary>
-    /// 監査ログ出力
-    /// </summary>
-    private void addAuditTrailLog()
-    {
-        string eventCd = EventCode.ReportOutDrug;
-
-        string hosoku = string.Empty;
-
-        if (OutputMode == CoOutputMode.File)
-        {
-            hosoku += $"file:{OutputDirectory + OutputFileName} ";
-        }
-        else
-        {
-            hosoku += $"printer:{PrinterName} ";
-        }
-
-        ArgumentModel arg = new ArgumentModel();
-        arg.PtId = PtId;
-        arg.SinDate = SinDate;
-        arg.RaiinNo = RaiinNo;
-        arg.EventCd = eventCd;
-        arg.Hosoku = hosoku;
-
-        ProcessEvent(arg);
-    }
-    /// <summary>
     /// 印刷処理
     /// </summary>
     /// <param name="hasNextPage"></param>
     /// <returns></returns>
-    private bool UpdateDrawForm(out bool hasNextPage)
+    private void UpdateDrawForm(out bool hasNextPage)
     {
+        Dictionary<string, string> setFieldDataPerPage = new();
+        List<ListTextObject> listDataPerPage = new();
+        Dictionary<string, bool> visibleFieldListPerPage = new();
+        Dictionary<string, int> textDeleteLinePerPage = new();
         bool _hasNextPage = true;
         #region SubMethod
 
         // 処方箋ヘッダー部印字
-        int UpdateFormHeader()
+        void UpdateFormHeader()
         {
             #region sub method
             // 分割
@@ -456,8 +404,8 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             // firstVisible - firstObjectNameのVisible, secondObjectNameのVisibleは逆になる
             void _setChoiceObjectVisible(bool firstVisible, string firstObjectName, string secondObjectName)
             {
-                CoRep.ObjectVisible(firstObjectName, firstVisible);
-                CoRep.ObjectVisible(secondObjectName, !firstVisible);
+                visibleFieldListPerPage.Add(firstObjectName, firstVisible);
+                visibleFieldListPerPage.Add(secondObjectName, !firstVisible);
             }
 
             // 残薬確認のチェック
@@ -491,13 +439,13 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                 if (_systemConfig.SyohosenFutanRate() != 0)
                 {
-                    if (_coModel.PrintData.KohiCount > 0 && _systemConfig.SyohosenFutanRate() == 2)
+                    if (_coModel.PrintData?.KohiCount > 0 && _systemConfig.SyohosenFutanRate() == 2)
                     {
                         // 公費併用時印字しない設定の場合
                     }
                     else
                     {
-                        int? futanRate = _coModel.PrintData.FutanRate;
+                        int? futanRate = _coModel.PrintData?.FutanRate;
 
                         if (futanRate != null)
                         {
@@ -513,9 +461,9 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             {
                 string ret = string.Empty;
 
-                if (_coModel.PrintData.HenkoFuka)
+                if (_coModel.PrintData?.HenkoFuka ?? false)
                 {
-                    ret = _coModel.PrintData.DoctorName;
+                    ret = _coModel.PrintData?.DoctorName ?? string.Empty;
                 }
 
                 return ret;
@@ -523,102 +471,101 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             #endregion
 
             // 控え　repeatKai = 1の場合、表示
-            CoRep.ObjectVisible("lblHikae", _repeatKai == 1);
+            visibleFieldListPerPage.Add("lblHikae", _repeatKai == 1);
             // ページ
-            CoRep.SetFieldData("dfPage", $"Page {_printPage}");
+            setFieldDataPerPage.Add("dfPage", $"Page {_printPage}");
             // 分割
-            CoRep.SetFieldData("dfBunkatu", _getBunkatu());
+            setFieldDataPerPage.Add("dfBunkatu", _getBunkatu());
             // 注意
-            CoRep.SetFieldData("dfCyui", _getCyui());
+            setFieldDataPerPage.Add("dfCyui", _getCyui());
 
             // 医療機関住所
-            CoRep.SetFieldData("txHpAddress", _coModel.PrintData?.HpAddress);
+            setFieldDataPerPage.Add("txHpAddress", _coModel.PrintData?.HpAddress ?? string.Empty);
             // 医療機関名称
-            CoRep.SetFieldData("dfHpName", _coModel.PrintData?.HpName ?? string.Empty);
+            setFieldDataPerPage.Add("dfHpName", _coModel.PrintData?.HpName ?? string.Empty);
             // 医療機関電話番号
-            CoRep.SetFieldData("dfHpTel", _coModel.PrintData?.HpTel ?? string.Empty);
+            setFieldDataPerPage.Add("dfHpTel", _coModel.PrintData?.HpTel ?? string.Empty);
             // 保険医師名
-            CoRep.SetFieldData("dfKaisetuName", _coModel.PrintData?.DoctorName ?? string.Empty);
+            setFieldDataPerPage.Add("dfKaisetuName", _coModel.PrintData?.DoctorName ?? string.Empty);
             // 受付順番
-            CoRep.SetFieldData("dfUketukeNo", _coModel.PrintData?.UketukeNo ?? 0);
+            setFieldDataPerPage.Add("dfUketukeNo", _coModel.PrintData?.UketukeNo.ToString() ?? string.Empty);
             // 都道府県番号
-            CoRep.SetFieldData("dfPrefNo", _coModel.PrintData?.PrefNo.ToString().PadLeft(2, '0'));
+            setFieldDataPerPage.Add("dfPrefNo", _coModel.PrintData?.PrefNo.ToString().PadLeft(2, '0') ?? string.Empty);
             // 点数表番号
-            CoRep.SetFieldData("dfTensuHyoNo", 1);
+            setFieldDataPerPage.Add("dfTensuHyoNo", "1");
             // 医療機関コード
-            CoRep.SetFieldData("dfHpCd", _coModel.PrintData?.HpCd.PadLeft(7, '0') ?? string.Empty);
+            setFieldDataPerPage.Add("dfHpCd", _coModel.PrintData?.HpCd.PadLeft(7, '0') ?? string.Empty);
 
             // 患者カナ氏名
-            CoRep.SetFieldData("dfPtKanaName", _coModel.PrintData?.PtKanaName ?? string.Empty);
+            setFieldDataPerPage.Add("dfPtKanaName", _coModel.PrintData?.PtKanaName ?? string.Empty);
             // 患者漢字氏名
-            CoRep.SetFieldData("dfPtKanjiName", _coModel.PrintData?.PtName ?? string.Empty);
+            setFieldDataPerPage.Add("dfPtKanjiName", _coModel.PrintData?.PtName ?? string.Empty);
             // 生年月日
-            CoRep.SetFieldData("dfBirthDay", _coModel.PrintData?.Birthday ?? string.Empty);
+            setFieldDataPerPage.Add("dfBirthDay", _coModel.PrintData?.Birthday ?? string.Empty);
             // 年齢
-            CoRep.SetFieldData("dfAge", _coModel.PrintData?.Age ?? 0);
+            setFieldDataPerPage.Add("dfAge", _coModel.PrintData?.Age.AsString() ?? string.Empty);
             // 性別（該当する項目に〇）
             _setChoiceObjectVisible(_coModel.PrintData?.Sex == 2, "crFemel", "crMan");
 
             // 交付年月日
-            CoRep.SetFieldData("dfKofuDay", _coModel.PrintData?.KofuDate ?? string.Empty);
+            setFieldDataPerPage.Add("dfKofuDay", _coModel.PrintData?.KofuDate ?? string.Empty);
 
             // 保険者番号
-            CoRep.SetFieldData("dfHokensyaNo", _coModel.PrintData?.HokensyaNo.PadLeft(8, ' ') ?? string.Empty);
+            setFieldDataPerPage.Add("dfHokensyaNo", _coModel.PrintData?.HokensyaNo.PadLeft(8, ' ') ?? string.Empty);
             // 記号番号
-            CoRep.SetFieldData("dfKigoBango", _coModel.PrintData?.KigoBango ?? string.Empty);
+            setFieldDataPerPage.Add("dfKigoBango", _coModel.PrintData?.KigoBango ?? string.Empty);
             // 枝番
-            CoRep.SetFieldData("dfEdaban", _coModel.PrintData?.EdaNo ?? string.Empty);
+            setFieldDataPerPage.Add("dfEdaban", _coModel.PrintData?.EdaNo ?? string.Empty);
             // 本人家族（取り消し線）
             _setChoiceObjectVisible(_coModel.PrintData?.HonKeKbn != 2, "bxHiHoken", "bxHiFuyo");
 
             // 負担率
-            CoRep.SetFieldData("dfRate", _getFutanRate());
+            setFieldDataPerPage.Add("dfRate", _getFutanRate());
 
             // 公費１負担者番号
-            CoRep.SetFieldData("dfFutansyaNoK1", _coModel.PrintData.KohiFutansyaNo(0).PadLeft(8, ' '));
+            setFieldDataPerPage.Add("dfFutansyaNoK1", _coModel.PrintData?.KohiFutansyaNo(0)!.PadLeft(8, ' ')! ?? string.Empty);
             // 公費１受給者番号
-            CoRep.SetFieldData("dfJyukyusyaNoK1", _coModel.PrintData.KohiJyukyusyaNo(0).PadLeft(7, ' '));
+            setFieldDataPerPage.Add("dfJyukyusyaNoK1", _coModel.PrintData?.KohiJyukyusyaNo(0)!.PadLeft(7, ' ')! ?? string.Empty);
 
             // 公費２負担者番号
-            CoRep.SetFieldData("dfFutansyaNoK2", _coModel.PrintData.KohiFutansyaNo(1).PadLeft(8, ' '));
+            setFieldDataPerPage.Add("dfFutansyaNoK2", _coModel.PrintData?.KohiFutansyaNo(1)!.PadLeft(8, ' ')! ?? string.Empty);
             // 公費２受給者番号
-            CoRep.SetFieldData("dfJyukyusyaNoK2", _coModel.PrintData.KohiJyukyusyaNo(1).PadLeft(7, ' '));
+            setFieldDataPerPage.Add("dfJyukyusyaNoK2", _coModel.PrintData?.KohiJyukyusyaNo(1)!.PadLeft(7, ' ')! ?? string.Empty);
 
             // 残薬確認ー疑義
-            CoRep.SetFieldData("dfCheckGigi", _getZanyakuCheck(_coModel.PrintData.ZanyakuGigi));
+            setFieldDataPerPage.Add("dfCheckGigi", _getZanyakuCheck(_coModel.PrintData?.ZanyakuGigi ?? false));
             // 残薬確認ー情報提供
-            CoRep.SetFieldData("dfCheckTeikyo", _getZanyakuCheck(_coModel.PrintData.ZanyakuTeikyo));
+            setFieldDataPerPage.Add("dfCheckTeikyo", _getZanyakuCheck(_coModel.PrintData?.ZanyakuTeikyo ?? false));
 
             // リフィル
-            CoRep.ObjectVisible("picRefill", _coModel.PrintData.RefillCount > 0);
+            visibleFieldListPerPage.Add("picRefill", _coModel.PrintData?.RefillCount > 0);
+
             // リフィル回数
-            CoRep.SetFieldData("dfRefill", _getRefillCount(_coModel.PrintData.RefillCount));
+            setFieldDataPerPage.Add("dfRefill", _getRefillCount(_coModel.PrintData?.RefillCount ?? 0));
+
             // リフィル処方でない場合に取り消し線を引くオプション
-            if (_coModel.PrintData.RefillCount == 0 &&
-                _systemConfig.SyohosenRefillStrikeLine() == 1)
+            if (_coModel.PrintData?.RefillCount == 0 && _systemConfig.SyohosenRefillStrikeLine() == 1)
             {
-                CoRep.SetTextDeleteLine("lblRefill", Hos.CnDraw.Constants.ConDecorateLine.Double);
+                textDeleteLinePerPage.Add("lblRefill", (int)ConDecorateLine.Double);
             }
 
             // 電子処方箋対応
-            CoRep.SetFieldData("dfEPSCompliant", _coModel.PrintData.EPSCompliant);
+            setFieldDataPerPage.Add("dfEPSCompliant", _coModel.PrintData?.EPSCompliant ?? string.Empty);
             // 引換番号
-            CoRep.SetFieldData("dfAccessCd", _coModel.PrintData.AccessCd);
+            setFieldDataPerPage.Add("dfAccessCd", _coModel.PrintData?.AccessCd ?? string.Empty);
 
             // 患者番号
-            CoRep.SetFieldData("dfPtNum", _coModel.PrintData.PtNum);
+            setFieldDataPerPage.Add("dfPtNum", _coModel.PrintData?.PtNum.AsString() ?? string.Empty);
 
             // 変更不可の薬剤がある場合、署名
-            CoRep.SetFieldData("dfDoctorName", _getDoctorName());
-
-            return 1;
+            setFieldDataPerPage.Add("dfDoctorName", _getDoctorName());
         }
 
         // 処方箋本体部印字
-        int UpdateFormBody()
+        void UpdateFormBody()
         {
-            int dataIndex = (CurrentPage - 1) * _dataRowCount;
-            int bikoIndex = (CurrentPage - 1) * (_bikoShortRowCount + _bikoLongRowCount);
+            int dataIndex = (currentPage - 1) * _dataRowCount;
+            int bikoIndex = (currentPage - 1) * (_bikoShortRowCount + _bikoLongRowCount);
 
             bool dataHasNextPage = true;
             bool bikoHasNextPage = true;
@@ -635,21 +582,21 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 for (short i = 0; i < _dataRowCount; i++)
                 {
                     // 変更不可
-                    CoRep.ListText("lsHenkou", 0, i, _dataList[dataIndex].HenkoMark);
+                    listDataPerPage.Add(new("lsHenkou", 0, i, _dataList[dataIndex].HenkoMark));
                     // Rp番号
-                    CoRep.ListText("lsRpInf", 0, i, _dataList[dataIndex].RpInf);
+                    listDataPerPage.Add(new("lsRpInf", 0, i, _dataList[dataIndex].RpInf));
                     // データ（薬剤名・用法名等）
-                    CoRep.ListText("lsData", 0, i, _dataList[dataIndex].Data);
+                    listDataPerPage.Add(new("lsData", 0, i, _dataList[dataIndex].Data));
                     // 数量
-                    CoRep.ListText("lsSuryo", 0, i, _dataList[dataIndex].Suryo);
+                    listDataPerPage.Add(new("lsSuryo", 0, i, _dataList[dataIndex].Suryo));
                     // 単位名
-                    CoRep.ListText("lsUnitName", 0, i, _dataList[dataIndex].UnitName);
+                    listDataPerPage.Add(new("lsUnitName", 0, i, _dataList[dataIndex].UnitName));
                     // 回数
-                    CoRep.ListText("lsKaisu", 0, i, _dataList[dataIndex].Kaisu);
+                    listDataPerPage.Add(new("lsKaisu", 0, i, _dataList[dataIndex].Kaisu));
                     // 用法単位名
-                    CoRep.ListText("lsYohoUnitName", 0, i, _dataList[dataIndex].YohoUnit);
+                    listDataPerPage.Add(new("lsYohoUnitName", 0, i, _dataList[dataIndex].YohoUnit));
                     // 分割数量
-                    CoRep.ListText("lsBunkatuSuryo", 0, i, _dataList[dataIndex].Bunkatu);
+                    listDataPerPage.Add(new("lsBunkatuSuryo", 0, i, _dataList[dataIndex].Bunkatu));
 
                     dataIndex++;
                     if (dataIndex >= _dataList.Count)
@@ -674,13 +621,13 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 {
                     if (i < _bikoShortRowCount)
                     {
-                        CoRep.ListText("lsBikoShort", 0, i, _bikoList[bikoIndex]);
+                        listDataPerPage.Add(new("lsBikoShort", 0, i, _bikoList[bikoIndex]));
                     }
                     else
                     {
                         // short型に変換する必要がある
                         short shortRow = (short)(i - _bikoShortRowCount);
-                        CoRep.ListText("lsBikoLong", 0, shortRow, _bikoList[bikoIndex]);
+                        listDataPerPage.Add(new("lsBikoLong", 0, shortRow, _bikoList[bikoIndex]));
                     }
 
                     bikoIndex++;
@@ -695,24 +642,23 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             #endregion
 
             // 項目と備考、どちらか印字しきれてないものがある場合、_hasNextPage = true
-            _hasNextPage = (dataHasNextPage || bikoHasNextPage);
+            _hasNextPage = dataHasNextPage || bikoHasNextPage;
 
             if (!_hasNextPage && _systemConfig.SyohosenQRKbn() == 1)
             {
                 // QRを印字する場合
                 //余り行数 = (項目リストの行数 - (データ量 % 項目リストの行数))
                 //※データ量がぴったりページ内に収まるとき、この式では計算が合わなくなるので余り行数を0にする
-                int remRowCount = _dataRowCount > 0 && _dataList.Count % _dataRowCount == 0 ? 0
-                    : _dataRowCount - _dataList.Count % _dataRowCount;
+                int remRowCount = _dataRowCount > 0 && (_dataList?.Count ?? 0) % _dataRowCount == 0 ? 0
+                    : _dataRowCount - (_dataList?.Count ?? 0) % _dataRowCount;
 
-                if ((dataBlank || remRowCount >= _qrRowCount) &&
-                  (CheckQRCount(_coModel.QRData())))
+                if ((dataBlank || remRowCount >= _qrRowCount) && CheckQRCount(_coModel.QRData()))
                 {
                     // ( このページに印刷する項目欄が空だった場合 or
                     //   余り行数 が、 QRの印字に必要な行数 より多い ) and
                     // ( QRの数が分割数以下 )
                     // のとき、QRを印字
-                    CoRep.SetFieldData("qr_OutDrg", _coModel.QRData());
+                    setFieldDataPerPage.Add("qr_OutDrg", _coModel.QRData());
                 }
                 else
                 {
@@ -720,78 +666,64 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     _printQrPage = true;
                 }
             }
-
-            return dataIndex + bikoIndex;
         }
 
         // QR専用紙の印字
-        int UpdateQR()
+        void UpdateQR()
         {
             // 控えの場合は印字
-            CoRep.ObjectVisible("lblHikae", _repeatKai == 1);
+            visibleFieldListPerPage.Add("lblHikae", _repeatKai == 1);
             // QR
-            CoRep.SetFieldData("qr_OutDrg", _coModel.QRData());
+            setFieldDataPerPage.Add("qr_OutDrg", _coModel.QRData());
             // ページ
-            CoRep.SetFieldData("dfPage", $"Page {_printPage}");
+            setFieldDataPerPage.Add("dfPage", $"Page {_printPage}");
             // 患者番号
-            CoRep.SetFieldData("dfPtNum", _coModel.PrintData?.PtNum ?? 0);
+            setFieldDataPerPage.Add("dfPtNum", _coModel.PrintData?.PtNum.AsString() ?? string.Empty);
             // 患者氏名
-            CoRep.SetFieldData("dfPtKanjiName", _coModel.PrintData?.PtName ?? string.Empty);
-
-            return 1;
+            setFieldDataPerPage.Add("dfPtKanjiName", _coModel.PrintData?.PtName ?? string.Empty);
         }
 
         // 分割指示
         void UpdateBunkatu()
         {
             // 控えの場合は印字
-            CoRep.ObjectVisible("lblHikae", _repeatKai == 1);
+            visibleFieldListPerPage.Add("lblHikae", _repeatKai == 1);
             // FAX番号
-            CoRep.SetFieldData("dfFaxNo", _coModel.PrintData?.HpFaxNo ?? string.Empty);
+            setFieldDataPerPage.Add("dfFaxNo", _coModel.PrintData?.HpFaxNo ?? string.Empty);
             // その他連絡先
-            CoRep.SetFieldData("dfOtherContacts", _coModel.PrintData?.HpOtherContacts ?? string.Empty);
+            setFieldDataPerPage.Add("dfOtherContacts", _coModel.PrintData?.HpOtherContacts ?? string.Empty);
             // 電話番号
-            CoRep.SetFieldData("dfTel", _coModel.PrintData?.HpTel ?? string.Empty);
+            setFieldDataPerPage.Add("dfTel", _coModel.PrintData?.HpTel ?? string.Empty);
         }
         #endregion
 
-        try
+        if (_printoutType == OutDrugPrintOutType.Syohosen)
         {
-            if (_printoutType == OutDrugPrintOutType.Syohosen)
-            {
-                // 処方箋
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    hasNextPage = _hasNextPage;
-                    return false;
-                }
-            }
-            else if (_printoutType == OutDrugPrintOutType.QR)
-            {
-                // QR
-                if (UpdateFormHeader() < 0 || UpdateQR() < 0)
-                {
-                    hasNextPage = _hasNextPage;
-                    return false;
-                }
-            }
-            else if (_printoutType == OutDrugPrintOutType.Bunkatu)
-            {
-                // 分割指示
-                UpdateBunkatu();
-
-                hasNextPage = false;
-                return false;
-            }
+            // 処方箋
+            UpdateFormHeader();
+            UpdateFormBody();
         }
-        catch (Exception e)
+        else if (_printoutType == OutDrugPrintOutType.QR)
         {
-            hasNextPage = _hasNextPage;
-            return false;
-        }
+            // QR
+            UpdateFormHeader();
+            UpdateQR();
 
+        }
+        else if (_printoutType == OutDrugPrintOutType.Bunkatu)
+        {
+            // 分割指示
+            UpdateBunkatu();
+            _hasNextPage = false;
+        }
+        _listTextData.Add(pageIndex, listDataPerPage);
+        _setFieldData.Add(pageIndex, setFieldDataPerPage);
+        _reportConfigModel.Add(pageIndex, new ReportConfigModel()
+        {
+            VisibleFieldList = visibleFieldListPerPage,
+            TextDeleteLine = textDeleteLinePerPage
+        });
         hasNextPage = _hasNextPage;
-        return true;
     }
 
     /// <summary>
@@ -873,7 +805,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
         string _getKohiName(CoPtKohiModel ptKohi)
         {
-            string kohiName = ptKohi.HokenMst.HokenName;
+            string kohiName = ptKohi.HokenMst.HokenName ?? string.Empty;
 
             int equalCount = (_dataCharCount - CIUtil.LenB(kohiName) - 18);
             int leftCount = equalCount / 2;
@@ -907,7 +839,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         // 既に追加した行数 % 1ページの最大行数
         int _getPrintedLineCount()
         {
-            return _dataList.Count() % _dataRowCount;
+            return _dataList.Count % _dataRowCount;
         }
 
         // このページに印字可能な残り行数
@@ -922,12 +854,10 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
         int kohiFutan = -1;
 
-        //foreach (CoOutDrugPrintDataRpInf rpInf in coModel.PrintData.RpInfs)
-        for (int i = 0; i < _coModel.PrintData.RpInfs.Count(); i++)
+        for (int i = 0; i < _coModel.PrintData?.RpInfs.Count; i++)
         {
             CoOutDrugPrintDataRpInf rpInf = _coModel.PrintData.RpInfs[i];
             List<PrintOutData> addPrintOutData = new List<PrintOutData>();
-            //printOutData.RpInf = rpInf.RpNo.ToString();
 
             // 分点チェック
             if (kohiFutan < 0)
@@ -943,7 +873,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             else if (rpInf.KohiFutan != kohiFutan)
             {
                 // 適用する公費が変わったとき、公費名称を印字する
-                CoPtKohiModel ptKohi = _coModel.PrintData.PtKohi(rpInf.KohiFutan - 1);
+                CoPtKohiModel ptKohi = _coModel.PrintData?.PtKohi(rpInf.KohiFutan - 1) ?? new();
                 if (ptKohi != null)
                 {
                     addPrintOutData.AddRange(_addList(_getKohiName(ptKohi), _dataCharCount, string.Empty));
@@ -974,7 +904,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     addPrintOutData.AddRange(_addListComment(drugInf.Data, _dataCharCount - _kaisuCharCount - _yohoUnitCharCount));
                     if (addPrintOutData.Any())
                     {
-                        if (string.IsNullOrEmpty(drugInf.UnitName.Trim()) == false)
+                        if (!string.IsNullOrEmpty(drugInf.UnitName.Trim()))
                         {
                             addPrintOutData.Last().Kaisu = drugInf.Suryo.ToString();
                         }
@@ -1003,7 +933,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 }
             }
 
-            if ((addPrintOutData.Count() + _getPrintedLineCount()) > _dataRowCount + (i + 1 == _coModel.PrintData.RpInfs.Count() ? 0 : -1))
+            if ((addPrintOutData.Count + _getPrintedLineCount()) > _dataRowCount + (i + 1 == _coModel.PrintData?.RpInfs.Count ? 0 : -1))
             {
                 // 追加する行数 + このページの印字済み行数 > 1ページの最大行数(最終Rpの場合は0, その他は-1する）
                 // つまり、このRpのデータを追加すると、ページの行数を超えてしまう場合、
@@ -1011,18 +941,6 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 // このRpのデータは次ページに印字する
 
                 string addComment = string.Empty;
-
-                //if (_getRemainingLineCount() > 1)
-                //{
-                //    // このページに印字できる残り行数が2行以上ある場合
-                //    addComment = _addHalfSpace("---- 以下余白、次頁あり ----", _dataCharCount);
-                //}
-                //else if (_getRemainingLineCount() == 1)
-                //{
-                //    // このページに印字できる残り行数が1行だけの場合
-
-                //    addComment = _addHalfSpace("---- 次頁あり ----", _dataCharCount);
-                //}
 
                 if (_getRemainingLineCount() >= 1)
                 {
@@ -1038,7 +956,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         _dataList.Last().Data = addComment;
                     }
 
-                    if (addPrintOutData.Count() > _dataRowCount)
+                    if (addPrintOutData.Count > _dataRowCount)
                     {
                         //このRpの行数が1ページの最大行数を超えている場合
                         addPrintOutData.Insert(_dataRowCount - 1, new PrintOutData() { Data = addComment });
@@ -1060,7 +978,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             if (rpInf.KohiFutan != 999)
             {
                 // 処方コメント以外の場合、Rp番号を追加する
-                for (int j = 0; j < addPrintOutData.Count(); j++)
+                for (int j = 0; j < addPrintOutData.Count; j++)
                 {
                     if (addPrintOutData[j].RpInf != "====")
                     {
@@ -1074,7 +992,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
             _dataList.AddRange(addPrintOutData);
 
-            if (_dataRowCount - (_dataList.Count() % _dataRowCount) > 1)
+            if (_dataRowCount - (_dataList.Count % _dataRowCount) > 1)
             {
                 // 1行空ける
                 _dataList.Add(new PrintOutData());
@@ -1131,7 +1049,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         int lengthsIndex = 0;
 
         // 備考欄データ作成処理
-        foreach (string biko in _coModel.PrintData.Biko)
+        foreach (string biko in _coModel.PrintData?.Biko ?? new())
         {
             string line = biko;
             while (line != string.Empty)
@@ -1147,7 +1065,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 line = CIUtil.CiCopyStrWidth(line, CIUtil.LenB(tmp) + 1, CIUtil.LenB(line) - CIUtil.LenB(tmp));
 
                 lengthsIndex++;
-                if (lengthsIndex >= maxLengths.Count())
+                if (lengthsIndex >= maxLengths.Count)
                 {
                     lengthsIndex = 0;
                 }
@@ -1164,26 +1082,22 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         // 戻り値
         List<CoOutDrugModel> outDrugModels = new List<CoOutDrugModel>();
 
-        List<CoOdrInfModel> odrInfs = _finder.FindOdrInfData(PtId, SinDate, RaiinNo);
-        List<CoOdrInfDetailModel> odrInfDtls = _finder.FindOdrInfDetailData(PtId, SinDate, RaiinNo);
-
-        foreach (CoOdrInfModel odr in odrInfs)
+        List<CoOdrInfModel> odrInfs = _finder.FindOdrInfData(hpId, ptId, sinDate, raiinNo);
+        List<CoOdrInfDetailModel> odrInfDtls = _finder.FindOdrInfDetailData(hpId, ptId, sinDate, raiinNo);
+        foreach (var odr in odrInfs.Where(odr => odrInfDtls.Any(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo)).ToList())
         {
-            if (odrInfDtls.Any(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo))
-            {
-                odr.Refill = (int)odrInfDtls.Find(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo).Suryo;
-            }
+            odr.Refill = (int)(odrInfDtls.Find(p => p.RpNo == odr.RpNo && p.RpEdaNo == odr.RpEdaNo)?.Suryo ?? 0);
         }
 
-        List<CoOdrInfModel> filteredOdrInfs = new List<CoOdrInfModel>();
-        List<CoOdrInfDetailModel> filteredOdrInfDtls = new List<CoOdrInfDetailModel>();
+        List<CoOdrInfModel> filteredOdrInfs;
+        List<CoOdrInfDetailModel> filteredOdrInfDtls;
 
         // 医療機関情報取得
-        CoHpInfModel hpInf = _finder.FindHpInf(SinDate);
+        CoHpInfModel hpInf = _finder.FindHpInf(hpId, sinDate);
         // 患者情報
-        CoPtInfModel ptInf = _finder.FindPtInf(PtId, SinDate);
+        CoPtInfModel ptInf = _finder.FindPtInf(hpId, ptId, sinDate);
         // 処方箋登録情報
-        List<CoEpsPrescription> epsPrescriptions = _finder.FindEpsPrescription(PtId, RaiinNo);
+        List<CoEpsPrescription> epsPrescriptions = _finder.FindEpsPrescription(hpId, ptId, raiinNo);
 
         // QRコードのバージョン
         string version = QRVersion.Jahis5;
@@ -1193,10 +1107,10 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 version = QRVersion.Jahis7;
                 break;
             case 2:
-                version = SinDate >= KaiseiDate.d20220401 ? QRVersion.Jahis8 : QRVersion.Jahis7;
+                version = sinDate >= KaiseiDate.d20220401 ? QRVersion.Jahis8 : QRVersion.Jahis7;
                 break;
             case 3:
-                version = SinDate >= KaiseiDate.d20221001 ? QRVersion.Jahis9 : QRVersion.Jahis8;
+                version = sinDate >= KaiseiDate.d20221001 ? QRVersion.Jahis9 : QRVersion.Jahis8;
                 break;
         }
 
@@ -1368,7 +1282,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         if (bunkatuMax <= 0) bunkatuMax = 1;
 
                         // PT_HOKEN
-                        CoPtHokenInfModel ptHoken = _finder.FindPtHoken(PtId, hokenId, SinDate);
+                        CoPtHokenInfModel ptHoken = _finder.FindPtHoken(hpId, ptId, hokenId, sinDate);
 
                         // PT_KOHI
                         // この患者が当該診療で使用しているすべての公費
@@ -1392,7 +1306,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                             if (kohiIds.Any())
                             {
-                                ptKohis = _finder.FindPtKohi(PtId, SinDate, kohiIds);
+                                ptKohis = _finder.FindPtKohi(hpId, ptId, sinDate, kohiIds);
                                 // priority順に並べ替え
                                 // 公費（5.生保、6.分点、7.一般) で、負担者番号があるものに絞り込み
                                 // 他に処方箋未記載の公費があれば、ここでフィルタする
@@ -1535,14 +1449,14 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         }
 
                         // 来院情報取得
-                        CoRaiinInfModel raiinInf = _finder.FindRaiinInf(PtId, SinDate, RaiinNo);
+                        CoRaiinInfModel raiinInf = _finder.FindRaiinInf(hpId, ptId, sinDate, raiinNo);
 
                         string accessCd = string.Empty;
 
                         // 電子処方箋対応 
-                        if (_systemConfig.ElectronicPrescriptionLicense > 0 && i == 0)
+                        if (_systemConfig.ElectronicPrescriptionLicense() > 0 && i == 0)
                         {
-                            List<CoEpsPrescription> filteredEpsPrescriptions = new List<CoEpsPrescription> { };
+                            List<CoEpsPrescription> filteredEpsPrescriptions = new();
                             if (string.IsNullOrEmpty(ptHoken.HokensyaNo))
                             {
                                 // 公費単独
@@ -1581,10 +1495,10 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         for (int bunkatuKai = 1; bunkatuKai <= bunkatuMax; bunkatuKai++)
                         {
                             // 印字用データを作成
-                            CoOutDrugPrintData printData = new CoOutDrugPrintData(OutDrugPrintOutType.Syohosen, SinDate, ptInf, ptHoken, filteredPtKohis, hpInf, raiinInf, bunkatuMax, bunkatuKai, refill.count, accessCd);
+                            CoOutDrugPrintData printData = new CoOutDrugPrintData(OutDrugPrintOutType.Syohosen, sinDate, ptInf, ptHoken, filteredPtKohis, hpInf, raiinInf, bunkatuMax, bunkatuKai, refill.count, accessCd);
 
                             // QRのデータを作成
-                            CoOutDrugQRData qrData = new CoOutDrugQRData(version, SinDate, hpInf, raiinInf, ptInf, ptHoken, filteredPtKohis, bunkatuMax, bunkatuKai, refill.count, accessCd);
+                            CoOutDrugQRData qrData = new CoOutDrugQRData(version, sinDate, hpInf, raiinInf, ptInf, ptHoken, filteredPtKohis, bunkatuMax, bunkatuKai, refill.count, accessCd);
 
                             #region 残薬
                             qrData.QR062 = null;
@@ -1674,10 +1588,10 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                 void _addBikoSanteiOdrItem(List<string> itemCds, string kigo)
                                 {
                                     bool santei = false;
-                                    santei = _finder.CheckSanteiTerm(PtId, SinDate / 100 * 100 + 1, SinDate, itemCds);
-                                    if (santei == false)
+                                    santei = _finder.CheckSanteiTerm(hpId, ptId, sinDate / 100 * 100 + 1, sinDate, itemCds);
+                                    if (!santei)
                                     {
-                                        santei = _finder.CheckOdrTerm(PtId, SinDate, SinDate, itemCds);
+                                        santei = _finder.CheckOdrTerm(hpId, ptId, sinDate, sinDate, itemCds);
                                     }
 
                                     if (santei)
@@ -1689,7 +1603,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                 {
                                     bool santei = false;
 
-                                    santei = _finder.CheckOdrTerm(PtId, SinDate, SinDate, itemCds);
+                                    santei = _finder.CheckOdrTerm(hpId, ptId, sinDate, sinDate, itemCds);
 
                                     if (santei)
                                     {
@@ -1711,14 +1625,14 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                             #endregion
 
                             #region 情報通信
-                            if (_finder.CheckOdrRaiin(PtId, RaiinNo, new List<string> { ItemCdConst.Con_Jouhou }))
+                            if (_finder.CheckOdrRaiin(hpId, ptId, raiinNo, new List<string> { ItemCdConst.Con_Jouhou }))
                             {
                                 biko = OutDrugUtil.AppendStr(biko, "情報通信");
                             }
                             #endregion
 
                             #region 高齢者
-                            if (i == 0 && (CIUtil.AgeChk(ptInf.Birthday, SinDate, 70) || ptHoken.IsKouki) && ptHoken.HokenSbtKbn == HokenSbtKbn.Hoken)
+                            if (i == 0 && (CIUtil.AgeChk(ptInf.Birthday, sinDate, 70) || ptHoken.IsKouki) && ptHoken.HokenSbtKbn == HokenSbtKbn.Hoken)
                             {
                                 int hokenRate = printData.GetHokenRate(ptHoken.Rate, ptHoken.HokenSbtKbn, ptHoken.KogakuKbn, ptHoken.Houbetu);
 
@@ -1728,7 +1642,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                 }
                                 else
                                 {
-                                    if (ptHoken.IsKouki && SinDate >= KaiseiDate.d20221001)
+                                    if (ptHoken.IsKouki && sinDate >= KaiseiDate.d20221001)
                                     {
                                         if (ptHoken.KogakuKbn == 41)
                                         {
@@ -2346,7 +2260,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         if (bunkatuMax > 1)
                         {
                             // 分割指示別紙用
-                            CoOutDrugPrintData printData = new CoOutDrugPrintData(OutDrugPrintOutType.Bunkatu, SinDate, ptInf, ptHoken, filteredPtKohis, hpInf, raiinInf, bunkatuMax, 0, 0, accessCd);
+                            CoOutDrugPrintData printData = new CoOutDrugPrintData(OutDrugPrintOutType.Bunkatu, sinDate, ptInf, ptHoken, filteredPtKohis, hpInf, raiinInf, bunkatuMax, 0, 0, accessCd);
                             outDrugModels.Add(new CoOutDrugModel(printData, null));
                         }
                         // 紙用データ作成
@@ -2368,7 +2282,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         bool ret = false;
 
         int needCount = 0;
-        int QRVer = CoRep.QRVersion("qr_OutDrg");
+        int QRVer = _qRVersion;
         int MaxLength = 0;
         // QR Versionに応じた最大データ量（漢字文字数）
         int[] MaxLengths =
@@ -2383,7 +2297,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         {
             MaxLength = MaxLengths[QRVer - 1];
             needCount = (AData.Length / MaxLength + 1);
-            if (needCount <= CoRep.QRChildCount("qr_OutDrg") + 1)
+            if (needCount <= _qRChildCount + 1)
             {
                 ret = true;
             }
@@ -2425,13 +2339,9 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             // その他
             ret = 9;
         }
-
         return ret;
     }
-
     #endregion
-
-
 
     /// <summary>
     /// Coレポート フォームファイルから必要なオブジェクトの設定を読み取る
@@ -2449,7 +2359,24 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetFormatLength),
             new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetListRowCount),
             new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetFormatLength),
-            new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetListRowCount)
+            new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetListRowCount),
+            new ObjectCalculate("lsQRRow", (int)CalculateTypeEnum.GetListRowCount),
+            new ObjectCalculate("qr_OutDrg", (int)CalculateTypeEnum.QRChildCount),
+            new ObjectCalculate("qr_OutDrg", (int)CalculateTypeEnum.QRVersion),
+        };
+
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.OutDrug, formfile, fieldInputList);
+
+        var javaOutputData = _readRseReportFileService.ReadFileRse(data);
+        UpdateParamLocal(javaOutputData.responses ?? new());
+    }
+
+    private void GetQRParam(string formfile)
+    {
+        List<ObjectCalculate> fieldInputList = new()
+        {
+            new ObjectCalculate("qr_OutDrg", (int)CalculateTypeEnum.QRChildCount),
+            new ObjectCalculate("qr_OutDrg", (int)CalculateTypeEnum.QRVersion),
         };
 
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.OutDrug, formfile, fieldInputList);
@@ -2468,13 +2395,20 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     switch (item.listName)
                     {
                         case "lsData":
+                            // データ行の数
                             _dataRowCount = item.result;
                             break;
                         case "lsBikoShort":
+                            // 備考欄、幅が狭いほうのリストの行数
                             _bikoShortRowCount = item.result;
                             break;
                         case "lsBikoLong":
+                            // 備考欄、幅が広い方のリストの行数
                             _bikoLongRowCount = item.result;
+                            break;
+                        case "lsQRRow":
+                            // QRコード印字に必要な行数
+                            _qrRowCount = item.result;
                             break;
                     }
                     break;
@@ -2482,25 +2416,48 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     switch (item.listName)
                     {
                         case "lsData":
+                            // データリストの幅
                             _dataCharCount = item.result;
                             break;
                         case "lsSuryo":
+                            // 数量リストの幅
                             _suryoCharCount = item.result;
                             break;
                         case "lsUnitName":
+                            // 単位リストの幅
                             _unitCharCount = item.result;
                             break;
                         case "lsKaisu":
+                            // 回数リストの幅
                             _kaisuCharCount = item.result;
                             break;
                         case "lsYohoUnitName":
+                            // 用法単位リストの幅
                             _yohoUnitCharCount = item.result;
                             break;
                         case "lsBikoShort":
+                            // 備考欄、幅が狭いほうのリストの幅
                             _bikoShortCharCount = item.result;
                             break;
                         case "lsBikoLong":
+                            // 備考欄、幅が広いほうのリストの幅
                             _bikoLongCharCount = item.result;
+                            break;
+                    }
+                    break;
+                case (int)CalculateTypeEnum.QRChildCount:
+                    switch (item.listName)
+                    {
+                        case "qr_OutDrg":
+                            _qRChildCount = item.result;
+                            break;
+                    }
+                    break;
+                case (int)CalculateTypeEnum.QRVersion:
+                    switch (item.listName)
+                    {
+                        case "qr_OutDrg":
+                            _qRVersion = item.result;
                             break;
                     }
                     break;

@@ -120,7 +120,7 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
             });
 
         var joinQuery = (
-            from odrInf in odrInfs
+            from odrInf in odrInfs.AsEnumerable()
             join odrInfDetail in odrInfDetails on
                 new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                 new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
