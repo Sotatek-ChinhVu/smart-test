@@ -26,7 +26,6 @@ namespace Interactor.SuperAdmin
         public UpgradePremiumInteractor(
             ITenantRepository tenantRepository,
             IAwsSdkService awsSdkService,
-            IWebSocketService webSocketService,
             INotificationRepository notificationRepository,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask,
