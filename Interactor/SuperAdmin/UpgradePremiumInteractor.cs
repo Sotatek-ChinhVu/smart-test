@@ -5,8 +5,11 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using Helper.Redis;
 using Interactor.Realtime;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
+using StackExchange.Redis;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
@@ -18,12 +21,16 @@ namespace Interactor.SuperAdmin
         private readonly INotificationRepository _notificationRepository;
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
+        private readonly IConfiguration _configuration;
+        private readonly IDatabase _cache;
         public UpgradePremiumInteractor(
             ITenantRepository tenantRepository,
             IAwsSdkService awsSdkService,
+            IWebSocketService webSocketService,
             INotificationRepository notificationRepository,
             ITenantRepository tenantRepositoryRunTask,
-            INotificationRepository notificationRepositoryRunTask
+            INotificationRepository notificationRepositoryRunTask,
+            IConfiguration configuration
             )
         {
             _awsSdkService = awsSdkService;
@@ -31,6 +38,18 @@ namespace Interactor.SuperAdmin
             _notificationRepository = notificationRepository;
             _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        private void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
@@ -150,6 +169,13 @@ namespace Interactor.SuperAdmin
                         // Finished upgrade
                         if (tenantUpgrade != null)
                         {
+                            // set cache to tenantId
+                            var key = "cache_tenantId_" + tenantUpgrade.SubDomain;
+                            if (_cache.KeyExists(key))
+                            {
+                                _cache.KeyDelete(key);
+                                _cache.StringSet(key, tenantUpgrade.TenantId.ToString());
+                            }
                             var messenge = $"{oldTenant.EndSubDomain} is upgrade premium successfully.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);

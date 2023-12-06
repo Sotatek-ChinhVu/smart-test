@@ -1,14 +1,13 @@
 ﻿using Domain.Models.UserToken;
-using Domain.SuperAdminModels.Admin;
 using UseCase.UserToken.GetInfoRefresh;
 
 namespace Interactor.UserToken
 {
     public class RefreshTokenByUserInteractor : IRefreshTokenByUserInputPort
     {
-        private readonly IAdminRepository _userTokenRepository;
+        private readonly IUserTokenRepository _userTokenRepository;
 
-        public RefreshTokenByUserInteractor(IAdminRepository userTokenRepository) => _userTokenRepository = userTokenRepository;
+        public RefreshTokenByUserInteractor(IUserTokenRepository userTokenRepository) => _userTokenRepository = userTokenRepository;
 
         public RefreshTokenByUserOutputData Handle(RefreshTokenByUserInputData inputData)
         {

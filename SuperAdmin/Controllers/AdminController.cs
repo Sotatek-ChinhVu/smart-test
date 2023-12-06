@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using Helper.Constants;
 using Microsoft.AspNetCore.Mvc;
+using SuperAdmin.Constants;
 using SuperAdmin.Presenters.Admin;
 using SuperAdmin.Requests.Admin;
 using SuperAdmin.Responses;
@@ -9,6 +10,7 @@ using SuperAdminAPI.Requests.UserToken;
 using SuperAdminAPI.Responses.UserToken;
 using SuperAdminAPI.Security;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Security.Claims;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.Login;
@@ -40,12 +42,21 @@ namespace SuperAdmin.Controllers
             new(ParamConstant.Name, output.User.Name),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
-
-            string token = AuthProvider.GenerateAccessToken(claims);
-            var resultRefreshToken = SigInRefreshToken(output.User.Id);
             Response<LoginResponse> result = new();
-            result.Data = new LoginResponse(token, output.User.Id, output.User.Name, output.User.FullName, output.User.Role, resultRefreshToken.refreshToken, resultRefreshToken.refreshTokenExpiryTime);
-            return new ActionResult<Response<LoginResponse>>(result);
+            result.Message = GetMessage(output.Status);
+            result.Status = (int)output.Status;
+            if (output.User.Id > 0)
+            {
+                string token = AuthProvider.GenerateAccessToken(claims);
+                var resultRefreshToken = SigInRefreshToken(output.User.Id);
+                result.Data = new LoginResponse(token, output.User.Id, output.User.Name, output.User.FullName, output.User.Role, resultRefreshToken.refreshToken, resultRefreshToken.refreshTokenExpiryTime);
+    
+                return new ActionResult<Response<LoginResponse>>(result);
+            }
+            else
+            {
+                return new ActionResult<Response<LoginResponse>>(result);
+            }
         }
 
         [HttpPost("RefreshToken")]
@@ -95,5 +106,14 @@ namespace SuperAdmin.Controllers
             else
                 return new(string.Empty, DateTime.MinValue);
         }
+
+        private string GetMessage(LoginStatus status) => status switch
+        {
+            LoginStatus.Successed => ResponseMessage.Success,
+            LoginStatus.Failed => ResponseMessage.Fail,
+            LoginStatus.InvalidLoginId => ResponseMessage.InvalidLoginId,
+            LoginStatus.InvalidPassWord => ResponseMessage.InvalidPassword,
+            _ => string.Empty
+        };
     }
 }
