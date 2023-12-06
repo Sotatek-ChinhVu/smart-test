@@ -42,6 +42,8 @@ namespace Interactor.Insurance
             {
                 _insuranceMstRepository.ReleaseResource();
             }
+            //Filter duplicate
+            validateDetails = validateDetails.DistinctBy(v => new { v.Status, v.Message }).ToList();
             return new ValidKohiOutputData(validateDetails);
         }
 
@@ -183,7 +185,9 @@ namespace Interactor.Insurance
                     result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidTokusyuNo4, message, TypeMessage.TypeMessageError));
                 }
             }
-            if (!string.IsNullOrEmpty(futansyaNo) && Int32.Parse(futansyaNo) == 0)
+            // Try parse to have not exception
+            var checkFutansyaNo = Int32.TryParse(futansyaNo, out Int32 numberFutansyaNo);
+            if (!string.IsNullOrEmpty(futansyaNo) && checkFutansyaNo && numberFutansyaNo == 0)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "負担者番号は 0〜9の数字で入力してください。" };
                 message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
