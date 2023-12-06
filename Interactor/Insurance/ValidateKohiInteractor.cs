@@ -461,6 +461,7 @@ namespace Interactor.Insurance
                             result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitFutansyaNo4, message, TypeMessage.TypeMessageError));
                         }
                     }
+                    //TryParse to have not exception
                     var checkJyukyusyaNo = Int32.TryParse(jyukyusyaNo, out Int32 numberJyukyusyaNo);
                     if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && checkJyukyusyaNo && !CIUtil.HokenNumberCheckDigits(numberJyukyusyaNo))
                     {
