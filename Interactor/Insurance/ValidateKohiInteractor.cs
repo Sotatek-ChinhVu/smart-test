@@ -192,19 +192,19 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo01, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo01, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo02, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo02, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo03, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo03, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo04, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo04, message, TypeMessage.TypeMessageError));
                 }
             }
         }
