@@ -1,7 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
-using Domain.Models.PatientInfor;
 using Helper.Common;
 using Helper.Extension;
 using UseCase.Insurance.ValidKohi;
@@ -45,7 +44,7 @@ namespace Interactor.Insurance
             return new ValidKohiOutputData(validateDetails);
         }
 
-        private void IsValidKohi(ref List<ResultValidateInsurance<ValidKohiStatus>> result, bool isKohiModdel, bool isHokenMstModel, string futansyaNo, string jyukyusyaNo, string tokusyuNo, int startDate, int endDate, int confirmDate, int hokenMstIsFutansyaCheckFlag, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsTokusyuCheckFlag, int hokenMstModelStartDate, int hokenMstModelEndDate, string hokenMstDisplayText, int numberKohi, int sinDate, bool isAddNew,bool selectedHokenPatternIsExpirated)
+        private void IsValidKohi(ref List<ResultValidateInsurance<ValidKohiStatus>> result, bool isKohiModdel, bool isHokenMstModel, string futansyaNo, string jyukyusyaNo, string tokusyuNo, int startDate, int endDate, int confirmDate, int hokenMstIsFutansyaCheckFlag, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsTokusyuCheckFlag, int hokenMstModelStartDate, int hokenMstModelEndDate, string hokenMstDisplayText, int numberKohi, int sinDate, bool isAddNew, bool selectedHokenPatternIsExpirated)
         {
             var message = "";
             var numberMessage = "";
@@ -462,7 +461,8 @@ namespace Interactor.Insurance
                             result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitFutansyaNo4, message, TypeMessage.TypeMessageError));
                         }
                     }
-                    if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && !CIUtil.HokenNumberCheckDigits(Int32.Parse(jyukyusyaNo)))
+                    var checkJyukyusyaNo = Int32.TryParse(jyukyusyaNo, out Int32 numberJyukyusyaNo);
+                    if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && checkJyukyusyaNo && !CIUtil.HokenNumberCheckDigits(numberJyukyusyaNo))
                     {
                         var paramsMessage = new string[] { "公費" + numberMessage + "受給者番号" };
                         message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
