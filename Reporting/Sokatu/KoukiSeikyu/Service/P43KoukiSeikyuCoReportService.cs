@@ -112,6 +112,7 @@ public class P43KoukiSeikyuCoReportService : IP43KoukiSeikyuCoReportService
         #region SubMethod
 
         #region Header
+        //using void function because it not return data
         void UpdateFormHeader()
         {
             //医療機関コード
@@ -145,6 +146,7 @@ public class P43KoukiSeikyuCoReportService : IP43KoukiSeikyuCoReportService
         #endregion
 
         #region Body
+        //using void function because it not return data
         void UpdateFormBody()
         {
             List<ListTextObject> listDataPerPage = new();

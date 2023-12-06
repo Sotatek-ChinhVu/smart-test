@@ -238,7 +238,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 ret = PtByomei.Byomei ?? string.Empty;
 
@@ -247,9 +247,9 @@ namespace Reporting.AccountingCard.Model
                     ret = "（主）" + ret;
                 }
 
-                if ((PtByomei.HosokuCmt ?? "").Trim() != "")
+                if ((PtByomei.HosokuCmt ?? string.Empty).Trim() != string.Empty)
                 {
-                    ret += "（" + PtByomei.HosokuCmt ?? string.Empty.Trim() + "）";
+                    ret += "（" + (PtByomei.HosokuCmt ?? string.Empty).Trim() + "）";
                 }
 
                 return ret;
@@ -283,7 +283,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
 
                 switch (PtByomei.TenkiKbn)
                 {
@@ -354,7 +354,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string HosokuCmt
         {
-            get { return PtByomei.HosokuCmt ?? ""; }
+            get { return PtByomei.HosokuCmt ?? string.Empty; }
         }
 
         /// <summary>

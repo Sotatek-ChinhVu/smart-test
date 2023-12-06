@@ -717,6 +717,7 @@ namespace Reporting.Statistics.Sta2011.Service
             #region SubMethod
 
             #region Header
+            //using void function because it not return data
             void UpdateFormHeader()
             {
                 //タイトル
@@ -738,6 +739,7 @@ namespace Reporting.Statistics.Sta2011.Service
             #endregion
 
             #region Body
+            //using void function because it not return data
             void UpdateFormBody()
             {
                 int hokIndex = (_currentPage - 1) * _maxRow;

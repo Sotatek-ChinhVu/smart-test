@@ -89,6 +89,8 @@ namespace Interactor.Insurance
                 _systemConfRepository.ReleaseResource();
                 _patientInforRepository.ReleaseResource();
             }
+            //Filter duplicate
+            validateDetails = validateDetails.DistinctBy(v => new { v.Status, v.Message }).ToList();
             return new ValidMainInsuranceOutputData(validateDetails);
         }
 

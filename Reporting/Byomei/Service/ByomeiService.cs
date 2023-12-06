@@ -140,6 +140,7 @@ public class ByomeiService : IByomeiService
     private void UpdateDrawForm()
     {
         #region SubMethod
+        //using void function because it not return data
         void UpdateFormHeader()
         {
             string bufFrom = string.Empty;
@@ -228,6 +229,7 @@ public class ByomeiService : IByomeiService
             }
         }
 
+        //using void function because it not return data
         void UpdateFormBody()
         {
             int byomeiIndex = (currentPage - 1) * dataCharCount;

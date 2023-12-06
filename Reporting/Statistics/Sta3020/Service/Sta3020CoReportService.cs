@@ -304,7 +304,7 @@ namespace Reporting.Statistics.Sta3020.Service
                     foreach (var colName in existsCols)
                     {
                         var value = typeof(CoSta3020PrintData).GetProperty(colName)?.GetValue(printData);
-                        AddListData(ref data, colName, value == null ? "" : value.ToString()??string.Empty);
+                        AddListData(ref data, colName, value == null ? "" : value.ToString() ?? string.Empty);
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
