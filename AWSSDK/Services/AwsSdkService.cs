@@ -1,5 +1,8 @@
+using Amazon.S3;
 using AWSSDK.Common;
+using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data.Common;
 
@@ -7,7 +10,16 @@ namespace AWSSDK.Services
 {
     public class AwsSdkService : IAwsSdkService
     {
-        public AwsSdkService() { }
+        private readonly IConfiguration _configuration;
+        private readonly string _sourceAccessKey;
+        private readonly string _sourceSecretKey;
+
+        public AwsSdkService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            _sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+        }
         public async Task<Dictionary<string, Dictionary<string, string>>> SummaryCard()
         {
             return await CloudWatchAction.GetSummaryCardAsync();
@@ -109,6 +121,34 @@ namespace AWSSDK.Services
                 Console.WriteLine($"Error: {ex.Message}");
                 return false;
             }
+        }
+
+        public async Task CreateFolderAsync(string bucketName, string folderName)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CreateFolderAsync(sourceS3ClientDestination, bucketName, folderName);
+        }
+
+        public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
+        }
+
+        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string sourceFolderKey, string destinationBucketName, string destinationFolderKey)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, sourceFolderKey, sourceS3ClientDestination, destinationBucketName, destinationFolderKey);
+        }
+
+        private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
+        }
+        private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionSource);
         }
     }
 }

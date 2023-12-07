@@ -13,5 +13,6 @@ namespace UseCase.SuperAdmin.StopedTenant
         Failed = 3,
         TenantDoesNotExist = 4,
         TenantNotAvailable = 5,
+        TenantNotStoped = 6,
     }
 }

@@ -15,7 +15,7 @@
         /// <summary>
         /// フォームファイル名
         /// </summary>
-        public string FormFileName { get; set; }=string.Empty;
+        public string FormFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 帳票タイトル

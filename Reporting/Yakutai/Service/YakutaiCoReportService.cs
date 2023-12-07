@@ -307,6 +307,7 @@ namespace Reporting.Yakutai.Service
             #region SubMethod
             List<ListTextObject> listDataPerPage = new();
             // ヘッダー
+            //using void function because it not return data
             void UpdateFormHeader()
             {
                 Dictionary<string, string> fieldDataPerPage = new();
@@ -510,6 +511,7 @@ namespace Reporting.Yakutai.Service
             }
 
             // 本体
+            //using void function because it not return data
             void UpdateFormBody()
             {
                 int dataIndex = (_currentPage - 1) * _dataRowCount;

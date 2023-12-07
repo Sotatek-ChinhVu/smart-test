@@ -62,7 +62,7 @@
         /// <summary>
         /// 単位名称
         /// </summary>
-        public string UnitName { get; set; } =string.Empty;
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 回数

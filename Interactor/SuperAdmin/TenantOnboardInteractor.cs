@@ -18,28 +18,29 @@ namespace Interactor.SuperAdmin
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantRepository _tenant2Repository;
         private readonly IMigrationTenantHistoryRepository _migrationTenantHistoryRepository;
-        private readonly IWebSocketService _iWebSocketService;
         private readonly INotificationRepository _notificationRepository;
+        private IWebSocketService _webSocketService;
         public TenantOnboardInteractor(
             IAwsSdkService awsSdkService,
             ITenantRepository tenantRepository,
             ITenantRepository tenant2Repository,
             IMigrationTenantHistoryRepository migrationTenantHistoryRepository,
-            IWebSocketService iWebSocketService,
-            INotificationRepository notificationRepository
+            INotificationRepository notificationRepository,
+            IWebSocketService webSocketService
             )
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _migrationTenantHistoryRepository = migrationTenantHistoryRepository;
-            _iWebSocketService = iWebSocketService;
             _notificationRepository = notificationRepository;
             _tenant2Repository = tenant2Repository;
+            _webSocketService = webSocketService;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
             try
             {
+                _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 var dbName = CommonConstants.RemoveSpecialCharacters(inputData.SubDomain);
                 if (inputData.Size <= 0)
                 {
@@ -191,7 +192,7 @@ namespace Interactor.SuperAdmin
             {
                 var message = $"{subDomain} is created failed. Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                await _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
@@ -268,20 +269,23 @@ namespace Interactor.SuperAdmin
             {
                 string host = CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
                 if (!string.IsNullOrEmpty(host))
-                {
+                {                    
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
                     CreateDatas(host, dbName, dataMigration, tenantId, model);
+                    
+                    // create folder S3
+                    _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                    _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 }
             }
             catch (Exception ex)
             {
-                var message = $"{tenantUrl} is created failed. Add data Error: {ex.Message}";
+                var message = $"{tenantUrl} is created failed: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                _iWebSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
             }
             finally
             {
