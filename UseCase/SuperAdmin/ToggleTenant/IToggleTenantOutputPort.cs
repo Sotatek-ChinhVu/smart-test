@@ -2,7 +2,7 @@
 
 namespace UseCase.SuperAdmin.StopedTenant
 {
-    public interface IStopedTenantOutputPort : IOutputPort<StopedTenantOutputData>
+    public interface IToggleTenantOutputPort : IOutputPort<ToggleTenantOutputData>
     {
     }
 }
