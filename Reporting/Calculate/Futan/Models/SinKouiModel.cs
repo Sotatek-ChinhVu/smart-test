@@ -79,7 +79,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string SyukeiSaki
         {
-            get { return SinKoui.SyukeiSaki; }
+            get { return SinKoui.SyukeiSaki ?? string.Empty; }
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string CdKbn
         {
-            get { return SinKoui.CdKbn; }
+            get { return SinKoui.CdKbn ?? string.Empty; }
         }
 
         /// <summary>
@@ -142,9 +142,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string DetailData
         {
-            get { return SinKoui.DetailData; }
+            get { return SinKoui.DetailData ?? string.Empty; }
         }
-
     }
-
 }

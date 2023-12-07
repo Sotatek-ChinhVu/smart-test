@@ -101,7 +101,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Text
         {
-            get { return CalcLog.Text; }
+            get { return CalcLog.Text ?? string.Empty; }
             set
             {
                 if (CalcLog.Text == value) return;
