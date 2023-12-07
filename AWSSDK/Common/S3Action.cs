@@ -48,7 +48,7 @@ namespace AWSSDK.Common
                 {
                     response = await sourceS3Client.ListObjectsV2Async(request);
 
-                    foreach (var obj in response.S3Objects)
+                    Parallel.ForEach(response.S3Objects, obj =>
                     {
                         var deleteObjectRequest = new DeleteObjectRequest
                         {
@@ -56,8 +56,8 @@ namespace AWSSDK.Common
                             Key = obj.Key
                         };
                         var sourceTransterUtility = new TransferUtility(sourceS3Client);
-                        await sourceTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest);
-                    }
+                        sourceTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest);
+                    });
 
                     request.ContinuationToken = response.NextContinuationToken;
                 } while (response.IsTruncated);
@@ -70,14 +70,14 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error deleting objects in folder: '{ex.Message}'");
             }
         }
-        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string sourceFolderKey, AmazonS3Client destinationClient, string destinationBucketName, string destinationFolderKey)
+        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string folderKey, AmazonS3Client destinationClient, string destinationBucketName)
         {
             try
             {
                 ListObjectsV2Request request = new ListObjectsV2Request
                 {
                     BucketName = sourceBucketName,
-                    Prefix = sourceFolderKey
+                    Prefix = folderKey
                 };
 
                 ListObjectsV2Response response;
@@ -86,32 +86,32 @@ namespace AWSSDK.Common
                     response = await sourceClient.ListObjectsV2Async(request);
                     if (!response.S3Objects.Any())
                     {
-                        Console.WriteLine($"Objects in folder '{sourceFolderKey}' not found.");
+                        Console.WriteLine($"Objects in folder '{folderKey}' not found.");
                         return;
                     }
-                    foreach (var obj in response.S3Objects)
+                    Parallel.ForEach(response.S3Objects, obj =>
                     {
                         var copyObjectRequest = new CopyObjectRequest
                         {
                             SourceBucket = sourceBucketName,
                             SourceKey = obj.Key,
                             DestinationBucket = destinationBucketName,
-                            DestinationKey = destinationFolderKey + obj.Key.Substring(sourceFolderKey.Length)
+                            DestinationKey = folderKey + obj.Key.Substring(folderKey.Length)
                         };
 
                         var destinationTransterUtility = new TransferUtility(destinationClient);
-                        await destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest);
-                    }
+                        destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest);
+                    });
 
                     request.ContinuationToken = response.NextContinuationToken;
                 } while (response.IsTruncated);
 
-                Console.WriteLine($"Objects in folder '{sourceFolderKey}' copied to '{destinationFolderKey}' successfully.");
+                Console.WriteLine($"Restore objects in folder '{folderKey}' successfully.");
             }
             catch (AmazonS3Exception ex)
             {
-                Console.WriteLine($"Error copying objects in folder: '{ex.Message}'");
-                throw new Exception($"Error copying objects in folder: '{ex.Message}'");
+                Console.WriteLine($"Error restore objects in folder '{folderKey}': '{ex.Message}'");
+                throw new Exception($"Error restore objects in folder '{folderKey}': '{ex.Message}'");
             }
         }
     }

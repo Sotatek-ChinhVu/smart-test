@@ -37,6 +37,14 @@ namespace Interactor.SuperAdmin
             {
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
+
+                string pathFileDumpTerminate = _configuration["PathFileDumpTerminate"] ?? string.Empty;
+
+                if (string.IsNullOrEmpty(pathFileDumpTerminate))
+                {
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.PathFileDumpRestoreNotAvailable);
+                }
+
                 if (inputData.TenantId <= 0)
                 {
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
@@ -63,6 +71,34 @@ namespace Interactor.SuperAdmin
                     try
                     {
                         Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
+
+                        // Backup tenant
+                        if (inputData.Type == 1) // sort terminate
+                        {
+                            // Create folder backup S3
+                            var backupFolder = @$"bk-{tenant.EndSubDomain}";
+                            _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.DestinationBucketName, backupFolder).Wait();
+
+                            // Dump DB backup
+                            var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // path save file sql dump
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
+
+                            // check valid file sql dump
+                            if (!System.IO.File.Exists(pathFileDump))
+                            {
+                                throw new Exception("File sql dump doesn't exist");
+                            }
+
+                            long length = new System.IO.FileInfo(pathFileDump).Length;
+                            if (length <= 0)
+                            {
+                                throw new Exception("Invalid file sql dump");
+                            }
+
+                            // Upload file sql dump to folder backup S3
+                            _awsSdkService.UploadFileAsync(ConfigConstant.RestoreBucketName, $@"{backupFolder}/{tenant.Db}", pathFileDump).Wait();
+                        }
+
                         bool deleteRDSAction = false;
 
                         // Connect RDS delete TenantDb
