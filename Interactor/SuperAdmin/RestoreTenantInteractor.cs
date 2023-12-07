@@ -292,7 +292,7 @@ namespace Interactor.SuperAdmin
                 }
                 finally
                 {
-                    if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
+                    //if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
                 }
             });
         }

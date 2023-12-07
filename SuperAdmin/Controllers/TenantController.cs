@@ -9,6 +9,7 @@ using SuperAdminAPI.Request.Tennant;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using UseCase.SuperAdmin.RestoreTenant;
 using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
@@ -23,7 +24,7 @@ namespace SuperAdminAPI.Controllers
     public class TenantController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        private  IWebSocketService _webSocketService;
+        private IWebSocketService _webSocketService;
         public TenantController(UseCaseBus bus, IWebSocketService webSocketService)
         {
             _bus = bus;
@@ -119,6 +120,16 @@ namespace SuperAdminAPI.Controllers
             var presenter = new RestoreTenantPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<RestoreTenantResponse>>(presenter.Result);
+        }
+
+        [HttpPost("RestoreObjectS3Tenant")]
+        public ActionResult<Response<RestoreObjectS3TenantResponse>> RestoreObjectS3Tenant([FromBody] RestoreObjectS3TenantRequest request)
+        {
+            var input = new RestoreObjectS3TenantInputData(request.ObjectName, _webSocketService);
+            var output = _bus.Handle(input);
+            var presenter = new RestoreObjectS3TenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RestoreObjectS3TenantResponse>>(presenter.Result);
         }
     }
 }
