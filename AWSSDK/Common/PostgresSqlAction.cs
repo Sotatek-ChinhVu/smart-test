@@ -36,7 +36,7 @@ namespace AWSSDK.Common
             else
             {
                 // path file linux
-                batchContent = "" + dumpCommand + "  > " + outFile + "\n";
+                batchContent = "" + dumpCommand + "  > " + outFile + " 2> /app/restore/log-create-dump.txt" + "\n";
             }
             if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
 
@@ -66,12 +66,12 @@ namespace AWSSDK.Common
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // path file windown
+                // path file window
                 batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
             }
             else
             {   // path file linux
-                batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + "\n";
+                batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + " 2> /app/restore/log-excute-dump.txt" + "\n";
             }
 
             await Execute(batchContent);
@@ -127,7 +127,6 @@ namespace AWSSDK.Common
 
                     using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
 
-
                     proc.WaitForExit();
                     var exit = proc.ExitCode;
 
@@ -142,7 +141,7 @@ namespace AWSSDK.Common
                 }
                 finally
                 {
-                    if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
+                    //if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
                 }
             });
         }
