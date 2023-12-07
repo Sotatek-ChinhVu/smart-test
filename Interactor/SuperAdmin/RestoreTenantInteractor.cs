@@ -6,6 +6,7 @@ using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
+using Entity.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ namespace Interactor.SuperAdmin
         {
             IWebSocketService _webSocketService;
             _webSocketService = (IWebSocketService)inputData.WebSocketService;
-            string pathFileDumpRestore = _configuration["PathFileDumpRestore"];
+            string pathFileDumpRestore = _configuration["PathFileDumpRestore"] ?? string.Empty;
 
             if (string.IsNullOrEmpty(pathFileDumpRestore))
             {
@@ -117,8 +118,7 @@ namespace Interactor.SuperAdmin
                                 throw new Exception("File sql dump doesn't exist");
                             }
 
-                            long length = new System.IO.FileInfo(pathFileDump).Length;
-                            if (length <= 0)
+                            if (!PostgresSqlAction.CheckingFinishedAccessedFile(pathFileDump))
                             {
                                 throw new Exception("Invalid file sql dump");
                             }
