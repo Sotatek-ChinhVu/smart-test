@@ -1,10 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Statistics.Sta9000.Models
 {
@@ -20,6 +15,11 @@ namespace Reporting.Statistics.Sta9000.Models
             FirstVisitDate = firstVisitDate;
             LastVisitDate = lastVisitDate;
             _ptCmt = ptCmt;
+            AdjFutan = string.Empty;
+            _ptCmt = string.Empty;
+            AdjRate = string.Empty;
+            AutoSantei = string.Empty;
+            PtGrps = new();
         }
 
         /// <summary>

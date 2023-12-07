@@ -11,6 +11,14 @@
             EndDateTo = -1;
         }
 
+        public CoSta3001PrintConf()
+        {
+            StartDateFrom = -1;
+            StartDateTo = -1;
+            EndDateFrom = -1;
+            EndDateTo = -1;
+        }
+
         /// <summary>
         /// STA_MENU.MENU_ID
         /// </summary>
@@ -19,12 +27,12 @@
         /// <summary>
         /// 帳票タイトル
         /// </summary>
-        public string ReportName { get; set; }
+        public string ReportName { get; set; } = string.Empty;
 
         /// <summary>
         /// フォームファイル名
         /// </summary>
-        public string FormFileName { get; set; }
+        public string FormFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 基準日
@@ -76,22 +84,22 @@
         /// <summary>
         /// 薬剤区分
         /// </summary>
-        public List<int> DrugKbns { get; set; }
+        public List<int> DrugKbns { get; set; } = new();
 
         /// <summary>
         /// 麻毒区分
         /// </summary>
-        public List<int> MadokuKbns { get; set; }
+        public List<int> MadokuKbns { get; set; } = new();
 
         /// <summary>
         /// 向精神薬区分
         /// </summary>
-        public List<int> KouseisinKbns { get; set; }
+        public List<int> KouseisinKbns { get; set; } = new();
 
         /// <summary>
         /// 後発フラグ
         /// </summary>
-        public List<int> KohatuKbns { get; set; }
+        public List<int> KohatuKbns { get; set; } = new();
 
         /// <summary>
         /// 開始日From

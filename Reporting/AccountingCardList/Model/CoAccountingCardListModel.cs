@@ -21,13 +21,6 @@ public class CoAccountingCardListModel
         PtByomeis = ptByomeiModels;
     }
 
-    public CoAccountingCardListModel()
-    {
-        PtInf = new();
-        KaikeiInfModels = new();
-        PtByomeis = new();
-    }
-
     public int SinYm { get; } = 0;
 
     public string Name

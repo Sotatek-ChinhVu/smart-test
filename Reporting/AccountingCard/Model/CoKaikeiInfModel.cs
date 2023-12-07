@@ -6,12 +6,12 @@ namespace Reporting.AccountingCard.Model
 {
     public class CoKaikeiInfModel
     {
-        public KaikeiInf KaikeiInf { get; } = null;
-        public List<KaikeiDetail> KaikeiDtls { get; } = null;
-        public PtInf PtInf { get; } = null;
-        public PtHokenInf PtHokenInf { get; } = null;
-        public HokenMst HokenMst { get; } = null;
-        public List<CoPtKohiModel> PtKohis { get; } = null;
+        public KaikeiInf KaikeiInf { get; set; }
+        public List<KaikeiDetail> KaikeiDtls { get; set; }
+        public PtInf PtInf { get; set; }
+        public PtHokenInf PtHokenInf { get; set; }
+        public HokenMst HokenMst { get; set; }
+        public List<CoPtKohiModel> PtKohis { get; set; }
 
         /// <summary>
         /// 会計情報
@@ -83,20 +83,20 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string Houbetu
         {
-            get => PtHokenInf.Houbetu;
+            get => PtHokenInf.Houbetu ?? string.Empty;
         }
 
         public string HokensyaNo
         {
-            get => PtHokenInf.HokensyaNo;
+            get => PtHokenInf.HokensyaNo ?? string.Empty;
         }
         public string Kigo
         {
-            get => PtHokenInf.Kigo;
+            get => PtHokenInf.Kigo ?? string.Empty;
         }
         public string Bango
         {
-            get => PtHokenInf.Bango;
+            get => PtHokenInf.Bango ?? string.Empty;
         }
         public string EdaNo
         {
@@ -104,7 +104,7 @@ namespace Reporting.AccountingCard.Model
             {
                 string ret = "";
 
-                if (string.IsNullOrEmpty(PtHokenInf.EdaNo) == false)
+                if (!string.IsNullOrEmpty(PtHokenInf.EdaNo))
                 {
                     ret = PtHokenInf.EdaNo.PadLeft(2, '0');
                 }
@@ -129,7 +129,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                return PtHokenInf.RousaiKofuNo;
+                return PtHokenInf.RousaiKofuNo ?? string.Empty;
             }
         }
         /// <summary>
@@ -139,7 +139,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                return PtHokenInf.RousaiJigyosyoName;
+                return PtHokenInf.RousaiJigyosyoName ?? string.Empty;
             }
         }
         /// <summary>
@@ -149,7 +149,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                return PtHokenInf.JibaiHokenName;
+                return PtHokenInf.JibaiHokenName ?? string.Empty;
             }
         }
         /// <summary>
@@ -159,7 +159,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                return PtHokenInf.JibaiHokenTanto;
+                return PtHokenInf.JibaiHokenTanto ?? string.Empty;
             }
         }
         /// <summary>
@@ -183,7 +183,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                if (PtKohis == null || PtKohis.Any() == false)
+                if (PtKohis == null || !PtKohis.Any())
                 {
                     return 0;
                 }
@@ -329,7 +329,6 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public int HokenRate
         {
-            //get => GetHokenRate(PtHokenInf.Rate, HokenMst.HokenSbtKbn, PtHokenInf.KogakuKbn, PtHokenInf.Houbetu);
             get => KaikeiInf.HokenRate;
         }
         /// <summary>
@@ -337,7 +336,6 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public int Rate
         {
-            //get => PtHokenInf.Rate;
             get => KaikeiInf.PtRate;
         }
         /// <summary>
@@ -361,7 +359,7 @@ namespace Reporting.AccountingCard.Model
                     if (new int[] { 1, 2 }.Contains(PtHokenInf.HokenKbn))
                     {
 
-                        ret = GetHokenRate(PtHokenInf.Rate, HokenMst.HokenSbtKbn, PtHokenInf.KogakuKbn, PtHokenInf.Houbetu);
+                        ret = GetHokenRate(PtHokenInf.Rate, HokenMst.HokenSbtKbn, PtHokenInf.KogakuKbn, PtHokenInf.Houbetu ?? string.Empty);
 
                     }
                     else if (PtHokenInf.HokenKbn == 0)
@@ -369,16 +367,11 @@ namespace Reporting.AccountingCard.Model
                         // 自費
                         ret = 100;
                     }
-                    else
-                    {
-                        // 労災・自賠
-                        //ret = null;
-                    }
                 }
 
                 if (PtKohis != null)
                 {
-                    for (int i = 0; i < PtKohis.Count(); i++)
+                    for (int i = 0; i < PtKohis.Count; i++)
                     {
                         if (PtKohis[i].HokenMst.FutanKbn == 0)
                         {
@@ -422,9 +415,9 @@ namespace Reporting.AccountingCard.Model
                     else if (IsElder() && houbetu != "39")
                     {
                         wrkRate =
-                            IsElder20per() ? wrkRate = 20 :  //前期高齢
-                            IsElderExpat() ? wrkRate = 20 :  //75歳以上海外居住者
-                            wrkRate = 10;
+                            IsElder20per() ? 20 :  //前期高齢
+                            IsElderExpat() ? 20 :  //75歳以上海外居住者
+                             10;
                     }
 
                     if (IsElder() || houbetu == "39")
@@ -558,7 +551,7 @@ namespace Reporting.AccountingCard.Model
         {
             string ret = "";
 
-            if (PtKohis != null && PtKohis.Any() && index >= 0 && index < PtKohis.Count())
+            if (PtKohis != null && PtKohis.Any() && index >= 0 && index < PtKohis.Count)
             {
                 ret = PtKohis[index].FutansyaNo;
             }
@@ -572,9 +565,9 @@ namespace Reporting.AccountingCard.Model
         /// <returns></returns>
         public string KohiJyukyusyaNo(int index)
         {
-            string ret = "";
+            string ret = string.Empty;
 
-            if (PtKohis != null && PtKohis.Any() && index >= 0 && index < PtKohis.Count())
+            if (PtKohis != null && PtKohis.Any() && index >= 0 && index < PtKohis.Count)
             {
                 ret = PtKohis[index].JyukyusyaNo;
             }

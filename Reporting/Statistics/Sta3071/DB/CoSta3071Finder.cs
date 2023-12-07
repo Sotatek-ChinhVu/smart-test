@@ -93,12 +93,12 @@ public class CoSta3071Finder : RepositoryBase, ICoSta3071Finder
                     JikanKbn = data.raiinInf.JikanKbn,
                     MinSinDate = data.sinkanInf.MinSinDate,
                     KaId = data.raiinInf.KaId,
-                    KaSname = data.kaMstj?.KaSname,
+                    KaSname = data.kaMstj?.KaSname ?? string.Empty,
                     TantoId = data.raiinInf.TantoId,
-                    TantoSname = data.tantoMst?.Sname,
+                    TantoSname = data.tantoMst?.Sname ?? string.Empty,
                     HokenKbn = data.kaikeiInf.HokenKbn,
                     HokenSbtCd = data.kaikeiInf.HokenSbtCd,
-                    Houbetu = data.kaikeiInf.Houbetu
+                    Houbetu = data.kaikeiInf.Houbetu ?? string.Empty
                 }
         ).ToList();
 

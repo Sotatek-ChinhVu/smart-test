@@ -11,9 +11,14 @@ namespace AWSSDK.Services
     public class AwsSdkService : IAwsSdkService
     {
         private readonly IConfiguration _configuration;
+        private readonly string _sourceAccessKey;
+        private readonly string _sourceSecretKey;
+
         public AwsSdkService(IConfiguration configuration)
         {
             _configuration = configuration;
+            _sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            _sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
         }
         public async Task<Dictionary<string, Dictionary<string, string>>> SummaryCard()
         {
@@ -120,21 +125,24 @@ namespace AWSSDK.Services
 
         public async Task CreateFolderAsync(string bucketName, string folderName)
         {
-            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
-            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
-            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
-            await S3Action.CreateFolderAsync(sourceS3Client, bucketName, folderName);
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CreateFolderAsync(sourceS3ClientDestination, bucketName, folderName);
         }
 
         public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
         {
-            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
-            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
-            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
-            await S3Action.DeleteObjectsInFolderAsync(sourceS3Client, bucketName, folderKey);
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
         }
 
-        private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
+        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string sourceFolderKey, string destinationBucketName, string destinationFolderKey)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, sourceFolderKey, sourceS3ClientDestination, destinationBucketName, destinationFolderKey);
+        }
+
+        private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
         {
             return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
         }
@@ -153,6 +161,11 @@ namespace AWSSDK.Services
             string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
             var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
             await S3Action.UploadFileWithProgressAsync(sourceS3Client, bucketName, folderName, filePath);
+        }
+        
+        private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionSource);
         }
     }
 }

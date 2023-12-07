@@ -155,5 +155,48 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error deleting objects in folder: '{ex.Message}'");
             }
         }
+        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string sourceFolderKey, AmazonS3Client destinationClient, string destinationBucketName, string destinationFolderKey)
+        {
+            try
+            {
+                ListObjectsV2Request request = new ListObjectsV2Request
+                {
+                    BucketName = sourceBucketName,
+                    Prefix = sourceFolderKey
+                };
+
+                ListObjectsV2Response response;
+                do
+                {
+                    response = await sourceClient.ListObjectsV2Async(request);
+                    if (!response.S3Objects.Any())
+                    {
+                        Console.WriteLine($"Objects in folder '{sourceFolderKey}' not found.");
+                        return;
+                    }
+                    foreach (var obj in response.S3Objects)
+                    {
+                        var copyObjectRequest = new CopyObjectRequest
+                        {
+                            SourceBucket = sourceBucketName,
+                            SourceKey = obj.Key,
+                            DestinationBucket = destinationBucketName,
+                            DestinationKey = destinationFolderKey + obj.Key.Substring(sourceFolderKey.Length)
+                        };
+
+                        await destinationClient.CopyObjectAsync(copyObjectRequest);
+                    }
+
+                    request.ContinuationToken = response.NextContinuationToken;
+                } while (response.IsTruncated);
+
+                Console.WriteLine($"Objects in folder '{sourceFolderKey}' copied to '{destinationFolderKey}' successfully.");
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"Error copying objects in folder: '{ex.Message}'");
+                throw new Exception($"Error copying objects in folder: '{ex.Message}'");
+            }
+        }
     }
 }

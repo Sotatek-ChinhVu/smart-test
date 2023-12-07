@@ -24,6 +24,16 @@ public class CoPtHokenModel
         PtKohi4 = ptKohi4;
     }
 
+    public CoPtHokenModel()
+    {
+        PtHokenPattern = new();
+        PtHokenInf = new();
+        PtKohi1 = new();
+        PtKohi2 = new();
+        PtKohi3 = new();
+        PtKohi4 = new();
+    }
+
     /// <summary>
     /// 患者ID
     /// </summary>
@@ -117,7 +127,7 @@ public class CoPtHokenModel
     /// </summary>
     public string HokenMemo
     {
-        get => PtHokenPattern?.HokenMemo?.AsString().Replace(Environment.NewLine, "⏎");
+        get => PtHokenPattern?.HokenMemo?.AsString().Replace(Environment.NewLine, "⏎") ?? string.Empty;
     }
 
     /// <summary>

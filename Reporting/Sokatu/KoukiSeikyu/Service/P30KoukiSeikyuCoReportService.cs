@@ -19,7 +19,7 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
     /// <summary>
     /// Finder
     /// </summary>
-    private ICoKoukiSeikyuFinder _kokhoFinder;
+    private readonly ICoKoukiSeikyuFinder _kokhoFinder;
 
     /// <summary>
     /// CoReport Model
@@ -35,7 +35,7 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
     private int hpId;
     private int seikyuYm;
     private SeikyuType seikyuType;
-    private List<string> printHokensyaNos;
+    private readonly List<string> printHokensyaNos;
     private bool hasNextPage;
     private int currentPage;
     #endregion
@@ -61,6 +61,13 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
         _extralData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        currentHokensyaNo = string.Empty;
+        hokensyaNos = new();
+        receInfs = new();
+        hpInf = new();
+        kohiHoubetuMsts = new();
+        printHokensyaNos = new();
+        _reportConfigPerPage = new();
     }
 
     public CommonReportingRequestModel GetP30KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
@@ -83,7 +90,7 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
                     currentPage = 1;
                     currentHokensyaNo = currentNo;
                     hasNextPage = true;
-                    while (getData && hasNextPage)
+                    while (hasNextPage)
                     {
                         UpdateDrawForm();
                         currentPage++;
@@ -153,7 +160,7 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel>? wrkReces = null;
                     switch (rowNo)
                     {
                         //国保
@@ -183,7 +190,7 @@ public class P30KoukiSeikyuCoReportService : IP30KoukiSeikyuCoReportService
             const int maxKohiRow = 12;
             int kohiIndex = (currentPage - 1) * maxKohiRow;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count == 0)
             {
                 hasNextPage = false;

@@ -17,7 +17,6 @@ public class CoSta3030PrintConf
 
     public CoSta3030PrintConf()
     {
-        MenuId = 0;
         StartDateFrom = -1;
         StartDateTo = -1;
         TenkiDateFrom = -1;
@@ -36,12 +35,12 @@ public class CoSta3030PrintConf
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; }
+    public string ReportName { get; set; } = string.Empty;
 
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; }
+    public string FormFileName { get; set; } = string.Empty;
 
     /// <summary>
     /// 改ページ１
@@ -142,24 +141,24 @@ public class CoSta3030PrintConf
     /// 転帰区分
     ///     1:治ゆ 2:中止 3:死亡 9:その他
     /// </summary>
-    public List<int> TenkiKbns { get; set; }
+    public List<int> TenkiKbns { get; set; } = new();
 
     /// <summary>
     /// 主病名
     ///     0:主病名以外 1:主病名
     /// </summary>
-    public List<int> SyubyoKbns { get; set; }
+    public List<int> SyubyoKbns { get; set; } = new();
 
     /// <summary>
     /// 疑い
     ///     0:疑い以外 1:疑い
     /// </summary>
-    public List<int> DoubtKbns { get; set; }
+    public List<int> DoubtKbns { get; set; } = new();
 
     /// <summary>
     /// 患者番号
     /// </summary>
-    public List<long> PtIds { get; set; }
+    public List<long> PtIds { get; set; } = new();
 
     /// <summary>
     /// 来院日From
@@ -187,12 +186,12 @@ public class CoSta3030PrintConf
     /// <summary>
     /// 検索病名
     /// </summary>
-    public List<string> ByomeiCds { get; set; }
+    public List<string> ByomeiCds { get; set; } = new();
 
     /// <summary>
     /// 未コード化傷病名
     /// </summary>
-    public List<string> FreeByomeis { get; set; }
+    public List<string> FreeByomeis { get; set; } = new();
 
     /// <summary>
     /// 検索病名の検索オプション（患者毎）
@@ -220,7 +219,7 @@ public class CoSta3030PrintConf
     /// <summary>
     /// 検索項目
     /// </summary>
-    public List<string> ItemCds { get; set; }
+    public List<string> ItemCds { get; set; } = new();
 
     /// <summary>
     /// 検索項目の検索オプション（患者毎）

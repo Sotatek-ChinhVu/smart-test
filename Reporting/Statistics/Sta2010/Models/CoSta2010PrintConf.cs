@@ -15,12 +15,12 @@
         /// <summary>
         /// フォームファイル名
         /// </summary>
-        public string FormFileName { get; set; }
+        public string FormFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 帳票タイトル
         /// </summary>
-        public string ReportName { get; set; }
+        public string ReportName { get; set; } = string.Empty;
 
         /// <summary>
         /// テスト患者の有無
@@ -58,19 +58,19 @@
         /// <summary>
         /// 診療科ID
         /// </summary>
-        public List<int> KaIds { get; set; }
+        public List<int> KaIds { get; set; } = new();
 
         /// <summary>
         /// 担当医ID
         /// </summary>
-        public List<int> TantoIds { get; set; }
+        public List<int> TantoIds { get; set; } = new();
 
         /// <summary>
         /// 保険種別
         ///     1:社保 2:国保 3:後期
         ///     10:労災 11:自賠 12:自費レセ
         /// </summary>
-        public List<int> HokenSbts { get; set; }
+        public List<int> HokenSbts { get; set; } = new();
 
         /// <summary>
         /// 対象レセプト
@@ -80,6 +80,6 @@
         ///     3:オンライン返戻
         ///     9:紙請求レセプト
         /// </summary>
-        public List<int> SeikyuTypes { get; set; }
+        public List<int> SeikyuTypes { get; set; } = new();
     }
 }
