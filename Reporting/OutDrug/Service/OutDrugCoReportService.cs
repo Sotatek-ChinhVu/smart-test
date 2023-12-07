@@ -330,31 +330,27 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// </summary>
     private void PrintOutEpsReference()
     {
-        if ((_systemConfig.ElectronicPrescriptionLicense() == 0) || (HokenGp > 0))
-        {
-            // 電子処方箋のライセンスなし、または、健保を印刷対象としない場合は処方内容控えを印刷しない
-            return;
-        }
-
-        // データ取得
-        List<CoEpsReference> references = _finder.GetEpsReferences(hpId, ptId, raiinNo);
-
-        //PdfDocument doc = new PdfDocument();
-        //doc.PrintSettings.PrinterName = PrinterName;
-        //doc.PrintSettings.DocumentName = "処方内容控え";
-        //// 画面に「印刷中」と表示せず、サイレント印刷する
-        //doc.PrintSettings.PrintController = new StandardPrintController();
-
-        //foreach (var reference in references)
-        //{
-        //    // デコード
-        //    byte[] pdfData = Convert.FromBase64String(reference.PrescriptionReferenceInformation);
-        //    doc.LoadFromBytes(pdfData);
-
-        //    // 印刷
-        //    doc.Print();
-        //}
-
+        ///anh.vu3, This code is not implement now
+        ///if ((_systemConfig.ElectronicPrescriptionLicense() == 0) || (HokenGp > 0))
+        ///{
+        ///    // 電子処方箋のライセンスなし、または、健保を印刷対象としない場合は処方内容控えを印刷しない
+        ///    return;
+        ///}
+        /// データ取得
+        ///List<CoEpsReference> references = _finder.GetEpsReferences(hpId, ptId, raiinNo);
+        ///PdfDocument doc = new PdfDocument();
+        ///doc.PrintSettings.PrinterName = PrinterName;
+        ///doc.PrintSettings.DocumentName = "処方内容控え";
+        ///// 画面に「印刷中」と表示せず、サイレント印刷する
+        ///doc.PrintSettings.PrintController = new StandardPrintController();
+        ///foreach (var reference in references)
+        ///{
+        ///    // デコード
+        ///    byte[] pdfData = Convert.FromBase64String(reference.PrescriptionReferenceInformation);
+        ///    doc.LoadFromBytes(pdfData);
+        ///    // 印刷
+        ///    doc.Print();
+        ///}
     }
     #endregion
 

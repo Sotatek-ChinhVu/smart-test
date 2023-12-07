@@ -52,7 +52,9 @@ namespace AWSSDK.Constants
             {"terminate-failed", 13},
             {"stoped", 14},
             {"restoring", 15},
-            {"restore-failed", 16}
+            {"restore-failed", 16},
+            {"stopping", 17},
+            {"starting", 18}
         };
 
             return rdsStatusDictionary;

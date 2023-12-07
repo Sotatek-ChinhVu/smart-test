@@ -5,6 +5,7 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using Entity.SuperAdmin;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
