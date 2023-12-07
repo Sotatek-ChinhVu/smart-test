@@ -351,6 +351,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         grpConditions = new();
         @params = new();
         formFileName = string.Empty;
+        jobName = string.Empty;
     }
     #endregion
 
@@ -382,36 +383,6 @@ public class AccountingCoReportService : IAccountingCoReportService
             _systemConfigProvider.ReleaseResource();
             _tenantProvider.DisposeDataContext();
         }
-    }
-
-    private List<CoAccountingParamModel> ConvertToCoAccountingParamModelList(long ptId, bool isCalculateProcess, int printTypeInput, List<RaiinInfModel> raiinInfModelList, List<RaiinInfModel> raiinInfModelPayList)
-    {
-        List<CoAccountingParamModel> result = new();
-        List<long> oyaRaiinList;
-        if (isCalculateProcess && ((printTypeInput == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
-                               || (printTypeInput == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
-        {
-            oyaRaiinList = raiinInfModelPayList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
-        }
-        else
-        {
-            oyaRaiinList = raiinInfModelList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
-        }
-        foreach (long oyaRaiinNo in oyaRaiinList)
-        {
-            var listRaiinNoPrint = raiinInfModelList.FindAll(item => item.OyaRaiinNo == oyaRaiinNo).OrderBy(item => item.SinDate).ToList();
-            int startDateInput = listRaiinNoPrint.First().SinDate;
-            int endDateInput = listRaiinNoPrint.Last().SinDate;
-            result.Add(
-            new CoAccountingParamModel(
-                ptId,
-                startDateInput,
-                endDateInput,
-                listRaiinNoPrint.Select(item => item.RaiinNo).ToList(),
-                printType: printTypeInput
-                ));
-        }
-        return result;
     }
 
     public AccountingResponse GetAccountingReportingData(
@@ -556,6 +527,36 @@ public class AccountingCoReportService : IAccountingCoReportService
                   accountingDicResult);
     }
 
+    private List<CoAccountingParamModel> ConvertToCoAccountingParamModelList(long ptId, bool isCalculateProcess, int printTypeInput, List<RaiinInfModel> raiinInfModelList, List<RaiinInfModel> raiinInfModelPayList)
+    {
+        List<CoAccountingParamModel> result = new();
+        List<long> oyaRaiinList;
+        if (isCalculateProcess && ((printTypeInput == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
+                               || (printTypeInput == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
+        {
+            oyaRaiinList = raiinInfModelPayList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
+        }
+        else
+        {
+            oyaRaiinList = raiinInfModelList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
+        }
+        foreach (long oyaRaiinNo in oyaRaiinList)
+        {
+            var listRaiinNoPrint = raiinInfModelList.FindAll(item => item.OyaRaiinNo == oyaRaiinNo).OrderBy(item => item.SinDate).ToList();
+            int startDateInput = listRaiinNoPrint.First().SinDate;
+            int endDateInput = listRaiinNoPrint.Last().SinDate;
+            result.Add(
+            new CoAccountingParamModel(
+                ptId,
+                startDateInput,
+                endDateInput,
+                listRaiinNoPrint.Select(item => item.RaiinNo).ToList(),
+                printType: printTypeInput
+                ));
+        }
+        return result;
+    }
+
     public bool CheckOpenReportingForm(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
     {
         List<CoAccountingParamModel> coAccountingParamModels = new();
@@ -574,13 +575,6 @@ public class AccountingCoReportService : IAccountingCoReportService
             coAccountingParamModels.AddRange(ConvertToCoAccountingParamModelList(ptId, isCalculateProcess, printTypeInput, raiinInfModelList, raiinInfModelPayList));
         }
         return CheckOpenReportingForm(hpId, coAccountingParamModels);
-    }
-
-    public bool CheckExistTemplate(string templateName, int printType)
-    {
-        formFileName = templateName;
-        this.printType = printType;
-        return GetParamFromRseFile();
     }
 
     public bool CheckOpenReportingForm(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
@@ -644,6 +638,13 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
 
         return totalSuccess > 0;
+    }
+
+    public bool CheckExistTemplate(string templateName, int printType)
+    {
+        formFileName = templateName;
+        this.printType = printType;
+        return GetParamFromRseFile();
     }
 
     private void PrintOut()
@@ -860,28 +861,30 @@ public class AccountingCoReportService : IAccountingCoReportService
         {
             dataListPtConditions.AddRange(_finder.FindPtInf(hpId, dataListGrpConditions));
         }
-        
-        var coModelList = GetDataList(hpId, startDate, endDate, dataListPtConditions, dataListGrpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
-        if (coModelList == null || coModelList.KaikeiInfListModels == null || coModelList.KaikeiInfListModels.Any() == false)
+
+        var coModelDataList = GetDataList(hpId, startDate, endDate, dataListPtConditions, dataListGrpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+        if (coModelDataList == null || coModelDataList.KaikeiInfListModels == null || !coModelDataList.KaikeiInfListModels.Any())
         {
             return new();
         }
 
-        List<string> output = new List<string>();
+        List<string> output = new();
 
         // ヘッダー
-        string head =
-            $"対象期間：{startDate}-{endDate} ";
+        string head = $"対象期間：{startDate}-{endDate} ";
 
         List<long> ptNums = GetPtNums(hpId, ptConditions.Select(p => p.Item1).ToList());
 
         if (ptNums.Any())
         {
             head += "対象患者：";
-            foreach (long ptId in ptNums)
+            StringBuilder headStringBuilder = new();
+            headStringBuilder.Append(head);
+            foreach (long item in ptNums)
             {
-                head += $"{ptId}/";
+                headStringBuilder.Append($"{item}/");
             }
+            head = headStringBuilder.ToString();
             head = head.Substring(0, head.Length - 1);
         }
 
@@ -936,7 +939,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             "患者メモ５"
             );
 
-        foreach (CoKaikeiInfListModel kaikeiInf in coModelList.KaikeiInfListModels)
+        foreach (CoKaikeiInfListModel kaikeiInf in coModelDataList.KaikeiInfListModels)
         {
             string line = "";
             // 患者番号
@@ -982,34 +985,36 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 電話３
             line += $"{kaikeiInf.RenrakuTel},";
 
+            StringBuilder lineStringBuilder = new();
+            lineStringBuilder.Append(line);
             for (int i = 1; i <= 6; i++)
             {
                 // 分類コード１
-                line += $"{kaikeiInf.PtGroupInfCode(i)},";
+                lineStringBuilder.Append($"{kaikeiInf.PtGroupInfCode(i)},");
                 // 分類名称１
-                line += $"{kaikeiInf.PtGroupInfCodeName(i)},";
+                lineStringBuilder.Append($"{kaikeiInf.PtGroupInfCodeName(i)},");
             }
 
             // 患者メモ
-            if (string.IsNullOrEmpty(kaikeiInf.Memo) == false)
+            if (!string.IsNullOrEmpty(kaikeiInf.Memo))
             {
                 string[] del = { "\r\n", "\r", "\n" };
                 List<string> memos = kaikeiInf.Memo.Split(del, StringSplitOptions.None).ToList();
 
                 for (int i = 0; i < 5; i++)
                 {
-                    if (memos.Count() > i)
+                    if (memos.Count > i)
                     {
-                        line += $"{memos[i]},";
+                        lineStringBuilder.Append($"{memos[i]},");
                     }
                     else
                     {
-                        line += ",";
+                        lineStringBuilder.Append(",");
                     }
                 }
             }
 
-            output.Add(line);
+            output.Add(lineStringBuilder.ToString());
         }
         return output;
     }
@@ -1154,14 +1159,6 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
         else
         {
-            //foreach (var item in @params)
-            //{
-            //    while (hasNextPage)
-            //    {
-            //        UpdateDrawFormSingle();
-            //        currentPage++;
-            //    }
-            //}
             UpdateDrawFormList();
         }
     }
@@ -1493,14 +1490,13 @@ public class AccountingCoReportService : IAccountingCoReportService
                             continue;
                         }
 
-                        StringBuilder itemName = new();
-                        itemName.Append(odrDtl.ItemName);
-
-                        if (odrDtl.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
-                        {
-                            // 分割調剤
-                            itemName.Append(CIUtil.GetBunkatuStr(odrDtl.Bunkatu, odrInf.OdrKouiKbn));
-                        }
+                        ///StringBuilder itemName = new();
+                        ///itemName.Append(odrDtl.ItemName);
+                        ///if (odrDtl.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
+                        ///{
+                        ///    // 分割調剤
+                        ///    itemName.Append(CIUtil.GetBunkatuStr(odrDtl.Bunkatu, odrInf.OdrKouiKbn));
+                        ///}
 
                         sinmeiPrintDataModels.AddRange(_addList(odrDtl.ItemName, string.Empty));
 
@@ -2405,8 +2401,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                 for (int j = 0; j < totalCdKbnls.Count; j++)
                 {
-                    double totalTensu = coModel.TotalTen(totalCdKbnls[j].CdKbn);
-                    string totalTen = CIUtil.ToStringIgnoreZero(totalTensu);
+                    string totalTen = CIUtil.ToStringIgnoreZero(coModel.TotalTen(totalCdKbnls[j].CdKbn));
                     totalTens.Add(totalTen);
 
                     SetFieldDataRep($"dfTitle{j + 1:D2}_", 1, 2, totalCdKbnls[j].Title);
@@ -2560,14 +2555,14 @@ public class AccountingCoReportService : IAccountingCoReportService
                     #endregion
 
                     string byomei = ptByomei.Byomei + _getUpdateMark();
-                    int startDate = ptByomei.StartDate;
+                    int ptByomeiStartDate = ptByomei.StartDate;
                     string tenki = ptByomei.Tenki;
                     int tenkiDate = ptByomei.TenkiDate;
 
                     // 病名
                     SetListDataRep("lsByomei_", 1, 2, 0, listRow, byomei);
                     // 病名開始日
-                    SetListDataRepSW("lsByomeiStartDate", 1, 2, 0, listRow, startDate);
+                    SetListDataRepSW("lsByomeiStartDate", 1, 2, 0, listRow, ptByomeiStartDate);
                     // 病名転帰区分
                     SetListDataRep("lsByomeiTenkiKbn_", 1, 2, 0, listRow, tenki);
                     // 病名転帰日
@@ -2579,7 +2574,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                         // 病名
                         SetListDataRep("ByoMeiList", 0, 2, 0, listRow, byomei);
                         // 病名開始日
-                        SetListDataRep("ByoYmdList", 0, 2, 0, listRow, CIUtil.SDateToShowWDate3(startDate).Ymd);
+                        SetListDataRep("ByoYmdList", 0, 2, 0, listRow, CIUtil.SDateToShowWDate3(ptByomeiStartDate).Ymd);
                         // 病名転帰区分
                         SetListDataRep("ByoTenKubunList", 0, 2, 0, listRow, tenki);
                         // 病名転帰日
@@ -2605,14 +2600,14 @@ public class AccountingCoReportService : IAccountingCoReportService
                     }
 
                     string byomei = ptByomei.Byomei + _getUpdateMark();
-                    int startDate = ptByomei.StartDate;
+                    int ptByomeiStartDate = ptByomei.StartDate;
                     string tenki = ptByomei.Tenki;
                     int tenkiDate = ptByomei.TenkiDate;
 
                     // 病名
                     SetListDataRep("lsByomeiToday_", 1, 2, 0, listRow, byomei);
                     // 病名開始日
-                    SetListDataRepSW("lsByomeiTodayStartDate", 1, 2, 0, listRow, startDate);
+                    SetListDataRepSW("lsByomeiTodayStartDate", 1, 2, 0, listRow, ptByomeiStartDate);
                     // 病名転帰区分
                     SetListDataRep("lsByomeiTodayTenkiKbn_", 1, 2, 0, listRow, tenki);
                     // 病名転帰日
@@ -2624,7 +2619,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                         // 病名
                         SetListDataRep("ByoMeiTodayList", 1, 2, 0, listRow, byomei);
                         // 病名開始日
-                        SetListDataRep("ByoYmdTodayList", 1, 2, 0, listRow, CIUtil.SDateToShowWDate3(startDate).Ymd);
+                        SetListDataRep("ByoYmdTodayList", 1, 2, 0, listRow, CIUtil.SDateToShowWDate3(ptByomeiStartDate).Ymd);
                         // 病名転帰区分
                         SetListDataRep("ByoTenKubunTodayList", 1, 2, 0, listRow, tenki);
                         // 病名転帰日
@@ -3772,8 +3767,8 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                 foreach (var jihiSbt in jihiSbts.Where(jihiSbt => totalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
                 {
-                    (int jihiSbt, double kingaku) totalJihiKoumokuDtl = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
-                    SetListDataRep($"lsJihi{jihiSbt}_", 1, 2, 0, row, totalJihiKoumokuDtl.kingaku);
+                    (int jihiSbt, double kingaku) totalJihiKoumokuDtlItem = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
+                    SetListDataRep($"lsJihi{jihiSbt}_", 1, 2, 0, row, totalJihiKoumokuDtlItem.kingaku);
                 }
 
                 // 外税
@@ -3832,8 +3827,8 @@ public class AccountingCoReportService : IAccountingCoReportService
                 ListText("JihiList", 0, row, totalJihiSinryo);
                 foreach (var jihiSbt in jihiSbts.Where(jihiSbt => totalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
                 {
-                    (int jihiSbt, double kingaku) totalJihiKoumokuDtl = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
-                    ListText($"JihiList{jihiSbt}", 0, row, totalJihiKoumokuDtl.kingaku);
+                    (int jihiSbt, double kingaku) totalJihiKoumokuDtlItem = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
+                    ListText($"JihiList{jihiSbt}", 0, row, totalJihiKoumokuDtlItem.kingaku);
                 }
 
                 SetFieldsData("KanKei", totalPtCount);
@@ -3887,8 +3882,8 @@ public class AccountingCoReportService : IAccountingCoReportService
                 {
                     if (totalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt))
                     {
-                        (int jihiSbt, double kingaku) totalJihiKoumokuDtl = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
-                        totalJihiKoumokuDtl.kingaku += coModelList.KaikeiInfListModels[idx].JihiKoumokuDtlKingaku(jihiSbt);
+                        (int jihiSbt, double kingaku) totalJihiKoumokuDtlItem = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
+                        totalJihiKoumokuDtlItem.kingaku += coModelList.KaikeiInfListModels[idx].JihiKoumokuDtlKingaku(jihiSbt);
                     }
                     else
                     {
@@ -4085,8 +4080,6 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private bool CheckExistData(int hpId, long ptId, int startDate, int endDate)
     {
-        int sinDate = endDate;
-
         List<CoWarningMessage> warningMessages = new();
 
         List<CoKaikeiInfModel> kaikeiInfModels;

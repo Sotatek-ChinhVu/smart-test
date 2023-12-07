@@ -1,4 +1,6 @@
-﻿namespace Domain.SuperAdminModels.Tenant
+﻿using Helper.Constants;
+
+namespace Domain.SuperAdminModels.Tenant
 {
     public class TenantModel
     {
@@ -11,25 +13,11 @@
             EndPointDb = string.Empty;
             EndSubDomain = string.Empty;
             RdsIdentifier = string.Empty;
+            UserConnect = string.Empty;
+            PasswordConnect = string.Empty;
         }
 
-        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier)
-        {
-            Hospital = hospital;
-            Status = status;
-            AdminId = adminId;
-            Password = password;
-            SubDomain = subDomain;
-            Db = db;
-            Size = size;
-            Type = type;
-            EndPointDb = endPointDb;
-            EndSubDomain = endSubDomain;
-            Action = action;
-            RdsIdentifier = rdsIdentifier;
-        }
-
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -48,6 +36,8 @@
             ScheduleTime = scheduleTime;
             CreateDate = createDate;
             RdsIdentifier = rdsIdentifier;
+            UserConnect = userConnect;
+            PasswordConnect = passwordConnect;
         }
 
         public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
@@ -116,7 +106,20 @@
         public string RdsIdentifier { get; private set; }
 
         public double StorageFull { get; private set; }
+
         public string UserConnect { get; private set; }
+
         public string PasswordConnect { get; private set; }
+
+        /// <summary>
+        /// Return StatusTenant to FE
+        /// </summary>
+        public byte StatusTenant
+        {
+            get
+            {
+                return (byte)(StatusTenantDisplayConst.StatusTenantDisplayDictionnary.ContainsKey(Status) ? StatusTenantDisplayConst.StatusTenantDisplayDictionnary[Status] : 0);
+            }
+        }
     }
 }

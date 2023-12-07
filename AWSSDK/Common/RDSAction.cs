@@ -39,7 +39,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new Dictionary<string, RDSInformation>();
+                throw new Exception($"GetRDSInformation. {ex.Message}");
             }
         }
 
@@ -91,11 +91,12 @@ namespace AWSSDK.Common
             {
                 if (e.ErrorCode == "DBInstanceAlreadyExists")
                 {
-                    Console.WriteLine($"Database Shard {dbIdentifier} exists already, continuing to poll ...");
+                    Console.WriteLine($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
+                    throw new Exception($"Database Instance {dbIdentifier} exists already, continuing to poll ...");
                 }
                 else
                 {
-                    throw;
+                    throw new Exception($"CreateNewShardAsync. {e.Message}");
                 }
             }
         }
@@ -137,7 +138,7 @@ namespace AWSSDK.Common
                     if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
                     {
                         Console.WriteLine($"Timeout: Snapshot not available after {ConfigConstant.TimeoutCheckingAvailable} minutes.");
-                        running = false;
+                        throw new Exception("Checking Snapshot Available timeout");
                     }
 
                     // Wait for 5 seconds before the next attempt
@@ -149,11 +150,11 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Check Snapshot Available. {ex.Message}");
             }
         }
 
-        public static void CreateDatabase(string host, string subDomain, string passwordConnect)
+        public static void CreateDatabase(string host, string dbName, string passwordConnect)
         {
             try
             {
@@ -167,13 +168,13 @@ namespace AWSSDK.Common
                     using (var checkCommand = new NpgsqlCommand())
                     {
                         checkCommand.Connection = connection;
-                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{subDomain}'";
+                        checkCommand.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{dbName}'";
 
                         var existingDatabase = checkCommand.ExecuteScalar();
 
-                        if (existingDatabase != null && existingDatabase.ToString() == subDomain)
+                        if (existingDatabase != null && existingDatabase.ToString() == dbName)
                         {
-                            Console.WriteLine($"Database '{subDomain}' already exists.");
+                            Console.WriteLine($"Database '{dbName}' already exists.");
                             return;
                         }
                     }
@@ -181,84 +182,16 @@ namespace AWSSDK.Common
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        command.CommandText = $"CREATE DATABASE {subDomain}; CREATE ROLE {subDomain} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {subDomain};";
+                        command.CommandText = $"CREATE DATABASE {dbName}; CREATE ROLE {dbName} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
                         command.ExecuteNonQuery();
-                        Console.WriteLine($"Database '{subDomain}' created successfully.");
+                        Console.WriteLine($"Database '{dbName}' created successfully.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
-        }
-
-        public static void CreateTables(string host, string tenantId, List<string> listMigration)
-        {
-            try
-            {
-                var dataMasterFileName = "data-master";
-                var connectionString = $"Host={host};Database={tenantId};Username=postgres;Password=Emr!23456789;Port=5432";
-
-                using (var connection = new NpgsqlConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-
-                        var folderPath = Path.Combine("\\SmartKarteBE\\emr-cloud-be\\SuperAdmin", "Template");
-
-                        if (Directory.Exists(folderPath))
-                        {
-                            var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-
-                            if (sqlFiles.Length > 0)
-                            {
-                                var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                                if (fileNames.Contains(dataMasterFileName))
-                                {
-                                    fileNames.Remove(dataMasterFileName);
-                                }
-                                var uniqueFileNames = fileNames.Except(listMigration).ToList();
-
-                                // insert table
-                                foreach (var fileName in uniqueFileNames)
-                                {
-                                    var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                    if (File.Exists(filePath))
-                                    {
-                                        var sqlScript = File.ReadAllText(filePath);
-                                        command.CommandText = sqlScript;
-                                        command.ExecuteNonQuery();
-                                    }
-                                }
-                                // insert data master
-                                var filePathMaster = Path.Combine(folderPath, $"{dataMasterFileName}.sql");
-                                if (File.Exists(filePathMaster) && !listMigration.Contains(dataMasterFileName))
-                                {
-                                    var sqlScript = File.ReadAllText(filePathMaster);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                }
-
-                                Console.WriteLine("SQL scripts executed successfully.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Info create table: No SQL files found in the specified folder.");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Info create table: Specified folder not found");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Error CreateDatabase: {ex.Message}");
+                throw new Exception($"CreateDatabase. {ex.Message}");
             }
         }
 
@@ -280,7 +213,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        public static async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
             try
             {
@@ -290,7 +223,7 @@ namespace AWSSDK.Common
                 // Create a request to create a DB snapshot
                 var createSnapshotRequest = new CreateDBSnapshotRequest
                 {
-                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier),
+                    DBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, snapshotType),
                     DBInstanceIdentifier = dbInstanceIdentifier
                 };
 
@@ -305,13 +238,13 @@ namespace AWSSDK.Common
                 else
                 {
                     Console.WriteLine($"DB snapshot creation failed. Response: {response}");
-                    return string.Empty;
+                    throw new Exception($"Create DB Snapshot. Code: {response?.HttpStatusCode}");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return string.Empty;
+                throw new Exception($"Create DB Snapshot: {ex.Message}");
             }
         }
 
@@ -330,20 +263,27 @@ namespace AWSSDK.Common
                         VpcSecurityGroupIds = vpcSecurityGroupIds,  // Todo update
                         DBInstanceClass = "db.t4g.micro" // Todo update
                     });
-                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception($"Restore DBInstance From Snapshot. Code: {response?.HttpStatusCode}");
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Restore DBInstance From Snapshot. {ex.Message}");
             }
         }
 
-        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier)
+        static string GenareateDBSnapshotIdentifier(string dbInstanceIdentifier, string snapshotType)
         {
             string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-Snapshot-{timestamp}";
+            string dbSnapshotIdentifier = $"{dbInstanceIdentifier}-{snapshotType}-{timestamp}";
 
             dbSnapshotIdentifier = string.Join("", dbSnapshotIdentifier.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
 
@@ -392,7 +332,7 @@ namespace AWSSDK.Common
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
+                        Console.WriteLine($"Get List Database connection  failed: {ex.Message}");
                     }
                 }
 
@@ -401,11 +341,18 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return new List<string>();
+                throw new Exception($"Get List Database. {ex.Message}");
             }
         }
 
-        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier)
+        /// <summary>
+        /// Delete RDS instance
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <param name="SkipFinalSnapshot">Delete without create snapshot backup</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier, bool SkipFinalSnapshot = false)
         {
             try
             {
@@ -414,21 +361,30 @@ namespace AWSSDK.Common
                 var deleteRequest = new DeleteDBInstanceRequest
                 {
                     DBInstanceIdentifier = dbInstanceIdentifier,
-                    SkipFinalSnapshot = false
+                    SkipFinalSnapshot = SkipFinalSnapshot
                 };
 
-                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier);
+                if (!SkipFinalSnapshot)
+                {
+                    deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, ConfigConstant.RdsSnapshotBackupTermiante);
+                }
 
                 var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
 
                 // Check if the HTTP status code indicates success
-                return response?.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                if (response?.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new Exception($"Delete RDS Instance. Code: {response?.HttpStatusCode}");
+                }
             }
             catch (Exception ex)
             {
-                // TODO: Log the exception details
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                Console.WriteLine($"Error: Delete RDS Instance. {ex.Message}");
+                throw new Exception($"Delete RDS Instance. {ex.Message}");
             }
         }
 
@@ -469,12 +425,47 @@ namespace AWSSDK.Common
                 }
 
                 // If the loop runs for the entire timeout duration, return false
-                return false;
+                throw new Exception("Checking Deleted RDSInstance timeout");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Checking Deleted RDSInstance. {ex.Message}");
+            }
+        }
+
+        public static async Task<string> GetLastSnapshot(string dbInstanceIdentifier)
+        {
+            try
+            {
+                // Create an RDS client
+                var rdsClient = new AmazonRDSClient();
+
+                // Create a request to describe DB snapshots
+                var describeSnapshotsRequest = new DescribeDBSnapshotsRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier,
+                    MaxRecords = 20,  // Limit 20 to get the latest snapshot
+                };
+
+                // Call DescribeDBSnapshots to get information about the snapshots
+                var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
+
+                // Extract information about the latest snapshot
+                var snapshot = describeSnapshotsResponse.DBSnapshots.OrderByDescending(x => x.SnapshotCreateTime).FirstOrDefault();
+                if (snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase))
+                {
+                    return snapshot.DBSnapshotIdentifier;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Get Last Snapshot. {ex.Message}");
             }
         }
     }

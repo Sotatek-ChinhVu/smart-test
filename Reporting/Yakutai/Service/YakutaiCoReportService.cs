@@ -9,6 +9,7 @@ using Reporting.ReadRseReportFile.Service;
 using Reporting.Yakutai.DB;
 using Reporting.Yakutai.Mapper;
 using Reporting.Yakutai.Model;
+using System.Text;
 
 namespace Reporting.Yakutai.Service
 {
@@ -31,17 +32,12 @@ namespace Reporting.Yakutai.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoYakutaiModel> coModels;
         private CoYakutaiModel coModel;
 
         /// <summary>
-        /// ファイル名
-        /// </summary>
-        private string OutputFileName;
-        /// <summary>
         /// プリンタ名
         /// </summary>
-        private string PrinterName;
+        private readonly string PrinterName;
 
         /// <summary>
         /// 印刷項目情報
@@ -61,7 +57,6 @@ namespace Reporting.Yakutai.Service
         private int _hpId;
         private long _ptId;
         private int _raiinNo;
-        private string _formFileName;
 
         private readonly Dictionary<int, Dictionary<string, string>> _singleFieldDataM = new Dictionary<int, Dictionary<string, string>>();
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
@@ -75,6 +70,9 @@ namespace Reporting.Yakutai.Service
             _finder = finder;
             _systemConfig = systemConfig;
             _readRseReportFileService = readRseReportFileService;
+            coModel = new();
+            PrinterName = string.Empty;
+            printOutData = new();
         }
 
         public CommonReportingRequestModel GetYakutaiReportingData(int hpId, long ptId, int sinDate, int raiinNo)
@@ -86,7 +84,7 @@ namespace Reporting.Yakutai.Service
                 _sinDate = sinDate;
                 _raiinNo = raiinNo;
                 _printoutDateTime = CIUtil.GetJapanDateTimeNow();
-                coModels = GetData();
+                var coModels = GetData();
                 _currentPage = 1;
 
                 if (coModels != null && coModels.Any())
@@ -97,11 +95,11 @@ namespace Reporting.Yakutai.Service
                         {
                             coModel = coYakutaiModel;
 
-                            _formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
-                            AddFileNamePageMap("1", _formFileName);
+                            var formFileName = GetFormFilePrinterName(coYakutaiModel).Item1;
+                            AddFileNamePageMap("1", formFileName);
                             _hasNextPage = true;
 
-                            GetRowCount(_formFileName);
+                            GetRowCount(formFileName);
                             MakeOdrDtlList();
                             //印刷
                             while (_hasNextPage)
@@ -208,7 +206,7 @@ namespace Reporting.Yakutai.Service
                     }
                 }
 
-                printOutData.AddRange(_appendBlankRows(addPrintOutData.Count()));
+                printOutData.AddRange(_appendBlankRows(addPrintOutData.Count));
                 printOutData.AddRange(addPrintOutData);
 
             }
@@ -265,10 +263,10 @@ namespace Reporting.Yakutai.Service
                     tmp = CIUtil.CiCopyStrWidth(line, 1, maxLength);
                 }
 
-                CoYakutaiPrintDataModel printOutData = new CoYakutaiPrintDataModel();
-                printOutData.Data = tmp;
+                CoYakutaiPrintDataModel printOutDataItem = new();
+                printOutDataItem.Data = tmp;
 
-                addPrintOutData.Add(printOutData);
+                addPrintOutData.Add(printOutDataItem);
 
                 // 今回出力分の文字列を削除
                 line = CIUtil.CiCopyStrWidth(line, CIUtil.LenB(tmp) + 1, CIUtil.LenB(line) - CIUtil.LenB(tmp));
@@ -309,7 +307,8 @@ namespace Reporting.Yakutai.Service
             #region SubMethod
             List<ListTextObject> listDataPerPage = new();
             // ヘッダー
-            int UpdateFormHeader()
+            //using void function because it not return data
+            void UpdateFormHeader()
             {
                 Dictionary<string, string> fieldDataPerPage = new();
                 #region print method
@@ -446,15 +445,11 @@ namespace Reporting.Yakutai.Service
                             }
                         }
                     }
-                    else if (coModel.DrugKbnCd == OdrKouiKbnConst.Tonpuku)
+                    else if (coModel.DrugKbnCd == OdrKouiKbnConst.Tonpuku && coModel.YohoTani != "調剤")
                     {
-                        // 頓服
-                        if (coModel.YohoTani != "調剤")
-                        {
-                            // "調剤" の場合は出さない
-                            SetFieldData("dfIkkairyo", "１回に");
-                            SetFieldData("dfIkkairyo2", "【１回量】");
-                        }
+                        // "調剤" の場合は出さない
+                        SetFieldData("dfIkkairyo", "１回に");
+                        SetFieldData("dfIkkairyo2", "【１回量】");
                     }
 
                 }
@@ -513,19 +508,18 @@ namespace Reporting.Yakutai.Service
 
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 _singleFieldDataM.Add(pageIndex, fieldDataPerPage);
-                return 1;
             }
 
             // 本体
-            int UpdateFormBody()
+            //using void function because it not return data
+            void UpdateFormBody()
             {
-
                 int dataIndex = (_currentPage - 1) * _dataRowCount;
 
                 if (printOutData == null || printOutData.Count == 0)
                 {
                     _hasNextPage = false;
-                    return dataIndex;
+                    return;
                 }
 
                 for (short i = 0; i < _dataRowCount; i++)
@@ -545,8 +539,7 @@ namespace Reporting.Yakutai.Service
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 _listTextData.Add(pageIndex, listDataPerPage);
 
-                return dataIndex;
-
+                return;
             }
 
             #endregion
@@ -577,11 +570,11 @@ namespace Reporting.Yakutai.Service
 
             // 一包化指示項目を含むかどうか
             List<CoOdrInfModel> appendOdrInfs = new();
-            List<CoOdrInfDetailModel> appendOdrDtls = new ();
+            List<CoOdrInfDetailModel> appendOdrDtls = new();
 
             foreach (CoOdrInfModel odrInf in odrInfs.OrderBy(p => p.OdrKouiKbn).ThenBy(p => p.SortNo).ThenBy(p => p.RpNo).ThenBy(p => p.RpEdaNo))
             {
-                List<int> fukuyojis = new ()
+                List<int> fukuyojis = new()
                 {
                     0,0,0,0,0
                 };
@@ -612,7 +605,7 @@ namespace Reporting.Yakutai.Service
                 {
                     foreach (CoOdrInfDetailModel odrDtl in odrInfDtls.FindAll(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.DrugKbn > 0))
                     {
-                        if (singleDoses.Any(p => p.UnitName == odrDtl.UnitNameDsp) == false)
+                        if (!singleDoses.Any(p => p.UnitName == odrDtl.UnitNameDsp))
                         {
                             ippo = false;
                             break;
@@ -655,7 +648,7 @@ namespace Reporting.Yakutai.Service
                                 RaiinNo = odrInf.RaiinNo,
                                 RpNo = odrInf.RpNo,
                                 RpEdaNo = rpEdaNo,
-                                //Id = 0;
+                                ///Id = 0;
                                 HokenPid = odrInf.HokenPid,
                                 OdrKouiKbn = odrInf.OdrKouiKbn,
                                 RpName = odrInf.RpName,
@@ -697,14 +690,9 @@ namespace Reporting.Yakutai.Service
                                             {
                                                 "食前","食後","食直前","食直後","食中","食間"
                                             };
-
-                                            foreach (string checkStr in checkStrs)
+                                            foreach (var checkStr in checkStrs.Where(checkStr => odrInfDtl.ItemName.Contains(checkStr)))
                                             {
-                                                if (odrInfDtl.ItemName.Contains(checkStr))
-                                                {
-                                                    suffix = checkStr;
-                                                    break;
-                                                }
+                                                suffix = checkStr;
                                             }
                                         }
 
@@ -805,16 +793,16 @@ namespace Reporting.Yakutai.Service
                     }
                 }
             }
-            odrInfs.RemoveAll(p => p.Delete == true);
-            odrInfDtls.RemoveAll(p => p.Delete == true);
+            odrInfs.RemoveAll(p => p.Delete);
+            odrInfDtls.RemoveAll(p => p.Delete);
 
             odrInfs.AddRange(appendOdrInfs);
             odrInfDtls.AddRange(appendOdrDtls);
 
-            List<CoYakutaiModel> results = new List<CoYakutaiModel>();
+            List<CoYakutaiModel> results = new();
 
             // 用法の種類を抽出する
-            HashSet<string> yohoKeys = new HashSet<string>();
+            HashSet<string> yohoKeys = new();
 
             foreach (CoOdrInfModel odrInf in odrInfs.OrderBy(p => p.OdrKouiKbn).ThenBy(p => p.SortNo).ThenBy(p => p.RpNo).ThenBy(p => p.RpEdaNo))
             {
@@ -848,25 +836,25 @@ namespace Reporting.Yakutai.Service
                     {
                         yohoOdrInfDtls = yohoOdrInfDtls.OrderBy(p => p.ItemCd).ThenBy(p => p.ItemName).ToList();
 
-                        string key = "";
+                        StringBuilder key = new();
 
                         foreach (CoOdrInfDetailModel yohoOdrInfDtl in yohoOdrInfDtls)
                         {
-                            if (_systemConfig.YakutaiPrintUnit() == 1 && yohoOdrInfDtl.IsIppoYoho == false)
+                            if (_systemConfig.YakutaiPrintUnit() == 1 && !yohoOdrInfDtl.IsIppoYoho)
                             {
                                 //Rp毎に印刷する
-                                key += $"({yohoOdrInfDtl.RpNo},{yohoOdrInfDtl.ItemCd},{yohoOdrInfDtl.ItemName},{yohoOdrInfDtl.Suryo})";
+                                key.Append($"({yohoOdrInfDtl.RpNo},{yohoOdrInfDtl.ItemCd},{yohoOdrInfDtl.ItemName},{yohoOdrInfDtl.Suryo})");
                             }
                             else
                             {
                                 //用法＋用法コメントが同じRpは１つにまとめる
-                                key += $"({yohoOdrInfDtl.ItemCd},{yohoOdrInfDtl.ItemName},{yohoOdrInfDtl.Suryo})";
+                                key.Append($"({yohoOdrInfDtl.ItemCd},{yohoOdrInfDtl.ItemName},{yohoOdrInfDtl.Suryo})");
                             }
                         }
 
-                        yohoKeys.Add(key);
+                        yohoKeys.Add(key.ToString());
 
-                        odrInf.YohoKey = key;
+                        odrInf.YohoKey = key.ToString();
                     }
                 }
             }
@@ -914,14 +902,6 @@ namespace Reporting.Yakutai.Service
             }
         }
 
-        private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
-        {
-            if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
-            {
-                dictionary.Add(field, new CellModel(value));
-            }
-        }
-
         private void AddFileNamePageMap(string field, string value)
         {
             if (!string.IsNullOrEmpty(field) && !_fileNamePageMap.ContainsKey(field))
@@ -958,24 +938,24 @@ namespace Reporting.Yakutai.Service
 
             // 小中大のうち、条件に合うものを選択
             void _choiceSetting(
-                double smallValue, string smallPrinter, string smallForm,
+                string smallPrinter, string smallForm,
                 double normalValue, string normalPrinter, string normalForm,
                 double bigValue, string bigPrinter, string bigForm)
             {
                 int ret = 0;
 
                 // 小中大のうち、プリンタの指定がある設定で最小のものを初期値とする
-                if (string.IsNullOrEmpty(smallPrinter) == false)
+                if (!string.IsNullOrEmpty(smallPrinter))
                 {
                     // 小
                     ret = 1;
                 }
-                else if (string.IsNullOrEmpty(normalPrinter) == false)
+                else if (!string.IsNullOrEmpty(normalPrinter))
                 {
                     // 中
                     ret = 2;
                 }
-                else if (string.IsNullOrEmpty(bigPrinter) == false)
+                else if (!string.IsNullOrEmpty(bigPrinter))
                 {
                     // 大
                     ret = 3;
@@ -983,14 +963,14 @@ namespace Reporting.Yakutai.Service
 
                 // 大中の最小服用量を超えたら、その設定を採用
                 if (bigValue > 0 &&
-                    string.IsNullOrEmpty(bigPrinter) == false &&
+                    !string.IsNullOrEmpty(bigPrinter) &&
                     yakutaiModel.Fukuyoryo >= bigValue)
                 {
                     // 大
                     ret = 3;
                 }
                 else if (normalValue > 0 &&
-                    string.IsNullOrEmpty(normalPrinter) == false &&
+                    !string.IsNullOrEmpty(normalPrinter) &&
                     yakutaiModel.Fukuyoryo >= normalValue)
                 {
                     // 中
@@ -1022,7 +1002,7 @@ namespace Reporting.Yakutai.Service
                 {
                     // 内服
                     _choiceSetting(
-                        _systemConfig.YakutaiNaifukuPaperSmallMinValue(), _systemConfig.YakutaiNaifukuPaperSmallPrinter(), YAKUTAI_NAIFUKU_SMALL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiNaifukuPaperSmallPrinter(), YAKUTAI_NAIFUKU_SMALL_FORM_FILE_NAME,
                         _systemConfig.YakutaiNaifukuPaperNormalMinValue(), _systemConfig.YakutaiNaifukuPaperNormalPrinter(), YAKUTAI_NAIFUKU_NORMAL_FORM_FILE_NAME,
                         _systemConfig.YakutaiNaifukuPaperBigMinValue(), _systemConfig.YakutaiNaifukuPaperBigPrinter(), YAKUTAI_NAIFUKU_BIG_FORM_FILE_NAME
                         );
@@ -1031,7 +1011,7 @@ namespace Reporting.Yakutai.Service
                 {
                     // 頓服
                     _choiceSetting(
-                        _systemConfig.YakutaiTonpukuPaperSmallMinValue(), _systemConfig.YakutaiTonpukuPaperSmallPrinter(), YAKUTAI_TONPUKU_SMALL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiTonpukuPaperSmallPrinter(), YAKUTAI_TONPUKU_SMALL_FORM_FILE_NAME,
                         _systemConfig.YakutaiTonpukuPaperNormalMinValue(), _systemConfig.YakutaiTonpukuPaperNormalPrinter(), YAKUTAI_TONPUKU_NORMAL_FORM_FILE_NAME,
                         _systemConfig.YakutaiTonpukuPaperBigMinValue(), _systemConfig.YakutaiTonpukuPaperBigPrinter(), YAKUTAI_TONPUKU_BIG_FORM_FILE_NAME
                         );
@@ -1040,7 +1020,7 @@ namespace Reporting.Yakutai.Service
                 {
                     // 外用
                     _choiceSetting(
-                        _systemConfig.YakutaiGaiyoPaperSmallMinValue(), _systemConfig.YakutaiGaiyoPaperSmallPrinter(), YAKUTAI_GAIYO_SMALL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiGaiyoPaperSmallPrinter(), YAKUTAI_GAIYO_SMALL_FORM_FILE_NAME,
                         _systemConfig.YakutaiGaiyoPaperNormalMinValue(), _systemConfig.YakutaiGaiyoPaperNormalPrinter(), YAKUTAI_GAIYO_NORMAL_FORM_FILE_NAME,
                         _systemConfig.YakutaiGaiyoPaperBigMinValue(), _systemConfig.YakutaiGaiyoPaperBigPrinter(), YAKUTAI_GAIYO_BIG_FORM_FILE_NAME
                         );

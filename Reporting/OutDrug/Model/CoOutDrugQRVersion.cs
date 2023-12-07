@@ -958,10 +958,10 @@ public class CoOutDrugQRRp
         return ret;
     }
 
-    readonly CoOutDrugQR101 _qr101;
-    readonly CoOutDrugQR102 _qr102;
-    readonly CoOutDrugQR111 _qr111;
-    readonly CoOutDrugQR181 _qr181;
+    readonly CoOutDrugQR101? _qr101;
+    readonly CoOutDrugQR102? _qr102;
+    readonly CoOutDrugQR111? _qr111;
+    readonly CoOutDrugQR181? _qr181;
     readonly List<CoOutDrugQRDrug> _qrDrugs;
 
     /// <summary>
@@ -971,7 +971,7 @@ public class CoOutDrugQRRp
     /// <param name="qr111">用法レコード</param>
     /// <param name="qr181">用法補足レコード</param>
     /// <param name="qrDrugs">QR薬剤情報管理クラスのリスト</param>
-    public CoOutDrugQRRp(CoOutDrugQR101 qr101, CoOutDrugQR102 qr102, CoOutDrugQR111 qr111, CoOutDrugQR181 qr181, List<CoOutDrugQRDrug> qrDrugs)
+    public CoOutDrugQRRp(CoOutDrugQR101? qr101, CoOutDrugQR102? qr102, CoOutDrugQR111? qr111, CoOutDrugQR181? qr181, List<CoOutDrugQRDrug> qrDrugs)
     {
         _qr101 = qr101;
         _qr102 = qr102;
@@ -1251,12 +1251,12 @@ public class CoOutDrugQRDrug
         return ret;
     }
 
-    readonly CoOutDrugQR201 _qr201;
-    readonly CoOutDrugQR211 _qr211;
-    readonly CoOutDrugQR231 _qr231;
-    readonly CoOutDrugQR281 _qr281;
+    readonly CoOutDrugQR201? _qr201;
+    readonly CoOutDrugQR211? _qr211;
+    readonly CoOutDrugQR231? _qr231;
+    readonly CoOutDrugQR281? _qr281;
 
-    public CoOutDrugQRDrug(CoOutDrugQR201 qr201, CoOutDrugQR211 qr211, CoOutDrugQR231 qr231, CoOutDrugQR281 qr281)
+    public CoOutDrugQRDrug(CoOutDrugQR201? qr201, CoOutDrugQR211? qr211, CoOutDrugQR231? qr231, CoOutDrugQR281? qr281)
     {
         _qr201 = qr201;
         _qr211 = qr211;
@@ -1310,7 +1310,7 @@ public class CoOutDrugQR201
         Rikika = rikika;
         UnitName = unitName;
     }
-    
+
     public CoOutDrugQR201()
     {
         Version = string.Empty;
@@ -1444,7 +1444,7 @@ public class CoOutDrugQR231
         K3FutanKbn = k3FutanKbn;
         K4FutanKbn = k4FutanKbn;
     }
-    
+
     public CoOutDrugQR231()
     {
         Version = string.Empty;

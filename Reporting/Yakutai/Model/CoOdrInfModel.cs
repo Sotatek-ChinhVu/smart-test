@@ -4,7 +4,7 @@ namespace Reporting.Yakutai.Model
 {
     public class CoOdrInfModel
     {
-        public OdrInf OdrInf { get; } = null;
+        public OdrInf OdrInf { get; set; }
 
         public CoOdrInfModel(OdrInf odrInf)
         {
@@ -179,7 +179,7 @@ namespace Reporting.Yakutai.Model
         /// <summary>
         /// 用法キー
         /// </summary>
-        public string YohoKey { get; set; }
+        public string YohoKey { get; set; } = string.Empty;
         /// <summary>
         /// 削除
         /// </summary>

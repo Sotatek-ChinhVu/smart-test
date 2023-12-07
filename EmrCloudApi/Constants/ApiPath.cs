@@ -292,6 +292,7 @@
         public const string GetSinkouCountInMonth = "GetSinkouCountInMonth";
         public const string GetHeaderVistitDate = "GetHeaderVistitDate";
         public const string SaveKensaIrai = "SaveKensaIrai";
+        public const string GetLastDayInfoList = "GetLastDayInfoList";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";

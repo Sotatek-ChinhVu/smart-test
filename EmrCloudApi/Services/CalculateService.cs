@@ -234,7 +234,12 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken)
+        /// <summary>
+        /// function calls ReceFutanCalculateMain to other functions
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <returns></returns>
+        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData)
         {
             try
             {
@@ -254,7 +259,33 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken)
+        /// <summary>
+        /// function calls ReceFutanCalculateMain only to calculate runs in month Rece
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<bool> ReceFutanCalculateMain(ReceCalculateRequest inputData, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData, cancellationToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function ReceFutanCalculateMain " + ex);
+                await _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// function calls RunCalculateMonth to other functions
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <returns></returns>
+        public bool RunCalculateMonth(CalculateMonthRequest inputData)
         {
             try
             {
@@ -270,6 +301,27 @@ namespace EmrCloudApi.Services
             {
                 Console.WriteLine("Function RunCalculateMonth " + ex);
                 _loggingHandler.WriteLogExceptionAsync(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// function calls RunCalculateMonth only to calculate runs in month Rece
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<bool> RunCalculateMonth(CalculateMonthRequest inputData, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await CallCalculate(CalculateApiPath.RunCalculateMonth, inputData, cancellationToken);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function RunCalculateMonth " + ex);
+                await _loggingHandler.WriteLogExceptionAsync(ex);
                 throw;
             }
         }

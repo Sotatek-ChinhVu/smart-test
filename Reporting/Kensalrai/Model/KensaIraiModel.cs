@@ -34,7 +34,7 @@ namespace Reporting.Kensalrai.Model
             }
         }
 
-        public KensaIraiModel(int sinDate, long raiinNo, long iraiCd, long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int tosekiKbn, int sikyuKbn, int kaId, double weight, double height, string tantoName, string tantoKanaName, string kaSName, List<KensaIraiDetailModel> details)
+        public KensaIraiModel(int sinDate, long raiinNo, long iraiCd, long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int tosekiKbn, int sikyuKbn, int kaId, double weight, double height, string tantoName, string tantoKanaName, string kaSName, string updateTime, List<KensaIraiDetailModel> details)
         {
             SinDate = sinDate;
             RaiinNo = raiinNo;
@@ -54,6 +54,7 @@ namespace Reporting.Kensalrai.Model
             TantoName = tantoName;
             TantoKanaName = tantoKanaName;
             KaSName = kaSName;
+            UpdateTime = updateTime;
             if (Details != null)
             {
                 Details = Details.FindAll(p => p.IsSelected);

@@ -141,7 +141,7 @@ public class RecalculationController : AuthorizeControllerBase
                         var objectStatus = JsonSerializer.Deserialize<RecalculationStatus>(data);
                         if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
                         {
-                            if (objectStatus.Type == -1)
+                            if (objectStatus.Type == CalculateStatusConstant.Invalid)
                             {
                                 stopCalculate = true;
                                 allowNextStep = true;

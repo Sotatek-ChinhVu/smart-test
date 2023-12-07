@@ -17,27 +17,27 @@ public class CoSta3041PrintData
     /// <summary>
     /// 合計行のタイトル
     /// </summary>
-    public string TotalKbn { get; set; }
+    public string TotalKbn { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計行のキャプション
     /// </summary>
-    public string TotalCaption { get; set; }
+    public string TotalCaption { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計行の件数
     /// </summary>
-    public string TotalVal { get; set; }
+    public string TotalVal { get; set; } = string.Empty;
 
     /// <summary>
     /// 診療年月
     /// </summary>
-    public string SinYm { get; set; }
+    public string SinYm { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者番号
     /// </summary>
-    public string PtNum { get; set; }
+    public string PtNum { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者番号
@@ -47,12 +47,12 @@ public class CoSta3041PrintData
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string KanaName { get; set; }
+    public string KanaName { get; set; } = string.Empty;
 
     /// <summary>
     /// 漢字氏名
     /// </summary>
-    public string PtName { get; set; }
+    public string PtName { get; set; } = string.Empty;
 
     /// <summary>
     /// 診療日
@@ -62,78 +62,78 @@ public class CoSta3041PrintData
     /// <summary>
     /// 診療日
     /// </summary>
-    public string SinDate { get; set; }
+    public string SinDate { get; set; } = string.Empty;
 
     /// <summary>
     /// 向精神薬区分コード
     /// 1:抗不安薬 2:睡眠薬 3:抗うつ薬 4:抗精神病薬
     /// </summary>
-    public string KouseisinKbnCd { get; set; }
+    public string KouseisinKbnCd { get; set; } = string.Empty;
 
     /// <summary>
     /// 向精神薬区分
     /// </summary>
-    public string KouseisinKbn { get; set; }
+    public string KouseisinKbn { get; set; } = string.Empty;
 
     /// <summary>
     /// 種類数
     /// </summary>
-    public string DrugCount { get; set; }
+    public string DrugCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 薬価基準コード
     /// </summary>
-    public string YakkaCd { get; set; }
+    public string YakkaCd { get; set; } = string.Empty;
 
     /// <summary>
     /// 薬価基準コード前7桁
     /// </summary>
-    public string YakkaCd7 { get; set; }
+    public string YakkaCd7 { get; set; } = string.Empty;
 
     /// <summary>
     /// 診療行為コード
     /// </summary>
-    public string ItemCd { get; set; }
+    public string ItemCd { get; set; } = string.Empty;
 
     /// <summary>
     /// 医薬品名称
     /// </summary>
-    public string DrugName { get; set; }
+    public string DrugName { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤投与
     /// </summary>
-    public string Tazai { get; set; }
+    public string Tazai { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗不安薬
     /// </summary>
-    public string TazaiFuan { get; set; }
+    public string TazaiFuan { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_睡眠薬
     /// </summary>
-    public string TazaiSuimin { get; set; }
+    public string TazaiSuimin { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗うつ薬
     /// </summary>
-    public string TazaiUtu { get; set; }
+    public string TazaiUtu { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗精神病薬
     /// </summary>
-    public string TazaiSeisin { get; set; }
+    public string TazaiSeisin { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗うつ抗精神病
     /// </summary>
-    public string TazaiUtuSeisin { get; set; }
+    public string TazaiUtuSeisin { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗不安睡眠
     /// </summary>
-    public string TazaiFuanSuimin { get; set; }
+    public string TazaiFuanSuimin { get; set; } = string.Empty;
 
     /// <summary>
     /// 明細区分
@@ -162,55 +162,55 @@ public class CoSta3041PrintData
     /// 投与患者数
     /// 明細…0：該当しない、1：該当、-:該当するが、既に０でカウント済み
     /// </summary>
-    public string PtCnt { get; set; }
+    public string PtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤投与患者数
     /// </summary>
-    public string TazaiPtCnt { get; set; }
+    public string TazaiPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗不安薬投与患者数
     /// </summary>
-    public string TazaiFuanPtCnt { get; set; }
+    public string TazaiFuanPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_睡眠薬投与患者数
     /// </summary>
-    public string TazaiSuiminPtCnt { get; set; }
+    public string TazaiSuiminPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗うつ薬投与患者数
     /// </summary>
-    public string TazaiUtuPtCnt { get; set; }
+    public string TazaiUtuPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗精神病薬投与患者数
     /// </summary>
-    public string TazaiSeisinPtCnt { get; set; }
+    public string TazaiSeisinPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗うつ抗精神病投与患者数
     /// </summary>
-    public string TazaiUtuSeisinPtCnt { get; set; }
+    public string TazaiUtuSeisinPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 多剤_抗不安睡眠投与患者数
     /// </summary>
-    public string TazaiFuanSuiminPtCnt { get; set; }
+    public string TazaiFuanSuiminPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 抗うつ薬投与患者数
     /// </summary>
-    public string UtuPtCnt { get; set; }
+    public string UtuPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 抗精神病薬投与患者数
     /// </summary>
-    public string SeisinPtCnt { get; set; }
+    public string SeisinPtCnt { get; set; } = string.Empty;
 
     /// <summary>
     /// 抗うつ抗精神病投与患者数
     /// </summary>
-    public string UtuSeisinPtCnt { get; set; }
+    public string UtuSeisinPtCnt { get; set; } = string.Empty;
 }

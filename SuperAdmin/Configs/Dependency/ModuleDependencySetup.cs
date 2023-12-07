@@ -25,12 +25,17 @@ using UseCase.SuperAdmin.GetNotification;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.RestoreTenant;
 using UseCase.SuperAdmin.RevokeInsertPermission;
+using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
+using UseCase.UserToken.GetInfoRefresh;
+using UseCase.UserToken.SiginRefresh;
 using UseCase.SystemStartDbs;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -101,6 +106,11 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenantDetailInputData, GetTenantDetailInteractor>();
             busBuilder.RegisterUseCase<GetNotificationInputData, GetNotificationInteractor>();
             busBuilder.RegisterUseCase<UpdateNotificationInputData, UpdateNotificationInteractor>();
+            busBuilder.RegisterUseCase<ToggleTenantInputData, ToggleTenantInteractor>();
+            busBuilder.RegisterUseCase<RestoreTenantInputData, RestoreTenantInteractor>();
+            busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
+            busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
+            busBuilder.RegisterUseCase<RestoreObjectS3TenantInputData, RestoreObjectS3TenantInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

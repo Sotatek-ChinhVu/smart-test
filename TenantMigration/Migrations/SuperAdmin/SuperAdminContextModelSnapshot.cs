@@ -276,10 +276,6 @@ namespace TenantMigration.Migrations.SuperAdmin
 
                     b.HasKey("TenantId");
 
-                    b.HasIndex("AdminId")
-                        .IsUnique()
-                        .HasFilter("\"IS_DELETED\" = 0");
-
                     b.HasIndex("Db")
                         .IsUnique()
                         .HasFilter("\"IS_DELETED\" = 0");
@@ -301,6 +297,29 @@ namespace TenantMigration.Migrations.SuperAdmin
                         .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("TENANT");
+                });
+
+            modelBuilder.Entity("Entity.SuperAdmin.UserToken", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("USER_ID");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("REFRESH_TOKEN");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("TOKEN_EXPIRY_TIME");
+
+                    b.Property<bool>("RefreshTokenIsUsed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("REFRESH_TOKEN_IS_USED");
+
+                    b.HasKey("UserId", "RefreshToken");
+
+                    b.ToTable("USER_TOKEN");
                 });
 #pragma warning restore 612, 618
         }

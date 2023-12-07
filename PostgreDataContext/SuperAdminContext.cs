@@ -1,5 +1,4 @@
-﻿using Entity.Logger;
-using Entity.SuperAdmin;
+﻿using Entity.SuperAdmin;
 using Microsoft.EntityFrameworkCore;
 
 namespace PostgreDataContext
@@ -18,10 +17,10 @@ namespace PostgreDataContext
             modelBuilder.Entity<Notification>().HasKey(a => new { a.Id });
             modelBuilder.Entity<Scription>().HasKey(a => new { a.Id });
             modelBuilder.Entity<Tenant>().HasKey(a => new { a.TenantId });
+            modelBuilder.Entity<UserToken>().HasKey(a => new { a.UserId, a.RefreshToken });
             modelBuilder.Entity<MigrationTenantHistory>().HasKey(a => new { a.Id });
 
             modelBuilder.Entity<Admin>().HasIndex(a => new { a.LoginId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
-            modelBuilder.Entity<Tenant>().HasIndex(a => new { a.AdminId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.Hospital }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.SubDomain }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.EndSubDomain }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
@@ -37,7 +36,8 @@ namespace PostgreDataContext
 
         public DbSet<Tenant> Tenants { get; set; } = default!;
 
-        public DbSet<MigrationTenantHistory> MigrationTenantHistories { get; set; } = default!;
+        public DbSet<UserToken> UserTokens { get; set; } = default!;
 
+        public DbSet<MigrationTenantHistory> MigrationTenantHistories { get; set; } = default!;
     }
 }

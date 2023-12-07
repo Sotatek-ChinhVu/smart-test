@@ -26,5 +26,7 @@ public class KensaIraiReportRequestItem
 
     public int KaId { get; set; }
 
+    public DateTime UpdateDate { get; set; }
+
     public List<KensaIraiDetailReportRequestItem> KensaIraiDetailList { get; set; } = new();
 }

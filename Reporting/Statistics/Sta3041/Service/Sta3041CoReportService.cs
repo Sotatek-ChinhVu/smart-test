@@ -100,6 +100,8 @@ public class Sta3041CoReportService : ISta3041CoReportService
         printConf = new();
         printDatas = new();
         rowCountFieldName = string.Empty;
+        headerL = new();
+        kouseisinInfs = new();
     }
 
     public CommonReportingRequestModel GetSta3041ReportingData(CoSta3041PrintConf printConf, int hpId, CoFileType outputFileType)
@@ -196,7 +198,7 @@ public class Sta3041CoReportService : ISta3041CoReportService
                 foreach (var colName in existsCols)
                 {
 
-                    var value = typeof(CoSta3041PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta3041PrintData).GetProperty(colName)?.GetValue(printData);
                     AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                     if (baseListName == string.Empty && objectRseList.Contains(colName))
@@ -235,52 +237,52 @@ public class Sta3041CoReportService : ISta3041CoReportService
         UpdateFormBody();
     }
 
-    private struct countData
+    private struct CountData
     {
-        public struct countKey
+        public struct CountKey
         {
             public long PtNum;
             public int SinYm;
             public int SinDate;
         }
 
-        public List<countKey> Pts;
-        public List<countKey> KouFuanPts;
-        public List<countKey> SuiminPts;
-        public List<countKey> KouUtuPts;
-        public List<countKey> KouSeisinPts;
-        public List<countKey> KouUtuKouSeisinPts;
-        public List<countKey> TazaiPts;
-        public List<countKey> TazaiKouFuanPts;
-        public List<countKey> TazaiSuiminPts;
-        public List<countKey> TazaiKouUtuPts;
-        public List<countKey> TazaiKouSeisinPts;
-        public List<countKey> TazaiKouFuanSuiminPts;
-        public List<countKey> TazaiKouUtuKouSeisinPts;
+        public List<CountKey> Pts;
+        public List<CountKey> KouFuanPts;
+        public List<CountKey> SuiminPts;
+        public List<CountKey> KouUtuPts;
+        public List<CountKey> KouSeisinPts;
+        public List<CountKey> KouUtuKouSeisinPts;
+        public List<CountKey> TazaiPts;
+        public List<CountKey> TazaiKouFuanPts;
+        public List<CountKey> TazaiSuiminPts;
+        public List<CountKey> TazaiKouUtuPts;
+        public List<CountKey> TazaiKouSeisinPts;
+        public List<CountKey> TazaiKouFuanSuiminPts;
+        public List<CountKey> TazaiKouUtuKouSeisinPts;
 
         //初期化
         public void Init()
         {
-            if (Pts == null) Pts = new List<countKey>();
-            if (KouFuanPts == null) KouFuanPts = new List<countKey>();
-            if (SuiminPts == null) SuiminPts = new List<countKey>();
-            if (KouUtuPts == null) KouUtuPts = new List<countKey>();
-            if (KouSeisinPts == null) KouSeisinPts = new List<countKey>();
-            if (KouUtuKouSeisinPts == null) KouUtuKouSeisinPts = new List<countKey>();
-            if (TazaiPts == null) TazaiPts = new List<countKey>();
-            if (TazaiKouFuanPts == null) TazaiKouFuanPts = new List<countKey>();
-            if (TazaiSuiminPts == null) TazaiSuiminPts = new List<countKey>();
-            if (TazaiKouUtuPts == null) TazaiKouUtuPts = new List<countKey>();
-            if (TazaiKouSeisinPts == null) TazaiKouSeisinPts = new List<countKey>();
-            if (TazaiKouFuanSuiminPts == null) TazaiKouFuanSuiminPts = new List<countKey>();
-            if (TazaiKouUtuKouSeisinPts == null) TazaiKouUtuKouSeisinPts = new List<countKey>();
+            if (Pts == null) Pts = new List<CountKey>();
+            if (KouFuanPts == null) KouFuanPts = new List<CountKey>();
+            if (SuiminPts == null) SuiminPts = new List<CountKey>();
+            if (KouUtuPts == null) KouUtuPts = new List<CountKey>();
+            if (KouSeisinPts == null) KouSeisinPts = new List<CountKey>();
+            if (KouUtuKouSeisinPts == null) KouUtuKouSeisinPts = new List<CountKey>();
+            if (TazaiPts == null) TazaiPts = new List<CountKey>();
+            if (TazaiKouFuanPts == null) TazaiKouFuanPts = new List<CountKey>();
+            if (TazaiSuiminPts == null) TazaiSuiminPts = new List<CountKey>();
+            if (TazaiKouUtuPts == null) TazaiKouUtuPts = new List<CountKey>();
+            if (TazaiKouSeisinPts == null) TazaiKouSeisinPts = new List<CountKey>();
+            if (TazaiKouFuanSuiminPts == null) TazaiKouFuanSuiminPts = new List<CountKey>();
+            if (TazaiKouUtuKouSeisinPts == null) TazaiKouUtuKouSeisinPts = new List<CountKey>();
         }
 
 
         public void AddValue(int sinDate, long ptNum, ref int[] drugCounts)
         {
 
-            countKey tgtKey = new countKey { PtNum = ptNum, SinYm = sinDate / 100, SinDate = sinDate };
+            CountKey tgtKey = new CountKey { PtNum = ptNum, SinYm = sinDate / 100, SinDate = sinDate };
 
             Pts.Add(tgtKey);
 
@@ -340,7 +342,7 @@ public class Sta3041CoReportService : ISta3041CoReportService
 
     }
 
-    private countData total = new countData();
+    private CountData total = new CountData();
 
     private bool GetData(int hpId)
     {
@@ -370,7 +372,7 @@ public class Sta3041CoReportService : ISta3041CoReportService
             #endregion
 
             #region SubMethod
-            int GetDrugCount(CoKouseisinInf tgtData, CoKouseisinInf preData)
+            int GetDrugCount(CoKouseisinInf tgtData, CoKouseisinInf? preData)
             {
                 //csvの場合、向精神薬区分ごとの1行目にだけ種類数は記録し、残りは0にする
                 int ret = 0;
@@ -396,12 +398,12 @@ public class Sta3041CoReportService : ISta3041CoReportService
                 return ret;
             }
 
-            void AddMeisaiRecord(CoKouseisinInf tgtData, CoKouseisinInf preData, bool is1stRow)
+            void AddMeisaiRecord(CoKouseisinInf tgtData, CoKouseisinInf? preData, bool is1stRow)
             {
                 CoSta3041PrintData printData = new CoSta3041PrintData();
 
                 //フォームファイルで出力するとき、前の行と重複する値を省略する
-                if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv || is1stRow || tgtData.PtNum != preData.PtNum)
+                if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv || is1stRow || tgtData.PtNum != preData?.PtNum)
                 {
                     printData.PtNum = tgtData.PtNum.ToString();
                     printData.KanaName = tgtData.KanaName;
@@ -438,7 +440,7 @@ public class Sta3041CoReportService : ISta3041CoReportService
 
             }
 
-            void AddSubTotalRecord(countData totalData, int sinYm = 0)
+            void AddSubTotalRecord(CountData totalData, int sinYm = 0)
             {
                 if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
                 {
@@ -495,7 +497,7 @@ public class Sta3041CoReportService : ISta3041CoReportService
 
             }
 
-            void AddTotalRecord(countData totalData)
+            void AddTotalRecord(CountData totalData)
             {
 
                 if (outputFileType == CoFileType.Csv || coFileType == CoFileType.Csv)
@@ -650,46 +652,66 @@ public class Sta3041CoReportService : ISta3041CoReportService
                 }
             }
 
-            void SetPtCountFlg(countData totalData, int sinYm, long ptNum)
+            void SetPtCountFlg(CountData totalData, int sinYm, long ptNum)
             {
                 int lastIdx = printDatas.Count - 1;
                 if (lastIdx >= 0)
                 {
+                    var ptCnt2 = totalData.Pts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].PtCnt = totalData.Pts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.Pts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? ptCnt2
                        : "0";
+
+                    var tazaiPtCnt2 = totalData.TazaiPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].TazaiPtCnt = totalData.TazaiPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.TazaiPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? tazaiPtCnt2
                        : "0";
+
+                    var tazaiFuanPtCnt2 = totalData.TazaiKouFuanPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].TazaiFuanPtCnt = totalData.TazaiKouFuanPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.TazaiKouFuanPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? tazaiFuanPtCnt2
                        : "0";
+
+                    var tazaiSuiminPtCnt2 = totalData.TazaiSuiminPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].TazaiSuiminPtCnt = totalData.TazaiSuiminPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.TazaiSuiminPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? tazaiSuiminPtCnt2
                        : "0";
+
+                    var tazaiUtuPtCnt2 = totalData.TazaiKouUtuPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].TazaiUtuPtCnt = totalData.TazaiKouUtuPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.TazaiKouUtuPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? tazaiUtuPtCnt2
                        : "0";
+
+                    var tazaiSeisinPtCnt2 = totalData.TazaiKouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].TazaiSeisinPtCnt = totalData.TazaiKouSeisinPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.TazaiKouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? tazaiSeisinPtCnt2
                        : "0";
+
+                    var tazaiUtuSeisinPtCnt2 = totalData.TazaiKouUtuKouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].TazaiUtuSeisinPtCnt = totalData.TazaiKouUtuKouSeisinPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.TazaiKouUtuKouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? tazaiUtuSeisinPtCnt2
                        : "0";
+
+                    var tazaiFuanSuiminPtCnt2 = totalData.TazaiKouFuanSuiminPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].TazaiFuanSuiminPtCnt = totalData.TazaiKouFuanSuiminPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.TazaiKouFuanSuiminPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? tazaiFuanSuiminPtCnt2
                        : "0";
+
+                    var utuPtCnt2 = totalData.KouUtuPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].UtuPtCnt = totalData.KouUtuPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.KouUtuPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? utuPtCnt2
                        : "0";
+
+                    var seisinPtCnt2 = totalData.KouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].SeisinPtCnt = totalData.KouSeisinPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.KouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? seisinPtCnt2
                        : "0";
+
+                    var utuSeisinPtCnt2 = totalData.KouUtuKouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1";
                     printDatas[lastIdx].UtuSeisinPtCnt = totalData.KouUtuKouSeisinPts.Exists(x => x.SinYm == sinYm && x.PtNum == ptNum)
-                       ? totalData.KouUtuKouSeisinPts.Exists(x => x.SinYm < sinYm && x.PtNum == ptNum) ? "-" : "1"
+                       ? utuSeisinPtCnt2
                        : "0";
                 }
-
             }
 
             void SetTazaiFlg()
@@ -781,17 +803,17 @@ public class Sta3041CoReportService : ISta3041CoReportService
             }
 
             //最後の患者をカウント
-            total.AddValue(preKouseisinInf.SinDate, preKouseisinInf.PtNum, ref drugCounts);
-            SetPtCountFlg(total, preKouseisinInf.SinYm, preKouseisinInf.PtNum);
+            total.AddValue(preKouseisinInf?.SinDate ?? 0, preKouseisinInf?.PtNum ?? 0, ref drugCounts);
+            SetPtCountFlg(total, preKouseisinInf?.SinYm ?? 0, preKouseisinInf?.PtNum ?? 0);
 
             //小計
             prePgCount = pgCount;
             AddBrankRecord(printDatas.Count, ref pgCount, subTotalRowsCnt);
             if (pgCount > prePgCount)
             {
-                headerL.Add(CIUtil.SMonthToShowSWMonth(preKouseisinInf.SinYm, 0, 0, 1));
+                headerL.Add(CIUtil.SMonthToShowSWMonth(preKouseisinInf?.SinYm ?? 0, 0, 0, 1));
             }
-            AddSubTotalRecord(total, preKouseisinInf.SinYm);
+            AddSubTotalRecord(total, preKouseisinInf?.SinYm ?? 0);
 
             //合計
             AddBrankRecord(printDatas.Count, ref pgCount, totalRowsCnt);
@@ -871,7 +893,6 @@ public class Sta3041CoReportService : ISta3041CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -886,7 +907,7 @@ public class Sta3041CoReportService : ISta3041CoReportService
             foreach (var column in putColumns)
             {
 
-                var value = typeof(CoSta3041PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                var value = typeof(CoSta3041PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
                 colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
             }
 

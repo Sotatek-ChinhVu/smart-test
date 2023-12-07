@@ -1,5 +1,8 @@
+using Amazon.S3;
 using AWSSDK.Common;
+using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data.Common;
 
@@ -7,7 +10,16 @@ namespace AWSSDK.Services
 {
     public class AwsSdkService : IAwsSdkService
     {
-        public AwsSdkService() { }
+        private readonly IConfiguration _configuration;
+        private readonly string _sourceAccessKey;
+        private readonly string _sourceSecretKey;
+
+        public AwsSdkService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            _sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+        }
         public async Task<Dictionary<string, Dictionary<string, string>>> SummaryCard()
         {
             return await CloudWatchAction.GetSummaryCardAsync();
@@ -19,9 +31,9 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
-            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
+            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier, snapshotType);
         }
 
         public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
@@ -50,6 +62,7 @@ namespace AWSSDK.Services
             }
             return false;
         }
+
         public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
         {
             try
@@ -71,16 +84,33 @@ namespace AWSSDK.Services
                         // Delete database
                         using (DbCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = $"DROP DATABASE {tennantDB};";
+                            command.CommandText = @$"
+                                                    DO $$ 
+                                                    DECLARE
+                                                        pid_list text;
+                                                        query_text text;
+                                                    BEGIN
+                                                        -- Get a comma-separated list of active process IDs (pids) for the specified database
+                                                        SELECT string_agg(pid::text, ',') INTO pid_list
+                                                        FROM pg_stat_activity
+                                                        WHERE datname = '{tennantDB}';
+
+                                                        -- Construct the query to terminate each connection
+                                                        query_text := 'SELECT pg_terminate_backend(' || pid_list || ')';
+
+                                                        -- Execute the query to terminate connections
+                                                        EXECUTE query_text;
+                                                    END $$;";
+                            command.CommandText += @$"DROP DATABASE {tennantDB};";
                             command.ExecuteNonQuery();
                         }
 
-                        Console.WriteLine($"Database deleted successfully.");
+                        Console.WriteLine($"Database: {tennantDB} deleted successfully.");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        return false;
+                        Console.WriteLine($"Error: Delete TenantDb {ex.Message}");
+                        throw new Exception($"Error: Delete TenantDb {ex.Message}");
                     }
                 }
 
@@ -91,6 +121,51 @@ namespace AWSSDK.Services
                 Console.WriteLine($"Error: {ex.Message}");
                 return false;
             }
+        }
+
+        public async Task CreateFolderAsync(string bucketName, string folderName)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CreateFolderAsync(sourceS3ClientDestination, bucketName, folderName);
+        }
+
+        public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
+        }
+
+        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string sourceFolderKey, string destinationBucketName, string destinationFolderKey)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, sourceFolderKey, sourceS3ClientDestination, destinationBucketName, destinationFolderKey);
+        }
+
+        private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
+        }
+
+        public async Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder)
+        {
+            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
+            await S3Action.BackupFolderAsync(sourceS3Client, sourceBucket, sourceFolder, backupBucket, backupFolder);
+        }
+
+        public async Task UploadFileAsync(string bucketName, string folderName, string filePath)
+        {
+            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
+            await S3Action.UploadFileWithProgressAsync(sourceS3Client, bucketName, folderName, filePath);
+        }
+        
+        private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionSource);
         }
     }
 }

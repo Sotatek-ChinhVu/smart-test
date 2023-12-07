@@ -94,7 +94,7 @@ namespace AWSSDK.Common
                                 Quantity = 0
                             },
                             FieldLevelEncryptionId = "",
-                            CachePolicyId = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                            CachePolicyId = ConfigConstant.ManagedCachingOptimized,
                             OriginRequestPolicyId = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
                         },
                         CacheBehaviors = new CacheBehaviors
@@ -145,7 +145,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return null;
+                throw new Exception($"UpdateAlterCNAME. {ex.Message}");
             }
         }
 
@@ -159,7 +159,6 @@ namespace AWSSDK.Common
                 {
                     Id = id
                 });
-
                 var distInfo = new Dictionary<string, object>
             {
                 { "ETag", response.ETag },
@@ -195,6 +194,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"UpdateAlterCNAME. {ex.Message}");
             }
         }
 
@@ -202,7 +202,7 @@ namespace AWSSDK.Common
         {
             try
             {
-                var distInfo = await GetDistributionConfigAsync("E1Q6ZVLBFAFBDX");
+                var distInfo = await GetDistributionConfigAsync(ConfigConstant.DistributionId);
 
                 if (distInfo != null)
                 {
@@ -220,14 +220,21 @@ namespace AWSSDK.Common
                         Console.WriteLine("CNAME removed successfully!");
                         return true;
                     }
+                    else
+                    {
+                        throw new Exception($"Remove Item Cname. Code: {resUpdate?.HttpStatusCode}");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Remove Item Cname. Distribution info empty");
                 }
 
-                return false; // Return false if there was an issue or if the update was not successful
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return false;
+                throw new Exception($"Remove Item Cname. {ex.Message}");
             }
         }
     }
