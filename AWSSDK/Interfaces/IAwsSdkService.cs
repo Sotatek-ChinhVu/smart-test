@@ -14,6 +14,9 @@ namespace AWSSDK.Interfaces
         bool DeleteTenantDb(string serverEndpoint, string tennantDB);
         Task CreateFolderAsync(string bucketName, string folderName);
         Task DeleteObjectsInFolderAsync(string bucketName, string folderKey);
+        Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder);
+        Task UploadFileAsync(string bucketName, string folderName, string filePath);
+        Task CopyObjectsInFolderAsync(string sourceBucketName, string sourceFolderKey, string destinationBucketName, string destinationFolderKey);
         Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type);
     }
 }

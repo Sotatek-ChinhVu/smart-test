@@ -82,7 +82,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("TerminateTenant")]
         public ActionResult<Response<TerminateTenantResponse>> TerminateTenant([FromBody] TerminateTenantRequest request)
         {
-            var input = new TerminateTenantInputData(request.TenantId, _webSocketService);
+            var input = new TerminateTenantInputData(request.TenantId, _webSocketService, request.Type);
             var output = _bus.Handle(input);
             var presenter = new TerminateTenantPresenter();
             presenter.Complete(output);
@@ -102,14 +102,14 @@ namespace SuperAdminAPI.Controllers
         }
         #endregion
 
-        [HttpPost("StopedTenant")]
-        public ActionResult<Response<StopedTenantResponse>> StopedTenant([FromBody] StopedTenantRequest request)
+        [HttpPost("ToggleTenant")]
+        public ActionResult<Response<ToggleTenantResponse>> ToggleTenant([FromBody] ToggleTenantRequest request)
         {
-            var input = new StopedTenantInputData(request.TenantId, _webSocketService);
+            var input = new ToggleTenantInputData(request.TenantId, _webSocketService, request.Type);
             var output = _bus.Handle(input);
-            var presenter = new StopedTenantPresenter();
+            var presenter = new ToggleTenantPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<StopedTenantResponse>>(presenter.Result);
+            return new ActionResult<Response<ToggleTenantResponse>>(presenter.Result);
         }
 
         [HttpPost("RestoreTenant")]

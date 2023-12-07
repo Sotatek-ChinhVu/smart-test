@@ -193,7 +193,7 @@ namespace AWSSDK.Common
                 Console.WriteLine($"Error CreateDatabase: {ex.Message}");
                 throw new Exception($"CreateDatabase. {ex.Message}");
             }
-        }        
+        }
 
         public static void GenerateDumpfile(string tenantId)
         {
@@ -345,7 +345,14 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier)
+        /// <summary>
+        /// Delete RDS instance
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <param name="SkipFinalSnapshot">Delete without create snapshot backup</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier, bool SkipFinalSnapshot = false)
         {
             try
             {
@@ -354,10 +361,13 @@ namespace AWSSDK.Common
                 var deleteRequest = new DeleteDBInstanceRequest
                 {
                     DBInstanceIdentifier = dbInstanceIdentifier,
-                    SkipFinalSnapshot = false
+                    SkipFinalSnapshot = SkipFinalSnapshot
                 };
 
-                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, ConfigConstant.RdsSnapshotBackupTermiante);
+                if (!SkipFinalSnapshot)
+                {
+                    deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, ConfigConstant.RdsSnapshotBackupTermiante);
+                }
 
                 var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
 
@@ -424,7 +434,7 @@ namespace AWSSDK.Common
             }
         }
 
-       public static async Task<string> GetLastSnapshot(string dbInstanceIdentifier)
+        public static async Task<string> GetLastSnapshot(string dbInstanceIdentifier)
         {
             try
             {
@@ -442,7 +452,7 @@ namespace AWSSDK.Common
                 var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
 
                 // Extract information about the latest snapshot
-                var snapshot = describeSnapshotsResponse.DBSnapshots.OrderByDescending(x=> x.SnapshotCreateTime).FirstOrDefault();
+                var snapshot = describeSnapshotsResponse.DBSnapshots.OrderByDescending(x => x.SnapshotCreateTime).FirstOrDefault();
                 if (snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase))
                 {
                     return snapshot.DBSnapshotIdentifier;
