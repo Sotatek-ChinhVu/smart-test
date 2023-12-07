@@ -106,7 +106,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenantDetailInputData, GetTenantDetailInteractor>();
             busBuilder.RegisterUseCase<GetNotificationInputData, GetNotificationInteractor>();
             busBuilder.RegisterUseCase<UpdateNotificationInputData, UpdateNotificationInteractor>();
-            busBuilder.RegisterUseCase<StopedTenantInputData, StopedTenantInteractor>();
+            busBuilder.RegisterUseCase<ToggleTenantInputData, ToggleTenantInteractor>();
             busBuilder.RegisterUseCase<RestoreTenantInputData, RestoreTenantInteractor>();
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
