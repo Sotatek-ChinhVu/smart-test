@@ -141,7 +141,7 @@ namespace AWSSDK.Common
                             Key = obj.Key
                         };
                         var sourceTransterUtility = new TransferUtility(sourceS3Client);
-                        sourceTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest);
+                        sourceTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest).Wait();
                     });
 
                     request.ContinuationToken = response.NextContinuationToken;
@@ -185,7 +185,7 @@ namespace AWSSDK.Common
                         };
 
                         var destinationTransterUtility = new TransferUtility(destinationClient);
-                        destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest);
+                        destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
                     });
 
                     request.ContinuationToken = response.NextContinuationToken;

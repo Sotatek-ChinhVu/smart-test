@@ -144,8 +144,8 @@ namespace AWSSDK.Services
                 RestoreObjectS3TenantTypeEnum.Files => $"{objectName}/store/files/",
                 RestoreObjectS3TenantTypeEnum.InsuranceCard => $"{objectName}/store/InsuranceCard/",
                 RestoreObjectS3TenantTypeEnum.Karte => $"{objectName}/store/karte/",
-                RestoreObjectS3TenantTypeEnum.NextPic => $"{objectName}/store/nextPic/",
-                RestoreObjectS3TenantTypeEnum.SetPic => $"{objectName}/store/setPic/",
+                RestoreObjectS3TenantTypeEnum.NextPic => $"{objectName}/store/karte/nextPic/",
+                RestoreObjectS3TenantTypeEnum.SetPic => $"{objectName}/store/karte/setPic/",
                 _ => string.Empty
             };
             var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
@@ -173,7 +173,7 @@ namespace AWSSDK.Services
             var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
             await S3Action.UploadFileWithProgressAsync(sourceS3Client, bucketName, folderName, filePath);
         }
-        
+
         private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
         {
             return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionSource);
