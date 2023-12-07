@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 using AWSSDK.Constants;
 
 namespace AWSSDK.Common
@@ -54,8 +55,8 @@ namespace AWSSDK.Common
                             BucketName = bucketName,
                             Key = obj.Key
                         };
-
-                        await sourceS3Client.DeleteObjectAsync(deleteObjectRequest);
+                        var sourceTransterUtility = new TransferUtility(sourceS3Client);
+                        await sourceTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest);
                     }
 
                     request.ContinuationToken = response.NextContinuationToken;
@@ -98,7 +99,8 @@ namespace AWSSDK.Common
                             DestinationKey = destinationFolderKey + obj.Key.Substring(sourceFolderKey.Length)
                         };
 
-                        await destinationClient.CopyObjectAsync(copyObjectRequest);
+                        var destinationTransterUtility = new TransferUtility(destinationClient);
+                        await destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest);
                     }
 
                     request.ContinuationToken = response.NextContinuationToken;
