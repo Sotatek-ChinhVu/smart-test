@@ -12,20 +12,19 @@ namespace Interactor.SuperAdmin
         private readonly IAwsSdkService _awsSdkService;
         private readonly INotificationRepository _notificationRepository;
         private readonly INotificationRepository _notificationTaskRunRepository;
-        private readonly IWebSocketService _webSocketService;
         public RestoreObjectS3TenantInteractor(
             IAwsSdkService awsSdkService,
             INotificationRepository notificationRepository,
-            INotificationRepository notificationTaskRunRepository,
-            IWebSocketService webSocketService)
+            INotificationRepository notificationTaskRunRepository)
         {
             _awsSdkService = awsSdkService;
             _notificationRepository = notificationRepository;
             _notificationTaskRunRepository = notificationTaskRunRepository;
-            _webSocketService = webSocketService;
         }
         public RestoreObjectS3TenantOutputData Handle(RestoreObjectS3TenantInputData inputData)
         {
+            IWebSocketService _webSocketService;
+            _webSocketService = (IWebSocketService)inputData.WebSocketService;
             try
             {
                 if (string.IsNullOrEmpty(inputData.ObjectName))
@@ -44,13 +43,13 @@ namespace Interactor.SuperAdmin
                         restoreObjectS3.Wait();
                         var message = inputData.ObjectName + $" is restore data S3 successfully.";
                         var notification = _notificationTaskRunRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
                     }
                     catch (Exception ex)
                     {
                         var message = inputData.ObjectName + $" is restore data S3 failed. {ex.Message}";
                         var notification = _notificationTaskRunRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
                     }
                     finally
                     {
@@ -60,14 +59,14 @@ namespace Interactor.SuperAdmin
 
                 var message = inputData.ObjectName + $" is restoring data S3.";
                 var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiInfo, message);
-                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
                 return new RestoreObjectS3TenantOutputData(RestoreObjectS3TenantStatus.Success);
             }
             catch (Exception ex)
             {
                 var message = inputData.ObjectName + $" is restore data S3 failed. {ex.Message}";
                 var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
                 return new RestoreObjectS3TenantOutputData(RestoreObjectS3TenantStatus.Failed);
             }
             finally
