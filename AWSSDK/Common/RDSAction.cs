@@ -345,6 +345,13 @@ namespace AWSSDK.Common
             }
         }
 
+        /// <summary>
+        /// Delete RDS instance
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <param name="SkipFinalSnapshot">Delete without create snapshot backup</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier, bool SkipFinalSnapshot = false)
         {
             try

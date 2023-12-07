@@ -36,6 +36,16 @@ namespace AWSSDK.Common
             }
         }
 
+        /// <summary>
+        /// Create Folder backup
+        /// </summary>
+        /// <param name="s3Client"></param>
+        /// <param name="sourceBucket"></param>
+        /// <param name="sourceFolder"></param>
+        /// <param name="backupBucket"></param>
+        /// <param name="backupFolder"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task BackupFolderAsync(AmazonS3Client s3Client, string sourceBucket, string sourceFolder, string backupBucket, string backupFolder)
         {
             try
@@ -82,6 +92,15 @@ namespace AWSSDK.Common
             }
         }
 
+        /// <summary>
+        /// Uploads the specified file.Multiple threads are used to read the file and perform multiple uploads in parallel
+        /// </summary>
+        /// <param name="s3Client"></param>
+        /// <param name="bucketName"></param>
+        /// <param name="folderName"></param>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<bool> UploadFileWithProgressAsync(AmazonS3Client s3Client, string bucketName, string folderName, string filePath)
         {
             try
@@ -98,7 +117,6 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error uploading file: '{ex.Message}'");
             }
         }
-
 
         public static async Task DeleteObjectsInFolderAsync(AmazonS3Client sourceS3Client, string bucketName, string folderKey)
         {
