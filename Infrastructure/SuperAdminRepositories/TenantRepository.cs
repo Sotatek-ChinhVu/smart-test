@@ -250,8 +250,9 @@ namespace Infrastructure.SuperAdminRepositories
             DisposeDataContext();
         }
 
-        public List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
+        public (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
         {
+            int totalTenant = 0;
             List<TenantModel> result;
             IQueryable<Tenant> query = NoTrackingDataContext.Tenants.Where(item => item.IsDeleted == 0);
             if (!searchModel.IsEmptyModel)
@@ -263,6 +264,8 @@ namespace Infrastructure.SuperAdminRepositories
             // sort data ignore storageFull
             if (!searchModel.StorageFull.Any() && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
             {
+                // get totalTenant to FE
+                totalTenant = query.Count();
                 var querySortList = SortTenantQuery(query, sortDictionary);
                 querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
                 result = querySortList.Select(tenant => new TenantModel(
@@ -288,7 +291,7 @@ namespace Infrastructure.SuperAdminRepositories
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
-                return result;
+                return (result, totalTenant);
             }
             result = query.Select(tenant => new TenantModel(
                                             tenant.TenantId,
@@ -332,8 +335,10 @@ namespace Infrastructure.SuperAdminRepositories
                     result = result.Where(item => item.StorageFull >= 90).ToList();
                 }
             }
+            // get totalTenant to FE
+            totalTenant = result.Count;
             result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
-            return result;
+            return (result, totalTenant);
         }
 
         public TenantModel GetTenant(int tenantId)
@@ -368,7 +373,7 @@ namespace Infrastructure.SuperAdminRepositories
             {
                 query = query.Where(item => item.CreateDate <= searchModel.ToDate);
             }
-            if (searchModel.Type != 0)
+            if (searchModel.Type != -1)
             {
                 query = query.Where(item => item.Type == searchModel.Type);
             }
