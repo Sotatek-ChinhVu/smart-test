@@ -18,12 +18,12 @@ public class CoSta3060PrintData
     /// <summary>
     /// 合計行のキャプション
     /// </summary>
-    public string TotalCaption { get; set; }
+    public string TotalCaption { get; set; } = string.Empty;
 
     /// <summary>
     /// 集計区分
     /// </summary>
-    public string ReportKbn { get; set; }
+    public string ReportKbn { get; set; } = string.Empty;
 
     /// <summary>
     /// 診察年月
@@ -46,7 +46,7 @@ public class CoSta3060PrintData
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname { get; set; }
+    public string KaSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 担当医ID
@@ -56,335 +56,335 @@ public class CoSta3060PrintData
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname { get; set; }
+    public string TantoSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 初診件数
     /// </summary>
-    public string SyosinCount { get; set; }
+    public string SyosinCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 再診件数
     /// </summary>
-    public string SaisinCount { get; set; }
+    public string SaisinCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 初診率
     /// </summary>
-    public string SyosinRate { get; set; }
+    public string SyosinRate { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計件数
     /// </summary>
-    public string TotalCount { get; set; }
+    public string TotalCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 実人数
     /// </summary>
-    public string PtCount { get; set; }
+    public string PtCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計点数
     /// </summary>
-    public string TotalTensu { get; set; }
+    public string TotalTensu { get; set; } = string.Empty;
 
     /// <summary>
     /// 平均点数
     /// </summary>
-    public string AvgTensu { get; set; }
+    public string AvgTensu { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 診察
     /// </summary>
-    public string KouiTensu0 { get; set; }
+    public string KouiTensu0 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 投薬
     /// </summary>
-    public string KouiTensu1 { get; set; }
+    public string KouiTensu1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 注射
     /// </summary>
-    public string KouiTensu2 { get; set; }
+    public string KouiTensu2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 処置
     /// </summary>
-    public string KouiTensu3 { get; set; }
+    public string KouiTensu3 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 手術
     /// </summary>
-    public string KouiTensu4 { get; set; }
+    public string KouiTensu4 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 検査
     /// </summary>
-    public string KouiTensu5 { get; set; }
+    public string KouiTensu5 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 画像
     /// </summary>
-    public string KouiTensu6 { get; set; }
+    public string KouiTensu6 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - その他
     /// </summary>
-    public string KouiTensu7 { get; set; }
+    public string KouiTensu7 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数 - 自費(円)
     /// </summary>
-    public string KouiTensu8 { get; set; }
+    public string KouiTensu8 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 診察
     /// </summary>
-    public string KouiCount0 { get; set; }
+    public string KouiCount0 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 投薬
     /// </summary>
-    public string KouiCount1 { get; set; }
+    public string KouiCount1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 注射
     /// </summary>
-    public string KouiCount2 { get; set; }
+    public string KouiCount2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 処置
     /// </summary>
-    public string KouiCount3 { get; set; }
+    public string KouiCount3 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 手術
     /// </summary>
-    public string KouiCount4 { get; set; }
+    public string KouiCount4 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 検査
     /// </summary>
-    public string KouiCount5 { get; set; }
+    public string KouiCount5 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 画像
     /// </summary>
-    public string KouiCount6 { get; set; }
+    public string KouiCount6 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - その他
     /// </summary>
-    public string KouiCount7 { get; set; }
+    public string KouiCount7 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数 - 自費(円)
     /// </summary>
-    public string KouiCount8 { get; set; }
+    public string KouiCount8 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 初再診
     /// </summary>
-    public string KouiTensuDetail0 { get; set; }
+    public string KouiTensuDetail0 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 医管
     /// </summary>
-    public string KouiTensuDetail1 { get; set; }
+    public string KouiTensuDetail1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 在宅
     /// </summary>
-    public string KouiTensuDetail2 { get; set; }
+    public string KouiTensuDetail2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 検査
     /// </summary>
-    public string KouiTensuDetail3 { get; set; }
+    public string KouiTensuDetail3 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 画像
     /// </summary>
-    public string KouiTensuDetail4 { get; set; }
+    public string KouiTensuDetail4 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 投薬
     /// </summary>
-    public string KouiTensuDetail5 { get; set; }
+    public string KouiTensuDetail5 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 注射
     /// </summary>
-    public string KouiTensuDetail6 { get; set; }
+    public string KouiTensuDetail6 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - リハ
     /// </summary>
-    public string KouiTensuDetail7 { get; set; }
+    public string KouiTensuDetail7 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 精神
     /// </summary>
-    public string KouiTensuDetail8 { get; set; }
+    public string KouiTensuDetail8 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 処置
     /// </summary>
-    public string KouiTensuDetail9 { get; set; }
+    public string KouiTensuDetail9 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 手術
     /// </summary>
-    public string KouiTensuDetail10 { get; set; }
+    public string KouiTensuDetail10 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 麻酔
     /// </summary>
-    public string KouiTensuDetail11 { get; set; }
+    public string KouiTensuDetail11 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 放射
     /// </summary>
-    public string KouiTensuDetail12 { get; set; }
+    public string KouiTensuDetail12 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 病理
     /// </summary>
-    public string KouiTensuDetail13 { get; set; }
+    public string KouiTensuDetail13 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - その他
     /// </summary>
-    public string KouiTensuDetail14 { get; set; }
+    public string KouiTensuDetail14 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 自費(円)
     /// </summary>
-    public string KouiTensuDetail15 { get; set; }
+    public string KouiTensuDetail15 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 初再診
     /// </summary>
-    public string KouiCountDetail0 { get; set; }
+    public string KouiCountDetail0 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 医管
     /// </summary>
-    public string KouiCountDetail1 { get; set; }
+    public string KouiCountDetail1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 在宅
     /// </summary>
-    public string KouiCountDetail2 { get; set; }
+    public string KouiCountDetail2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 検査
     /// </summary>
-    public string KouiCountDetail3 { get; set; }
+    public string KouiCountDetail3 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 画像
     /// </summary>
-    public string KouiCountDetail4 { get; set; }
+    public string KouiCountDetail4 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 投薬
     /// </summary>
-    public string KouiCountDetail5 { get; set; }
+    public string KouiCountDetail5 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 注射
     /// </summary>
-    public string KouiCountDetail6 { get; set; }
+    public string KouiCountDetail6 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - リハ
     /// </summary>
-    public string KouiCountDetail7 { get; set; }
+    public string KouiCountDetail7 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 精神
     /// </summary>
-    public string KouiCountDetail8 { get; set; }
+    public string KouiCountDetail8 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 処置
     /// </summary>
-    public string KouiCountDetail9 { get; set; }
+    public string KouiCountDetail9 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 手術
     /// </summary>
-    public string KouiCountDetail10 { get; set; }
+    public string KouiCountDetail10 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 麻酔
     /// </summary>
-    public string KouiCountDetail11 { get; set; }
+    public string KouiCountDetail11 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 放射
     /// </summary>
-    public string KouiCountDetail12 { get; set; }
+    public string KouiCountDetail12 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 病理
     /// </summary>
-    public string KouiCountDetail13 { get; set; }
+    public string KouiCountDetail13 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - その他
     /// </summary>
-    public string KouiCountDetail14 { get; set; }
+    public string KouiCountDetail14 { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 自費(円)
     /// </summary>
-    public string KouiCountDetail15 { get; set; }
+    public string KouiCountDetail15 { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者負担合計
     /// </summary>
-    public string TotalPtFutan { get; set; }
+    public string TotalPtFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者番号
     /// </summary>
-    public string PtNum { get; set; }
+    public string PtNum { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者氏名
     /// </summary>
-    public string PtName { get; set; }
+    public string PtName { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 初再診 の内、初診のみ
     /// </summary>
-    public string KouiTensuSyosin { get; set; }
+    public string KouiTensuSyosin { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 初再診 の内、初診のみ
     /// </summary>
-    public string KouiCountSyosin { get; set; }
+    public string KouiCountSyosin { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 初再診 の内、再診のみ
     /// </summary>
-    public string KouiTensuSaisin { get; set; }
+    public string KouiTensuSaisin { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 初再診 の内、再診のみ
     /// </summary>
-    public string KouiCountSaisin { get; set; }
+    public string KouiCountSaisin { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為点数(詳細) - 初再診 の内、初診・再診以外
     /// </summary>
-    public string KouiTensuSyosaiSonota { get; set; }
+    public string KouiTensuSyosaiSonota { get; set; } = string.Empty;
 
     /// <summary>
     /// 行為件数(詳細) - 初再診 の内、初診・再診以外
     /// </summary>
-    public string KouiCountSyosaiSonota { get; set; }
+    public string KouiCountSyosaiSonota { get; set; } = string.Empty;
 }

@@ -171,19 +171,19 @@ public class CoSta3010Finder : RepositoryBase, ICoSta3010Finder
                         if (printConf.SearchOpt == 1)
                         {
                             //and検索
-                            tgtDetails = tgtDetails.Where(x => printConf.ListSearchWord.All(key => x.ItemName.Contains(key)));
+                            tgtDetails = tgtDetails.Where(x => (printConf.ListSearchWord ?? new()).All(key => x.ItemName.Contains(key)));
                         }
                         else
                         {
                             //or検索
-                            tgtDetails = tgtDetails.Where(x => printConf.ListSearchWord.Any(key => x.ItemName.Contains(key)));
+                            tgtDetails = tgtDetails.Where(x => (printConf.ListSearchWord ?? new()).Any(key => x.ItemName.Contains(key)));
                         }
                     }
 
                     //検索項目
                     if ((printConf.ItemCds?.Count ?? 0) > 0)
                     {
-                        tgtDetails = tgtDetails.Where(x => printConf.ItemCds.Any(key => x.ItemCd.Contains(key)));
+                        tgtDetails = tgtDetails.Where(x => (printConf.ItemCds ?? new()).Any(key => x.ItemCd.Contains(key)));
                     }
                     break;
                 }
@@ -318,10 +318,10 @@ public class CoSta3010Finder : RepositoryBase, ICoSta3010Finder
     /// </summary>
     /// <param name="listSetKbns">セット区分-セット枝番リスト</param>
     /// <returns></returns>
-    private Expression<Func<SetMst, bool>> CreateSetKbnExpression(List<List<int>> listSetKbns)
+    private Expression<Func<SetMst, bool>>? CreateSetKbnExpression(List<List<int>> listSetKbns)
     {
         var param = Expression.Parameter(typeof(SetMst));
-        Expression expression = null;
+        Expression? expression = null;
 
         if (listSetKbns != null && listSetKbns.Count > 0)
         {

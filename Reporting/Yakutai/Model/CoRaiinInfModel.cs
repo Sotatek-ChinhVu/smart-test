@@ -4,15 +4,22 @@ namespace Reporting.Yakutai.Model
 {
     public class CoRaiinInfModel
     {
-        public RaiinInf RaiinInf { get; } = null;
-        public KaMst KaMst { get; } = null;
-        public UserMst UserMst { get; } = null;
+        public RaiinInf RaiinInf { get; set; }
+        public KaMst KaMst { get; set; }
+        public UserMst UserMst { get; set; }
 
         public CoRaiinInfModel(RaiinInf raiinInf, KaMst kaMst, UserMst userMst)
         {
             RaiinInf = raiinInf;
             KaMst = kaMst;
             UserMst = userMst;
+        }
+
+        public CoRaiinInfModel()
+        {
+            RaiinInf = new();
+            KaMst = new();
+            UserMst = new();
         }
 
         /// <summary>
@@ -89,7 +96,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string YoyakuTime
         {
-            get { return RaiinInf.YoyakuTime; }
+            get { return RaiinInf.YoyakuTime ?? string.Empty; }
         }
 
         /// <summary>
@@ -114,7 +121,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string UketukeTime
         {
-            get { return RaiinInf.UketukeTime; }
+            get { return RaiinInf.UketukeTime ?? string.Empty; }
         }
 
         /// <summary>
@@ -139,7 +146,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string SinStartTime
         {
-            get { return RaiinInf.SinStartTime; }
+            get { return RaiinInf.SinStartTime ?? string.Empty; }
         }
 
         /// <summary>
@@ -148,7 +155,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string SinEndTime
         {
-            get { return RaiinInf.SinEndTime; }
+            get { return RaiinInf.SinEndTime ?? string.Empty; }
         }
 
         /// <summary>
@@ -157,7 +164,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string KaikeiTime
         {
-            get { return RaiinInf.KaikeiTime; }
+            get { return RaiinInf.KaikeiTime ?? string.Empty; }
         }
 
         /// <summary>
