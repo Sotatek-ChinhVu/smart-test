@@ -3,9 +3,9 @@ using UseCase.SuperAdmin.TerminateTenant;
 
 namespace UseCase.SuperAdmin.StopedTenant
 {
-    public class StopedTenantOutputData : IOutputData
+    public class ToggleTenantOutputData : IOutputData
     {
-        public StopedTenantOutputData(bool result, StopedTenantStatus status)
+        public ToggleTenantOutputData(bool result, ToggleTenantStatus status)
         {
             Result = result;
             Status = status;
@@ -13,6 +13,6 @@ namespace UseCase.SuperAdmin.StopedTenant
 
         public bool Result { get; private set; }
 
-        public StopedTenantStatus Status { get; private set; }
+        public ToggleTenantStatus Status { get; private set; }
     }
 }

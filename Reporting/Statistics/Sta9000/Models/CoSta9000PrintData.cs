@@ -25,37 +25,37 @@ public class CoSta9000PrintData
     /// <summary>
     /// 患者番号
     /// </summary>
-    public string PtNum { get; set; }
+    public string PtNum { get; set; } = string.Empty;
 
     /// <summary>
     /// 氏名
     /// </summary>
-    public string PtName { get; set; }
+    public string PtName { get; set; } = string.Empty;
 
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string KanaName { get; set; }
+    public string KanaName { get; set; } = string.Empty;
 
     /// <summary>
     /// 性別
     /// </summary>
-    public string Sex { get; set; }
+    public string Sex { get; set; } = string.Empty;
 
     /// <summary>
     /// 生年月日
     /// </summary>
-    public string Birthday { get; set; }
+    public string Birthday { get; set; } = string.Empty;
 
     /// <summary>
     /// 生年月日(和暦)
     /// </summary>
-    public string BirthdayW { get; set; }
+    public string BirthdayW { get; set; } = string.Empty;
 
     /// <summary>
     /// 生年月日(和暦西暦)
     /// </summary>
-    public string BirthdayWS { get; set; }
+    public string BirthdayWS { get; set; } = string.Empty;
 
     /// <summary>
     /// 年齢
@@ -76,17 +76,17 @@ public class CoSta9000PrintData
     /// <summary>
     /// 死亡日
     /// </summary>
-    public string DeathDate { get; set; }
+    public string DeathDate { get; set; } = string.Empty;
 
     /// <summary>
     /// 郵便マーク
     /// </summary>
-    public string HomePostMark { get; set; }
+    public string HomePostMark { get; set; } = string.Empty;
 
     /// <summary>
     /// 郵便番号
     /// </summary>
-    public string HomePost { get; set; }
+    public string HomePost { get; set; } = string.Empty;
 
     /// <summary>
     /// 住所
@@ -99,168 +99,157 @@ public class CoSta9000PrintData
     /// <summary>
     /// 住所１
     /// </summary>
-    public string HomeAddress1 { get; set; }
+    public string HomeAddress1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 住所２
     /// </summary>
-    public string HomeAddress2 { get; set; }
-
-    /// <summary>
-    /// 電話
-    /// </summary>
-    public string Tel
-    {
-        get =>
-            Tel1.AsString() != "" ? Tel1 :
-            Tel2.AsString() != "" ? Tel2 :
-            RenrakuTel;
-    }
+    public string HomeAddress2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 電話１
     /// </summary>
-    public string Tel1 { get; set; }
+    public string Tel1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 電話２
     /// </summary>
-    public string Tel2 { get; set; }
+    public string Tel2 { get; set; } = string.Empty;
 
     /// <summary>
     /// メールアドレス
     /// </summary>
-    public string Mail { get; set; }
+    public string Mail { get; set; } = string.Empty;
 
     /// <summary>
     /// 世帯主
     /// </summary>
-    public string Setainusi { get; set; }
+    public string Setainusi { get; set; } = string.Empty;
 
     /// <summary>
     /// 世帯主との続柄
     /// </summary>
-    public string Zokugara { get; set; }
+    public string Zokugara { get; set; } = string.Empty;
 
     /// <summary>
     /// 職業
     /// </summary>
-    public string Job { get; set; }
+    public string Job { get; set; } = string.Empty;
 
     /// <summary>
     /// 連絡先名称
     /// </summary>
-    public string RenrakuName { get; set; }
+    public string RenrakuName { get; set; } = string.Empty;
 
     /// <summary>
     /// 連絡先郵便番号
     /// </summary>
-    public string RenrakuPost { get; set; }
+    public string RenrakuPost { get; set; } = string.Empty;
 
     /// <summary>
     /// 連絡先住所１
     /// </summary>
-    public string RenrakuAddress1 { get; set; }
+    public string RenrakuAddress1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 連絡先住所２
     /// </summary>
-    public string RenrakuAddress2 { get; set; }
+    public string RenrakuAddress2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 連絡先電話番号
     /// </summary>
-    public string RenrakuTel { get; set; }
+    public string RenrakuTel { get; set; } = string.Empty;
 
     /// <summary>
     /// 連絡先備考
     /// </summary>
-    public string RenrakuMemo { get; set; }
+    public string RenrakuMemo { get; set; } = string.Empty;
 
     /// <summary>
     /// 勤務先名称
     /// </summary>
-    public string OfficeName { get; set; }
+    public string OfficeName { get; set; } = string.Empty;
 
     /// <summary>
     /// 勤務先郵便番号
     /// </summary>
-    public string OfficePost { get; set; }
+    public string OfficePost { get; set; } = string.Empty;
 
     /// <summary>
     /// 勤務先住所１
     /// </summary>
-    public string OfficeAddress1 { get; set; }
+    public string OfficeAddress1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 勤務先住所２
     /// </summary>
-    public string OfficeAddress2 { get; set; }
+    public string OfficeAddress2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 勤務先電話番号
     /// </summary>
-    public string OfficeTel { get; set; }
+    public string OfficeTel { get; set; } = string.Empty;
 
     /// <summary>
     /// 勤務先備考
     /// </summary>
-    public string OfficeMemo { get; set; }
+    public string OfficeMemo { get; set; } = string.Empty;
 
     /// <summary>
     /// 領収証明細
     /// </summary>
-    public string IsRyosyuDetail { get; set; }
+    public string IsRyosyuDetail { get; set; } = string.Empty;
 
     /// <summary>
     /// 主治医
     /// </summary>
-    public string PrimaryDoctor { get; set; }
+    public string PrimaryDoctor { get; set; } = string.Empty;
 
     /// <summary>
     /// テスト患者区分
     /// </summary>
-    public string IsTester { get; set; }
+    public string IsTester { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者登録日時
     /// </summary>
-    public string CreateDate { get; set; }
+    public string CreateDate { get; set; } = string.Empty;
 
     /// <summary>
     /// 初回来院日
     /// </summary>
-    public string FirstVisitDate { get; set; }
+    public string FirstVisitDate { get; set; } = string.Empty;
 
     /// <summary>
     /// 最終来院日
     /// </summary>
-    public string LastVisitDate { get; set; }
+    public string LastVisitDate { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者コメント
     /// </summary>
-    public string PtCmt { get; set; }
+    public string PtCmt { get; set; } = string.Empty;
 
     /// <summary>
     /// 調整額
     /// </summary>
-    public string AdjFutan { get; set; }
+    public string AdjFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 調整率
     /// </summary>
-    public string AdjRate { get; set; }
+    public string AdjRate { get; set; } = string.Empty;
 
     /// <summary>
     /// 自動算定
     /// </summary>
-    public string AutoSantei { get; set; }
+    public string AutoSantei { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者グループ
     /// </summary>
-    public List<CoPtInfModel.PtGrp> PtGrps { get; set; }
+    public List<CoPtInfModel.PtGrp> PtGrps { get; set; } = new();
 
     /// <summary>
     /// 年齢基準日
@@ -310,53 +299,53 @@ public class CoSta9000PrintData
     /// <summary>
     /// 診療行為コード・病名コード
     /// </summary>
-    public string ItemCd { get; set; }
+    public string ItemCd { get; set; } = string.Empty;
 
     /// <summary>
     /// 漢字名称・病名
     /// </summary>
-    public string ItemName { get; set; }
+    public string ItemName { get; set; } = string.Empty;
 
     /// <summary>
     /// 数量
     /// </summary>
-    public string Suryo { get; set; }
+    public string Suryo { get; set; } = string.Empty;
 
     /// <summary>
     /// 単位名称
     /// </summary>
-    public string UnitName { get; set; }
+    public string UnitName { get; set; } = string.Empty;
 
     /// <summary>
     /// 診療日・開始日
     /// </summary>
-    public string SinDate { get; set; }
+    public string SinDate { get; set; } = string.Empty;
 
     /// <summary>
     /// 転帰日
     /// </summary>
-    public string TenkiDate { get; set; }
+    public string TenkiDate { get; set; } = string.Empty;
 
     /// <summary>
     /// 転帰区分
     /// </summary>
-    public string TenkiKbn { get; set; }
+    public string TenkiKbn { get; set; } = string.Empty;
     #endregion
 
     #region CSV出力用
-    public CoPtByomeiModel PtByomei { get; set; }
+    public CoPtByomeiModel PtByomei { get; set; } = new();
 
-    public CoPtHokenModel PtHoken { get; set; }
+    public CoPtHokenModel PtHoken { get; set; } = new();
 
-    public CoRaiinInfModel RaiinInf { get; set; }
+    public CoRaiinInfModel RaiinInf { get; set; } = new();
 
-    public CoOdrInfModel OdrInf { get; set; }
+    public CoOdrInfModel OdrInf { get; set; } = new();
 
-    public CoSinKouiModel SinKoui { get; set; }
+    public CoSinKouiModel SinKoui { get; set; } = new();
 
-    public CoKarteInfModel KarteInf { get; set; }
+    public CoKarteInfModel KarteInf { get; set; } = new();
 
-    public CoKensaModel KensaInf { get; set; }
+    public CoKensaModel KensaInf { get; set; } = new();
 
     #endregion
 }

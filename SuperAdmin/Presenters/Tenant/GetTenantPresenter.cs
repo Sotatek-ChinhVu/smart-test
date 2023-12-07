@@ -12,7 +12,7 @@ public class GetTenantPresenter : IGetTenantOutputPort
 
     public void Complete(GetTenantOutputData outputData)
     {
-        Result.Data = new GetTenantResponse(outputData.TenantList.Select(item => new TenantDto(item)).ToList());
+        Result.Data = new GetTenantResponse(outputData.TenantList.Select(item => new TenantDto(item)).ToList(), outputData.TotalTenant);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

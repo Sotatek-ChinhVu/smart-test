@@ -21,6 +21,7 @@ namespace AWSSDK.Constants
         public static int SizeTypeGB = 2;
         public static byte StatusNotiSuccess = 1;
         public static byte StatusNotifailure = 0;
+        public static byte StatusNotiInfo = 2;
         public static List<string> LISTSYSTEMDB = new List<string>() { "rdsadmin, postgres" };
         public static string RdsSnapshotBackupTermiante = "Bak-Termiante";
         public static string RdsSnapshotUpgrade = "Upgrade";
@@ -29,7 +30,10 @@ namespace AWSSDK.Constants
         public static int PgPostDefault = 5432;
 
         public static string DestinationBucketName = "phuc-test-s3";
+        public static string RestoreBucketName = "phuc-test-s3";
+        public static string SourceBucketName = "phuc-test-s3-replication";
         public static RegionEndpoint RegionDestination = RegionEndpoint.GetBySystemName("ap-northeast-1");
+        public static RegionEndpoint RegionSource = RegionEndpoint.GetBySystemName("ap-southeast-1");
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>
@@ -49,7 +53,9 @@ namespace AWSSDK.Constants
             {"terminate-failed", 13},
             {"stoped", 14},
             {"restoring", 15},
-            {"restore-failed", 16}
+            {"restore-failed", 16},
+            {"stopping", 17},
+            {"starting", 18}
         };
 
             return rdsStatusDictionary;

@@ -5,14 +5,17 @@ namespace Reporting.Yakutai.Model
 {
     public class CoPtInfModel
     {
-        public PtInf PtInf { get; } = null;
+        public PtInf PtInf { get; set; }
         public CoPtInfModel(PtInf ptInf, int sinDate)
         {
             PtInf = ptInf;
             SinDate = sinDate;
-
         }
 
+        public CoPtInfModel()
+        {
+            PtInf = new();
+        }
 
         public int SinDate { get; set; }
 
@@ -58,7 +61,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string KanaName
         {
-            get { return PtInf.KanaName; }
+            get { return PtInf.KanaName ?? string.Empty; }
         }
 
         /// <summary>
@@ -66,7 +69,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Name
         {
-            get { return PtInf.Name; }
+            get { return PtInf.Name ?? string.Empty; }
         }
 
         /// <summary>
@@ -121,7 +124,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string HomePost
         {
-            get { return PtInf.HomePost; }
+            get { return PtInf.HomePost ?? string.Empty; }
         }
 
         /// <summary>
@@ -129,7 +132,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string HomeAddress1
         {
-            get { return PtInf.HomeAddress1; }
+            get { return PtInf.HomeAddress1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -137,7 +140,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string HomeAddress2
         {
-            get { return PtInf.HomeAddress2; }
+            get { return PtInf.HomeAddress2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -192,7 +195,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Mail
         {
-            get { return PtInf.Mail; }
+            get { return PtInf.Mail ?? string.Empty; }
         }
 
         /// <summary>
@@ -200,7 +203,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Setanusi
         {
-            get { return PtInf.Setanusi; }
+            get { return PtInf.Setanusi ?? string.Empty; }
         }
 
         /// <summary>
@@ -208,7 +211,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Zokugara
         {
-            get { return PtInf.Zokugara; }
+            get { return PtInf.Zokugara ?? string.Empty; }
         }
 
         /// <summary>
@@ -216,7 +219,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Job
         {
-            get { return PtInf.Job; }
+            get { return PtInf.Job ?? string.Empty; }
         }
 
         /// <summary>
@@ -224,7 +227,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string RenrakuName
         {
-            get { return PtInf.RenrakuName; }
+            get { return PtInf.RenrakuName ?? string.Empty; }
         }
 
         /// <summary>
@@ -232,7 +235,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string RenrakuPost
         {
-            get { return PtInf.RenrakuPost; }
+            get { return PtInf.RenrakuPost ?? string.Empty; }
         }
 
         /// <summary>
@@ -240,7 +243,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string RenrakuAddress1
         {
-            get { return PtInf.RenrakuAddress1; }
+            get { return PtInf.RenrakuAddress1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -248,7 +251,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string RenrakuAddress2
         {
-            get { return PtInf.RenrakuAddress2; }
+            get { return PtInf.RenrakuAddress2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -264,7 +267,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string RenrakuMemo
         {
-            get { return PtInf.RenrakuMemo; }
+            get { return PtInf.RenrakuMemo ?? string.Empty; }
         }
 
         /// <summary>
@@ -272,7 +275,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string OfficeName
         {
-            get { return PtInf.OfficeName; }
+            get { return PtInf.OfficeName ?? string.Empty; }
         }
 
         /// <summary>
@@ -280,7 +283,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string OfficePost
         {
-            get { return PtInf.OfficePost; }
+            get { return PtInf.OfficePost ?? string.Empty; }
         }
 
         /// <summary>
@@ -288,7 +291,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string OfficeAddress1
         {
-            get { return PtInf.OfficeAddress1; }
+            get { return PtInf.OfficeAddress1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -296,7 +299,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string OfficeAddress2
         {
-            get { return PtInf.OfficeAddress2; }
+            get { return PtInf.OfficeAddress2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -304,7 +307,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string OfficeTel
         {
-            get { return PtInf.OfficeTel; }
+            get { return PtInf.OfficeTel ?? string.Empty; }
         }
 
         /// <summary>
@@ -312,7 +315,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string OfficeMemo
         {
-            get { return PtInf.OfficeMemo; }
+            get { return PtInf.OfficeMemo ?? string.Empty; }
         }
 
         /// <summary>
