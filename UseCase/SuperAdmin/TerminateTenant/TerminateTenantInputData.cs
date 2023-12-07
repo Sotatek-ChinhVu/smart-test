@@ -9,10 +9,14 @@ namespace UseCase.SuperAdmin.TerminateTenant
 {
     public class TerminateTenantInputData : IInputData<TerminateTenantOutputData>
     {
-        public TerminateTenantInputData(int tenantId)
+        public TerminateTenantInputData(int tenantId, dynamic webSocketService)
         {
             TenantId = tenantId;
+            WebSocketService = webSocketService;
         }
+
         public int TenantId { get; private set; }
+
+        public dynamic WebSocketService { get; private set; }
     }
 }
