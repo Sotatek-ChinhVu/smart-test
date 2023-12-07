@@ -5,11 +5,14 @@ namespace UseCase.SuperAdmin.GetNotification;
 
 public class GetNotificationOutputData : IOutputData
 {
-    public GetNotificationOutputData(List<NotificationModel> notificationList, GetNotificationStatus status)
+    public GetNotificationOutputData(List<NotificationModel> notificationList, int totalItem, GetNotificationStatus status)
     {
         NotificationList = notificationList;
+        TotalItem = totalItem;
         Status = status;
     }
+
+    public int TotalItem { get; private set; }
 
     public List<NotificationModel> NotificationList { get; private set; }
 

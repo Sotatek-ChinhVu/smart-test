@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using AWSSDK.Constants;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -18,6 +19,7 @@ namespace AWSSDK.Common
         /// <returns></returns>
         public async static Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
         {
+            Console.WriteLine($"Start: run  PostgreSqlDump");
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             outFile = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? outFile : outFile.Replace("\\", "/");
             string batchContent;
@@ -53,6 +55,7 @@ namespace AWSSDK.Common
         /// <returns></returns>
         public static async Task PostgreSqlExcuteFileDump(string pathFileDump, string host, int port, string database, string user, string password)
         {
+            Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
             string batchContent;
@@ -173,6 +176,44 @@ namespace AWSSDK.Common
             info.RedirectStandardError = true;
 
             return info;
+        }
+
+        /// <summary>
+        /// Checking file is still being accessed or modified
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static bool CheckingFinishedAccessedFile(string filePath)
+        {
+            // Check if the file is still being accessed or modified
+            DateTime startTime = DateTime.Now;
+            bool running = true;
+            while (running)
+            {
+                try
+                {
+                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                    {
+                        // If the FileStream is successfully opened, it means the file is not being written to
+                        running = false;
+                        return true;
+                    }
+                }
+                catch (IOException)
+                {
+                    // If an IOException occurs, the file is still being written to
+                    Thread.Sleep(3000);
+                }
+
+                // Check if more than Timeout
+                if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
+                {
+                    Console.WriteLine($"Timeout: Checking Finished Accessed File {ConfigConstant.TimeoutCheckingAvailable} minutes.");
+                    throw new Exception($"Checking Finished Accessed File: {filePath} timeout");
+                }
+            }
+            return false;
         }
     }
 }
