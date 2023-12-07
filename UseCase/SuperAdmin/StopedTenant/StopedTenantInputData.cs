@@ -4,14 +4,17 @@ namespace UseCase.SuperAdmin.StopedTenant
 {
     public class StopedTenantInputData : IInputData<StopedTenantOutputData>
     {
-        public StopedTenantInputData(int tenantId, dynamic webSocketService)
+        public StopedTenantInputData(int tenantId, dynamic webSocketService, int type)
         {
             TenantId = tenantId;
             WebSocketService = webSocketService;
+            Type = type;
         }
 
         public int TenantId { get; private set; }
 
         public dynamic WebSocketService { get; private set; }
+
+        public int Type { get; private set; }
     }
 }
