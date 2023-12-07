@@ -34,7 +34,6 @@ namespace Interactor.SuperAdmin
         {
             IWebSocketService _webSocketService;
             _webSocketService = (IWebSocketService)inputData.WebSocketService;
-            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, "11");
             string pathFileDumpRestore = _configuration["PathFileDumpRestore"];
 
             if (string.IsNullOrEmpty(pathFileDumpRestore))
