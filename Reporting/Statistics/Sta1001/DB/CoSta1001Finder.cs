@@ -1,5 +1,4 @@
-﻿
-using Domain.Constant;
+﻿using Domain.Constant;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -37,8 +36,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
     /// <returns></returns>
     public List<CoSyunoInfModel> GetSyunoInfs(int hpId, CoSta1001PrintConf printConf, int staMonthType)
     {
-        //Log.WriteLogStart(ModuleName, this, nameof(GetSyunoInfs), "");
-
         //入金情報
         var syunoNyukins = NoTrackingDataContext.SyunoNyukin.Where(s => s.IsDeleted == DeleteStatus.None);
 
@@ -46,8 +43,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
         var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.NyukinKbn != 0);  //0:未精算を除く
-                                                                                             //会計情報
-                                                                                             //var kaikeiInfs = dbService.KaikeiInfRepository.FindListQueryableNoTrack();
         var kaikeiFutans = NoTrackingDataContext.KaikeiInfs
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k =>
@@ -62,8 +57,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                     AdjustFutan = k.Sum(x => x.AdjustFutan),
                 });
 
-
-        //var test = kaikeiHokens.ToList();
 
         //来院情報
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId);
@@ -109,8 +102,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var kaMsts = NoTrackingDataContext.KaMsts.Where(k => k.IsDeleted == DeleteStatus.None);
         //ユーザーマスタ
         var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
-        //保険パターン
-        //var ptHokenPatterns = dbService.PtHokenPatternRepository.FindListQueryableNoTrack(p => p.IsDeleted == DeleteStatus.None);
 
         var preNyukins = (
             from n in syunoNyukins
@@ -142,8 +133,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 PreAdjustFutan = ng.Sum(n => n.AdjustFutan)
             }
         ).ToList();
-
-        //Log.WriteLogMsg(ModuleName, this, nameof(GetSyunoInfs), "preNyukins.ToList");
 
         var joinQuery = (
             from syunoNyukin in syunoNyukins
@@ -352,8 +341,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         #region 未精算or当日入金レコードがない来院の請求情報を追加
         if (!printConf.IsExcludeUnpaid)
         {
-            //Log.WriteLogMsg(ModuleName, this, nameof(GetSyunoInfs), "!IsExcludeUnpaid");
-
             //当日入金がある来院
             var theDayNyukins = syunoNyukins.Where(n =>
                 n.HpId == hpId &&
@@ -465,15 +452,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             }
 
             var seikyus = joinSeikyu.ToList();
-            //switch (staMonthType)
-            //{
-            //    case 0:
-            //        seikyus?.FindAll(s => s.NyukinKbn >= 1).ForEach(s => s.NyukinKbn = 0);
-            //        break;
-            //    case 1:
-            //        seikyus?.FindAll(s => s.NyukinKbn != 2).ForEach(s => s.NyukinKbn = 0);
-            //        break;
-            //}
 
             raiinNoList = seikyus.Select(s => s.RaiinNo).ToList();
             kaikeiHokenList = NoTrackingDataContext.KaikeiInfs.Where(k => raiinNoList.Contains(k.RaiinNo))
@@ -488,7 +466,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 (
                     new CoSyunoInfModel()
                     {
-                        IsNyukin = (staMonthType == 2 && seikyu.NyukinKbn >= 1) ? false : seikyu.NyukinSeqNo != 0,  //当日入金レコードがない場合は未入金扱い
+                        IsNyukin = !(staMonthType == 2 && seikyu.NyukinKbn >= 1) && seikyu.NyukinSeqNo != 0,  //当日入金レコードがない場合は未入金扱い
                         PreNyukinGaku = 0,
                         PreAdjustFutan = 0,
                         PtFutan = seikyu.PtFutan,

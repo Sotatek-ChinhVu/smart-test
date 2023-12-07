@@ -88,6 +88,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
         printConf = new();
         printDatas = new();
         rowCountFieldName = string.Empty;
+        ptByomeiInfs = new();
     }
 
     public CommonReportingRequestModel GetSta3030ReportingData(CoSta3030PrintConf printConf, int hpId, CoFileType outputFileType)
@@ -197,7 +198,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
                 {
                     foreach (var colName in existsCols)
                     {
-                        var value = typeof(CoSta3030PrintData).GetProperty(colName).GetValue(printData);
+                        var value = typeof(CoSta3030PrintData).GetProperty(colName)?.GetValue(printData);
                         AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                         if (baseListName == string.Empty && objectRseList.Contains(colName))
@@ -281,113 +282,6 @@ public class Sta3030CoReportService : ISta3030CoReportService
             printDatas.Add(printData);
         }
 
-        /*void MakePrintData()
-        {
-            printDatas = new List<CoSta3030PrintData>();
-
-            int rowCount = 0;
-            int pgCount = 1;
-            long prePtNum = -1;
-            string preByomei = string.Empty;
-            bool pgBreak = false;
-
-            //改ページ条件
-            bool ptNumPgBreak = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(1);
-
-            #region ソート順
-            ptByomeiInfs = ptByomeiInfs?
-                .OrderBy(s =>
-                   ptNumPgBreak ? s.PtNum.ToString().PadLeft(10, '0') : "0")
-                .ThenBy(s =>
-                   printConf.SortOpt1 == 1 ? "0" :
-                   printConf.SortOrder1 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
-                   printConf.SortOrder1 == 2 ? s.Byomei :
-                   printConf.SortOrder1 == 3 ? s.StartDate.ToString() :
-                   printConf.SortOrder1 == 4 ? s.PtKanaName :
-                   printConf.SortOrder1 == 5 ? s.TenkiKbn.ToString() :
-                   printConf.SortOrder1 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
-                .ThenByDescending(s =>
-                   printConf.SortOpt1 == 0 ? "0" :
-                   printConf.SortOrder1 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
-                   printConf.SortOrder1 == 2 ? s.Byomei :
-                   printConf.SortOrder1 == 3 ? s.StartDate.ToString() :
-                   printConf.SortOrder1 == 4 ? s.PtKanaName :
-                   printConf.SortOrder1 == 5 ? s.TenkiKbn.ToString() :
-                   printConf.SortOrder1 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
-                .ThenBy(s =>
-                   printConf.SortOpt2 == 1 ? "0" :
-                   printConf.SortOrder2 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
-                   printConf.SortOrder2 == 2 ? s.Byomei :
-                   printConf.SortOrder2 == 3 ? s.StartDate.ToString() :
-                   printConf.SortOrder2 == 4 ? s.PtKanaName :
-                   printConf.SortOrder2 == 5 ? s.TenkiKbn.ToString() :
-                   printConf.SortOrder2 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
-                .ThenByDescending(s =>
-                   printConf.SortOpt2 == 0 ? "0" :
-                   printConf.SortOrder2 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
-                   printConf.SortOrder2 == 2 ? s.Byomei :
-                   printConf.SortOrder2 == 3 ? s.StartDate.ToString() :
-                   printConf.SortOrder2 == 4 ? s.PtKanaName :
-                   printConf.SortOrder2 == 5 ? s.TenkiKbn.ToString() :
-                   printConf.SortOrder2 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
-                .ThenBy(s =>
-                   printConf.SortOpt3 == 1 ? "0" :
-                   printConf.SortOrder3 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
-                   printConf.SortOrder3 == 2 ? s.Byomei :
-                   printConf.SortOrder3 == 3 ? s.StartDate.ToString() :
-                   printConf.SortOrder3 == 4 ? s.PtKanaName :
-                   printConf.SortOrder3 == 5 ? s.TenkiKbn.ToString() :
-                   printConf.SortOrder3 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
-                .ThenByDescending(s =>
-                   printConf.SortOpt3 == 0 ? "0" :
-                   printConf.SortOrder3 == 1 ? s.PtNum.ToString().PadLeft(10, '0') :
-                   printConf.SortOrder3 == 2 ? s.Byomei :
-                   printConf.SortOrder3 == 3 ? s.StartDate.ToString() :
-                   printConf.SortOrder3 == 4 ? s.PtKanaName :
-                   printConf.SortOrder3 == 5 ? s.TenkiKbn.ToString() :
-                   printConf.SortOrder3 == 6 ? (s.TenkiDate == 0 ? 99999999 : s.TenkiDate).ToString() : "0")
-                .ToList() ?? new();
-            #endregion
-
-            foreach (var ptByomeiInf in ptByomeiInfs)
-            {
-
-                //改ページ条件
-                pgBreak = false;
-                if (ptNumPgBreak && ptByomeiInf.PtNum != prePtNum)
-                {
-                    pgBreak = rowCount > 0;
-                }
-
-                //改ページ
-                if (rowCount == maxRow || pgBreak)
-                {
-                    for (int i = printDatas.Count; i < maxRow * pgCount; i++)
-                    {
-                        //空行を追加
-                        printDatas.Add(new CoSta3030PrintData(RowType.Brank));
-                    }
-                    pgCount++;
-                    rowCount = 0;
-                }
-
-                //前の行と同じ情報を省略
-                int omit = 0;
-                if ((outputFileType != CoFileType.Csv || coFileType != CoFileType.Csv) && (rowCount > 0))
-                {
-                    omit = (ptNumPgBreak || new int[] { 1, 4 }.Contains(printConf.SortOrder1)) && (ptByomeiInf.PtNum == prePtNum) ? 1
-                        : (!ptNumPgBreak && printConf.SortOrder1 == 2) && (ptByomeiInf.Byomei == preByomei) ? 2
-                        : 0;
-                }
-
-                AddMeisaiRecord(ptByomeiInf, omit);
-                rowCount++;
-
-                prePtNum = ptByomeiInf.PtNum;
-                preByomei = ptByomeiInf.Byomei;
-            }
-        }*/
-
         void MakePrintData()
         {
             printDatas = new List<CoSta3030PrintData>();
@@ -402,7 +296,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
             bool ptNumPgBreak = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(1);
 
             #region ソート順
-            ptByomeiInfs = ptByomeiInfs
+            ptByomeiInfs = ptByomeiInfs!
                 .OrderBy(s =>
                    ptNumPgBreak ? s.PtNum.ToString().PadLeft(10, '0') : "0")
                 .ThenBy(s =>
@@ -482,9 +376,8 @@ public class Sta3030CoReportService : ISta3030CoReportService
                 int omit = 0;
                 if ((outputFileType != CoFileType.Csv && coFileType != CoFileType.Csv) && (rowCount > 0))
                 {
-                    omit = (ptNumPgBreak || new int[] { 1, 4 }.Contains(printConf.SortOrder1)) && (ptByomeiInf.PtNum == prePtNum) ? 1
-                        : (!ptNumPgBreak && printConf.SortOrder1 == 2) && (ptByomeiInf.Byomei == preByomei) ? 2
-                        : 0;
+                    var conditionOmit2 = (!ptNumPgBreak && printConf.SortOrder1 == 2) && (ptByomeiInf.Byomei == preByomei) ? 2 : 0;
+                    omit = (ptNumPgBreak || new int[] { 1, 4 }.Contains(printConf.SortOrder1)) && (ptByomeiInf.PtNum == prePtNum) ? 1 : conditionOmit2;
                 }
 
                 AddMeisaiRecord(ptByomeiInf, omit);
@@ -570,7 +463,6 @@ public class Sta3030CoReportService : ISta3030CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -584,7 +476,7 @@ public class Sta3030CoReportService : ISta3030CoReportService
 
             foreach (var column in putColumns)
             {
-                var value = typeof(CoSta3030PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                var value = typeof(CoSta3030PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
                 colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
             }
 

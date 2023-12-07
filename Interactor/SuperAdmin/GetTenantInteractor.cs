@@ -17,7 +17,7 @@ public class GetTenantInteractor : IGetTenantInputPort
         try
         {
             var result = _tenantRepository.GetTenantList(inputData.SearchModel, inputData.SortDictionary, inputData.Skip, inputData.Take);
-            return new GetTenantOutputData(result, GetTenantStatus.Successed);
+            return new GetTenantOutputData(result.TenantList, result.TotalTenant, GetTenantStatus.Successed);
         }
         finally
         {

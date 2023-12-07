@@ -40,7 +40,7 @@ public class CoSta3061PrintData
     /// <summary>
     /// 集計区分
     /// </summary>
-    public string ReportKbn { get; set; }
+    public string ReportKbn { get; set; } = string.Empty;
 
     /// <summary>
     /// 診察計

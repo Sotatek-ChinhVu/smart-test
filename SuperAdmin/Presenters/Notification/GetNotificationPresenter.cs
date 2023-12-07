@@ -11,7 +11,7 @@ public class GetNotificationPresenter : IGetNotificationOutputPort
 
     public void Complete(GetNotificationOutputData outputData)
     {
-        Result.Data = new GetNotificationResponse(outputData.NotificationList.Select(item => new NotificationDto(item)).ToList());
+        Result.Data = new GetNotificationResponse(outputData.TotalItem, outputData.NotificationList.Select(item => new NotificationDto(item)).ToList());
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }
