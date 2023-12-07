@@ -26,12 +26,12 @@ public class CoSta3040PrintConf
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; }
+    public string ReportName { get; set; } = string.Empty;
 
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; }
+    public string FormFileName { get; set; } = string.Empty;
 
     /// <summary>
     /// 期間From(YYYYMM)
@@ -76,5 +76,5 @@ public class CoSta3040PrintConf
     /// 診療識別
     ///     1:在宅 2:処方 3:注射 4:指導 5:処置 6:手術 7:検査 8:画像診断 9:その他
     /// </summary>
-    public List<int> SinryoSbt { get; set; }
+    public List<int> SinryoSbt { get; set; } = new();
 }

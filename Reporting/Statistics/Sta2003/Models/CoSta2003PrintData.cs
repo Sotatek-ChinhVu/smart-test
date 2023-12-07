@@ -18,17 +18,17 @@ public class CoSta2003PrintData
     /// <summary>
     /// 合計行のキャプション
     /// </summary>
-    public string TotalCaption { get; set; }
+    public string TotalCaption { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計行の件数
     /// </summary>
-    public string TotalCount { get; set; }
+    public string TotalCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計行の実人数
     /// </summary>
-    public string TotalPtCount { get; set; }
+    public string TotalPtCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 入金月
@@ -46,42 +46,42 @@ public class CoSta2003PrintData
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public string KaId { get; set; }
+    public string KaId { get; set; } = string.Empty;
 
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname { get; set; }
+    public string KaSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public string TantoId { get; set; }
+    public string TantoId { get; set; } = string.Empty;
 
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname { get; set; }
+    public string TantoSname { get; set; }  = string.Empty;
 
     /// <summary>
     /// 患者番号
     /// </summary>
-    public string PtNum { get; set; }
+    public string PtNum { get; set; } = string.Empty;
 
     /// <summary>
     /// 氏名
     /// </summary>
-    public string PtName { get; set; }
+    public string PtName { get; set; } = string.Empty;
 
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string PtKanaName { get; set; }
+    public string PtKanaName { get; set; } = string.Empty;
 
     /// <summary>
     /// 保険種別
     /// </summary>
-    public string HokenSbt { get; set; }
+    public string HokenSbt { get; set; } = string.Empty;
 
     /// <summary>
     /// 保険種別コード（条件指定用）
@@ -114,80 +114,80 @@ public class CoSta2003PrintData
     /// <summary>
     /// 来院回数
     /// </summary>
-    public string RaiinCount { get; set; }
+    public string RaiinCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 来院日数
     /// </summary>
-    public string RaiinDayCount { get; set; }
+    public string RaiinDayCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計点数
     /// </summary>
-    public string Tensu { get; set; }
+    public string Tensu { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計点数(新)
     /// </summary>
-    public string NewTensu { get; set; }
+    public string NewTensu { get; set; } = string.Empty;
 
     /// <summary>
     /// 負担金額
     /// </summary>
-    public string PtFutan { get; set; }
+    public string PtFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 保険外金額
     /// </summary>
-    public string JihiFutan { get; set; }
+    public string JihiFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 消費税
     /// </summary>
-    public string JihiTax { get; set; }
+    public string JihiTax { get; set; } = string.Empty;
 
     /// <summary>
     /// 調整額
     /// </summary>
-    public string AdjustFutan { get; set; }
+    public string AdjustFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計請求額
     /// </summary>
-    public string SeikyuGaku { get; set; }
+    public string SeikyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計請求額(新)
     /// </summary>
-    public string NewSeikyuGaku { get; set; }
+    public string NewSeikyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 免除額
     /// </summary>
-    public string MenjyoGaku { get; set; }
+    public string MenjyoGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 入金額
     /// </summary>
-    public string NyukinGaku { get; set; }
+    public string NyukinGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 未収額
     /// </summary>
-    public string MisyuGaku { get; set; }
+    public string MisyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 期間外入金額
     /// </summary>
-    public string PostNyukinGaku { get; set; }
+    public string PostNyukinGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 期間外調整額
     /// </summary>
-    public string PostAdjustFutan { get; set; }
+    public string PostAdjustFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 保険種別ごとの金額
     /// </summary>
-    public List<string> JihiSbtFutans { get; set; }
+    public List<string> JihiSbtFutans { get; set; } = new();
 }

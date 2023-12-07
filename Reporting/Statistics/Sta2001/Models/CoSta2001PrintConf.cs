@@ -19,12 +19,12 @@ public class CoSta2001PrintConf
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; }
+    public string FormFileName { get; set; } = string.Empty;
 
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; }
+    public string ReportName { get; set; } = string.Empty;
 
     /// <summary>
     /// テスト患者の有無
@@ -62,10 +62,10 @@ public class CoSta2001PrintConf
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public List<int> KaIds { get; set; }
+    public List<int> KaIds { get; set; } = new();
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public List<int> TantoIds { get; set; }
+    public List<int> TantoIds { get; set; } = new();
 }

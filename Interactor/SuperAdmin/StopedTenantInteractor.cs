@@ -9,19 +9,16 @@ namespace Interactor.SuperAdmin
     public class StopedTenantInteractor : IStopedTenantInputPort
     {
         private readonly ITenantRepository _tenantRepository;
-        private readonly IWebSocketService _webSocketService;
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
 
         public StopedTenantInteractor(
             ITenantRepository tenantRepository,
-            IWebSocketService webSocketService,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask
             )
         {
             _tenantRepository = tenantRepository;
-            _webSocketService = webSocketService;
             _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
         }
@@ -30,6 +27,9 @@ namespace Interactor.SuperAdmin
         {
             try
             {
+                IWebSocketService _webSocketService;
+                _webSocketService = (IWebSocketService)inputData.WebSocketService;
+
                 if (inputData.TenantId <= 0)
                 {
                     return new StopedTenantOutputData(false, StopedTenantStatus.InvalidTenantId);
@@ -49,7 +49,7 @@ namespace Interactor.SuperAdmin
 
 
                 CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run(async () =>
+                _ = Task.Run(() =>
                 {
                     try
                     {
@@ -58,7 +58,7 @@ namespace Interactor.SuperAdmin
                         {
                             var messenge = $"{tenant.EndSubDomain} is stoped successfully.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                             cts.Cancel();
                             return;
@@ -68,7 +68,7 @@ namespace Interactor.SuperAdmin
                     {
                         var messenge = $"{tenant.EndSubDomain} is stoped failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
                     }

@@ -75,6 +75,7 @@ public class Sta3040CoReportService : ISta3040CoReportService
         printConf = new();
         printDatas = new();
         rowCountFieldName = string.Empty;
+        usedDrugInfs = new();
     }
 
     public CommonReportingRequestModel GetSta3040ReportingData(CoSta3040PrintConf printConf, int hpId, CoFileType outputFileType)
@@ -169,7 +170,7 @@ public class Sta3040CoReportService : ISta3040CoReportService
                 {
                     if (colName != "SinYm" || rowNo == 0) //診療年月は1行目だけ印字する
                     {
-                        var value = typeof(CoSta3040PrintData).GetProperty(colName).GetValue(printData);
+                        var value = typeof(CoSta3040PrintData).GetProperty(colName)?.GetValue(printData);
                         AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
                     }
 
@@ -538,7 +539,6 @@ public class Sta3040CoReportService : ISta3040CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -553,7 +553,7 @@ public class Sta3040CoReportService : ISta3040CoReportService
             foreach (var column in putColumns)
             {
 
-                var value = typeof(CoSta3040PrintData).GetProperty(column.ColName).GetValue(csvData);
+                var value = typeof(CoSta3040PrintData).GetProperty(column.ColName)?.GetValue(csvData);
                 colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
             }
 

@@ -30,6 +30,19 @@ public class CoSinKouiModel
         JihiSbtMst = jihiSbtMst;
     }
 
+    public CoSinKouiModel()
+    {
+        RaiinInf = new();
+        UketukeSbtMst = new();
+        KaMst = new();
+        UserMst = new();
+        SinKouiCount = new();
+        SinRpInf = new();
+        SinKoui = new();
+        SinKouiDetail = new();
+        JihiSbtMst = new();
+    }
+
     /// <summary>
     /// 患者ID
     /// </summary>

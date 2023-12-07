@@ -22,8 +22,6 @@ namespace Reporting.Statistics.Sta2021.Service
         private bool _hasNextPage;
         private string _rowCountFieldName = string.Empty;
         private int _colCountSinYM;
-        bool isPutColName;
-        bool isPutTotalRow;
         int prtIndex = 0;
         int colIndex = 0;
         private List<string> _objectRseList;
@@ -34,13 +32,13 @@ namespace Reporting.Statistics.Sta2021.Service
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
 
-        private List<PutColumn> csvTotalColumns = new List<PutColumn>
+        private readonly List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分"),
             new PutColumn("TotalCaption", "合計行")
         };
 
-        private List<PutColumn> putColumns = new List<PutColumn>
+        private readonly List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("KaId", "診療科ID"),
             new PutColumn("KaSname", "診療科"),
@@ -84,9 +82,7 @@ namespace Reporting.Statistics.Sta2021.Service
         private List<string> headerL2;
         private List<CoSinKouiModel> sinKouis;
         private CoHpInfModel hpInf;
-        private BackgroundWorker _backgroundWorker = null;
-
-        private List<PutColumn> putCurColumns = new List<PutColumn>();
+        private readonly List<PutColumn> putCurColumns = new();
 
         #endregion
 
@@ -95,6 +91,13 @@ namespace Reporting.Statistics.Sta2021.Service
         {
             _staFinder = staFinder;
             _readRseReportFileService = readRseReportFileService;
+            _objectRseList = new();
+            _printConf = new();
+            printDatas = new();
+            headerL1 = new();
+            headerL2 = new();
+            sinKouis = new();
+            hpInf = new();
         }
 
         public CommonReportingRequestModel GetSta2021ReportingData(CoSta2021PrintConf printConf, int hpId)
@@ -142,9 +145,8 @@ namespace Reporting.Statistics.Sta2021.Service
                 bool pbTantoId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2 }.Contains(2);
 
                 #region 診療年月のリストを作成
-                //var sinYms = sinKouis.GroupBy(s => s.SinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-                int startYm = _printConf.StartSinYm <= 0 ? sinKouis.Min(s => s.SinYm) : _printConf.StartSinYm;
-                int endYm = _printConf.EndSinYm <= 0 ? sinKouis.Max(s => s.SinYm) : _printConf.EndSinYm;
+                int startYm = _printConf.StartSinYm <= 0 ? sinKouis!.Min(s => s.SinYm) : _printConf.StartSinYm;
+                int endYm = _printConf.EndSinYm <= 0 ? sinKouis!.Max(s => s.SinYm) : _printConf.EndSinYm;
 
                 List<int> sinYms = new List<int>();
                 while (startYm <= endYm)
@@ -165,15 +167,15 @@ namespace Reporting.Statistics.Sta2021.Service
                 }
                 #endregion
 
-                var kaIds = sinKouis.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                var kaIds = sinKouis!.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                 for (int kaCnt = 0; (pbKaId && kaCnt <= kaIds.Count - 1) || kaCnt == 0; kaCnt++)
                 {
-                    var tantoIds = sinKouis.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                    var tantoIds = sinKouis!.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                     for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds.Count - 1) || taCnt == 0; taCnt++)
                     {
-                        var curDatas = sinKouis.Where(s =>
-                            (pbKaId ? s.KaId == kaIds[kaCnt] : true) &&
-                            (pbTantoId ? s.TantoId == tantoIds[taCnt] : true)
+                        var curDatas = sinKouis!.Where(s =>
+                            (!pbKaId || s.KaId == kaIds[kaCnt]) &&
+                            (!pbTantoId || s.TantoId == tantoIds[taCnt])
                         ).ToList();
 
                         if (curDatas.Count == 0) continue;
@@ -190,7 +192,7 @@ namespace Reporting.Statistics.Sta2021.Service
                             _printConf.SortOrder3 >= 1 ? _printConf.SortOpt3 : 0;
 
                         //小計毎のリスト
-                        List<string> grpIds = null;
+                        List<string>? grpIds = null;
                         switch (sortOrder1)
                         {
                             case 1:
@@ -215,7 +217,7 @@ namespace Reporting.Statistics.Sta2021.Service
                         for (int grpCnt = 0; (grpIds != null && grpCnt <= grpIds.Count - 1) || grpCnt == 0; grpCnt++)
                         {
                             var grpDatas = curDatas.Where(s =>
-                                (grpIds != null ? (sortOrder1 == 1 ? s.SinKouiKbn == grpIds[grpCnt] : s.SinId == grpIds[grpCnt]) : true)
+                                (grpIds == null || (sortOrder1 == 1 ? s.SinKouiKbn == grpIds[grpCnt] : s.SinId == grpIds[grpCnt]))
                             ).ToList();
 
                             if (grpDatas.Count == 0) continue;
@@ -267,7 +269,7 @@ namespace Reporting.Statistics.Sta2021.Service
                             foreach (var itemData in itemDatas)
                             {
                                 var wrkDatas = grpDatas.Where(s =>
-                                    (groupSinId ? s.SinId == itemData.SinId : true) &&
+                                    (!groupSinId || s.SinId == itemData.SinId) &&
                                     s.ItemCdCmt == itemData.ItemCdCmt &&
                                     s.ItemCd == itemData.ItemCd &&
                                     s.Ten == itemData.Ten &&
@@ -276,10 +278,10 @@ namespace Reporting.Statistics.Sta2021.Service
 
                                 CoSta2021PrintData printData = new CoSta2021PrintData();
 
-                                printData.KaId = (pbKaId || kaIds.Count == 1) ? wrkDatas.First().KaId.ToString() : null;
-                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? wrkDatas.First().KaSname : null;
-                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First().TantoId.ToString() : null;
-                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First().TantoSname : null;
+                                printData.KaId = (pbKaId || kaIds.Count == 1) ? wrkDatas.First().KaId.ToString() : string.Empty;
+                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? wrkDatas.First().KaSname ?? string.Empty : string.Empty;
+                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First().TantoId.ToString() ?? string.Empty : string.Empty;
+                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First().TantoSname ?? string.Empty : string.Empty;
                                 printData.SinId = wrkDatas.First().SinId;
                                 printData.SinKouiKbn = wrkDatas.First().SinKouiKbn;
                                 printData.ItemCd = itemData.ItemCd;
@@ -314,9 +316,10 @@ namespace Reporting.Statistics.Sta2021.Service
                                 CoSta2021PrintData printData = new CoSta2021PrintData();
 
                                 printData.RowType = RowType.Total;
+                                string sortOrder1_2 = sortOrder1 == 2 ? string.Format("◆{0} {1}計", grpDatas.First().SinId, grpDatas.First().SinIdName) ?? string.Empty : string.Empty;
                                 printData.TotalCaption =
                                     sortOrder1 == 1 ? string.Format("◆{0} {1}計", grpDatas.First().SinKouiKbn, grpDatas.First().SinKouiKbnName) :
-                                    sortOrder1 == 2 ? string.Format("◆{0} {1}計", grpDatas.First().SinId, grpDatas.First().SinIdName) : "";
+                                    sortOrder1_2;
                                 printData.Suryo = grpTotalSuryo.ToString("#,0.00");
 
                                 foreach (var sinYm in sinYms)
@@ -335,8 +338,8 @@ namespace Reporting.Statistics.Sta2021.Service
                                     {
                                         printDatas.Last().SinYm.Add(sinYm);
                                         printDatas.Last().SinYmS.Add(CIUtil.SMonthToShowSMonth(sinYm));
-                                        printDatas.Last().Counts.Add(null);
-                                        printDatas.Last().Moneys.Add(null);
+                                        printDatas.Last().Counts.Add(string.Empty);
+                                        printDatas.Last().Moneys.Add(string.Empty);
                                     }
                                 }
                             }
@@ -368,8 +371,8 @@ namespace Reporting.Statistics.Sta2021.Service
                             {
                                 printDatas.Last().SinYm.Add(sinYm);
                                 printDatas.Last().SinYmS.Add(CIUtil.SMonthToShowSMonth(sinYm));
-                                printDatas.Last().Counts.Add(null);
-                                printDatas.Last().Moneys.Add(null);
+                                printDatas.Last().Counts.Add(string.Empty);
+                                printDatas.Last().Moneys.Add(string.Empty);
                             }
                         }
 
@@ -378,12 +381,6 @@ namespace Reporting.Statistics.Sta2021.Service
                         int pageCount = (int)Math.Ceiling((double)(rowCount) / maxRow);
                         for (int i = 0; i < pageCount; i++)
                         {
-                            //診療年月
-                            //if (pbSinYm)
-                            //{
-                            //    string wrkYm = CIUtil.Copy(CIUtil.SDateToShowSWDate(curDatas.First().SinYm * 100 + 1, 0, 1, 1), 1, 13);
-                            //    headerL1.Add(wrkYm + "度");
-                            //}
                             //改ページ条件
                             List<string> wrkHeaders = new List<string>();
                             if (pbKaId) wrkHeaders.Add(curDatas.First().KaSname);
@@ -400,7 +397,7 @@ namespace Reporting.Statistics.Sta2021.Service
             sinKouis = _staFinder.GetSinKouis(HpId, _printConf);
             if ((sinKouis?.Count ?? 0) == 0) return false;
 
-            hpInf = _staFinder.GetHpInf(HpId, sinKouis.First().SinYm);
+            hpInf = _staFinder.GetHpInf(HpId, sinKouis!.First().SinYm);
 
             //印刷用データの作成
             MakePrintData();
@@ -410,14 +407,14 @@ namespace Reporting.Statistics.Sta2021.Service
         #endregion
 
         #region Update Draw Form
-        private bool UpdateDrawForm()
+        private void UpdateDrawForm()
         {
             _hasNextPage = true;
 
             #region SubMethod
 
             #region Header
-            int UpdateFormHeader()
+            void UpdateFormHeader()
             {
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
@@ -428,7 +425,7 @@ namespace Reporting.Statistics.Sta2021.Service
                     CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
                 ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
                 //ページ数
-                int colCount = (int)Math.Ceiling((double)printDatas.First().SinYm.Count() / _colCountSinYM);
+                int colCount = (int)Math.Ceiling((double)printDatas.First().SinYm.Count / _colCountSinYM);
                 int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow) * colCount;
                 _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
 
@@ -446,13 +443,11 @@ namespace Reporting.Statistics.Sta2021.Service
                         CIUtil.SDateToShowSWDate(_printConf.EndSinYm * 100 + 1, 0, 1).Substring(0, 12)
                     )
                 );
-
-                return 1;
             }
             #endregion
 
             #region Body
-            int UpdateFormBody()
+            void UpdateFormBody()
             {
                 int wrkIndex = prtIndex;
                 int wrkColIndex = colIndex;
@@ -475,7 +470,7 @@ namespace Reporting.Statistics.Sta2021.Service
                             baseListName = colName;
                         }
 
-                        var value = typeof(CoSta2021PrintData).GetProperty(colName).GetValue(printData);
+                        var value = typeof(CoSta2021PrintData).GetProperty(colName)?.GetValue(printData);
                         if (wrkIndex >= 1 && rowNo >= 1)
                         {
                             bool sameItem = true;
@@ -488,29 +483,28 @@ namespace Reporting.Statistics.Sta2021.Service
                             //前の行と同じ場合は記載を省略する
                             if (new string[] { "SinKouiKbn", "ItemCd", "ItemName", "Ten" }.Contains(colName))
                             {
-                                var preValue = typeof(CoSta2021PrintData).GetProperty(colName).GetValue(printDatas[wrkIndex - 1]);
-                                if ((value == null ? "" : value.ToString()).CompareTo(preValue == null ? "" : preValue.ToString()) == 0 && sameItem) continue;
+                                var preValue = typeof(CoSta2021PrintData).GetProperty(colName)?.GetValue(printDatas[wrkIndex - 1]);
+                                if ((value == null ? "" : value.ToString() ?? string.Empty).CompareTo(preValue == null ? "" : preValue.ToString()) == 0 && sameItem) continue;
                             }
                             else if (colName == "TenUnit")
                             {
-                                var tenValue = typeof(CoSta2021PrintData).GetProperty("Ten").GetValue(printDatas[wrkIndex]);
-                                var preValue = typeof(CoSta2021PrintData).GetProperty("Ten").GetValue(printDatas[wrkIndex - 1]);
-                                if ((tenValue == null ? "" : tenValue.ToString()).CompareTo(preValue == null ? "" : preValue.ToString()) == 0 && sameItem) continue;
+                                var tenValue = typeof(CoSta2021PrintData).GetProperty("Ten")?.GetValue(printDatas[wrkIndex]);
+                                var preValue = typeof(CoSta2021PrintData).GetProperty("Ten")?.GetValue(printDatas[wrkIndex - 1]);
+                                if ((tenValue == null ? "" : tenValue.ToString() ?? string.Empty).CompareTo(preValue == null ? "" : preValue.ToString()) == 0 && sameItem) continue;
                             }
                         }
 
-                        AddListData(ref data, colName, value == null ? "" : value.ToString());
+                        AddListData(ref data, colName, value == null ? "" : value.ToString() ?? string.Empty);
                     }
 
                     //診療年月別データ
                     int subTotalCount = 0;
                     int subTotalMoney = 0;
                     wrkColIndex = colIndex;
-                    for (short i = 0; i <= _colCountSinYM - 1 && wrkColIndex <= printData.SinYmS.Count() - 1; i++)
+                    for (short i = 0; i <= _colCountSinYM - 1 && wrkColIndex <= printData.SinYmS.Count - 1; i++)
                     {
                         if (rowNo == 0)
                         {
-                            //CoRep.SetFieldData($"SinYm{i}{"\r\n"}回数／金額", printData.SinYmS[wrkColIndex]);
                             AddListData(ref data, "SinYm", printData.SinYmS[wrkColIndex]);
                             AddListData(ref data, "SinYm", "回数／金額");
                         }
@@ -525,7 +519,7 @@ namespace Reporting.Statistics.Sta2021.Service
 
                     int totalCount = 0;
                     int totalMoney = 0;
-                    for (short i = 0; i <= printData.SinYmS.Count() - 1; i++)
+                    for (short i = 0; i <= printData.SinYmS.Count - 1; i++)
                     {
                         totalCount += int.Parse(printData.Counts[i] ?? "0", NumberStyles.Any);
                         totalMoney += int.Parse(printData.Moneys[i] ?? "0", NumberStyles.Any);
@@ -540,7 +534,7 @@ namespace Reporting.Statistics.Sta2021.Service
 
                         SetVisibleFieldData("TotalTitle1", false);
                         SetVisibleFieldData("TotalTitle2", false);
-                        if (wrkColIndex == printDatas.First().SinYm.Count())
+                        if (wrkColIndex == printDatas.First().SinYm.Count)
                         {
                             //合計
                             AddListData(ref data, "CountTotal", totalCount.ToString("#,0"));
@@ -575,7 +569,7 @@ namespace Reporting.Statistics.Sta2021.Service
                 }
 
                 colIndex = wrkColIndex;
-                if (colIndex >= printDatas.First().SinYm.Count() || colIndex == 0)
+                if (colIndex >= printDatas.First().SinYm.Count || colIndex == 0)
                 {
                     prtIndex = wrkIndex;
                     colIndex = 0;
@@ -585,30 +579,16 @@ namespace Reporting.Statistics.Sta2021.Service
                     _hasNextPage = true;
                 }
 
-                return wrkIndex;
             }
             #endregion
 
             #endregion
-
-            try
-            {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-            return true;
+            UpdateFormHeader();
+            UpdateFormBody();
         }
         #endregion
 
         #region get data java
-
         private void SetFieldData(string field, string value)
         {
             if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
@@ -685,7 +665,7 @@ namespace Reporting.Statistics.Sta2021.Service
             {
                 if (wrkTitle == "診療年月データ")
                 {
-                    for (int i = 0; i <= csvDatas.First().SinYm.Count() - 1; i++)
+                    for (int i = 0; i <= csvDatas.First().SinYm.Count - 1; i++)
                     {
                         wrkCols.Add($"\"回数_{csvDatas.First().SinYm[i]}\"");
                         wrkCols.Add($"\"金額_{csvDatas.First().SinYm[i]}\"");
@@ -705,7 +685,7 @@ namespace Reporting.Statistics.Sta2021.Service
                 {
                     if (wrkColumn == "SinYmValues")
                     {
-                        for (int i = 0; i <= csvDatas.First().SinYm.Count() - 1; i++)
+                        for (int i = 0; i <= csvDatas.First().SinYm.Count - 1; i++)
                         {
                             wrkCols.Add($"\"Counts{i}\"");
                             wrkCols.Add($"\"Moneys{i}\"");
@@ -720,7 +700,6 @@ namespace Reporting.Statistics.Sta2021.Service
             }
 
             //データ
-            int totalRow = csvDatas.Count;
             int rowOutputed = 0;
             foreach (var csvData in csvDatas)
             {
@@ -736,7 +715,7 @@ namespace Reporting.Statistics.Sta2021.Service
                 {
                     if (column.ColName == "SinYmValues")
                     {
-                        for (int i = 0; i <= csvData.SinYm.Count() - 1; i++)
+                        for (int i = 0; i <= csvData.SinYm.Count - 1; i++)
                         {
                             colDatas.Add("\"" + csvData.Counts[i] + "\"");
                             colDatas.Add("\"" + csvData.Moneys[i] + "\"");
@@ -744,7 +723,7 @@ namespace Reporting.Statistics.Sta2021.Service
                     }
                     else
                     {
-                        var value = typeof(CoSta2021PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                        var value = typeof(CoSta2021PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
                         if (csvData.RowType == RowType.Total && !column.IsTotal)
                         {
                             value = string.Empty;

@@ -18,12 +18,11 @@ namespace Reporting.SyojyoSyoki.Service
         /// <summary>
         /// Finder
         /// </summary>
-        private ICoSyojyoSyokiFinder _finder;
+        private readonly ICoSyojyoSyokiFinder _finder;
         /// <summary>
         /// CoReport Model
         /// </summary>
         private CoSyojyoSyokiModel coModel;
-        private List<CoSyojyoSyokiModel> coModels;
         #endregion
 
         private readonly IReadRseReportFileService _readRseReportFileService;
@@ -32,19 +31,21 @@ namespace Reporting.SyojyoSyoki.Service
         private int _hpId;
         private long _ptId;
         private int _seiKyuYm;
-        private int _sinYm;
+        private readonly int _sinYm = 0;
         private int _hokenId;
         private int _syojyoSyokiRowCount;
         private int _syojyoSyokiCharCount;
         private readonly string _rowCountFieldName = "lsSyojyoSyoki";
         private List<string> _syojyoSyokiList;
-        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
+        private readonly Dictionary<string, string> _singleFieldData = new();
+        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new();
 
         public SyojyoSyokiCoReportService(IReadRseReportFileService readRseReportFileService, ICoSyojyoSyokiFinder finder)
         {
             _readRseReportFileService = readRseReportFileService;
             _finder = finder;
+            coModel = new();
+            _syojyoSyokiList = new();
         }
 
         public CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seiKyuYm, int hokenId)
@@ -56,7 +57,7 @@ namespace Reporting.SyojyoSyoki.Service
                 _seiKyuYm = seiKyuYm;
                 _hokenId = hokenId;
                 GetRowCount();
-                coModels = GetData();
+                var coModels = GetData();
 
                 if (coModels != null && coModels.Any())
                 {
@@ -96,7 +97,6 @@ namespace Reporting.SyojyoSyoki.Service
         {
             try
             {
-
                 return _finder.FindSyoukiInf(_hpId, _ptId, _seiKyuYm, _sinYm, _hokenId);
             }
             finally
@@ -130,7 +130,7 @@ namespace Reporting.SyojyoSyoki.Service
 
             foreach (CoSyoukiInfModel syoukiInf in coModel.SyoukiInfs)
             {
-                if (_syojyoSyokiList.Any() && _syojyoSyokiList.Count() % _syojyoSyokiRowCount != 0)
+                if (_syojyoSyokiList.Any() && _syojyoSyokiList.Count % _syojyoSyokiRowCount != 0)
                 {
                     _syojyoSyokiList.Add("");
                 }
@@ -334,14 +334,7 @@ namespace Reporting.SyojyoSyoki.Service
 
             #endregion
 
-            try
-            {
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    return false;
-                }
-            }
-            catch (Exception e)
+            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
             {
                 return false;
             }

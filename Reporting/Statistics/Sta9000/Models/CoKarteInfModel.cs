@@ -21,6 +21,16 @@ public class CoKarteInfModel
         KarteInf = karteInf;
     }
 
+
+    public CoKarteInfModel()
+    {
+        RaiinInf = new();
+        UketukeSbtMst = new();
+        KaMst = new();
+        UserMst = new();
+        KarteInf = new();
+    }
+
     /// <summary>
     /// 患者ID
     /// </summary>

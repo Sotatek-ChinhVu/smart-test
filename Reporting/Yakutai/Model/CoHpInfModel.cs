@@ -5,11 +5,16 @@ namespace Reporting.Yakutai.Model
 {
     public class CoHpInfModel
     {
-        public HpInf HpInf { get; } = null;
+        public HpInf HpInf { get; set; }
 
         public CoHpInfModel(HpInf hpInf)
         {
             HpInf = hpInf;
+        }
+
+        public CoHpInfModel()
+        {
+            HpInf = new();
         }
 
         /// <summary>
@@ -37,7 +42,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string HpCd
         {
-            get { return HpInf.HpCd; }
+            get { return HpInf.HpCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -45,7 +50,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string RousaiHpCd
         {
-            get { return HpInf.RousaiHpCd; }
+            get { return HpInf.RousaiHpCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -53,7 +58,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string HpName
         {
-            get { return HpInf.HpName; }
+            get { return HpInf.HpName ?? string.Empty; }
         }
 
         /// <summary>
@@ -61,7 +66,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string ReceHpName
         {
-            get { return HpInf.ReceHpName; }
+            get { return HpInf.ReceHpName ?? string.Empty; }
         }
 
         /// <summary>
@@ -69,7 +74,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string KaisetuName
         {
-            get { return HpInf.KaisetuName; }
+            get { return HpInf.KaisetuName ?? string.Empty; }
         }
 
         /// <summary>
@@ -77,11 +82,11 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string PostCd
         {
-            get { return HpInf.PostCd ?? ""; }
+            get { return HpInf.PostCd ?? string.Empty; }
         }
         public string PostCdDsp
         {
-            get { return CIUtil.GetDspPostCd(HpInf.PostCd); }
+            get { return CIUtil.GetDspPostCd(HpInf.PostCd ?? string.Empty); }
         }
         /// <summary>
         /// 都道府県番号   
@@ -96,7 +101,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Address1
         {
-            get { return HpInf.Address1; }
+            get { return HpInf.Address1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -104,7 +109,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Address2
         {
-            get { return HpInf.Address2; }
+            get { return HpInf.Address2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -112,7 +117,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Address
         {
-            get { return (HpInf.Address1 ?? "") + (HpInf.Address2 ?? ""); }
+            get { return (HpInf.Address1 ?? string.Empty) + (HpInf.Address2 ?? string.Empty); }
         }
 
         /// <summary>
@@ -120,7 +125,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Tel
         {
-            get { return HpInf.Tel; }
+            get { return HpInf.Tel ?? string.Empty; }
         }
 
         /// <summary>
@@ -128,7 +133,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string FaxNo
         {
-            get { return HpInf.FaxNo; }
+            get { return HpInf.FaxNo ?? string.Empty; }
         }
 
         /// <summary>
@@ -136,7 +141,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string OtherContacts
         {
-            get { return HpInf.OtherContacts; }
+            get { return HpInf.OtherContacts ?? string.Empty; }
         }
     }
 }

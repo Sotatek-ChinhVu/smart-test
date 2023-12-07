@@ -5,13 +5,13 @@ namespace Reporting.Yakutai.Model
 {
     public class CoOdrInfDetailModel
     {
-        public  ISystemConfig _systemConfig;
-        public OdrInfDetail OdrInfDetail { get; } = null;
-        public OdrInf OdrInf { get; } = null;
-        public TenMst TenMst { get; } = null;
-        public YohoInfMst YohoInfMst { get; } = null;
+        private readonly ISystemConfig _systemConfig;
+        public OdrInfDetail OdrInfDetail { get; set; }
+        public OdrInf OdrInf { get; set; }
+        public TenMst? TenMst { get; set; }
+        public YohoInfMst YohoInfMst { get; set; }
 
-        public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst tenMst, YohoInfMst yohoInfMst, ISystemConfig systemConfig)
+        public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst? tenMst, YohoInfMst yohoInfMst, ISystemConfig systemConfig)
         {
             OdrInfDetail = odrInfDetail;
             OdrInf = odrInf;
@@ -258,7 +258,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Kokuji1
         {
-            get { return OdrInfDetail.Kokuji1; }
+            get { return OdrInfDetail.Kokuji1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Kokiji2
         {
-            get { return OdrInfDetail.Kokiji2; }
+            get { return OdrInfDetail.Kokiji2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string IpnCd
         {
-            get { return OdrInfDetail.IpnCd; }
+            get { return OdrInfDetail.IpnCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string IpnName
         {
-            get { return OdrInfDetail.IpnName; }
+            get { return OdrInfDetail.IpnName ?? string.Empty; }
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string JissiMachine
         {
-            get { return OdrInfDetail.JissiMachine; }
+            get { return OdrInfDetail.JissiMachine ?? string.Empty; }
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string ReqCd
         {
-            get { return OdrInfDetail.ReqCd; }
+            get { return OdrInfDetail.ReqCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -350,7 +350,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string Bunkatu
         {
-            get { return OdrInfDetail.Bunkatu; }
+            get { return OdrInfDetail.Bunkatu ?? string.Empty; }
         }
 
         /// <summary>
@@ -359,7 +359,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string CmtName
         {
-            get { return OdrInfDetail.CmtName; }
+            get { return OdrInfDetail.CmtName ?? string.Empty; }
         }
 
         /// <summary>
@@ -369,7 +369,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string CmtOpt
         {
-            get { return OdrInfDetail.CmtOpt; }
+            get { return OdrInfDetail.CmtOpt ?? string.Empty; }
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string FontColor
         {
-            get { return OdrInfDetail.FontColor; }
+            get { return OdrInfDetail.FontColor ?? string.Empty; }
         }
         /// <summary>
         /// 服用時設定-起床時
@@ -436,15 +436,12 @@ namespace Reporting.Yakutai.Model
             {
                 double ret = Suryo;
 
-                if (TenMst != null)
+                if (TenMst != null && !string.IsNullOrEmpty(TenMst.CnvUnitName) && UnitName == TenMst.OdrUnitName)
                 {
-                    if (string.IsNullOrEmpty(TenMst.CnvUnitName) == false && UnitName == TenMst.OdrUnitName)
-                    {
-                        ret =
-                            Suryo *
-                            (TenMst.OdrTermVal > 0 ? TenMst.OdrTermVal : 1) /
-                            (TenMst.CnvTermVal > 0 ? TenMst.CnvTermVal : 1);
-                    }
+                    ret =
+                        Suryo *
+                        (TenMst.OdrTermVal > 0 ? TenMst.OdrTermVal : 1) /
+                        (TenMst.CnvTermVal > 0 ? TenMst.CnvTermVal : 1);
                 }
 
                 return ret;
@@ -460,10 +457,10 @@ namespace Reporting.Yakutai.Model
             {
                 bool ret = false;
 
-                if (_systemConfig.YakutaiTaniDsp() == 1&&
+                if (_systemConfig.YakutaiTaniDsp() == 1 &&
                     TenMst != null &&
                     TenMst.YohoKbn == 0 &&
-                    string.IsNullOrEmpty(TenMst.CnvUnitName) == false &&
+                    !string.IsNullOrEmpty(TenMst.CnvUnitName) &&
                     TenMst.CnvTermVal > 0 &&
                     UnitName == TenMst.OdrUnitName)
                 {
@@ -500,7 +497,7 @@ namespace Reporting.Yakutai.Model
 
         public string YohoSuffix
         {
-            get { return YohoInfMst != null ? YohoInfMst.YohoSuffix : ""; }
+            get { return YohoInfMst != null ? YohoInfMst.YohoSuffix ?? string.Empty : string.Empty; }
         }
         public bool Delete { get; set; } = false;
         public bool IsIppoYoho { get; set; } = false;
