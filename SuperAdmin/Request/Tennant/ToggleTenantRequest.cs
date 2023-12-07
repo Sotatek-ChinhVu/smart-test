@@ -1,6 +1,6 @@
 ﻿namespace SuperAdminAPI.Request.Tennant
 {
-    public class StopedTenantRequest
+    public class ToggleTenantRequest
     {
         public int TenantId { get; set; }
         
