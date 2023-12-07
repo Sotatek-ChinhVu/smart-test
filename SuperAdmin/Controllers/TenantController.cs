@@ -1,4 +1,5 @@
 ﻿using Domain.SuperAdminModels.Tenant;
+using Interactor.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SuperAdmin.Responses;
@@ -22,15 +23,17 @@ namespace SuperAdminAPI.Controllers
     public class TenantController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public TenantController(UseCaseBus bus)
+        private  IWebSocketService _webSocketService;
+        public TenantController(UseCaseBus bus, IWebSocketService webSocketService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpPost("UpgradePremium")]
         public ActionResult<Response<UpgradePremiumResponse>> UpgradePremium([FromBody] UpgradePremiumRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.SizeType, request.Domain);
+            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.SizeType, request.Domain, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new UpgradePremiumPresenter();
             presenter.Complete(output);
@@ -67,7 +70,8 @@ namespace SuperAdminAPI.Controllers
                 request.SubDomain,
                 request.Size,
                 request.SizeType,
-                request.ClusterMode);
+                request.ClusterMode,
+                _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new TenantOnboardPresenter();
             presenter.Complete(output);
@@ -77,7 +81,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("TerminateTenant")]
         public ActionResult<Response<TerminateTenantResponse>> TerminateTenant([FromBody] TerminateTenantRequest request)
         {
-            var input = new TerminateTenantInputData(request.TenantId);
+            var input = new TerminateTenantInputData(request.TenantId, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new TerminateTenantPresenter();
             presenter.Complete(output);
@@ -100,7 +104,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("StopedTenant")]
         public ActionResult<Response<StopedTenantResponse>> StopedTenant([FromBody] StopedTenantRequest request)
         {
-            var input = new StopedTenantInputData(request.TenantId);
+            var input = new StopedTenantInputData(request.TenantId, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new StopedTenantPresenter();
             presenter.Complete(output);
@@ -110,7 +114,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("RestoreTenant")]
         public ActionResult<Response<RestoreTenantResponse>> RestoreTenant([FromBody] RestoreTenantRequest request)
         {
-            var input = new RestoreTenantInputData(request.TenantId);
+            var input = new RestoreTenantInputData(request.TenantId, _webSocketService);
             var output = _bus.Handle(input);
             var presenter = new RestoreTenantPresenter();
             presenter.Complete(output);

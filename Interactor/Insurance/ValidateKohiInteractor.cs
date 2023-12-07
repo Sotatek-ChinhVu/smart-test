@@ -1,7 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
-using Domain.Models.PatientInfor;
 using Helper.Common;
 using Helper.Extension;
 using UseCase.Insurance.ValidKohi;
@@ -42,10 +41,12 @@ namespace Interactor.Insurance
             {
                 _insuranceMstRepository.ReleaseResource();
             }
+            //Filter duplicate
+            validateDetails = validateDetails.DistinctBy(v => new { v.Status, v.Message }).ToList();
             return new ValidKohiOutputData(validateDetails);
         }
 
-        private void IsValidKohi(ref List<ResultValidateInsurance<ValidKohiStatus>> result, bool isKohiModdel, bool isHokenMstModel, string futansyaNo, string jyukyusyaNo, string tokusyuNo, int startDate, int endDate, int confirmDate, int hokenMstIsFutansyaCheckFlag, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsTokusyuCheckFlag, int hokenMstModelStartDate, int hokenMstModelEndDate, string hokenMstDisplayText, int numberKohi, int sinDate, bool isAddNew,bool selectedHokenPatternIsExpirated)
+        private void IsValidKohi(ref List<ResultValidateInsurance<ValidKohiStatus>> result, bool isKohiModdel, bool isHokenMstModel, string futansyaNo, string jyukyusyaNo, string tokusyuNo, int startDate, int endDate, int confirmDate, int hokenMstIsFutansyaCheckFlag, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsTokusyuCheckFlag, int hokenMstModelStartDate, int hokenMstModelEndDate, string hokenMstDisplayText, int numberKohi, int sinDate, bool isAddNew, bool selectedHokenPatternIsExpirated)
         {
             var message = "";
             var numberMessage = "";
@@ -183,25 +184,27 @@ namespace Interactor.Insurance
                     result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidTokusyuNo4, message, TypeMessage.TypeMessageError));
                 }
             }
-            if (!string.IsNullOrEmpty(futansyaNo) && Int32.Parse(futansyaNo) == 0)
+            // Try parse to have not exception
+            var checkFutansyaNo = Int32.TryParse(futansyaNo, out Int32 numberFutansyaNo);
+            if (!string.IsNullOrEmpty(futansyaNo) && numberFutansyaNo == 0)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "負担者番号は 0〜9の数字で入力してください。" };
                 message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo01, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo01, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo02, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo02, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo03, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo03, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo04, message, TypeMessage.TypeMessageWarning));
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo04, message, TypeMessage.TypeMessageError));
                 }
             }
         }
@@ -462,7 +465,9 @@ namespace Interactor.Insurance
                             result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitFutansyaNo4, message, TypeMessage.TypeMessageError));
                         }
                     }
-                    if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && !CIUtil.HokenNumberCheckDigits(Int32.Parse(jyukyusyaNo)))
+                    //TryParse to have not exception
+                    var checkJyukyusyaNo = Int32.TryParse(jyukyusyaNo, out Int32 numberJyukyusyaNo);
+                    if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && !CIUtil.HokenNumberCheckDigits(numberJyukyusyaNo))
                     {
                         var paramsMessage = new string[] { "公費" + numberMessage + "受給者番号" };
                         message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
