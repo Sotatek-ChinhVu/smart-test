@@ -21,7 +21,7 @@ public class OdrDateDetailModel
         ItemName = string.Empty;
     }
 
-    public int GrpId { get; set; }
+    public int GrpId { get; private set; }
 
     public int SeqNo { get; private set; }
 
