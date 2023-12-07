@@ -84,6 +84,7 @@ public class Sta3010CoReportService : ISta3010CoReportService
         printConf = new();
         printDatas = new();
         rowCountFieldName = string.Empty;
+        odrSets = new();
     }
 
     private void UpdateDrawForm()
@@ -137,7 +138,7 @@ public class Sta3010CoReportService : ISta3010CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta3010PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta3010PrintData).GetProperty(colName)?.GetValue(printData);
                     AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                     if (baseListName == string.Empty && objectRseList.Contains(colName))
@@ -455,7 +456,6 @@ public class Sta3010CoReportService : ISta3010CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -469,7 +469,7 @@ public class Sta3010CoReportService : ISta3010CoReportService
 
             foreach (var column in putColumns)
             {
-                var value = typeof(CoSta3010PrintData).GetProperty(column.ColName).GetValue(csvData);
+                var value = typeof(CoSta3010PrintData).GetProperty(column.ColName)?.GetValue(csvData);
                 colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
             }
 

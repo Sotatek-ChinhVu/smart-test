@@ -20,12 +20,12 @@ public class CoSta1010PrintConf
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; }
+    public string FormFileName { get; set; } = string.Empty;
 
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; }
+    public string ReportName { get; set; } = string.Empty;
 
     /// <summary>
     /// テスト患者の有無
@@ -93,12 +93,12 @@ public class CoSta1010PrintConf
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public List<int> KaIds { get; set; }
+    public List<int> KaIds { get; set; } = new();
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public List<int> TantoIds { get; set; }
+    public List<int> TantoIds { get; set; } = new();
 
     /// <summary>
     /// 請求金額(新) を請求金額にする
@@ -129,7 +129,7 @@ public class CoSta1010PrintConf
     /// 未収区分
     ///     1:通常未収 2:免除額 3:調整額
     /// </summary>
-    public List<int> MisyuKbns { get; set; }
+    public List<int> MisyuKbns { get; set; } = new();
 
     /// <summary>
     /// 期間外に入金がある場合は未収としない

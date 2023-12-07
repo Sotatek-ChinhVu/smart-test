@@ -593,7 +593,6 @@ public class CoSyunoInfModel
     /// </summary>
     public bool IsFirstRaiin
     {
-        //get => SyunoNyukin.SinDate == FirstRaiinDate && SyunoNyukin.SinDate == SyunoNyukin.NyukinDate;
         get => SinDate == FirstRaiinDate && SinDate == NyukinDate;
     }
 

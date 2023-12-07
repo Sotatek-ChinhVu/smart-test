@@ -135,7 +135,7 @@ namespace Reporting.SyojyoSyoki.DB
 
                 if (syoukiInfModels.Any())
                 {
-                    HpInf hpInf = hpInfs.FirstOrDefault(p => p.StartDate <= receInfData.receInf.SinYm * 100 + 31);
+                    var hpInf = hpInfs.FirstOrDefault(p => p.StartDate <= receInfData.receInf.SinYm * 100 + 31);
 
                     results.Add(
                             new CoSyojyoSyokiModel(
