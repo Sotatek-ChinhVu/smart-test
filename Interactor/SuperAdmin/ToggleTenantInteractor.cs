@@ -6,13 +6,13 @@ using UseCase.SuperAdmin.StopedTenant;
 
 namespace Interactor.SuperAdmin
 {
-    public class StopedTenantInteractor : IStopedTenantInputPort
+    public class ToggleTenantInteractor : IToggleTenantInputPort
     {
         private readonly ITenantRepository _tenantRepository;
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
 
-        public StopedTenantInteractor(
+        public ToggleTenantInteractor(
             ITenantRepository tenantRepository,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask
@@ -23,7 +23,7 @@ namespace Interactor.SuperAdmin
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
         }
 
-        public StopedTenantOutputData Handle(StopedTenantInputData inputData)
+        public ToggleTenantOutputData Handle(ToggleTenantInputData inputData)
         {
             try
             {
@@ -32,24 +32,24 @@ namespace Interactor.SuperAdmin
 
                 if (inputData.TenantId <= 0)
                 {
-                    return new StopedTenantOutputData(false, StopedTenantStatus.InvalidTenantId);
+                    return new ToggleTenantOutputData(false, ToggleTenantStatus.InvalidTenantId);
                 }
 
                 var tenant = _tenantRepository.Get(inputData.TenantId);
 
                 if (tenant == null || tenant.TenantId <= 0)
                 {
-                    return new StopedTenantOutputData(false, StopedTenantStatus.TenantDoesNotExist);
+                    return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantDoesNotExist);
                 }
 
                 if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && inputData.Type==0)
                 {
-                    return new StopedTenantOutputData(false, StopedTenantStatus.TenantNotAvailable);
+                    return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantNotAvailable);
                 }
 
                 if (tenant.Status != ConfigConstant.StatusTenantDictionary()["stoped"] && inputData.Type == 1)
                 {
-                    return new StopedTenantOutputData(false, StopedTenantStatus.TenantNotStoped);
+                    return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantNotStoped);
                 }
 
                 if (inputData.Type == 0)
@@ -101,7 +101,7 @@ namespace Interactor.SuperAdmin
                     }
                 });
 
-                return new StopedTenantOutputData(true, StopedTenantStatus.Successed);
+                return new ToggleTenantOutputData(true, ToggleTenantStatus.Successed);
             }
             finally
             {

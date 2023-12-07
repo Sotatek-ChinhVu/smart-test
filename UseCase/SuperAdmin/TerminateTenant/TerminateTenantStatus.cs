@@ -7,5 +7,6 @@
         Failed = 3,
         TenantDoesNotExist = 4,
         TenantDbDoesNotExistInRDS = 5,
+        PathFileDumpRestoreNotAvailable = 6,
     }
 }
