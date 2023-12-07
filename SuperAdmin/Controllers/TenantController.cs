@@ -131,5 +131,15 @@ namespace SuperAdminAPI.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<RestoreObjectS3TenantResponse>>(presenter.Result);
         }
+
+        [HttpPost("UpdateTenant")]
+        public ActionResult<Response<RestoreObjectS3TenantResponse>> UpdateTenant([FromBody] RestoreObjectS3TenantRequest request)
+        {
+            var input = new RestoreObjectS3TenantInputData(request.ObjectName, _webSocketService);
+            var output = _bus.Handle(input);
+            var presenter = new RestoreObjectS3TenantPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RestoreObjectS3TenantResponse>>(presenter.Result);
+        }
     }
 }
