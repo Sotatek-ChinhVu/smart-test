@@ -24,7 +24,7 @@ namespace Interactor.Insurance
             try
             {
                 // Get HokenMst
-                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo, inputData.SinDate);
+                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.HpId, inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo, inputData.SinDate);
 
                 // Get HokenSyaMst
                 //get FindHokensyaMstByNoNotrack
