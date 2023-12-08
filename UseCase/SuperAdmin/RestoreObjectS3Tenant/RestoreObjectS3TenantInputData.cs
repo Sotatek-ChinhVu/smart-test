@@ -14,6 +14,6 @@ namespace UseCase.SuperAdmin.RestoreObjectS3Tenant
 
         public dynamic WebSocketService { get; private set; }
 
-        public RestoreObjectS3TenantTypeEnum Type { get; set; }
+        public RestoreObjectS3TenantTypeEnum Type { get; private set; }
     }
 }
