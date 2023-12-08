@@ -56,7 +56,6 @@ public class P13KokhoSokatuCoReportService : IP13KokhoSokatuCoReportService
     private int seikyuYm;
     private SeikyuType seikyuType;
     int diskKind;
-    int diskCnt;
     private bool hasNextPage;
     private int currentPage;
     #endregion
