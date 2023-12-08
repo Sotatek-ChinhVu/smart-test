@@ -1,9 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-using AWSSDK.Constants;
-using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
 
 namespace AWSSDK.Common
 {
@@ -67,23 +64,34 @@ namespace AWSSDK.Common
                     Prefix = sourceFolder,
                 };
 
-                var listObjectsResponse = await s3Client.ListObjectsV2Async(listObjectsRequest);
 
                 // Coppy sourceFolder to backupFolder
-                foreach (var s3Object in listObjectsResponse.S3Objects)
+                ListObjectsV2Response listObjectsResponse;
+                do
                 {
-                    var copyObjectRequest = new CopyObjectRequest
+                    // Get list object pagiging
+                    listObjectsResponse = await s3Client.ListObjectsV2Async(listObjectsRequest);
+                    if (!listObjectsResponse.S3Objects.Any())
                     {
-                        SourceBucket = sourceBucket,
-                        SourceKey = s3Object.Key,
-                        DestinationBucket = backupBucket,
-                        DestinationKey = backupFolder + s3Object.Key.Substring(sourceFolder.Length),
-                    };
+                        Console.WriteLine($"Objects in folder '{sourceFolder}' not found.");
+                        return;
+                    }
+                    
+                    foreach (var obj in listObjectsResponse.S3Objects)
+                    {
+                        var copyObjectRequest = new CopyObjectRequest
+                        {
+                            SourceBucket = sourceBucket,
+                            SourceKey = obj.Key,
+                            DestinationBucket = backupBucket,
+                            DestinationKey = backupFolder + obj.Key.Substring(sourceFolder.Length),
+                        };
 
-                    await s3Client.CopyObjectAsync(copyObjectRequest);
+                        await s3Client.CopyObjectAsync(copyObjectRequest);
+                    }
 
-                    Console.WriteLine($"Object '{s3Object.Key}' backed up successfully to '{backupFolder}' in bucket '{backupBucket}'.");
-                }
+                    listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
+                } while (listObjectsResponse.IsTruncated);
             }
             catch (AmazonS3Exception ex)
             {
