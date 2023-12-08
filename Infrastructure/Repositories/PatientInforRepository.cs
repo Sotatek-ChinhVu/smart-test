@@ -2130,6 +2130,7 @@ namespace Infrastructure.Repositories
 
         public HokenMstModel GetHokenMstByInfor(int hpId, int hokenNo, int hokenEdaNo, int sinDate)
         {
+            // Get all hoken follow hpInf 
             var hpInf = NoTrackingDataContext.HpInfs.Where(h => h.HpId == hpId && h.StartDate <= sinDate).OrderByDescending(x => x.StartDate).FirstOrDefault();
             var prefCd = hpInf?.PrefNo;
             //Validate get all hokenMst
