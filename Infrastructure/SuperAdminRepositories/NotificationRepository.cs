@@ -46,8 +46,11 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
         }
     }
 
-    public List<NotificationModel> GetNotificationList(int skip, int take)
+    public (List<NotificationModel> NotificationList, int TotalItem) GetNotificationList(int skip, int take)
     {
+        // get total notification to FE paging
+        var totalItem = NoTrackingDataContext.Notifications.Where(item => item.IsDeleted == 0).Count();
+
         var result = NoTrackingDataContext.Notifications.Where(item => item.IsDeleted == 0)
                                                         .OrderBy(item => item.IsRead)
                                                         .ThenByDescending(item => item.Id)
@@ -61,7 +64,7 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
                                                                             item.IsRead == 1,
                                                                             item.CreateDate))
                                                         .ToList();
-        return result;
+        return (result, totalItem);
     }
 
     public List<NotificationModel> UpdateNotificationList(List<NotificationModel> notificationList)

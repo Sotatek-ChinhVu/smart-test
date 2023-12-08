@@ -250,8 +250,9 @@ namespace Infrastructure.SuperAdminRepositories
             DisposeDataContext();
         }
 
-        public List<TenantModel> GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
+        public (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
         {
+            int totalTenant = 0;
             List<TenantModel> result;
             IQueryable<Tenant> query = NoTrackingDataContext.Tenants.Where(item => item.IsDeleted == 0);
             if (!searchModel.IsEmptyModel)
@@ -263,6 +264,8 @@ namespace Infrastructure.SuperAdminRepositories
             // sort data ignore storageFull
             if (!searchModel.StorageFull.Any() && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
             {
+                // get totalTenant to FE
+                totalTenant = query.Count();
                 var querySortList = SortTenantQuery(query, sortDictionary);
                 querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
                 result = querySortList.Select(tenant => new TenantModel(
@@ -288,7 +291,7 @@ namespace Infrastructure.SuperAdminRepositories
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
-                return result;
+                return (result, totalTenant);
             }
             result = query.Select(tenant => new TenantModel(
                                             tenant.TenantId,
@@ -332,8 +335,10 @@ namespace Infrastructure.SuperAdminRepositories
                     result = result.Where(item => item.StorageFull >= 90).ToList();
                 }
             }
+            // get totalTenant to FE
+            totalTenant = result.Count;
             result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
-            return result;
+            return (result, totalTenant);
         }
 
         public TenantModel GetTenant(int tenantId)
@@ -344,8 +349,8 @@ namespace Infrastructure.SuperAdminRepositories
                 return new();
             }
             var tenantModel = ConvertEntityToModel(tenant);
-            var storageFull = GetStorageFullItem(tenantModel, true);
-            tenantModel.ChangeStorageFull(storageFull);
+            var result = GetStorageFullItem(tenantModel, true);
+            tenantModel.ChangeStorageFull(result.storageFull, result.storageUsed);
             return tenantModel;
         }
 
@@ -368,7 +373,7 @@ namespace Infrastructure.SuperAdminRepositories
             {
                 query = query.Where(item => item.CreateDate <= searchModel.ToDate);
             }
-            if (searchModel.Type != 0)
+            if (searchModel.Type != -1)
             {
                 query = query.Where(item => item.Type == searchModel.Type);
             }
@@ -709,13 +714,13 @@ namespace Infrastructure.SuperAdminRepositories
         {
             Parallel.ForEach(tenantList, tenant =>
             {
-                var storageFull = GetStorageFullItem(tenant, false);
-                tenant.ChangeStorageFull(storageFull);
+                var result = GetStorageFullItem(tenant, false);
+                tenant.ChangeStorageFull(result.storageFull, result.storageUsed);
             });
             return tenantList;
         }
 
-        private double GetStorageFullItem(TenantModel tenant, bool isClearCache)
+        private (double storageFull, double storageUsed) GetStorageFullItem(TenantModel tenant, bool isClearCache)
         {
             double storageFull = 0;
             double storageInDB = 0;
@@ -740,7 +745,8 @@ namespace Infrastructure.SuperAdminRepositories
             if (_cache.KeyExists(finalKey))
             {
                 storageFull = _cache.StringGet(finalKey).AsInteger();
-                return storageFull;
+                // return storageUsed in database
+                return (storageFull, Math.Round((tenant.Size * storageFull) / 100));
             }
             else
             {
@@ -758,14 +764,17 @@ namespace Infrastructure.SuperAdminRepositories
                             if (reader.HasRows)
                             {
                                 reader.Read();
+
+                                // calculate storageInDB
+                                double sizeInDB = reader.GetInt64(0);
                                 /// 1: MB; 2: GB
                                 switch (tenant.SizeType)
                                 {
                                     case 1:
-                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024);
+                                        storageInDB = Math.Round(sizeInDB / 1024 / 1024, 2);
                                         break;
                                     case 2:
-                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024 / 1024);
+                                        storageInDB = Math.Round(sizeInDB / 1024 / 1024 / 1024, 2);
                                         break;
                                 }
                             }
@@ -784,7 +793,8 @@ namespace Infrastructure.SuperAdminRepositories
                     Console.WriteLine("Can not connect to database " + tenant.EndPointDb + tenant.Db + "\n" + ex.ToString());
                 }
             }
-            return storageFull;
+            // return storageUsed in database
+            return (storageFull, storageInDB);
         }
 
         private TenantModel ConvertEntityToModel(Tenant tenant)
