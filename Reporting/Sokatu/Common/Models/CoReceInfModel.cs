@@ -708,7 +708,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public int ReceCnt
         {
-            get => ReceInf.ReceSbt.Substring(2, 1).AsInteger();
+            get => ReceInf.ReceSbt?.Substring(2, 1).AsInteger() ?? 0;
         }
 
         /// <summary>

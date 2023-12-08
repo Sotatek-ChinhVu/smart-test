@@ -191,21 +191,21 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var wrkRece = curReceInfs[ptIndex];
 
                     //受給者証番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece.JyukyusyaNo(kohiHoubetus)));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece?.JyukyusyaNo(kohiHoubetus) ?? string.Empty));
                     //氏名
-                    listDataPerPage.Add(new("ptName", 0, rowNo, wrkRece.PtName));
+                    listDataPerPage.Add(new("ptName", 0, rowNo, wrkRece?.PtName ?? string.Empty));
                     //生年月日(g ee・MM・dd)
-                    string wYmd = CIUtil.SDateToShowWDate(wrkRece.BirthDay);
+                    string wYmd = CIUtil.SDateToShowWDate(wrkRece == null ? 0 : wrkRece.BirthDay);
                     wYmd = wYmd.Replace("/", "・");
                     listDataPerPage.Add(new("birthday", 0, rowNo, wYmd));
                     //住所
-                    listDataPerPage.Add(new("homeAddress", 0, rowNo, wrkRece.HomeAddress1 + wrkRece.HomeAddress2));
+                    listDataPerPage.Add(new("homeAddress", 0, rowNo, wrkRece?.HomeAddress1 + wrkRece?.HomeAddress2));
                     //総点数
-                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkRece.Tensu.ToString()));
-                    totalData.Tensu += wrkRece.Tensu;
+                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkRece?.Tensu.ToString() ?? string.Empty));
+                    totalData.Tensu += wrkRece == null ? 0 : wrkRece.Tensu;
                     //請求金額
-                    listDataPerPage.Add(new("seikyu", 0, rowNo, wrkRece.HokenIchibuFutan.ToString()));
-                    totalData.Seikyu += wrkRece.HokenIchibuFutan;
+                    listDataPerPage.Add(new("seikyu", 0, rowNo, wrkRece == null ? "0" : wrkRece.HokenIchibuFutan.ToString()));
+                    totalData.Seikyu += wrkRece == null ? 0 : wrkRece.HokenIchibuFutan;
 
                     ptIndex++;
                     if (ptIndex >= curReceInfs.Count)

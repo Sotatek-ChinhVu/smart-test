@@ -1,5 +1,4 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.KokhoSokatu.DB;
@@ -122,7 +121,7 @@ public class P12KokhoSokatuCoReportService : IP12KokhoSokatuCoReportService
         int UpdateFormBody()
         {
             List<ListTextObject> listDataPerPage = new();
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1; 
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
 
             const int maxRow = 3;
 

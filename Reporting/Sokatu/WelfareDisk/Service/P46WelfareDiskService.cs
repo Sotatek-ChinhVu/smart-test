@@ -109,7 +109,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
             string seiYm = CIUtil.SDateToWDate(seikyuYm * 100 + 1).ToString();
             colDatas.Add(seiYm.Substring(0, 5));
             //市町村番号
-            string townNo = receInf.JyukyusyaNo(kohiHoubetus).PadLeft(2, '0');
+            string townNo = receInf.JyukyusyaNo(kohiHoubetus)?.PadLeft(2, '0') ?? string.Empty;
             colDatas.Add(townNo.Substring(townNo.Length - 2));
             //事業番号
             colDatas.Add("1");

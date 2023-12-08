@@ -98,7 +98,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
             List<string> colDatas = new List<string>
             {
                 //受給者証番号
-                receInf.JyukyusyaNo,
+                receInf.JyukyusyaNo ?? string.Empty,
                 //対象者氏名
                 receInf.PtName,
                 //生年月日
@@ -135,7 +135,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
             //熊本県用のモデルにコピー
             receInfs = wrkReces.Select(x => new CoP43WelfareReceInfModel2(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, kohiHokens)).ToList();
             //天草市こども医療費の対象に絞る
-            receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo.PadLeft(7, '0')).ToList();
+            receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo?.PadLeft(7, '0')).ToList();
 
             return (receInfs?.Count ?? 0) > 0;
         }

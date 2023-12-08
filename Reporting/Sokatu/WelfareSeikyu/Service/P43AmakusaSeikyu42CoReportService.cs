@@ -156,7 +156,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var curReceInf = receInfs[ptIndex];
 
                     //受給者番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.JyukyusyaNo));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.JyukyusyaNo ?? string.Empty));
                     switch (curReceInf.HokenKbn)
                     {
                         case HokenKbn.Syaho:
@@ -244,7 +244,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             //熊本県用のモデルにコピー
             receInfs = wrkReces.Select(x => new CoP43WelfareReceInfModel2(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, KohiHokens)).ToList();
             //天草市重度心身障害者の対象に絞る
-            receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo.PadLeft(7, '0')).ToList();
+            receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo?.PadLeft(7, '0')).ToList();
 
             return (receInfs?.Count ?? 0) > 0;
         }

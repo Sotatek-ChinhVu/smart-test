@@ -1,5 +1,4 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;

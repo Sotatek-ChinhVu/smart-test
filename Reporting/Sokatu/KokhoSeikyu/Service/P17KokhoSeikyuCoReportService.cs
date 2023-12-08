@@ -158,7 +158,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo);
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
                 //診療科
-                SetFieldData("kaName", kaMsts[0].KaName);
+                SetFieldData("kaName", kaMsts[0]?.KaName ?? string.Empty);
                 return 1;
             }
             #endregion
@@ -244,7 +244,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         listDataPerPage.Add(new("kohiTensu", 0, rowNo, wrkData.Tensu.ToString()));
                         listDataPerPage.Add(new("kohiFutan", 0, rowNo, wrkData.Futan.ToString()));
                     }
-                    _hasNextPage = !curReceInfs.ToList().FirstOrDefault().IsPrefIn;
+                    _hasNextPage = !curReceInfs.FirstOrDefault()?.IsPrefIn ?? false;
                 }
 
                 _listTextData.Add(pageIndex, listDataPerPage);

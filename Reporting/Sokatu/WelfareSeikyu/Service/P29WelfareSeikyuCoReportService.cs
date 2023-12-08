@@ -174,15 +174,15 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     totalData.Futan += (curReceInf?.PtFutan == null) ? 0 : curReceInf.PtFutan;
                     listDataPerPage.Add(new("futan", 0, rowNo, curReceInf?.PtFutan.ToString() ?? string.Empty));
                     //長
-                    listDataPerPage.Add(new("choki", 0, rowNo, curReceInf.IsChoki ? "○" : ""));
+                    listDataPerPage.Add(new("choki", 0, rowNo, (curReceInf == null ? false : curReceInf.IsChoki) ? "○" : ""));
                     //診療年月
-                    listDataPerPage.Add(new("sinYm", 0, rowNo, curReceInf.SeikyuKbn >= 1 ? CIUtil.SDateToWDate(curReceInf.SinYm * 100 + 1).ToString().Substring(0, 5) : ""));
+                    listDataPerPage.Add(new("sinYm", 0, rowNo, curReceInf?.SeikyuKbn >= 1 ? CIUtil.SDateToWDate(curReceInf.SinYm * 100 + 1).ToString().Substring(0, 5) : ""));
                     //備考
                     List<string> bikos = new List<string>();
-                    bikos.Add(curReceInf.PrefNo(1) == 0 && curReceInf.Kohi1ReceKisai == 1 ? curReceInf.Kohi1Houbetu : "");
-                    bikos.Add(curReceInf.PrefNo(2) == 0 && curReceInf.Kohi2ReceKisai == 1 ? curReceInf.Kohi2Houbetu : "");
-                    bikos.Add(curReceInf.PrefNo(3) == 0 && curReceInf.Kohi3ReceKisai == 1 ? curReceInf.Kohi3Houbetu : "");
-                    bikos.Add(curReceInf.PrefNo(4) == 0 && curReceInf.Kohi4ReceKisai == 1 ? curReceInf.Kohi4Houbetu : "");
+                    bikos.Add(curReceInf?.PrefNo(1) == 0 && curReceInf.Kohi1ReceKisai == 1 ? curReceInf.Kohi1Houbetu : "");
+                    bikos.Add(curReceInf?.PrefNo(2) == 0 && curReceInf.Kohi2ReceKisai == 1 ? curReceInf.Kohi2Houbetu : "");
+                    bikos.Add(curReceInf?.PrefNo(3) == 0 && curReceInf.Kohi3ReceKisai == 1 ? curReceInf.Kohi3Houbetu : "");
+                    bikos.Add(curReceInf?.PrefNo(4) == 0 && curReceInf.Kohi4ReceKisai == 1 ? curReceInf.Kohi4Houbetu : "");
                     bikos.RemoveAll(s => s == "");
                     listDataPerPage.Add(new("biko", 0, rowNo, string.Join(" ", bikos)));
 
