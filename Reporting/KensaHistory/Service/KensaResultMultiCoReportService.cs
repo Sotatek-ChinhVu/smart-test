@@ -14,22 +14,16 @@ namespace Reporting.KensaHistory.Service
     {
         private IKensaSetRepository _kokhoFinder;
         private ICoKensaHistoryFinder _coKensaHistoryFinder;
-        private HpInfModel hpInf;
+        private HpInfModel hpInf = new();
         private int hpId;
         private int userId;
         private long ptId;
         private int setId;
-        private int iraiCd;
         private int startDate;
         private int endDate;
         private bool showAbnormalKbn;
-        private int itemQuantity;
-        private long iraiDate;
-        private long iraiStart;
-        private long iraiEnd;
         private int sinDate;
-        private int row;
-        private PtInf ptInf;
+        private PtInf ptInf = new();
         private (List<CoKensaResultMultiModel>, List<long>) data = new();
         private List<CoKensaResultMultiModel> kensaInfDetails = new();
         private List<CoKensaResultMultiModel> kensaInfDetailsItem = new();
@@ -45,7 +39,7 @@ namespace Reporting.KensaHistory.Service
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, bool> _visibleFieldData;
         private string _formFileName = "kensaResultMulti.rse";
-        private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
+        private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage = new();
         private readonly Dictionary<string, bool> _visibleAtPrint;
 
         public KensaResultMultiCoReportService(IKensaSetRepository kokhoFinder, ICoKensaHistoryFinder coKensaHistoryFinder)
@@ -571,8 +565,8 @@ namespace Reporting.KensaHistory.Service
 
             if (kensaInfDetails.Count > 0 && date.Count > 0)
             {
-                iraiStart = date.First();
-                iraiEnd = date.Last();
+                var iraiStart = date.First();
+                var iraiEnd = date.Last();
             }
 
             foreach (var item in kensaInfDetails)

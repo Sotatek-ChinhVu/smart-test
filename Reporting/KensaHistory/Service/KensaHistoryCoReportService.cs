@@ -12,7 +12,7 @@ namespace Reporting.KensaHistory.Service
     public class KensaHistoryCoReportService : IKensaHistoryCoReportService
     {
         private readonly ICoKensaHistoryFinder _coKensaHistoryFinder;
-        private HpInfModel hpInf;
+        private HpInfModel hpInf = new();
         private int hpId;
         private int userId;
         private long ptId;
@@ -21,8 +21,8 @@ namespace Reporting.KensaHistory.Service
         private int startDate;
         private int sinDate;
         private bool showAbnormalKbn;
-        private PtInf ptInf;
-        private ListKensaInfDetailModel kensaInfDetailModel;
+        private PtInf ptInf = new();
+        private ListKensaInfDetailModel kensaInfDetailModel = new();
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModels = new();
         private List<ListKensaInfDetailItemModel> listKensaInfDetailItemModelItems = new();
         private bool hasNextPage;
@@ -35,7 +35,7 @@ namespace Reporting.KensaHistory.Service
         private readonly Dictionary<int, List<ListTextObject>> _listTextData;
         private readonly Dictionary<string, bool> _visibleFieldData;
         private readonly string _formFileName = "kensaResult.rse";
-        private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
+        private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage = new();
         private readonly Dictionary<string, bool> _visibleAtPrint;
 
         public KensaHistoryCoReportService(ICoKensaHistoryFinder coKensaHistoryFinder)

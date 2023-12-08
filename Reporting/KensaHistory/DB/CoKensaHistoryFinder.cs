@@ -43,7 +43,7 @@ namespace Reporting.KensaHistory.DB
 
         public PtInf GetPtInf(int hpId, long ptId)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId) ?? new();
             return ptInf;
         }
 
