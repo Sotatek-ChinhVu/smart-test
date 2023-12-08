@@ -3,8 +3,8 @@ using AWSSDK.Constants;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
-using Entity.SuperAdmin;
 using Interactor.Realtime;
+using Microsoft.Extensions.Configuration;
 using UseCase.SuperAdmin.TerminateTenant;
 
 namespace Interactor.SuperAdmin
@@ -16,13 +16,15 @@ namespace Interactor.SuperAdmin
         private readonly INotificationRepository _notificationRepository;
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
+        private readonly IConfiguration _configuration;
 
         public TerminateTenantInteractor(
             ITenantRepository tenantRepository,
             IAwsSdkService awsSdkService,
             INotificationRepository notificationRepository,
             ITenantRepository tenantRepositoryRunTask,
-            INotificationRepository notificationRepositoryRunTask
+            INotificationRepository notificationRepositoryRunTask,
+            IConfiguration configuration
             )
         {
             _awsSdkService = awsSdkService;
@@ -30,6 +32,7 @@ namespace Interactor.SuperAdmin
             _notificationRepository = notificationRepository;
             _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
+            _configuration = configuration;
         }
         public TerminateTenantOutputData Handle(TerminateTenantInputData inputData)
         {
@@ -37,6 +40,14 @@ namespace Interactor.SuperAdmin
             {
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
+
+                string pathFileDumpTerminate = _configuration["PathFileDumpTerminate"] ?? string.Empty;
+
+                if (string.IsNullOrEmpty(pathFileDumpTerminate))
+                {
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.PathFileDumpRestoreNotAvailable);
+                }
+
                 if (inputData.TenantId <= 0)
                 {
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.InvalidTenantId);
@@ -58,11 +69,39 @@ namespace Interactor.SuperAdmin
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run( () =>
+                _ = Task.Run(() =>
                 {
                     try
                     {
                         Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
+
+                        // Backup tenant
+                        if (inputData.Type == 1) // sort terminate
+                        {
+                            // Create folder backup S3
+                            var backupFolder = @$"bk-{tenant.EndSubDomain}";
+                            _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.DestinationBucketName, backupFolder).Wait();
+                            
+                            // Dump DB backup
+                            var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // path save file sql dump
+                           PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
+                            
+                            // check valid file sql dump
+                            if (!System.IO.File.Exists(pathFileDump))
+                            {
+                                throw new Exception("File sql dump doesn't exist");
+                            }
+
+                            long length = new System.IO.FileInfo(pathFileDump).Length;
+                            if (length <= 0)
+                            {
+                                throw new Exception("Invalid file sql dump");
+                            }
+                            
+                            // Upload file sql dump to folder backup S3
+                            _awsSdkService.UploadFileAsync(ConfigConstant.RestoreBucketName, $@"{backupFolder}/{tenant.Db}", pathFileDump).Wait();
+                        }
+
                         bool deleteRDSAction = false;
 
                         // Connect RDS delete TenantDb
@@ -77,11 +116,11 @@ namespace Interactor.SuperAdmin
                         // Deleted RDS
                         else
                         {
-                            deleteRDSAction =  RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
+                            deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
                         }
 
                         // Delete DNS
-                        var deleteDNSAction =  Route53Action.DeleteTenantDomain(tenant.SubDomain).Result;
+                        var deleteDNSAction = Route53Action.DeleteTenantDomain(tenant.SubDomain).Result;
 
                         // Delete item cname in cloud front
                         var deleteItemCnameAction = CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain).Result;
@@ -107,7 +146,7 @@ namespace Interactor.SuperAdmin
                     }
                     catch (Exception ex)
                     {
-                        _tenantRepository.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
+                        _tenantRepositoryRunTask.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
                         // Notification  terminating failed
                         var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);

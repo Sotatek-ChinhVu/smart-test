@@ -1,8 +1,8 @@
 ﻿namespace SuperAdminAPI.Reponse.Tenant
 {
-    public class StopedTenantResponse
+    public class ToggleTenantResponse
     {
-        public StopedTenantResponse(bool result)
+        public ToggleTenantResponse(bool result)
         {
             Result = result;
         }
