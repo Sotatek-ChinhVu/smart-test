@@ -316,7 +316,7 @@ public class ReportService : IReportService
             }
         }
 
-        AccountingResponse result = null;
+        AccountingResponse result = new();
         try
         {
             result = _accountingCoReportService.GetAccountingReportingData(hpId, requestAccountting);
