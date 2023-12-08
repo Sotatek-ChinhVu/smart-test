@@ -41,7 +41,7 @@ namespace Interactor.SuperAdmin
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
 
-                string pathFileDumpTerminate = _configuration["PathFileDumpTerminate"];
+                string pathFileDumpTerminate = _configuration["PathFileDumpTerminate"] ?? string.Empty;
 
                 if (string.IsNullOrEmpty(pathFileDumpTerminate))
                 {
