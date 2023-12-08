@@ -149,7 +149,7 @@ public class P17KoukiSeikyuCoReportService : IP17KoukiSeikyuCoReportService
             fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo.ToString());
             _setFieldData.Add(pageIndex, fieldDataPerPage);
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
             return 1;
         }
         #endregion

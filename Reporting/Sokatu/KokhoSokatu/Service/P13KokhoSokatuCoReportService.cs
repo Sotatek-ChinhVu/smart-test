@@ -1,5 +1,4 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
@@ -57,7 +56,6 @@ public class P13KokhoSokatuCoReportService : IP13KokhoSokatuCoReportService
     private int seikyuYm;
     private SeikyuType seikyuType;
     int diskKind;
-    int diskCnt;
     private bool hasNextPage;
     private int currentPage;
     #endregion

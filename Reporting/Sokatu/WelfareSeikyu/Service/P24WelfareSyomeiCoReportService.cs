@@ -228,16 +228,14 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             var wrkReces = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHokenNos, FutanCheck.None, 0);
 
             //患者指定がある場合は絞り込み
-            wrkReces = (printPtIds?.Count ?? 0) == 0 ? wrkReces.ToList() :
-                wrkReces.Where(r => printPtIds != null && printPtIds.Contains(r.PtId)).ToList();
+            wrkReces = (printPtIds?.Count ?? 0) == 0 ? wrkReces.ToList() : wrkReces.Where(r => printPtIds != null && printPtIds.Contains(r.PtId)).ToList();
 
             //三重県用のモデルクラスにコピー
-            receInfs = wrkReces
-                .Select(x => new CoP24WelfareReceInfModel(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, kohiHokenNos))
-                .OrderBy(r => r.CityCode)
-                .ThenBy(r => r.KohiSbt)
-                .ThenBy(r => r.WelfareJyukyusyaNo)
-                .ToList();
+            receInfs = wrkReces.Select(x => new CoP24WelfareReceInfModel(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, kohiHokenNos))
+                               .OrderBy(r => r.CityCode)
+                               .ThenBy(r => r.KohiSbt)
+                               .ThenBy(r => r.WelfareJyukyusyaNo)
+                               .ToList();
 
             //処方せん発行区分
             foreach (var receInf in receInfs)

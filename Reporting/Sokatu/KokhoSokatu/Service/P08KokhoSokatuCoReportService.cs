@@ -1,6 +1,4 @@
 ﻿using Helper.Common;
-using Helper.Constants;
-using Microsoft.EntityFrameworkCore.Internal;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
@@ -32,7 +30,7 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
     #region Init properties
     private int hpId;
     private int seikyuYm;
-    private SeikyuType seikyuType; 
+    private SeikyuType seikyuType;
     private bool hasNextPage;
     private int currentPage;
     #endregion

@@ -127,11 +127,11 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 {
                     if (i == 0)
                     {
-                        SetFieldData("kaName", kaMsts[i].KaName);
+                        SetFieldData("kaName", kaMsts[i].KaName ?? string.Empty);
                     }
                     else
                     {
-                        listDataPerPage.Add(new("kaNames", 0, (short)(i - 1), kaMsts.Any() ? kaMsts[i].KaName : string.Empty));
+                        listDataPerPage.Add(new("kaNames", 0, (short)(i - 1), kaMsts.Any() ? kaMsts[i].KaName ?? string.Empty : string.Empty));
                     }
                 }
 

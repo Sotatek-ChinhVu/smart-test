@@ -116,7 +116,7 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
                 //医療機関コード
                 SetFieldData(string.Format("hpCode{0}", i), hpInf.HpCd);
                 //診療科
-                SetFieldData(string.Format("kaName{0}", i), kaMsts[0].KaName);
+                SetFieldData(string.Format("kaName{0}", i), kaMsts[0].KaName ?? string.Empty);
                 //請求年月
                 CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
                 SetFieldData(string.Format("seikyuGengo{0}", i), wrkYmd.Gengo);

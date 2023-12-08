@@ -21,7 +21,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     private int currentPage;
     private string currentHokensyaNo;
     private int dataRowCount;
-    private int count;
 
     /// <summary>
     /// CoReport Model

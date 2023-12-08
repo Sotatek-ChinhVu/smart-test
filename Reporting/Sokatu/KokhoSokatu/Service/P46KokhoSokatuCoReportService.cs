@@ -95,7 +95,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 SetFieldData("kaisetuName", hpInf.KaisetuName);
                 SetFieldData("hpTel", hpInf.Tel);
                 //診療科
-                SetFieldData("kaName", kaMsts[0].KaName);
+                SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
 
                 return 1;
             }
@@ -197,7 +197,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 _listTextData.Add(pageIndex, listDataPerPage);
                 return 1;
             }
-            #endregion
+            #endregion  
 
             #region BodyP2
             int UpdateFormBodyP2()

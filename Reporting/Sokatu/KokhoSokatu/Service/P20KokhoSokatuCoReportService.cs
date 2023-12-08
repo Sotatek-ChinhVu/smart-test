@@ -127,7 +127,7 @@ public class P20KokhoSokatuCoReportService : IP20KokhoSokatuCoReportService
             SetFieldData("seikyuYear", wrkYmd.Year.ToString());
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
             //印
             SetVisibleFieldData("inkan", seikyuYm < KaiseiDate.m202210);
 

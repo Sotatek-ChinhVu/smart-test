@@ -114,7 +114,7 @@ public class P45KoukiSokatuCoReportService : IP45KoukiSokatuCoReportService
             //医療機関コード
             SetFieldData("hpCode", hpInf.HpCd);
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
             //医療機関情報
             SetFieldData("postCd", hpInf.PostCdDsp);
             SetFieldData("address1", hpInf.Address1);

@@ -173,7 +173,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var wrkRece = curReceInfs[ptIndex];
 
                     //受給者証番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece.TokusyuNo(kohiHokenNos)));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece.TokusyuNo(kohiHokenNos) ?? string.Empty));
                     //氏名
                     listDataPerPage.Add(new("ptName", 0, rowNo, wrkRece.PtName));
                     //生年月日(g ee・MM・dd)

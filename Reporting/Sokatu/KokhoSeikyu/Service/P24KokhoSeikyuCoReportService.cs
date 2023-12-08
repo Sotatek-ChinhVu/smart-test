@@ -65,7 +65,6 @@ public class P24KokhoSeikyuCoReportService : IP24KokhoSeikyuCoReportService
     private SeikyuType seikyuType;
     private List<string> printHokensyaNos;
     private List<CoReceInfModel> curReceInfs;
-    private int hokenRate;
     private bool hasNextPage;
     private int currentPage;
     #endregion

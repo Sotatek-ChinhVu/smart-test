@@ -185,7 +185,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             hpInf = _welfareFinder.GetHpInf(hpId, seikyuYm);
             receInfs = _welfareFinder.GetReceInf(hpId, seikyuYm, seikyuType, kohiHoubetus, FutanCheck.KohiFutan, HokenKbn.Syaho);
             //負担者番号の一覧を取得
-            futansyaNos = receInfs.GroupBy(r => r.FutansyaNo(kohiHoubetus)).OrderBy(r => r.Key).Select(r => r.Key).ToList();
+            futansyaNos = receInfs.GroupBy(r => r.FutansyaNo(kohiHoubetus ?? new()) ?? string.Empty).OrderBy(r => r.Key).Select(r => r.Key).ToList();
 
             return (receInfs?.Count ?? 0) > 0;
         }

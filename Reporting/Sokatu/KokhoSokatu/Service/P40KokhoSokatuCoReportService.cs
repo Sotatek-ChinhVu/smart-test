@@ -128,7 +128,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
 
             return 1;
         }

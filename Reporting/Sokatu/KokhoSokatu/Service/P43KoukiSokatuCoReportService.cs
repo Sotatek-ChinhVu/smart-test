@@ -128,7 +128,7 @@ public class P43KoukiSokatuCoReportService : IP43KoukiSokatuCoReportService
                 SetFieldData(string.Format("seikyuMonth{0}", i), wrkYmd.Month.ToString());
             }
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
             //印
             SetVisibleFieldData("kbnRate9", seikyuYm < KaiseiDate.m202210);
             SetVisibleFieldData("kbnIppan", seikyuYm >= KaiseiDate.m202210);

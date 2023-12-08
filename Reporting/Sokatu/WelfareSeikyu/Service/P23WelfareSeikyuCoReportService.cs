@@ -171,7 +171,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var curReceInf = curReceInfs[ptIndex];
 
                     //受給者証番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareJyukyusyaNo));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareJyukyusyaNo ?? string.Empty));
                     //氏名
                     listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
                     totalData.Count++;

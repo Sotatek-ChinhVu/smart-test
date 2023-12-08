@@ -2,7 +2,6 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Reporting.Calculate.Constants;
 using Reporting.Sokatu.AfterCareSeikyu.Model;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.Common.Models;
