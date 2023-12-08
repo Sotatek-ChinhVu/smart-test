@@ -5,6 +5,7 @@ using AWSSDK.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data.Common;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 
 namespace AWSSDK.Services
 {
@@ -135,11 +136,21 @@ namespace AWSSDK.Services
             await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
         }
 
-        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string sourceFolderKey, string destinationBucketName, string destinationFolderKey)
+        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type)
         {
+            string folderKey = type switch
+            {
+                RestoreObjectS3TenantTypeEnum.All => objectName,
+                RestoreObjectS3TenantTypeEnum.Files => $"{objectName}/store/files/",
+                RestoreObjectS3TenantTypeEnum.InsuranceCard => $"{objectName}/store/InsuranceCard/",
+                RestoreObjectS3TenantTypeEnum.Karte => $"{objectName}/store/karte/",
+                RestoreObjectS3TenantTypeEnum.NextPic => $"{objectName}/store/karte/nextPic/",
+                RestoreObjectS3TenantTypeEnum.SetPic => $"{objectName}/store/karte/setPic/",
+                _ => string.Empty
+            };
             var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
             var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, sourceFolderKey, sourceS3ClientDestination, destinationBucketName, destinationFolderKey);
+            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, folderKey, sourceS3ClientDestination, destinationBucketName);
         }
 
         private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
@@ -162,7 +173,7 @@ namespace AWSSDK.Services
             var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
             await S3Action.UploadFileWithProgressAsync(sourceS3Client, bucketName, folderName, filePath);
         }
-        
+
         private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
         {
             return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionSource);

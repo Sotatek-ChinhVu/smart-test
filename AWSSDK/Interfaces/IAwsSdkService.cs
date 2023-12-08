@@ -1,4 +1,6 @@
-﻿namespace AWSSDK.Interfaces
+﻿using UseCase.SuperAdmin.RestoreObjectS3Tenant;
+
+namespace AWSSDK.Interfaces
 {
     public interface IAwsSdkService
     {
@@ -14,6 +16,6 @@
         Task DeleteObjectsInFolderAsync(string bucketName, string folderKey);
         Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder);
         Task UploadFileAsync(string bucketName, string folderName, string filePath);
-        Task CopyObjectsInFolderAsync(string sourceBucketName, string sourceFolderKey, string destinationBucketName, string destinationFolderKey);
+        Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type);
     }
 }
