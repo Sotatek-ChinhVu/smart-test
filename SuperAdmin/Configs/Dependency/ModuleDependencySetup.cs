@@ -98,7 +98,7 @@ namespace SuperAdmin.Configs.Dependency
             var busBuilder = new SyncUseCaseBusBuilder(registration);
 
             busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
-            busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
+            busBuilder.RegisterUseCase<UpdateTenantInputData, UpdateTenantInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
             busBuilder.RegisterUseCase<TerminateTenantInputData, TerminateTenantInteractor>();
