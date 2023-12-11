@@ -5,10 +5,13 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System.Text;
 
 
@@ -16,8 +19,24 @@ namespace Infrastructure.Repositories.SpecialNote
 {
     public class SpecialNoteRepository : RepositoryBase, ISpecialNoteRepository
     {
-        public SpecialNoteRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        public SpecialNoteRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
+            key = GetDomainKey();
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public bool SaveSpecialNote(int hpId, long ptId, int sinDate, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId)
@@ -77,6 +96,12 @@ namespace Infrastructure.Repositories.SpecialNote
                         CreateId = userId
                     });
                 }
+            }
+            // delete cache key when save summaryInf
+            var finalKey = key + CacheKeyConstant.SummaryInfGetList + "_" + summaryInfModel.HpId + "_" + summaryInfModel.PtId;
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
             }
         }
         #endregion
