@@ -382,7 +382,7 @@ namespace Interactor.SuperAdmin
                 var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
                 var dbName = "smartkartelogging";
                 var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
-                string sqlCreateAuditLog = File.ReadAllText(QueryConstant.InsertAuditLog);
+                string sqlCreateAuditLog = File.ReadAllText(QueryConstant.CreateAuditLog);
                 var addParttion = $"CREATE TABLE IF NOT EXISTS PARTITION_{tenantId} PARTITION OF public.\"AuditLogs\" FOR VALUES IN ({tenantId});";
 
                 using (var connection = new NpgsqlConnection(connectionString))
