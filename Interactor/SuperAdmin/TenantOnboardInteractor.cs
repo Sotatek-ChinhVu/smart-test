@@ -316,8 +316,7 @@ namespace Interactor.SuperAdmin
                         _CreateAuditLog(command, tenantId);
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
-                        _CreateDataMaster(command);
-
+                        _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
                     }
                 }
             }
@@ -388,12 +387,21 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error AuditLog table: {ex.Message}");
+                Console.WriteLine($"Error insert AuditLog table: {ex.Message}");
             }
         }
 
-        private void _CreateDataMaster(NpgsqlCommand command)
+        private void _CreateDataMaster(string host, string database, string user, string password)
         {
+            try
+            {
+                string pathFile = "/app/data-master.sql";
+                PostgresSqlAction.PostgreSqlExcuteFileSQLDataMaster(pathFile, host, 5432, database, user, password).Wait();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error insert data master: {ex.Message}");
+            }
         }
 
         private void _CreateFunction(NpgsqlCommand command, List<string> listMigration, int tenantId)
