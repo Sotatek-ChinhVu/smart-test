@@ -109,37 +109,94 @@ namespace Infrastructure.Repositories.SpecialNote
         #region SaveImportantNote
         private void SaveImportantNote(int userId, int hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
+            string finalKey;
             if (importantNoteModel?.AlrgyFoodItems != null && importantNoteModel.AlrgyFoodItems.Any())
             {
                 SaveAlrgyFoodItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveAlrgyFoodItems
+                finalKey = key + CacheKeyConstant.AlrgyFoodGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (importantNoteModel?.AlrgyElseItems != null && importantNoteModel.AlrgyElseItems.Any())
             {
                 SaveElseItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveElseItems
+                finalKey = key + CacheKeyConstant.AlrgyElseGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (importantNoteModel?.AlrgyDrugItems != null && importantNoteModel.AlrgyDrugItems.Any())
             {
                 SaveDrugItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveDrugItems
+                finalKey = key + CacheKeyConstant.PtAlrgyDrugGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (importantNoteModel?.KioRekiItems != null && importantNoteModel.KioRekiItems.Any())
             {
                 SaveKioRekiItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveKioRekiItems
+                finalKey = key + CacheKeyConstant.KioRekiGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (importantNoteModel?.InfectionsItems != null && importantNoteModel.InfectionsItems.Any())
             {
                 SaveInfectionsItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveInfectionsItems
+                finalKey = key + CacheKeyConstant.InfectionGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (importantNoteModel?.OtherDrugItems != null && importantNoteModel.OtherDrugItems.Any())
             {
                 SaveOtherDrugItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveOtherDrugItems
+                finalKey = key + CacheKeyConstant.OtherDrugGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (importantNoteModel?.OtcDrugItems != null && importantNoteModel.OtcDrugItems.Any())
             {
                 SaveOtcDrugItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveOtcDrugItems
+                finalKey = key + CacheKeyConstant.OtcDrugGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (importantNoteModel?.SuppleItems != null && importantNoteModel.SuppleItems.Any())
             {
                 SaveSuppleItems(userId, hpId, ptId, importantNoteModel);
+
+                // delete cache key when save SaveSuppleItems
+                finalKey = key + CacheKeyConstant.SuppleGetList + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
         }
         private void SaveAlrgyFoodItems(int userId, int hpId, long ptId, ImportantNoteModel importantNoteModel)
