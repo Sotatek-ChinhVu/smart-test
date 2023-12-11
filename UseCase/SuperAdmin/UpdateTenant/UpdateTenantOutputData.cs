@@ -2,9 +2,9 @@
 
 namespace UseCase.SuperAdmin.UpgradePremium
 {
-    public class UpgradePremiumOutputData : IOutputData
+    public class UpdateTenantOutputData : IOutputData
     {
-        public UpgradePremiumOutputData(bool result, UpgradePremiumStatus status)
+        public UpdateTenantOutputData(bool result, UpdateTenantStatus status)
         {
             Result = result;
             Status = status;
@@ -12,6 +12,6 @@ namespace UseCase.SuperAdmin.UpgradePremium
 
         public bool Result { get; private set; }
 
-        public UpgradePremiumStatus Status { get; private set; }
+        public UpdateTenantStatus Status { get; private set; }
     }
 }

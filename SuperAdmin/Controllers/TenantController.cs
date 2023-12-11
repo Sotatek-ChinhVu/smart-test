@@ -31,14 +31,14 @@ namespace SuperAdminAPI.Controllers
             _webSocketService = webSocketService;
         }
 
-        [HttpPost("UpgradePremium")]
-        public ActionResult<Response<UpgradePremiumResponse>> UpgradePremium([FromBody] UpgradePremiumRequest request)
+        [HttpPost("UpdateTenant")]
+        public ActionResult<Response<UpdateTenantResponse>> UpdateTenant([FromBody] UpdateTenantRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.SizeType, request.Domain, _webSocketService);
+            var input = new UpdateTenantInputData(request.TenantId, request.Size, request.SizeType, request.SubDomain, request.Type, request.Hospital, request.AdminId, request.Password, _webSocketService);
             var output = _bus.Handle(input);
-            var presenter = new UpgradePremiumPresenter();
+            var presenter = new UpdateTenantPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<UpgradePremiumResponse>>(presenter.Result);
+            return new ActionResult<Response<UpdateTenantResponse>>(presenter.Result);
         }
 
         [HttpPost("GetTenant")]
