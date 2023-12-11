@@ -1,20 +1,21 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Microsoft.AspNetCore.Http;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.SuperAdmin.UpdateTenant
 {
     public class UpdateTenantInputData : IInputData<UpdateTenantOutputData>
     {
-        public UpdateTenantInputData(int tenantId, dynamic webSocketService, int type)
+        public UpdateTenantInputData(int tenantId, dynamic webSocketService, IFormFile fileUpdate)
         {
             TenantId = tenantId;
             WebSocketService = webSocketService;
-            File = type;
+            FileUpdate = fileUpdate;
         }
 
         public int TenantId { get; private set; }
 
         public dynamic WebSocketService { get; private set; }
 
-        public int File { get; private set; }
+        public IFormFile FileUpdate { get; private set; }
     }
 }

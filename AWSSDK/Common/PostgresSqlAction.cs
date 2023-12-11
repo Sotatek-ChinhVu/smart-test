@@ -1,4 +1,5 @@
 ﻿using AWSSDK.Constants;
+using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -72,6 +73,31 @@ namespace AWSSDK.Common
             else
             {   // path file linux
                 batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + " 2> /app/restore/log-excute-dump.txt" + "\n";
+            }
+
+            await Execute(batchContent);
+        }
+
+       
+        static async Task ExecuteSqlFile(string pathFile, string host, int port, string database, string user, string password)
+        {
+            Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
+            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+            pathFile = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFile : pathFile.Replace("\\", "/");
+            string batchContent;
+            string dumpCommand =
+            $"{Set} PGPASSWORD={password}\n" +
+                 $"psql" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
+
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // path file window
+                batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFile + "\"" + "\n";
+            }
+            else
+            {   // path file linux
+                batchContent = "" + dumpCommand + "  -c -v " + pathFile + " 2> /app/restore/log-excute-dump.txt" + "\n";
             }
 
             await Execute(batchContent);

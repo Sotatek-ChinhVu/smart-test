@@ -50,11 +50,11 @@ namespace Interactor.SuperAdmin
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>
                 {
-                    string typeName = inputData.Type == 0 ? "stoped" : "start";
+                    string typeName = 0 == 0 ? "stoped" : "start";
                     try
                     {
                         bool result;
-                        if (inputData.Type == 0)
+                        if (0 == 0)
                         {
                             result = _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["stoped"]);
                         }
