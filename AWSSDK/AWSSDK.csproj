@@ -18,6 +18,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Helper\Helper.csproj" />
+		<ProjectReference Include="..\UseCase\UseCase.csproj" />
 	</ItemGroup>
 
 </Project>

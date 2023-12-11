@@ -2,9 +2,9 @@
 
 namespace UseCase.SuperAdmin.StopedTenant
 {
-    public class StopedTenantInputData : IInputData<StopedTenantOutputData>
+    public class ToggleTenantInputData : IInputData<ToggleTenantOutputData>
     {
-        public StopedTenantInputData(int tenantId, dynamic webSocketService, int type)
+        public ToggleTenantInputData(int tenantId, dynamic webSocketService, int type)
         {
             TenantId = tenantId;
             WebSocketService = webSocketService;

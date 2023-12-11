@@ -8,7 +8,7 @@ using UseCase.SuperAdmin.TerminateTenant;
 
 namespace UseCase.SuperAdmin.StopedTenant
 {
-    public interface IStopedTenantInputPort : IInputPort<StopedTenantInputData, StopedTenantOutputData>
+    public interface IToggleTenantInputPort : IInputPort<ToggleTenantInputData, ToggleTenantOutputData>
     {
     }
 }
