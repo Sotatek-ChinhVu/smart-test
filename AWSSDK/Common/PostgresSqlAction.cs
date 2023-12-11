@@ -223,7 +223,7 @@ namespace AWSSDK.Common
             string dumpCommand =
                  $"{Set} PGPASSWORD={password}\n";
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // path file window
                 dumpCommand = dumpCommand + $"psql -h {host} -p {port} -U {user} -d {database} -c \"SET client_encoding = 'UTF8';\" -f {pathFileDump}";
