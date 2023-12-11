@@ -269,11 +269,11 @@ namespace Interactor.SuperAdmin
             {
                 string host = CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
                 if (!string.IsNullOrEmpty(host))
-                {                    
+                {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
                     CreateDatas(host, dbName, dataMigration, tenantId, model);
-                    
+
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
@@ -309,14 +309,14 @@ namespace Interactor.SuperAdmin
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
                         var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
-                        var sqlInsertUser = string.Format(ConfigConstant.SqlUser, model.AdminId, model.Password);
-                        var sqlInsertUserPermission = ConfigConstant.SqlUserPermission;
+                        var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId, model.Password);
+                        var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
+                        _CreateAuditLog(tenantId);
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
-                        _CreateDataMaster(command, listMigration, tenantId);
-
+                        _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
                     }
                 }
             }
@@ -325,6 +325,7 @@ namespace Interactor.SuperAdmin
                 throw new Exception($"{ex.Message}");
             }
         }
+
         private void _CreateTable(NpgsqlCommand command, List<string> listMigration, int tenantId)
         {
             try
@@ -374,51 +375,57 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void _CreateDataMaster(NpgsqlCommand command, List<string> listMigration, int tenantId)
+        private void _CreateAuditLog(int tenantId)
         {
             try
             {
-                string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-                string folderPath = Path.Combine(templatePath, "DataMaster");
-                if (Directory.Exists(folderPath))
+                var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
+                var dbName = "smartkartelogging";
+                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
+                string sqlCreateAuditLog = File.ReadAllText(QueryConstant.CreateAuditLog);
+                var addParttion = $"CREATE TABLE IF NOT EXISTS PARTITION_{tenantId} PARTITION OF public.\"AuditLogs\" FOR VALUES IN ({tenantId});";
+
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var sqlFiles = Directory.GetFiles(folderPath, "*.sql");
-
-                    if (sqlFiles.Length > 0)
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
                     {
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
-                        var uniqueFileNames = fileNames.Except(listMigration).ToList();
-
-                        // insert data master
-                        if (uniqueFileNames.Any())
+                        command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
+                        var tableExists = command.ExecuteScalar();
+                        string createCommandText = string.Empty;
+                        if (tableExists != null && !(bool)tableExists)
                         {
-                            foreach (var fileName in uniqueFileNames)
-                            {
-                                var filePath = Path.Combine(folderPath, $"{fileName}.sql");
-                                if (File.Exists(filePath))
-                                {
-                                    var sqlScript = File.ReadAllText(filePath);
-                                    command.CommandText = sqlScript;
-                                    command.ExecuteNonQuery();
-                                    if (!string.IsNullOrEmpty(fileName))
-                                    {
-                                        _migrationTenantHistoryRepository.AddMigrationHistory(tenantId, fileName);
-                                    }
-                                }
-                            }
-                            Console.WriteLine("SQL scripts data master executed successfully.");
+                            createCommandText = sqlCreateAuditLog + addParttion;
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Create data master: no files found");
+                        else
+                        {
+                            createCommandText = addParttion;
+                        }
+                        using (var createTableCommand = new NpgsqlCommand())
+                        {
+                            createTableCommand.CommandText = createCommandText;
+                            createTableCommand.ExecuteNonQuery();
+                            Console.WriteLine("SQL scripts AuditLog, Parttion executed successfully.");
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error create data master: {ex.Message}");
-                throw new Exception($"Error create data master.  {ex.Message}");
+                Console.WriteLine($"Error insert AuditLog, Parttion: {ex.Message}");
+            }
+        }
+
+        private void _CreateDataMaster(string host, string database, string user, string password)
+        {
+            try
+            {
+                string pathFile = "/app/data-master.sql";
+                PostgresSqlAction.PostgreSqlExcuteFileSQLDataMaster(pathFile, host, 5432, database, user, password).Wait();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error insert data master: {ex.Message}");
             }
         }
 
