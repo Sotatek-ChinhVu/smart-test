@@ -313,7 +313,7 @@ namespace Interactor.SuperAdmin
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
-                        _CreateAuditLog(command, tenantId);
+                        _CreateAuditLog(tenantId);
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
                         _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
@@ -375,19 +375,44 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void _CreateAuditLog(NpgsqlCommand command, int tenantId)
+        private void _CreateAuditLog(int tenantId)
         {
             try
             {
-                var sqlScript = File.ReadAllText(QueryConstant.InsertAuditLog);
+                var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
+                var dbName = "smartkartelogging";
+                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
+                string sqlCreateAuditLog = File.ReadAllText(QueryConstant.InsertAuditLog);
                 var addParttion = $"CREATE TABLE IF NOT EXISTS PARTITION_{tenantId} PARTITION OF public.\"AuditLogs\" FOR VALUES IN ({tenantId});";
-                command.CommandText = sqlScript + addParttion;
-                command.ExecuteNonQuery();
-                Console.WriteLine("SQL scripts AuditLog executed successfully.");
+
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
+                        var tableExists = command.ExecuteScalar();
+                        string createCommandText = string.Empty;
+                        if (tableExists != null && !(bool)tableExists)
+                        {
+                            createCommandText = sqlCreateAuditLog + addParttion;
+                        }
+                        else
+                        {
+                            createCommandText = addParttion;
+                        }
+                        using (var createTableCommand = new NpgsqlCommand())
+                        {
+                            createTableCommand.CommandText = createCommandText;
+                            createTableCommand.ExecuteNonQuery();
+                            Console.WriteLine("SQL scripts AuditLog, Parttion executed successfully.");
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error insert AuditLog table: {ex.Message}");
+                Console.WriteLine($"Error insert AuditLog, Parttion: {ex.Message}");
             }
         }
 
