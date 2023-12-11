@@ -41,7 +41,7 @@ namespace Interactor.SuperAdmin
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
 
-                string pathFileDumpTerminate = _configuration["PathFileDumpTerminate"];
+                string pathFileDumpTerminate = _configuration["PathFileDumpTerminate"] ?? string.Empty;
 
                 if (string.IsNullOrEmpty(pathFileDumpTerminate))
                 {
@@ -79,8 +79,8 @@ namespace Interactor.SuperAdmin
                         if (inputData.Type == 1) // sort terminate
                         {
                             // Create folder backup S3
-                            var backupFolder = @$"bk-{tenant.EndSubDomain}";
-                            _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.DestinationBucketName, backupFolder).Wait();
+                            var backupFolderName = @$"bk-{tenant.EndSubDomain}";
+                            _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.RestoreBucketName, backupFolderName).Wait();
                             
                             // Dump DB backup
                             var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // path save file sql dump
@@ -99,7 +99,7 @@ namespace Interactor.SuperAdmin
                             }
                             
                             // Upload file sql dump to folder backup S3
-                            _awsSdkService.UploadFileAsync(ConfigConstant.RestoreBucketName, $@"{backupFolder}/{tenant.Db}", pathFileDump).Wait();
+                            _awsSdkService.UploadFileAsync(ConfigConstant.RestoreBucketName, $@"{backupFolderName}/{tenant.Db}", pathFileDump).Wait();
                         }
 
                         bool deleteRDSAction = false;

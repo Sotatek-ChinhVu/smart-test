@@ -24,6 +24,7 @@ public class TenantDto
         ScheduleTime = model.ScheduleTime;
         CreateDate = model.CreateDate;
         RdsIdentifier = model.RdsIdentifier;
+        StorageUsed = model.StorageUsed;
         StorageFull = model.StorageFull;
     }
 
@@ -65,6 +66,8 @@ public class TenantDto
     public DateTime CreateDate { get; private set; }
 
     public string RdsIdentifier { get; private set; }
+
+    public double StorageUsed { get; private set; }
 
     public double StorageFull { get; private set; }
 }
