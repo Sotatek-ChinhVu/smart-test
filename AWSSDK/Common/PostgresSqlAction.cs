@@ -264,8 +264,8 @@ namespace AWSSDK.Common
                         using (Process chmodProc = new Process())
                         {
                             chmodProc.StartInfo = chmodInfo;
-                            chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
                             chmodProc.Start();
+                            chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");                           
                             chmodProc.BeginOutputReadLine();
                             chmodProc.BeginErrorReadLine();
                             chmodProc.WaitForExit();
