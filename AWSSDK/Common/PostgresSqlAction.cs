@@ -215,6 +215,7 @@ namespace AWSSDK.Common
             return false;
         }
 
+        #region insert data master
         public static async Task PostgreSqlExcuteFileSQLDataMaster(string pathFileDump, string host, int port, string database, string user, string password)
         {
             Console.WriteLine($"Start: run  PostgreSqlExcuteFileDataMaster");
@@ -232,7 +233,75 @@ namespace AWSSDK.Common
             {   // path file linux
                 dumpCommand = dumpCommand + $"psql" + " -h " + host + " -p " + port + " -U " + user + " -d " + database + " -c \"SET client_encoding = 'UTF8';\"" + " -f " + pathFileDump;
             }
-            await Execute(dumpCommand);
+            await ExecuteDataMaster(dumpCommand);
         }
+
+        private static Task ExecuteDataMaster(string dumpCommand)
+        {
+            return Task.Run(() =>
+            {
+                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"));
+                try
+                {
+                    string batchContent = "";
+                    batchContent += $"{dumpCommand}";
+
+                    System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
+
+                    // Create process Grant execute permissions to file .sh
+                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        // Grant execute permissions using chmod
+                        ProcessStartInfo chmodInfo = new ProcessStartInfo
+                        {
+                            FileName = "chmod",
+                            Arguments = $"+x {batFilePath}",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+                        using (Process chmodProc = new Process())
+                        {
+                            chmodProc.StartInfo = chmodInfo;
+                            chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
+                            chmodProc.Start();
+                            chmodProc.BeginOutputReadLine();
+                            chmodProc.BeginErrorReadLine();
+                            chmodProc.WaitForExit();
+                            if (chmodProc.ExitCode != 0)
+                            {
+                                // Handle chmod error, if any
+                                throw new Exception($"Error insert data master!");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+                        using (Process proc = new Process())
+                        {
+                            proc.StartInfo = info;
+                            proc.Start();
+                            proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
+                            proc.BeginOutputReadLine();
+                            proc.BeginErrorReadLine();
+                            proc.WaitForExit();
+                            var exitCode = proc.ExitCode;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    throw new Exception($"Execute sql insert data master. {ex.Message}");
+
+                }
+                finally
+                {
+                }
+            });
+        }
+        #endregion insert data master
     }
 }
