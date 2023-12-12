@@ -288,14 +288,20 @@ namespace AWSSDK.Common
 
                         ProcessStartInfo info = ProcessInfoByOS(batFilePath);
 
-                        using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
+                        var proc = System.Diagnostics.Process.Start(info);
                         Console.WriteLine("Start ...");
-                        proc.WaitForExit();
-                        Console.WriteLine("End.");
-                        var exit = proc.ExitCode;
+                        if (proc != null)
+                        {
+                            proc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
+                            proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
+                            proc.BeginOutputReadLine();
+                            proc.BeginErrorReadLine();
+                            proc.WaitForExit();
+                            Console.WriteLine("End.");
+                            var exit = proc.ExitCode;
 
-
-                        proc.Close();
+                            proc.Close();
+                        }
                     }
                     else
                     {
