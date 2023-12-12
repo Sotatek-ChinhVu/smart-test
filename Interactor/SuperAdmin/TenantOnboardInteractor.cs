@@ -1,14 +1,15 @@
-﻿using Amazon.RDS.Model;
-using Amazon.RDS;
+﻿using Amazon.RDS;
+using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Interfaces;
-using Domain.SuperAdminModels.Tenant;
-using UseCase.SuperAdmin.TenantOnboard;
 using Domain.SuperAdminModels.MigrationTenantHistory;
-using Interactor.Realtime;
 using Domain.SuperAdminModels.Notification;
+using Domain.SuperAdminModels.Tenant;
+using Interactor.Realtime;
+using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
+using UseCase.SuperAdmin.TenantOnboard;
 
 namespace Interactor.SuperAdmin
 {
@@ -20,13 +21,15 @@ namespace Interactor.SuperAdmin
         private readonly IMigrationTenantHistoryRepository _migrationTenantHistoryRepository;
         private readonly INotificationRepository _notificationRepository;
         private IWebSocketService _webSocketService;
+        private readonly IMemoryCache _memoryCache;
         public TenantOnboardInteractor(
             IAwsSdkService awsSdkService,
             ITenantRepository tenantRepository,
             ITenantRepository tenant2Repository,
             IMigrationTenantHistoryRepository migrationTenantHistoryRepository,
             INotificationRepository notificationRepository,
-            IWebSocketService webSocketService
+            IWebSocketService webSocketService,
+            IMemoryCache memoryCache
             )
         {
             _awsSdkService = awsSdkService;
@@ -35,6 +38,7 @@ namespace Interactor.SuperAdmin
             _notificationRepository = notificationRepository;
             _tenant2Repository = tenant2Repository;
             _webSocketService = webSocketService;
+            _memoryCache = memoryCache;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -97,6 +101,9 @@ namespace Interactor.SuperAdmin
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
 
+            var cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken ct = cancellationTokenSource.Token;
+
             try
             {
                 // Provisioning SubDomain for new tenants
@@ -116,7 +123,7 @@ namespace Interactor.SuperAdmin
                             _ = Task.Run(() =>
                             {
                                 AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                            });
+                            }, cancellationTokenSource.Token);
                         }
                         else
                         {
@@ -126,7 +133,7 @@ namespace Interactor.SuperAdmin
                             _ = Task.Run(() =>
                             {
                                 AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                            });
+                            }, cancellationTokenSource.Token);
                         }
                     }
                     else // In the rest cases, checking available RDS for new Tenant
@@ -144,7 +151,7 @@ namespace Interactor.SuperAdmin
                             _ = Task.Run(() =>
                             {
                                 AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                            });
+                            }, cancellationTokenSource.Token);
                         }
                         else // Else, returning the first available RDS Cluster in the list
                         {
@@ -160,7 +167,7 @@ namespace Interactor.SuperAdmin
                                     _ = Task.Run(() =>
                                     {
                                         AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                                    });
+                                    }, cancellationTokenSource.Token);
                                     break;
                                 }
                             }
@@ -173,11 +180,14 @@ namespace Interactor.SuperAdmin
                                 _ = Task.Run(() =>
                                 {
                                     AddData(id, tenantUrl, dbName, model, dbIdentifierNew);
-                                });
+                                }, cancellationTokenSource.Token);
                             }
                         }
                     }
                 }
+                _memoryCache.Set(
+                subDomain,
+                cancellationTokenSource);
                 await Route53Action.CreateTenantDomain(subDomain);
                 await CloudFrontAction.UpdateNewTenantAsync(subDomain);
 

@@ -36,6 +36,7 @@ using UseCase.UserToken.GetInfoRefresh;
 using UseCase.UserToken.SiginRefresh;
 using UseCase.SystemStartDbs;
 using UseCase.SuperAdmin.RestoreObjectS3Tenant;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -117,8 +118,10 @@ namespace SuperAdmin.Configs.Dependency
 
             busBuilder.RegisterUseCase<RevokeInsertPermissionInputData, RevokeInsertPermissionInteractor>();
 
+            services.AddMemoryCache();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
+
         }
     }
 }

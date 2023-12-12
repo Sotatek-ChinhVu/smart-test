@@ -176,7 +176,7 @@ namespace Interactor.SuperAdmin
 
 
                             // Delete DB in old RDS
-                            var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb).Result;
+                            var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb, oldTenant.UserConnect, oldTenant.PasswordConnect).Result;
                             Console.WriteLine($"listTenantDb: {listTenantDb}");
 
                             // Connect RDS delete TenantDb
@@ -253,7 +253,7 @@ namespace Interactor.SuperAdmin
         }
 
         /// <summary>
-        /// Delete tenant db in old RDS
+        /// Delete redundant Databases in new RDS
         /// </summary>
         /// <param name="serverEndpoint"></param>
         /// <param name="tennantDB"></param>
@@ -265,7 +265,7 @@ namespace Interactor.SuperAdmin
             {
                 // Connection string format for SQL Server
                 string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
-                var listTenantDb = RDSAction.GetListDatabase(serverEndpoint).Result;
+                var listTenantDb = RDSAction.GetListDatabase(serverEndpoint, username, password).Result;
                 if (listTenantDb.Contains(tennantDB))
                 {
                     listTenantDb.Remove(tennantDB);

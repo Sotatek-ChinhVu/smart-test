@@ -297,16 +297,12 @@ namespace AWSSDK.Common
             return dbSnapshotIdentifier;
         }
 
-        public static async Task<List<string>> GetListDatabase(string serverEndpoint)
+        public static async Task<List<string>> GetListDatabase(string serverEndpoint, string username, string password)
         {
             try
             {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                int port = 5432;
                 // Connection string format for PostgreSQL
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
                 var withOutDb = ConfigConstant.LISTSYSTEMDB;
                 string strWithoutDb = string.Join(", ", withOutDb);
                 strWithoutDb = "'" + strWithoutDb.Replace(", ", "', '") + "'";

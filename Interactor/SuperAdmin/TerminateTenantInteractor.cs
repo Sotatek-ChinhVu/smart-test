@@ -4,6 +4,7 @@ using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using UseCase.SuperAdmin.TerminateTenant;
 
@@ -17,6 +18,7 @@ namespace Interactor.SuperAdmin
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
         private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _memoryCache;
 
         public TerminateTenantInteractor(
             ITenantRepository tenantRepository,
@@ -24,7 +26,8 @@ namespace Interactor.SuperAdmin
             INotificationRepository notificationRepository,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask,
-            IConfiguration configuration
+            IConfiguration configuration,
+             IMemoryCache memoryCache
             )
         {
             _awsSdkService = awsSdkService;
@@ -33,6 +36,7 @@ namespace Interactor.SuperAdmin
             _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
             _configuration = configuration;
+            _memoryCache = memoryCache;
         }
         public TerminateTenantOutputData Handle(TerminateTenantInputData inputData)
         {
@@ -59,12 +63,10 @@ namespace Interactor.SuperAdmin
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantDoesNotExist);
                 }
 
-                var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb).Result;
-                // Check valid delete tennatDb
-                if (listTenantDb == null || listTenantDb.Count() == 0 || !listTenantDb.Contains(tenant.Db))
-                {
-                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantDbDoesNotExistInRDS);
-                }
+                //var cancellationTokenSource = _memoryCache.Get<CancellationTokenSource>(tenant.SubDomain);
+                //cancellationTokenSource.Cancel();
+                var a = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, true).Result;
+                return new TerminateTenantOutputData(false, TerminateTenantStatus.PathFileDumpRestoreNotAvailable);
 
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
 
@@ -73,6 +75,10 @@ namespace Interactor.SuperAdmin
                 {
                     try
                     {
+                        var cancellationTokenSource = _memoryCache.Get<CancellationTokenSource>(tenant.SubDomain);
+                        cancellationTokenSource.Cancel();
+
+                        var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
                         Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
 
                         // Backup tenant
@@ -81,11 +87,11 @@ namespace Interactor.SuperAdmin
                             // Create folder backup S3
                             var backupFolderName = @$"bk-{tenant.EndSubDomain}";
                             _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.RestoreBucketName, backupFolderName).Wait();
-                            
+
                             // Dump DB backup
                             var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // path save file sql dump
-                           PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
-                            
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
+
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
                             {
@@ -97,7 +103,7 @@ namespace Interactor.SuperAdmin
                             {
                                 throw new Exception("Invalid file sql dump");
                             }
-                            
+
                             // Upload file sql dump to folder backup S3
                             _awsSdkService.UploadFileAsync(ConfigConstant.RestoreBucketName, $@"{backupFolderName}/{tenant.Db}", pathFileDump).Wait();
                         }
@@ -151,6 +157,8 @@ namespace Interactor.SuperAdmin
                         var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        // Delete cache memory
+                        _memoryCache.Remove(tenant.SubDomain);
                         cts.Cancel();
                         return;
                     }
