@@ -1,5 +1,4 @@
 ﻿using Domain.Models.PtCmtInf;
-using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -86,6 +85,13 @@ public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
         return result ?? new PtCmtInfModel();
     }
 
+    /// <summary>
+    /// using hpId to get data
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="ptId"></param>
+    /// <param name="text"></param>
+    /// <param name="userId"></param>
     public void Upsert(int hpId, long ptId, string text, int userId)
     {
         var ptCmtList = TrackingDataContext.PtCmtInfs.AsTracking()
