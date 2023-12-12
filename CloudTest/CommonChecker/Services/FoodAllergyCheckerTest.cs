@@ -1,25 +1,21 @@
 ﻿using CloudUnitTest.SampleData;
 using CommonChecker.Caches;
-using CommonChecker.DB;
-using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
-using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Entity.Tenant;
-using Moq;
 
 namespace CloudUnitTest.CommonChecker.Services;
 
 public class FoodAllergyCheckerTest : BaseUT
 {
     /// <summary>
-    /// Test FoodAllergyChecker With Setting Value is 5
+    /// Test Error Food Allery when Pt_Id has data in PTAlleryDrug and ItemCd contain Odr 
     /// </summary>
     [Test]
-    public void FoodAllergyChecker_001_ReturnsEmptyList_WhenFollowSettingValue()
+    public void FoodAllergyChecker_001_CheckError_With_ItemCd_Is_PtAlrydrug()
     {
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
@@ -37,16 +33,19 @@ public class FoodAllergyCheckerTest : BaseUT
                                                                 RealtimeCheckerType.FoodAllergy, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var FoodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-        FoodAllergyChecker.HpID = 1;
-        FoodAllergyChecker.PtID = 111;
-        FoodAllergyChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
+        foodAllergyChecker.HpID = 1;
+        foodAllergyChecker.PtID = 111;
+        foodAllergyChecker.Sinday = 20230101;
+        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
-            systemConf.Val = 5;
+            systemConf.Val = 3;
         }
         else
         {
@@ -54,88 +53,114 @@ public class FoodAllergyCheckerTest : BaseUT
             {
                 HpId = 1,
                 GrpCd = 2027,
-                GrpEdaNo = 1,
+                GrpEdaNo = 0,
                 CreateDate = DateTime.UtcNow,
                 UpdateDate = DateTime.UtcNow,
                 CreateId = 2,
                 UpdateId = 2,
-                Val = 5
+                Val = 3
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
         tenantTracking.SaveChanges();
 
-        if (systemConf != null) systemConf.Val = temp;
+        //Read data test
+        var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
+        var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+        tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
+        tenantTracking.M12FoodAlrgy.AddRange(m12);
         tenantTracking.SaveChanges();
 
-        // Act
-        var result = FoodAllergyChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
-        // Assert
-        Assert.True(result.ErrorOrderList.Count == 0);
+        try
+        {
+            // Act
+            var result = foodAllergyChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+            // Assert
+            Assert.True(result.ErrorOrderList.Count == 1 && result.ErrorInfo != null);
+        }
+        finally
+        {
+            if (systemConf != null) systemConf.Val = temp;
+
+            tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
+            tenantTracking.M12FoodAlrgy.RemoveRange(m12);
+            tenantTracking.SaveChanges();
+        }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     [Test]
-    public void FoodAllergyChecker_002_CheckFoodAllergy()
+    public void FoodAllergyChecker_002_CheckError_With_ItemCd_Is_PtAlrydrug()
     {
-        //Setup
+        //setup
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+        };
+
+        var odrInfoModel = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(21, 0, ordInfDetails)
+        };
+
+        var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                RealtimeCheckerType.FoodAllergy, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 999 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
+        foodAllergyChecker.HpID = 1;
+        foodAllergyChecker.PtID = 111;
+        foodAllergyChecker.Sinday = 20230101;
+        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
+
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
         var temp = systemConf?.Val ?? 0;
-        int settingLevel = 3;
         if (systemConf != null)
         {
-            systemConf.Val = settingLevel;
+            systemConf.Val = 3;
         }
         else
         {
             systemConf = new SystemConf
             {
-                HpId = 999,
+                HpId = 1,
                 GrpCd = 2027,
-                GrpEdaNo = 2,
+                GrpEdaNo = 0,
                 CreateDate = DateTime.UtcNow,
                 UpdateDate = DateTime.UtcNow,
                 CreateId = 2,
                 UpdateId = 2,
-                Val = settingLevel
+                Val = 3
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
         tenantTracking.SaveChanges();
 
-        var m12FoodAlrgys = CommonCheckerData.ReadM12FoodAlrgy("");
-        tenantTracking.M12FoodAlrgy.AddRange(m12FoodAlrgys);
+        //Read data test
+        var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
+        var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+        tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
+        tenantTracking.M12FoodAlrgy.AddRange(m12);
         tenantTracking.SaveChanges();
 
-        int hpId = 999;
-        long ptId = 1231;
-        int sinDate = 20230505;
-
-        var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
-        var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
-
-        var listItemCode = new List<ItemCodeModel>()
-        {
-            new ItemCodeModel("936DIS002", "id1"),
-            new ItemCodeModel("22DIS002", "id2"),
-            new ItemCodeModel("101DIS002", "id3"),
-            new ItemCodeModel("776DIS002", "id4"),
-            new ItemCodeModel("717DIS002", "id5"),
-        };
-
-        //Act
         try
         {
-            var result = realTimeCheckerFinder.CheckFoodAllergy(hpId, ptId, sinDate, listItemCode, settingLevel, new(), true);
-
-            //Assert
-            Assert.True(!result.Any());
+            // Act
+            var result = foodAllergyChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+            // Assert
+            Assert.True(result.ErrorOrderList.Count == 1 && result.ErrorInfo != null);
         }
         finally
         {
             if (systemConf != null) systemConf.Val = temp;
-            tenantTracking.M12FoodAlrgy.RemoveRange(m12FoodAlrgys);
+
+            tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
+            tenantTracking.M12FoodAlrgy.RemoveRange(m12);
             tenantTracking.SaveChanges();
         }
     }

@@ -6,56 +6,40 @@ public class PrintOutData
 {
     public PrintOutData()
     {
-        HenkoMark = string.Empty;
-        RpInf = string.Empty;
-        Data = string.Empty;
-        Suryo = string.Empty;
-        UnitName = string.Empty;
-        Kaisu = string.Empty;
-        YohoUnit = string.Empty;
-        Bunkatu = string.Empty;
     }
 
     /// <summary>
     /// 変更不可マーク
     /// </summary>
-    [JsonPropertyName("henkoMark")]
-    public string HenkoMark { get; set; }
+    public string HenkoMark { get; set; } = string.Empty;
     /// <summary>
     /// RP番号
     /// </summary>
-    [JsonPropertyName("rpInf")]
-    public string RpInf { get; set; }
+    public string RpInf { get; set; } = string.Empty;
     /// <summary>
     /// 薬剤名や用法名など
     /// </summary>
-    [JsonPropertyName("data")]
-    public string Data { get; set; }
+    public string Data { get; set; } = string.Empty;
     /// <summary>
     /// 数量
     /// </summary>
-    [JsonPropertyName("suryo")]
-    public string Suryo { get; set; }
+    public string Suryo { get; set; } = string.Empty;
     /// <summary>
     /// 単位名
     /// </summary>
-    [JsonPropertyName("unitName")]
-    public string UnitName { get; set; }
+    public string UnitName { get; set; } = string.Empty;
     /// <summary>
     /// 回数
     /// </summary>
-    [JsonPropertyName("kaisu")]
-    public string Kaisu { get; set; }
+    public string Kaisu { get; set; } = string.Empty;
     /// <summary>
     /// 用法単位
     /// </summary>
-    [JsonPropertyName("yohoUnit")]
-    public string YohoUnit { get; set; }
+    public string YohoUnit { get; set; } = string.Empty;
     /// <summary>
     /// 文革指示
     /// </summary>
-    [JsonPropertyName("bunkatu")]
-    public string Bunkatu { get; set; }
+    public string Bunkatu { get; set; } = string.Empty;
 
     public bool IsClearData
     {
