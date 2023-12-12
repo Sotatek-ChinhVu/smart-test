@@ -268,23 +268,34 @@ namespace AWSSDK.Common
                             CreateNoWindow = true
                         };
                         Console.WriteLine("Process-linux");
-                        using (Process chmodProc = new Process())
+                        using (var chmodProc =  Process.Start(chmodInfo))
                         {
-                            chmodProc.StartInfo = chmodInfo;
-                            chmodProc.Start();
-                            Console.WriteLine("chmod process-start");
-                            chmodProc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
-                            chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
-                            chmodProc.BeginOutputReadLine();
-                            chmodProc.BeginErrorReadLine();
-                            chmodProc.WaitForExit();
-                            if (chmodProc.ExitCode != 0)
+                            //chmodProc.StartInfo = chmodInfo;
+                            //chmodProc.Start();
+                            //Console.WriteLine("chmod process-start");
+                            //chmodProc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
+                            //chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
+                            //chmodProc.BeginOutputReadLine();
+                            //chmodProc.BeginErrorReadLine();
+                            chmodProc?.WaitForExit();
+                            if (chmodProc?.ExitCode != 0)
                             {
                                 // Handle chmod error, if any
                                 throw new Exception($"Error insert data master!");
                             }
                             Console.WriteLine("chmod exit code" + chmodProc.ExitCode);
                         }
+
+                        ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+
+                        using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
+                        Console.WriteLine("Start ...");
+                        proc.WaitForExit();
+                        Console.WriteLine("End.");
+                        var exit = proc.ExitCode;
+
+
+                        proc.Close();
                     }
                     else
                     {
