@@ -248,7 +248,8 @@ namespace AWSSDK.Common
                     batchContent += $"{dumpCommand}";
 
                     System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
-
+                    Console.WriteLine(batFilePath);
+                    Console.WriteLine(batchContent);
                     // Create process Grant execute permissions to file .sh
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
@@ -262,11 +263,14 @@ namespace AWSSDK.Common
                             UseShellExecute = false,
                             CreateNoWindow = true
                         };
+                        Console.WriteLine("Process-linux");
                         using (Process chmodProc = new Process())
                         {
                             chmodProc.StartInfo = chmodInfo;
                             chmodProc.Start();
-                            chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");                           
+                            Console.WriteLine("chmod process-start");
+                            chmodProc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
+                            chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
                             chmodProc.BeginOutputReadLine();
                             chmodProc.BeginErrorReadLine();
                             chmodProc.WaitForExit();
@@ -275,15 +279,18 @@ namespace AWSSDK.Common
                                 // Handle chmod error, if any
                                 throw new Exception($"Error insert data master!");
                             }
+                            Console.WriteLine("chmod exit code" + chmodProc.ExitCode);
                         }
                     }
                     else
                     {
+                        Console.WriteLine("Process-window");
                         ProcessStartInfo info = ProcessInfoByOS(batFilePath);
                         using (Process proc = new Process())
                         {
                             proc.StartInfo = info;
                             proc.Start();
+                            Console.WriteLine("window-process-start");
                             proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
                             proc.BeginOutputReadLine();
                             proc.BeginErrorReadLine();
