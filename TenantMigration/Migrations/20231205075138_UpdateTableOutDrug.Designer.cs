@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231205075138_UpdateTableOutDrug")]
+    partial class UpdateTableOutDrug
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26189,16 +26192,6 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("END_DATE");
 
-                    b.Property<string>("HpkiIssuerDn")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("HPKI_ISSUER_DN");
-
-                    b.Property<string>("HpkiSn")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("HPKI_SN");
-
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
@@ -26227,10 +26220,6 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("LOGIN_PASS");
-
-                    b.Property<int>("LoginType")
-                        .HasColumnType("integer")
-                        .HasColumnName("LOGIN_TYPE");
 
                     b.Property<int>("ManagerKbn")
                         .HasColumnType("integer")

@@ -128,10 +128,10 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpGet(ApiPath.OutDrug)]
-    public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
+    public async Task<IActionResult> GetOutDrugReportingData([FromQuery] OutDrugRequest request)
     {
         var data = _reportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-        return await RenderPdf(data, ReportType.OutDug, "院外処方箋.pdf");
+        return await RenderPdf(data, ReportType.Common, "院外処方箋.pdf");
     }
 
     [HttpGet(ApiPath.ReceiptCheck)]
@@ -584,7 +584,7 @@ public class PdfCreatorController : ControllerBase
         {
             return Content(NoDataMessage, "text/html");
         }
-
+        var json = JsonSerializer.Serialize(data);
         StringContent jsonContent = (reportType == ReportType.DrugInfo)
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
@@ -595,7 +595,6 @@ public class PdfCreatorController : ControllerBase
         {
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
-            ReportType.OutDug => "reporting-out-drug",
             ReportType.Accounting => "reporting-accounting",
             _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
         } ?? string.Empty;
