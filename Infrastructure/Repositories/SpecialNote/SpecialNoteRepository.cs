@@ -618,6 +618,7 @@ namespace Infrastructure.Repositories.SpecialNote
         #region SavePatientInfo
         private void SavePatientInfo(int hpId, long ptId, int sinDate, PatientInfoModel patientInfoModel, int userId)
         {
+            string finalKey;
             foreach (var pregnancyItem in patientInfoModel.PregnancyItems)
             {
                 if (patientInfoModel?.PregnancyItems != null && pregnancyItem.HpId == hpId && pregnancyItem.PtId == ptId)
@@ -626,13 +627,34 @@ namespace Infrastructure.Repositories.SpecialNote
                 }
             }
 
+            // delete cache key when save SavePregnancyItems
+            finalKey = key + CacheKeyConstant.PtPregnancyGetList + "_" + hpId + "_" + ptId;
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
+            }
+
             if (patientInfoModel?.PtCmtInfItems != null && patientInfoModel.PtCmtInfItems.HpId == hpId && patientInfoModel.PtCmtInfItems.PtId == ptId)
             {
                 SavePtCmtInfItems(patientInfoModel, userId);
+
+                // delete cache key when save SavePtCmtInfItems
+                finalKey = key + CacheKeyConstant.PtCmtInfGetList + "_" + hpId + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (patientInfoModel?.SeikatureInfItems != null && patientInfoModel.SeikatureInfItems.HpId == hpId && patientInfoModel.SeikatureInfItems.PtId == ptId)
             {
                 SaveSeikatureInfItems(patientInfoModel, userId);
+
+                // delete cache key when save SavePtCmtInfItems
+                finalKey = key + CacheKeyConstant.SeikaturekiInfGetList + "_" + hpId + "_" + ptId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             if (patientInfoModel?.PhysicalInfItems != null && patientInfoModel.PhysicalInfItems.Any())
             {

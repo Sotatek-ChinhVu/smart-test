@@ -11,4 +11,7 @@ public static class CacheKeyConstant
     public const string OtcDrugGetList = "OtcDrugGetList";
     public const string PtAlrgyDrugGetList = "PtAlrgyDrugGetList";
     public const string SuppleGetList = "SuppleGetList";
+    public const string PtPregnancyGetList = "PtPregnancyGetList";
+    public const string PtCmtInfGetList = "PtCmtInfGetList";
+    public const string SeikaturekiInfGetList = "SeikaturekiInfGetList";
 }
