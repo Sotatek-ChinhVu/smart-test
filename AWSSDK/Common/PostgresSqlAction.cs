@@ -36,7 +36,7 @@ namespace AWSSDK.Common
             else
             {
                 // path file linux
-                batchContent = "" + dumpCommand + "  > " + outFile + "\n";
+                batchContent = "" + dumpCommand + "  > " + outFile + " 2> /app/restore/log-create-dump.txt" + "\n";
             }
             if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
 
@@ -66,12 +66,12 @@ namespace AWSSDK.Common
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // path file windown
+                // path file window
                 batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
             }
             else
             {   // path file linux
-                batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + "\n";
+                batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + " 2> /app/restore/log-excute-dump.txt" + "\n";
             }
 
             await Execute(batchContent);
@@ -127,7 +127,6 @@ namespace AWSSDK.Common
 
                     using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
 
-
                     proc.WaitForExit();
                     var exit = proc.ExitCode;
 
@@ -142,7 +141,7 @@ namespace AWSSDK.Common
                 }
                 finally
                 {
-                    if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
+                    //if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
                 }
             });
         }
@@ -214,6 +213,26 @@ namespace AWSSDK.Common
                 }
             }
             return false;
+        }
+
+        public static async Task PostgreSqlExcuteFileSQLDataMaster(string pathFileDump, string host, int port, string database, string user, string password)
+        {
+            Console.WriteLine($"Start: run  PostgreSqlExcuteFileDataMaster");
+            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+            pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
+            string dumpCommand =
+                 $"{Set} PGPASSWORD={password}\n";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // path file window
+                dumpCommand = dumpCommand + $"psql -h {host} -p {port} -U {user} -d {database} -c \"SET client_encoding = 'UTF8';\" -f {pathFileDump}";
+            }
+            else
+            {   // path file linux
+                dumpCommand = dumpCommand + $"psql" + " -h " + host + " -p " + port + " -U " + user + " -d " + database + " -c \"SET client_encoding = 'UTF8';\"" + " -f " + pathFileDump;
+            }
+            await Execute(dumpCommand);
         }
     }
 }

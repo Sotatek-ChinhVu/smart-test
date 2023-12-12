@@ -67,14 +67,19 @@ public class DiseaseCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        if (systemConf != null) systemConf.Val = temp;
-        tenantTracking.SaveChanges();
+        try
+        {
+            // Act
+            var result = diseaseChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
 
-        // Act
-        var result = diseaseChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
-
-        // Assert
-        Assert.True(result.ErrorOrderList.Count == 0);
+            // Assert
+            Assert.True(result.ErrorOrderList.Count == 0);
+        }
+        finally
+        {
+            if (systemConf != null) systemConf.Val = temp;
+            tenantTracking.SaveChanges();
+        }
     }
 
     [Test]

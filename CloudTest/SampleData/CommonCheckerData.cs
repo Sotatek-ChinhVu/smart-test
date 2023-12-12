@@ -1688,6 +1688,175 @@ namespace CloudUnitTest.SampleData
             return m01Kinkis;
         }
 
+        public static List<PtAlrgyFood> ReadPtAlrgyFood()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptAlrgyDrugs = new List<PtAlrgyFood>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_ALRGY_FOOD").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptAlrgy = new PtAlrgyFood();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptAlrgy.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    ptAlrgy.PtId = ptId;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int sortNo);
+                                    ptAlrgy.SortNo = sortNo;
+                                    break;
+                                case "E":
+                                    ptAlrgy.AlrgyKbn = text;
+                                    break;
+                                case "F":
+                                    int.TryParse(text, out int startDate);
+                                    ptAlrgy.StartDate = startDate;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int endDate);
+                                    ptAlrgy.EndDate = endDate;
+                                    break;
+                                case "H":
+                                    ptAlrgy.Cmt = text;
+                                    break;
+                                case "I":
+                                    int.TryParse(text, out int isDeleted);
+                                    ptAlrgy.IsDeleted = isDeleted;
+                                    break;
+                                case "J":
+                                    ptAlrgy.CreateDate = DateTime.UtcNow;
+                                    break;
+                                case "K":
+                                    int.TryParse(text, out int createId);
+                                    ptAlrgy.CreateId = createId;
+                                    break;
+                                case "L":
+                                    ptAlrgy.CreateMachine = text;
+                                    break;
+                                case "M":
+                                    ptAlrgy.UpdateDate = DateTime.UtcNow;
+                                    break;
+                                case "N":
+                                    int.TryParse(text, out int updateId);
+                                    ptAlrgy.UpdateId = updateId;
+                                    break;
+                                case "O":
+                                    ptAlrgy.UpdateMachine = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptAlrgyDrugs.Add(ptAlrgy);
+                    }
+                }
+            }
+
+            return ptAlrgyDrugs;
+        }
+
+        public static List<M14AgeCheck> ReadM14AgeCheck()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m14AgeCheck = new List<M14AgeCheck>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M14_AGE_CHECK").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m14 = new M14AgeCheck();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m14.YjCd = text;
+                                    break;
+                                case "B":
+                                    m14.AttentionCmtCd = text;
+                                    break;
+                                case "C":
+                                    m14.WorkingMechanism = text;
+                                    break;
+                                case "D":
+                                    m14.TenpuLevel = text;
+                                    break;
+                                case "E":
+                                    m14.AgeKbn = text;
+                                    break;
+                                case "F":
+                                    m14.WeightKbn = text;
+                                    break;
+                                case "G":
+                                    m14.SexKbn = text;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int ageMin);
+                                    m14.AgeMin = ageMin;
+                                    break;
+                                case "I":
+                                    int.TryParse(text, out int ageMax);
+                                    m14.AgeMax = ageMax;
+                                    break;
+                                case "J":
+                                    int.TryParse(text, out int weightMin);
+                                    m14.WeightMin = weightMin;
+                                    break;
+                                case "K":
+                                    int.TryParse(text, out int weightMax);
+                                    m14.WeightMax = weightMax;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m14AgeCheck.Add(m14);
+                    }
+                }
+            }
+
+            return m14AgeCheck;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 

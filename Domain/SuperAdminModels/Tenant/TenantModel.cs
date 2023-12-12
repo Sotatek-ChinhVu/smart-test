@@ -59,9 +59,10 @@ namespace Domain.SuperAdminModels.Tenant
             PasswordConnect = passwordConnect;
         }
 
-        public TenantModel ChangeStorageFull(double storageFull)
+        public TenantModel ChangeStorageFull(double storageFull, double storageUsed)
         {
             StorageFull = storageFull;
+            StorageUsed = storageUsed;
             return this;
         }
 
@@ -104,6 +105,11 @@ namespace Domain.SuperAdminModels.Tenant
         public DateTime CreateDate { get; private set; }
 
         public string RdsIdentifier { get; private set; }
+
+        /// <summary>
+        ///  return storage used to FE
+        /// </summary>
+        public double StorageUsed { get; private set; }
 
         public double StorageFull { get; private set; }
 
