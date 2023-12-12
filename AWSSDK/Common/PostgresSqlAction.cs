@@ -214,5 +214,25 @@ namespace AWSSDK.Common
             }
             return false;
         }
+
+        public static async Task PostgreSqlExcuteFileSQLDataMaster(string pathFileDump, string host, int port, string database, string user, string password)
+        {
+            Console.WriteLine($"Start: run  PostgreSqlExcuteFileDataMaster");
+            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+            pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
+            string dumpCommand =
+                 $"{Set} PGPASSWORD={password}\n";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // path file window
+                dumpCommand = dumpCommand + $"psql -h {host} -p {port} -U {user} -d {database} -c \"SET client_encoding = 'UTF8';\" -f {pathFileDump}";
+            }
+            else
+            {   // path file linux
+                dumpCommand = dumpCommand + $"psql" + " -h " + host + " -p " + port + " -U " + user + " -d " + database + " -c \"SET client_encoding = 'UTF8';\"" + " -f " + pathFileDump;
+            }
+            await Execute(dumpCommand);
+        }
     }
 }

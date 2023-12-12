@@ -3,7 +3,7 @@ using UseCase.SuperAdmin.Login;
 
 namespace UseCase.SuperAdmin.UpgradePremium
 {
-    public interface IUpgradePremiumOutputPort : IOutputPort<UpgradePremiumOutputData>
+    public interface IUpdateTenantOutputPort : IOutputPort<UpdateTenantOutputData>
     {
     }
 }
