@@ -223,6 +223,7 @@ namespace AWSSDK.Common
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
             string dumpCommand =
+                $"echo \"scipt chay\" >> /app/test.txtttt\n" +
                  $"{Set} PGPASSWORD={password}\n";
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -250,6 +251,7 @@ namespace AWSSDK.Common
                     System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
                     Console.WriteLine(batFilePath);
                     Console.WriteLine(batchContent);
+                    Console.WriteLine("Check access file: " + CheckingFinishedAccessedFile(batFilePath).ToString());
                     // Create process Grant execute permissions to file .sh
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     {
