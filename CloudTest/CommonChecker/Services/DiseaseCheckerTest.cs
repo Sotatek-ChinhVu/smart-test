@@ -522,7 +522,7 @@ public class DiseaseCheckerTest : BaseUT
     }
 
     [Test]
-    public void CheckDiseaseChecker_008_CheckOrderList_With_CheckedResultForHistoryDisease_Any()
+    public void CheckDiseaseChecker_008_CheckOrderList_With_CheckedResultForFamilyDisease_Any()
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
