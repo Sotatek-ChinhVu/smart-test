@@ -144,6 +144,11 @@ namespace Interactor.SuperAdmin
                                 // Notification  terminating success
                                 var messenge = tenant.EndSubDomain + $"is teminate successfully. ";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                                
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(tenant.StatusTenant);
+
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                                 cts.Cancel();
                                 return;
@@ -156,6 +161,11 @@ namespace Interactor.SuperAdmin
                         // Notification  terminating failed
                         var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+
+                        // Add info tenant for notification
+                        notification.SetTenantId(tenant.TenantId);
+                        notification.SetStatusTenant(tenant.StatusTenant);
+
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         // Delete cache memory
                         _memoryCache.Remove(tenant.SubDomain);
