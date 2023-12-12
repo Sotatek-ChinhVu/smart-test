@@ -9,6 +9,8 @@ using Domain.SuperAdminModels.MigrationTenantHistory;
 using Interactor.Realtime;
 using Domain.SuperAdminModels.Notification;
 using Npgsql;
+using Entity.SuperAdmin;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Interactor.SuperAdmin
 {
@@ -96,7 +98,7 @@ namespace Interactor.SuperAdmin
             int tier = model.Type;
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
-
+            int id = 0;
             try
             {
                 // Provisioning SubDomain for new tenants
@@ -111,7 +113,7 @@ namespace Interactor.SuperAdmin
                         var rdsInfo = await RDSAction.GetRDSInformation();
                         if (rdsInfo.ContainsKey(dbIdentifier))
                         {
-                            var id = _tenantRepository.CreateTenant(model);
+                            id = _tenantRepository.CreateTenant(model);
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
                             {
@@ -120,7 +122,7 @@ namespace Interactor.SuperAdmin
                         }
                         else
                         {
-                            var id = _tenantRepository.CreateTenant(model);
+                            id = _tenantRepository.CreateTenant(model);
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
@@ -138,7 +140,7 @@ namespace Interactor.SuperAdmin
                         if (availableIdentifier.Count == 0)
                         {
                             string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                            var id = _tenantRepository.CreateTenant(model);
+                            id = _tenantRepository.CreateTenant(model);
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
@@ -156,7 +158,7 @@ namespace Interactor.SuperAdmin
                                 {
                                     checkAvailableIdentifier = true;
                                     model.ChangeRdsIdentifier(dbIdentifier);
-                                    var id = _tenantRepository.CreateTenant(model);
+                                    id = _tenantRepository.CreateTenant(model);
                                     _ = Task.Run(() =>
                                     {
                                         AddData(id, tenantUrl, dbName, model, dbIdentifier);
@@ -167,7 +169,7 @@ namespace Interactor.SuperAdmin
                             if (!checkAvailableIdentifier)
                             {
                                 string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
-                                var id = _tenantRepository.CreateTenant(model);
+                                id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifierNew);
                                 model.ChangeRdsIdentifier(dbIdentifierNew);
                                 _ = Task.Run(() =>
@@ -192,6 +194,11 @@ namespace Interactor.SuperAdmin
             {
                 var message = $"{subDomain} is created failed. Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+
+                // Add info tenant for notification
+                saveDBNotify.SetTenantId(id);
+                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
+
                 await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
@@ -278,6 +285,11 @@ namespace Interactor.SuperAdmin
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
+                    
+                    // Add info tenant for notification
+                    saveDBNotify.SetTenantId(tenantId);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);
+
                     _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 }
             }
@@ -285,6 +297,9 @@ namespace Interactor.SuperAdmin
             {
                 var message = $"{tenantUrl} is created failed: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                // Add info tenant for notification
+                saveDBNotify.SetTenantId(tenantId);
+                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
             }
             finally
