@@ -263,12 +263,13 @@ namespace AWSSDK.Common
                             UseShellExecute = false,
                             CreateNoWindow = true
                         };
+                        Console.WriteLine("Process-linux");
                         using (Process chmodProc = new Process())
                         {
                             chmodProc.StartInfo = chmodInfo;
                             chmodProc.Start();
-                            Console.WriteLine("chmodProc-start");
-                            chmodProc.OutputDataReceived += (sender, e) => Console.WriteLine($"{e.Data}");
+                            Console.WriteLine("chmod process-start");
+                            chmodProc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
                             chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
                             chmodProc.BeginOutputReadLine();
                             chmodProc.BeginErrorReadLine();
@@ -278,7 +279,7 @@ namespace AWSSDK.Common
                                 // Handle chmod error, if any
                                 throw new Exception($"Error insert data master!");
                             }
-                            Console.WriteLine("linux" + chmodProc.ExitCode);
+                            Console.WriteLine("chmod exit code" + chmodProc.ExitCode);
                         }
                     }
                     else
@@ -289,7 +290,7 @@ namespace AWSSDK.Common
                         {
                             proc.StartInfo = info;
                             proc.Start();
-                            Console.WriteLine("Start-window");
+                            Console.WriteLine("window-process-start");
                             proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
                             proc.BeginOutputReadLine();
                             proc.BeginErrorReadLine();
