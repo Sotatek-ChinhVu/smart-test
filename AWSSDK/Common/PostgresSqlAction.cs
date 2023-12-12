@@ -173,6 +173,7 @@ namespace AWSSDK.Common
             info.UseShellExecute = false;
             info.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
             info.RedirectStandardError = true;
+            info.RedirectStandardOutput = true;
 
             return info;
         }
