@@ -219,6 +219,8 @@ namespace AWSSDK.Common
         #region insert data master
         public static async Task PostgreSqlExcuteFileSQLDataMaster(string pathFileDump, string host, int port, string database, string user, string password)
         {
+            user = "postgres";
+            password = "Emr!23456789";
             Console.WriteLine($"Start: run  PostgreSqlExcuteFileDataMaster");
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
