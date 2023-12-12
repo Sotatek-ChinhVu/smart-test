@@ -390,6 +390,7 @@ namespace Interactor.SuperAdmin
                     connection.Open();
                     using (var command = new NpgsqlCommand())
                     {
+                        command.Connection = connection;
                         command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
                         var tableExists = command.ExecuteScalar();
                         string createCommandText = string.Empty;
@@ -403,6 +404,7 @@ namespace Interactor.SuperAdmin
                         }
                         using (var createTableCommand = new NpgsqlCommand())
                         {
+                            createTableCommand.Connection = connection;
                             createTableCommand.CommandText = createCommandText;
                             createTableCommand.ExecuteNonQuery();
                             Console.WriteLine("SQL scripts AuditLog, Parttion executed successfully.");
