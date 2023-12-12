@@ -133,6 +133,11 @@ namespace Interactor.SuperAdmin
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
                             var messenge = $"{tenant.EndSubDomain} is restore successfully.";
                             var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+
+                            // Add info tenant for notification
+                            notification.SetTenantId(tenant.TenantId);
+                            notification.SetStatusTenant(tenant.StatusTenant);
+
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                             cts.Cancel();
                             return;
@@ -146,6 +151,11 @@ namespace Interactor.SuperAdmin
                         // Notification  restore failed
                         var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
                         var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                        
+                        // Add info tenant for notification
+                        notification.SetTenantId(tenant.TenantId);
+                        notification.SetStatusTenant(tenant.StatusTenant);
+
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;
