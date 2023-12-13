@@ -81,11 +81,11 @@ namespace Interactor.SuperAdmin
                             // Create folder backup S3
                             var backupFolderName = @$"bk-{tenant.EndSubDomain}";
                             _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.RestoreBucketName, backupFolderName).Wait();
-                            
+
                             // Dump DB backup
                             var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // path save file sql dump
-                           PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
-                            
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
+
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
                             {
@@ -97,7 +97,7 @@ namespace Interactor.SuperAdmin
                             {
                                 throw new Exception("Invalid file sql dump");
                             }
-                            
+
                             // Upload file sql dump to folder backup S3
                             _awsSdkService.UploadFileAsync(ConfigConstant.RestoreBucketName, $@"{backupFolderName}/{tenant.Db}", pathFileDump).Wait();
                         }
@@ -138,6 +138,11 @@ namespace Interactor.SuperAdmin
                                 // Notification  terminating success
                                 var messenge = tenant.EndSubDomain + $"is teminate successfully. ";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                                
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(tenant.StatusTenant);
+
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                                 cts.Cancel();
                                 return;
@@ -150,6 +155,11 @@ namespace Interactor.SuperAdmin
                         // Notification  terminating failed
                         var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+
+                        // Add info tenant for notification
+                        notification.SetTenantId(tenant.TenantId);
+                        notification.SetStatusTenant(tenant.StatusTenant);
+
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;

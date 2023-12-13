@@ -14,7 +14,7 @@ using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
 {
-    public class UpgradePremiumInteractor : IUpgradePremiumInputPort
+    public class UpdateTenantInteractor : IUpdateTenantInputPort
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
@@ -23,7 +23,7 @@ namespace Interactor.SuperAdmin
         private readonly INotificationRepository _notificationRepositoryRunTask;
         private readonly IConfiguration _configuration;
         private readonly IDatabase _cache;
-        public UpgradePremiumInteractor(
+        public UpdateTenantInteractor(
             ITenantRepository tenantRepository,
             IAwsSdkService awsSdkService,
             INotificationRepository notificationRepository,
@@ -51,7 +51,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public UpgradePremiumOutputData Handle(UpgradePremiumInputData inputData)
+        public UpdateTenantOutputData Handle(UpdateTenantInputData inputData)
         {
             try
             {
@@ -59,66 +59,80 @@ namespace Interactor.SuperAdmin
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 if (inputData.TenantId <= 0)
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidTenantId);
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidTenantId);
                 }
 
                 if (inputData.Size <= 0)
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidSize);
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidSize);
                 }
 
                 if (inputData.SizeType <= 0)
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidSizeType);
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidSizeType);
                 }
 
                 if (string.IsNullOrEmpty(inputData.SubDomain))
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.InvalidDomain);
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidDomain);
+                }
+
+                if (string.IsNullOrEmpty(inputData.Hospital))
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidHospital);
+                }
+
+                if (inputData.AdminId <= 0)
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidAdminId);
+                }
+
+                if (string.IsNullOrEmpty(inputData.Password))
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidPassword);
                 }
 
                 var oldTenant = _tenantRepository.Get(inputData.TenantId);
+
                 if (oldTenant.TenantId <= 0 || oldTenant.TenantId <= 0)
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.TenantDoesNotExist);
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantDoesNotExist);
                 }
 
-                if (oldTenant.Type == ConfigConstant.TypeDedicate)
+                if (oldTenant.Type == ConfigConstant.TypeDedicate && inputData.Type == ConfigConstant.TypeDedicate)
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.FailedTenantIsPremium);
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantTypeDedicate);
                 }
+
 
                 if (!_awsSdkService.CheckExitRDS(oldTenant.RdsIdentifier).Result)
                 {
-                    return new UpgradePremiumOutputData(false, UpgradePremiumStatus.RdsDoesNotExist);
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.RdsDoesNotExist);
                 }
 
                 if (oldTenant.SubDomain != inputData.SubDomain)
                 {
                     if (Route53Action.CheckSubdomainExistence(inputData.SubDomain).Result)
                     {
-                        return new UpgradePremiumOutputData(false, UpgradePremiumStatus.NewDomainAleadyExist);
+                        return new UpdateTenantOutputData(false, UpdateTenantStatus.NewDomainAleadyExist);
                     }
                 }
-                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrading"]);
+                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>
                 {
                     try
                     {
-                        // Create SnapShot
-                        var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpgrade).Result;
+                        string rdsIdentifier = oldTenant.RdsIdentifier;
+                        string endPointDb = oldTenant.EndPointDb;
 
-                        if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
-                        {
-                            throw new Exception("Snapshot is not Available");
-                        }
-
-                        // Create New subdomain
+                        // Update subdomain
                         if (oldTenant.SubDomain != inputData.SubDomain)
                         {
+                            // Create New subdomain
                             if (Route53Action.CreateTenantDomain(inputData.SubDomain).Result != null)
                             {
+                                // Delete old subdomain
                                 var actionDeleteDomain = Route53Action.DeleteTenantDomain(oldTenant.SubDomain).Result;
                             }
                             else
@@ -127,45 +141,70 @@ namespace Interactor.SuperAdmin
                             }
                         }
 
-                        // Restore DB Instance from snapshot
-                        Console.WriteLine($"Start Restore");
 
-                        string rString = CommonConstants.GenerateRandomString(6);
-                        var dbInstanceIdentifier = $"{inputData.SubDomain}-{rString}";
-                        Console.WriteLine($"Start Restore: {dbInstanceIdentifier}");
-
-                        var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, snapshotIdentifier).Result;
-
-                        // Check Restore success 
-                        var endpoint = CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId).Result;
-
-
-                        //Delete list Db without tenantDB in new RDS
-                        Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
-                        var isDeleteSuccess = ConnectAndDeleteDatabases(endpoint.Address, oldTenant.Db);
-
-
-                        // Delete DB in old RDS
-                        var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb).Result;
-                        Console.WriteLine($"listTenantDb: {listTenantDb}");
-                        // Connect RDS delete TenantDb
-                        if (listTenantDb.Count > 1)
+                        // Upgrade tenant Sharing to Dedicate
+                        if (oldTenant.Type == ConfigConstant.TypeSharing && inputData.Type == ConfigConstant.TypeDedicate)
                         {
-                            Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
-                            _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db);
+                            // Create SnapShot
+                            var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpgrade).Result;
+
+                            if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
+                            {
+                                throw new Exception("Snapshot is not Available");
+                            }
+
+                            // Restore DB Instance from snapshot
+                            Console.WriteLine($"Start Restore");
+
+                            string rString = CommonConstants.GenerateRandomString(6);
+                            var newRdsIdentifier = $"{inputData.SubDomain}-{rString}";
+
+                            Console.WriteLine($"Start Restore: {newRdsIdentifier}");
+
+                            var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(newRdsIdentifier, snapshotIdentifier).Result;
+
+                            // Check Restore success 
+                            var newEndpoint = CheckRestoredInstanceAvailableAsync(newRdsIdentifier, inputData.TenantId).Result;
+
+                            // Update new value  
+                            rdsIdentifier = newRdsIdentifier;
+                            endPointDb = newEndpoint.Address;
+
+                            //Delete list Db without tenantDB in new RDS
+                            Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
+                            var isDeleteSuccess = ConnectAndDeleteDatabases(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
+
+
+                            // Delete DB in old RDS
+                            var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb).Result;
+                            Console.WriteLine($"listTenantDb: {listTenantDb}");
+
+                            // Connect RDS delete TenantDb
+                            if (listTenantDb.Count > 1)
+                            {
+                                Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
+                                _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db);
+                            }
+
+                            // Deleted RDS
+                            else
+                            {
+                                Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
+                                var actionDeleteRDS = RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                            }
                         }
 
-                        // Deleted RDS
-                        else
+                        // Update adminId, password
+                        if (oldTenant.AdminId != inputData.AdminId || oldTenant.Password != oldTenant.Password)
                         {
-                            Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
-                            var actionDeleteRDS = RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                            UpdateLoginIdLoginPass(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect, oldTenant.AdminId, oldTenant.Password, inputData.AdminId, inputData.Password);
                         }
 
-                        // Update endpoint, dbInstanceIdentifier, status tenant available 
-                        var tenantUpgrade = _tenantRepositoryRunTask.UpgradePremium(inputData.TenantId, dbInstanceIdentifier, endpoint.Address, inputData.SubDomain, inputData.Size, inputData.SizeType);
+                        // Update tenant
+                        var tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size, inputData.SizeType,
+                            inputData.Hospital, inputData.AdminId, inputData.Password);
 
-                        // Finished upgrade
+                        // Finished update tenant
                         if (tenantUpgrade != null)
                         {
                             // set cache to tenantId
@@ -175,7 +214,7 @@ namespace Interactor.SuperAdmin
                                 _cache.KeyDelete(key);
                                 _cache.StringSet(key, tenantUpgrade.TenantId.ToString());
                             }
-                            var messenge = $"{oldTenant.EndSubDomain} is upgrade premium successfully.";
+                            var messenge = $"{oldTenant.EndSubDomain} is update tenant successfully.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                             cts.Cancel();
@@ -188,10 +227,10 @@ namespace Interactor.SuperAdmin
                     }
                     catch (Exception ex)
                     {
-                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["update-failed"]);
                         // Notification  upgrade failed
-                        _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["upgrade-failed"]);
-                        var messenge = $"{oldTenant.EndSubDomain} is upgrade premium failed. Error: {ex.Message}.";
+                        _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["update-failed"]);
+                        var messenge = $"{oldTenant.EndSubDomain} is update update failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
@@ -204,7 +243,7 @@ namespace Interactor.SuperAdmin
                     }
                 });
 
-                return new UpgradePremiumOutputData(true, UpgradePremiumStatus.Successed);
+                return new UpdateTenantOutputData(true, UpdateTenantStatus.Successed);
             }
             finally
             {
@@ -213,17 +252,19 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        public bool ConnectAndDeleteDatabases(string serverEndpoint, string tennantDB)
+        /// <summary>
+        /// Delete tenant db in old RDS
+        /// </summary>
+        /// <param name="serverEndpoint"></param>
+        /// <param name="tennantDB"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool ConnectAndDeleteDatabases(string serverEndpoint, string tennantDB, string username, string password)
         {
             try
             {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                int port = 5432;
-
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
                 var listTenantDb = RDSAction.GetListDatabase(serverEndpoint).Result;
                 if (listTenantDb.Contains(tennantDB))
                 {
@@ -231,7 +272,12 @@ namespace Interactor.SuperAdmin
                 }
                 else
                 {
-                    throw new Exception($"Connec tAndDelete Databases. tennantDB doesn't exists");
+                    throw new Exception($"Connect AndDelete Databases. tennantDB doesn't exists");
+                }
+
+                if (listTenantDb.Count <= 0)
+                {
+                    return true;
                 }
 
                 // Create and open a connection
@@ -267,6 +313,56 @@ namespace Interactor.SuperAdmin
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 throw new Exception($"Delete redundant Databases in new RDS. {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Update loginId, loginPass in tenant db
+        /// </summary>
+        /// <param name="serverEndpoint"></param>
+        /// <param name="tennantDB"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateLoginIdLoginPass(string serverEndpoint, string tennantDB, string username, string password, int loginId, string loginPass, int newLoginId, string newLoginPass)
+        {
+            try
+            {
+                // Connection string format for SQL Server
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
+
+
+                // Create and open a connection
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        // Update database
+                        using (NpgsqlCommand command = new NpgsqlCommand())
+                        {
+                            command.Connection = connection;
+                            command.CommandText += $"UPDATE \"{tennantDB}\".public.\"USER_MST\" SET  \"LOGIN_ID\"  = '{newLoginId}', \"LOGIN_PASS\"  = '{newLoginPass}' WHERE \"LOGIN_ID\"  ='{loginId}' and \"LOGIN_PASS\"  ='{loginPass}';";
+                            command.ExecuteNonQuery();
+                        }
+
+                        Console.WriteLine($"Database Update successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                        throw new Exception($"Connect And Update Databases Failed. {ex.Message}");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Update AdminId, Password. {ex.Message}");
             }
         }
 

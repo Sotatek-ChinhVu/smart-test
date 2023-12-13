@@ -9,6 +9,8 @@ using Domain.SuperAdminModels.MigrationTenantHistory;
 using Interactor.Realtime;
 using Domain.SuperAdminModels.Notification;
 using Npgsql;
+using Entity.SuperAdmin;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Interactor.SuperAdmin
 {
@@ -295,7 +297,7 @@ namespace Interactor.SuperAdmin
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-
+                    
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(tenantId);
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);
@@ -307,6 +309,9 @@ namespace Interactor.SuperAdmin
             {
                 var message = $"{tenantUrl} is created failed: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                // Add info tenant for notification
+                saveDBNotify.SetTenantId(tenantId);
+                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
             }
             finally
@@ -335,9 +340,9 @@ namespace Interactor.SuperAdmin
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
-                        _CreateAuditLog(tenantId);
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
+                        _CreateAuditLog(tenantId);
                         _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
                     }
                 }
@@ -404,7 +409,7 @@ namespace Interactor.SuperAdmin
                 var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
                 var dbName = "smartkartelogging";
                 var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
-                string sqlCreateAuditLog = File.ReadAllText(QueryConstant.CreateAuditLog);
+                string sqlCreateAuditLog = QueryConstant.CreateAuditLog;
                 var addParttion = $"CREATE TABLE IF NOT EXISTS PARTITION_{tenantId} PARTITION OF public.\"AuditLogs\" FOR VALUES IN ({tenantId});";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -412,6 +417,7 @@ namespace Interactor.SuperAdmin
                     connection.Open();
                     using (var command = new NpgsqlCommand())
                     {
+                        command.Connection = connection;
                         command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
                         var tableExists = command.ExecuteScalar();
                         string createCommandText = string.Empty;
@@ -425,6 +431,7 @@ namespace Interactor.SuperAdmin
                         }
                         using (var createTableCommand = new NpgsqlCommand())
                         {
+                            createTableCommand.Connection = connection;
                             createTableCommand.CommandText = createCommandText;
                             createTableCommand.ExecuteNonQuery();
                             Console.WriteLine("SQL scripts AuditLog, Parttion executed successfully.");
@@ -434,7 +441,8 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error insert AuditLog, Parttion: {ex.Message}");
+                Console.WriteLine($"Error insert AuditLog/ Parttion: {ex.Message}");
+                throw new Exception($"Error insert AuditLog/ Parttion: {ex.Message}");
             }
         }
 
@@ -448,6 +456,7 @@ namespace Interactor.SuperAdmin
             catch (Exception ex)
             {
                 Console.WriteLine($"Error insert data master: {ex.Message}");
+                throw new Exception($"Error insert data master: {ex.Message}");
             }
         }
 
