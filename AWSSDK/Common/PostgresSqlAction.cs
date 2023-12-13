@@ -255,70 +255,69 @@ namespace AWSSDK.Common
                     Console.WriteLine(batchContent);
                     Console.WriteLine("Check access file: " + CheckingFinishedAccessedFile(batFilePath).ToString());
                     // Create process Grant execute permissions to file .sh
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    //if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    //{
+                    //    // Grant execute permissions using chmod
+                    //    ProcessStartInfo chmodInfo = new ProcessStartInfo
+                    //    {
+                    //        FileName = "chmod",
+                    //        Arguments = $"+x {batFilePath}",
+                    //        RedirectStandardOutput = true,
+                    //        RedirectStandardError = true,
+                    //        UseShellExecute = false,
+                    //        CreateNoWindow = true
+                    //    };
+                    //    Console.WriteLine("Process-linux");
+                    //    using (var chmodProc =  Process.Start(chmodInfo))
+                    //    {
+                    //        //chmodProc.StartInfo = chmodInfo;
+                    //        //chmodProc.Start();
+                    //        //Console.WriteLine("chmod process-start");
+                    //        //chmodProc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
+                    //        //chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
+                    //        //chmodProc.BeginOutputReadLine();
+                    //        //chmodProc.BeginErrorReadLine();
+                    //        chmodProc?.WaitForExit();
+                    //        if (chmodProc?.ExitCode != 0)
+                    //        {
+                    //            // Handle chmod error, if any
+                    //            throw new Exception($"Error insert data master!");
+                    //        }
+                    //        Console.WriteLine("chmod exit code" + chmodProc.ExitCode);
+                    //    }
+
+                    //    ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+
+                    //    var proc = System.Diagnostics.Process.Start(info);
+                    //    Console.WriteLine("Start ...");
+                    //    if (proc != null)
+                    //    {
+                    //        proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
+                    //        proc.BeginOutputReadLine();
+                    //        proc.BeginErrorReadLine();
+                    //        proc.WaitForExit();
+                    //        Console.WriteLine("End.");
+                    //        var exit = proc.ExitCode;
+
+                    //        proc.Close();
+                    //    }
+                    //}
+                    //else
+                    //{
+                    Console.WriteLine("Process-window");
+                    ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+                    using (Process proc = new Process())
                     {
-                        // Grant execute permissions using chmod
-                        ProcessStartInfo chmodInfo = new ProcessStartInfo
-                        {
-                            FileName = "chmod",
-                            Arguments = $"+x {batFilePath}",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-                        Console.WriteLine("Process-linux");
-                        using (var chmodProc =  Process.Start(chmodInfo))
-                        {
-                            //chmodProc.StartInfo = chmodInfo;
-                            //chmodProc.Start();
-                            //Console.WriteLine("chmod process-start");
-                            //chmodProc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
-                            //chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
-                            //chmodProc.BeginOutputReadLine();
-                            //chmodProc.BeginErrorReadLine();
-                            chmodProc?.WaitForExit();
-                            if (chmodProc?.ExitCode != 0)
-                            {
-                                // Handle chmod error, if any
-                                throw new Exception($"Error insert data master!");
-                            }
-                            Console.WriteLine("chmod exit code" + chmodProc.ExitCode);
-                        }
-
-                        ProcessStartInfo info = ProcessInfoByOS(batFilePath);
-
-                        var proc = System.Diagnostics.Process.Start(info);
-                        Console.WriteLine("Start ...");
-                        if (proc != null)
-                        {
-                            proc.OutputDataReceived += (sender, e) => Console.WriteLine($"chmod info: {e.Data}");
-                            proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");
-                            proc.BeginOutputReadLine();
-                            proc.BeginErrorReadLine();
-                            proc.WaitForExit();
-                            Console.WriteLine("End.");
-                            var exit = proc.ExitCode;
-
-                            proc.Close();
-                        }
+                        proc.StartInfo = info;
+                        proc.Start();
+                        Console.WriteLine("window-process-start");
+                        proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
+                        proc.BeginOutputReadLine();
+                        proc.BeginErrorReadLine();
+                        proc.WaitForExit();
+                        var exitCode = proc.ExitCode;
                     }
-                    else
-                    {
-                        Console.WriteLine("Process-window");
-                        ProcessStartInfo info = ProcessInfoByOS(batFilePath);
-                        using (Process proc = new Process())
-                        {
-                            proc.StartInfo = info;
-                            proc.Start();
-                            Console.WriteLine("window-process-start");
-                            proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
-                            proc.BeginOutputReadLine();
-                            proc.BeginErrorReadLine();
-                            proc.WaitForExit();
-                            var exitCode = proc.ExitCode;
-                        }
-                    }
+                    //}
                 }
                 catch (Exception ex)
                 {
