@@ -377,6 +377,12 @@ namespace AWSSDK.Common
                     throw new Exception($"Delete RDS Instance. Code: {response?.HttpStatusCode}");
                 }
             }
+
+            // Exception instance doesn't exist
+            catch (DBInstanceNotFoundException)
+            {
+                return true;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: Delete RDS Instance. {ex.Message}");

@@ -17,6 +17,8 @@
         public static readonly string InvalidDomain = "Invalid Domain";
         public static readonly string NewDomainAleadyExist = "New Domain Aleady Exist";
         public static readonly string FailedTenantIsPremium = "Failed Tenant Is Premium";
+        public static readonly string TenantIsTerminating = "Tenant Is Terminating";
+        public static readonly string TenantIsNotAvailableToSortTerminate = "Tenant Is Not Available To Sort Terminate";
     }
     
 }

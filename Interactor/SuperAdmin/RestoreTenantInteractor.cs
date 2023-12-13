@@ -84,18 +84,6 @@ namespace Interactor.SuperAdmin
                         // Set tenant info to cache memory
                         _memoryCache.Set(tenant.SubDomain, cts);
 
-                        _ = Task.Run(() =>
-                        {
-                            while (true)
-                            {
-                                if (ct.IsCancellationRequested)
-                                {
-                                    throw new OperationCanceledException(cts.Token);
-                                }
-                                Thread.Sleep(1000);
-                            }
-                        }, cts.Token);
-
                         Console.WriteLine($"Start  restore  tenant. RdsIdentifier: {tenant.RdsIdentifier}");
 
                         // Create snapshot backup
@@ -109,10 +97,13 @@ namespace Interactor.SuperAdmin
                         // Create tmp RDS from snapshot
                         string rString = CommonConstants.GenerateRandomString(6);
                         var dbInstanceIdentifier = $"{tenant.SubDomain}-{rString}";
-                        var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier).Result;
 
-                        // Set tenant info to cache memory
-                        _memoryCache.Set(tenant.SubDomain, new TenantCacheMemory(cts, dbInstanceIdentifier));
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+                            var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier).Result;
+                            // Set tenant info to cache memory
+                            _memoryCache.Set(tenant.SubDomain, new TenantCacheMemory(cts, dbInstanceIdentifier));
+                        }
 
                         var endpoint = CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId).Result;
 
@@ -120,20 +111,36 @@ namespace Interactor.SuperAdmin
                         if (tenant.Type == ConfigConstant.TypeDedicate)
                         {
                             // Update data enpoint
-                            var updateEndPoint = _tenantRepositoryRunTask.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
+                            bool updateEndPoint = false;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                updateEndPoint = _tenantRepositoryRunTask.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
+                            }
+
                             if (!updateEndPoint)
                             {
                                 throw new Exception("Update end sub domain failed");
                             }
 
                             // delete old RDS
-                            var actionDeleteOldRDS = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
-                            var checkDeleteActionOldRDS = RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+
+                                var actionDeleteOldRDS = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
+                                var checkDeleteActionOldRDS = RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result;
+                            }
+
                             // Finished restore
-                            _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                            var messenge = $"{tenant.EndSubDomain} is restore successfully.";
-                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
+                                var messenge = $"{tenant.EndSubDomain} is restore successfully.";
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(tenant.StatusTenant);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            }
                             cts.Cancel();
                             return;
                         }
@@ -159,42 +166,42 @@ namespace Interactor.SuperAdmin
                             // restore db 
                             PostgresSqlAction.PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
 
-                            // delete Tmp RDS
-                            var actionDeleteTmpRDS = RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier, true).Result;
-                            var checkDeleteActionTmpRDS = RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier).Result;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                // delete Tmp RDS
+                                var actionDeleteTmpRDS = RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier, true).Result;
+                                var checkDeleteActionTmpRDS = RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier).Result;
+                            }
                             // Finished restore
-                            _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                            var messenge = $"{tenant.EndSubDomain} is restore successfully.";
-                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
+                                var messenge = $"{tenant.EndSubDomain} is restore successfully.";
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
-                            // Add info tenant for notification
-                            notification.SetTenantId(tenant.TenantId);
-                            notification.SetStatusTenant(tenant.StatusTenant);
-
-                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(tenant.StatusTenant);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            }
                             cts.Cancel();
                             return;
                         }
                     }
 
-                    // stop task run
-                    catch (OperationCanceledException)
-                    {
-                        return;
-                    }
-
                     catch (Exception ex)
                     {
-                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                        // Notification  restore failed
-                        var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
-                        var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-
-                        // Add info tenant for notification
-                        notification.SetTenantId(tenant.TenantId);
-                        notification.SetStatusTenant(tenant.StatusTenant);
-
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
+                            // Notification  restore failed
+                            var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
+                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                            // Add info tenant for notification
+                            notification.SetTenantId(tenant.TenantId);
+                            notification.SetStatusTenant(tenant.StatusTenant);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        }
                         cts.Cancel();
                         return;
                     }

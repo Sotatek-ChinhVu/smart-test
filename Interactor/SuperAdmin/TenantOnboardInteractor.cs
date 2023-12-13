@@ -190,21 +190,12 @@ namespace Interactor.SuperAdmin
                 // Set tenant info to cache memory
                 _memoryCache.Set(subDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
 
-                // Check cancel task
-                _ = Task.Run(() =>
+                if (!ct.IsCancellationRequested) // Check task run is not canceled
                 {
-                    while (true)
-                    {
-                        if (ct.IsCancellationRequested)
-                        {
-                            throw new OperationCanceledException(cancellationTokenSource.Token);
-                        }
-                        Thread.Sleep(1000);
-                    }
-                }, cancellationTokenSource.Token);
 
-                await Route53Action.CreateTenantDomain(subDomain);
-                await CloudFrontAction.UpdateNewTenantAsync(subDomain);
+                    await Route53Action.CreateTenantDomain(subDomain);
+                    await CloudFrontAction.UpdateNewTenantAsync(subDomain);
+                }
 
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
@@ -215,14 +206,17 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                var message = $"{subDomain} is created failed. Error: {ex.Message}";
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                if (!ct.IsCancellationRequested) // Check task run is not canceled
+                {
+                    var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                    var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
 
-                // Add info tenant for notification
-                saveDBNotify.SetTenantId(id);
-                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
+                    // Add info tenant for notification
+                    saveDBNotify.SetTenantId(id);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
 
-                await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                    await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                }
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }

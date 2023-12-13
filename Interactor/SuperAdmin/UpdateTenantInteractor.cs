@@ -6,12 +6,14 @@ using AWSSDK.Dto;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using Entity.SuperAdmin;
 using Helper.Redis;
 using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using StackExchange.Redis;
+using System.Threading;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace Interactor.SuperAdmin
@@ -126,32 +128,19 @@ namespace Interactor.SuperAdmin
                         return new UpdateTenantOutputData(false, UpdateTenantStatus.NewDomainAleadyExist);
                     }
                 }
-                //_tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
+
+                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
                 var cts = new CancellationTokenSource();
                 CancellationToken ct = cts.Token;
                 _ = Task.Run(() =>
                 {
                     try
                     {
-
                         ct.ThrowIfCancellationRequested();
                         string rdsIdentifier = oldTenant.RdsIdentifier;
                         string endPointDb = oldTenant.EndPointDb;
                         // Set tenant info to cache memory
-                        _memoryCache.Set(oldTenant.SubDomain, cts);
-
-                        _ = Task.Run(() =>
-                        {
-                            while (true)
-                            {
-                                if (ct.IsCancellationRequested)
-                                {
-                                    throw new OperationCanceledException(cts.Token);
-                                }
-                                Thread.Sleep(1000);
-                            }
-                        }, cts.Token);
-
+                        _memoryCache.Set(oldTenant.SubDomain, new TenantCacheMemory(cts, string.Empty));
 
                         // Update subdomain
                         if (oldTenant.SubDomain != inputData.SubDomain)
@@ -187,10 +176,13 @@ namespace Interactor.SuperAdmin
 
                             Console.WriteLine($"Upgrade. newRdsIdentifier : {newRdsIdentifier}");
 
-                            var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(newRdsIdentifier, snapshotIdentifier).Result;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(newRdsIdentifier, snapshotIdentifier).Result;
 
-                            // Set tenant info to cache memory
-                            _memoryCache.Set(oldTenant.SubDomain, new TenantCacheMemory(cts, newRdsIdentifier));
+                                // Set tenant info to cache memory
+                                _memoryCache.Set(oldTenant.SubDomain, new TenantCacheMemory(cts, newRdsIdentifier));
+                            }
 
                             // Check Restore success 
                             var newEndpoint = CheckRestoredInstanceAvailableAsync(newRdsIdentifier, inputData.TenantId).Result;
@@ -204,22 +196,25 @@ namespace Interactor.SuperAdmin
                             var isDeleteSuccess = ConnectAndDeleteDatabases(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
 
 
-                            // Delete DB in old RDS
-                            var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb, oldTenant.UserConnect, oldTenant.PasswordConnect).Result;
-                            Console.WriteLine($"listTenantDb: {listTenantDb}");
-
-                            // Connect RDS delete TenantDb
-                            if (listTenantDb.Count > 1)
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
                             {
-                                Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
-                                _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
-                            }
+                                // Delete DB in old RDS
+                                var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb, oldTenant.UserConnect, oldTenant.PasswordConnect).Result;
+                                Console.WriteLine($"listTenantDb: {listTenantDb}");
 
-                            // Deleted RDS
-                            else
-                            {
-                                Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
-                                var actionDeleteRDS = RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                                // Connect RDS delete TenantDb
+                                if (listTenantDb.Count > 1)
+                                {
+                                    Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
+                                    _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
+                                }
+
+                                // Deleted RDS
+                                else
+                                {
+                                    Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
+                                    var actionDeleteRDS = RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                                }
                             }
                         }
 
@@ -230,11 +225,16 @@ namespace Interactor.SuperAdmin
                         }
 
                         // Update tenant
-                        var tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size, inputData.SizeType,
-                            inputData.Hospital, inputData.AdminId, inputData.Password);
+                        TenantModel tenantUpgrade = new TenantModel();
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+
+                            tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size, inputData.SizeType,
+                               inputData.Hospital, inputData.AdminId, inputData.Password);
+                        }
 
                         // Finished update tenant
-                        if (tenantUpgrade != null)
+                        if (tenantUpgrade.TenantId > 0)
                         {
                             // set cache to tenantId
                             var key = "cache_tenantId_" + tenantUpgrade.SubDomain;
@@ -243,9 +243,13 @@ namespace Interactor.SuperAdmin
                                 _cache.KeyDelete(key);
                                 _cache.StringSet(key, tenantUpgrade.TenantId.ToString());
                             }
-                            var messenge = $"{oldTenant.EndSubDomain} is update tenant successfully.";
-                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
-                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                var messenge = $"{oldTenant.EndSubDomain} is update tenant successfully.";
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            }
                             cts.Cancel();
                             return;
                         }
@@ -255,20 +259,20 @@ namespace Interactor.SuperAdmin
                         }
                     }
 
-                    // stop task run
-                    catch (OperationCanceledException)
-                    {
-                        return;
-                    }
-
                     catch (Exception ex)
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["update-failed"]);
-                        // Notification  upgrade failed
-                        _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["update-failed"]);
-                        var messenge = $"{oldTenant.EndSubDomain} is update update failed. Error: {ex.Message}.";
-                        var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+                            // Notification  upgrade failed
+                            _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["update-failed"]);
+                            var messenge = $"{oldTenant.EndSubDomain} is update update failed. Error: {ex.Message}.";
+                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                            // Add info tenant for notification
+                            notification.SetTenantId(oldTenant.TenantId);
+                            notification.SetStatusTenant(oldTenant.StatusTenant);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        }
                         cts.Cancel();
                         return;
                     }

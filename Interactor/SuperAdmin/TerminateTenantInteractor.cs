@@ -7,7 +7,6 @@ using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using System.Linq;
 using UseCase.SuperAdmin.TerminateTenant;
 
 namespace Interactor.SuperAdmin
@@ -70,15 +69,17 @@ namespace Interactor.SuperAdmin
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
                 }
 
-                //var tenantInfo2 = _memoryCache.Get<CancellationTokenSource>(tenant.SubDomain);
+                if (tenant.Status == ConfigConstant.StatusTenantDictionary()["terminating"])
+                {
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
+                }
 
-                //// Cancel task run
-                //tenantInfo2.Cancel();
-                //return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
+                if ((tenant.StatusTenant == 1 || tenant.StatusTenant == 5) && inputData.Type == 1)
+                {
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsNotAvailableToSortTerminate);
+                }
 
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
-
-                
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>
@@ -89,7 +90,7 @@ namespace Interactor.SuperAdmin
                         var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
                         Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
 
-                        if (tenant.StatusTenant != 3) // terminate tenant  creating, updating, restoring
+                        if (tenant.StatusTenant == 1 || tenant.StatusTenant == 5) // terminate tenant  creating, updating, restoring
                         {
                             skipFinalSnapshot = true;
                             var tenantInfo = _memoryCache.Get<TenantCacheMemory>(tenant.SubDomain) ?? new TenantCacheMemory();
@@ -108,7 +109,7 @@ namespace Interactor.SuperAdmin
                         }
 
                         // Backup tenant
-                        if (inputData.Type == 1 && tenant.StatusTenant != 1 && tenant.StatusTenant != 6) // sort terminate without tenant pending, sutting-down
+                        if (inputData.Type == 1)
                         {
                             // Create folder backup S3
                             var backupFolderName = @$"bk-{tenant.EndSubDomain}";
