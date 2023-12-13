@@ -7,6 +7,8 @@
         InvalidSizeType = 3,
         InvalidClusterMode = 4,
         Failed = 5,
-        SubDomainExists = 6
+        SubDomainExists = 6,
+        InvalidSubDomain = 7,
+        HopitalExists = 8,
     }
 }

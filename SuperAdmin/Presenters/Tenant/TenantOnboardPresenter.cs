@@ -31,6 +31,8 @@ namespace SuperAdminAPI.Presenters.Tenant
             TenantOnboardStatus.InvalidClusterMode => ResponseMessage.InvalidClusterMode,
             TenantOnboardStatus.InvalidSizeType => ResponseMessage.InvalidSizeType,
             TenantOnboardStatus.SubDomainExists => ResponseMessage.SubDomainExists,
+            TenantOnboardStatus.InvalidSubDomain => ResponseMessage.InvalidSubDomain,
+            TenantOnboardStatus.HopitalExists => ResponseMessage.HopitalExists,
             _ => string.Empty
         };
     }
