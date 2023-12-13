@@ -1660,7 +1660,7 @@ namespace Reporting.Calculate.Futan.Models
             get
             {
                 return Convert.ToInt32(
-                    KaikeiDetail.ReceSbt.Substring(3, 1) == "0" || KaikeiDetail.ReceSbt?.Substring(3, 1) == "8"
+                    KaikeiDetail.ReceSbt.Substring(3, 1) == "0" || KaikeiDetail.ReceSbt.Substring(3, 1) == "8"
                 );
             }
         }

@@ -144,5 +144,7 @@ namespace Reporting.Calculate.Futan.Models
         {
             get { return SinKoui.DetailData; }
         }
+
     }
+
 }
