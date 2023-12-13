@@ -9,8 +9,6 @@ using Domain.SuperAdminModels.MigrationTenantHistory;
 using Interactor.Realtime;
 using Domain.SuperAdminModels.Notification;
 using Npgsql;
-using Entity.SuperAdmin;
-using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Interactor.SuperAdmin
 {
@@ -297,7 +295,7 @@ namespace Interactor.SuperAdmin
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                    
+
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(tenantId);
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);
