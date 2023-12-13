@@ -13,7 +13,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
-            if (CurrentListOrder == null)
+            if (CurrentListOrder == null || CurrentListOrder.Count == 0)
             {
                 return unitCheckerResult;
             }
