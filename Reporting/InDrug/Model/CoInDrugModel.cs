@@ -40,6 +40,18 @@ namespace Reporting.InDrug.Model
             OdrInfSyohosenBikoDetailModels = odrDtls.FindAll(p => p.OdrKouiKbn == 101);
         }
 
+        public CoInDrugModel()
+        {
+            PtInfModel = new();
+            RaiinInfModel = new();
+            OdrInfModels = new();
+            OdrInfDetailModels = new();
+            OdrInfSyohosenCommentModels = new();
+            OdrInfSyohosenCommentDetailModels = new();
+            OdrInfSyohosenBikoModels = new();
+            OdrInfSyohosenBikoDetailModels = new();
+        }
+
         /// <summary>
         /// 患者番号
         /// </summary>

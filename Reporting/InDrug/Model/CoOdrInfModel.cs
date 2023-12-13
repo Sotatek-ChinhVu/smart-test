@@ -1,15 +1,10 @@
 ﻿using Entity.Tenant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.InDrug.Model
 {
     public class CoOdrInfModel
     {
-        public OdrInf OdrInf { get; } = null;
+        public OdrInf OdrInf { get; } = new();
 
         public CoOdrInfModel(OdrInf odrInf)
         {
