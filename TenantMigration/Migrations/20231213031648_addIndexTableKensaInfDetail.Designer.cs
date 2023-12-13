@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231213031648_addIndexTableKensaInfDetail")]
+    partial class addIndexTableKensaInfDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8805,8 +8808,6 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("PrecautionCd", "ExtendCd");
 
-                    b.HasIndex(new[] { "AgeMin", "AgeMax", "SexCd" }, "M34_PRECAUTION_CODE_AGE_MIN_IDX");
-
                     b.ToTable("M34_PRECAUTION_CODE");
                 });
 
@@ -9975,8 +9976,6 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "RaiinNo", "RpNo", "RpEdaNo", "Id");
 
                     b.HasIndex(new[] { "HpId", "PtId", "SinDate", "IsDeleted" }, "ODR_INF_IDX01");
-
-                    b.HasIndex(new[] { "RaiinNo", "OdrKouiKbn", "InoutKbn", "IsDeleted" }, "ODR_INF_RAIIN_NO_IDX");
 
                     b.ToTable("ODR_INF");
                 });
