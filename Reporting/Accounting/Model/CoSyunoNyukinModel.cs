@@ -95,7 +95,7 @@ namespace Reporting.Accounting.Model
         }
         public string PayMehod
         {
-            get { return PaymentMethod != null ? PaymentMethod.PayName : string.Empty; }
+            get { return PaymentMethod != null ? PaymentMethod.PayName ?? string.Empty : string.Empty; }
         }
         /// <summary>
         /// 入金日

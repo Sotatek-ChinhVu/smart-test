@@ -21,7 +21,13 @@ public class OdrDateInfModel
         OdrDateDetailList = odrDateDetailList;
     }
 
-    public int GrpId { get; set; }
+    public OdrDateInfModel ChangeGrpId(int grpId)
+    {
+        GrpId = grpId;
+        return this;
+    }
+
+    public int GrpId { get; private set; }
 
     public int SortNo { get; private set; }
 

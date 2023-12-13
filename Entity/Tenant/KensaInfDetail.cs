@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Xml.Linq;
 
 namespace Entity.Tenant
 {
     [Table(name: "KENSA_INF_DETAIL")]
+    [Index(nameof(PtId), nameof(IsDeleted),nameof(KensaItemCd), Name = "KENSA_INF_DETAIL_PT_ID_IDX")]
     public class KensaInfDetail : EmrCloneable<KensaInfDetail>
     {
         /// <summary>
