@@ -101,7 +101,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string SortKey
         {
-            get { return LimitCntListInf.SortKey ?? string.Empty; }
+            get { return LimitCntListInf.SortKey; }
             set
             {
                 if (LimitCntListInf.SortKey == value) return;
@@ -129,7 +129,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Biko
         {
-            get { return LimitCntListInf.Biko ?? string.Empty; }
+            get { return LimitCntListInf.Biko; }
             set
             {
                 if (LimitCntListInf.Biko == value) return;

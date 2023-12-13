@@ -101,7 +101,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string SortKey
         {
-            get { return LimitListInf.SortKey ?? string.Empty; }
+            get { return LimitListInf.SortKey; }
             set
             {
                 if (LimitListInf.SortKey == value) return;

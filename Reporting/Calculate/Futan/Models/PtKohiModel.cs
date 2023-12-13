@@ -100,7 +100,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Houbetu
         {
-            get { return HokenMst.Houbetu ?? string.Empty; }
+            get { return HokenMst.Houbetu; }
         }
 
         /// <summary>

@@ -203,7 +203,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string ReceSbt
         {
-            get { return KaikeiInf.ReceSbt ?? string.Empty; }
+            get { return KaikeiInf.ReceSbt; }
             set
             {
                 if (KaikeiInf.ReceSbt == value) return;
@@ -217,7 +217,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Houbetu
         {
-            get { return KaikeiInf.Houbetu ?? string.Empty; }
+            get { return KaikeiInf.Houbetu; }
             set
             {
                 if (KaikeiInf.Houbetu == value) return;
@@ -231,7 +231,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi1Houbetu
         {
-            get { return KaikeiInf.Kohi1Houbetu ?? string.Empty; }
+            get { return KaikeiInf.Kohi1Houbetu; }
             set
             {
                 if (KaikeiInf.Kohi1Houbetu == value) return;
@@ -245,7 +245,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi2Houbetu
         {
-            get { return KaikeiInf.Kohi2Houbetu ?? string.Empty; }
+            get { return KaikeiInf.Kohi2Houbetu; }
             set
             {
                 if (KaikeiInf.Kohi2Houbetu == value) return;
@@ -259,7 +259,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi3Houbetu
         {
-            get { return KaikeiInf.Kohi3Houbetu ?? string.Empty; }
+            get { return KaikeiInf.Kohi3Houbetu; }
             set
             {
                 if (KaikeiInf.Kohi3Houbetu == value) return;
@@ -273,7 +273,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi4Houbetu
         {
-            get { return KaikeiInf.Kohi4Houbetu ?? string.Empty; }
+            get { return KaikeiInf.Kohi4Houbetu; }
             set
             {
                 if (KaikeiInf.Kohi4Houbetu == value) return;

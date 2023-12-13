@@ -242,7 +242,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Houbetu
         {
-            get { return KaikeiDetail.Houbetu ?? string.Empty; }
+            get { return KaikeiDetail.Houbetu; }
             set
             {
                 if (KaikeiDetail.Houbetu == value) return;
@@ -256,7 +256,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi1Houbetu
         {
-            get { return KaikeiDetail.Kohi1Houbetu ?? string.Empty; }
+            get { return KaikeiDetail.Kohi1Houbetu; }
             set
             {
                 if (KaikeiDetail.Kohi1Houbetu == value) return;
@@ -270,7 +270,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi2Houbetu
         {
-            get { return KaikeiDetail.Kohi2Houbetu ?? string.Empty; }
+            get { return KaikeiDetail.Kohi2Houbetu; }
             set
             {
                 if (KaikeiDetail.Kohi2Houbetu == value) return;
@@ -284,7 +284,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi3Houbetu
         {
-            get { return KaikeiDetail.Kohi3Houbetu ?? string.Empty; }
+            get { return KaikeiDetail.Kohi3Houbetu; }
             set
             {
                 if (KaikeiDetail.Kohi3Houbetu == value) return;
@@ -298,7 +298,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi4Houbetu
         {
-            get { return KaikeiDetail.Kohi4Houbetu ?? string.Empty; }
+            get { return KaikeiDetail.Kohi4Houbetu; }
             set
             {
                 if (KaikeiDetail.Kohi4Houbetu == value) return;
@@ -312,7 +312,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi1Priority
         {
-            get { return KaikeiDetail.Kohi1Priority ?? string.Empty; }
+            get { return KaikeiDetail.Kohi1Priority; }
             set
             {
                 if (KaikeiDetail.Kohi1Priority == value) return;
@@ -326,7 +326,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi2Priority
         {
-            get { return KaikeiDetail.Kohi2Priority ?? string.Empty; }
+            get { return KaikeiDetail.Kohi2Priority; }
             set
             {
                 if (KaikeiDetail.Kohi2Priority == value) return;
@@ -340,7 +340,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi3Priority
         {
-            get { return KaikeiDetail.Kohi3Priority ?? string.Empty; }
+            get { return KaikeiDetail.Kohi3Priority; }
             set
             {
                 if (KaikeiDetail.Kohi3Priority == value) return;
@@ -354,7 +354,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string Kohi4Priority
         {
-            get { return KaikeiDetail.Kohi4Priority ?? string.Empty; }
+            get { return KaikeiDetail.Kohi4Priority; }
             set
             {
                 if (KaikeiDetail.Kohi4Priority == value) return;
@@ -1125,7 +1125,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string ReceSbt
         {
-            get { return KaikeiDetail.ReceSbt ?? string.Empty; }
+            get { return KaikeiDetail.ReceSbt; }
             set
             {
                 if (KaikeiDetail.ReceSbt == value) return;
@@ -1559,7 +1559,7 @@ namespace Reporting.Calculate.Futan.Models
         /// </summary>
         public string SortKey
         {
-            get { return KaikeiDetail.SortKey ?? string.Empty; }
+            get { return KaikeiDetail.SortKey; }
             set
             {
                 if (KaikeiDetail.SortKey == value) return;
@@ -1604,7 +1604,7 @@ namespace Reporting.Calculate.Futan.Models
             get
             {
                 return
-                    KaikeiDetail.ReceSbt?.Substring(1, 1) == "3" &&
+                    KaikeiDetail.ReceSbt.Substring(1, 1) == "3" &&
                     (KaikeiDetail.ReceSbt.Substring(3, 1) == "0" || KaikeiDetail.ReceSbt.Substring(3, 1) == "8");
             }
         }
@@ -1660,7 +1660,7 @@ namespace Reporting.Calculate.Futan.Models
             get
             {
                 return Convert.ToInt32(
-                    KaikeiDetail.ReceSbt?.Substring(3, 1) == "0" || KaikeiDetail.ReceSbt?.Substring(3, 1) == "8"
+                    KaikeiDetail.ReceSbt.Substring(3, 1) == "0" || KaikeiDetail.ReceSbt?.Substring(3, 1) == "8"
                 );
             }
         }
