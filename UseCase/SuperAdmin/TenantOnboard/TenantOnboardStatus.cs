@@ -2,6 +2,7 @@
 {
     public enum TenantOnboardStatus
     {
+        InvalidRequest = 0,
         Successed = 1,
         InvalidSize = 2,
         InvalidSizeType = 3,
