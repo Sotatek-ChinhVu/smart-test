@@ -41,10 +41,26 @@ namespace Interactor.SuperAdmin
             try
             {
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
-                var dbName = CommonConstants.RemoveSpecialCharacters(inputData.SubDomain);
-                if (inputData.Size <= 0)
+
+                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.Size <= 0)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidRequest);
+                }
+                var checkValidSubDomain = CommonConstants.IsSubdomainValid(inputData.SubDomain);
+                var isExistHospital = _tenantRepository.CheckExistsHospital(inputData.Hospital);
+                var checkSubDomainDB = _tenantRepository.CheckExistsSubDomain(inputData.SubDomain);
+                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
+                if (isExistHospital)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.HopitalExists);
+                }
+                else if (!checkValidSubDomain)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSubDomain);
+                }
+                else if (checkSubDomain || checkSubDomainDB)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
                 else if (inputData.SizeType != ConfigConstant.SizeTypeMB && inputData.SizeType != ConfigConstant.SizeTypeGB)
                 {
@@ -54,22 +70,24 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
-                else if (string.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0)
+                else if (inputData.SizeType == ConfigConstant.SizeTypeMB)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    if (inputData.Size > 256000)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
-                if (checkSubDomain)
+                else if (inputData.SizeType == ConfigConstant.SizeTypeGB)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
+                    if (inputData.Size > 250)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
+                var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
                 {
                     Console.WriteLine($"Exception: {errorValue}");
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    return new TenantOnboardOutputData(new TenantOnboardItem(errorValue), TenantOnboardStatus.Failed);
                 }
                 if (tenantOnboard.TryGetValue("message", out string? messageValue))
                 {
@@ -89,43 +107,40 @@ namespace Interactor.SuperAdmin
 
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
-            string subDomain = model.SubDomain;
-            string dbName = model.Db;
-            int size = model.Size;
-            int sizeType = model.SizeType;
-            int tier = model.Type;
             string rString = CommonConstants.GenerateRandomString(6);
-            string tenantUrl = "";
-
+            string tenantUrl = string.Empty;
+            int id = 0;
             try
             {
+                await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain);
+                await Route53Action.CreateTenantDomain(model.SubDomain);
                 // Provisioning SubDomain for new tenants
-                tenantUrl = $"{subDomain}.{ConfigConstant.Domain}";
+                tenantUrl = $"{model.SubDomain}.{ConfigConstant.Domain}";
                 // Checking Available RDS Cluster
-                if (subDomain.Length > 0)
+                if (model.SubDomain.Length > 0)
                 {
                     // Checking tenant tier, if dedicated, provision new RDS instance
-                    if (tier == ConfigConstant.TypeDedicate)
+                    if (model.Type == ConfigConstant.TypeDedicate)
                     {
                         string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                         var rdsInfo = await RDSAction.GetRDSInformation();
                         if (rdsInfo.ContainsKey(dbIdentifier))
                         {
-                            var id = _tenantRepository.CreateTenant(model);
+                            id = _tenantRepository.CreateTenant(model);
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
                             {
-                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                AddData(id, tenantUrl, model);
                             });
                         }
                         else
                         {
-                            var id = _tenantRepository.CreateTenant(model);
+                            id = _tenantRepository.CreateTenant(model);
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
                             {
-                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                AddData(id, tenantUrl, model);
                             });
                         }
                     }
@@ -138,12 +153,12 @@ namespace Interactor.SuperAdmin
                         if (availableIdentifier.Count == 0)
                         {
                             string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
-                            var id = _tenantRepository.CreateTenant(model);
+                            id = _tenantRepository.CreateTenant(model);
                             await RDSAction.CreateNewShardAsync(dbIdentifier);
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
                             {
-                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                AddData(id, tenantUrl, model);
                             });
                         }
                         else // Else, returning the first available RDS Cluster in the list
@@ -156,10 +171,10 @@ namespace Interactor.SuperAdmin
                                 {
                                     checkAvailableIdentifier = true;
                                     model.ChangeRdsIdentifier(dbIdentifier);
-                                    var id = _tenantRepository.CreateTenant(model);
+                                    id = _tenantRepository.CreateTenant(model);
                                     _ = Task.Run(() =>
                                     {
-                                        AddData(id, tenantUrl, dbName, model, dbIdentifier);
+                                        AddData(id, tenantUrl, model);
                                     });
                                     break;
                                 }
@@ -167,19 +182,17 @@ namespace Interactor.SuperAdmin
                             if (!checkAvailableIdentifier)
                             {
                                 string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
-                                var id = _tenantRepository.CreateTenant(model);
+                                id = _tenantRepository.CreateTenant(model);
                                 await RDSAction.CreateNewShardAsync(dbIdentifierNew);
                                 model.ChangeRdsIdentifier(dbIdentifierNew);
                                 _ = Task.Run(() =>
                                 {
-                                    AddData(id, tenantUrl, dbName, model, dbIdentifierNew);
+                                    AddData(id, tenantUrl, model);
                                 });
                             }
                         }
                     }
                 }
-                await Route53Action.CreateTenantDomain(subDomain);
-                await CloudFrontAction.UpdateNewTenantAsync(subDomain);
 
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
@@ -190,8 +203,13 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                var message = $"{model.SubDomain} is created failed. Error: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+
+                // Add info tenant for notification
+                saveDBNotify.SetTenantId(id);
+                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
+
                 await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
@@ -263,21 +281,25 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void AddData(int tenantId, string tenantUrl, string dbName, TenantModel model, string dbIdentifier)
+        private void AddData(int tenantId, string tenantUrl, TenantModel model)
         {
             try
             {
-                string host = CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
+                string host = CheckingRDSStatusAsync(model.RdsIdentifier, tenantId, tenantUrl);
                 if (!string.IsNullOrEmpty(host))
                 {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
-                    RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                    CreateDatas(host, dbName, dataMigration, tenantId, model);
-
+                    RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
+                    CreateDatas(host, model.Db, dataMigration, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
+
+                    // Add info tenant for notification
+                    saveDBNotify.SetTenantId(tenantId);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);
+
                     _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                 }
             }
@@ -285,6 +307,9 @@ namespace Interactor.SuperAdmin
             {
                 var message = $"{tenantUrl} is created failed: {ex.Message}";
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                // Add info tenant for notification
+                saveDBNotify.SetTenantId(tenantId);
+                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
             }
             finally
@@ -313,9 +338,9 @@ namespace Interactor.SuperAdmin
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
-                        _CreateAuditLog(tenantId);
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
+                        _CreateAuditLog(tenantId);
                         _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
                     }
                 }
@@ -382,7 +407,7 @@ namespace Interactor.SuperAdmin
                 var host = "develop-smartkarte-logging.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com";
                 var dbName = "smartkartelogging";
                 var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
-                string sqlCreateAuditLog = File.ReadAllText(QueryConstant.CreateAuditLog);
+                string sqlCreateAuditLog = QueryConstant.CreateAuditLog;
                 var addParttion = $"CREATE TABLE IF NOT EXISTS PARTITION_{tenantId} PARTITION OF public.\"AuditLogs\" FOR VALUES IN ({tenantId});";
 
                 using (var connection = new NpgsqlConnection(connectionString))
@@ -390,6 +415,7 @@ namespace Interactor.SuperAdmin
                     connection.Open();
                     using (var command = new NpgsqlCommand())
                     {
+                        command.Connection = connection;
                         command.CommandText = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'AuditLogs')";
                         var tableExists = command.ExecuteScalar();
                         string createCommandText = string.Empty;
@@ -403,6 +429,7 @@ namespace Interactor.SuperAdmin
                         }
                         using (var createTableCommand = new NpgsqlCommand())
                         {
+                            createTableCommand.Connection = connection;
                             createTableCommand.CommandText = createCommandText;
                             createTableCommand.ExecuteNonQuery();
                             Console.WriteLine("SQL scripts AuditLog, Parttion executed successfully.");
@@ -412,7 +439,8 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error insert AuditLog, Parttion: {ex.Message}");
+                Console.WriteLine($"Error insert AuditLog/ Parttion: {ex.Message}");
+                throw new Exception($"Error insert AuditLog/ Parttion: {ex.Message}");
             }
         }
 
@@ -426,6 +454,7 @@ namespace Interactor.SuperAdmin
             catch (Exception ex)
             {
                 Console.WriteLine($"Error insert data master: {ex.Message}");
+                throw new Exception($"Error insert data master: {ex.Message}");
             }
         }
 
