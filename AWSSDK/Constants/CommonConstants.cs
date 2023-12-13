@@ -25,17 +25,16 @@ namespace AWSSDK.Constants
 
             return new string(password);
         }
-        public static string RemoveSpecialCharacters(string input)
+        public static string GenerateDatabaseName(string subdomain)
         {
-            string pattern = @"^[a-zA-Z]\w*";
-            Regex regex = new Regex(pattern);
-            Match match = regex.Match(input);
-            if (match.Success)
-            {
-                Console.WriteLine(match.Value.ToLower().Trim());
-                return match.Value.ToLower().Trim();
-            }
-            return string.Empty;
+            string cleanedSubdomain = subdomain.Replace("-", "");
+
+            return cleanedSubdomain.ToLower();
+        }
+        public static bool IsSubdomainValid(string subdomain)
+        {
+            string pattern = @"^(?!\-)[a-zA-Z0-9\-]{1,63}(?<!\-)$";
+            return Regex.IsMatch(subdomain, pattern);
         }
     }
 }
