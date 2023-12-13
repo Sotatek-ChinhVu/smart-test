@@ -11,17 +11,17 @@ public class OdrDateInfModel
         OdrDateDetailList = odrDateDetailList;
     }
 
-    public OdrDateInfModel(int grpId, int sortNo, string grpName, string sinDateBinding, List<OdrDateDetailModel> odrDateDetailList, bool isDeleted)
+    public OdrDateInfModel(int grpId, int sortNo, string grpName, int isDeleted, List<OdrDateDetailModel> odrDateDetailList)
     {
         GrpId = grpId;
         SortNo = sortNo;
         GrpName = grpName;
-        SinDateBinding = sinDateBinding;
-        OdrDateDetailList = odrDateDetailList;
         IsDeleted = isDeleted;
+        SinDateBinding = string.Empty;
+        OdrDateDetailList = odrDateDetailList;
     }
 
-    public int GrpId { get; private set; }
+    public int GrpId { get; set; }
 
     public int SortNo { get; private set; }
 
@@ -31,5 +31,10 @@ public class OdrDateInfModel
 
     public List<OdrDateDetailModel> OdrDateDetailList { get; private set; }
 
-    public bool IsDeleted { get; private set; }
+    public int IsDeleted { get; private set; }
+
+    public bool CheckDefaultValue()
+    {
+        return GrpName == string.Empty && GrpId == 0;
+    }
 }
