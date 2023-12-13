@@ -27,6 +27,7 @@ namespace SuperAdminAPI.Presenters.Tenant
         {
             TenantOnboardStatus.Successed => ResponseMessage.Success,
             TenantOnboardStatus.Failed => ResponseMessage.Fail,
+            TenantOnboardStatus.InvalidRequest => ResponseMessage.Fail,
             TenantOnboardStatus.InvalidSize => ResponseMessage.InvalidSize,
             TenantOnboardStatus.InvalidClusterMode => ResponseMessage.InvalidClusterMode,
             TenantOnboardStatus.InvalidSizeType => ResponseMessage.InvalidSizeType,
