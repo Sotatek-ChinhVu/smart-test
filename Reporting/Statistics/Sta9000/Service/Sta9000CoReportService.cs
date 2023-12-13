@@ -1119,7 +1119,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
         switch (outputDataType)
         {
             case 1:
-                ptHokens = _finder.GetPtHokens(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                ptHokens = _finder.GetPtHokens(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 2:
                 ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
@@ -1128,16 +1128,16 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 raiinInfs = _finder.GetRaiinInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 4:
-                odrInfs = _finder.GetOdrInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                odrInfs = _finder.GetOdrInfs(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 5:
-                sinKouis = _finder.GetSinKouis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                sinKouis = _finder.GetSinKouis(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 6:
-                karteInfs = _finder.GetKarteInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                karteInfs = _finder.GetKarteInfs(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 7:
-                kensaInfs = _finder.GetKensaInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf);
+                kensaInfs = _finder.GetKensaInfs(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new(), kensaConf ?? new());
                 break;
         }
 
@@ -1505,7 +1505,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
         switch (outputDataType)
         {
             case 1:
-                ptHokens = _finder.GetPtHokens(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                ptHokens = _finder.GetPtHokens(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 2:
                 ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
@@ -1514,16 +1514,16 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 raiinInfs = _finder.GetRaiinInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 4:
-                odrInfs = _finder.GetOdrInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                odrInfs = _finder.GetOdrInfs(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 5:
-                sinKouis = _finder.GetSinKouis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                sinKouis = _finder.GetSinKouis(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 6:
-                karteInfs = _finder.GetKarteInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                karteInfs = _finder.GetKarteInfs(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new());
                 break;
             case 7:
-                kensaInfs = _finder.GetKensaInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf);
+                kensaInfs = _finder.GetKensaInfs(hpId, ptConf ?? new(), hokenConf ?? new(), byomeiConf ?? new(), raiinConf ?? new(), sinConf ?? new(), karteConf ?? new(), kensaConf ?? new());
                 break;
         }
 
@@ -1679,7 +1679,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 foreach (var colName in existsCols)
                 {
                     object? value = null;
-                    System.Reflection.PropertyInfo propertyInfo;
+                    System.Reflection.PropertyInfo? propertyInfo;
                     propertyInfo = typeof(CoRaiinInfModel).GetProperty(colName);
                     if (propertyInfo != null && printData.RaiinInf != null)
                     {
