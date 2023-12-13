@@ -57,8 +57,50 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     {
         try
         {
-            var response = await _s3Client.DeleteObjectAsync(_options.BucketName, key);
-            return Convert.ToBoolean(response.DeleteMarker);
+            /// Delete source
+            var listVersionsRequest = new ListVersionsRequest
+            {
+                BucketName = _options.BucketName,
+                Prefix = key
+            };
+            var listVersionsResponse = await _s3Client.ListVersionsAsync(listVersionsRequest);
+            var objectsToDelete = listVersionsResponse.Versions.Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId }).ToList();
+            var deleteObjectsRequest = new DeleteObjectsRequest
+            {
+                BucketName = _options.BucketName,
+                Objects = objectsToDelete
+            };
+            var deleteObjectsResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsRequest);
+            /// Copy to Replication (frefix: delete-)
+            var listVersionsReplicationRequest = new ListVersionsRequest
+            {
+                BucketName = _options.BucketNameReplication,
+                Prefix = key
+            };
+            var listVersionsReplicationResponse = await _s3Client.ListVersionsAsync(listVersionsReplicationRequest);
+            var oldFileName = Path.GetFileName(key);
+
+            var newFileName = "delete-" + oldFileName;
+            var destinationKey = key.Replace(oldFileName, newFileName);
+            var copyObjectRequest = new CopyObjectRequest
+            {
+                SourceBucket = _options.BucketNameReplication,
+                SourceKey = key,
+                DestinationBucket = _options.BucketNameReplication,
+                DestinationKey = destinationKey
+            };
+            var copyObjectResponse = await _s3Client.CopyObjectAsync(copyObjectRequest);
+
+            /// Delete Replication
+            var objectsReplicationToDelete = listVersionsReplicationResponse.Versions.Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId }).ToList();
+            var deleteObjectsReplicationRequest = new DeleteObjectsRequest
+            {
+                BucketName = _options.BucketNameReplication,
+                Objects = objectsReplicationToDelete
+            };
+            var deleteObjectsReplicationResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsReplicationRequest);
+
+            return true;
         }
         catch (AmazonS3Exception)
         {
@@ -215,7 +257,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
     public string GetAccessBaseS3() => $"{_options.BaseAccessUrl}/";
 
-    public async Task<(bool valid,string key)> S3FilePathIsExists(string locationFile)
+    public async Task<(bool valid, string key)> S3FilePathIsExists(string locationFile)
     {
         var listS3Objects = await _s3Client.ListObjectsV2Async(new ListObjectsV2Request
         {
