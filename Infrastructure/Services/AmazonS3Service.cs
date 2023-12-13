@@ -52,7 +52,31 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     {
         return $"{_options.BaseAccessUrl}/{key}";
     }
+    private static string GetLeftName(string inputString)
+    {
+        int lastIndex = inputString.LastIndexOf('/');
+        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
 
+        if (lastIndex >= 0 && secondLastIndex >= 0)
+        {
+            string result = inputString.Substring(0, secondLastIndex + 1);
+            return result;
+        }
+        return string.Empty;
+    }
+    private static string GetRightName(string inputString)
+    {
+
+        int lastIndex = inputString.LastIndexOf('/');
+        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
+
+        if (lastIndex >= 0 && secondLastIndex >= 0)
+        {
+            string result = inputString.Substring(secondLastIndex + 1, lastIndex - secondLastIndex - 1);
+            return result + "/";
+        }
+        return string.Empty;
+    }
     public async Task<bool> DeleteObjectAsync(string key)
     {
         try
@@ -65,31 +89,51 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
             };
             var listVersionsResponse = await _s3Client.ListVersionsAsync(listVersionsRequest);
             var objectsToDelete = listVersionsResponse.Versions.Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId }).ToList();
-            var deleteObjectsRequest = new DeleteObjectsRequest
+            if (objectsToDelete.Any())
             {
-                BucketName = _options.BucketName,
-                Objects = objectsToDelete
-            };
-            var deleteObjectsResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsRequest);
-            /// Copy to Replication (frefix: delete-)
+                var deleteObjectsRequest = new DeleteObjectsRequest
+                {
+                    BucketName = _options.BucketName,
+                    Objects = objectsToDelete
+                };
+                var deleteObjectsResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsRequest);
+            }
+            ///
             var listVersionsReplicationRequest = new ListVersionsRequest
             {
                 BucketName = _options.BucketNameReplication,
                 Prefix = key
             };
             var listVersionsReplicationResponse = await _s3Client.ListVersionsAsync(listVersionsReplicationRequest);
-            var oldFileName = Path.GetFileName(key);
+            /// Copy to Replication (frefix: delete-)
 
-            var newFileName = "delete-" + oldFileName;
-            var destinationKey = key.Replace(oldFileName, newFileName);
-            var copyObjectRequest = new CopyObjectRequest
+            var listVersionLastest = listVersionsReplicationResponse.Versions.Where(i => i.IsLatest);
+            var destinationKeyFolder = string.Empty;
+            foreach (var version in listVersionLastest)
             {
-                SourceBucket = _options.BucketNameReplication,
-                SourceKey = key,
-                DestinationBucket = _options.BucketNameReplication,
-                DestinationKey = destinationKey
-            };
-            var copyObjectResponse = await _s3Client.CopyObjectAsync(copyObjectRequest);
+                var destinationKey = string.Empty;
+                DateTime expires = DateTime.UtcNow.Add(TimeSpan.FromDays(1));
+                var copyObjectRequest = new CopyObjectRequest
+                {
+                    SourceBucket = _options.BucketNameReplication,
+                    SourceKey = version.Key,
+                    DestinationBucket = _options.BucketNameReplication,
+
+                };
+                if (version.Key.EndsWith("/"))
+                {
+                    destinationKey = GetLeftName(version.Key) + "delete-" + GetRightName(version.Key);
+                    destinationKeyFolder = destinationKey;
+                    copyObjectRequest.DestinationKey = destinationKeyFolder;
+                }
+                else
+                {
+                    var oldFileName = Path.GetFileName(version.Key);
+                    var newFileName = "delete-" + oldFileName;
+                    copyObjectRequest.DestinationKey = destinationKeyFolder + newFileName;
+                }
+                var copyObjectResponse = await _s3Client.CopyObjectAsync(copyObjectRequest);
+            }
 
             /// Delete Replication
             var objectsReplicationToDelete = listVersionsReplicationResponse.Versions.Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId }).ToList();
