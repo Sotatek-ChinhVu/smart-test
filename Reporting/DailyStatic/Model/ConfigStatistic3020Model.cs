@@ -6,6 +6,10 @@ namespace Reporting.DailyStatic.Model;
 
 public class ConfigStatistic3020Model : StatisticModelBase
 {
+    public ConfigStatistic3020Model()
+    {
+    }
+
     public ConfigStatistic3020Model(StaMenu staMenu, List<StaConf> listStaConf)
     {
         StaMenu = staMenu;
@@ -83,7 +87,7 @@ public class ConfigStatistic3020Model : StatisticModelBase
     /// </summary>
     public string MenuName
     {
-        get => StaMenu.MenuName;
+        get => StaMenu.MenuName ?? String.Empty;
         set
         {
             StaMenu.MenuName = value;

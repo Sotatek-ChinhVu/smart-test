@@ -5,9 +5,9 @@ namespace Reporting.DailyStatic.Model;
 
 public class StatisticModelBase
 {
-    public StaMenu StaMenu { get; set; }
+    public StaMenu StaMenu { get; set; } = new();
 
-    public List<StaConf> ListStaConf { get; set; }
+    public List<StaConf> ListStaConf { get; set; } = new();
 
     protected void SettingConfig(int configId, string value)
     {
