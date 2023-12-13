@@ -1,6 +1,5 @@
 ﻿using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
-using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
@@ -97,8 +96,10 @@ namespace Infrastructure.SuperAdminRepositories
             tenant.UserConnect = model.UserConnect;
             tenant.PasswordConnect = model.PasswordConnect;
             tenant.IsDeleted = 0;
-            tenant.CreateDate = CIUtil.GetJapanDateTimeNow();
-            tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
+
+            // created date and updated date uses utc time
+            tenant.CreateDate = DateTime.UtcNow;
+            tenant.UpdateDate = DateTime.UtcNow;
             TrackingDataContext.Tenants.Add(tenant);
             TrackingDataContext.SaveChanges();
             return tenant.TenantId;
@@ -122,9 +123,9 @@ namespace Infrastructure.SuperAdminRepositories
                     tenant.RdsIdentifier = dbIdentifier;
                 }
                 tenant.Status = status;
-                tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                tenant.CreateDate = TimeZoneInfo.ConvertTimeToUtc(tenant.CreateDate);
-                TrackingDataContext.Tenants.Update(tenant);
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
@@ -148,6 +149,9 @@ namespace Infrastructure.SuperAdminRepositories
                 tenant.Hospital = hospital;
                 tenant.AdminId = adminId;
                 tenant.Password = password;
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
                 TrackingDataContext.SaveChanges();
                 var tenantModel = ConvertEntityToModel(tenant);
                 return tenantModel;
@@ -169,6 +173,9 @@ namespace Infrastructure.SuperAdminRepositories
                     throw new Exception("Tenant does not exist");
                 }
                 tenant.Status = status;
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
                 TrackingDataContext.SaveChanges();
                 return true;
             }
@@ -191,7 +198,8 @@ namespace Infrastructure.SuperAdminRepositories
 
                 tenant.Status = TerminateStatus;
                 tenant.IsDeleted = 1;
-                tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
                 TrackingDataContext.SaveChanges();
                 var tenantModel = ConvertEntityToModel(tenant);
                 return tenantModel;
@@ -811,9 +819,9 @@ namespace Infrastructure.SuperAdminRepositories
                         _cache.KeyExpire(finalKey, new TimeSpan(1, 0, 0));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine("Can not connect to database " + tenant.EndPointDb + tenant.Db + "\n" + ex.ToString());
+                    // do not return anything in this catch
                 }
             }
             // return storageUsed in database
