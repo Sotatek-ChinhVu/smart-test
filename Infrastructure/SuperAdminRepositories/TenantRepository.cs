@@ -58,6 +58,26 @@ namespace Infrastructure.SuperAdminRepositories
             return 0;
         }
 
+        public bool CheckExistsHospital(string hospital)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.Hospital.ToLower().Trim() == hospital.ToLower().Trim() && t.IsDeleted == 0);
+            if (tenant.Any())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool CheckExistsSubDomain(string subDomain)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.SubDomain.ToLower().Trim() == subDomain.ToLower().Trim() && t.IsDeleted == 0);
+            if (tenant.Any())
+            {
+                return true;
+            }
+            return false;
+        }
+
         public int CreateTenant(TenantModel model)
         {
             var tenant = new Tenant();

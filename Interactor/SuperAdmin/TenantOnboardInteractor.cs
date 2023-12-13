@@ -41,10 +41,29 @@ namespace Interactor.SuperAdmin
             try
             {
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
-                var dbName = CommonConstants.RemoveSpecialCharacters(inputData.SubDomain);
+                var checkValidSubDomain = CommonConstants.IsSubdomainValid(inputData.SubDomain);
+                var isExistHospital = _tenantRepository.CheckExistsHospital(inputData.Hospital);
+                var checkSubDomainDB = _tenantRepository.CheckExistsSubDomain(inputData.SubDomain);
+                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
                 if (inputData.Size <= 0)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                }
+                else if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                }
+                else if (isExistHospital)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.HopitalExists);
+                }
+                else if (!checkValidSubDomain)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSubDomain);
+                }
+                else if (checkSubDomain || checkSubDomainDB)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
                 else if (inputData.SizeType != ConfigConstant.SizeTypeMB && inputData.SizeType != ConfigConstant.SizeTypeGB)
                 {
@@ -54,22 +73,24 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
-                else if (string.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0)
+                else if (inputData.SizeType == ConfigConstant.SizeTypeMB)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    if (inputData.Size > 256000)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
-                if (checkSubDomain)
+                else if (inputData.SizeType == ConfigConstant.SizeTypeGB)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
+                    if (inputData.Size > 250)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
+                var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
                 var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
                 {
                     Console.WriteLine($"Exception: {errorValue}");
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    return new TenantOnboardOutputData(new TenantOnboardItem(errorValue), TenantOnboardStatus.Failed);
                 }
                 if (tenantOnboard.TryGetValue("message", out string? messageValue))
                 {
