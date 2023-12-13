@@ -146,6 +146,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 this.hpId = hpId;
                 this.seikyuYm = seikyuYm;
                 this.seikyuType = seikyuType;
+                this.welfareType = welfareType;
                 var getData = GetData();
                 string formFile = "";
 
