@@ -2,6 +2,7 @@
 using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
+using AWSSDK.Dto;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
@@ -10,8 +11,6 @@ using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
 using UseCase.SuperAdmin.TenantOnboard;
-using Entity.SuperAdmin;
-using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Interactor.SuperAdmin
 {
@@ -107,6 +106,7 @@ namespace Interactor.SuperAdmin
             int id = 0;
             try
             {
+                ct.ThrowIfCancellationRequested();
                 // Provisioning SubDomain for new tenants
                 tenantUrl = $"{subDomain}.{ConfigConstant.Domain}";
                 // Checking Available RDS Cluster
@@ -186,9 +186,23 @@ namespace Interactor.SuperAdmin
                         }
                     }
                 }
-                _memoryCache.Set(
-                subDomain,
-                cancellationTokenSource);
+
+                // Set tenant info to cache memory
+                _memoryCache.Set(subDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
+
+                // Check cancel task
+                _ = Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        if (ct.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException(cancellationTokenSource.Token);
+                        }
+                        Thread.Sleep(1000);
+                    }
+                }, cancellationTokenSource.Token);
+
                 await Route53Action.CreateTenantDomain(subDomain);
                 await CloudFrontAction.UpdateNewTenantAsync(subDomain);
 
@@ -294,7 +308,7 @@ namespace Interactor.SuperAdmin
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                    
+
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(tenantId);
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);

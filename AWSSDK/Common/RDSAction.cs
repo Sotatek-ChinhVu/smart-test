@@ -384,6 +384,12 @@ namespace AWSSDK.Common
             }
         }
 
+        /// <summary>
+        /// Check RDS instance deleted
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<bool> CheckRDSInstanceDeleted(string dbInstanceIdentifier)
         {
             try
@@ -422,6 +428,11 @@ namespace AWSSDK.Common
 
                 // If the loop runs for the entire timeout duration, return false
                 throw new Exception("Checking Deleted RDSInstance timeout");
+            }
+            // Exception instance doesn't exist
+            catch (DBInstanceNotFoundException)
+            {
+                return true;
             }
             catch (Exception ex)
             {
@@ -462,6 +473,40 @@ namespace AWSSDK.Common
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 throw new Exception($"Get Last Snapshot. {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Check RDS instance exists 
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<bool> CheckRDSInstanceExists(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                var describeRequest = new DescribeDBInstancesRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier
+                };
+
+                var describeResponse = await rdsClient.DescribeDBInstancesAsync(describeRequest);
+
+                // Check if the instance exists (status will be null if it doesn't)
+                return describeResponse.DBInstances.Count > 0;
+            }
+            // Exception instance doesn't exist
+            catch (DBInstanceNotFoundException)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Checking RDSInstance existence failed. {ex.Message}");
             }
         }
     }

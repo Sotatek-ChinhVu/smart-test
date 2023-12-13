@@ -24,7 +24,7 @@ namespace AWSSDK.Constants
         public static byte StatusNotiInfo = 2;
         public static List<string> LISTSYSTEMDB = new List<string>() { "rdsadmin, postgres" };
         public static string RdsSnapshotBackupTermiante = "Bak-Termiante";
-        public static string RdsSnapshotUpgrade = "Upgrade";
+        public static string RdsSnapshotUpdate = "Update";
         public static string RdsSnapshotBackupRestore = "Bak-Restore";
         public static string ManagedCachingOptimized = "658327ea-f89d-4fab-a63d-7e88639e58f6";
         public static int PgPostDefault = 5432;
