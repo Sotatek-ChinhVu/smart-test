@@ -24,7 +24,7 @@ namespace SuperAdminAPI.Controllers
     public class TenantController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        private IWebSocketService _webSocketService;
+        private readonly IWebSocketService _webSocketService;
         public TenantController(UseCaseBus bus, IWebSocketService webSocketService)
         {
             _bus = bus;
