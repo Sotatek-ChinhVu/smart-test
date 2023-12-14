@@ -46,10 +46,26 @@ namespace Interactor.SuperAdmin
             try
             {
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
-                var dbName = CommonConstants.RemoveSpecialCharacters(inputData.SubDomain);
-                if (inputData.Size <= 0)
+
+                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.Size <= 0)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidRequest);
+                }
+                var checkValidSubDomain = CommonConstants.IsSubdomainValid(inputData.SubDomain);
+                var isExistHospital = _tenantRepository.CheckExistsHospital(inputData.Hospital);
+                var checkSubDomainDB = _tenantRepository.CheckExistsSubDomain(inputData.SubDomain);
+                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
+                if (isExistHospital)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.HopitalExists);
+                }
+                else if (!checkValidSubDomain)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSubDomain);
+                }
+                else if (checkSubDomain || checkSubDomainDB)
+                {
+                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
                 else if (inputData.SizeType != ConfigConstant.SizeTypeMB && inputData.SizeType != ConfigConstant.SizeTypeGB)
                 {
@@ -59,22 +75,24 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
-                else if (string.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0)
+                else if (inputData.SizeType == ConfigConstant.SizeTypeMB)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    if (inputData.Size > 256000)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
-                if (checkSubDomain)
+                else if (inputData.SizeType == ConfigConstant.SizeTypeGB)
                 {
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
+                    if (inputData.Size > 250)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain, dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
+                var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
+                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
                 {
                     Console.WriteLine($"Exception: {errorValue}");
-                    return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    return new TenantOnboardOutputData(new TenantOnboardItem(errorValue), TenantOnboardStatus.Failed);
                 }
                 if (tenantOnboard.TryGetValue("message", out string? messageValue))
                 {
@@ -94,26 +112,27 @@ namespace Interactor.SuperAdmin
 
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
-            string subDomain = model.SubDomain;
-            string dbName = model.Db;
-            int size = model.Size;
-            int sizeType = model.SizeType;
-            int tier = model.Type;
             string rString = CommonConstants.GenerateRandomString(6);
             string tenantUrl = "";
             var cancellationTokenSource = new CancellationTokenSource();
             CancellationToken ct = cancellationTokenSource.Token;
             int id = 0;
+            string tenantUrl = string.Empty;
             try
             {
                 ct.ThrowIfCancellationRequested();
+                if (!ct.IsCancellationRequested) // Check task run is not canceled
+                {
+                    await CloudFrontAction.UpdateNewTenantAsync(subDomain); 
+                    await Route53Action.CreateTenantDomain(subDomain);
+                }
                 // Provisioning SubDomain for new tenants
-                tenantUrl = $"{subDomain}.{ConfigConstant.Domain}";
+                tenantUrl = $"{model.SubDomain}.{ConfigConstant.Domain}";
                 // Checking Available RDS Cluster
-                if (subDomain.Length > 0)
+                if (model.SubDomain.Length > 0)
                 {
                     // Checking tenant tier, if dedicated, provision new RDS instance
-                    if (tier == ConfigConstant.TypeDedicate)
+                    if (model.Type == ConfigConstant.TypeDedicate)
                     {
                         string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                         var rdsInfo = await RDSAction.GetRDSInformation();
@@ -123,8 +142,8 @@ namespace Interactor.SuperAdmin
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
                             {
-                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                            }, cancellationTokenSource.Token);
+                                AddData(id, tenantUrl, model);
+                            });
                         }
                         else
                         {
@@ -133,8 +152,8 @@ namespace Interactor.SuperAdmin
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
                             {
-                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                            }, cancellationTokenSource.Token);
+                                AddData(id, tenantUrl, model);
+                            });
                         }
                     }
                     else // In the rest cases, checking available RDS for new Tenant
@@ -151,8 +170,8 @@ namespace Interactor.SuperAdmin
                             model.ChangeRdsIdentifier(dbIdentifier);
                             _ = Task.Run(() =>
                             {
-                                AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                            }, cancellationTokenSource.Token);
+                                AddData(id, tenantUrl, model);
+                            });
                         }
                         else // Else, returning the first available RDS Cluster in the list
                         {
@@ -167,8 +186,8 @@ namespace Interactor.SuperAdmin
                                     id = _tenantRepository.CreateTenant(model);
                                     _ = Task.Run(() =>
                                     {
-                                        AddData(id, tenantUrl, dbName, model, dbIdentifier);
-                                    }, cancellationTokenSource.Token);
+                                        AddData(id, tenantUrl, model);
+                                    });
                                     break;
                                 }
                             }
@@ -180,8 +199,8 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifierNew);
                                 _ = Task.Run(() =>
                                 {
-                                    AddData(id, tenantUrl, dbName, model, dbIdentifierNew);
-                                }, cancellationTokenSource.Token);
+                                    AddData(id, tenantUrl, model);
+                                });
                             }
                         }
                     }
@@ -189,13 +208,6 @@ namespace Interactor.SuperAdmin
 
                 // Set tenant info to cache memory
                 _memoryCache.Set(subDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
-
-                if (!ct.IsCancellationRequested) // Check task run is not canceled
-                {
-
-                    await Route53Action.CreateTenantDomain(subDomain);
-                    await CloudFrontAction.UpdateNewTenantAsync(subDomain);
-                }
 
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
@@ -287,17 +299,16 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void AddData(int tenantId, string tenantUrl, string dbName, TenantModel model, string dbIdentifier)
+        private void AddData(int tenantId, string tenantUrl, TenantModel model)
         {
             try
             {
-                string host = CheckingRDSStatusAsync(dbIdentifier, tenantId, tenantUrl);
+                string host = CheckingRDSStatusAsync(model.RdsIdentifier, tenantId, tenantUrl);
                 if (!string.IsNullOrEmpty(host))
                 {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
-                    RDSAction.CreateDatabase(host, dbName, model.PasswordConnect);
-                    CreateDatas(host, dbName, dataMigration, tenantId, model);
-
+                    RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
+                    CreateDatas(host, model.Db, dataMigration, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
                     var message = $"{tenantUrl} is created successfuly.";

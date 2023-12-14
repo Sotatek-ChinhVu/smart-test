@@ -149,7 +149,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 return UpdateReceptionStaticCellStatus.RaiinCmtUpdated;
             // Update or insert PtCmtInf
             case nameof(ReceptionRowModel.PtComment):
-                _ptCmtInfRepository.Upsert(input.PtId, input.CellValue, input.UserId);
+                _ptCmtInfRepository.Upsert(input.HpId, input.PtId, input.CellValue, input.UserId);
                 return UpdateReceptionStaticCellStatus.PatientCmtUpdated;
             default:
                 return UpdateReceptionStaticCellStatus.InvalidCellName;

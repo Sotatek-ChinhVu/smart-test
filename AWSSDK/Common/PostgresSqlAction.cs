@@ -95,43 +95,14 @@ namespace AWSSDK.Common
 
                     System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
 
-                    // Create process Grant execute permissions to file .sh
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    {
-                        // Grant execute permissions using chmod
-                        ProcessStartInfo chmodInfo = new ProcessStartInfo
-                        {
-                            FileName = "chmod",
-                            Arguments = $"+x {batFilePath}",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-
-                        using (System.Diagnostics.Process chmodProc = System.Diagnostics.Process.Start(chmodInfo))
-                        {
-                            chmodProc.WaitForExit();
-
-                            if (chmodProc.ExitCode != 0)
-                            {
-                                // Handle chmod error, if any
-                                string errorOutput = chmodProc.StandardError.ReadToEnd();
-                                Console.WriteLine($"chmod error: {errorOutput}");
-                                throw new Exception($"Failed to grant execute permissions to the script: {errorOutput}");
-                            }
-                        }
-                    }
-
                     ProcessStartInfo info = ProcessInfoByOS(batFilePath);
 
-                    using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
-
-                    proc.WaitForExit();
-                    var exit = proc.ExitCode;
-
-
-                    proc.Close();
+                    var proc = System.Diagnostics.Process.Start(info);
+                    Console.WriteLine("Start...");
+                    proc?.WaitForExit();
+                    var exit = proc?.ExitCode;
+                    Console.WriteLine("End...");
+                    proc?.Close();
                 }
                 catch (Exception ex)
                 {
@@ -223,6 +194,7 @@ namespace AWSSDK.Common
             string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
             pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
             string dumpCommand =
+                $"echo \"scipt chay\" >> /app/test.txtttt\n" +
                  $"{Set} PGPASSWORD={password}\n";
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -248,48 +220,21 @@ namespace AWSSDK.Common
                     batchContent += $"{dumpCommand}";
 
                     System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
-
-                    // Create process Grant execute permissions to file .sh
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    Console.WriteLine(batFilePath);
+                    Console.WriteLine(batchContent);
+                    Console.WriteLine("Check access file: " + CheckingFinishedAccessedFile(batFilePath).ToString());
+                    ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+                    using (Process proc = new Process())
                     {
-                        // Grant execute permissions using chmod
-                        ProcessStartInfo chmodInfo = new ProcessStartInfo
-                        {
-                            FileName = "chmod",
-                            Arguments = $"+x {batFilePath}",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-                        using (Process chmodProc = new Process())
-                        {
-                            chmodProc.StartInfo = chmodInfo;
-                            chmodProc.Start();
-                            chmodProc.ErrorDataReceived += (sender, e) => Console.WriteLine($"chmod error: {e.Data}");                           
-                            chmodProc.BeginOutputReadLine();
-                            chmodProc.BeginErrorReadLine();
-                            chmodProc.WaitForExit();
-                            if (chmodProc.ExitCode != 0)
-                            {
-                                // Handle chmod error, if any
-                                throw new Exception($"Error insert data master!");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        ProcessStartInfo info = ProcessInfoByOS(batFilePath);
-                        using (Process proc = new Process())
-                        {
-                            proc.StartInfo = info;
-                            proc.Start();
-                            proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
-                            proc.BeginOutputReadLine();
-                            proc.BeginErrorReadLine();
-                            proc.WaitForExit();
-                            var exitCode = proc.ExitCode;
-                        }
+                        proc.StartInfo = info;
+                        proc.Start();
+                        Console.WriteLine("Process Start");
+                        proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
+                        proc.BeginOutputReadLine();
+                        proc.BeginErrorReadLine();
+                        proc.WaitForExit();
+                        Console.WriteLine("Process End");
+                        var exitCode = proc.ExitCode;
                     }
                 }
                 catch (Exception ex)

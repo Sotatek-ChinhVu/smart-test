@@ -34,6 +34,9 @@ namespace AWSSDK.Constants
         public static string SourceBucketName = "phuc-test-s3-replication";
         public static RegionEndpoint RegionDestination = RegionEndpoint.GetBySystemName("ap-northeast-1");
         public static RegionEndpoint RegionSource = RegionEndpoint.GetBySystemName("ap-southeast-1");
+
+        public static int StatusTenantPending = 1;
+        public static int StatusTenantStopping = 4;
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>
@@ -60,6 +63,5 @@ namespace AWSSDK.Constants
 
             return rdsStatusDictionary;
         }
-       
     }
 }

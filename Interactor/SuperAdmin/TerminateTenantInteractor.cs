@@ -74,7 +74,7 @@ namespace Interactor.SuperAdmin
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
                 }
 
-                if ((tenant.StatusTenant == 1 || tenant.StatusTenant == 5) && inputData.Type == 1)
+                if ((tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping) && inputData.Type == 1)
                 {
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsNotAvailableToSortTerminate);
                 }
@@ -90,7 +90,7 @@ namespace Interactor.SuperAdmin
                         var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
                         Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
 
-                        if (tenant.StatusTenant == 1 || tenant.StatusTenant == 5) // terminate tenant  creating, updating, restoring
+                        if (tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping) // terminate tenant  creating, updating, restoring
                         {
                             skipFinalSnapshot = true;
                             var tenantInfo = _memoryCache.Get<TenantCacheMemory>(tenant.SubDomain) ?? new TenantCacheMemory();
