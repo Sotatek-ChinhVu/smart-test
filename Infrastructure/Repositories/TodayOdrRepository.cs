@@ -3512,6 +3512,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                 if (odrDateInf != null)
                 {
                     odrDateInf.GrpName = item.GrpName;
+                    odrDateInf.SortNo = item.SortNo;
                     odrDateInf.UpdateId = userId;
                     odrDateInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
@@ -3541,7 +3542,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             }
             else
             {
-                item.GrpId = grpIdMax;
+                item.ChangeGrpId(grpIdMax);
                 grpIdMax++;
             }
         }
@@ -3566,6 +3567,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     if (odrDateDetail != null)
                     {
                         odrDateDetail.ItemCd = OdrDateDetailItem.ItemCd;
+                        odrDateDetail.SortNo = OdrDateDetailItem.SortNo;
                         odrDateDetail.UpdateId = userId;
                         odrDateDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }

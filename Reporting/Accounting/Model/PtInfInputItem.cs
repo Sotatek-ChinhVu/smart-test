@@ -8,5 +8,5 @@ public class PtInfInputItem
 
     public int HokenId { get; set; }
 
-    public string KanaName { get; set; }
+    public string KanaName { get; set; } = string.Empty;
 }

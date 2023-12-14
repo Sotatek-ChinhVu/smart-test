@@ -15,6 +15,7 @@
         InvalidHospital = 11,
         InvalidAdminId = 12,
         InvalidPassword = 13,
-        TenantTypeDedicate = 14,
+        NotAllowUpdateTenantDedicateToSharing = 14,
+        TenantNotReadyToUpdate = 15
     }
 }

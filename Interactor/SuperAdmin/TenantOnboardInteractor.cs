@@ -1,14 +1,16 @@
-﻿using Amazon.RDS.Model;
-using Amazon.RDS;
+﻿using Amazon.RDS;
+using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
+using AWSSDK.Dto;
 using AWSSDK.Interfaces;
-using Domain.SuperAdminModels.Tenant;
-using UseCase.SuperAdmin.TenantOnboard;
 using Domain.SuperAdminModels.MigrationTenantHistory;
-using Interactor.Realtime;
 using Domain.SuperAdminModels.Notification;
+using Domain.SuperAdminModels.Tenant;
+using Interactor.Realtime;
+using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
+using UseCase.SuperAdmin.TenantOnboard;
 
 namespace Interactor.SuperAdmin
 {
@@ -20,13 +22,15 @@ namespace Interactor.SuperAdmin
         private readonly IMigrationTenantHistoryRepository _migrationTenantHistoryRepository;
         private readonly INotificationRepository _notificationRepository;
         private IWebSocketService _webSocketService;
+        private readonly IMemoryCache _memoryCache;
         public TenantOnboardInteractor(
             IAwsSdkService awsSdkService,
             ITenantRepository tenantRepository,
             ITenantRepository tenant2Repository,
             IMigrationTenantHistoryRepository migrationTenantHistoryRepository,
             INotificationRepository notificationRepository,
-            IWebSocketService webSocketService
+            IWebSocketService webSocketService,
+            IMemoryCache memoryCache
             )
         {
             _awsSdkService = awsSdkService;
@@ -35,6 +39,7 @@ namespace Interactor.SuperAdmin
             _notificationRepository = notificationRepository;
             _tenant2Repository = tenant2Repository;
             _webSocketService = webSocketService;
+            _memoryCache = memoryCache;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -108,12 +113,18 @@ namespace Interactor.SuperAdmin
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
             string rString = CommonConstants.GenerateRandomString(6);
-            string tenantUrl = string.Empty;
+            var cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken ct = cancellationTokenSource.Token;
             int id = 0;
+            string tenantUrl = string.Empty;
             try
             {
-                await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain);
-                await Route53Action.CreateTenantDomain(model.SubDomain);
+                ct.ThrowIfCancellationRequested();
+                if (!ct.IsCancellationRequested) // Check task run is not canceled
+                {
+                    await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain); 
+                    await Route53Action.CreateTenantDomain(model.SubDomain);
+                }
                 // Provisioning SubDomain for new tenants
                 tenantUrl = $"{model.SubDomain}.{ConfigConstant.Domain}";
                 // Checking Available RDS Cluster
@@ -194,6 +205,9 @@ namespace Interactor.SuperAdmin
                     }
                 }
 
+                // Set tenant info to cache memory
+                _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
+
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
@@ -203,14 +217,20 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                var message = $"{model.SubDomain} is created failed. Error: {ex.Message}";
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                if (!ct.IsCancellationRequested) // Check task run is not canceled
+                {
+                    var message = $"{model.SubDomain} is created failed. Error: {ex.Message}";
+                    var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
 
-                // Add info tenant for notification
-                saveDBNotify.SetTenantId(id);
-                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
+                    // Add info tenant for notification
+                    saveDBNotify.SetTenantId(id);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
 
-                await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                    await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+
+                    // Delete cache memory
+                    _memoryCache.Remove(model.SubDomain);
+                }
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
@@ -298,9 +318,12 @@ namespace Interactor.SuperAdmin
 
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(tenantId);
-                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantRunning);
 
                     _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+
+                    // Delete cache memory
+                    _memoryCache.Remove(model.SubDomain);
                 }
             }
             catch (Exception ex)
@@ -309,8 +332,11 @@ namespace Interactor.SuperAdmin
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 // Add info tenant for notification
                 saveDBNotify.SetTenantId(tenantId);
-                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
+                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+
+                // Delete cache memory
+                _memoryCache.Remove(model.SubDomain);
             }
             finally
             {
