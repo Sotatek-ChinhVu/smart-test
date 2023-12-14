@@ -2,6 +2,6 @@
 {
     public interface ISystemConfigRepository
     {
-        public int RefillSetting(int presentDate);
+        public int RefillSetting(int hpId, int presentDate);
     }
 }

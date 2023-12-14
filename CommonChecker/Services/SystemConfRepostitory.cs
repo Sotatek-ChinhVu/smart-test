@@ -34,9 +34,9 @@ namespace CommonChecker.Services
             }
             return systemConf != null ? systemConf.Val : defaultValue;
         }
-        public int RefillSetting(int presentDate)
+        public int RefillSetting(int hpId,int presentDate)
         {
-            return GetSettingValue(2002, 0, presentDate: presentDate, defaultValue: 999);
+            return GetSettingValue(hpId, 2002, 0, presentDate: presentDate, defaultValue: 999);
         }
     }
 }
