@@ -6810,6 +6810,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "SeqNo");
 
+                    b.HasIndex(new[] { "PtId", "IsDeleted", "KensaItemCd" }, "KENSA_INF_DETAIL_PT_ID_IDX");
+
                     b.ToTable("KENSA_INF_DETAIL");
                 });
 
@@ -8803,8 +8805,6 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("PrecautionCd", "ExtendCd");
 
-                    b.HasIndex(new[] { "AgeMin", "AgeMax", "SexCd" }, "M34_PRECAUTION_CODE_AGE_MIN_IDX");
-
                     b.ToTable("M34_PRECAUTION_CODE");
                 });
 
@@ -9973,8 +9973,6 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "RaiinNo", "RpNo", "RpEdaNo", "Id");
 
                     b.HasIndex(new[] { "HpId", "PtId", "SinDate", "IsDeleted" }, "ODR_INF_IDX01");
-
-                    b.HasIndex(new[] { "RaiinNo", "OdrKouiKbn", "InoutKbn", "IsDeleted" }, "ODR_INF_RAIIN_NO_IDX");
 
                     b.ToTable("ODR_INF");
                 });
