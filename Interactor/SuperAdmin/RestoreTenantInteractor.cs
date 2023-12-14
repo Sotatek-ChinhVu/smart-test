@@ -142,7 +142,7 @@ namespace Interactor.SuperAdmin
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                                 // Delete cache memory
-                                _memoryCache.Remove(oldTenant.SubDomain);
+                                _memoryCache.Remove(tenant.SubDomain);
                             }
                             cts.Cancel();
                             return;
@@ -188,7 +188,7 @@ namespace Interactor.SuperAdmin
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                                 // Delete cache memory
-                                _memoryCache.Remove(oldTenant.SubDomain);
+                                _memoryCache.Remove(tenant.SubDomain);
                             }
                             cts.Cancel();
                             return;
@@ -209,7 +209,7 @@ namespace Interactor.SuperAdmin
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                             // Delete cache memory
-                            _memoryCache.Remove(oldTenant.SubDomain);
+                            _memoryCache.Remove(tenant.SubDomain);
                         }
                         cts.Cancel();
                         return;
