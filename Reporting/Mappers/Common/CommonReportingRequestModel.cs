@@ -92,13 +92,16 @@ namespace Reporting.Mappers.Common
         public string RowCountFieldName { get; set; } = string.Empty;
 
         [JsonPropertyName("visibleFieldList")]
-        public Dictionary<string, bool> VisibleFieldList { get; set; } = new Dictionary<string, bool>();
+        public Dictionary<string, bool> VisibleFieldList { get; set; } = new();
 
         [JsonPropertyName("visibleAtPrint")]
-        public Dictionary<string, bool> VisibleAtPrint { get; set; } = new Dictionary<string, bool>();
+        public Dictionary<string, bool> VisibleAtPrint { get; set; } = new();
 
         [JsonPropertyName("wrapFieldList")]
-        public Dictionary<string, bool> WrapFieldList { get; set; } = new Dictionary<string, bool>();
+        public Dictionary<string, bool> WrapFieldList { get; set; } = new();
+
+        [JsonPropertyName("textDeleteLine")]
+        public Dictionary<string, int> TextDeleteLine { get; set; } = new();
     }
 
     public class ListTextObject
