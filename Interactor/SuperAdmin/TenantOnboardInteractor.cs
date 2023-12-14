@@ -9,6 +9,7 @@ using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
+using Infrastructure.SuperAdminRepositories;
 using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
@@ -300,7 +301,7 @@ namespace Interactor.SuperAdmin
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, dbIdentifier);
                         running = false;
                     }
                     // Check if more than timeout
@@ -345,7 +346,7 @@ namespace Interactor.SuperAdmin
 
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
                     }
-            
+                    _tenant2Repository.UpdateStatusTenant(tenantId, 1);
                     // Delete cache memory
                     _memoryCache.Remove(model.SubDomain);
                 }

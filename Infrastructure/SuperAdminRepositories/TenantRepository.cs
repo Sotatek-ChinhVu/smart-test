@@ -130,6 +130,19 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
+        public bool UpdateInfTenantStatus(int tenantId, byte status)
+        {
+            var tenant = TrackingDataContext.Tenants.FirstOrDefault(i => i.TenantId == tenantId);
+            if (tenant != null)
+            {
+                tenant.Status = status;
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
         public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password)
         {
             try
