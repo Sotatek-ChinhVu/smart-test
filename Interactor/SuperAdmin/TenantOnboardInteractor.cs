@@ -128,7 +128,7 @@ namespace Interactor.SuperAdmin
                 // Provisioning SubDomain for new tenants
                 tenantUrl = $"{model.SubDomain}.{ConfigConstant.Domain}";
                 // Checking Available RDS Cluster
-                if (model.SubDomain.Length > 0)
+                if (model.SubDomain.Length > 0 && !ct.IsCancellationRequested)
                 {
                     // Checking tenant tier, if dedicated, provision new RDS instance
                     if (model.Type == ConfigConstant.TypeDedicate)
@@ -138,21 +138,27 @@ namespace Interactor.SuperAdmin
                         if (rdsInfo.ContainsKey(dbIdentifier))
                         {
                             id = _tenantRepository.CreateTenant(model);
-                            model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(() =>
+                            if (!ct.IsCancellationRequested)
                             {
-                                AddData(id, tenantUrl, model);
-                            });
+                                model.ChangeRdsIdentifier(dbIdentifier);
+                                Task.Run(() =>
+                                {
+                                    AddData(id, tenantUrl, model);
+                                }).Wait();
+                            }
                         }
                         else
                         {
                             id = _tenantRepository.CreateTenant(model);
-                            await RDSAction.CreateNewShardAsync(dbIdentifier);
-                            model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(() =>
+                            if (!ct.IsCancellationRequested)
                             {
-                                AddData(id, tenantUrl, model);
-                            });
+                                await RDSAction.CreateNewShardAsync(dbIdentifier);
+                                model.ChangeRdsIdentifier(dbIdentifier);
+                                Task.Run(() =>
+                                {
+                                    AddData(id, tenantUrl, model);
+                                }).Wait();
+                            }
                         }
                     }
                     else // In the rest cases, checking available RDS for new Tenant
@@ -165,12 +171,15 @@ namespace Interactor.SuperAdmin
                         {
                             string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                             id = _tenantRepository.CreateTenant(model);
-                            await RDSAction.CreateNewShardAsync(dbIdentifier);
-                            model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(() =>
+                            if (!ct.IsCancellationRequested)
                             {
-                                AddData(id, tenantUrl, model);
-                            });
+                                await RDSAction.CreateNewShardAsync(dbIdentifier);
+                                model.ChangeRdsIdentifier(dbIdentifier);
+                                Task.Run(() =>
+                                {
+                                    AddData(id, tenantUrl, model);
+                                }).Wait();
+                            }
                         }
                         else // Else, returning the first available RDS Cluster in the list
                         {
@@ -181,12 +190,15 @@ namespace Interactor.SuperAdmin
                                 if (sumSubDomainToDbIdentifier <= 3)
                                 {
                                     checkAvailableIdentifier = true;
-                                    model.ChangeRdsIdentifier(dbIdentifier);
-                                    id = _tenantRepository.CreateTenant(model);
-                                    _ = Task.Run(() =>
+                                    if (!ct.IsCancellationRequested)
                                     {
-                                        AddData(id, tenantUrl, model);
-                                    });
+                                        model.ChangeRdsIdentifier(dbIdentifier);
+                                        id = _tenantRepository.CreateTenant(model);
+                                        Task.Run(() =>
+                                        {
+                                            AddData(id, tenantUrl, model);
+                                        }).Wait();
+                                    }
                                     break;
                                 }
                             }
@@ -194,12 +206,15 @@ namespace Interactor.SuperAdmin
                             {
                                 string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                 id = _tenantRepository.CreateTenant(model);
-                                await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                model.ChangeRdsIdentifier(dbIdentifierNew);
-                                _ = Task.Run(() =>
+                                if (!ct.IsCancellationRequested)
                                 {
-                                    AddData(id, tenantUrl, model);
-                                });
+                                    await RDSAction.CreateNewShardAsync(dbIdentifierNew);
+                                    model.ChangeRdsIdentifier(dbIdentifierNew);
+                                    Task.Run(() =>
+                                    {
+                                        AddData(id, tenantUrl, model);
+                                    }).Wait();
+                                }
                             }
                         }
                     }
