@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231213031648_addIndexTableKensaInfDetail")]
+    partial class addIndexTableKensaInfDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3372,6 +3375,435 @@ namespace TenantMigration.Migrations
                     b.HasKey("ItemCd", "StartDate");
 
                     b.ToTable("DRUG_UNIT_CONV");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.EpsChk", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("SeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(4);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SeqNo"));
+
+                    b.Property<int>("CheckResult")
+                        .HasColumnType("integer")
+                        .HasColumnName("CHECK_RESULT");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("DrugInfo")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("DRUG_INFO");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<int>("OnlineConsent")
+                        .HasColumnType("integer")
+                        .HasColumnName("ONLINE_CONSENT");
+
+                    b.Property<int>("OralBrowsingConsent")
+                        .HasColumnType("integer")
+                        .HasColumnName("ORAL_BROWSING_CONSENT");
+
+                    b.Property<int>("SameMedicalInstitutionAlertFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("SAME_MEDICAL_INSTITUTION_ALERT_FLG");
+
+                    b.Property<int>("SinDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIN_DATE");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "PtId", "RaiinNo", "SeqNo");
+
+                    b.ToTable("EPS_CHK");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.EpsChkDetail", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("SeqNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(4);
+
+                    b.Property<string>("MessageId")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("MESSAGE_ID")
+                        .HasColumnOrder(5);
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("COMMENT");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)")
+                        .HasColumnName("MESSAGE");
+
+                    b.Property<string>("MessageCategory")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("MESSAGE_CATEGORY");
+
+                    b.Property<string>("PastDate")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("PAST_DATE");
+
+                    b.Property<string>("PastDispensingQuantity")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("PAST_DISPENSING_QUANTITY");
+
+                    b.Property<string>("PastDosageForm")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("PAST_DOSAGE_FORM");
+
+                    b.Property<string>("PastInsurancePharmacyName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("PAST_INSURANCE_PHARMACY_NAME");
+
+                    b.Property<string>("PastMedicalInstitutionName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("PAST_MEDICAL_INSTITUTION_NAME");
+
+                    b.Property<string>("PastPharmaceuticalCode")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)")
+                        .HasColumnName("PAST_PHARMACEUTICAL_CODE");
+
+                    b.Property<string>("PastPharmaceuticalCodeType")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("PAST_PHARMACEUTICAL_CODE_TYPE");
+
+                    b.Property<string>("PastPharmaceuticalName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("PAST_PHARMACEUTICAL_NAME");
+
+                    b.Property<string>("PastUsage")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("PAST_USAGE");
+
+                    b.Property<string>("PharmaceuticalsIngredientName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("PHARMACEUTICALS_INGREDIENT_NAME");
+
+                    b.Property<string>("TargetDispensingQuantity")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("TARGET_DISPENSING_QUANTITY");
+
+                    b.Property<string>("TargetDosageForm")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("TARGET_DOSAGE_FORM");
+
+                    b.Property<string>("TargetPharmaceuticalCode")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)")
+                        .HasColumnName("TARGET_PHARMACEUTICAL_CODE");
+
+                    b.Property<string>("TargetPharmaceuticalCodeType")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("TARGET_PHARMACEUTICAL_CODE_TYPE");
+
+                    b.Property<string>("TargetPharmaceuticalName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("TARGET_PHARMACEUTICAL_NAME");
+
+                    b.Property<string>("TargetUsage")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("TARGET_USAGE");
+
+                    b.HasKey("HpId", "PtId", "RaiinNo", "SeqNo", "MessageId");
+
+                    b.ToTable("EPS_CHK_DETAIL");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.EpsPrescription", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("SeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(4);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SeqNo"));
+
+                    b.Property<string>("AccessCode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("ACCESS_CODE");
+
+                    b.Property<string>("Bango")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("BANGO");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DELETED_DATE");
+
+                    b.Property<int>("DeletedReason")
+                        .HasColumnType("integer")
+                        .HasColumnName("DELETED_REASON");
+
+                    b.Property<string>("EdaNo")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("EDA_NO");
+
+                    b.Property<string>("HokensyaNo")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("HOKENSYA_NO");
+
+                    b.Property<int>("IssueType")
+                        .HasColumnType("integer")
+                        .HasColumnName("ISSUE_TYPE");
+
+                    b.Property<int>("KaId")
+                        .HasColumnType("integer")
+                        .HasColumnName("KA_ID");
+
+                    b.Property<string>("Kigo")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("KIGO");
+
+                    b.Property<string>("KohiFutansyaNo")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("KOHI_FUTANSYA_NO");
+
+                    b.Property<string>("KohiJyukyusyaNo")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("KOHI_JYUKYUSYA_NO");
+
+                    b.Property<string>("PrescriptionDocument")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("PRESCRIPTION_DOCUMENT");
+
+                    b.Property<string>("PrescriptionId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)")
+                        .HasColumnName("PRESCRIPTION_ID");
+
+                    b.Property<int>("RefileCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("REFILE_COUNT");
+
+                    b.Property<int>("SinDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIN_DATE");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("STATUS");
+
+                    b.Property<int>("TantoId")
+                        .HasColumnType("integer")
+                        .HasColumnName("TANTO_ID");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "PtId", "RaiinNo", "SeqNo");
+
+                    b.HasIndex(new[] { "HpId", "PrescriptionId" }, "EPS_PRESCRIPTION_IDX01");
+
+                    b.ToTable("EPS_PRESCRIPTION");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.EpsReference", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("PrescriptionId")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)")
+                        .HasColumnName("PRESCRIPTION_ID")
+                        .HasColumnOrder(3);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("PrescriptionReferenceInformation")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("PRESCRIPTION_REFERENCE_INFORMATION");
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO");
+
+                    b.Property<int>("SinDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIN_DATE");
+
+                    b.HasKey("HpId", "PtId", "PrescriptionId");
+
+                    b.ToTable("EPS_REFERENCE");
                 });
 
             modelBuilder.Entity("Entity.Tenant.EventMst", b =>
@@ -24294,6 +24726,20 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(12)")
                         .HasColumnName("YJ_CD");
 
+                    b.Property<string>("YohoCd")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("YOHO_CD");
+
+                    b.Property<int>("YohoHosokuKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("YOHO_HOSOKU_KBN");
+
+                    b.Property<int>("YohoHosokuRec")
+                        .HasColumnType("integer")
+                        .HasColumnName("YOHO_HOSOKU_REC");
+
                     b.Property<int>("YohoKbn")
                         .HasColumnType("integer")
                         .HasColumnName("YOHO_KBN");
@@ -26538,6 +26984,93 @@ namespace TenantMigration.Migrations
                     b.ToTable("YAKKA_SYUSAI_MST");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.YohoHosoku", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("ItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("ITEM_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("StartDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_DATE")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("SeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(4);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SeqNo"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("Hosoku")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("character varying(240)")
+                        .HasColumnName("HOSOKU");
+
+                    b.Property<string>("HosokuItemCd")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("HOSOKU_ITEM_CD");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.Property<int>("YohoHosokuKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("YOHO_HOSOKU_KBN");
+
+                    b.Property<int>("YohoHosokuRec")
+                        .HasColumnType("integer")
+                        .HasColumnName("YOHO_HOSOKU_REC");
+
+                    b.HasKey("HpId", "ItemCd", "StartDate", "SeqNo");
+
+                    b.ToTable("YOHO_HOSOKU");
+                });
+
             modelBuilder.Entity("Entity.Tenant.YohoInfMst", b =>
                 {
                     b.Property<int>("HpId")
@@ -26585,6 +27118,139 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "ItemCd");
 
                     b.ToTable("YOHO_INF_MST");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.YohoMst", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<string>("YohoCd")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("YOHO_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("StartDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_DATE")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("Bui")
+                        .HasColumnType("integer")
+                        .HasColumnName("BUI");
+
+                    b.Property<int>("ChozaiYohoCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("CHOZAI_YOHO_CD");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("EndDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("END_DATE");
+
+                    b.Property<int>("ReferenceNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("REFERENCE_NO");
+
+                    b.Property<string>("TimingKbn")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("TIMING_KBN");
+
+                    b.Property<int>("TimingKbnCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("TIMING_KBN_CD");
+
+                    b.Property<int>("TonyoJoken")
+                        .HasColumnType("integer")
+                        .HasColumnName("TONYO_JOKEN");
+
+                    b.Property<int>("ToyoInterval")
+                        .HasColumnType("integer")
+                        .HasColumnName("TOYO_INTERVAL");
+
+                    b.Property<int>("ToyoTime")
+                        .HasColumnType("integer")
+                        .HasColumnName("TOYO_TIME");
+
+                    b.Property<int>("ToyoTiming")
+                        .HasColumnType("integer")
+                        .HasColumnName("TOYO_TIMING");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.Property<int>("YohoCdKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("YOHO_CD_KBN");
+
+                    b.Property<string>("YohoDetailKbn")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnName("YOHO_DETAIL_KBN");
+
+                    b.Property<string>("YohoDetailKbnCd")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("YOHO_DETAIL_KBN_CD");
+
+                    b.Property<string>("YohoKanaName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("YOHO_KANA_NAME");
+
+                    b.Property<string>("YohoKbn")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("YOHO_KBN");
+
+                    b.Property<string>("YohoKbnCd")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("YOHO_KBN_CD");
+
+                    b.Property<string>("YohoName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("YOHO_NAME");
+
+                    b.HasKey("HpId", "YohoCd", "StartDate");
+
+                    b.ToTable("YOHO_MST");
                 });
 
             modelBuilder.Entity("Entity.Tenant.YohoSetMst", b =>
