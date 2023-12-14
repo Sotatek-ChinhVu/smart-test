@@ -82,7 +82,7 @@ namespace Interactor.SuperAdmin
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restoring"]);
 
                         // Set tenant info to cache memory
-                        _memoryCache.Set(tenant.SubDomain, cts);
+                        _memoryCache.Set(tenant.SubDomain, new TenantCacheMemory(cts, string.Empty));
 
                         Console.WriteLine($"Start  restore  tenant. RdsIdentifier: {tenant.RdsIdentifier}");
 
