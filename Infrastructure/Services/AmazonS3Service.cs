@@ -48,35 +48,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         _tenantProvider.DisposeDataContext();
     }
 
-    private string GetAccessUrl(string key)
-    {
-        return $"{_options.BaseAccessUrl}/{key}";
-    }
-    private static string GetLeftName(string inputString)
-    {
-        int lastIndex = inputString.LastIndexOf('/');
-        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
-
-        if (lastIndex >= 0 && secondLastIndex >= 0)
-        {
-            string result = inputString.Substring(0, secondLastIndex + 1);
-            return result;
-        }
-        return string.Empty;
-    }
-    private static string GetRightName(string inputString)
-    {
-
-        int lastIndex = inputString.LastIndexOf('/');
-        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
-
-        if (lastIndex >= 0 && secondLastIndex >= 0)
-        {
-            string result = inputString.Substring(secondLastIndex + 1, lastIndex - secondLastIndex - 1);
-            return result + "/";
-        }
-        return string.Empty;
-    }
     public async Task<bool> DeleteObjectAsync(string key)
     {
         try
@@ -108,41 +79,90 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
             /// Copy to Replication (frefix: delete-)
 
             var listVersionLastest = listVersionsReplicationResponse.Versions.Where(i => i.IsLatest);
-            var destinationKeyFolder = string.Empty;
-            foreach (var version in listVersionLastest)
+            if (listVersionLastest.Any())
             {
-                var destinationKey = string.Empty;
-                DateTime expires = DateTime.UtcNow.Add(TimeSpan.FromDays(1));
-                var copyObjectRequest = new CopyObjectRequest
+                var destinationKeyFolder = string.Empty;
+                var rootFolder = string.Empty;
+                bool isFirstIteration = true;
+                foreach (var version in listVersionLastest)
                 {
-                    SourceBucket = _options.BucketNameReplication,
-                    SourceKey = version.Key,
-                    DestinationBucket = _options.BucketNameReplication,
+                    var destinationKey = string.Empty;
+                    DateTime expires = DateTime.UtcNow.Add(TimeSpan.FromDays(1));
+                    var copyObjectRequest = new CopyObjectRequest
+                    {
+                        SourceBucket = _options.BucketNameReplication,
+                        SourceKey = version.Key,
+                        DestinationBucket = _options.BucketNameReplication,
+                    };
+                    if (version.Key.EndsWith("/"))
+                    {
+                        if (isFirstIteration)
+                        {
+                            isFirstIteration = false;
+                            char separator = '/';
+                            int count = version.Key.Split(separator).Length - 1;
+                            if (count == 1)
+                            {
+                                destinationKey = $"delete-{version.Key}";
+                            }
+                            else
+                            {
+                                destinationKey = GetLeftName(version.Key) + "delete-" + GetRightName(version.Key);
+                            }
+                            destinationKeyFolder = destinationKey;
+                            copyObjectRequest.DestinationKey = destinationKeyFolder;
+                            rootFolder = destinationKey;
+                        }
+                        else
+                        {
+                            char separator = '/';
+                            var checkKey = key;
+                            if (!key.EndsWith(separator.ToString()))
+                            {
+                                checkKey = key + separator;
+                            }
+                            var cutString = CutString(checkKey, version.Key);
+                            copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+                        }
+                    }
+                    else
+                    {
+                        var oldFileName = Path.GetFileName(version.Key);
+                        if (isFirstIteration)
+                        {
+                            isFirstIteration = false;
+                            var newFileName = "delete-" + oldFileName;
+                            copyObjectRequest.DestinationKey = version.Key.Replace(oldFileName, newFileName);
+                        }
+                        else
+                        {
+                            char separator = '/';
+                            var checkKey = key;
+                            if (!key.EndsWith(separator.ToString()))
+                            {
+                                checkKey = key + separator;
+                            }
+                            var cutString = CutString(checkKey, version.Key);
+                            copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
 
-                };
-                if (version.Key.EndsWith("/"))
-                {
-                    destinationKey = GetLeftName(version.Key) + "delete-" + GetRightName(version.Key);
-                    destinationKeyFolder = destinationKey;
-                    copyObjectRequest.DestinationKey = destinationKeyFolder;
+                        }
+
+                    }
+                    Console.WriteLine(copyObjectRequest.DestinationKey);
+                    var copyObjectResponse = await _s3Client.CopyObjectAsync(copyObjectRequest);
                 }
-                else
-                {
-                    var oldFileName = Path.GetFileName(version.Key);
-                    var newFileName = "delete-" + oldFileName;
-                    copyObjectRequest.DestinationKey = destinationKeyFolder + newFileName;
-                }
-                var copyObjectResponse = await _s3Client.CopyObjectAsync(copyObjectRequest);
             }
-
             /// Delete Replication
             var objectsReplicationToDelete = listVersionsReplicationResponse.Versions.Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId }).ToList();
-            var deleteObjectsReplicationRequest = new DeleteObjectsRequest
+            if (objectsReplicationToDelete.Any())
             {
-                BucketName = _options.BucketNameReplication,
-                Objects = objectsReplicationToDelete
-            };
-            var deleteObjectsReplicationResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsReplicationRequest);
+                var deleteObjectsReplicationRequest = new DeleteObjectsRequest
+                {
+                    BucketName = _options.BucketNameReplication,
+                    Objects = objectsReplicationToDelete
+                };
+                var deleteObjectsReplicationResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsReplicationRequest);
+            }
 
             return true;
         }
@@ -312,4 +332,64 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
         return (listS3Objects.S3Objects.Any(), locationFile);
     }
+
+    #region Private function
+    private string GetAccessUrl(string key)
+    {
+        return $"{_options.BaseAccessUrl}/{key}";
+    }
+    private static string GetLeftName(string inputString)
+    {
+        int lastIndex = inputString.LastIndexOf('/');
+        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
+
+        if (lastIndex >= 0 && secondLastIndex >= 0)
+        {
+            string result = inputString.Substring(0, secondLastIndex + 1);
+            return result;
+        }
+        return string.Empty;
+    }
+    private static string GetRightName(string inputString)
+    {
+
+        int lastIndex = inputString.LastIndexOf('/');
+        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
+
+        if (lastIndex >= 0 && secondLastIndex >= 0)
+        {
+            string result = inputString.Substring(secondLastIndex + 1, lastIndex - secondLastIndex - 1);
+            return result + "/";
+        }
+        return string.Empty;
+    }
+    private static string AddFrefixDelete(string inputString)
+    {
+        char separator = '/';
+        string[] segments = inputString.Split(separator);
+
+        for (int i = 0; i < segments.Length; i++)
+        {
+            if (!string.IsNullOrWhiteSpace(segments[i]))
+            {
+                segments[i] = $"delete-{segments[i]}";
+            }
+        }
+
+        return string.Join("/", segments);
+    }
+    private static string CutString(string substring1, string inputString)
+    {
+        int firstOccurrenceIndex = inputString.IndexOf(substring1);
+
+        if (firstOccurrenceIndex != -1)
+        {
+            string part1 = inputString.Substring(0, firstOccurrenceIndex);
+            string part2 = inputString.Substring(firstOccurrenceIndex + substring1.Length);
+            return part1 + part2;
+        }
+
+        return inputString;
+    }
+    #endregion
 }
