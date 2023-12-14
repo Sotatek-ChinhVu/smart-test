@@ -1,12 +1,10 @@
 ﻿using Helper.Common;
 using Helper.Extension;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.SpecialNote.SummaryInf
 {
     public class SummaryInfModel
     {
-        [JsonConstructor]
         public SummaryInfModel(long id, int hpId, long ptId, long seqNo, string text, string rtext, DateTime createDate, DateTime updateDate)
         {
             Id = id;

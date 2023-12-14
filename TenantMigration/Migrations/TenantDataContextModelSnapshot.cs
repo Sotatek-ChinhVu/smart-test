@@ -6381,8 +6381,6 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "SeqNo");
 
-                    b.HasIndex(new[] { "PtId", "IsDeleted", "KensaItemCd" }, "KENSA_INF_DETAIL_PT_ID_IDX");
-
                     b.ToTable("KENSA_INF_DETAIL");
                 });
 

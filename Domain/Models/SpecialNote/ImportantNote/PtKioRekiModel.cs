@@ -1,10 +1,7 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Domain.Models.SpecialNote.ImportantNote
+﻿namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtKioRekiModel
     {
-        [JsonConstructor]
         public PtKioRekiModel(int hpId, long ptId, int seqNo, int sortNo, string byomeiCd, string byotaiCd, string byomei, int startDate, string cmt, int isDeleted)
         {
             HpId = hpId;
