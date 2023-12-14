@@ -238,7 +238,7 @@ namespace Interactor.SuperAdmin
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
-                    { "message", "Please wait for 15 minutes for all resources to be available" }
+                    { "message", "Please wait for 40 minutes for all resources to be available" }
                 };
 
                 return result;
