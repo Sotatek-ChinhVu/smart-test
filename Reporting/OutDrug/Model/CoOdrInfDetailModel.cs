@@ -1,27 +1,25 @@
 ﻿using Entity.Tenant;
 using Reporting.CommonMasters.Constants;
 
-namespace Emr.Report.OutDrug.Model;
+namespace Reporting.OutDrug.Model;
 
 public class CoOdrInfDetailModel
 {
-    public OdrInfDetail OdrInfDetail { get; set; }
-    public OdrInf OdrInf { get; set; }
-    public TenMst TenMst { get; set; }
-    public YohoMst YohoMst { get; set; }
-    public PtHokenPattern PtHokenPattern { get; set; }
+    public OdrInfDetail OdrInfDetail { get; }
+    public OdrInf OdrInf { get; }
+    public TenMst TenMst { get; }
+    public PtHokenPattern PtHokenPattern { get; }
 
-    readonly string[] _bunkatu;
+    readonly string[]? _bunkatu;
 
-    public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst tenMst, PtHokenPattern ptHokenPattern, YohoMst yohoMst)
+    public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst tenMst, PtHokenPattern ptHokenPattern)
     {
         OdrInfDetail = odrInfDetail;
         OdrInf = odrInf;
         TenMst = tenMst;
         PtHokenPattern = ptHokenPattern;
-        YohoMst = yohoMst;
-        _bunkatu = new string[0];
-        if (OdrInfDetail.Bunkatu != null && OdrInfDetail.Bunkatu != "")
+
+        if (OdrInfDetail.Bunkatu != null && OdrInfDetail.Bunkatu != string.Empty)
         {
             _bunkatu = OdrInfDetail.Bunkatu.Split('+');
         }
@@ -103,7 +101,7 @@ public class CoOdrInfDetailModel
     /// </summary>
     public string ItemCd
     {
-        get { return OdrInfDetail.ItemCd ?? ""; }
+        get { return OdrInfDetail.ItemCd ?? string.Empty; }
     }
 
     /// <summary>
@@ -111,7 +109,7 @@ public class CoOdrInfDetailModel
     /// </summary>
     public string ItemName
     {
-        get { return OdrInfDetail.ItemName ?? ""; }
+        get { return OdrInfDetail.ItemName ?? string.Empty; }
     }
 
     /// <summary>
@@ -127,7 +125,7 @@ public class CoOdrInfDetailModel
     /// </summary>
     public string UnitName
     {
-        get { return OdrInfDetail.UnitName ?? ""; }
+        get { return OdrInfDetail.UnitName ?? string.Empty; }
     }
 
     /// <summary>
@@ -323,7 +321,7 @@ public class CoOdrInfDetailModel
     /// </summary>
     public string BunkatuKai(int index)
     {
-        string ret = "";
+        string ret = string.Empty;
 
         if (_bunkatu != null && _bunkatu.Length > 0 && _bunkatu.Length >= index)
         {
@@ -463,30 +461,6 @@ public class CoOdrInfDetailModel
         get { return TenMst == null ? 0 : TenMst.YohoKbn; }
     }
 
-    /// <summary>
-    /// 用法補足区分
-    /// </summary>
-    public int YohoHosokuKbn
-    {
-        get { return TenMst == null ? 0 : TenMst.YohoHosokuKbn; }
-    }
-
-    /// <summary>
-    /// 用法コード
-    /// </summary>
-    public string YohoCd
-    {
-        get { return YohoMst == null ? string.Empty : YohoMst.YohoCd; }
-    }
-
-    /// <summary>
-    /// 用法名称
-    /// </summary>
-    public string YohoName
-    {
-        get { return YohoMst == null ? OdrInfDetail.ItemName ?? string.Empty : YohoMst.YohoName; }
-    }
-
     public string ReceName
     {
         get { return TenMst == null ? string.Empty : TenMst.ReceName ?? string.Empty; }
@@ -501,55 +475,7 @@ public class CoOdrInfDetailModel
     {
         get
         {
-            return (MasterSbt == "T" ||
-              (!string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith("Z")));
+            return (MasterSbt == "T" || (!string.IsNullOrEmpty(ItemCd) && ItemCd.StartsWith("Z")));
         }
-    }
-
-    /// <summary>
-    /// 不均等服用
-    /// </summary>
-    public bool IsFukinto
-    {
-        get
-        {
-            bool ret = false;
-
-            if (TenMst != null && TenMst?.YohoKbn > 0)
-            {
-                int[] fukuyoTimings = {
-                    TenMst.FukuyoRise,
-                    TenMst.FukuyoMorning,
-                    TenMst.FukuyoDaytime,
-                    TenMst.FukuyoNight,
-                    TenMst.FukuyoSleep};
-
-                int fukuyo = 0;
-
-                foreach (var fukuyoTiming in fukuyoTimings)
-                {
-                    if (fukuyoTiming > 0)
-                    {
-                        if (fukuyo > 0 && fukuyo != fukuyoTiming)
-                        {
-                            // 服用量がタイミングによって異なる場合は不均等
-                            ret = true;
-                            continue;
-                        }
-                        fukuyo = fukuyoTiming;
-                    }
-                }
-            }
-
-            return ret;
-        }
-    }
-
-    /// <summary>
-    /// YJコード
-    /// </summary>
-    public string YjCd
-    {
-        get { return TenMst == null ? string.Empty : TenMst.YjCd ?? string.Empty; }
     }
 }

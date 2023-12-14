@@ -13,11 +13,10 @@ public class CoOutDrugPrintData
     private readonly List<CoPtKohiModel> _ptKohi;
     private readonly CoHpInfModel _hpInf;
     private readonly CoRaiinInfModel _raiinInf;
-    private readonly string _accessCd;
 
     public CoOutDrugPrintData(
         OutDrugPrintOutType printType, int sinDate, CoPtInfModel ptInf, CoPtHokenInfModel ptHoken, List<CoPtKohiModel> ptKohis,
-        CoHpInfModel hpInf, CoRaiinInfModel raiinInf, int bunkatuMax, int bunkatuKai, int refillCount, string accessCd)
+        CoHpInfModel hpInf, CoRaiinInfModel raiinInf, int bunkatuMax, int bunkatuKai, int refillCount)
     {
         _sinDate = sinDate;
         _ptInf = ptInf;
@@ -25,14 +24,14 @@ public class CoOutDrugPrintData
         _ptKohi = ptKohis;
         _hpInf = hpInf;
         _raiinInf = raiinInf;
-        _accessCd = accessCd;
 
         PrintType = printType;
         BunkatuMax = bunkatuMax;
         BunkatuKai = bunkatuKai;
         RefillCount = refillCount;
 
-        RpInfs = new();
+        RpInfs = new List<CoOutDrugPrintDataRpInf>();
+
         Biko = new();
     }
     /// <summary>
@@ -56,21 +55,6 @@ public class CoOutDrugPrintData
             return ret;
         }
     }
-
-    /// <summary>
-    /// 印刷データ識別情報２（患者ID_診療日_来院番号_保険ID_分割回_リフィル回数）
-    /// </summary>
-    public string PrintDataID2
-    {
-        get
-        {
-            string ret;
-
-            ret = $"{_ptInf.PtId}_{_sinDate}_{_raiinInf.RaiinNo}_{(_ptHoken == null ? 0 : _ptHoken.HokenId)}_{BunkatuKai}_{RefillCount}";
-
-            return ret;
-        }
-    }
     /// <summary>
     /// 最大分割数
     /// </summary>
@@ -83,22 +67,6 @@ public class CoOutDrugPrintData
     /// リフィル回数
     /// </summary>
     public int RefillCount { get; set; } = 0;
-
-    /// <summary>
-    /// 電子処方箋対応
-    /// </summary>
-    public string EPSCompliant
-    {
-        get { return string.IsNullOrEmpty(_accessCd) ? "" : "電子処方箋対応"; }
-    }
-
-    /// <summary>
-    /// 引換番号
-    /// </summary>
-    public string AccessCd
-    {
-        get { return string.IsNullOrEmpty(_accessCd) ? "" : string.Format("引換番号:{0}", _accessCd); }
-    }
 
     /// <summary>
     /// 患者カナ氏名
@@ -272,10 +240,11 @@ public class CoOutDrugPrintData
                 }
                 else if (_ptInf.IsElder() && houbetu != "39")
                 {
-                    var wrkRateIsElderExpat = _ptInf.IsElderExpat() ? 20 :  //75歳以上海外居住者
-                                                                      10;
-                    wrkRate = _ptInf.IsElder20per() ? 20 :  //前期高齢
-                              wrkRateIsElderExpat;
+                    wrkRate = 10;
+                    if (_ptInf.IsElder20per() || _ptInf.IsElderExpat())
+                    {
+                        wrkRate = 20;
+                    }
                 }
 
                 if (_ptInf.IsElder() || houbetu == "39")
@@ -340,7 +309,7 @@ public class CoOutDrugPrintData
     /// <returns></returns>
     public string KohiFutansyaNo(int index)
     {
-        string ret = string.Empty;
+        string ret = "";
 
         CoPtKohiModel? kohi = PtKohi(index);
         if (kohi != null)
@@ -565,7 +534,7 @@ public class CoOutDrugPrintData
     /// </summary>
     public int SinDate
     {
-        get { return _raiinInf.SinDate; }
+        get { return _sinDate; }
     }
     /// <summary>
     /// 来院番号

@@ -767,13 +767,6 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     public int SyohosenKouiDivide() { return (int)GetSettingValue(92003, 10); }
 
-
-    /// <summary>
-    /// 電子処方箋
-    /// VAL in (0, 1)以外はライセンスなし
-    /// </summary>
-    public int ElectronicPrescriptionLicense() { return (int)GetSettingValue(100040, 0); }
-
     /// <summary>
     /// 特処１病名条件
     /// </summary>
