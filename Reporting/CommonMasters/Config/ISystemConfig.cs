@@ -82,9 +82,4 @@ public interface ISystemConfig : IRepositoryBase
     int P13WelfareBlueSeikyuType();
     int OdrKensaIraiKaCode();
     int SyohosenKouiDivide();
-    /// <summary>
-    /// 電子処方箋
-    /// VAL in (0, 1)以外はライセンスなし
-    /// </summary>
-    int ElectronicPrescriptionLicense();
 }
