@@ -41,10 +41,12 @@ namespace Domain.Constant
 
     public static class TypeMessage
     {
-        public const int TypeMessageError = 1;
-        public const int TypeMessageWarning = 2;
-        public const int TypeMessageConfirmation = 3;
-        public const int TypeMessageInformation = 4;
-        public const int TypeMessageSuccess = 5;
+        public const int TypeMessageCustom = 1;
+        public const int TypeMessageError = 2;
+        public const int TypeMessageWarning = 3;
+        public const int TypeMessageConfirmation = 4;
+        public const int TypeMessageInformation = 5;
+        public const int TypeMessageInformationEx = 6;
+        public const int TypeMessageSuccess = 7;
     }    
 }

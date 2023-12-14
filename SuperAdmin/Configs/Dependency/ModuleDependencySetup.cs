@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using SuperAdminAPI.Services;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
+using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.GetNotification;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
@@ -96,7 +97,7 @@ namespace SuperAdmin.Configs.Dependency
             var busBuilder = new SyncUseCaseBusBuilder(registration);
 
             busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
-            busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
+            busBuilder.RegisterUseCase<UpdateTenantInputData, UpdateTenantInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
             busBuilder.RegisterUseCase<TerminateTenantInputData, TerminateTenantInteractor>();
@@ -110,14 +111,17 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<RestoreObjectS3TenantInputData, RestoreObjectS3TenantInteractor>();
             busBuilder.RegisterUseCase<UpdateDataTenantInputData, UpdateDataTenantInteractor>();
+            busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             busBuilder.RegisterUseCase<RevokeInsertPermissionInputData, RevokeInsertPermissionInteractor>();
 
+            services.AddMemoryCache();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
+
         }
     }
 }

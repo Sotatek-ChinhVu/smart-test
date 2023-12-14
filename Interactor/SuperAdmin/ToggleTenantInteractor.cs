@@ -80,6 +80,11 @@ namespace Interactor.SuperAdmin
                         {
                             var messenge = $"{tenant.EndSubDomain} is {typeName} successfully.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+
+                            // Add info tenant for notification
+                            notification.SetTenantId(tenant.TenantId);
+                            notification.SetStatusTenant(inputData.Type == 0 ? ConfigConstant.StatusTenantStopped : ConfigConstant.StatusTenantRunning);
+
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                             cts.Cancel();
@@ -90,6 +95,11 @@ namespace Interactor.SuperAdmin
                     {
                         var messenge = $"{tenant.EndSubDomain} is {typeName} failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+
+                        // Add info tenant for notification
+                        notification.SetTenantId(tenant.TenantId);
+                        notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
+
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         cts.Cancel();
                         return;

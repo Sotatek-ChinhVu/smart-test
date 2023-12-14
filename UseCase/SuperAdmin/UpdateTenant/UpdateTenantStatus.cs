@@ -1,6 +1,6 @@
 ﻿namespace UseCase.SuperAdmin.UpgradePremium
 {
-    public enum UpgradePremiumStatus : byte
+    public enum UpdateTenantStatus : byte
     {
         Successed = 1,
         InvalidTenantId = 2,
@@ -12,5 +12,10 @@
         InvalidSize = 8,
         InvalidSizeType = 9,
         InvalidDomain = 10,
+        InvalidHospital = 11,
+        InvalidAdminId = 12,
+        InvalidPassword = 13,
+        NotAllowUpdateTenantDedicateToSharing = 14,
+        TenantNotReadyToUpdate = 15
     }
 }
