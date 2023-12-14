@@ -1,6 +1,6 @@
 ﻿namespace SuperAdminAPI.Reponse.Tenant
 {
-    public class UpdateTenantResponse
+    public class UpdateDataTenantResponse
     {
     }
 }

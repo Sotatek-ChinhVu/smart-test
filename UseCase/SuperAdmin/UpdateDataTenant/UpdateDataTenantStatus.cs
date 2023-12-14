@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UseCase.SuperAdmin.UpdateTenant
+namespace UseCase.SuperAdmin.UpdateDataTenant
 {
-    public enum UpdateTenantStatus : byte
+    public enum UpdateDataTenantStatus : byte
     {
         Successed = 1,
         InvalidTenantId = 2,

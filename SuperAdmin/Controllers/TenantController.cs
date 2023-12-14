@@ -14,7 +14,7 @@ using UseCase.SuperAdmin.RestoreTenant;
 using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
-using UseCase.SuperAdmin.UpdateTenant;
+using UseCase.SuperAdmin.UpdateDataTenant;
 using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdminAPI.Controllers
@@ -133,14 +133,14 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<RestoreObjectS3TenantResponse>>(presenter.Result);
         }
 
-        [HttpPost("UpdateTenant")]
-        public ActionResult<Response<UpdateTenantResponse>> UpdateTenant([FromForm] UpdateTenantRequest request)
+        [HttpPost("UpdateDataTenant")]
+        public ActionResult<Response<UpdateDataTenantResponse>> UpdateTenant([FromForm] UpdateDataTenantRequest request)
         {
-            var input = new UpdateTenantInputData(request.TenantId, _webSocketService, request.FileUpdate);
+            var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdate);
             var output = _bus.Handle(input);
-            var presenter = new UpdateTenantPresenter();
+            var presenter = new UpdateDataTenantPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<UpdateTenantResponse>>(presenter.Result);
+            return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
         }
     }
 }

@@ -10,13 +10,11 @@ using EmrCloudApi.ScheduleTask;
 using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Infrastructure.Services;
 using Infrastructure.SuperAdminRepositories;
 using Interactor.Realtime;
 using Interactor.SuperAdmin;
 using Interactor.SuperAdmin.AuditLog;
-using Interactor.SystemStartDbs;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using SuperAdminAPI.Services;
 using UseCase.Core.Builder;
@@ -25,18 +23,17 @@ using UseCase.SuperAdmin.GetNotification;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using UseCase.SuperAdmin.RestoreTenant;
 using UseCase.SuperAdmin.RevokeInsertPermission;
 using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
+using UseCase.SuperAdmin.UpdateDataTenant;
 using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
 using UseCase.UserToken.GetInfoRefresh;
 using UseCase.UserToken.SiginRefresh;
-using UseCase.SystemStartDbs;
-using UseCase.SuperAdmin.RestoreObjectS3Tenant;
-using UseCase.SuperAdmin.UpdateTenant;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -112,7 +109,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<RestoreObjectS3TenantInputData, RestoreObjectS3TenantInteractor>();
-            busBuilder.RegisterUseCase<UpdateTenantInputData, UpdateTenantInteractor>();
+            busBuilder.RegisterUseCase<UpdateDataTenantInputData, UpdateDataTenantInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
