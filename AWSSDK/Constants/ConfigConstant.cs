@@ -35,8 +35,12 @@ namespace AWSSDK.Constants
         public static RegionEndpoint RegionDestination = RegionEndpoint.GetBySystemName("ap-northeast-1");
         public static RegionEndpoint RegionSource = RegionEndpoint.GetBySystemName("ap-southeast-1");
 
-        public static int StatusTenantPending = 1;
-        public static int StatusTenantStopping = 4;
+        public static byte StatusTenantPending = 1;
+        public static byte StatusTenantStopping = 4;
+        public static byte StatusTenantRunning = 3;
+        public static byte StatusTenantFailded = 2;
+        public static byte StatusTenantTeminated = 7;
+        public static byte StatusTenantStopped = 5;
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>

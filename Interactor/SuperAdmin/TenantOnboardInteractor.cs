@@ -224,7 +224,7 @@ namespace Interactor.SuperAdmin
 
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(id);
-                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
 
                     await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
 
@@ -318,7 +318,7 @@ namespace Interactor.SuperAdmin
 
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(tenantId);
-                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantRunning);
 
                     _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
 
@@ -332,7 +332,7 @@ namespace Interactor.SuperAdmin
                 var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 // Add info tenant for notification
                 saveDBNotify.SetTenantId(tenantId);
-                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
+                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
 
                 // Delete cache memory
