@@ -246,14 +246,17 @@ namespace Interactor.SuperAdmin
                             {
                                 var messenge = $"{oldTenant.EndSubDomain} is update tenant successfully.";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
+
                                 // Add info tenant for notification
                                 notification.SetTenantId(oldTenant.TenantId);
                                 notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
-                                // Delete cache memory
-                                _memoryCache.Remove(oldTenant.SubDomain);
                             }
+
+                            // Delete cache memory
+                            _memoryCache.Remove(oldTenant.SubDomain);
+
                             cts.Cancel();
                             return;
                         }
@@ -266,6 +269,7 @@ namespace Interactor.SuperAdmin
                     catch (Exception ex)
                     {
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["update-failed"]);
+
                         if (!ct.IsCancellationRequested) // Check task run is not canceled
                         {
                             // Notification  upgrade failed
@@ -276,10 +280,11 @@ namespace Interactor.SuperAdmin
                             notification.SetTenantId(oldTenant.TenantId);
                             notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-
-                            // Delete cache memory
-                            _memoryCache.Remove(oldTenant.SubDomain);
                         }
+
+                        // Delete cache memory
+                        _memoryCache.Remove(oldTenant.SubDomain);
+
                         cts.Cancel();
                         return;
                     }

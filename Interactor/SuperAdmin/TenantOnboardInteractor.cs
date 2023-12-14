@@ -4,6 +4,7 @@ using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using AWSSDK.Interfaces;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
@@ -148,7 +149,7 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(() =>
                                 {
-                                    AddData(id, tenantUrl, model);
+                                    AddData(id, tenantUrl, model, ct);
                                 });
                             }
                         }
@@ -161,7 +162,7 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(() =>
                                 {
-                                    AddData(id, tenantUrl, model);
+                                    AddData(id, tenantUrl, model, ct);
                                 });
                             }
                         }
@@ -182,7 +183,7 @@ namespace Interactor.SuperAdmin
                                 model.ChangeRdsIdentifier(dbIdentifier);
                                 _ = Task.Run(() =>
                                 {
-                                    AddData(id, tenantUrl, model);
+                                    AddData(id, tenantUrl, model, ct);
                                 });
                             }
                         }
@@ -201,7 +202,7 @@ namespace Interactor.SuperAdmin
                                         id = _tenantRepository.CreateTenant(model);
                                         _ = Task.Run(() =>
                                         {
-                                            AddData(id, tenantUrl, model);
+                                            AddData(id, tenantUrl, model, ct);
                                         });
                                     }
                                     break;
@@ -217,7 +218,7 @@ namespace Interactor.SuperAdmin
                                     model.ChangeRdsIdentifier(dbIdentifierNew);
                                     _ = Task.Run(() =>
                                     {
-                                        AddData(id, tenantUrl, model);
+                                        AddData(id, tenantUrl, model, ct);
                                     });
                                 }
                             }
@@ -225,20 +226,10 @@ namespace Interactor.SuperAdmin
                     }
                 }
 
-                var message = $"{tenantUrl} is created successfuly.";
-
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-
-                // Add info tenant for notification
-                saveDBNotify.SetTenantId(id);
-                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantRunning);
-
-                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify).Wait();
-
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
-                    { "message", "Please wait for 40 minutes for all resources to be available" }
+                    { "message", "Please wait for 45 minutes for all resources to be available" }
                 };
 
                 return result;
@@ -255,10 +246,11 @@ namespace Interactor.SuperAdmin
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
 
                     await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-
-                    // Delete cache memory
-                    _memoryCache.Remove(model.SubDomain);
                 }
+
+                // Delete cache memory
+                _memoryCache.Remove(model.SubDomain);
+
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
@@ -329,7 +321,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void AddData(int tenantId, string tenantUrl, TenantModel model)
+        private void AddData(int tenantId, string tenantUrl, TenantModel model, CancellationToken ct)
         {
             try
             {
@@ -342,18 +334,33 @@ namespace Interactor.SuperAdmin
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
 
+                    if (!ct.IsCancellationRequested)
+                    {
+                        var message = $"{tenantUrl} is created successfuly.";
+                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
+
+                        // Add info tenant for notification
+                        saveDBNotify.SetTenantId(tenantId);
+                        saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                    }
+            
                     // Delete cache memory
                     _memoryCache.Remove(model.SubDomain);
                 }
             }
             catch (Exception ex)
             {
-                var message = $"{tenantUrl} is created failed: {ex.Message}";
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                // Add info tenant for notification
-                saveDBNotify.SetTenantId(tenantId);
-                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
-                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                if (!ct.IsCancellationRequested)
+                {
+                    var message = $"{tenantUrl} is created failed: {ex.Message}";
+                    var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                    // Add info tenant for notification
+                    saveDBNotify.SetTenantId(tenantId);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                }
 
                 // Delete cache memory
                 _memoryCache.Remove(model.SubDomain);
