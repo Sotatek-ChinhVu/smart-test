@@ -809,6 +809,7 @@ using UseCase.DrugInfor.SaveSinrekiFilterMstList;
 using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using Interactor.LastDayInformation;
 using UseCase.LastDayInformation.GetLastDayInfoList;
+using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1407,6 +1408,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveKensaIraiInputData, SaveKensaIraiInteractor>();
             busBuilder.RegisterUseCase<ContainerMasterUpdateInputData, ContainerMasterUpdateInteractor>();
             busBuilder.RegisterUseCase<GetLastDayInfoListInputData, GetLastDayInfoListInteractor>();
+            busBuilder.RegisterUseCase<SaveSettingLastDayInfoListInputData, SaveSettingLastDayInfoListInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
