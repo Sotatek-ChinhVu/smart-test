@@ -32,14 +32,14 @@ public class ExportCsvTenantListInteractor : IExportCsvTenantListInputPort
             Dictionary<TenantEnum, string> columnNameDictionary = new();
             if (inputData.ColumnView.Any())
             {
-                foreach (var item in inputData.ColumnView.Where(item => ColumnTenantName.ColumnNameTenantDictionary.ContainsKey(item)).ToList())
+                foreach (var item in inputData.ColumnView.Where(item => ColumnCsvName.ColumnNameTenantDictionary.ContainsKey(item)).ToList())
                 {
-                    columnNameDictionary.Add(item, ColumnTenantName.ColumnNameTenantDictionary[item]);
+                    columnNameDictionary.Add(item, ColumnCsvName.ColumnNameTenantDictionary[item]);
                 }
             }
             else
             {
-                columnNameDictionary = ColumnTenantName.ColumnNameTenantDictionary;
+                columnNameDictionary = ColumnCsvName.ColumnNameTenantDictionary;
             }
             StringBuilder headerCsv = new();
             int index = 1;

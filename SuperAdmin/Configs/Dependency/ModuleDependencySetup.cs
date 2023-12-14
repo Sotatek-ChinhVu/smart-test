@@ -37,6 +37,7 @@ using UseCase.UserToken.SiginRefresh;
 using UseCase.SystemStartDbs;
 using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using UseCase.SuperAdmin.ExportCsvTenantList;
+using UseCase.SuperAdmin.ExportCsvLogList;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -113,6 +114,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<RestoreObjectS3TenantInputData, RestoreObjectS3TenantInteractor>();
             busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
+            busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

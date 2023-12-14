@@ -20,7 +20,7 @@ public interface ITenantRepository
 
     TenantModel TerminateTenant(int tenantId, byte TerminateStatus);
 
-    (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
+    (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take, bool getDataReport = false);
 
     void RevokeInsertPermission();
 

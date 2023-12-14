@@ -13,7 +13,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
     {
     }
 
-    public List<AuditLogModel> GetAuditLogList(int tenantId, AuditLogSearchModel requestModel, Dictionary<AuditLogEnum, int> sortDictionary, int skip, int take)
+    public List<AuditLogModel> GetAuditLogList(int tenantId, AuditLogSearchModel requestModel, Dictionary<AuditLogEnum, int> sortDictionary, int skip, int take, bool getDataReport = false)
     {
         List<AuditLogModel> result;
         IQueryable<AuditLog> query = NoTrackingDataContext.AuditLogs.Where(item => item.TenantId == tenantId);
@@ -25,7 +25,10 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
 
         var querySortList = SortQuery(query, sortDictionary);
 
-        querySortList = (IOrderedQueryable<AuditLog>)querySortList.Skip(skip).Take(take);
+        if (!getDataReport)
+        {
+            querySortList = (IOrderedQueryable<AuditLog>)querySortList.Skip(skip).Take(take);
+        }
 
         result = querySortList.Select(item => new AuditLogModel(
                                                   item.LogId,
