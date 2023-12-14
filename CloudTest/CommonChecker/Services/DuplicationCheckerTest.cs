@@ -1849,4 +1849,6 @@ public class DuplicationCheckerTest : BaseUT
 
         Assert.False(result.Count == 1 && result[0].Id == "id1" && result[0].IsIppanCdDuplicated);
     }
+
+
 }
