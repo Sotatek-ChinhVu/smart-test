@@ -138,7 +138,7 @@ namespace Interactor.SuperAdmin
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
                                 // Add info tenant for notification
                                 notification.SetTenantId(tenant.TenantId);
-                                notification.SetStatusTenant(tenant.StatusTenant);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                                 // Delete cache memory
@@ -184,7 +184,7 @@ namespace Interactor.SuperAdmin
 
                                 // Add info tenant for notification
                                 notification.SetTenantId(tenant.TenantId);
-                                notification.SetStatusTenant(tenant.StatusTenant);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                                 // Delete cache memory
@@ -205,7 +205,7 @@ namespace Interactor.SuperAdmin
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                             // Add info tenant for notification
                             notification.SetTenantId(tenant.TenantId);
-                            notification.SetStatusTenant(tenant.StatusTenant);
+                            notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
                             // Delete cache memory

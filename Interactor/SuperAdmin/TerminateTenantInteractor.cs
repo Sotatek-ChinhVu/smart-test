@@ -185,7 +185,7 @@ namespace Interactor.SuperAdmin
 
                                 // Add info tenant for notification
                                 notification.SetTenantId(tenant.TenantId);
-                                notification.SetStatusTenant(tenant.StatusTenant);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantTeminated);
 
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
 
@@ -206,7 +206,7 @@ namespace Interactor.SuperAdmin
 
                         // Add info tenant for notification
                         notification.SetTenantId(tenant.TenantId);
-                        notification.SetStatusTenant(tenant.StatusTenant);
+                        notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
 
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                         
