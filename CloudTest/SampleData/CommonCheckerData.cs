@@ -1431,7 +1431,7 @@ namespace CloudUnitTest.SampleData
         }
 
 
-        public static List<PtSupple> ReadMPtSupple(string key)
+        public static List<PtSupple> ReadPtSupple()
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1467,10 +1467,6 @@ namespace CloudUnitTest.SampleData
                                 case "B":
                                     int.TryParse(text, out int ptId);
                                     ptSupple.PtId = ptId;
-                                    break;
-                                case "C":
-                                    int.TryParse(text, out int seqNo);
-                                    ptSupple.SeqNo = seqNo;
                                     break;
                                 case "D":
                                     int.TryParse(text, out int sortNo);
