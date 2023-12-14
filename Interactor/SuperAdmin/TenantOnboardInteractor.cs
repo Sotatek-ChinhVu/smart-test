@@ -113,7 +113,6 @@ namespace Interactor.SuperAdmin
         private async Task<Dictionary<string, string>> TenantOnboardAsync(TenantModel model)
         {
             string rString = CommonConstants.GenerateRandomString(6);
-            string tenantUrl = "";
             var cancellationTokenSource = new CancellationTokenSource();
             CancellationToken ct = cancellationTokenSource.Token;
             int id = 0;
@@ -123,8 +122,8 @@ namespace Interactor.SuperAdmin
                 ct.ThrowIfCancellationRequested();
                 if (!ct.IsCancellationRequested) // Check task run is not canceled
                 {
-                    await CloudFrontAction.UpdateNewTenantAsync(subDomain); 
-                    await Route53Action.CreateTenantDomain(subDomain);
+                    await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain); 
+                    await Route53Action.CreateTenantDomain(model.SubDomain);
                 }
                 // Provisioning SubDomain for new tenants
                 tenantUrl = $"{model.SubDomain}.{ConfigConstant.Domain}";
@@ -207,7 +206,7 @@ namespace Interactor.SuperAdmin
                 }
 
                 // Set tenant info to cache memory
-                _memoryCache.Set(subDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
+                _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
 
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
@@ -220,7 +219,7 @@ namespace Interactor.SuperAdmin
             {
                 if (!ct.IsCancellationRequested) // Check task run is not canceled
                 {
-                    var message = $"{subDomain} is created failed. Error: {ex.Message}";
+                    var message = $"{model.SubDomain} is created failed. Error: {ex.Message}";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
 
                     // Add info tenant for notification
@@ -228,6 +227,9 @@ namespace Interactor.SuperAdmin
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
 
                     await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+
+                    // Delete cache memory
+                    _memoryCache.Remove(model.SubDomain);
                 }
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
@@ -319,6 +321,9 @@ namespace Interactor.SuperAdmin
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["available"]);
 
                     _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+
+                    // Delete cache memory
+                    _memoryCache.Remove(model.SubDomain);
                 }
             }
             catch (Exception ex)
@@ -329,6 +334,9 @@ namespace Interactor.SuperAdmin
                 saveDBNotify.SetTenantId(tenantId);
                 saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantDictionary()["failed"]);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+
+                // Delete cache memory
+                _memoryCache.Remove(model.SubDomain);
             }
             finally
             {

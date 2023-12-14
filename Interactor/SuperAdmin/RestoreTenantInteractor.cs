@@ -140,6 +140,9 @@ namespace Interactor.SuperAdmin
                                 notification.SetTenantId(tenant.TenantId);
                                 notification.SetStatusTenant(tenant.StatusTenant);
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(oldTenant.SubDomain);
                             }
                             cts.Cancel();
                             return;
@@ -183,6 +186,9 @@ namespace Interactor.SuperAdmin
                                 notification.SetTenantId(tenant.TenantId);
                                 notification.SetStatusTenant(tenant.StatusTenant);
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(oldTenant.SubDomain);
                             }
                             cts.Cancel();
                             return;
@@ -201,6 +207,9 @@ namespace Interactor.SuperAdmin
                             notification.SetTenantId(tenant.TenantId);
                             notification.SetStatusTenant(tenant.StatusTenant);
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                            // Delete cache memory
+                            _memoryCache.Remove(oldTenant.SubDomain);
                         }
                         cts.Cancel();
                         return;

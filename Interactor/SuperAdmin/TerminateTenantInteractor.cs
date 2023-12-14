@@ -209,6 +209,9 @@ namespace Interactor.SuperAdmin
                         notification.SetStatusTenant(tenant.StatusTenant);
 
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        
+                        // Delete cache memory
+                        _memoryCache.Remove(tenant.SubDomain);
 
                         cts.Cancel();
                         return;

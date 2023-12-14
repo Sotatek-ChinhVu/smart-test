@@ -7,6 +7,7 @@ using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
+using Entity.Tenant;
 using Helper.Redis;
 using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
@@ -249,6 +250,9 @@ namespace Interactor.SuperAdmin
                                 var messenge = $"{oldTenant.EndSubDomain} is update tenant successfully.";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(oldTenant.SubDomain);
                             }
                             cts.Cancel();
                             return;
@@ -272,6 +276,9 @@ namespace Interactor.SuperAdmin
                             notification.SetTenantId(oldTenant.TenantId);
                             notification.SetStatusTenant(oldTenant.StatusTenant);
                             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            
+                            // Delete cache memory
+                            _memoryCache.Remove(oldTenant.SubDomain);
                         }
                         cts.Cancel();
                         return;
