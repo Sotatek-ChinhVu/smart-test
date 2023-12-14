@@ -1,12 +1,10 @@
 ﻿using Helper.Common;
 using Helper.Extension;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.SpecialNote.PatientInfo
 {
     public class PtPregnancyModel
     {
-        [JsonConstructor]
         public PtPregnancyModel(long id, int hpId, long ptId, int seqNo, int startDate, int endDate, int periodDate, int periodDueDate, int ovulationDate, int ovulationDueDate, int isDeleted, DateTime updateDate, int updateId, string updateMachine, int sinDate)
         {
             Id = id;

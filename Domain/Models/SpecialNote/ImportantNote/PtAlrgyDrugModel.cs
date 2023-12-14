@@ -1,12 +1,10 @@
 ﻿using Helper.Extension;
-using System.Text.Json.Serialization;
 using static Helper.Constants.PtAlrgyDrugConst;
 
 namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtAlrgyDrugModel
     {
-        [JsonConstructor]
         public PtAlrgyDrugModel(int hpId, long ptId, int seqNo, int sortNo, string itemCd, string drugName, int startDate, int endDate, string cmt, int isDeleted)
         {
             HpId = hpId;

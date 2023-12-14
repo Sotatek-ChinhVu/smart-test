@@ -1,11 +1,9 @@
 ﻿using Helper.Extension;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtSuppleModel
     {
-        [JsonConstructor]
         public PtSuppleModel(int hpId, long ptId, int seqNo, int sortNo, string indexCd, string indexWord, int startDate, int endDate, string cmt, int isDeleted)
         {
             HpId = hpId;

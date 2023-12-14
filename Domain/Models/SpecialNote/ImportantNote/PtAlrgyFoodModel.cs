@@ -1,11 +1,9 @@
 ﻿using Helper.Extension;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtAlrgyFoodModel
     {
-        [JsonConstructor]
         public PtAlrgyFoodModel(int hpId, long ptId, int seqNo, int sortNo, string alrgyKbn, int startDate, int endDate, string cmt, int isDeleted, string foodName)
         {
             HpId = hpId;
