@@ -1,7 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
 using Reporting.CommonMasters.Constants;
-using Reporting.OutDrug.Constants;
 using System.Text;
 
 namespace Reporting.OutDrug.Model;
@@ -882,7 +881,6 @@ public class CoOutDrugQR064
         }
     }
 }
-
 /// <summary>
 /// 081 備考レコード
 /// </summary>
@@ -939,43 +937,6 @@ public class CoOutDrugQR081
         }
     }
 
-}
-
-/// <summary>
-/// 082 処方箋番号レコード
-/// </summary>
-public class CoOutDrugQR082
-{
-    /// <summary>
-    /// 処方箋番号レコード生成
-    /// </summary>
-    /// <param name="accessCd">引換番号</param>
-    public CoOutDrugQR082(string version, string accessCd)
-    {
-        Version = version;
-        AccessCd = accessCd;
-    }
-    /// <summary>
-    /// QRのバージョン
-    /// </summary>
-    public string Version { get; set; }
-    /// <summary>
-    /// 処方箋番号種別
-    /// </summary>
-    public int RxNoType { get; set; } = 1;
-    /// <summary>
-    /// 引換番号
-    /// </summary>
-    public string AccessCd { get; set; }
-
-    public string QRData
-    {
-        get
-        {
-            return $"82,{RxNoType},{AccessCd}";
-
-        }
-    }
 }
 
 /// <summary>
@@ -1584,7 +1545,6 @@ public class CoOutDrugQR281
     }
 }
 
-
 /// <summary>
 /// 処方箋QRデータ
 /// </summary>
@@ -1596,7 +1556,7 @@ public class CoOutDrugQRData
         string tmp = addStr;
         if (tmp != string.Empty)
         {
-            if (ret != string.Empty) ret += NewLineCd.QR;
+            if (ret != string.Empty) ret += "\r\n";
             ret += tmp;
         }
 
@@ -1605,7 +1565,7 @@ public class CoOutDrugQRData
 
     public CoOutDrugQRData(
         string version, int sinDate, CoHpInfModel hpInf, CoRaiinInfModel raiinInf, CoPtInfModel ptInf, CoPtHokenInfModel ptHoken,
-        List<CoPtKohiModel> filteredPtKohis, int bunkatuMax, int bunkatuKai, int refillCount, string accessCd)
+        List<CoPtKohiModel> filteredPtKohis, int bunkatuMax, int bunkatuKai, int refillCount)
     {
         QRVersion = new CoOutDrugQRVersion(version);
         QR001 = new CoOutDrugQR001(version, hpInf.HpCd, hpInf.PrefNo, hpInf.HpName);
@@ -1621,7 +1581,7 @@ public class CoOutDrugQRData
             ptHoken != null &&
             ptHoken.IsKouki &&
             ptHoken.KogakuKbn == 41 &&
-            string.Compare(version, Constants.QRVersion.Jahis9) >= 0
+            string.Compare(version, CommonMasters.Constants.QRVersion.Jahis9) >= 0
             )
         {
             ichibuFutanKbn = 5;
@@ -1730,40 +1690,32 @@ public class CoOutDrugQRData
         {
             QR064 = new CoOutDrugQR064(version, refillCount);
         }
-
-        QR082 = null;
-        if (!string.IsNullOrEmpty(accessCd))
-        {
-            QR082 = new CoOutDrugQR082(version, accessCd);
-        }
     }
 
     public bool IsHeiyo { get; set; }
 
-    public CoOutDrugQRVersion? QRVersion { get; set; }
-    public CoOutDrugQR001? QR001 { get; set; }
-    public CoOutDrugQR002? QR002 { get; set; }
-    public CoOutDrugQR003? QR003 { get; set; }
-    public CoOutDrugQR005? QR005 { get; set; }
-    public CoOutDrugQR011? QR011 { get; set; }
-    public CoOutDrugQR012? QR012 { get; set; }
-    public CoOutDrugQR013? QR013 { get; set; }
-    public CoOutDrugQR014? QR014 { get; set; }
-    public CoOutDrugQR021? QR021 { get; set; }
-    public CoOutDrugQR022? QR022 { get; set; }
-    public CoOutDrugQR023? QR023 { get; set; }
-    public CoOutDrugQR025? QR025 { get; set; }
+    public CoOutDrugQRVersion QRVersion { get; set; }
+    public CoOutDrugQR001 QR001 { get; set; }
+    public CoOutDrugQR002 QR002 { get; set; }
+    public CoOutDrugQR003 QR003 { get; set; }
+    public CoOutDrugQR005 QR005 { get; set; }
+    public CoOutDrugQR011 QR011 { get; set; }
+    public CoOutDrugQR012 QR012 { get; set; }
+    public CoOutDrugQR013 QR013 { get; set; }
+    public CoOutDrugQR014 QR014 { get; set; }
+    public CoOutDrugQR021 QR021 { get; set; }
+    public CoOutDrugQR022 QR022 { get; set; }
+    public CoOutDrugQR023 QR023 { get; set; }
+    public CoOutDrugQR025 QR025 { get; set; }
     public CoOutDrugQR027? QR027 { get; set; }
     public CoOutDrugQR028? QR028 { get; set; }
     public CoOutDrugQR029? QR029 { get; set; }
     public CoOutDrugQR030? QR030 { get; set; }
-    public CoOutDrugQR051? QR051 { get; set; }
+    public CoOutDrugQR051 QR051 { get; set; }
     public CoOutDrugQR062? QR062 { get; set; }
     public CoOutDrugQR063? QR063 { get; set; }
     public CoOutDrugQR064? QR064 { get; set; }
     public CoOutDrugQR081? QR081 { get; set; }
-    public CoOutDrugQR082? QR082 { get; set; }
-
     public List<CoOutDrugQRRp> QRRps { get; set; } = new();
 
     public string QRData
@@ -1771,7 +1723,6 @@ public class CoOutDrugQRData
         get
         {
             string ret = string.Empty;
-
             if (QRVersion != null) ret = _appendStr(ret, QRVersion.QRData);
             if (QR001 != null) ret = _appendStr(ret, QR001.QRData);
             if (QR002 != null) ret = _appendStr(ret, QR002.QRData);
@@ -1792,9 +1743,8 @@ public class CoOutDrugQRData
             if (QR051 != null) ret = _appendStr(ret, QR051.QRData);
             if (QR062 != null) ret = _appendStr(ret, QR062.QRData);
             if (QR063 != null) ret = _appendStr(ret, QR063.QRData);
-            if (QR064 != null && (string.Compare(QRVersion?.Version, Constants.QRVersion.Jahis8) >= 0)) ret = _appendStr(ret, QR064.QRData);
+            if (QR064 != null && (string.Compare(QRVersion?.Version, CommonMasters.Constants.QRVersion.Jahis8) >= 0)) ret = _appendStr(ret, QR064.QRData);
             if (QR081 != null) ret = _appendStr(ret, QR081.QRData);
-            if (QR082 != null) ret = _appendStr(ret, QR082.QRData);
             if (QRRps != null && QRRps.Any())
             {
                 foreach (CoOutDrugQRRp qrRp in QRRps)

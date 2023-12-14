@@ -208,7 +208,7 @@ public class ReportService : IReportService
     /// <param name="sinDate"></param>
     /// <param name="raiinNo"></param>
     /// <returns></returns>
-    public CommonReportingRequestModel GetOutDrugReportingData(int hpId, long ptId, int sinDate, long raiinNo)
+    public CoOutDrugReportingOutputData GetOutDrugReportingData(int hpId, long ptId, int sinDate, long raiinNo)
     {
         return _outDrugCoReportService.GetOutDrugReportingData(hpId, ptId, sinDate, raiinNo);
     }

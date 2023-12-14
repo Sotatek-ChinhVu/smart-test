@@ -8,6 +8,4 @@ public enum CalculateTypeEnum : byte
     GetFormatLendB = 3,
     GetListColCount = 4,
     GetObjectVisible = 5,
-    QRChildCount = 6,
-    QRVersion = 7,
 }

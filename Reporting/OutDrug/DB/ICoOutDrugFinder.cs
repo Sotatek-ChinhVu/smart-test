@@ -1,5 +1,4 @@
 ﻿using Domain.Common;
-using Emr.Report.OutDrug.Model;
 using Reporting.OutDrug.Model;
 
 namespace Reporting.OutDrug.DB;
@@ -103,62 +102,4 @@ public interface ICoOutDrugFinder : IRepositoryBase
     /// <param name="sinDate"></param>
     /// <returns>0-持っていない、1-マル長10000円を持っている、2-マル長20000円を持っている</returns>
     int ExistMarucyo(int hpId, long ptId, int sinDate, int hokenId);
-
-    /// <summary>
-    /// 用法補足情報を取得する
-    /// </summary>
-    /// <param name="yohoCd">項目コード</param>
-    /// <param name="sinDate">診療日</param>
-    List<CoYohoHosoku> FindYohoHosoku(int hpId, string itemCd, int sinDate);
-
-    /// <summary>
-    /// 重複投薬等チェック情報を取得する
-    /// </summary>
-    List<CoEpsChk> FindEPSChecks(int hpId, long ptId, long raiinNo);
-
-    /// <summary>
-    /// 用法マスタ情報を取得する
-    /// </summary>
-    /// <param name="yohoCd">用法コード</param>
-    /// <param name="sinDate">診療日</param>
-    /// <returns></returns>
-    CoYohoMstModel FindYohoMst(int hpId, string yohoCd, int sinDate);
-
-    /// <summary>
-    /// １回量剤形に登録された単位か
-    /// </summary>
-    /// <param name="unitName">単位名</param>
-    /// <returns>true:１回量剤形である, false:１回量剤形ではない</returns>
-    public bool IsSingleDosageUnit(int hpId, string unitName);
-
-    /// <summary>
-    /// 力価情報(M46_DOSAGE_DRUG)取得
-    /// </summary>
-    /// <param name="yjCode">YJコード</param>
-    /// <returns></returns>
-    public CoDosageDrugModel GetDosageDrugModel(string yjCode);
-
-    /// <summary>
-    /// 今月オンライン資格確認した保険
-    /// </summary>
-    /// <param name="ptId">患者番号</param>
-    /// <param name="sinDate">診療日</param>
-    /// <returns>今月オンライン資格確認した保険ID</returns>
-    public int GetOnlineConfirmedHokenId(int hpId, long ptId, int sinDate);
-
-    /// <summary>
-    /// 電子処方箋登録情報
-    /// </summary>
-    /// <param name="ptId">患者番号</param>
-    /// <param name="raiinNo">来院番号</param>
-    /// <returns>電子処方箋登録情報のリスト</returns>
-    public List<CoEpsPrescription> FindEpsPrescription(int hpId, long ptId, long raiinNo);
-
-    /// <summary>
-    /// 電子処方箋の処方内容控え取得
-    /// </summary>
-    /// <param name="ptId">患者番号</param>
-    /// <param name="raiinNo">来院番号</param>
-    /// <returns>電子処方箋の処方内容控えのリスト</returns>
-    public List<CoEpsReference> GetEpsReferences(int hpId, long ptId, long raiinNo);
 }
