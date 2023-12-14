@@ -9,6 +9,7 @@ using SuperAdminAPI.Security;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEmrOptions(builder.Configuration);
+builder.Services.AddMemoryCache();
 
 int minWorker, minIOC;
 ThreadPool.GetMinThreads(out minWorker, out minIOC);
