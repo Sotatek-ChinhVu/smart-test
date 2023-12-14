@@ -1,16 +1,37 @@
 ﻿using Domain.Models.SpecialNote.PatientInfo;
+using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories.SpecialNote
 {
     public class PatientInfoRepository : RepositoryBase, IPatientInfoRepository
     {
         private const string WEIGHT_CD = "V0002";
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
 
-        public PatientInfoRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        public PatientInfoRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
+            key = GetDomainKey();
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public List<KensaInfDetailModel> GetListKensaInfModel(int hpId, long ptId, int sinDate)
@@ -49,9 +70,15 @@ namespace Infrastructure.Repositories.SpecialNote
             return new();
         }
 
+        /// <summary>
+        /// Always read data from the database, because kensaInf usually updated from multiple sources
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="ptId"></param>
+        /// <returns></returns>
         public List<PhysicalInfoModel> GetPhysicalList(int hpId, long ptId)
         {
-            var physicals = new List<PhysicalInfoModel>();
+            List<PhysicalInfoModel> physicals = new();
             var allKensaInfDetails = NoTrackingDataContext.KensaInfDetails.Where(x => x.PtId == ptId && x.IsDeleted == 0 && (x.KensaItemCd != null && x.KensaItemCd.StartsWith("V")))?.GroupBy(item => new { item.KensaItemCd, item.IraiDate })
                .Select(item => item.OrderByDescending(x => x.SeqNo).FirstOrDefault()).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == 0 && x.KensaItemCd.StartsWith("V")).OrderBy(mst => mst.SortNo);
@@ -63,27 +90,27 @@ namespace Infrastructure.Repositories.SpecialNote
                   kensaMst.HpId,
                   kensaMst.KensaItemCd,
                   kensaMst.KensaItemSeqNo,
-                  kensaMst.CenterCd ?? String.Empty,
-                  kensaMst.KensaName ?? String.Empty,
-                  kensaMst.KensaKana ?? String.Empty,
-                  kensaMst.Unit ?? String.Empty,
+                  kensaMst.CenterCd ?? string.Empty,
+                  kensaMst.KensaName ?? string.Empty,
+                  kensaMst.KensaKana ?? string.Empty,
+                  kensaMst.Unit ?? string.Empty,
                   kensaMst.MaterialCd,
                   kensaMst.ContainerCd,
-                  kensaMst.MaleStd ?? String.Empty,
-                  kensaMst.MaleStdLow ?? String.Empty,
-                  kensaMst.FemaleStdHigh ?? String.Empty,
-                  kensaMst.FemaleStd ?? String.Empty,
-                  kensaMst.FemaleStdLow ?? String.Empty,
-                  kensaMst.FemaleStdHigh ?? String.Empty,
-                  kensaMst.Formula ?? String.Empty,
-                  kensaMst.OyaItemCd ?? String.Empty,
+                  kensaMst.MaleStd ?? string.Empty,
+                  kensaMst.MaleStdLow ?? string.Empty,
+                  kensaMst.FemaleStdHigh ?? string.Empty,
+                  kensaMst.FemaleStd ?? string.Empty,
+                  kensaMst.FemaleStdLow ?? string.Empty,
+                  kensaMst.FemaleStdHigh ?? string.Empty,
+                  kensaMst.Formula ?? string.Empty,
+                  kensaMst.OyaItemCd ?? string.Empty,
                   kensaMst.OyaItemSeqNo,
                   kensaMst.SortNo,
-                  kensaMst.CenterItemCd1 ?? String.Empty,
-                  kensaMst.CenterItemCd2 ?? String.Empty,
+                  kensaMst.CenterItemCd1 ?? string.Empty,
+                  kensaMst.CenterItemCd2 ?? string.Empty,
                   kensaMst.IsDelete,
                   kensaMst.Digit,
-                  kensaInfDetails == null ? new List<KensaInfDetailModel>() : kensaInfDetails.Select(kd =>
+                  kensaInfDetails == null ? new() : kensaInfDetails.Select(kd =>
                       new KensaInfDetailModel(
                         kd?.HpId ?? 0,
                         kd?.PtId ?? 0,
@@ -91,13 +118,13 @@ namespace Infrastructure.Repositories.SpecialNote
                         kd?.SeqNo ?? 0,
                         kd?.IraiDate ?? 0,
                         kd?.RaiinNo ?? 0,
-                        kd?.KensaItemCd ?? String.Empty,
-                        kd?.ResultVal ?? String.Empty,
-                        kd?.ResultType ?? String.Empty,
-                        kd?.AbnormalKbn ?? String.Empty,
+                        kd?.KensaItemCd ?? string.Empty,
+                        kd?.ResultVal ?? string.Empty,
+                        kd?.ResultType ?? string.Empty,
+                        kd?.AbnormalKbn ?? string.Empty,
                         kd?.IsDeleted ?? 0,
-                        kd?.CmtCd1 ?? String.Empty,
-                        kd?.CmtCd2 ?? String.Empty,
+                        kd?.CmtCd1 ?? string.Empty,
+                        kd?.CmtCd2 ?? string.Empty,
                         kd?.UpdateDate ?? DateTime.MinValue,
                         string.Empty,
                         string.Empty,
@@ -111,25 +138,42 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId)
         {
-            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).AsEnumerable()
-              .Select(x => new PtPregnancyModel(
-                x.Id,
-                x.HpId,
-                x.PtId,
-                x.SeqNo,
-                x.StartDate,
-                x.EndDate,
-                x.PeriodDate,
-                x.PeriodDueDate,
-                x.OvulationDate,
-                x.OvulationDueDate,
-                x.IsDeleted,
-                x.UpdateDate,
-                x.UpdateId,
-                x.UpdateMachine ?? string.Empty,
-                0
-            ));
-            return ptPregnancys.ToList();
+            List<PtPregnancyModel> ptPregnancys;
+
+            // If exist cache, get data from cache then return data
+            var finalKey = key + CacheKeyConstant.PtPregnancyGetList + "_" + hpId + "_" + ptId;
+            if (_cache.KeyExists(finalKey))
+            {
+                var cacheString = _cache.StringGet(finalKey).AsString();
+                ptPregnancys = !string.IsNullOrEmpty(cacheString) ? JsonSerializer.Deserialize<List<PtPregnancyModel>>(cacheString) ?? new() : new();
+            }
+            else
+            {
+                // If not, get data from database
+                ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).AsEnumerable()
+                                                                  .Select(x => new PtPregnancyModel(
+                                                                                   x.Id,
+                                                                                   x.HpId,
+                                                                                   x.PtId,
+                                                                                   x.SeqNo,
+                                                                                   x.StartDate,
+                                                                                   x.EndDate,
+                                                                                   x.PeriodDate,
+                                                                                   x.PeriodDueDate,
+                                                                                   x.OvulationDate,
+                                                                                   x.OvulationDueDate,
+                                                                                   x.IsDeleted,
+                                                                                   x.UpdateDate,
+                                                                                   x.UpdateId,
+                                                                                   x.UpdateMachine ?? string.Empty,
+                                                                                   0
+                                                                   )).ToList();
+
+                // Set data to new cache
+                var json = JsonSerializer.Serialize(ptPregnancys);
+                _cache.StringSet(finalKey, json);
+            }
+            return ptPregnancys;
         }
 
         public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId, int sinDate)
@@ -149,7 +193,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.IsDeleted,
                 x.UpdateDate,
                 x.UpdateId,
-                x.UpdateMachine ?? String.Empty,
+                x.UpdateMachine ?? string.Empty,
                 sinDate
             ));
             return ptPregnancys.AsEnumerable().OrderByDescending(item => item.StartDate).ToList();
@@ -157,14 +201,33 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<SeikaturekiInfModel> GetSeikaturekiInfList(long ptId, int hpId)
         {
-            var seikaturekiInfs = NoTrackingDataContext.SeikaturekiInfs.Where(x => x.PtId == ptId && x.HpId == hpId).AsEnumerable().OrderByDescending(x => x.UpdateDate).Select(x => new SeikaturekiInfModel(
-                x.Id,
-                x.HpId,
-                x.PtId,
-                x.SeqNo,
-                x.Text ?? String.Empty
-            ));
-            return seikaturekiInfs.ToList();
+            List<SeikaturekiInfModel> seikaturekiInfs;
+
+            // If exist cache, get data from cache then return data
+            var finalKey = key + CacheKeyConstant.SeikaturekiInfGetList + "_" + hpId + "_" + ptId;
+            if (_cache.KeyExists(finalKey))
+            {
+                var cacheString = _cache.StringGet(finalKey).AsString();
+                seikaturekiInfs = !string.IsNullOrEmpty(cacheString) ? JsonSerializer.Deserialize<List<SeikaturekiInfModel>>(cacheString) ?? new() : new();
+            }
+            else
+            {
+                // If not, get data from database
+                seikaturekiInfs = NoTrackingDataContext.SeikaturekiInfs.Where(x => x.PtId == ptId && x.HpId == hpId)
+                                                                       .AsEnumerable()
+                                                                       .OrderByDescending(x => x.UpdateDate)
+                                                                       .Select(x => new SeikaturekiInfModel(
+                                                                                        x.Id,
+                                                                                        x.HpId,
+                                                                                        x.PtId,
+                                                                                        x.SeqNo,
+                                                                                        x.Text ?? string.Empty
+                                                                       )).ToList();
+                // Set data to new cache
+                var json = JsonSerializer.Serialize(seikaturekiInfs);
+                _cache.StringSet(finalKey, json);
+            }
+            return seikaturekiInfs;
         }
 
         public List<KensaInfDetailModel> GetListKensaInfDetailModel(int hpId, long ptId, int sinDate)

@@ -1,9 +1,11 @@
 ﻿using Helper.Extension;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtOtcDrugModel
     {
+        [JsonConstructor]
         public PtOtcDrugModel(int hpId, long ptId, long seqNo, int sortNo, int serialNum, string tradeName, int startDate, int endDate, string cmt, int isDeleted)
         {
             HpId = hpId;
