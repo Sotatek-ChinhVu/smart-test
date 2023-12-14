@@ -430,15 +430,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<KensaCmtMst>().HasKey(s => new { s.HpId, s.CmtCd, s.CmtSeqNo });
             modelBuilder.Entity<KensaResultLog>().HasKey(s => new { s.OpId });
             modelBuilder.Entity<SinrekiFilterMstKoui>().HasKey(s => new { s.HpId, s.GrpCd, s.SeqNo });
-
-            // add new entity
-            modelBuilder.Entity<EpsPrescription>().HasKey(s => new { s.HpId, s.PtId, s.RaiinNo, s.SeqNo });
-            modelBuilder.Entity<YohoMst>().HasKey(s => new { s.HpId, s.YohoCd, s.StartDate });
-            modelBuilder.Entity<EpsReference>().HasKey(s => new { s.HpId, s.PtId, s.PrescriptionId });
-            modelBuilder.Entity<YohoHosoku>().HasKey(s => new { s.HpId, s.ItemCd, s.StartDate, s.SeqNo });
-            modelBuilder.Entity<EpsChk>().HasKey(s => new { s.HpId, s.PtId, s.RaiinNo, s.SeqNo });
-            modelBuilder.Entity<EpsChkDetail>().HasKey(s => new { s.HpId, s.PtId, s.RaiinNo, s.SeqNo, s.MessageId });
-
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
 
@@ -453,7 +444,7 @@ namespace PostgreDataContext
            .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
             modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
-            modelBuilder.Entity<UserMst>().HasIndex(u => new { u.UserId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
+            modelBuilder.Entity<UserMst>().HasIndex(u => new {u.UserId}).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -1198,18 +1189,5 @@ namespace PostgreDataContext
         public DbSet<KensaResultLog> KensaResultLogs { get; set; } = default!;
 
         public DbSet<SmartKarteAppSignalRPort> SmartKarteAppSignalRPorts { get; set; } = default!;
-
-        // add new DBSet
-        public DbSet<EpsPrescription> EpsPrescriptions { get; set; } = default!;
-
-        public DbSet<YohoMst> YohoMsts { get; set; } = default!;
-
-        public DbSet<EpsReference> EpsReferences { get; set; } = default!;
-
-        public DbSet<YohoHosoku> YohoHosokus { get; set; } = default!;
-
-        public DbSet<EpsChk> EpsChks { get; set; } = default!;
-
-        public DbSet<EpsChkDetail> EpsChkDetails { get; set; } = default!;
     }
 }

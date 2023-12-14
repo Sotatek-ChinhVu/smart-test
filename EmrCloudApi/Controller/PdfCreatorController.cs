@@ -31,7 +31,6 @@ using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using StackExchange.Redis;
 using Helper.Redis;
-using System.Diagnostics;
 
 namespace EmrCloudApi.Controller;
 
@@ -129,10 +128,10 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpGet(ApiPath.OutDrug)]
-    public async Task<IActionResult> GetOutDrugReportingData([FromQuery] OutDrugRequest request)
+    public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
     {
         var data = _reportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-        return await RenderPdf(data, ReportType.Common, "院外処方箋.pdf");
+        return await RenderPdf(data, ReportType.OutDug, "院外処方箋.pdf");
     }
 
     [HttpGet(ApiPath.ReceiptCheck)]
@@ -563,7 +562,13 @@ public class PdfCreatorController : ControllerBase
 
     private async Task<IActionResult> RenderPdf(DrugInfoData data, ReportType reportType, string fileName)
     {
-        bool returnNoData = !data.DrugInfoList.Any();
+        bool returnNoData = !data.drugInfoList.Any();
+        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
+    }
+
+    private async Task<IActionResult> RenderPdf(CoOutDrugReportingOutputData data, ReportType reportType, string fileName)
+    {
+        bool returnNoData = !data.Data.Any();
         return await ActionReturnPDF(returnNoData, data, reportType, fileName);
     }
 
@@ -580,7 +585,9 @@ public class PdfCreatorController : ControllerBase
             return Content(NoDataMessage, "text/html");
         }
 
-        StringContent jsonContent = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        StringContent jsonContent = (reportType == ReportType.DrugInfo)
+          ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
+          new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
@@ -588,6 +595,7 @@ public class PdfCreatorController : ControllerBase
         {
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
+            ReportType.OutDug => "reporting-out-drug",
             ReportType.Accounting => "reporting-accounting",
             _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
         } ?? string.Empty;
@@ -605,6 +613,7 @@ public class PdfCreatorController : ControllerBase
             using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
             {
                 var byteData = streamingData.ToArray();
+
                 return File(byteData, "application/pdf");
             }
         }

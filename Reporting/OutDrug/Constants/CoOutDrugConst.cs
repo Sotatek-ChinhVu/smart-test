@@ -1,6 +1,6 @@
 ﻿namespace Reporting.OutDrug.Constants;
 
-public static class ItemTypeConst
+public class ItemTypeConst
 {
     public const int Item = 0;
     public const int Yoho = 1;
@@ -10,7 +10,7 @@ public static class ItemTypeConst
     public const int Bunkatu = 100;
 }
 
-public static class QRVersion
+public class QRVersion
 {
     public const string Jahis5 = "JAHIS5";
     public const string Jahis7 = "JAHIS7";
@@ -18,7 +18,7 @@ public static class QRVersion
     public const string Jahis9 = "JAHIS9";
 }
 
-public static class EpsCsvVersion
+public class EpsCsvVersion
 {
     public const string SJ1 = "SJ1";
 }
@@ -29,14 +29,14 @@ public static class EpsCsvVersion
 /// 2: 処方箋情報提供ファイル
 /// 3: 確定前処方箋情報ファイル
 /// </summary>
-public static class EpsCsvType
+public class EpsCsvType
 {
     public const int Electronic = 1;
     public const int Paper = 2;
     public const int Unfinished = 3;
 }
 
-public static class MaxLength
+public class MaxLength
 {
     public const int KohiFutansya = 8;
     public const int KohiJyukyusya = 7;
@@ -50,7 +50,7 @@ public static class MaxLength
 /// 3: 第３公費
 /// 4: 特殊公費
 /// </summary>
-public static class EpsKohiRecKbn
+public class EpsKohiRecKbn
 {
     public const int Biko = 0;
     public const int Kohi1 = 1;
@@ -59,7 +59,7 @@ public static class EpsKohiRecKbn
     public const int KohiSp = 4;
 }
 
-public static class DrugInfKbn
+public class DrugInfKbn
 {
     public const int Drug = 1;
     public const int Zairyo = 1;
@@ -71,32 +71,27 @@ public static class DrugInfKbn
 /// 4: YJコード
 /// 7: 一般名コード
 /// </summary>
-public static class DrugCdSbt
+public class DrugCdSbt
 {
     public const int RezedenCd = 2;
     public const int YJCd = 4;
     public const int IpnNameCd = 7;
 }
 
-public static class DrugCdConst
+public class DrugCdConst
 {
     public const string DrugDummy = "666660000";
     public const string ZairyoDummy = "777770000";
     public const string YJDummy = "2000000X0000";
 }
 
-public static class YohoCdConst
+public class YohoCdConst
 {
     public const string Dummy = "0X0XXXXXXXXX0000";
 }
 
-public static class NewLineCd
+public class NewLineCd
 {
     public const string QR = "\r\n";
     public const string EpsCsv = "\n";
-}
-
-public static class HoubetuConst
-{
-    public const string Seiho = "12";
 }

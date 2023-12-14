@@ -1,10 +1,7 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Domain.Models.SpecialNote.ImportantNote
+﻿namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtInfectionModel
     {
-        [JsonConstructor]
         public PtInfectionModel(int hpId, long ptId, long seqNo, int sortNo, string byomeiCd, string byotaiCd, string byomei, int startDate, string cmt, int isDeleted)
         {
             HpId = hpId;

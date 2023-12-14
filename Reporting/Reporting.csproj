@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="OutDrug\Mapper\**" />
+    <EmbeddedResource Remove="OutDrug\Mapper\**" />
+    <None Remove="OutDrug\Mapper\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Entity\Entity.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
