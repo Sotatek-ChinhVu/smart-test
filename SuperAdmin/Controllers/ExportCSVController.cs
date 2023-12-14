@@ -9,7 +9,6 @@ using UseCase.Core.Sync;
 using ClosedXML.Excel;
 using UseCase.SuperAdmin.ExportCsvLogList;
 using UseCase.SuperAdmin.ExportCsvTenantList;
-using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data;
 using System.Net.Mime;
 using System.Web;
@@ -167,6 +166,12 @@ public class ExportCsvController : ControllerBase
                         workSheet.Cell(row, column).SetValue(auditLog.SinDay.ToString());
                         break;
                     case AuditLogEnum.RequestInfo:
+                        // the maximum charaters of each cell in excel is 32767
+                        if (auditLog.RequestInfo.Length > 32767)
+                        {
+                            workSheet.Cell(row, column).SetValue(auditLog.RequestInfo.Substring(0, 32767));
+                            break;
+                        }
                         workSheet.Cell(row, column).SetValue(auditLog.RequestInfo);
                         break;
                     case AuditLogEnum.Desciption:

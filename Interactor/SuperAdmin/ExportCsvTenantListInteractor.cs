@@ -22,7 +22,7 @@ public class ExportCsvTenantListInteractor : IExportCsvTenantListInputPort
             List<string> result = new();
 
             // get tenant data from database
-            var tenantData = _tenantRepository.GetTenantList(inputData.SearchModel, inputData.SortDictionary, inputData.Skip, inputData.Take);
+            var tenantData = _tenantRepository.GetTenantList(inputData.SearchModel, inputData.SortDictionary, 0, 0, true);
             if (!tenantData.TenantList.Any())
             {
                 return new ExportCsvTenantListOutputData(new(), ExportCsvTenantListStatus.NoData);
