@@ -147,7 +147,7 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password)
+        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace Infrastructure.SuperAdminRepositories
                 }
                 tenant.EndPointDb = endPoint;
                 tenant.Type = 1;
-                tenant.Status = 1;
+                tenant.Status = status;
                 tenant.SubDomain = subDomain;
                 tenant.Size = size;
                 tenant.SizeType = sizeType;
@@ -166,6 +166,7 @@ namespace Infrastructure.SuperAdminRepositories
                 tenant.Hospital = hospital;
                 tenant.AdminId = adminId;
                 tenant.Password = password;
+                tenant.EndSubDomain = endSubDomain;
 
                 // updated date uses utc time
                 tenant.UpdateDate = DateTime.UtcNow;

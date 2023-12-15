@@ -31,7 +31,7 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
                         notification.Status,
                         notification.Message ?? string.Empty,
                         notification.IsDeleted == 1,
-                        notification.IsRead == 0,
+                        notification.IsRead != 0,
                         notification.CreateDate);
         }
         catch

@@ -18,7 +18,7 @@ public interface ITenantRepository
 
     bool UpdateStatusTenant(int tenantId, byte status);
 
-    TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password);
+    TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status);
 
     TenantModel TerminateTenant(int tenantId, byte TerminateStatus);
 

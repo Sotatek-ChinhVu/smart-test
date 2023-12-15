@@ -137,6 +137,7 @@ namespace Interactor.SuperAdmin
                         ct.ThrowIfCancellationRequested();
                         string rdsIdentifier = oldTenant.RdsIdentifier;
                         string endPointDb = oldTenant.EndPointDb;
+                        string endSubDomain = oldTenant.EndSubDomain;
                         // Set tenant info to cache memory
                         _memoryCache.Set(oldTenant.SubDomain, new TenantCacheMemory(cts, string.Empty));
 
@@ -148,6 +149,9 @@ namespace Interactor.SuperAdmin
                             {
                                 // Delete old subdomain
                                 var actionDeleteDomain = Route53Action.DeleteTenantDomain(oldTenant.SubDomain).Result;
+
+                                // Update end subdomain
+                                endSubDomain = inputData.SubDomain + ConfigConstant.Domain;
                             }
                             else
                             {
@@ -226,9 +230,8 @@ namespace Interactor.SuperAdmin
                         TenantModel tenantUpgrade = new TenantModel();
                         if (!ct.IsCancellationRequested) // Check task run is not canceled
                         {
-
-                            tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size, inputData.SizeType,
-                               inputData.Hospital, inputData.AdminId, inputData.Password);
+                            tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size, 
+                                            inputData.SizeType,inputData.Hospital, inputData.AdminId, inputData.Password, endSubDomain, oldTenant.Status);
                         }
 
                         // Finished update tenant
@@ -245,7 +248,7 @@ namespace Interactor.SuperAdmin
                             if (!ct.IsCancellationRequested) // Check task run is not canceled
                             {
                                 var messenge = $"{oldTenant.EndSubDomain} is update tenant successfully.";
-                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusTenantDictionary()["available"], messenge);
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
                                 // Add info tenant for notification
                                 notification.SetTenantId(oldTenant.TenantId);
