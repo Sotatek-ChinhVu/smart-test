@@ -6,7 +6,7 @@
         public int AdminId { get; set; }
         public string Password { get; set; } = string.Empty;
         public string SubDomain { get; set; } = string.Empty;
-        public int Size { get; set; }
+        public double Size { get; set; }
 
         /// <summary>
         /// 1: MB , 2: GB

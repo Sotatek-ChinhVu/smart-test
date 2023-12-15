@@ -44,7 +44,7 @@ public class TenantDto
 
     public string Db { get; private set; }
 
-    public int Size { get; private set; }
+    public double Size { get; private set; }
 
     /// <summary>
     /// 1: MB; 2: GB

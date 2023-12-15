@@ -6,7 +6,7 @@
 
         public string SubDomain { get; set; } = string.Empty;
 
-        public int Size { get; set; }
+        public double Size { get; set; }
 
         public int SizeType { get; set; }
 

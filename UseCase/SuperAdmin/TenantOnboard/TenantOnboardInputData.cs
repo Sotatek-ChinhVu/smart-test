@@ -4,7 +4,7 @@ namespace UseCase.SuperAdmin.TenantOnboard
 {
     public sealed class TenantOnboardInputData : IInputData<TenantOnboardOutputData>
     {
-        public TenantOnboardInputData(string hospital, int adminId, string password, string subDomain, int size, int sizeType, byte clusterMode, dynamic webSocketService)
+        public TenantOnboardInputData(string hospital, int adminId, string password, string subDomain, double size, int sizeType, byte clusterMode, dynamic webSocketService)
         {
             Hospital = hospital;
             AdminId = adminId;
@@ -24,7 +24,7 @@ namespace UseCase.SuperAdmin.TenantOnboard
         /// <summary>
         /// Data size per year
         /// </summary>
-        public int Size { get; private set; }
+        public double Size { get; private set; }
 
         /// <summary>
         /// 1: MB , 2: GB

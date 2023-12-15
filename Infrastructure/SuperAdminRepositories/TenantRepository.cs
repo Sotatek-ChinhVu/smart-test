@@ -143,7 +143,7 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password)
+        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, double size, int sizeType, string hospital, int adminId, string password)
         {
             try
             {
@@ -260,7 +260,7 @@ namespace Infrastructure.SuperAdminRepositories
                 }
             }
         }
-        private void GrantOrRevokeExecute(int size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role, string dbName)
+        private void GrantOrRevokeExecute(double size, int sizeType, NpgsqlConnection connection, object? databaseSize, string role, string dbName)
         {
             var sizeDatabase = Convert.ToInt64(databaseSize) / (1024 * 1024); //MB
             if (sizeType == 2)

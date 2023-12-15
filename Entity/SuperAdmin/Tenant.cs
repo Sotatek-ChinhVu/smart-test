@@ -30,7 +30,7 @@ namespace Entity.SuperAdmin
         public string Db { get; set; } = string.Empty;
 
         [Column("SIZE")]
-        public int Size { get; set; }
+        public double Size { get; set; }
 
         /// <summary>
         /// 1: MB; 2: GB

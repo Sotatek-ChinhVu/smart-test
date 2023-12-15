@@ -4,7 +4,7 @@ namespace UseCase.SuperAdmin.UpgradePremium
 {
     public class UpdateTenantInputData : IInputData<UpdateTenantOutputData>
     {
-        public UpdateTenantInputData(int tenantId, int size, int sizeType, string subDomain, byte type, string hospital, int adminId, string password, dynamic webSocketService)
+        public UpdateTenantInputData(int tenantId, double size, int sizeType, string subDomain, byte type, string hospital, int adminId, string password, dynamic webSocketService)
         {
             TenantId = tenantId;
             Size = size;
@@ -18,7 +18,7 @@ namespace UseCase.SuperAdmin.UpgradePremium
         }
         public int TenantId { get; private set; }
 
-        public int Size { get; private set; }
+        public double Size { get; private set; }
             
         public int SizeType { get; private set; }
 
