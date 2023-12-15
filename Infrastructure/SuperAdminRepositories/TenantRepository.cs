@@ -32,6 +32,13 @@ namespace Infrastructure.SuperAdminRepositories
             return tenantModel;
         }
 
+        public TenantModel GetByStatus(int tenantId, byte status)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.Status == status && t.IsDeleted == 0).FirstOrDefault();
+            var tenantModel = tenant == null ? new() : ConvertEntityToModel(tenant);
+            return tenantModel;
+        }
+
         public void GetRedis()
         {
             string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
@@ -79,30 +86,27 @@ namespace Infrastructure.SuperAdminRepositories
 
         public int CreateTenant(TenantModel model)
         {
-            var tenant = new Tenant();
-            tenant.Hospital = model.Hospital;
-            tenant.AdminId = model.AdminId;
-            tenant.Password = model.Password;
-            tenant.SubDomain = model.SubDomain;
-
-            tenant.Status = 2; //Status: creating
-            tenant.Db = model.Db;
-            tenant.Size = model.Size;
-            tenant.SizeType = model.SizeType;
-            tenant.Type = model.Type;
-            tenant.EndPointDb = model.SubDomain;
-            tenant.EndSubDomain = model.SubDomain;
-            tenant.RdsIdentifier = model.RdsIdentifier;
-            tenant.UserConnect = model.UserConnect;
-            tenant.PasswordConnect = model.PasswordConnect;
-            tenant.IsDeleted = 0;
-
-            // created date and updated date uses utc time
-            tenant.CreateDate = DateTime.UtcNow;
-            tenant.UpdateDate = DateTime.UtcNow;
-            TrackingDataContext.Tenants.Add(tenant);
-            TrackingDataContext.SaveChanges();
-            return tenant.TenantId;
+            int tenantId = model.TenantId;
+            if (tenantId > 0)
+            {
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(i => i.TenantId == tenantId && i.IsDeleted == 0);
+                if (tenant != null)
+                {
+                    _AddTenant(tenant, model);
+                    TrackingDataContext.Tenants.Update(tenant);
+                    TrackingDataContext.SaveChanges();
+                    tenantId = tenant.TenantId;
+                }
+            }
+            else
+            {
+                var tenant = new Tenant();
+                _AddTenant(tenant, model);
+                TrackingDataContext.Tenants.Add(tenant);
+                TrackingDataContext.SaveChanges();
+                tenantId = tenant.TenantId;
+            }
+            return tenantId;
         }
 
         public bool UpdateInfTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier)
@@ -882,6 +886,28 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.RdsIdentifier,
                        tenant.UserConnect,
                        tenant.PasswordConnect);
+        }
+
+        private void _AddTenant(Tenant tenant, TenantModel model)
+        {
+            tenant.Hospital = model.Hospital;
+            tenant.AdminId = model.AdminId;
+            tenant.Password = model.Password;
+            tenant.SubDomain = model.SubDomain;
+            tenant.Status = 2; //Status: creating
+            tenant.Db = model.Db;
+            tenant.Size = model.Size;
+            tenant.SizeType = model.SizeType;
+            tenant.Type = model.Type;
+            tenant.EndPointDb = model.SubDomain;
+            tenant.EndSubDomain = model.SubDomain;
+            tenant.RdsIdentifier = model.RdsIdentifier;
+            tenant.UserConnect = model.UserConnect;
+            tenant.PasswordConnect = model.PasswordConnect;
+            tenant.IsDeleted = 0;
+            // created date and updated date uses utc time
+            tenant.CreateDate = DateTime.UtcNow;
+            tenant.UpdateDate = DateTime.UtcNow;
         }
         #endregion
     }

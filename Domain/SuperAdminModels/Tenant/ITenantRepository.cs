@@ -6,6 +6,8 @@ public interface ITenantRepository
 {
     TenantModel Get(int tenantId);
 
+    TenantModel GetByStatus(int tenantId, byte status);
+
     int GetBySubDomainAndIdentifier(string subDomain, string Identifier);
 
     int SumSubDomainToDbIdentifier(string dbIdentifier);
@@ -25,7 +27,7 @@ public interface ITenantRepository
     void RevokeInsertPermission();
 
     TenantModel GetTenant(int tenantId);
-
+   
     bool CheckExistsHospital(string hospital);
 
     bool CheckExistsSubDomain(string subDomain);
