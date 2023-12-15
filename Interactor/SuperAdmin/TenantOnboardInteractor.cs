@@ -4,9 +4,12 @@ using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using AWSSDK.Interfaces;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
+using Entity.SuperAdmin;
+using Infrastructure.SuperAdminRepositories;
 using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
@@ -115,6 +118,10 @@ namespace Interactor.SuperAdmin
             string rString = CommonConstants.GenerateRandomString(6);
             var cancellationTokenSource = new CancellationTokenSource();
             CancellationToken ct = cancellationTokenSource.Token;
+
+            // Set tenant info to cache memory
+            _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
+
             int id = 0;
             string tenantUrl = string.Empty;
             try
@@ -122,13 +129,13 @@ namespace Interactor.SuperAdmin
                 ct.ThrowIfCancellationRequested();
                 if (!ct.IsCancellationRequested) // Check task run is not canceled
                 {
-                    await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain); 
+                    await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain);
                     await Route53Action.CreateTenantDomain(model.SubDomain);
                 }
                 // Provisioning SubDomain for new tenants
                 tenantUrl = $"{model.SubDomain}.{ConfigConstant.Domain}";
                 // Checking Available RDS Cluster
-                if (model.SubDomain.Length > 0)
+                if (model.SubDomain.Length > 0 && !ct.IsCancellationRequested)
                 {
                     // Checking tenant tier, if dedicated, provision new RDS instance
                     if (model.Type == ConfigConstant.TypeDedicate)
@@ -138,21 +145,27 @@ namespace Interactor.SuperAdmin
                         if (rdsInfo.ContainsKey(dbIdentifier))
                         {
                             id = _tenantRepository.CreateTenant(model);
-                            model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(() =>
+                            if (!ct.IsCancellationRequested)
                             {
-                                AddData(id, tenantUrl, model);
-                            });
+                                model.ChangeRdsIdentifier(dbIdentifier);
+                                _ = Task.Run(() =>
+                                {
+                                    AddData(id, tenantUrl, model, ct);
+                                });
+                            }
                         }
                         else
                         {
                             id = _tenantRepository.CreateTenant(model);
-                            await RDSAction.CreateNewShardAsync(dbIdentifier);
-                            model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(() =>
+                            if (!ct.IsCancellationRequested)
                             {
-                                AddData(id, tenantUrl, model);
-                            });
+                                await RDSAction.CreateNewShardAsync(dbIdentifier);
+                                model.ChangeRdsIdentifier(dbIdentifier);
+                                _ = Task.Run(() =>
+                                {
+                                    AddData(id, tenantUrl, model, ct);
+                                });
+                            }
                         }
                     }
                     else // In the rest cases, checking available RDS for new Tenant
@@ -165,12 +178,15 @@ namespace Interactor.SuperAdmin
                         {
                             string dbIdentifier = $"develop-smartkarte-postgres-{rString}";
                             id = _tenantRepository.CreateTenant(model);
-                            await RDSAction.CreateNewShardAsync(dbIdentifier);
-                            model.ChangeRdsIdentifier(dbIdentifier);
-                            _ = Task.Run(() =>
+                            if (!ct.IsCancellationRequested)
                             {
-                                AddData(id, tenantUrl, model);
-                            });
+                                await RDSAction.CreateNewShardAsync(dbIdentifier);
+                                model.ChangeRdsIdentifier(dbIdentifier);
+                                _ = Task.Run(() =>
+                                {
+                                    AddData(id, tenantUrl, model, ct);
+                                });
+                            }
                         }
                         else // Else, returning the first available RDS Cluster in the list
                         {
@@ -181,12 +197,15 @@ namespace Interactor.SuperAdmin
                                 if (sumSubDomainToDbIdentifier <= 3)
                                 {
                                     checkAvailableIdentifier = true;
-                                    model.ChangeRdsIdentifier(dbIdentifier);
-                                    id = _tenantRepository.CreateTenant(model);
-                                    _ = Task.Run(() =>
+                                    if (!ct.IsCancellationRequested)
                                     {
-                                        AddData(id, tenantUrl, model);
-                                    });
+                                        model.ChangeRdsIdentifier(dbIdentifier);
+                                        id = _tenantRepository.CreateTenant(model);
+                                        _ = Task.Run(() =>
+                                        {
+                                            AddData(id, tenantUrl, model, ct);
+                                        });
+                                    }
                                     break;
                                 }
                             }
@@ -194,25 +213,26 @@ namespace Interactor.SuperAdmin
                             {
                                 string dbIdentifierNew = $"develop-smartkarte-postgres-{rString}";
                                 id = _tenantRepository.CreateTenant(model);
-                                await RDSAction.CreateNewShardAsync(dbIdentifierNew);
-                                model.ChangeRdsIdentifier(dbIdentifierNew);
-                                _ = Task.Run(() =>
+                                if (!ct.IsCancellationRequested)
                                 {
-                                    AddData(id, tenantUrl, model);
-                                });
+                                    await RDSAction.CreateNewShardAsync(dbIdentifierNew);
+                                    model.ChangeRdsIdentifier(dbIdentifierNew);
+                                    _ = Task.Run(() =>
+                                    {
+                                        AddData(id, tenantUrl, model, ct);
+                                    });
+                                }
                             }
                         }
                     }
                 }
 
-                // Set tenant info to cache memory
-                _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
-
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
-                    { "message", "Please wait for 15 minutes for all resources to be available" }
+                    { "message", "Please wait for 45 minutes for all resources to be available" }
                 };
+
                 return result;
             }
             catch (Exception ex)
@@ -227,10 +247,11 @@ namespace Interactor.SuperAdmin
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
 
                     await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
-
-                    // Delete cache memory
-                    _memoryCache.Remove(model.SubDomain);
                 }
+
+                // Delete cache memory
+                _memoryCache.Remove(model.SubDomain);
+
                 return new Dictionary<string, string> { { "Error", ex.Message } };
             }
         }
@@ -280,7 +301,7 @@ namespace Interactor.SuperAdmin
                         var endpoint = dbInstance.Endpoint;
                         host = endpoint.Address;
                         // update status available: 1
-                        var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 1, tenantUrl, host, dbIdentifier);
+                        var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, dbIdentifier);
                         running = false;
                     }
                     // Check if more than timeout
@@ -301,7 +322,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void AddData(int tenantId, string tenantUrl, TenantModel model)
+        private void AddData(int tenantId, string tenantUrl, TenantModel model, CancellationToken ct)
         {
             try
             {
@@ -313,27 +334,34 @@ namespace Interactor.SuperAdmin
                     CreateDatas(host, model.Db, dataMigration, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
-                    var message = $"{tenantUrl} is created successfuly.";
-                    var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
 
-                    // Add info tenant for notification
-                    saveDBNotify.SetTenantId(tenantId);
-                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                    if (!ct.IsCancellationRequested)
+                    {
+                        var message = $"{tenantUrl} is created successfuly.";
+                        var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
 
-                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                        // Add info tenant for notification
+                        saveDBNotify.SetTenantId(tenantId);
+                        saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantRunning);
 
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                    }
+                    _tenant2Repository.UpdateStatusTenant(tenantId, 1);
                     // Delete cache memory
                     _memoryCache.Remove(model.SubDomain);
                 }
             }
             catch (Exception ex)
             {
-                var message = $"{tenantUrl} is created failed: {ex.Message}";
-                var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                // Add info tenant for notification
-                saveDBNotify.SetTenantId(tenantId);
-                saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
-                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                if (!ct.IsCancellationRequested)
+                {
+                    var message = $"{tenantUrl} is created failed: {ex.Message}";
+                    var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                    // Add info tenant for notification
+                    saveDBNotify.SetTenantId(tenantId);
+                    saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, saveDBNotify);
+                }
 
                 // Delete cache memory
                 _memoryCache.Remove(model.SubDomain);
