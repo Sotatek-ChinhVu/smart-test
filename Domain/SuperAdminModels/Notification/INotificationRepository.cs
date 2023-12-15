@@ -11,4 +11,9 @@ public interface INotificationRepository : IRepositoryBase
     List<NotificationModel> UpdateNotificationList(List<NotificationModel> notificationList);
 
     bool CheckExistNotification(List<int> notificationIdList);
+
+    /// <summary>
+    /// Read all notifications
+    /// </summary>
+    List<NotificationModel> ReadAllNotification();
 }

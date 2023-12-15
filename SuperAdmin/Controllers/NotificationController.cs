@@ -40,7 +40,7 @@ public class NotificationController : ControllerBase
     [HttpPost("UpdateNotification")]
     public async Task<ActionResult<Response<UpdateNotificationResponse>>> UpdateNotification([FromBody] UpdateNotificationRequest request)
     {
-        var input = new UpdateNotificationInputData(request.NotificationList.Select(item => new NotificationModel(item.Id, item.IsDeleted, item.IsRead)).ToList());
+        var input = new UpdateNotificationInputData(request.NotificationList.Select(item => new NotificationModel(item.Id, item.IsDeleted, item.IsRead)).ToList(), request.IsRealAllNotifications);
         var output = _bus.Handle(input);
         if (output.Status == UpdateNotificationStatus.Successed && output.NotificationList.Any())
         {

@@ -98,6 +98,29 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
         return result;
     }
 
+    /// <summary>
+    /// Read all notifications
+    /// </summary>
+    public List<NotificationModel> ReadAllNotification()
+    {
+        var notificationList = TrackingDataContext.Notifications.Where(item => item.IsDeleted == 0 && item.IsRead == 0).ToList();
+        foreach (var entity in notificationList)
+        {
+            entity.IsRead = 1;
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        }
+        TrackingDataContext.SaveChanges();
+        var result = notificationList.Select(notification => new NotificationModel(
+                                                                 notification.Id,
+                                                                 notification.Status,
+                                                                 notification.Message ?? string.Empty,
+                                                                 notification.IsDeleted == 1,
+                                                                 notification.IsRead == 1,
+                                                                 notification.CreateDate))
+                                     .ToList();
+        return result;
+    }
+
     public bool CheckExistNotification(List<int> notificationIdList)
     {
         notificationIdList = notificationIdList.Distinct().ToList();
