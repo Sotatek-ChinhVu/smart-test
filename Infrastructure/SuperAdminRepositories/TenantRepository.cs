@@ -1,6 +1,5 @@
 ﻿using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
-using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
@@ -58,6 +57,26 @@ namespace Infrastructure.SuperAdminRepositories
             return 0;
         }
 
+        public bool CheckExistsHospital(string hospital)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.Hospital.ToLower().Trim() == hospital.ToLower().Trim() && t.IsDeleted == 0);
+            if (tenant.Any())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool CheckExistsSubDomain(string subDomain)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.SubDomain.ToLower().Trim() == subDomain.ToLower().Trim() && t.IsDeleted == 0);
+            if (tenant.Any())
+            {
+                return true;
+            }
+            return false;
+        }
+
         public int CreateTenant(TenantModel model)
         {
             var tenant = new Tenant();
@@ -77,8 +96,10 @@ namespace Infrastructure.SuperAdminRepositories
             tenant.UserConnect = model.UserConnect;
             tenant.PasswordConnect = model.PasswordConnect;
             tenant.IsDeleted = 0;
-            tenant.CreateDate = CIUtil.GetJapanDateTimeNow();
-            tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
+
+            // created date and updated date uses utc time
+            tenant.CreateDate = DateTime.UtcNow;
+            tenant.UpdateDate = DateTime.UtcNow;
             TrackingDataContext.Tenants.Add(tenant);
             TrackingDataContext.SaveChanges();
             return tenant.TenantId;
@@ -102,14 +123,27 @@ namespace Infrastructure.SuperAdminRepositories
                     tenant.RdsIdentifier = dbIdentifier;
                 }
                 tenant.Status = status;
-                tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                tenant.CreateDate = TimeZoneInfo.ConvertTimeToUtc(tenant.CreateDate);
-                TrackingDataContext.Tenants.Update(tenant);
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpgradePremium(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType)
+        public bool UpdateInfTenantStatus(int tenantId, byte status)
+        {
+            var tenant = TrackingDataContext.Tenants.FirstOrDefault(i => i.TenantId == tenantId);
+            if (tenant != null)
+            {
+                tenant.Status = status;
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password)
         {
             try
             {
@@ -125,6 +159,12 @@ namespace Infrastructure.SuperAdminRepositories
                 tenant.Size = size;
                 tenant.SizeType = sizeType;
                 tenant.RdsIdentifier = dbIdentifier;
+                tenant.Hospital = hospital;
+                tenant.AdminId = adminId;
+                tenant.Password = password;
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
                 TrackingDataContext.SaveChanges();
                 var tenantModel = ConvertEntityToModel(tenant);
                 return tenantModel;
@@ -146,6 +186,9 @@ namespace Infrastructure.SuperAdminRepositories
                     throw new Exception("Tenant does not exist");
                 }
                 tenant.Status = status;
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
                 TrackingDataContext.SaveChanges();
                 return true;
             }
@@ -168,7 +211,8 @@ namespace Infrastructure.SuperAdminRepositories
 
                 tenant.Status = TerminateStatus;
                 tenant.IsDeleted = 1;
-                tenant.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
                 TrackingDataContext.SaveChanges();
                 var tenantModel = ConvertEntityToModel(tenant);
                 return tenantModel;
@@ -349,8 +393,8 @@ namespace Infrastructure.SuperAdminRepositories
                 return new();
             }
             var tenantModel = ConvertEntityToModel(tenant);
-            var storageFull = GetStorageFullItem(tenantModel, true);
-            tenantModel.ChangeStorageFull(storageFull);
+            var result = GetStorageFullItem(tenantModel, true);
+            tenantModel.ChangeStorageFull(result.storageFull, result.storageUsed);
             return tenantModel;
         }
 
@@ -714,13 +758,13 @@ namespace Infrastructure.SuperAdminRepositories
         {
             Parallel.ForEach(tenantList, tenant =>
             {
-                var storageFull = GetStorageFullItem(tenant, false);
-                tenant.ChangeStorageFull(storageFull);
+                var result = GetStorageFullItem(tenant, false);
+                tenant.ChangeStorageFull(result.storageFull, result.storageUsed);
             });
             return tenantList;
         }
 
-        private double GetStorageFullItem(TenantModel tenant, bool isClearCache)
+        private (double storageFull, double storageUsed) GetStorageFullItem(TenantModel tenant, bool isClearCache)
         {
             double storageFull = 0;
             double storageInDB = 0;
@@ -745,7 +789,8 @@ namespace Infrastructure.SuperAdminRepositories
             if (_cache.KeyExists(finalKey))
             {
                 storageFull = _cache.StringGet(finalKey).AsInteger();
-                return storageFull;
+                // return storageUsed in database
+                return (storageFull, Math.Round((tenant.Size * storageFull) / 100));
             }
             else
             {
@@ -763,14 +808,17 @@ namespace Infrastructure.SuperAdminRepositories
                             if (reader.HasRows)
                             {
                                 reader.Read();
+
+                                // calculate storageInDB
+                                double sizeInDB = reader.GetInt64(0);
                                 /// 1: MB; 2: GB
                                 switch (tenant.SizeType)
                                 {
                                     case 1:
-                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024);
+                                        storageInDB = Math.Round(sizeInDB / 1024 / 1024, 2);
                                         break;
                                     case 2:
-                                        storageInDB = (reader.GetInt64(0) / 1024 / 1024 / 1024);
+                                        storageInDB = Math.Round(sizeInDB / 1024 / 1024 / 1024, 2);
                                         break;
                                 }
                             }
@@ -784,12 +832,13 @@ namespace Infrastructure.SuperAdminRepositories
                         _cache.KeyExpire(finalKey, new TimeSpan(1, 0, 0));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine("Can not connect to database " + tenant.EndPointDb + tenant.Db + "\n" + ex.ToString());
+                    // do not return anything in this catch
                 }
             }
-            return storageFull;
+            // return storageUsed in database
+            return (storageFull, storageInDB);
         }
 
         private TenantModel ConvertEntityToModel(Tenant tenant)

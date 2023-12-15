@@ -16,9 +16,8 @@ using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using PostgreDataContext;
 using System.Text;
-using System.Linq;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -38,6 +37,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
     private const string SUSPECT_FLAG = "の疑い";
     private readonly ISystemConfRepository? _systemConf;
     private readonly IApprovalInfRepository? _approvalInfRepository;
+    private readonly TenantDataContext _tenantDataContext;
 
     public TodayOdrRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf, IApprovalInfRepository approvalInfRepository) : base(tenantProvider)
     {
@@ -3465,5 +3465,162 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                            odrDateDetailItemList));
         }
         return result;
+    }
+
+    public bool SaveSettingLastDayInfo(int hpId, int userId, List<OdrDateInfModel> odrDateInfModels)
+    {
+        var odrDateInfs = new List<OdrDateInf>();
+        var odrDateDetails = new List<OdrDateDetail>();
+        var grpIdMax = 0;
+        var seqNoMax = 0;
+        var OdrDateInfList = NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).ToList();
+        var OdrDateDetailList = NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).ToList();
+
+        if (OdrDateInfList.Count != 0)
+        {
+            grpIdMax = NoTrackingDataContext.OdrDateInfs.Where(x => x.HpId == hpId).Max(x => x.GrpId) + 1;
+        }
+        else
+        {
+            grpIdMax = 1;
+        }
+
+        if (OdrDateDetailList.Count != 0)
+        {
+            seqNoMax = NoTrackingDataContext.OdrDateDetails.Where(x => x.HpId == hpId).Max(x => x.SeqNo) + 1;
+        }
+        else
+        {
+            seqNoMax = 1;
+        }
+
+        foreach (var item in odrDateInfModels)
+        {
+            if (item.GrpName == string.Empty && item.GrpId == 0) continue;
+
+            if (item.IsDeleted == 1)
+            {
+                var odrDateInf = TrackingDataContext.OdrDateInfs.FirstOrDefault(x => x.HpId == hpId && x.GrpId == item.GrpId);
+                if (odrDateInf != null)
+                {
+                    odrDateInf.IsDeleted = 1;
+                }
+            }
+            else
+            {
+                var odrDateInf = TrackingDataContext.OdrDateInfs.FirstOrDefault(x => x.HpId == hpId && x.GrpId == item.GrpId);
+                if (odrDateInf != null)
+                {
+                    odrDateInf.GrpName = item.GrpName;
+                    odrDateInf.SortNo = item.SortNo;
+                    odrDateInf.UpdateId = userId;
+                    odrDateInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
+                else
+                {
+                    OdrDateInf odrDateInfItem = ConvertOdrDateInfList(hpId, userId, item);
+                    odrDateInfs.Add(odrDateInfItem);
+                }
+            }
+        }
+
+        var grpIdInfMax = grpIdMax;
+
+        foreach (var data in odrDateInfs)
+        {
+            data.GrpId = grpIdInfMax;
+            grpIdInfMax++;
+        }
+
+        TrackingDataContext.OdrDateInfs.AddRange(odrDateInfs);
+
+        foreach (var item in odrDateInfModels)
+        {
+            if (item.GrpId != 0)
+            {
+                continue;
+            }
+            else
+            {
+                item.ChangeGrpId(grpIdMax);
+                grpIdMax++;
+            }
+        }
+
+        foreach (var item in odrDateInfModels)
+        {
+            foreach (var OdrDateDetailItem in item.OdrDateDetailList)
+            {
+                if (OdrDateDetailItem.ItemCd == "") continue;
+
+                if (OdrDateDetailItem.IsDeleted == 1)
+                {
+                    var odrDateDetail = TrackingDataContext.OdrDateDetails.FirstOrDefault(x => x.HpId == hpId && x.GrpId == OdrDateDetailItem.GrpId && x.SeqNo == OdrDateDetailItem.SeqNo);
+                    if (odrDateDetail != null)
+                    {
+                        odrDateDetail.IsDeleted = 1;
+                    }
+                }
+                else 
+                {
+                    var odrDateDetail = TrackingDataContext.OdrDateDetails.FirstOrDefault(x => x.HpId == hpId && x.GrpId == OdrDateDetailItem.GrpId && x.SeqNo == OdrDateDetailItem.SeqNo);
+                    if (odrDateDetail != null)
+                    {
+                        odrDateDetail.ItemCd = OdrDateDetailItem.ItemCd;
+                        odrDateDetail.SortNo = OdrDateDetailItem.SortNo;
+                        odrDateDetail.UpdateId = userId;
+                        odrDateDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        OdrDateDetail odrdateDetailitem = ConvertOdrDateDetailList(hpId, userId, OdrDateDetailItem, item.GrpId);
+                        odrDateDetails.Add(odrdateDetailitem);
+                    }
+                }
+            }
+        }
+
+        foreach (var data in odrDateDetails)
+        {
+            data.SeqNo = seqNoMax;
+            seqNoMax++;
+        }
+
+        TrackingDataContext.OdrDateDetails.AddRange(odrDateDetails);
+
+        return TrackingDataContext.SaveChanges() > 0; 
+    }
+
+    private OdrDateInf ConvertOdrDateInfList(int hpId, int userId, OdrDateInfModel u)
+    {
+        return new OdrDateInf
+        {
+            HpId = hpId,
+            GrpId = 0,
+            SortNo = u.SortNo,
+            GrpName = u.GrpName,
+            IsDeleted = u.IsDeleted,
+            CreateId = userId,
+            UpdateId = userId,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            UpdateDate = CIUtil.GetJapanDateTimeNow()
+        };
+    }
+
+    private OdrDateDetail ConvertOdrDateDetailList(int hpId, int userId, OdrDateDetailModel u, int grpId)
+    {
+        return new OdrDateDetail
+        {
+            HpId = hpId,
+            GrpId = grpId,
+            SeqNo = 0,
+            ItemCd = u.ItemCd,
+            IsDeleted = u.IsDeleted,
+            SortNo = u.SortNo,
+            CreateId = userId,
+            UpdateId = userId,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            UpdateDate = CIUtil.GetJapanDateTimeNow()
+        };
     }
 }

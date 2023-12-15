@@ -4,6 +4,9 @@ public class CommonExcelReportingModel
 {
     public CommonExcelReportingModel()
     {
+        FileName = string.Empty;
+        SheetName = string.Empty;
+        Data = new();
     }
 
     public CommonExcelReportingModel(string fileName, string sheetName, List<string> data)
