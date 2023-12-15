@@ -5,18 +5,19 @@ namespace Infrastructure.Common;
 public class CookieModel
 {
     [JsonConstructor]
-    public CookieModel(int hpId, string domain)
+    public CookieModel(string domain, string token)
     {
-        HpId = hpId;
         Domain = domain;
+        Token = token;
     }
 
     public CookieModel()
     {
         Domain = string.Empty;
+        Token = string.Empty;
     }
 
-    public int HpId { get; private set; }
-
     public string Domain { get; private set; }
+
+    public string Token { get; private set; }
 }

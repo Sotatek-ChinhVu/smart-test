@@ -18,7 +18,6 @@ using Reporting.DrugInfo.Model;
 using Reporting.GrowthCurve.Model;
 using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
-using Reporting.OutDrug.Model.Output;
 using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
@@ -30,6 +29,8 @@ using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using StackExchange.Redis;
 using Helper.Redis;
+using Helper.Constants;
+using Infrastructure.Common;
 
 namespace EmrCloudApi.Controller;
 
@@ -122,6 +123,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.MedicalRecordWebId)]
     public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
     {
+        // if HpId = -1, return status 401
+        if (HpId == -1)
+        {
+            return Content("Not authorize page!!!", "text/html");
+        }
         var data = _reportService.GetMedicalRecordWebIdReportingData(HpId, request.PtId, request.SinDate);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -490,6 +496,18 @@ public class PdfCreatorController : CookieController
                 }
             }
         }
+    }
+
+
+    [HttpGet("GetCookie")]
+    public void Write(string domain, string token)
+    {
+        CookieOptions options = new CookieOptions();
+        options.Expires = DateTime.Now.AddDays(1);
+        options.Path = "/";
+        var cookieObject = new CookieModel(domain, token);
+        string dataCookie = JsonSerializer.Serialize(cookieObject);
+        HttpContext.Response.Cookies.Append(DomainCookie.CookieReportKey, dataCookie, options);
     }
 
     #region private function

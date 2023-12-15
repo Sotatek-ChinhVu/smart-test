@@ -15,6 +15,9 @@ using System.Text.Json;
 using System.Text.Unicode;
 using StackExchange.Redis;
 using Helper.Extension;
+using System.Linq.Dynamic.Core.Tokenizer;
+using System.IdentityModel.Tokens.Jwt;
+using Newtonsoft.Json.Linq;
 
 namespace Infrastructure.CommonDB
 {
@@ -256,20 +259,27 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromQueryString()
         {
-            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value;
-            if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
+            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
+
+            // get domain from param
+            string clientDomain = SubStringToGetParam(queryString);
+
+            // get domain from cookie
+            if (string.IsNullOrEmpty(clientDomain))
             {
                 return GetDomainFromCookie();
             }
 
-            var clientDomain = SubStringToGetParam(queryString);
-
-            return clientDomain ?? string.Empty;
+            return clientDomain;
         }
 
+        /// <summary>
+        /// Get domain from cookie
+        /// </summary>
         public string GetDomainFromCookie()
         {
-            string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies.FirstOrDefault().Value ?? string.Empty;
+            string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies[DomainCookie.CookieReportKey] ?? string.Empty;
+
             if (!string.IsNullOrEmpty(cookieValue))
             {
                 var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
@@ -277,7 +287,11 @@ namespace Infrastructure.CommonDB
                 {
                     return string.Empty;
                 }
-                return cookie.Domain;
+                var jwtToken = new JwtSecurityToken(cookie.Token);
+                if (jwtToken.ValidFrom < DateTime.UtcNow || jwtToken.ValidTo > DateTime.UtcNow)
+                {
+                    return cookie.Domain;
+                }
             }
             return string.Empty;
         }

@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using Infrastructure.Common;
+using Helper.Constants;
+using System.IdentityModel.Tokens.Jwt;
+using Helper.Extension;
+
 namespace EmrCloudApi.Controller;
 
 [ApiController]
@@ -13,17 +17,33 @@ public class CookieController : ControllerBase
     public CookieController(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
-        var cookieModel = GetCookieModel();
-        HpId = cookieModel.HpId;
+        HpId = GetHpId();
     }
 
-    private CookieModel GetCookieModel()
+    /// <summary>
+    ///  Get HpId from cookie to report api
+    /// </summary>
+    /// <returns></returns>
+    private int GetHpId()
     {
-        string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies.FirstOrDefault().Value ?? string.Empty;
+        string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies[DomainCookie.CookieReportKey] ?? string.Empty;
         if (!string.IsNullOrEmpty(cookieValue))
         {
-            return JsonSerializer.Deserialize<CookieModel>(cookieValue) ?? new();
+            var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
+            if (cookie == null)
+            {
+                return -1;
+            }
+            var jwtToken = new JwtSecurityToken(cookie.Token);
+            if (jwtToken.ValidFrom < DateTime.UtcNow || jwtToken.ValidTo > DateTime.UtcNow)
+            {
+                int result = jwtToken.Payload[ParamConstant.HpId].AsInteger();
+                if (result > 0)
+                {
+                    return result;
+                }
+            }
         }
-        return new();
+        return -1;
     }
 }
