@@ -30,7 +30,7 @@ public class NotificationController : ControllerBase
     [HttpGet("GetNotification")]
     public ActionResult<Response<GetNotificationResponse>> GetNotification([FromQuery] GetNotificationRequest request)
     {
-        var input = new GetNotificationInputData(request.Skip, request.Take);
+        var input = new GetNotificationInputData(request.Skip, request.Take, request.OnlyUnreadNotifications);
         var output = _bus.Handle(input);
         var presenter = new GetNotificationPresenter();
         presenter.Complete(output);
