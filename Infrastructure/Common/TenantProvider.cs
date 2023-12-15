@@ -2,12 +2,10 @@
 using Infrastructure.Common;
 using Helper.Redis;
 using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using PostgreDataContext;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -15,9 +13,7 @@ using System.Text.Json;
 using System.Text.Unicode;
 using StackExchange.Redis;
 using Helper.Extension;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.IdentityModel.Tokens.Jwt;
-using Newtonsoft.Json.Linq;
 
 namespace Infrastructure.CommonDB
 {
