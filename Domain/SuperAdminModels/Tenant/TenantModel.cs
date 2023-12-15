@@ -17,7 +17,7 @@ namespace Domain.SuperAdminModels.Tenant
             PasswordConnect = string.Empty;
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, double size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -40,7 +40,7 @@ namespace Domain.SuperAdminModels.Tenant
             PasswordConnect = passwordConnect;
         }
 
-        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
+        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, double size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             Hospital = hospital;
             Status = status;
@@ -86,7 +86,7 @@ namespace Domain.SuperAdminModels.Tenant
 
         public string Db { get; private set; }
 
-        public int Size { get; private set; }
+        public double Size { get; private set; }
 
         public int SizeType { get; private set; }
 
