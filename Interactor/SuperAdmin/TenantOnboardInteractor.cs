@@ -54,8 +54,10 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidRequest);
                 }
+                bool creatTenant = true;
                 if (inputData.TenantId > 0)
                 {
+                    creatTenant = false;
                     var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
                     var tenantFaild = _tenantRepository.GetByStatus(inputData.TenantId, statusTenantFaild);
                     if (tenantFaild.TenantId == 0)
@@ -72,7 +74,7 @@ namespace Interactor.SuperAdmin
                 var isExistHospital = _tenantRepository.CheckExistsHospital(inputData.Hospital);
                 var checkSubDomainDB = _tenantRepository.CheckExistsSubDomain(inputData.SubDomain);
                 var checkSubDomain = _awsSdkService.CheckSubdomainExistenceAsync(inputData.SubDomain).Result;
-                if (isExistHospital)
+                if (creatTenant && isExistHospital)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.HopitalExists);
                 }
@@ -80,7 +82,7 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSubDomain);
                 }
-                else if (checkSubDomain || checkSubDomainDB)
+                else if (creatTenant && (checkSubDomain || checkSubDomainDB))
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
@@ -120,7 +122,8 @@ namespace Interactor.SuperAdmin
                     }
                 }
                 var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
-                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
+                var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
+                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, tenantUrl, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -154,7 +157,7 @@ namespace Interactor.SuperAdmin
             _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
 
             int id = model.TenantId;
-            string tenantUrl = string.Empty;
+            string tenantUrl = model.EndSubDomain;
             try
             {
                 ct.ThrowIfCancellationRequested();
@@ -163,8 +166,6 @@ namespace Interactor.SuperAdmin
                     await CloudFrontAction.UpdateNewTenantAsync(model.SubDomain);
                     await Route53Action.CreateTenantDomain(model.SubDomain);
                 }
-                // Provisioning SubDomain for new tenants
-                tenantUrl = $"{model.SubDomain}.{ConfigConstant.Domain}";
                 // Checking Available RDS Cluster
                 if (model.SubDomain.Length > 0 && !ct.IsCancellationRequested)
                 {
@@ -370,7 +371,7 @@ namespace Interactor.SuperAdmin
                 {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
-                    //CreateDatas(host, model.Db, dataMigration, tenantId, model);
+                    CreateDatas(host, model.Db, dataMigration, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
 
