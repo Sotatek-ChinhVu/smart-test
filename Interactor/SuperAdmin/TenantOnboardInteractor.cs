@@ -96,23 +96,15 @@ namespace Interactor.SuperAdmin
                 }
                 else if (inputData.SizeType == ConfigConstant.SizeTypeMB)
                 {
-                    if (inputData.ClusterMode == ConfigConstant.TypeSharing)
-                    {
-                        if (inputData.Size > 262144) // 256 GB
-                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                    }
-                    else
-                    {
-                        if (inputData.Size > 1048576) // 1024 GB
-                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                    }
-
+                    // default 150MB
+                    if (inputData.Size > 150)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
                 else if (inputData.SizeType == ConfigConstant.SizeTypeGB)
                 {
                     if (inputData.ClusterMode == ConfigConstant.TypeSharing)
                     {
-                        if (inputData.Size > 256)
+                        if (inputData.Size > 250)
                             return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                     }
                     else
