@@ -134,6 +134,7 @@ namespace SuperAdminAPI.Controllers
         }
 
         [HttpPost("UpdateDataTenant")]
+        [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
         public ActionResult<Response<UpdateDataTenantResponse>> UpdateTenant([FromForm] UpdateDataTenantRequest request)
         {
             var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);

@@ -1,6 +1,6 @@
-﻿using Domain.SuperAdminModels.Notification;
-using Domain.SuperAdminModels.Tenant;
+﻿using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
 using UseCase.SuperAdmin.UpdateDataTenant;
@@ -11,18 +11,14 @@ namespace Interactor.SuperAdmin
     public class UpdateDataTenantInteractor : IUpdateDataTenantInputPort
     {
         private readonly ITenantRepository _tenantRepository;
-        private readonly ITenantRepository _tenantRepositoryRunTask;
-        private readonly INotificationRepository _notificationRepositoryRunTask;
-
+        private readonly IConfiguration _configuration;
         public UpdateDataTenantInteractor(
             ITenantRepository tenantRepository,
-            ITenantRepository tenantRepositoryRunTask,
-            INotificationRepository notificationRepositoryRunTask
+             IConfiguration configuration
             )
         {
             _tenantRepository = tenantRepository;
-            _tenantRepositoryRunTask = tenantRepositoryRunTask;
-            _notificationRepositoryRunTask = notificationRepositoryRunTask;
+            _configuration = configuration;
         }
         public UpdateDataTenantOutputData Handle(UpdateDataTenantInputData inputData)
         {
@@ -30,6 +26,8 @@ namespace Interactor.SuperAdmin
             {
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
+                string pathFolderUpdateDataTenant = _configuration["PathFolderUpdateDataTenant"] ?? string.Empty;
+                string passwordFile7z = _configuration["PasswordFile7z"] ?? string.Empty;
 
                 if (inputData.TenantId <= 0)
                 {
@@ -43,16 +41,27 @@ namespace Interactor.SuperAdmin
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.TenantDoesNotExist);
                 }
 
-                if (string.Equals(Path.GetExtension(inputData.FileUpdateData.FileName), ".7z", StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(Path.GetExtension(inputData.FileUpdateData.FileName), ".7z", StringComparison.OrdinalIgnoreCase))
                 {
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.UploadFileIncorrectFormat7z);
                 }
 
-                // Extract file 7z
-                using (var archive = SevenZipArchive.Open(@"D:\e01.200825_01.7z", new ReaderOptions() { Password = "Sotatek" }))
+
+                string pathFile7z = $"{pathFolderUpdateDataTenant}\\{tenant.SubDomain}-{Guid.NewGuid()}.7z";
+                string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
+
+                // Save file 7z
+                using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
                 {
-                    archive.ExtractToDirectory(@"D:\7Z");
+                    inputData.FileUpdateData.CopyTo(fileStream);
                 }
+
+                // Extract file 7z
+                using (var archive = SevenZipArchive.Open(pathFile7z, new ReaderOptions() { Password = passwordFile7z }))
+                {
+                    archive.ExtractToDirectory(pathFileExtract7z);
+                }
+
                 // Execute file script in folder 02_script
 
                 // Create transaction executed 
