@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using AWSSDK.Constants;
 
 namespace AWSSDK.Common
 {
@@ -163,7 +164,7 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error deleting objects in folder: '{ex.Message}'");
             }
         }
-        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string folderKey, AmazonS3Client destinationClient, string destinationBucketName)
+        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string folderKey, AmazonS3Client destinationClient, string destinationBucketName, bool prefixDelete)
         {
             try
             {
@@ -184,16 +185,34 @@ namespace AWSSDK.Common
                     }
                     Parallel.ForEach(response.S3Objects, obj =>
                     {
+                        var destinationKey = folderKey + obj.Key.Substring(folderKey.Length);
+
                         var copyObjectRequest = new CopyObjectRequest
                         {
+
                             SourceBucket = sourceBucketName,
                             SourceKey = obj.Key,
                             DestinationBucket = destinationBucketName,
-                            DestinationKey = folderKey + obj.Key.Substring(folderKey.Length)
-                        };
 
-                        var destinationTransterUtility = new TransferUtility(destinationClient);
-                        destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
+                        };
+                        if (prefixDelete)
+                        {
+                            destinationKey = CommonConstants.RemoveDeleteString(destinationKey);
+                            copyObjectRequest.DestinationKey = destinationKey;
+                            Console.WriteLine(destinationKey);
+                            var destinationTransterUtility = new TransferUtility(destinationClient);
+                            destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
+                        }
+                        else
+                        {
+                            if (!CommonConstants.CheckCondition(destinationKey))
+                            {
+                                copyObjectRequest.DestinationKey = destinationKey;
+                                Console.WriteLine(destinationKey);
+                                var destinationTransterUtility = new TransferUtility(destinationClient);
+                                destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
+                            }
+                        }
                     });
 
                     request.ContinuationToken = response.NextContinuationToken;
