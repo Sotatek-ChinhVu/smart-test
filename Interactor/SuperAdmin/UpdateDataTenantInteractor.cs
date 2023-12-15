@@ -1,8 +1,10 @@
-﻿using AWSSDK.Constants;
-using Domain.SuperAdminModels.Notification;
+﻿using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using SharpCompress.Archives;
+using SharpCompress.Archives.SevenZip;
 using UseCase.SuperAdmin.UpdateDataTenant;
+using ReaderOptions = SharpCompress.Readers.ReaderOptions;
 
 namespace Interactor.SuperAdmin
 {
@@ -41,45 +43,19 @@ namespace Interactor.SuperAdmin
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.TenantDoesNotExist);
                 }
 
-                CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run(() =>
+                if (string.Equals(Path.GetExtension(inputData.FileUpdateData.FileName), ".7z", StringComparison.OrdinalIgnoreCase))
                 {
-                    string typeName = 0 == 0 ? "stoped" : "start";
-                    try
-                    {
-                        bool result;
-                        if (0 == 0)
-                        {
-                            result = _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["stoped"]);
-                        }
-                        else
-                        {
-                            result = _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                        }
-                        if (result)
-                        {
-                            var messenge = $"{tenant.EndSubDomain} is {typeName} successfully.";
-                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                    return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.UploadFileIncorrectFormat7z);
+                }
 
-                            cts.Cancel();
-                            return;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        var messenge = $"{tenant.EndSubDomain} is {typeName} failed. Error: {ex.Message}.";
-                        var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-                        cts.Cancel();
-                        return;
-                    }
-                    finally
-                    {
-                        _tenantRepositoryRunTask.ReleaseResource();
-                        _notificationRepositoryRunTask.ReleaseResource();
-                    }
-                });
+                // Extract file 7z
+                using (var archive = SevenZipArchive.Open(@"D:\e01.200825_01.7z", new ReaderOptions() { Password = "Sotatek" }))
+                {
+                    archive.ExtractToDirectory(@"D:\7Z");
+                }
+                // Execute file script in folder 02_script
+
+                // Create transaction executed 
 
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }

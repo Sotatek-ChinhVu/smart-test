@@ -13,6 +13,6 @@ namespace UseCase.SuperAdmin.UpdateDataTenant
         Failed = 3,
         TenantDoesNotExist = 4,
         TenantNotAvailable = 5,
-        TenantNotStoped = 6,
+        UploadFileIncorrectFormat7z = 6,
     }
 }

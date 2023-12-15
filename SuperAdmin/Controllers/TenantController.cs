@@ -136,7 +136,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("UpdateDataTenant")]
         public ActionResult<Response<UpdateDataTenantResponse>> UpdateTenant([FromForm] UpdateDataTenantRequest request)
         {
-            var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdate);
+            var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);
             var output = _bus.Handle(input);
             var presenter = new UpdateDataTenantPresenter();
             presenter.Complete(output);

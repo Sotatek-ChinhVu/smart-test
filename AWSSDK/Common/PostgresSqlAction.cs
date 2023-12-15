@@ -1,9 +1,9 @@
 ﻿using AWSSDK.Constants;
-using Microsoft.Extensions.Hosting;
+using Npgsql;
+using System.Data;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-
 namespace AWSSDK.Common
 {
     public static class PostgresSqlAction
@@ -78,38 +78,74 @@ namespace AWSSDK.Common
             await Execute(batchContent);
         }
 
-       
-        static async Task ExecuteSqlFile(string pathFile, string host, int port, string database, string user, string password)
+        /// <summary>
+        /// Execute list file script sql
+        /// </summary>
+        /// <param name="filePaths"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        public static void ExecuteSqlFiles(List<string> filePaths, string host, int port, string database, string user, string password)
         {
-            Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
-            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
-            pathFile = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFile : pathFile.Replace("\\", "/");
-            string batchContent;
-            string dumpCommand =
-            $"{Set} PGPASSWORD={password}\n" +
-                 $"psql" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
+            string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
 
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            try
             {
-                // path file window
-                batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFile + "\"" + "\n";
-            }
-            else
-            {   // path file linux
-                batchContent = "" + dumpCommand + "  -c -v " + pathFile + " 2> /app/restore/log-excute-dump.txt" + "\n";
-            }
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
 
-            await Execute(batchContent);
+                    // Begin a transaction
+                    using (NpgsqlTransaction transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Execute all SQL files in a transaction
+                            foreach (var filePath in filePaths)
+                            {
+                                // Read the content of the SQL file
+                                string sqlScript;
+                                using (StreamReader reader = new StreamReader(filePath))
+                                {
+                                    sqlScript = reader.ReadToEnd();
+                                }
+
+                                // Execute the SQL command
+                                using (NpgsqlCommand command = new NpgsqlCommand(sqlScript, connection, transaction))
+                                {
+                                    command.CommandType = CommandType.Text;
+                                    command.ExecuteNonQuery();
+                                }
+                            }
+
+                            // If everything is successful, commit the transaction
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            // If there's an error, rollback the transaction
+                            transaction.Rollback();
+                            Console.WriteLine($"Error executing SQL files: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error connecting to the database: {ex.Message}");
+            }
         }
 
-        /// <summary>
-        ///  Create file .sh / .bat to execute conent script sql
-        /// </summary>
-        /// <param name="dumpCommand"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        private static Task Execute(string dumpCommand)
+
+    /// <summary>
+    ///  Create file .sh / .bat to execute conent script sql
+    /// </summary>
+    /// <param name="dumpCommand"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    private static Task Execute(string dumpCommand)
         {
             return Task.Run(() =>
             {

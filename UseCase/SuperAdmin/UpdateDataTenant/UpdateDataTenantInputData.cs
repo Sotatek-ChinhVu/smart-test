@@ -5,17 +5,17 @@ namespace UseCase.SuperAdmin.UpdateDataTenant
 {
     public class UpdateDataTenantInputData : IInputData<UpdateDataTenantOutputData>
     {
-        public UpdateDataTenantInputData(int tenantId, dynamic webSocketService, IFormFile fileUpdate)
+        public UpdateDataTenantInputData(int tenantId, dynamic webSocketService, IFormFile fileUpdateData)
         {
             TenantId = tenantId;
             WebSocketService = webSocketService;
-            FileUpdate = fileUpdate;
+            FileUpdateData = fileUpdateData;
         }
 
         public int TenantId { get; private set; }
 
         public dynamic WebSocketService { get; private set; }
 
-        public IFormFile FileUpdate { get; private set; }
+        public IFormFile FileUpdateData { get; private set; }
     }
 }
