@@ -40,8 +40,9 @@ namespace Domain.SuperAdminModels.Tenant
             PasswordConnect = passwordConnect;
         }
 
-        public TenantModel(string hospital, byte status, int adminId, string password, string subDomain, string db, double size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, double size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
         {
+            TenantId = tenantId;
             Hospital = hospital;
             Status = status;
             AdminId = adminId;

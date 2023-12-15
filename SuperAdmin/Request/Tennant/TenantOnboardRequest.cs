@@ -2,6 +2,7 @@
 {
     public class TenantOnboardRequest
     {
+        public int TenantId { get; set; }
         public string Hospital { get; set; } = string.Empty;
         public int AdminId { get; set; }
         public string Password { get; set; } = string.Empty;
@@ -14,7 +15,7 @@
         public int SizeType { get; set; }
 
         /// <summary>
-        /// 1: Sharing , 2: Dedicated
+        /// 0: Sharing , 1: Dedicated
         /// </summary>
         public byte ClusterMode { get; set; }
     }
