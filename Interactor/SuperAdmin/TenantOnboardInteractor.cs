@@ -50,9 +50,23 @@ namespace Interactor.SuperAdmin
             {
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
 
-                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.Size <= 0)
+                if (string.IsNullOrEmpty(inputData.Hospital) || string.IsNullOrEmpty(inputData.SubDomain) || string.IsNullOrEmpty(inputData.Password) || inputData.AdminId <= 0 || inputData.Size <= 0 || inputData.TenantId < 0)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidRequest);
+                }
+                if (inputData.TenantId > 0)
+                {
+                    var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
+                    var tenantFaild = _tenantRepository.GetByStatus(inputData.TenantId, statusTenantFaild);
+                    if (tenantFaild.TenantId == 0)
+                    {
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    }
+                    var teminatedTenant = TeminatedTenant(inputData.TenantId);
+                    if (!teminatedTenant)
+                    {
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                    }
                 }
                 var checkValidSubDomain = CommonConstants.IsSubdomainValid(inputData.SubDomain);
                 var isExistHospital = _tenantRepository.CheckExistsHospital(inputData.Hospital);
@@ -80,16 +94,33 @@ namespace Interactor.SuperAdmin
                 }
                 else if (inputData.SizeType == ConfigConstant.SizeTypeMB)
                 {
-                    if (inputData.Size > 256000)
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    if (inputData.ClusterMode == ConfigConstant.TypeSharing)
+                    {
+                        if (inputData.Size > 262144) // 256 GB
+                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    }
+                    else
+                    {
+                        if (inputData.Size > 1048576) // 1024 GB
+                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    }
+
                 }
                 else if (inputData.SizeType == ConfigConstant.SizeTypeGB)
                 {
-                    if (inputData.Size > 250)
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    if (inputData.ClusterMode == ConfigConstant.TypeSharing)
+                    {
+                        if (inputData.Size > 256)
+                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    }
+                    else
+                    {
+                        if (inputData.Size > 1024)
+                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
+                    }
                 }
                 var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
-                var tenantModel = new TenantModel(inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
+                var tenantModel = new TenantModel(inputData.TenantId, inputData.Hospital, 0, inputData.AdminId, inputData.Password, inputData.SubDomain.ToLower(), dbName, inputData.Size, inputData.SizeType, inputData.ClusterMode, string.Empty, string.Empty, 0, string.Empty, inputData.SubDomain, CommonConstants.GenerateRandomPassword());
                 var tenantOnboard = TenantOnboardAsync(tenantModel).Result;
                 var message = string.Empty;
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
@@ -122,7 +153,7 @@ namespace Interactor.SuperAdmin
             // Set tenant info to cache memory
             _memoryCache.Set(model.SubDomain, new TenantCacheMemory(cancellationTokenSource, string.Empty));
 
-            int id = 0;
+            int id = model.TenantId;
             string tenantUrl = string.Empty;
             try
             {
@@ -241,7 +272,8 @@ namespace Interactor.SuperAdmin
                 {
                     var message = $"{model.SubDomain} is created failed. Error: {ex.Message}";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-
+                    var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
+                    var updateStatus = _tenantRepository.UpdateInfTenantStatus(id, statusTenantFaild);
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(id);
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
@@ -290,7 +322,11 @@ namespace Interactor.SuperAdmin
                         var rdsStatusDictionary = ConfigConstant.StatusTenantDictionary();
                         if (rdsStatusDictionary.TryGetValue(checkStatus, out byte statusTenant))
                         {
-                            var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, statusTenant, string.Empty, string.Empty, dbIdentifier);
+                            if (dbInstance.Endpoint != null && dbInstance.Endpoint.Address != null)
+                            {
+                                host = dbInstance.Endpoint.Address;
+                            }
+                            var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, statusTenant, tenantUrl, host, dbIdentifier);
                         }
                     }
 
@@ -298,11 +334,14 @@ namespace Interactor.SuperAdmin
 
                     if (checkStatus == "available")
                     {
-                        var endpoint = dbInstance.Endpoint;
-                        host = endpoint.Address;
+                        if (dbInstance.Endpoint != null && dbInstance.Endpoint.Address != null)
+                        {
+                            host = dbInstance.Endpoint.Address;
+                        }
                         // update status available: 1
                         var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, dbIdentifier);
                         running = false;
+                        return host;
                     }
                     // Check if more than timeout
                     if ((DateTime.Now - startTime).TotalMinutes > ConfigConstant.TimeoutCheckingAvailable)
@@ -331,7 +370,7 @@ namespace Interactor.SuperAdmin
                 {
                     var dataMigration = _migrationTenantHistoryRepository.GetMigration(tenantId);
                     RDSAction.CreateDatabase(host, model.Db, model.PasswordConnect);
-                    CreateDatas(host, model.Db, dataMigration, tenantId, model);
+                    //CreateDatas(host, model.Db, dataMigration, tenantId, model);
                     // create folder S3
                     _awsSdkService.CreateFolderAsync(ConfigConstant.DestinationBucketName, tenantUrl).Wait();
 
@@ -357,6 +396,8 @@ namespace Interactor.SuperAdmin
                 {
                     var message = $"{tenantUrl} is created failed: {ex.Message}";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
+                    var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
+                    var updateStatus = _tenant2Repository.UpdateInfTenantStatus(tenantId, statusTenantFaild);
                     // Add info tenant for notification
                     saveDBNotify.SetTenantId(tenantId);
                     saveDBNotify.SetStatusTenant(ConfigConstant.StatusTenantFailded);
@@ -601,6 +642,83 @@ namespace Interactor.SuperAdmin
             {
                 Console.WriteLine($"Error create trigger: {ex.Message}");
                 throw new Exception($"Error create trigger.  {ex.Message}");
+            }
+        }
+
+        private bool TeminatedTenant(int tenantId)
+        {
+            try
+            {
+                bool skipFinalSnapshot = false;
+                var statusTenant = ConfigConstant.StatusTenantDictionary()["terminating"];
+                var updateStatus = _tenantRepository.UpdateInfTenantStatus(tenantId, statusTenant);
+
+                var tenant = _tenantRepository.Get(tenantId);
+
+                bool deleteRDSAction = false;
+                bool deleteDNSAction = false;
+                bool deleteItemCnameAction = false;
+                var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
+                // Connect RDS delete TenantDb
+                if (listTenantDb.Count > 1)
+                {
+                    if (listTenantDb.Contains(tenant.Db))
+                    {
+                        deleteRDSAction = _awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
+                    }
+                    else
+                    {
+                        deleteRDSAction = true;
+                    }
+                }
+                // Deleted RDS
+                else
+                {
+                    if (RDSAction.CheckRDSInstanceExists(tenant.RdsIdentifier).Result)
+                    {
+                        if (!string.IsNullOrEmpty(tenant.RdsIdentifier))
+                        {
+                            deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
+                        }
+                    }
+                    else
+                    {
+                        deleteRDSAction = true;
+                    }
+                }
+
+                // Delete DNS
+                var checkExistsSubDomain = Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result;
+                if (checkExistsSubDomain)
+                {
+                    deleteDNSAction = Route53Action.DeleteTenantDomain(tenant.SubDomain).Result;
+                }
+                else { deleteDNSAction = true; }
+                // Delete item cname in cloud front
+                deleteItemCnameAction = CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain).Result;
+
+                //Delete folder S3
+                _awsSdkService.DeleteObjectsInFolderAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain).Wait();
+
+                // Check action deleted  RDS, DNS, Cloud front
+                if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
+                {
+                    // Check finshed terminate
+                    if (RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result)
+                    {
+                        return true;
+                    }
+                }
+                var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
+                _tenantRepository.UpdateInfTenantStatus(tenantId, statusTenantFaild);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
+                _tenantRepository.UpdateInfTenantStatus(tenantId, statusTenantFaild);
+                Console.WriteLine(ex.ToString());
+                return false;
             }
         }
 

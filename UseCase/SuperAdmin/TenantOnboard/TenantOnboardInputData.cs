@@ -4,8 +4,9 @@ namespace UseCase.SuperAdmin.TenantOnboard
 {
     public sealed class TenantOnboardInputData : IInputData<TenantOnboardOutputData>
     {
-        public TenantOnboardInputData(string hospital, int adminId, string password, string subDomain, int size, int sizeType, byte clusterMode, dynamic webSocketService)
+        public TenantOnboardInputData(int tenantId, string hospital, int adminId, string password, string subDomain, int size, int sizeType, byte clusterMode, dynamic webSocketService)
         {
+            TenantId = tenantId;
             Hospital = hospital;
             AdminId = adminId;
             Password = password;
@@ -15,7 +16,7 @@ namespace UseCase.SuperAdmin.TenantOnboard
             ClusterMode = clusterMode;
             WebSocketService = webSocketService;
         }
-
+        public int TenantId { get; private set; }
         public string Hospital { get; private set; } = string.Empty;
         public int AdminId { get; private set; }
         public string Password { get; private set; } = string.Empty;
@@ -32,7 +33,7 @@ namespace UseCase.SuperAdmin.TenantOnboard
         public int SizeType { get; private set; }
 
         /// <summary>
-        /// 1: Sharing , 2: Dedicated
+        /// 0: Sharing , 1: Dedicated
         /// </summary>
         public byte ClusterMode { get; private set; }
 
