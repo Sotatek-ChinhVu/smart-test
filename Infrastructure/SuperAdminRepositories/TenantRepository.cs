@@ -389,7 +389,10 @@ namespace Infrastructure.SuperAdminRepositories
 
         public TenantModel GetTenant(int tenantId)
         {
-            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId && item.IsDeleted == 0);
+            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId
+                                                                              // if get status tenant is teminated, get item is deleted
+                                                                              && ((item.Status != 12 && item.IsDeleted == 0)
+                                                                                   || (item.Status == 12 && item.IsDeleted == 1)));
             if (tenant == null)
             {
                 return new();
