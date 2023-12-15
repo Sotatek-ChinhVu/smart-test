@@ -299,7 +299,7 @@ namespace Infrastructure.SuperAdminRepositories
             DisposeDataContext();
         }
 
-        public (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
+        public (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take, bool getDataReport = false)
         {
             int totalTenant = 0;
             List<TenantModel> result;
@@ -314,9 +314,12 @@ namespace Infrastructure.SuperAdminRepositories
             if (!searchModel.StorageFull.Any() && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
             {
                 // get totalTenant to FE
-                totalTenant = query.Count();
                 var querySortList = SortTenantQuery(query, sortDictionary);
-                querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
+                if (!getDataReport)
+                {
+                    totalTenant = query.Count();
+                    querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
+                }
                 result = querySortList.Select(tenant => new TenantModel(
                                                             tenant.TenantId,
                                                             tenant.Hospital,
@@ -387,8 +390,15 @@ namespace Infrastructure.SuperAdminRepositories
                 result = tenantListFilterByStorageFull.DistinctBy(item => item.TenantId).ToList();
             }
             // get totalTenant to FE
-            totalTenant = result.Count;
-            result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
+            if (!getDataReport)
+            {
+                totalTenant = result.Count;
+                result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
+            }
+            else
+            {
+                result = SortTenantList(result, sortDictionary).ToList();
+            }
             return (result, totalTenant);
         }
 
