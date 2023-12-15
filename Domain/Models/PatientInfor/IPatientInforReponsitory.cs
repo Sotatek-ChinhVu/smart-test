@@ -52,7 +52,7 @@ namespace Domain.Models.PatientInfor
         bool DeletePatientInfo(long ptId, int hpId, int userId);
         bool IsAllowDeletePatient(int hpId, long ptId);
 
-        HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate);
+        HokenMstModel GetHokenMstByInfor(int hpId, int hokenNo, int hokenEdaNo, int sinDate);
 
         HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya);
 

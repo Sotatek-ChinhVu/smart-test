@@ -30,5 +30,8 @@ public interface ITenantRepository
 
     bool CheckExistsSubDomain(string subDomain);
 
+    bool UpdateInfTenantStatus(int tenantId, byte status);
+
     void ReleaseResource();
+
 }
