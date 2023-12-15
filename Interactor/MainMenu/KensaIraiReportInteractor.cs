@@ -105,7 +105,6 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
         foreach (var kensaIrai in source)
         {
             var weightHeight = _coKensaIraiFinder.GetHeightWeight(hpId, kensaIrai.PtId, kensaIrai.SinDate);
-
             var raiinInf = _receptionRepository.GetRaiinInf(hpId, kensaIrai.PtId, kensaIrai.SinDate, kensaIrai.RaiinNo);
             kensaIraiList.Add(new Reporting.Kensalrai.Model.KensaIraiModel(
                 kensaIrai.SinDate,
@@ -125,7 +124,8 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 raiinInf?.TantoName ?? string.Empty,
                 raiinInf?.TantoKanaName ?? string.Empty,
                 raiinInf?.KaSName ?? string.Empty,
-            AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails))) ;
+                kensaIrai.UpdateDate.ToString("HHmm"),
+            AsKensaIraiDetailReportModel(kensaIrai.KensaIraiDetails)));
         }
         return kensaIraiList;
     }
@@ -260,7 +260,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 依頼コード    20桁
             if (odrKensaIraiFileType == 2)
             {
-                o1 += adjStr((kensaIrai.SinDate % 1000000).ToString(), 20);
+                o1 += adjStr((kensaIrai.SinDate % 1000000).ToString() + kensaIrai.IraiCd.ToString(), 20);
             }
             else
             {
@@ -327,7 +327,7 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             }
             else
             {
-                if (odrKensaIraiFileType == 0)
+                if (odrKensaIraiFileType == 0 || odrKensaIraiFileType == 2)
                 {
                     o1 += adjStr(kensaIrai.GetSexStr("M", "F"), 1);
                 }
@@ -363,7 +363,8 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 透析前後     1桁  ※0はスペースで出力
             o1 += adjStr(CIUtil.ToStringIgnoreZero(kensaIrai.TosekiKbn), 1);
             // 至急報告     1桁
-            if (fileType == 1)
+            //Setting Val = 1 SikyuKbn is empty when SikyuKbn = 0
+            if (odrKensaIraiFileType == 1)
             {
                 // 加古川
                 if (kensaIrai.SikyuKbn == 0)
@@ -372,19 +373,12 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 }
                 else
                 {
-                    o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1);
+                    o1 += adjStr("1", 1);
                 }
             }
             else
             {
-                if (kensaIrai.SikyuKbn == 0)
-                {
-                    o1 += adjStr(" ", 1);
-                }
-                else
-                {
-                    o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1);
-                }
+                o1 += adjStr(kensaIrai.SikyuKbn.ToString(), 1);
             }
 
             // 依頼コメント内容     20桁 ※未使用
@@ -571,11 +565,11 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
             // 生年月日区分   1桁  ※スペース固定
             o1 += ",";
             // 生年月日
-            o1 += (kensaIrai.Birthday % 1000000).ToString().PadLeft(6, '0') + ",";
+            o1 += kensaIrai.Birthday.ToString() + ",";
             // 採取日      6桁  ※YYMMDD（西暦）
             o1 += (kensaIrai.SinDate % 1000000).ToString().PadLeft(6, '0') + ",";
             // 採取時間     4桁  ※未使用
-            o1 += (kensaIrai.UpdateTime.PadLeft(6, '0')) + ",";
+            o1 += (kensaIrai.UpdateTime) + ",";
             //保険情報
             o1 += ",,,,,,,";
 
@@ -588,7 +582,12 @@ public class KensaIraiReportInteractor : IKensaIraiReportInputPort
                 o1 += kensaIrai.SikyuKbn.ToString() + ",";
             }
 
-            o1 += ",,,,,,,,,,,,";
+            o1 += ",,,,,,,,,,,";
+
+            if (!kensaIrai.Details.Any())
+            {
+                o1 += ",";
+            }
 
             int dtlCount = 0;
             foreach (var kensaDtl in kensaIrai.Details)

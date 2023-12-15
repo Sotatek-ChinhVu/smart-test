@@ -28,12 +28,26 @@ public class CoOdrInfModel
         UserMst = userMst;
         OdrInf = odrInf;
         OdrInfDetail = odrInfDetail;
-        //PtHokenPattern = ptHokenPattern;
-        //this.hokenHoubetu = hokenHoubetu;
-        //this.kohi1Houbetu = kohi1Houbetu;
-        //this.kohi2Houbetu = kohi2Houbetu;
-        //this.kohi3Houbetu = kohi3Houbetu;
-        //this.kohi4Houbetu = kohi4Houbetu;
+        PtHokenPattern = new();
+        kohi1Houbetu = string.Empty;
+        kohi2Houbetu = string.Empty;
+        kohi3Houbetu = string.Empty;
+        kohi4Houbetu = string.Empty;
+    }
+
+    public CoOdrInfModel()
+    {
+        RaiinInf = new();
+        UketukeSbtMst = new();
+        KaMst = new();
+        UserMst = new();
+        OdrInf = new();
+        OdrInfDetail = new();
+        PtHokenPattern = new();
+        kohi1Houbetu = string.Empty;
+        kohi2Houbetu = string.Empty;
+        kohi3Houbetu = string.Empty;
+        kohi4Houbetu = string.Empty;
     }
 
     /// <summary>
@@ -130,10 +144,10 @@ public class CoOdrInfModel
                 switch (PtHokenPattern.HokenKbn)
                 {
                     case 0:
+                        var hokenHoubetu109 = HokenHoubetu == "109" ? "自費レセ" : string.Empty;
                         return
                             HokenHoubetu == "108" ? "自費" :
-                            HokenHoubetu == "109" ? "自費レセ" :
-                            string.Empty;
+                            hokenHoubetu109;
                     case 11: return "労災（短期給付）";
                     case 12: return "労災（傷病年金）";
                     case 13: return "労災（アフターケア）";
@@ -414,7 +428,7 @@ public class CoOdrInfModel
     {
         get =>
             OdrInfDetail.JissiDate == null ? string.Empty :
-                OdrInfDetail.JissiDate?.ToString("yyyy/MM/dd HH:mm");
+                OdrInfDetail.JissiDate?.ToString("yyyy/MM/dd HH:mm") ?? string.Empty;
     }
 
     public int JissiId

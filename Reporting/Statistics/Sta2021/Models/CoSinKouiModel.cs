@@ -10,7 +10,7 @@
         /// <summary>
         /// 診療識別
         /// </summary>
-        public string SinId { get; set; }
+        public string SinId { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療識別名称
@@ -62,7 +62,7 @@
         /// <summary>
         /// 単位名称
         /// </summary>
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 回数
@@ -77,7 +77,7 @@
         /// <summary>
         /// 診療行為区分
         /// </summary>
-        public string SinKouiKbn { get; set; }
+        public string SinKouiKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為区分名称
@@ -129,17 +129,17 @@
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為コード（フリーコメントの場合は名称を入れる）
         /// </summary>
-        public string ItemCdCmt { get; set; }
+        public string ItemCdCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為名称
         /// </summary>
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 麻毒区分
@@ -174,7 +174,7 @@
         /// <summary>
         /// 診療科略称
         /// </summary>
-        public string KaSname { get; set; }
+        public string KaSname { get; set; } = string.Empty;
 
         /// <summary>
         /// 担当医ID
@@ -184,6 +184,6 @@
         /// <summary>
         /// 担当医略称
         /// </summary>
-        public string TantoSname { get; set; }
+        public string TantoSname { get; set; } = string.Empty;
     }
 }

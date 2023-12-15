@@ -36,14 +36,17 @@ namespace Domain.Constant
         public const string MessageType_mEnt01030 = "問題が発生したため、{0}は登録できません。";
         public const string MessageType_mEnt02020 = "{0}を登録しました。";
         public const string MessageType_mUpd01030 = "問題が発生したため、{0}を更新できません。";
+        public const string MessageType_Age = "{0}ため、登録できません。\r\n{1}";
     }
 
     public static class TypeMessage
     {
-        public const int TypeMessageError = 1;
-        public const int TypeMessageWarning = 2;
-        public const int TypeMessageConfirmation = 3;
-        public const int TypeMessageInformation = 4;
-        public const int TypeMessageSuccess = 5;
+        public const int TypeMessageCustom = 1;
+        public const int TypeMessageError = 2;
+        public const int TypeMessageWarning = 3;
+        public const int TypeMessageConfirmation = 4;
+        public const int TypeMessageInformation = 5;
+        public const int TypeMessageInformationEx = 6;
+        public const int TypeMessageSuccess = 7;
     }    
 }

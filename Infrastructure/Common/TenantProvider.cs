@@ -13,6 +13,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using StackExchange.Redis;
+using Helper.Extension;
 
 namespace Infrastructure.CommonDB
 {
@@ -20,10 +22,23 @@ namespace Infrastructure.CommonDB
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
+        private readonly IDatabase _cache;
+
         public TenantProvider(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        private void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public string GetConnectionString()
@@ -47,17 +62,34 @@ namespace Infrastructure.CommonDB
             }
             return clientDomainInConfig;
         }
+
         public string GetAdminConnectionString()
         {
             string dbSample = _configuration["AdminDatabase"] ?? string.Empty;
             return dbSample;
         }
 
-        public string GetClinicID()
+        public string GetDomainName()
         {
             var domain = GetDomainFromHeader();
             domain = string.IsNullOrEmpty(domain) ? GetDomainFromQueryString() : domain;
             return string.IsNullOrEmpty(domain) ? TempIdentity.ClinicID : domain;
+        }
+
+        public int GetTenantId()
+        {
+            // get domain then get tenantId from Tenant table
+            string domain = GetDomainName();
+            string key = "cache_tenantId_" + domain;
+            int tenantId = 0;
+            if (_cache.KeyExists(key))
+            {
+                return _cache.StringGet(key).AsInteger();
+            }
+            var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
+            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.SubDomain == domain)?.TenantId ?? 0;
+            _cache.StringSet(key, tenantId.ToString());
+            return tenantId;
         }
 
         #region Expose data
@@ -352,12 +384,12 @@ namespace Infrastructure.CommonDB
 
         public TenantDataContext CreateNewTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
                     {
                         buider.EnableRetryOnFailure(maxRetryCount: 3);
                     })
-                    .UseLoggerFactory(loggerFactory)
+                    //.UseLoggerFactory(loggerFactory)
                     .Options;
             var factory = new PooledDbContextFactory<TenantDataContext>(options);
             return factory.CreateDbContext();
@@ -365,12 +397,12 @@ namespace Infrastructure.CommonDB
 
         public TenantNoTrackingDataContext CreateNewNoTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
                 {
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
                 })
-                .UseLoggerFactory(loggerFactory)
+                //.UseLoggerFactory(loggerFactory)
                 .Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
@@ -378,12 +410,12 @@ namespace Infrastructure.CommonDB
 
         public SuperAdminContext CreateNewSuperAdminTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<SuperAdminContext>().UseNpgsql(GetConnectionStringForSuperAdmin(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                    .UseLoggerFactory(loggerFactory)
+                    //.UseLoggerFactory(loggerFactory)
                     .Options;
             var factory = new PooledDbContextFactory<SuperAdminContext>(options);
             return factory.CreateDbContext();
@@ -391,12 +423,12 @@ namespace Infrastructure.CommonDB
 
         public SuperAdminNoTrackingContext CreateNewSuperAdminNoTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<SuperAdminNoTrackingContext>().UseNpgsql(GetConnectionStringForSuperAdmin(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                .UseLoggerFactory(loggerFactory)
+                //.UseLoggerFactory(loggerFactory)
                 .Options;
             var factory = new PooledDbContextFactory<SuperAdminNoTrackingContext>(options);
             return factory.CreateDbContext();
@@ -404,12 +436,12 @@ namespace Infrastructure.CommonDB
 
         public DbContextOptions CreateNewTrackingAdminDbContextOption()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetAdminConnectionString(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                    .UseLoggerFactory(loggerFactory)
+                    //.UseLoggerFactory(loggerFactory)
                     .Options;
             return options;
         }
@@ -432,12 +464,12 @@ namespace Infrastructure.CommonDB
 
         public AdminDataContext CreateNewAuditLogTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<AdminDataContext>().UseNpgsql(GetConnectionStringForAuditLog(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                    .UseLoggerFactory(loggerFactory)
+                    //.UseLoggerFactory(loggerFactory)
                     .Options;
             var factory = new PooledDbContextFactory<AdminDataContext>(options);
             return factory.CreateDbContext();
@@ -445,12 +477,12 @@ namespace Infrastructure.CommonDB
 
         public AdminNoTrackingContext CreateNewAuditLogNoTrackingDataContext()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
+            //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<AdminNoTrackingContext>().UseNpgsql(GetConnectionStringForAuditLog(), buider =>
             {
                 buider.EnableRetryOnFailure(maxRetryCount: 3);
             })
-                .UseLoggerFactory(loggerFactory)
+                //.UseLoggerFactory(loggerFactory)
                 .Options;
             var factory = new PooledDbContextFactory<AdminNoTrackingContext>(options);
             return factory.CreateDbContext();

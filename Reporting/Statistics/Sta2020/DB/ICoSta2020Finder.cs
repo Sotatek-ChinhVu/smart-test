@@ -8,6 +8,6 @@ namespace Reporting.Statistics.Sta2020.DB
     {
         List<CoSinKouiModel> GetSinKouis(int hpId, CoSta2020PrintConf printConf);
 
-        CoHpInfModel GetHpInf(int hpId, int sinDate);
+        CoHpInfModel GetHpInf(int hpId, int sinYm);
     }
 }

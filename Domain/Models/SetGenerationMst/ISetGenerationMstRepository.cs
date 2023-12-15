@@ -13,7 +13,7 @@ namespace Domain.Models.SetGenerationMst
 
         List<SetSendaiGenerationModel> GetListSendaiGeneration(int hpId);
 
-        bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId);
+        bool DeleteSetSenDaiGeneration(int hpId, int generationId, int userId, int startDate);
 
         AddSetSendaiModel? AddSetSendaiGeneration(int userId, int hpId, int startDate);
 
@@ -37,7 +37,19 @@ namespace Domain.Models.SetGenerationMst
 
         AddSetSendaiModel? RestoreSetSendaiGeneration(int restoreGenerationId, int hpId, int userId);
 
+        void RestoreByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId);
+
+        void RestoreListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId);
+
         List<ListSetGenerationMstModel> GetAll(int hpId);
+
+        AddSetSendaiModel? AddByomeiSetGenerationMst(int hpId, int userId, int startDate);
+
+        AddSetSendaiModel? AddListSetGenerationMst(int hpId, int userId, int startDate);
+
+        void CloneByomeiSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId);
+
+        void CloneListSetGeneration(int hpId, int userId, int targetGeneration, int sourceGenerationId);
 
         IEnumerable<SetGenerationMstModel> ReloadCache(int hpId, bool flag = false);
     }

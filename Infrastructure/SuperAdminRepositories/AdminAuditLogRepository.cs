@@ -1,6 +1,5 @@
 ﻿using Domain.SuperAdminModels.Logger;
 using Entity.Logger;
-using Helper.Common;
 using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -17,7 +16,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
     public List<AuditLogModel> GetAuditLogList(int tenantId, AuditLogSearchModel requestModel, Dictionary<AuditLogEnum, int> sortDictionary, int skip, int take)
     {
         List<AuditLogModel> result;
-        IQueryable<NewAuditLog> query = NoTrackingDataContext.NewAuditLogs.Where(item => item.TenantId == tenantId);
+        IQueryable<AuditLog> query = NoTrackingDataContext.AuditLogs.Where(item => item.TenantId == tenantId);
 
         if (!requestModel.IsEmptyModel)
         {
@@ -26,7 +25,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
 
         var querySortList = SortQuery(query, sortDictionary);
 
-        querySortList = (IOrderedQueryable<NewAuditLog>)querySortList.Skip(skip).Take(take);
+        querySortList = (IOrderedQueryable<AuditLog>)querySortList.Skip(skip).Take(take);
 
         result = querySortList.Select(item => new AuditLogModel(
                                                   item.LogId,
@@ -51,7 +50,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
         return result;
     }
 
-    private IQueryable<NewAuditLog> FilterData(IQueryable<NewAuditLog> query, AuditLogSearchModel requestModel)
+    private IQueryable<AuditLog> FilterData(IQueryable<AuditLog> query, AuditLogSearchModel requestModel)
     {
         if (!string.IsNullOrEmpty(requestModel.Domain))
         {
@@ -137,10 +136,10 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
         return query;
     }
 
-    private IOrderedQueryable<NewAuditLog> SortQuery(IQueryable<NewAuditLog> query, Dictionary<AuditLogEnum, int> sortDictionary)
+    private IOrderedQueryable<AuditLog> SortQuery(IQueryable<AuditLog> query, Dictionary<AuditLogEnum, int> sortDictionary)
     {
         bool firstSort = true;
-        IOrderedQueryable<NewAuditLog> querySortList = query.OrderByDescending(item => item.LogId);
+        IOrderedQueryable<AuditLog> querySortList = query.OrderByDescending(item => item.LogId);
         foreach (var sortItem in sortDictionary)
         {
             switch (sortItem.Value)

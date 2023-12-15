@@ -54,7 +54,7 @@ public class CoSta9000ByomeiConf
     /// <summary>
     /// 検索病名（未コード化病名）
     /// </summary>
-    public List<string> Byomeis { get; set; }
+    public List<string> Byomeis { get; set; } = new();
 
     /// <summary>
     /// 検索病名のオプション

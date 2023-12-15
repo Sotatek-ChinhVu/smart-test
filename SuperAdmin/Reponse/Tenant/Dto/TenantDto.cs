@@ -9,6 +9,7 @@ public class TenantDto
         TenantId = model.TenantId;
         Hospital = model.Hospital;
         Status = model.Status;
+        StatusTenant = model.StatusTenant;
         AdminId = model.AdminId;
         Password = model.Password;
         SubDomain = model.SubDomain;
@@ -23,6 +24,7 @@ public class TenantDto
         ScheduleTime = model.ScheduleTime;
         CreateDate = model.CreateDate;
         RdsIdentifier = model.RdsIdentifier;
+        StorageUsed = model.StorageUsed;
         StorageFull = model.StorageFull;
     }
 
@@ -31,6 +33,8 @@ public class TenantDto
     public string Hospital { get; private set; }
 
     public byte Status { get; private set; }
+
+    public byte StatusTenant { get; private set; }
 
     public int AdminId { get; private set; }
 
@@ -62,6 +66,8 @@ public class TenantDto
     public DateTime CreateDate { get; private set; }
 
     public string RdsIdentifier { get; private set; }
+
+    public double StorageUsed { get; private set; }
 
     public double StorageFull { get; private set; }
 }

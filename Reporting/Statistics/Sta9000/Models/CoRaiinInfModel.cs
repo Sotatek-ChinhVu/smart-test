@@ -24,6 +24,19 @@ public class CoRaiinInfModel
         _raiinCmt = raiinCmt;
         _raiinBiko = raiinBiko;
         _firstVisitDate = firstVisitDate;
+        RaiinKbns = new();
+    }
+
+    public CoRaiinInfModel()
+    {
+        RaiinInf = new();
+        UketukeSbtMst = new();
+        KaMst = new();
+        UserMst = new();
+        _raiinCmt = string.Empty;
+        _raiinBiko = string.Empty;
+        _firstVisitDate = new();
+        RaiinKbns = new();
     }
 
     /// <summary>
@@ -101,7 +114,7 @@ public class CoRaiinInfModel
             string value = RaiinInf.UketukeTime ?? string.Empty.PadLeft(4, '0');
             value = value.PadRight(6, '0');
             return value.Length >= 6 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2)) : string.Empty;
-        } 
+        }
     }
 
     public int UketukeId
@@ -134,7 +147,7 @@ public class CoRaiinInfModel
 
             string value = RaiinInf.SinEndTime ?? string.Empty.PadLeft(4, '0');
             value = value.PadRight(6, '0');
-            return value.Length >= 6 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2)): string.Empty;
+            return value.Length >= 6 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2)) : string.Empty;
         }
     }
 
@@ -254,7 +267,7 @@ public class CoRaiinInfModel
     /// </summary>
     public struct RaiinKbn
     {
-        public int GrpId { get;set; }
+        public int GrpId { get; set; }
         public string GrpName { get; set; }
         public string KbnName { get; set; }
 

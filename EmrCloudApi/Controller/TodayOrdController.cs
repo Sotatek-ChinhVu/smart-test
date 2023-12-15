@@ -1,14 +1,19 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.Models.MstItem;
+using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
+using EmrCloudApi.Presenters.LastDayInformation;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Insurance;
+using EmrCloudApi.Requests.LastDayInformation;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.InsuranceList;
+using EmrCloudApi.Responses.LastDayInformation;
+using EmrCloudApi.Responses.LastDayInformation.Dto;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
@@ -17,6 +22,8 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.LastDayInformation.GetLastDayInfoList;
+using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.AutoCheckOrder;
 using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
@@ -500,6 +507,53 @@ namespace EmrCloudApi.Controller
                 result.Add(keyValuePair.Key, tenItemDtos);
             }
 
+            return result;
+        }
+
+
+        [HttpGet(ApiPath.GetLastDayInfoList)]
+        public ActionResult<Response<GetLastDayInfoListResponse>> GetLastDayInfoListOrder([FromQuery] GetLastDayInfoListRequest request)
+        {
+            var input = new GetLastDayInfoListInputData(HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLastDayInfoListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLastDayInfoListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveSettingLastDayInfoList)]
+        public ActionResult<Response<SaveSettingLastDayInfoListResponse>> SaveSettingLastDayInfoListOrder([FromBody] SaveSettingLastDayInfoListRequest request)
+        {
+            var input = new SaveSettingLastDayInfoListInputData(HpId, UserId, ConvertToModel(request.SaveSettingLastDayInfoListInputItems ?? new()));
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveSettingLastDayInfoListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveSettingLastDayInfoListResponse>>(presenter.Result);
+        }
+
+        private List<OdrDateInfModel> ConvertToModel(List<SaveSettingLastDayInfoListInputItem> listItem)
+        {
+            List<OdrDateInfModel> result = new();
+            foreach (var item in listItem)
+            {
+                var odrDateInfModel = new OdrDateInfModel
+                                        (
+                                            item.GrpId,
+                                            item.SortNo,
+                                            item.GrpName,
+                                            item.IsDeleted,
+                                            item.SaveOdrDateDetailItems.Select(x => new OdrDateDetailModel(x.GrpId,
+                                                                                                                x.SeqNo,
+                                                                                                                x.ItemCd,
+                                                                                                                x.SortNo,
+                                                                                                                x.IsDeleted)).ToList()
+                                        );
+                result.Add(odrDateInfModel);
+            }
             return result;
         }
     }

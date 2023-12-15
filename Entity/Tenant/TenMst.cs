@@ -8,7 +8,7 @@ namespace Entity.Tenant
     /// 点数マスタ
     /// </summary>
     [Table("TEN_MST")]
-    [Index(nameof(HpId), nameof(ItemCd), nameof(StartDate),nameof(EndDate), nameof(Name), nameof(KanaName1), nameof(KanaName2), nameof(KanaName3), nameof(KanaName4), nameof(KanaName5),
+    [Index(nameof(HpId), nameof(ItemCd), nameof(StartDate), nameof(EndDate), nameof(Name), nameof(KanaName1), nameof(KanaName2), nameof(KanaName3), nameof(KanaName4), nameof(KanaName5),
         nameof(KanaName6), nameof(KanaName7), nameof(IsDeleted), nameof(IsAdopted), Name = "TEN_MST_IDX08")]
 
     public class TenMst : EmrCloneable<TenMst>
@@ -1995,5 +1995,42 @@ namespace Entity.Tenant
         [Column("IS_DELETED")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 用法コード
+        ///     YOHO_MST.YOHO_CD
+        /// </summary>
+        [Column("YOHO_CD")]
+        [MaxLength(16)]
+        public string YohoCd { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 用法補足区分
+        ///     0:未指定
+        ///     1:漸減
+        ///     2:一包化
+        ///     3:隔日
+        ///     4:粉砕
+        ///     5:用法の続き
+        ///     6:部位
+        ///     7:１回使用量
+        /// </summary>
+        [Column("YOHO_HOSOKU_KBN")]
+        [CustomAttribute.DefaultValue(0)]
+        public int YohoHosokuKbn { get; set; }
+
+        /// <summary>
+        /// 用法補足記録
+        ///     0:未指定
+        ///     1:頓用の条件指定
+        ///     2:投与タイミング
+        ///     3:投与時刻
+        ///     4:投与間隔
+        ///     50:部位（左・右・両）
+        ///     51:部位（その他）
+        /// </summary>
+        [Column("YOHO_HOSOKU_REC")]
+        [CustomAttribute.DefaultValue(0)]
+        public int YohoHosokuRec { get; set; }
     }
 }

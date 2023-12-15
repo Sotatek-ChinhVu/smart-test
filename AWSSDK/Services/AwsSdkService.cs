@@ -1,13 +1,26 @@
+using Amazon.S3;
 using AWSSDK.Common;
+using AWSSDK.Constants;
 using AWSSDK.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data.Common;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 
 namespace AWSSDK.Services
 {
     public class AwsSdkService : IAwsSdkService
     {
-        public AwsSdkService() { }
+        private readonly IConfiguration _configuration;
+        private readonly string _sourceAccessKey;
+        private readonly string _sourceSecretKey;
+
+        public AwsSdkService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
+            _sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
+        }
         public async Task<Dictionary<string, Dictionary<string, string>>> SummaryCard()
         {
             return await CloudWatchAction.GetSummaryCardAsync();
@@ -19,9 +32,9 @@ namespace AWSSDK.Services
             return result;
         }
 
-        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier)
+        public async Task<string> CreateDBSnapshotAsync(string dbInstanceIdentifier, string snapshotType)
         {
-            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier);
+            return await RDSAction.CreateDBSnapshotAsync(dbInstanceIdentifier, snapshotType);
         }
 
         public async Task<bool> RestoreDBInstanceFromSnapshot(string dbInstanceIdentifier, string snapshotIdentifier)
@@ -50,16 +63,13 @@ namespace AWSSDK.Services
             }
             return false;
         }
-        public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
+
+        public bool DeleteTenantDb(string serverEndpoint, string tennantDB, string username, string password)
         {
             try
             {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                int port = 5432;
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -71,16 +81,33 @@ namespace AWSSDK.Services
                         // Delete database
                         using (DbCommand command = connection.CreateCommand())
                         {
-                            command.CommandText = $"DROP DATABASE {tennantDB};";
+                            command.CommandText = @$"
+                                                    DO $$ 
+                                                    DECLARE
+                                                        pid_list text;
+                                                        query_text text;
+                                                    BEGIN
+                                                        -- Get a comma-separated list of active process IDs (pids) for the specified database
+                                                        SELECT string_agg(pid::text, ',') INTO pid_list
+                                                        FROM pg_stat_activity
+                                                        WHERE datname = '{tennantDB}';
+
+                                                        -- Construct the query to terminate each connection
+                                                        query_text := 'SELECT pg_terminate_backend(' || pid_list || ')';
+
+                                                        -- Execute the query to terminate connections
+                                                        EXECUTE query_text;
+                                                    END $$;";
+                            command.CommandText += @$"DROP DATABASE {tennantDB};";
                             command.ExecuteNonQuery();
                         }
 
-                        Console.WriteLine($"Database deleted successfully.");
+                        Console.WriteLine($"Database: {tennantDB} deleted successfully.");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        return false;
+                        Console.WriteLine($"Error: Delete TenantDb {ex.Message}");
+                        throw new Exception($"Error: Delete TenantDb {ex.Message}");
                     }
                 }
 
@@ -91,6 +118,57 @@ namespace AWSSDK.Services
                 Console.WriteLine($"Error: {ex.Message}");
                 return false;
             }
+        }
+
+        public async Task CreateFolderAsync(string bucketName, string folderName)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CreateFolderAsync(sourceS3ClientDestination, bucketName, folderName);
+        }
+
+        public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
+        }
+
+        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type)
+        {
+            string folderKey = type switch
+            {
+                RestoreObjectS3TenantTypeEnum.All => objectName,
+                RestoreObjectS3TenantTypeEnum.Files => $"{objectName}/store/files/",
+                RestoreObjectS3TenantTypeEnum.InsuranceCard => $"{objectName}/store/InsuranceCard/",
+                RestoreObjectS3TenantTypeEnum.Karte => $"{objectName}/store/karte/",
+                RestoreObjectS3TenantTypeEnum.NextPic => $"{objectName}/store/karte/nextPic/",
+                RestoreObjectS3TenantTypeEnum.SetPic => $"{objectName}/store/karte/setPic/",
+                _ => string.Empty
+            };
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, folderKey, sourceS3ClientDestination, destinationBucketName);
+        }
+
+        private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
+        }
+
+        public async Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.BackupFolderAsync(sourceS3ClientDestination, sourceBucket, sourceFolder, backupBucket, backupFolder);
+        }
+
+        public async Task UploadFileAsync(string bucketName, string folderName, string filePath)
+        {
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.UploadFileWithProgressAsync(sourceS3ClientDestination, bucketName, folderName, filePath);
+        }
+
+        private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionSource);
         }
     }
 }
