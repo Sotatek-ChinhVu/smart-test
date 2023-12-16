@@ -16,11 +16,20 @@ public class UpdateNotificationInteractor : IUpdateNotificationInputPort
     {
         try
         {
+            List<NotificationModel> notificationResult;
+
+            // if condition is realAllNotifications
+            if (inputData.IsRealAllNotifications)
+            {
+                notificationResult = _notificationRepository.ReadAllNotification();
+                return new UpdateNotificationOutputData(notificationResult, UpdateNotificationStatus.Successed);
+            }
+
             if (!_notificationRepository.CheckExistNotification(inputData.NotificationList.Select(item => item.Id).Distinct().ToList()))
             {
                 return new UpdateNotificationOutputData(UpdateNotificationStatus.InvalidIdNotification);
             }
-            var notificationResult = _notificationRepository.UpdateNotificationList(inputData.NotificationList);
+            notificationResult = _notificationRepository.UpdateNotificationList(inputData.NotificationList);
             if (notificationResult.Any())
             {
                 return new UpdateNotificationOutputData(notificationResult, UpdateNotificationStatus.Successed);
