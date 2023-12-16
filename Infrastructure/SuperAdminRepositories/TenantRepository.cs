@@ -151,13 +151,13 @@ namespace Infrastructure.SuperAdminRepositories
         {
             try
             {
-                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && (x.Status == 12 || x.IsDeleted == 0));
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && (status == 12 || x.IsDeleted == 0));
                 if (tenant == null)
                 {
                     return new();
                 }
 
-                if (tenant.Status == 1 && tenant.Status == 9)
+                if (status == 1 && status == 9)
                 {
                     tenant.EndPointDb = endPoint;
                     tenant.Type = 1;
