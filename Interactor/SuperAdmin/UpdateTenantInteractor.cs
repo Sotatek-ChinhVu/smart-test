@@ -153,97 +153,100 @@ namespace Interactor.SuperAdmin
                         // Set tenant info to cache memory
                         _memoryCache.Set(oldTenant.SubDomain, new TenantCacheMemory(cts, string.Empty));
 
-                        // Update subdomain
-                        if (oldTenant.SubDomain != inputData.SubDomain)
+                        if (oldTenant.Status == 1 || oldTenant.Status == 9)
                         {
-                            // Create New subdomain
-                            if (Route53Action.CreateTenantDomain(inputData.SubDomain).Result != null)
+                            // Update subdomain
+                            if (oldTenant.SubDomain != inputData.SubDomain)
                             {
-                                // Delete old subdomain
-                                var actionDeleteDomain = Route53Action.DeleteTenantDomain(oldTenant.SubDomain).Result;
-
-                                // Update end subdomain
-                                endSubDomain = inputData.SubDomain + ConfigConstant.Domain;
-                            }
-                            else
-                            {
-                                throw new Exception("Create New subdomain failed");
-                            }
-                        }
-
-                        // Upgrade tenant Sharing to Dedicate
-                        if (oldTenant.Type == ConfigConstant.TypeSharing && inputData.Type == ConfigConstant.TypeDedicate)
-                        {
-                            // Create SnapShot
-                            var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpdate).Result;
-
-                            if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
-                            {
-                                throw new Exception("Snapshot is not Available");
-                            }
-
-                            // Create new RDS Instance from snapshot
-                            Console.WriteLine($"Start Upgrade Dedicate");
-
-                            string rString = CommonConstants.GenerateRandomString(6);
-                            var newRdsIdentifier = $"{inputData.SubDomain}-{rString}";
-
-                            Console.WriteLine($"Upgrade. newRdsIdentifier : {newRdsIdentifier}");
-
-                            if (!ct.IsCancellationRequested) // Check task run is not canceled
-                            {
-                                var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(newRdsIdentifier, snapshotIdentifier).Result;
-
-                                // Set tenant info to cache memory
-                                _memoryCache.Set(oldTenant.SubDomain, new TenantCacheMemory(cts, newRdsIdentifier));
-                            }
-
-                            // Check Restore success 
-                            var newEndpoint = CheckRestoredInstanceAvailableAsync(newRdsIdentifier, inputData.TenantId).Result;
-
-                            // Update new value  
-                            rdsIdentifier = newRdsIdentifier;
-                            endPointDb = newEndpoint.Address;
-
-                            //Delete list Db without tenantDB in new RDS
-                            Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
-                            var isDeleteSuccess = ConnectAndDeleteDatabases(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
-
-
-                            if (!ct.IsCancellationRequested) // Check task run is not canceled
-                            {
-                                // Delete DB in old RDS
-                                var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb, oldTenant.UserConnect, oldTenant.PasswordConnect).Result;
-                                Console.WriteLine($"listTenantDb: {listTenantDb}");
-
-                                // Connect RDS delete TenantDb
-                                if (listTenantDb.Count > 1)
+                                // Create New subdomain
+                                if (Route53Action.CreateTenantDomain(inputData.SubDomain).Result != null)
                                 {
-                                    Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
-                                    _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
-                                }
+                                    // Delete old subdomain
+                                    var actionDeleteDomain = Route53Action.DeleteTenantDomain(oldTenant.SubDomain).Result;
 
-                                // Deleted RDS
+                                    // Update end subdomain
+                                    endSubDomain = inputData.SubDomain + ConfigConstant.Domain;
+                                }
                                 else
                                 {
-                                    Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
-                                    var actionDeleteRDS = RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                                    throw new Exception("Create New subdomain failed");
                                 }
                             }
-                        }
 
-                        // Update adminId, password
-                        if (oldTenant.AdminId != inputData.AdminId || oldTenant.Password != oldTenant.Password)
-                        {
-                            UpdateLoginIdLoginPass(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect, oldTenant.AdminId, oldTenant.Password, inputData.AdminId, inputData.Password);
+                            // Upgrade tenant Sharing to Dedicate
+                            if (oldTenant.Type == ConfigConstant.TypeSharing && inputData.Type == ConfigConstant.TypeDedicate)
+                            {
+                                // Create SnapShot
+                                var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync(oldTenant.RdsIdentifier, ConfigConstant.RdsSnapshotUpdate).Result;
+
+                                if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
+                                {
+                                    throw new Exception("Snapshot is not Available");
+                                }
+
+                                // Create new RDS Instance from snapshot
+                                Console.WriteLine($"Start Upgrade Dedicate");
+
+                                string rString = CommonConstants.GenerateRandomString(6);
+                                var newRdsIdentifier = $"{inputData.SubDomain}-{rString}";
+
+                                Console.WriteLine($"Upgrade. newRdsIdentifier : {newRdsIdentifier}");
+
+                                if (!ct.IsCancellationRequested) // Check task run is not canceled
+                                {
+                                    var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(newRdsIdentifier, snapshotIdentifier).Result;
+
+                                    // Set tenant info to cache memory
+                                    _memoryCache.Set(oldTenant.SubDomain, new TenantCacheMemory(cts, newRdsIdentifier));
+                                }
+
+                                // Check Restore success 
+                                var newEndpoint = CheckRestoredInstanceAvailableAsync(newRdsIdentifier, inputData.TenantId).Result;
+
+                                // Update new value  
+                                rdsIdentifier = newRdsIdentifier;
+                                endPointDb = newEndpoint.Address;
+
+                                //Delete list Db without tenantDB in new RDS
+                                Console.WriteLine($"Start Terminate old tenant: {oldTenant.RdsIdentifier}");
+                                var isDeleteSuccess = ConnectAndDeleteDatabases(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
+
+
+                                if (!ct.IsCancellationRequested) // Check task run is not canceled
+                                {
+                                    // Delete DB in old RDS
+                                    var listTenantDb = RDSAction.GetListDatabase(oldTenant.EndPointDb, oldTenant.UserConnect, oldTenant.PasswordConnect).Result;
+                                    Console.WriteLine($"listTenantDb: {listTenantDb}");
+
+                                    // Connect RDS delete TenantDb
+                                    if (listTenantDb.Count > 1)
+                                    {
+                                        Console.WriteLine($"Connect RDS delete TenantDb: {oldTenant.RdsIdentifier}");
+                                        _awsSdkService.DeleteTenantDb(oldTenant.EndPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect);
+                                    }
+
+                                    // Deleted RDS
+                                    else
+                                    {
+                                        Console.WriteLine($"Deleted RDS: {oldTenant.RdsIdentifier}");
+                                        var actionDeleteRDS = RDSAction.DeleteRDSInstanceAsync(oldTenant.RdsIdentifier);
+                                    }
+                                }
+                            }
+
+                            // Update adminId, password
+                            if (oldTenant.AdminId != inputData.AdminId || oldTenant.Password != oldTenant.Password)
+                            {
+                                UpdateLoginIdLoginPass(endPointDb, oldTenant.Db, oldTenant.UserConnect, oldTenant.PasswordConnect, oldTenant.AdminId, oldTenant.Password, inputData.AdminId, inputData.Password);
+                            }
                         }
 
                         // Update tenant
                         TenantModel tenantUpgrade = new TenantModel();
                         if (!ct.IsCancellationRequested) // Check task run is not canceled
                         {
-                            tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size, 
-                                            inputData.SizeType,inputData.Hospital, inputData.AdminId, inputData.Password, endSubDomain, oldTenant.Status);
+                            tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size,
+                                            inputData.SizeType, inputData.Hospital, inputData.AdminId, inputData.Password, endSubDomain, oldTenant.Status);
                         }
 
                         // Finished update tenant
