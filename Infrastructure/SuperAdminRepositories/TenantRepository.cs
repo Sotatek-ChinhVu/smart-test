@@ -27,7 +27,7 @@ namespace Infrastructure.SuperAdminRepositories
 
         public TenantModel Get(int tenantId)
         {
-            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.IsDeleted == 0).FirstOrDefault();
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && (t.Status == 12 || t.IsDeleted == 0)).FirstOrDefault();
             var tenantModel = tenant == null ? new() : ConvertEntityToModel(tenant);
             return tenantModel;
         }
