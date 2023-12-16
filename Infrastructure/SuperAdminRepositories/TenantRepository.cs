@@ -147,21 +147,26 @@ namespace Infrastructure.SuperAdminRepositories
         {
             try
             {
-                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && (x.Status == 12 || x.IsDeleted == 0));
                 if (tenant == null)
                 {
                     return new();
                 }
-                tenant.EndPointDb = endPoint;
-                tenant.Type = 1;
-                tenant.Status = 1;
-                tenant.SubDomain = subDomain;
-                tenant.Size = size;
-                tenant.SizeType = sizeType;
-                tenant.RdsIdentifier = dbIdentifier;
+
+                if (tenant.Status != 12)
+                {
+                    tenant.EndPointDb = endPoint;
+                    tenant.Type = 1;
+                    tenant.Status = 1;
+                    tenant.SubDomain = subDomain;
+                    tenant.Size = size;
+                    tenant.SizeType = sizeType;
+                    tenant.RdsIdentifier = dbIdentifier;
+                    tenant.AdminId = adminId;
+                    tenant.Password = password;
+                }
+
                 tenant.Hospital = hospital;
-                tenant.AdminId = adminId;
-                tenant.Password = password;
 
                 // updated date uses utc time
                 tenant.UpdateDate = DateTime.UtcNow;
@@ -298,7 +303,7 @@ namespace Infrastructure.SuperAdminRepositories
         {
             int totalTenant = 0;
             List<TenantModel> result;
-            IQueryable<Tenant> query = NoTrackingDataContext.Tenants.Where(item => item.IsDeleted == 0);
+            IQueryable<Tenant> query = NoTrackingDataContext.Tenants.Where(item => (item.Status == 12 || item.IsDeleted == 0));
             if (!searchModel.IsEmptyModel)
             {
                 // filte data ignore storageFull
@@ -387,7 +392,7 @@ namespace Infrastructure.SuperAdminRepositories
 
         public TenantModel GetTenant(int tenantId)
         {
-            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId && item.IsDeleted == 0);
+            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId && ( item.Status == 12 || item.IsDeleted == 0));
             if (tenant == null)
             {
                 return new();
