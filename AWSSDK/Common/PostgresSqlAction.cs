@@ -87,7 +87,7 @@ namespace AWSSDK.Common
         /// <param name="database"></param>
         /// <param name="user"></param>
         /// <param name="password"></param>
-        public static void ExecuteSqlFiles(List<string> filePaths, string host, int port, string database, string user, string password)
+        public static void ExecuteSqlFiles(string[] filePaths, string host, int port, string database, string user, string password)
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
 

@@ -1,4 +1,5 @@
-﻿using Domain.SuperAdminModels.Tenant;
+﻿using AWSSDK.Common;
+using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
@@ -50,6 +51,8 @@ namespace Interactor.SuperAdmin
                 string pathFile7z = $"{pathFolderUpdateDataTenant}\\{tenant.SubDomain}-{Guid.NewGuid()}.7z";
                 string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
 
+                string pathFolderScript = $"{pathFileExtract7z}\\updfile\\02_script";
+
                 // Save file 7z
                 using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
                 {
@@ -65,7 +68,8 @@ namespace Interactor.SuperAdmin
                 // Execute file script in folder 02_script
 
                 // Create transaction executed 
-
+                string[] extractedFiles = Directory.GetFiles(pathFolderScript);
+                PostgresSqlAction.ExecuteSqlFiles(extractedFiles, "localhost", 5432,"test01",  "postgres", "1234$");
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
             finally
