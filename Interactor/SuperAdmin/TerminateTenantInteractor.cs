@@ -156,7 +156,7 @@ namespace Interactor.SuperAdmin
                             if (RDSAction.CheckRDSInstanceExists(tenant.RdsIdentifier).Result)
                             {
                                 // Check RDS being used by another tenant
-                                if (_tenantRepositoryRunTask.GetByRdsId(tenant.TenantId, tenant.RdsIdentifier).Count() == 0)
+                                if (_tenantRepositoryRunTask.GetByRdsId(tenant.TenantId, tenant.RdsIdentifier).Count() == 1)
                                 {
                                     deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
                                 }
