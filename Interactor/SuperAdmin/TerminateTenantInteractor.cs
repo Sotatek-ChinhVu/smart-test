@@ -155,7 +155,15 @@ namespace Interactor.SuperAdmin
                         {
                             if (RDSAction.CheckRDSInstanceExists(tenant.RdsIdentifier).Result)
                             {
-                                deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
+                                // Check RDS being used by another tenant
+                                if (_tenantRepositoryRunTask.GetByRdsId(tenant.TenantId, tenant.RdsIdentifier).Count() == 0)
+                                {
+                                    deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
+                                }
+                                else
+                                {
+                                    deleteRDSAction = true;
+                                }
                             }
                             else
                             {
@@ -209,7 +217,7 @@ namespace Interactor.SuperAdmin
                         notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
 
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-                        
+
                         // Delete cache memory
                         _memoryCache.Remove(tenant.SubDomain);
 
