@@ -37,6 +37,7 @@ namespace AWSSDK.Constants
             return Regex.IsMatch(subdomain, pattern);
         }
 
+        #region [function file s3]
         public static string RemoveDeleteString(string path)
         {
             char slash = '/';
@@ -95,5 +96,32 @@ namespace AWSSDK.Constants
             }
             return false;
         }
+
+        public static string GetLeftName(string inputString)
+        {
+            int lastIndex = inputString.LastIndexOf('/');
+            int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
+
+            if (lastIndex >= 0 && secondLastIndex >= 0)
+            {
+                string result = inputString.Substring(0, secondLastIndex + 1);
+                return result;
+            }
+            return string.Empty;
+        }
+        public static string GetRightName(string inputString)
+        {
+
+            int lastIndex = inputString.LastIndexOf('/');
+            int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
+
+            if (lastIndex >= 0 && secondLastIndex >= 0)
+            {
+                string result = inputString.Substring(secondLastIndex + 1, lastIndex - secondLastIndex - 1);
+                return result + "/";
+            }
+            return string.Empty;
+        }
+        #endregion [function file s3]
     }
 }

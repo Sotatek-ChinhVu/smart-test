@@ -57,173 +57,18 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
                 BucketName = _options.BucketName,
                 Prefix = key
             };
-            ListVersionsResponse listVersionsResponse;
-            do
-            {
-                listVersionsResponse = await _s3Client.ListVersionsAsync(listVersionsRequest);
-
-                var objectsToDelete = listVersionsResponse.Versions
-                    .Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId })
-                    .ToList();
-
-                if (objectsToDelete.Any())
-                {
-                    var deleteObjectsRequest = new DeleteObjectsRequest
-                    {
-                        BucketName = _options.BucketName,
-                        Objects = objectsToDelete
-                    };
-
-                    var deleteObjectsResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsRequest);
-
-                    // Check the response for any errors
-                    if (deleteObjectsResponse.DeleteErrors.Any())
-                    {
-                        Console.WriteLine("Some objects could not be deleted. Error details:");
-                        foreach (var error in deleteObjectsResponse.DeleteErrors)
-                        {
-                            Console.WriteLine($"Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
-                        }
-                    }
-                }
-
-                // Set markers for the next iteration
-                listVersionsRequest.KeyMarker = listVersionsResponse.NextKeyMarker;
-                listVersionsRequest.VersionIdMarker = listVersionsResponse.NextVersionIdMarker;
-
-            } while (listVersionsResponse.IsTruncated);
-            ///
             var listVersionsReplicationRequest = new ListVersionsRequest
             {
                 BucketName = _options.BucketNameReplication,
                 Prefix = key
             };
-            ListVersionsResponse listVersionsReplicationResponse;
-            do
-            {
-                listVersionsReplicationResponse = await _s3Client.ListVersionsAsync(listVersionsReplicationRequest);
-                /// Copy to Replication (frefix: delete-)
 
-                var listVersionLastest = listVersionsReplicationResponse.Versions.Where(i => i.IsLatest);
-                if (listVersionLastest.Any())
-                {
-                    var destinationKeyFolder = string.Empty;
-                    var rootFolder = string.Empty;                 
-                    bool isFirstIteration = true;
-                    foreach (var version in listVersionLastest)
-                    {
-                        var destinationKey = string.Empty;
-                        DateTime expires = DateTime.UtcNow.Add(TimeSpan.FromDays(1));
-                        var copyObjectRequest = new CopyObjectRequest
-                        {
-                            SourceBucket = _options.BucketNameReplication,
-                            SourceKey = version.Key,
-                            DestinationBucket = _options.BucketNameReplication,
-                        };
-                        if (version.Key.EndsWith("/"))
-                        {
-                            if (isFirstIteration)
-                            {
-                                isFirstIteration = false;
-                                char separator = '/';
-                                int count = version.Key.Split(separator).Length - 1;
-                                if (count == 1)
-                                {
-                                    destinationKey = $"delete-{version.Key}";
-                                }
-                                else
-                                {
-                                    destinationKey = GetLeftName(version.Key) + "delete-" + GetRightName(version.Key);
-                                }
-                                destinationKeyFolder = destinationKey;
-                                copyObjectRequest.DestinationKey = destinationKeyFolder;
-                                rootFolder = destinationKey;
-                            }
-                            else
-                            {
-                                char separator = '/';
-                                var checkKey = key;
-                                if (!key.EndsWith(separator.ToString()))
-                                {
-                                    checkKey = key + separator;
-                                }
-                                var cutString = CutString(checkKey, version.Key);
-                                copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
-                            }
-                        }
-                        else
-                        {
-                            var oldFileName = Path.GetFileName(version.Key);
-                            if (isFirstIteration)
-                            {
-                                isFirstIteration = false;
-                                var newFileName = "delete-" + oldFileName;
-                                copyObjectRequest.DestinationKey = version.Key.Replace(oldFileName, newFileName);
-                            }
-                            else
-                            {
-                                char separator = '/';
-                                var checkKey = key;
-                                if (!key.EndsWith(separator.ToString()))
-                                {
-                                    checkKey = key + separator;
-                                }
-                                var cutString = CutString(checkKey, version.Key);
-                                copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+            /// Delete 
+            await _DeleteObjectByBucket(listVersionsRequest, _options.BucketName);
 
-                            }
-
-                        }
-                        Console.WriteLine(copyObjectRequest.DestinationKey);
-                        var copyObjectResponse = await _s3Client.CopyObjectAsync(copyObjectRequest);
-                    }
-                }
-                // Set markers for the next iteration
-                listVersionsReplicationRequest.KeyMarker = listVersionsReplicationResponse.NextKeyMarker;
-                listVersionsReplicationRequest.VersionIdMarker = listVersionsReplicationResponse.NextVersionIdMarker;
-
-            } while (listVersionsReplicationResponse.IsTruncated);
-            Console.WriteLine("Objects copied to replication successfully.");
-
-            /// Delete Replication
-            ListVersionsResponse listVersionsReplicationResponseDelete;
-            do
-            {
-                listVersionsReplicationResponseDelete = await _s3Client.ListVersionsAsync(listVersionsReplicationRequest);
-
-                var objectsReplicationToDelete = listVersionsReplicationResponseDelete.Versions
-                    .Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId })
-                    .ToList();
-
-                if (objectsReplicationToDelete.Any())
-                {
-                    var deleteObjectsReplicationRequest = new DeleteObjectsRequest
-                    {
-                        BucketName = _options.BucketNameReplication,
-                        Objects = objectsReplicationToDelete
-                    };
-
-                    var deleteObjectsReplicationResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsReplicationRequest);
-
-                    // Check the response for any errors
-                    if (deleteObjectsReplicationResponse.DeleteErrors.Any())
-                    {
-                        Console.WriteLine("Some objects could not be deleted in replication. Error details:");
-                        foreach (var error in deleteObjectsReplicationResponse.DeleteErrors)
-                        {
-                            Console.WriteLine($"Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
-                        }
-                    }
-                }
-
-                // Set markers for the next iteration
-                listVersionsReplicationRequest.KeyMarker = listVersionsReplicationResponseDelete.NextKeyMarker;
-                listVersionsReplicationRequest.VersionIdMarker = listVersionsReplicationResponseDelete.NextVersionIdMarker;
-
-            } while (listVersionsReplicationResponseDelete.IsTruncated);
-
-            Console.WriteLine("Objects deleted in replication successfully.");
-
+            ///Copy, delete replication
+            await _CopyObjectReplyCation(listVersionsReplicationRequest, key);
+            await _DeleteObjectByBucket(listVersionsReplicationRequest, _options.BucketNameReplication);
             return true;
         }
         catch (AmazonS3Exception)
@@ -450,6 +295,120 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         }
 
         return inputString;
+    }
+    private async Task _DeleteObjectByBucket(ListVersionsRequest listVersionsRequest, string bucketName)
+    {
+        ListVersionsResponse listVersionsResponse;
+        do
+        {
+            listVersionsResponse = await _s3Client.ListVersionsAsync(listVersionsRequest);
+
+            var objectsToDelete = listVersionsResponse.Versions
+                .Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId })
+                .ToList();
+
+            if (objectsToDelete.Any())
+            {
+                var deleteObjectsRequest = new DeleteObjectsRequest
+                {
+                    BucketName = bucketName,
+                    Objects = objectsToDelete
+                };
+
+                var deleteObjectsResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsRequest);
+
+                // Check the response for any errors
+                if (deleteObjectsResponse.DeleteErrors.Any())
+                {
+                    Console.WriteLine("Some objects could not be deleted. Error details:");
+                    foreach (var error in deleteObjectsResponse.DeleteErrors)
+                    {
+                        Console.WriteLine($"Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
+                    }
+                }
+            }
+
+            // Set markers for the next iteration
+            listVersionsRequest.KeyMarker = listVersionsResponse.NextKeyMarker;
+            listVersionsRequest.VersionIdMarker = listVersionsResponse.NextVersionIdMarker;
+
+        } while (listVersionsResponse.IsTruncated);
+        Console.WriteLine("Objects deleted in replication successfully.");
+
+    }
+    private async Task _CopyObjectReplyCation(ListVersionsRequest listVersionsReplicationRequest, string key)
+    {
+        if (!key.EndsWith("/"))
+        {
+            key += "/";
+        }
+        ListVersionsResponse listVersionsReplicationResponse;
+        do
+        {
+            listVersionsReplicationResponse = await _s3Client.ListVersionsAsync(listVersionsReplicationRequest);
+            /// Copy to Replication (frefix: delete-)
+            var listVersionLastest = listVersionsReplicationResponse.Versions.Where(i => i.IsLatest && i.IsDeleteMarker == false);
+            if (listVersionLastest.Any())
+            {
+                var rootFolder = string.Empty;
+                int count = key.Split("/").Length - 1;
+                if (count == 1)
+                {
+                    rootFolder = $"delete-{key}";
+                }
+                else
+                {
+                    rootFolder = GetLeftName(key) + "delete-" + GetRightName(key);
+                }
+                Parallel.ForEach(listVersionLastest, version =>
+                {
+                    try
+                    {
+                        var copyObjectRequest = new CopyObjectRequest
+                        {
+                            SourceBucket = _options.BucketNameReplication,
+                            SourceKey = version.Key,
+                            DestinationBucket = _options.BucketNameReplication,
+                        };
+                        if (version.Key.EndsWith("/"))
+                        {
+
+                            char separator = '/';
+                            var checkKey = key;
+                            if (!key.EndsWith(separator.ToString()))
+                            {
+                                checkKey = key + separator;
+                            }
+                            var cutString = CutString(checkKey, version.Key);
+                            copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+                        }
+                        else
+                        {
+                            char separator = '/';
+                            var checkKey = key;
+                            if (!key.EndsWith(separator.ToString()))
+                            {
+                                checkKey = key + separator;
+                            }
+                            var cutString = CutString(checkKey, version.Key);
+                            copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+                        }
+                        Console.WriteLine(copyObjectRequest.DestinationKey);
+                        var copyObjectResponse = _s3Client.CopyObjectAsync(copyObjectRequest).Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Exception copy {version.Key}: {ex.Message}");
+                    }
+
+                });
+            }
+            // Set markers for the next iteration
+            listVersionsReplicationRequest.KeyMarker = listVersionsReplicationResponse.NextKeyMarker;
+            listVersionsReplicationRequest.VersionIdMarker = listVersionsReplicationResponse.NextVersionIdMarker;
+
+        } while (listVersionsReplicationResponse.IsTruncated);
+        Console.WriteLine("Objects copied to replication successfully.");
     }
     #endregion
 }
