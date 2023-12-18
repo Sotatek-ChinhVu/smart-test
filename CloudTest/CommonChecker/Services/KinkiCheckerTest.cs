@@ -1,5 +1,6 @@
 ﻿using CloudUnitTest.SampleData;
 using CommonChecker.Caches;
+using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
@@ -8,6 +9,7 @@ using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Entity.Tenant;
+using Moq;
 
 namespace CloudUnitTest.CommonChecker.Services;
 
@@ -64,10 +66,19 @@ public class KinkiCheckerTest : BaseUT
         systemConf.Val = temp;
         tenantTracking.SaveChanges();
 
-        //// Act
-        var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
-        //// Assert
-        Assert.True(result.ErrorOrderList is null);
+        try
+        {
+            //// Act
+            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
+            //// Assert
+            Assert.True(result.ErrorOrderList is null);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            tenantTracking.SaveChanges();
+        }
+
     }
 
     [Test]
@@ -128,15 +139,204 @@ public class KinkiCheckerTest : BaseUT
         cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
-        ///Act
-        var result = realTimeCheckerFinder.CheckKinki(hpId, settingLevel, sinDate, listDrugItemCode, listItemCode);
+        try
+        {
+            ///Act
+            var result = realTimeCheckerFinder.CheckKinki(hpId, settingLevel, sinDate, listDrugItemCode, listItemCode);
 
+            tenantTracking.SaveChanges();
+
+            ///Assert
+            Assert.True(!result.Any());
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void CheckKinkiChecker_003_CheckKinki_TestRemoveDuplicate()
+    {
+        //setup
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel("id1", 20, "61UTKINKI3", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+        };
+
+        var odrInfoModel = new OrdInfoModel(21, 0, ordInfDetails);
+
+
+        var unitCheckerForOrderListResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                RealtimeCheckerType.Kinki, odrInfoModel, 20230101, 111);
+
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var kinkiChecker = new KinkiChecker<OrdInfoModel, OrdInfoDetailModel>();
+        kinkiChecker.HpID = 1;
+        kinkiChecker.PtID = 111;
+        kinkiChecker.Sinday = 20230101;
+
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null)
+        {
+            systemConf.Val = 5;
+        }
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2027,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 2,
+                UpdateId = 2,
+                Val = 5
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
         systemConf.Val = temp;
 
-        tenantTracking.TenMsts.RemoveRange(tenMsts);
+        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        tenantTracking.M01Kinki.AddRange(m01Kinki);
+        var tenMsts = CommonCheckerData.ReadTenMst("KINKI3", "");
+        tenantTracking.TenMsts.AddRange(tenMsts);
+
         tenantTracking.SaveChanges();
 
-        ///Assert
-        Assert.True(!result.Any());
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        kinkiChecker.InitFinder(tenantNoTracking, cache);
+
+        try
+        {
+            //// Act
+            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
+            //// Assert
+            Assert.True(result.ErrorOrderList is null);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M01Kinki.RemoveRange(m01Kinki);
+            tenantTracking.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void CheckKinkiChecker_004_CheckKinki_TestDefault_Error()
+    {
+        //setup
+        var currentOdrInfoDetailModels = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel("id1", 20, "61UTKINKI3", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+        };
+
+        var currentOdrInfoModel = new List<OrdInfoModel>()
+        {
+           new OrdInfoModel (21, 0, currentOdrInfoDetailModels)
+        };
+
+        //setup
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel("id1", 20, "61UTKINKI3", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+        };
+
+        var odrInfoModel = new OrdInfoModel(21, 0, ordInfDetails);
+
+        var unitCheckerForOrderListResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                 RealtimeCheckerType.Kinki, odrInfoModel, 20230101, 111);
+
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var kinkiChecker = new KinkiChecker<OrdInfoModel, OrdInfoDetailModel>();
+        kinkiChecker.HpID = 1;
+        kinkiChecker.PtID = 111;
+        kinkiChecker.Sinday = 20230101;
+        kinkiChecker.CurrentListOrder = currentOdrInfoModel;
+
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null)
+        {
+            systemConf.Val = 5;
+        }
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2027,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 2,
+                UpdateId = 2,
+                Val = 5
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        systemConf.Val = temp;
+
+        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        tenantTracking.M01Kinki.AddRange(m01Kinki);
+        var tenMsts = CommonCheckerData.ReadTenMst("KINKI3", "");
+        tenantTracking.TenMsts.AddRange(tenMsts);
+
+        tenantTracking.SaveChanges();
+
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        kinkiChecker.InitFinder(tenantNoTracking, cache);
+
+        try
+        {
+            /// Act
+            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
+
+            //// Assert
+            Assert.True(result.ErrorOrderList.Count == 1 && result.IsError == true);
+        }
+        finally
+        {
+            systemConf.Val = temp;
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.M01Kinki.RemoveRange(m01Kinki);
+            tenantTracking.SaveChanges();
+        }
+    }
+
+    [Test]
+    public void CheckInvalidData_005_HandleCheckOrderList_ThrowsNotImplementedException()
+    {
+        //Setup
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+            {
+            new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+            };
+
+        var odrInfoModel = new List<OrdInfoModel>()
+            {
+            new OrdInfoModel(21, 0, ordInfDetails)
+            };
+
+        // Arrange
+        var kinkiChecker = new KinkiChecker<OrdInfoModel, OrdInfoDetailModel>();
+        var unitChecker = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                 RealtimeCheckerType.Kinki, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+
+        // Act and Assert
+        Assert.Throws<NotImplementedException>(() => kinkiChecker.HandleCheckOrderList(unitChecker));
     }
 }
