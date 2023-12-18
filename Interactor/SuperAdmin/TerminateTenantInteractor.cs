@@ -1,9 +1,11 @@
 ﻿using AWSSDK.Common;
 using AWSSDK.Constants;
+using AWSSDK.Dto;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using UseCase.SuperAdmin.TerminateTenant;
 
@@ -17,6 +19,7 @@ namespace Interactor.SuperAdmin
         private readonly ITenantRepository _tenantRepositoryRunTask;
         private readonly INotificationRepository _notificationRepositoryRunTask;
         private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _memoryCache;
 
         public TerminateTenantInteractor(
             ITenantRepository tenantRepository,
@@ -24,7 +27,8 @@ namespace Interactor.SuperAdmin
             INotificationRepository notificationRepository,
             ITenantRepository tenantRepositoryRunTask,
             INotificationRepository notificationRepositoryRunTask,
-            IConfiguration configuration
+            IConfiguration configuration,
+             IMemoryCache memoryCache
             )
         {
             _awsSdkService = awsSdkService;
@@ -33,6 +37,7 @@ namespace Interactor.SuperAdmin
             _tenantRepositoryRunTask = tenantRepositoryRunTask;
             _notificationRepositoryRunTask = notificationRepositoryRunTask;
             _configuration = configuration;
+            _memoryCache = memoryCache;
         }
         public TerminateTenantOutputData Handle(TerminateTenantInputData inputData)
         {
@@ -59,11 +64,19 @@ namespace Interactor.SuperAdmin
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantDoesNotExist);
                 }
 
-                var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb).Result;
-                // Check valid delete tennatDb
-                if (listTenantDb == null || listTenantDb.Count() == 0 || !listTenantDb.Contains(tenant.Db))
+                if (tenant.Status == ConfigConstant.StatusTenantDictionary()["terminating"])
                 {
-                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantDbDoesNotExistInRDS);
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
+                }
+
+                if (tenant.Status == ConfigConstant.StatusTenantDictionary()["terminating"])
+                {
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
+                }
+
+                if ((tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping) && inputData.Type == 1)
+                {
+                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsNotAvailableToSortTerminate);
                 }
 
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
@@ -73,10 +86,30 @@ namespace Interactor.SuperAdmin
                 {
                     try
                     {
+                        bool skipFinalSnapshot = false;
+                        var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
                         Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
 
+                        if (tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping) // terminate tenant  creating, updating, restoring
+                        {
+                            skipFinalSnapshot = true;
+                            var tenantInfo = _memoryCache.Get<TenantCacheMemory>(tenant.SubDomain) ?? new TenantCacheMemory();
+
+                            // Cancel task run
+                            tenantInfo.CancelToken.Cancel();
+
+                            // Delete tmp RDS
+                            if (!string.IsNullOrEmpty(tenantInfo.TmpRdsIdentifier))
+                            {
+                                if (RDSAction.CheckRDSInstanceExists(tenantInfo.TmpRdsIdentifier).Result)
+                                {
+                                    var deleteTmpRDSAction = RDSAction.DeleteRDSInstanceAsync(tenantInfo.TmpRdsIdentifier, skipFinalSnapshot).Result;
+                                }
+                            }
+                        }
+
                         // Backup tenant
-                        if (inputData.Type == 1) // sort terminate
+                        if (inputData.Type == 1)
                         {
                             // Create folder backup S3
                             var backupFolderName = @$"bk-{tenant.EndSubDomain}";
@@ -84,7 +117,7 @@ namespace Interactor.SuperAdmin
 
                             // Dump DB backup
                             var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // path save file sql dump
-                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
 
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
@@ -107,7 +140,11 @@ namespace Interactor.SuperAdmin
                         // Connect RDS delete TenantDb
                         if (listTenantDb.Count > 1)
                         {
-                            if (_awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db))
+                            if (listTenantDb.Contains(tenant.Db))
+                            {
+                                deleteRDSAction = _awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
+                            }
+                            else
                             {
                                 deleteRDSAction = true;
                             }
@@ -116,7 +153,22 @@ namespace Interactor.SuperAdmin
                         // Deleted RDS
                         else
                         {
-                            deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
+                            if (RDSAction.CheckRDSInstanceExists(tenant.RdsIdentifier).Result)
+                            {
+                                // Check RDS being used by another tenant
+                                if (_tenantRepositoryRunTask.GetByRdsId(tenant.TenantId, tenant.RdsIdentifier).Count() == 1)
+                                {
+                                    deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
+                                }
+                                else
+                                {
+                                    deleteRDSAction = true;
+                                }
+                            }
+                            else
+                            {
+                                deleteRDSAction = true;
+                            }
                         }
 
                         // Delete DNS
@@ -138,12 +190,16 @@ namespace Interactor.SuperAdmin
                                 // Notification  terminating success
                                 var messenge = tenant.EndSubDomain + $"is teminate successfully. ";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                                
+
                                 // Add info tenant for notification
                                 notification.SetTenantId(tenant.TenantId);
-                                notification.SetStatusTenant(tenant.StatusTenant);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantTeminated);
 
                                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(tenant.SubDomain);
+
                                 cts.Cancel();
                                 return;
                             }
@@ -151,16 +207,20 @@ namespace Interactor.SuperAdmin
                     }
                     catch (Exception ex)
                     {
-                        _tenantRepositoryRunTask.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
+                        _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
                         // Notification  terminating failed
                         var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
 
                         // Add info tenant for notification
                         notification.SetTenantId(tenant.TenantId);
-                        notification.SetStatusTenant(tenant.StatusTenant);
+                        notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
 
                         _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                        // Delete cache memory
+                        _memoryCache.Remove(tenant.SubDomain);
+
                         cts.Cancel();
                         return;
                     }

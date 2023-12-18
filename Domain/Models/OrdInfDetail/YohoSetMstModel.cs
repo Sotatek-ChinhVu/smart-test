@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.OrdInfDetails
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.OrdInfDetails
 {
     public class YohoSetMstModel
     {
+        [JsonConstructor]
         public YohoSetMstModel(string itemname, int yohoKbn, int setId, int userId, string itemCd)
         {
             Itemname = itemname;
