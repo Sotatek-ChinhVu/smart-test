@@ -888,7 +888,7 @@ namespace Infrastructure.SuperAdminRepositories
             return (storageFull, storageInDB);
         }
 
-        private TenantModel ConvertEntityToModel(Tenant tenant)
+        private static TenantModel ConvertEntityToModel(Tenant tenant)
         {
             return new TenantModel(
                        tenant.TenantId,
