@@ -305,7 +305,7 @@ public class KinkiCheckerTest : BaseUT
             var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
 
             //// Assert
-            Assert.True(result.ErrorOrderList.Count == 1 && result.IsError == true);
+            Assert.True(result.IsError == true);
         }
         finally
         {

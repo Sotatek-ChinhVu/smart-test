@@ -2,6 +2,7 @@
 using CommonChecker.Caches;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
@@ -665,6 +666,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             tenantTracking.SaveChanges();
 
+
             var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
 
             drugAllergy.HpID = 999;
@@ -674,6 +676,8 @@ namespace CloudUnitTest.CommonChecker.Services
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
+
+            new SystemConfig(tenantNoTracking);
             try
             {
                 // Act
@@ -708,7 +712,7 @@ namespace CloudUnitTest.CommonChecker.Services
         {
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 2);
+            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == grpCd && p.GrpEdaNo == grpEdaNo);
             var val = systemConf?.Val ?? 0;
             if (systemConf != null)
             {
@@ -729,7 +733,7 @@ namespace CloudUnitTest.CommonChecker.Services
                 };
                 tenantTracking.SystemConfs.Add(systemConf);
             }
-
+            tenantTracking.SaveChanges();
             return val;
         }
     }
