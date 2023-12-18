@@ -269,7 +269,6 @@ namespace AWSSDK.Common
                         {
                             destinationKey = CommonConstants.RemoveDeleteString(destinationKey);
                             copyObjectRequest.DestinationKey = destinationKey;
-                            Console.WriteLine(destinationKey);
                             var destinationTransterUtility = new TransferUtility(destinationClient);
                             destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
                         }

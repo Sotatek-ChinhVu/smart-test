@@ -384,16 +384,27 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
                         }
                         else
                         {
-                            char separator = '/';
-                            var checkKey = key;
-                            if (!key.EndsWith(separator.ToString()))
+                            if (listVersionLastest.Count() == 1)
                             {
-                                checkKey = key + separator;
+                                if (rootFolder.EndsWith("/"))
+                                {
+                                    rootFolder = rootFolder.Substring(0, rootFolder.Length - 1);
+                                }
+                                copyObjectRequest.DestinationKey = rootFolder;
                             }
-                            var cutString = CutString(checkKey, version.Key);
-                            copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+                            else
+                            {
+                                char separator = '/';
+                                var checkKey = key;
+                                if (!key.EndsWith(separator.ToString()))
+                                {
+                                    checkKey = key + separator;
+                                }
+                                var cutString = CutString(checkKey, version.Key);
+                                copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+                            }
+
                         }
-                        Console.WriteLine(copyObjectRequest.DestinationKey);
                         var copyObjectResponse = _s3Client.CopyObjectAsync(copyObjectRequest).Result;
                     }
                     catch (Exception ex)
