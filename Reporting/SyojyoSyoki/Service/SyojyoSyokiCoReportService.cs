@@ -80,6 +80,7 @@ namespace Reporting.SyojyoSyoki.Service
 
                             while (_hasNextPage)
                             {
+                                // fix exception in line 334
                                 UpdateDrawForm();
                                 _currentPage++;
                             }
@@ -88,6 +89,7 @@ namespace Reporting.SyojyoSyoki.Service
                     }
                 }
 
+                // total page
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
                 _extralData.Add("totalPage", pageIndex.ToString());
 
@@ -254,7 +256,7 @@ namespace Reporting.SyojyoSyoki.Service
                     return ret;
                 }
                 #endregion
-
+                //Fix Get data and print Header each page
                 // ページ
                 fieldDataPerPage.Add("dfPage", _currentPage.ToString());
                 // 患者番号
@@ -328,6 +330,7 @@ namespace Reporting.SyojyoSyoki.Service
 
                 for (short i = 0; i < _syojyoSyokiRowCount; i++)
                 {
+                    // Get data in
                     listDataPerPage.Add(new("lsSyojyoSyoki", 0, i, _syojyoSyokiList[dataIndex]));
 
                     dataIndex++;
@@ -338,7 +341,7 @@ namespace Reporting.SyojyoSyoki.Service
                     }
                 }
 
-                _listTextData.Add(pageIndex, listDataPerPage);
+                _listTextData.Add(pageIndex, listDataPerPage); // print Body each page.
                 return dataIndex;
             }
 
