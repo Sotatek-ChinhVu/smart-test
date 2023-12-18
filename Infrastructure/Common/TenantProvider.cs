@@ -14,6 +14,7 @@ using System.Text.Unicode;
 using StackExchange.Redis;
 using Helper.Extension;
 using System.IdentityModel.Tokens.Jwt;
+using Helper.Common;
 
 namespace Infrastructure.CommonDB
 {
@@ -284,7 +285,7 @@ namespace Infrastructure.CommonDB
                     return string.Empty;
                 }
                 var jwtToken = new JwtSecurityToken(cookie.Token);
-                if (jwtToken.ValidFrom < DateTime.UtcNow || jwtToken.ValidTo > DateTime.UtcNow)
+                if (jwtToken.ValidFrom < DateTime.UtcNow && jwtToken.ValidTo > DateTime.UtcNow)
                 {
                     return cookie.Domain;
                 }
