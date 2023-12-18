@@ -40,6 +40,30 @@ namespace Domain.SuperAdminModels.Tenant
             PasswordConnect = passwordConnect;
         }
 
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect, int isDeleted)
+        {
+            TenantId = tenantId;
+            Hospital = hospital;
+            Status = status;
+            AdminId = adminId;
+            Password = password;
+            SubDomain = subDomain;
+            Db = db;
+            Size = size;
+            SizeType = sizeType;
+            Type = type;
+            EndPointDb = endPointDb;
+            EndSubDomain = endSubDomain;
+            Action = action;
+            ScheduleDate = scheduleDate;
+            ScheduleTime = scheduleTime;
+            CreateDate = createDate;
+            RdsIdentifier = rdsIdentifier;
+            UserConnect = userConnect;
+            PasswordConnect = passwordConnect;
+            IsDeleted = isDeleted;
+        }
+
         public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
         {
             TenantId = tenantId;
@@ -117,6 +141,8 @@ namespace Domain.SuperAdminModels.Tenant
         public string UserConnect { get; private set; }
 
         public string PasswordConnect { get; private set; }
+
+        public int IsDeleted { get; private set; }
 
         /// <summary>
         /// Return StatusTenant to FE

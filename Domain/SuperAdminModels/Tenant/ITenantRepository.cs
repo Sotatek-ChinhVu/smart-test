@@ -27,12 +27,14 @@ public interface ITenantRepository
     void RevokeInsertPermission();
 
     TenantModel GetTenant(int tenantId);
-   
+
     bool CheckExistsHospital(string hospital);
 
     bool CheckExistsSubDomain(string subDomain);
 
     bool UpdateInfTenantStatus(int tenantId, byte status);
+
+    TenantModel GetTenantUpdate(int tenantId);
 
     void ReleaseResource();
 

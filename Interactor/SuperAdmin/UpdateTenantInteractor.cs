@@ -67,77 +67,84 @@ namespace Interactor.SuperAdmin
                     return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidTenantId);
                 }
 
-                var oldTenant = _tenantRepository.Get(inputData.TenantId);
+                var oldTenant = _tenantRepository.GetTenantUpdate(inputData.TenantId);
 
-                if (oldTenant.Status == 1 || oldTenant.Status == 9)
+                if (oldTenant == null || oldTenant.TenantId <= 0)
                 {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantDoesNotExist);
+                }
 
-                    if (inputData.Size <= 0)
+                if (string.IsNullOrEmpty(inputData.Hospital))
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidHospital);
+                }
+
+                if (oldTenant.IsDeleted == 1) // Update hospital tenant terminate 
+                {
+                    _tenantRepository.UpdateTenant(oldTenant.TenantId, oldTenant.RdsIdentifier, oldTenant.EndPointDb, oldTenant.SubDomain, oldTenant.Size,
+                                          oldTenant.SizeType, inputData.Hospital, oldTenant.AdminId, oldTenant.Password, oldTenant.EndSubDomain, oldTenant.Status);
+                    var noti = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, $"{oldTenant.EndSubDomain} is update tenant successfully.");
+
+                    // Add info tenant for notification
+                    noti.SetTenantId(oldTenant.TenantId);
+                    noti.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, noti);
+                    return new UpdateTenantOutputData(true, UpdateTenantStatus.Successed);
+                }
+
+                if (inputData.Size <= 0)
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidSize);
+                }
+
+                if (inputData.SizeType <= 0)
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidSizeType);
+                }
+
+                if (string.IsNullOrEmpty(inputData.SubDomain))
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidDomain);
+                }
+
+                if (string.IsNullOrEmpty(inputData.Hospital))
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidHospital);
+                }
+
+                if (inputData.AdminId <= 0)
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidAdminId);
+                }
+
+                if (string.IsNullOrEmpty(inputData.Password))
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidPassword);
+                }
+
+                if (oldTenant.Type == ConfigConstant.TypeDedicate && inputData.Type == ConfigConstant.TypeSharing)
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.NotAllowUpdateTenantDedicateToSharing);
+                }
+
+                if (oldTenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && oldTenant.Status != ConfigConstant.StatusTenantDictionary()["stoped"] && oldTenant.Status != ConfigConstant.StatusTenantDictionary()["storage-full"])
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantNotReadyToUpdate);
+                }
+
+                if (!_awsSdkService.CheckExitRDS(oldTenant.RdsIdentifier).Result)
+                {
+                    return new UpdateTenantOutputData(false, UpdateTenantStatus.RdsDoesNotExist);
+                }
+
+                if (oldTenant.SubDomain != inputData.SubDomain)
+                {
+                    if (Route53Action.CheckSubdomainExistence(inputData.SubDomain).Result)
                     {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidSize);
-                    }
-
-                    if (inputData.SizeType <= 0)
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidSizeType);
-                    }
-
-                    if (string.IsNullOrEmpty(inputData.SubDomain))
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidDomain);
-                    }
-
-                    if (string.IsNullOrEmpty(inputData.Hospital))
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidHospital);
-                    }
-
-                    if (inputData.AdminId <= 0)
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidAdminId);
-                    }
-
-                    if (string.IsNullOrEmpty(inputData.Password))
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidPassword);
-                    }
-
-
-                    if (oldTenant.TenantId <= 0 || oldTenant.TenantId <= 0)
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantDoesNotExist);
-                    }
-
-                    if (oldTenant.Type == ConfigConstant.TypeDedicate && inputData.Type == ConfigConstant.TypeSharing)
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.NotAllowUpdateTenantDedicateToSharing);
-                    }
-
-                    if (oldTenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && oldTenant.Status != ConfigConstant.StatusTenantDictionary()["stoped"] && oldTenant.Status != ConfigConstant.StatusTenantDictionary()["storage-full"])
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.TenantNotReadyToUpdate);
-                    }
-
-                    if (!_awsSdkService.CheckExitRDS(oldTenant.RdsIdentifier).Result)
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.RdsDoesNotExist);
-                    }
-
-                    if (oldTenant.SubDomain != inputData.SubDomain)
-                    {
-                        if (Route53Action.CheckSubdomainExistence(inputData.SubDomain).Result)
-                        {
-                            return new UpdateTenantOutputData(false, UpdateTenantStatus.NewDomainAleadyExist);
-                        }
+                        return new UpdateTenantOutputData(false, UpdateTenantStatus.NewDomainAleadyExist);
                     }
                 }
-                else
-                {
-                    if (string.IsNullOrEmpty(inputData.Hospital))
-                    {
-                        return new UpdateTenantOutputData(false, UpdateTenantStatus.InvalidHospital);
-                    }
-                }
+
 
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
                 var cts = new CancellationTokenSource();

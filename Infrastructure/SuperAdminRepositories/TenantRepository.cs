@@ -32,6 +32,13 @@ namespace Infrastructure.SuperAdminRepositories
             return tenantModel;
         }
 
+        public TenantModel GetTenantUpdate(int tenantId)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId).FirstOrDefault();
+            var tenantModel = tenant == null ? new() : ConvertEntityToModel(tenant);
+            return tenantModel;
+        }
+
         public TenantModel GetByStatus(int tenantId, byte status)
         {
             var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.Status == status && t.IsDeleted == 0).FirstOrDefault();
@@ -898,7 +905,8 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.CreateDate,
                        tenant.RdsIdentifier,
                        tenant.UserConnect,
-                       tenant.PasswordConnect);
+                       tenant.PasswordConnect,
+                       tenant.IsDeleted);
         }
 
         private void _AddTenant(Tenant tenant, TenantModel model)
