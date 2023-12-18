@@ -77,7 +77,7 @@ namespace AWSSDK.Common
                         Console.WriteLine($"Objects in folder '{sourceFolder}' not found.");
                         return;
                     }
-                    
+
                     foreach (var obj in listObjectsResponse.S3Objects)
                     {
                         var copyObjectRequest = new CopyObjectRequest
@@ -235,7 +235,7 @@ namespace AWSSDK.Common
                             Console.WriteLine($"Objects in folder '{folder}' not found.");
                             return;
                         }
-                        
+
                         int count = folderKey.Split("/").Length - 1;
                         if (count == 1)
                         {
@@ -253,7 +253,7 @@ namespace AWSSDK.Common
                             return;
                         }
                     }
-                    Parallel.ForEach(response.S3Objects, async obj =>
+                    Parallel.ForEach(response.S3Objects, obj =>
                     {
                         var destinationKey = folderKey + obj.Key.Substring(folderKey.Length);
 
@@ -278,12 +278,11 @@ namespace AWSSDK.Common
                             if (!CommonConstants.CheckCondition(destinationKey))
                             {
                                 copyObjectRequest.DestinationKey = destinationKey;
-                                Console.WriteLine(destinationKey);
                                 var destinationTransterUtility = new TransferUtility(destinationClient);
                                 destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
                             }
                         }
-                        await DeleteAllVersionObject(folderKey,sourceClient,sourceBucketName);
+                        DeleteAllVersionObject(folderKey, sourceClient, sourceBucketName).Wait();
                     });
 
                     request.ContinuationToken = response.NextContinuationToken;

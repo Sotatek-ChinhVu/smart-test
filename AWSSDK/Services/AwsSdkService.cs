@@ -136,7 +136,7 @@ namespace AWSSDK.Services
         {
             string folderKey = type switch
             {
-                RestoreObjectS3TenantTypeEnum.All => objectName,
+                RestoreObjectS3TenantTypeEnum.All => $"{objectName}/",
                 RestoreObjectS3TenantTypeEnum.Files => $"{objectName}/store/files/",
                 RestoreObjectS3TenantTypeEnum.InsuranceCard => $"{objectName}/store/InsuranceCard/",
                 RestoreObjectS3TenantTypeEnum.Karte => $"{objectName}/store/karte/",

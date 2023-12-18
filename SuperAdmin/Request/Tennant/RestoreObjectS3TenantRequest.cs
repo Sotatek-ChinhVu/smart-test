@@ -9,7 +9,7 @@ namespace SuperAdminAPI.Request.Tennant
 
         public RestoreObjectS3TenantTypeEnum Type { get; set; }
 
-        public bool PrefixDelete {  get; set; }
+        public bool IsPrefixDelete {  get; set; }
 
 
     }

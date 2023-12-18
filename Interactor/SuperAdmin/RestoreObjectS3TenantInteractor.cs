@@ -39,7 +39,7 @@ namespace Interactor.SuperAdmin
                         ConfigConstant.SourceBucketName,
                         inputData.ObjectName,
                         ConfigConstant.DestinationBucketName,
-                        inputData.Type, inputData.PrefixDelete);
+                        inputData.Type, inputData.IsPrefixDelete);
                         restoreObjectS3.Wait();
                         var message = inputData.ObjectName + $" is restore data S3 successfully.";
                         var notification = _notificationTaskRunRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
