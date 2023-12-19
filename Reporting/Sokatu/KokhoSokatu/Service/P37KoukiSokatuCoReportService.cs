@@ -162,7 +162,7 @@ public class P37KoukiSokatuCoReportService : IP37KoukiSokatuCoReportService
                         case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiIppan).ToList(); break;
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKoukiUpper).ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数

@@ -161,7 +161,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                         case 8: wrkReces = receInfs.Where(r => r.IsRetAll).ToList(); break;
                         case 9: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -216,7 +216,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                             case 5: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                             case 6: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                         }
-                        if (wrkReces == null) continue;
+                        if (wrkReces.Count == 0) continue;
 
                         countData wrkData = new countData();
                         //件数

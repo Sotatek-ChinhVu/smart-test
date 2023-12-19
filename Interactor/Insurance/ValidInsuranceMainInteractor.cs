@@ -24,7 +24,7 @@ namespace Interactor.Insurance
             try
             {
                 // Get HokenMst
-                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo, inputData.SinDate);
+                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.HpId, inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo, inputData.SinDate);
 
                 // Get HokenSyaMst
                 //get FindHokensyaMstByNoNotrack
@@ -323,7 +323,7 @@ namespace Interactor.Insurance
 
             if (!string.IsNullOrEmpty(checkMessageIsValidConfirmDateHoken))
             {
-                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InValidConfirmDateHoken, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageConfirmation));
+                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InValidConfirmDateHoken, checkMessageIsValidConfirmDateHoken, TypeMessage.TypeMessageConfirmation));
             }
 
             // check valid hokenmst date
@@ -554,7 +554,7 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "75歳到達月ですが、自己負担限度額の特例対象年月が入力されていません。", "保険", "無視する", "戻る" };
                 message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidTokkurei, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidTokkurei, message, TypeMessage.TypeMessageWarning));
             }
         }
 
@@ -686,7 +686,7 @@ namespace Interactor.Insurance
                 {
                     var stringParams = new string[] { "保険", "保険証" };
                     var stringParams2 = new string[] { "無視する", "戻る" };
-                    checkComfirmDateHoken = string.Format(ErrorMessage.MessageType_mChk00030, stringParams, stringParams2);
+                    checkComfirmDateHoken = string.Format(ErrorMessage.MessageType_mChk00030, stringParams.FirstOrDefault(), stringParams2.FirstOrDefault());
                     return checkComfirmDateHoken;
                 }
             }

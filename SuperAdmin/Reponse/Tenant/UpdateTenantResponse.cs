@@ -1,8 +1,8 @@
 ﻿namespace SuperAdminAPI.Reponse.Tenant
 {
-    public class UpgradePremiumResponse
+    public class UpdateTenantResponse
     {
-       public UpgradePremiumResponse(bool result)
+       public UpdateTenantResponse(bool result)
         {
             Result = result;
         }

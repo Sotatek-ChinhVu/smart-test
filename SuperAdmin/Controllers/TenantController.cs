@@ -24,21 +24,21 @@ namespace SuperAdminAPI.Controllers
     public class TenantController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        private IWebSocketService _webSocketService;
+        private readonly IWebSocketService _webSocketService;
         public TenantController(UseCaseBus bus, IWebSocketService webSocketService)
         {
             _bus = bus;
             _webSocketService = webSocketService;
         }
 
-        [HttpPost("UpgradePremium")]
-        public ActionResult<Response<UpgradePremiumResponse>> UpgradePremium([FromBody] UpgradePremiumRequest request)
+        [HttpPost("UpdateTenant")]
+        public ActionResult<Response<UpdateTenantResponse>> UpdateTenant([FromBody] UpdateTenantRequest request)
         {
-            var input = new UpgradePremiumInputData(request.TenantId, request.Size, request.SizeType, request.Domain, _webSocketService);
+            var input = new UpdateTenantInputData(request.TenantId, request.Size, request.SizeType, request.SubDomain, request.Type, request.Hospital, request.AdminId, request.Password, _webSocketService);
             var output = _bus.Handle(input);
-            var presenter = new UpgradePremiumPresenter();
+            var presenter = new UpdateTenantPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<UpgradePremiumResponse>>(presenter.Result);
+            return new ActionResult<Response<UpdateTenantResponse>>(presenter.Result);
         }
 
         [HttpPost("GetTenant")]
@@ -65,6 +65,7 @@ namespace SuperAdminAPI.Controllers
         public ActionResult<Response<TenantOnboardResponse>> TenantOnboardAsync([FromBody] TenantOnboardRequest request)
         {
             var input = new TenantOnboardInputData(
+                request.TenantId,
                 request.Hospital,
                 request.AdminId,
                 request.Password,

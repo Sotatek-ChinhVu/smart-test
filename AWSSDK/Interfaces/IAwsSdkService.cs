@@ -11,7 +11,7 @@ namespace AWSSDK.Interfaces
         Task<bool> CheckSubdomainExistenceAsync(string subdomainToCheck);
         Task<bool> IsDedicatedTypeAsync(string dbIdentifier);
         Task<bool> CheckExitRDS(string dbIdentifier);
-        bool DeleteTenantDb(string serverEndpoint, string tennantDB);
+        bool DeleteTenantDb(string serverEndpoint, string tennantDB, string username, string password);
         Task CreateFolderAsync(string bucketName, string folderName);
         Task DeleteObjectsInFolderAsync(string bucketName, string folderKey);
         Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder);

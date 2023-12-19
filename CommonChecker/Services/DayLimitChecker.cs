@@ -50,7 +50,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return unitCheckerForOrderListResult;
         }
 
-        private double GetUsingDay(TOdrInf order)
+        public double GetUsingDay(TOdrInf order)
         {
             var usingInfo = order.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(o => o.IsDrugUsage);
 
@@ -58,7 +58,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 return -1;
             }
-            return usingInfo?.Suryo ?? 0;
+            return usingInfo.Suryo;
         }
     }
 }

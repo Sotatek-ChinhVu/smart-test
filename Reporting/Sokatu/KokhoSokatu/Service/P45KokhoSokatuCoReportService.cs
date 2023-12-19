@@ -181,7 +181,7 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
                     case 3: wrkReces = curReceInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     case 4: wrkReces = curReceInfs.ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

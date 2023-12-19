@@ -179,7 +179,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         //公費計
                         case 8: curReceInfs = receInfs.Where(r => r.IsHeiyo).ToList(); break;
                     }
-                    if (curReceInfs == null || (kbnIndex >= 2 && curReceInfs.Count == 0)) continue;
+                    if (curReceInfs.Count == 0 || (kbnIndex >= 2 && curReceInfs.Count == 0)) continue;
 
                     //
                     switch (kbnIndex)

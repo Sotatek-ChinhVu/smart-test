@@ -147,6 +147,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 this.seikyuYm = seikyuYm;
                 this.seikyuType = seikyuType;
                 var getData = GetData();
+                this.welfareType = welfareType;
                 string formFile = "";
 
                 switch (welfareType)

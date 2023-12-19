@@ -149,7 +149,7 @@ public class P33KokhoSokatuCoReportService : IP33KokhoSokatuCoReportService
                     case 1: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && r.IsPrefIn).ToList(); break;
                     case 2: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数
@@ -173,7 +173,7 @@ public class P33KokhoSokatuCoReportService : IP33KokhoSokatuCoReportService
                     case 1: wrkReces = receInfs.Where(r => r.IsKoukiAll && r.IsPrefIn).ToList(); break;
                     case 2: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

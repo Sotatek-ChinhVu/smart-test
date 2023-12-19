@@ -64,16 +64,12 @@ namespace AWSSDK.Services
             return false;
         }
 
-        public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
+        public bool DeleteTenantDb(string serverEndpoint, string tennantDB, string username, string password)
         {
             try
             {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                int port = 5432;
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -160,18 +156,14 @@ namespace AWSSDK.Services
 
         public async Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder)
         {
-            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
-            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
-            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
-            await S3Action.BackupFolderAsync(sourceS3Client, sourceBucket, sourceFolder, backupBucket, backupFolder);
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.BackupFolderAsync(sourceS3ClientDestination, sourceBucket, sourceFolder, backupBucket, backupFolder);
         }
 
         public async Task UploadFileAsync(string bucketName, string folderName, string filePath)
         {
-            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
-            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
-            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
-            await S3Action.UploadFileWithProgressAsync(sourceS3Client, bucketName, folderName, filePath);
+            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.UploadFileWithProgressAsync(sourceS3ClientDestination, bucketName, folderName, filePath);
         }
 
         private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)

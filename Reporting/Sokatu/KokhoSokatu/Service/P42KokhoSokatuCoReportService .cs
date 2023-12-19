@@ -159,7 +159,7 @@ public class P42KokhoSokatuCoReportService : IP42KokhoSokatuCoReportService
                     case 0: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && r.IsPrefIn).ToList(); break;
                     case 1: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && !r.IsPrefIn).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 //保険者数
                 int kokhoSeikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Count();
@@ -175,7 +175,7 @@ public class P42KokhoSokatuCoReportService : IP42KokhoSokatuCoReportService
                     case 0: wrkReces = receInfs.Where(r => r.IsKoukiAll && r.IsPrefIn).ToList(); break;
                     case 1: wrkReces = receInfs.Where(r => r.IsKoukiAll && !r.IsPrefIn).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 //保険者数
                 int koukiSeikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Count();

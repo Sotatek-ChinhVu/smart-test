@@ -111,7 +111,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         case 1: wrkReces = receInfs.Where(r => r.IsKoukiUpper).ToList(); break;
                         case 2: wrkReces = receInfs.ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数

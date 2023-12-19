@@ -142,7 +142,7 @@ public class P26KokhoSokatuInCoReportService : IP26KokhoSokatuInCoReportService
                     case 2: break;
                     case 3: wrkReces = receInfs.ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

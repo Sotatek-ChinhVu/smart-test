@@ -153,7 +153,7 @@ public class P13KokhoSokatuCoReportService : IP13KokhoSokatuCoReportService
                         totalData.Clear();
                         break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

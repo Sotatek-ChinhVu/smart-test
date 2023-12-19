@@ -199,9 +199,9 @@ namespace Reporting.Sokatu.WelfareDisk.Service
             //事業番号
             colDatas.Add("1");
             //公費負担者番号
-            colDatas.Add(receInf.FutansyaNo(kohiHoubetus).PadLeft(8, '0'));
+            colDatas.Add(receInf.FutansyaNo(kohiHoubetus)?.PadLeft(8, '0') ?? string.Empty);
             //公費受給者番号
-            colDatas.Add(receInf.JyukyusyaNo(kohiHoubetus).PadLeft(7, '0'));
+            colDatas.Add(receInf.JyukyusyaNo(kohiHoubetus)?.PadLeft(7, '0') ?? string.Empty);
             //患者カナ氏名(全角)
             string kanKana = CIUtil.Copy(receInf.PtKanaName, 1, 30);
             colDatas.Add("\"" + CIUtil.ToWide(kanKana) + "\"");

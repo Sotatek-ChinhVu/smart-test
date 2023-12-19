@@ -178,7 +178,7 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
                     case 5: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                     case 6: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

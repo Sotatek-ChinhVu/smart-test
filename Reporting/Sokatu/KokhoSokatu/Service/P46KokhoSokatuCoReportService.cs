@@ -132,7 +132,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         //合計
                         case 2: wrkReces = curReceInfs.ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     var hokenshaList = wrkReces.GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList();
 
@@ -175,7 +175,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         //合計
                         case 8: wrkReces = curReceInfs.ToList(); break;
                     }
-                    if (wrkReces == null) 
+                    if (wrkReces.Count == 0) 
                     {
                         continue;
                     }

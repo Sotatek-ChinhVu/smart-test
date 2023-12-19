@@ -179,7 +179,7 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
                         case 0: wrkReces = curReceInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数
