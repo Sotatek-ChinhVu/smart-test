@@ -582,7 +582,7 @@ namespace Infrastructure.Repositories
 
             // get totalItem and get items per page
             var total = raiinListInfQuery.Count();
-            var itemPerPage = total / 10;
+            var itemPerPage = total / 10 == 0 ? 1 : total / 10;
 
             // multiple thread to get data raiinListInf
             var tastList1 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(NoTrackingDataContext, hpId, ptId).Skip(0 * itemPerPage).Take(itemPerPage).ToList());
