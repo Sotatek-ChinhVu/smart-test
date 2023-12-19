@@ -25,8 +25,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// </summary>
         private List<CoP24WelfareReceInfModel> receInfs;
         private CoHpInfModel hpInf;
-        private List<string> cityCodes;
-        string currentCityCode;
+        private List<string> cityCodes = new();
+        string currentCityCode = "";
         #endregion
 
         #region Constructor and Init
@@ -39,6 +39,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             _listTextData = new();
             _visibleFieldData = new();
             _visibleAtPrint = new();
+            hpInf = new();
+            receInfs = new();
         }
         #endregion
 
@@ -166,7 +168,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     //保険請求点数
                     listDataPerPage.Add(new("tensu", 0, rowNo, curReceInf.Tensu.ToString()));
                     //一部負担額
-                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.HokenReceFutan.ToString()));
+                    listDataPerPage.Add(new("futan", 0, rowNo, curReceInf.HokenReceFutan.ToString() ?? string.Empty));
 
                     //公費・長 区分、公費請求点数、公費・長 一部負担額
                     if (curReceInf.IsChoki)

@@ -1431,7 +1431,7 @@ namespace CloudUnitTest.SampleData
         }
 
 
-        public static List<PtSupple> ReadMPtSupple(string key)
+        public static List<PtSupple> ReadPtSupple()
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1467,10 +1467,6 @@ namespace CloudUnitTest.SampleData
                                 case "B":
                                     int.TryParse(text, out int ptId);
                                     ptSupple.PtId = ptId;
-                                    break;
-                                case "C":
-                                    int.TryParse(text, out int seqNo);
-                                    ptSupple.SeqNo = seqNo;
                                     break;
                                 case "D":
                                     int.TryParse(text, out int sortNo);
@@ -1855,6 +1851,268 @@ namespace CloudUnitTest.SampleData
             }
 
             return m14AgeCheck;
+        }
+
+        public static List<PtKioReki> ReadPtKioReki()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptKioRekis = new List<PtKioReki>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_KIO_REKI").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptkioReki = new PtKioReki();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptkioReki.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int ptId);
+                                    ptkioReki.PtId = ptId;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int sortNo);
+                                    ptkioReki.SortNo = sortNo;
+                                    break;
+                                case "E":
+                                    ptkioReki.ByomeiCd = text;
+                                    break;
+                                case "F":
+                                    ptkioReki.ByotaiCd = text;
+                                    break;
+                                case "G":
+                                    ptkioReki.Byomei = text;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int startDate);
+                                    ptkioReki.StartDate = startDate;
+                                    break;
+                                case "I":
+                                    ptkioReki.Cmt = text;
+                                    break;
+                                case "J":
+                                    int.TryParse(text, out int isDeleted);
+                                    ptkioReki.IsDeleted = isDeleted;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        ptkioReki.CreateDate = DateTime.UtcNow;
+                        ptkioReki.UpdateDate = DateTime.UtcNow;
+                        ptkioReki.CreateMachine = "UNIT-TEST";
+                        ptkioReki.UpdateMachine = "UNIT-TEST";
+                        ptkioReki.CreateId = 2;
+                        ptKioRekis.Add(ptkioReki);
+                    }
+                }
+            }
+
+            return ptKioRekis;
+        }
+
+        public static List<PtFamilyReki> ReadPtFamilyReki()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptFamilyRekis = new List<PtFamilyReki>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_FAMILY_REKI").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptFamilyReki = new PtFamilyReki();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "B":
+                                    int.TryParse(text, out int hpId);
+                                    ptFamilyReki.HpId = hpId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int ptId);
+                                    ptFamilyReki.PtId = ptId;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int id);
+                                    ptFamilyReki.FamilyId = id;
+                                    break;
+                                case "F":
+                                    int.TryParse(text, out int sortNo);
+                                    ptFamilyReki.SortNo = sortNo;
+                                    break;
+                                case "G":
+                                    ptFamilyReki.ByomeiCd = text;
+                                    break;
+                                case "H":
+                                    ptFamilyReki.ByotaiCd = text;
+                                    break;
+                                case "I":
+                                    ptFamilyReki.Byomei = text;
+                                    break;
+                                case "J":
+                                    ptFamilyReki.Cmt = text;
+                                    break;
+                                case "K":
+                                    int.TryParse(text, out int isDeleted);
+                                    ptFamilyReki.IsDeleted = isDeleted;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        ptFamilyReki.CreateDate = DateTime.UtcNow;
+                        ptFamilyReki.UpdateDate = DateTime.UtcNow;
+                        ptFamilyReki.CreateMachine = "UNIT-TEST";
+                        ptFamilyReki.UpdateMachine = "UNIT-TEST";
+                        ptFamilyReki.CreateId = 2;
+                        ptFamilyRekis.Add(ptFamilyReki);
+                    }
+                }
+            }
+
+            return ptFamilyRekis;
+        }
+
+        public static List<PtFamily> ReadPtFamily()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var ptFamilies = new List<PtFamily>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_FAMILY").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptFamily = new PtFamily();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int familyId);
+                                    ptFamily.FamilyId = familyId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int hpId);
+                                    ptFamily.HpId = hpId;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int id);
+                                    ptFamily.PtId = id;
+                                    break;
+                                case "E":
+                                    ptFamily.ZokugaraCd = text;
+                                    break;
+                                case "F":
+                                    int.TryParse(text, out int sortNo);
+                                    ptFamily.SortNo = sortNo;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int parentId);
+                                    ptFamily.ParentId = parentId;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int familyPtId);
+                                    ptFamily.FamilyPtId = familyPtId;
+                                    break;
+                                case "I":
+                                    ptFamily.KanaName = text;
+                                    break;
+                                case "J":
+                                    ptFamily.Name = text;
+                                    break;
+                                case "K":
+                                    int.TryParse(text, out int sex);
+                                    ptFamily.Sex = sex;
+                                    break;
+                                case "L":
+                                    int.TryParse(text, out int dob);
+                                    ptFamily.Birthday = dob;
+                                    break;
+                                case "M":
+                                    int.TryParse(text, out int isDead);
+                                    ptFamily.IsDead = isDead;
+                                    break;
+                                case "N":
+                                    int.TryParse(text, out int isSeparated);
+                                    ptFamily.IsSeparated = isSeparated;
+                                    break;
+                                case "O":
+                                    ptFamily.Biko = text;
+                                    break;
+                                case "P":
+                                    int.TryParse(text, out int isDeleted);
+                                    ptFamily.IsDeleted = isDeleted;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        ptFamily.CreateDate = DateTime.UtcNow;
+                        ptFamily.UpdateDate = DateTime.UtcNow;
+                        ptFamily.CreateMachine = "UNIT-TEST";
+                        ptFamily.UpdateMachine = "UNIT-TEST";
+                        ptFamily.CreateId = 2;
+
+                        ptFamilies.Add(ptFamily);
+                    }
+                }
+            }
+
+            return ptFamilies;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)

@@ -212,6 +212,7 @@ public class AgeCheckerTest : BaseUT
         ageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
+        //AgeLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 3);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -279,6 +280,7 @@ public class AgeCheckerTest : BaseUT
         ageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
+        //AgeLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 3);
         var temp = systemConf?.Val ?? 11;
         if (systemConf != null)
@@ -326,6 +328,8 @@ public class AgeCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+        //AgeLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 3);
         var temp = systemConf?.Val ?? 8;
         int settingLevel = 8;

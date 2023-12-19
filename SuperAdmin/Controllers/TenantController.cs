@@ -66,6 +66,7 @@ namespace SuperAdminAPI.Controllers
         public ActionResult<Response<TenantOnboardResponse>> TenantOnboardAsync([FromBody] TenantOnboardRequest request)
         {
             var input = new TenantOnboardInputData(
+                request.TenantId,
                 request.Hospital,
                 request.AdminId,
                 request.Password,

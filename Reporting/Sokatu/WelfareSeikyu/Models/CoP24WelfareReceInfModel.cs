@@ -25,6 +25,17 @@ public class CoP24WelfareReceInfModel
         this.kohiHokenNos = kohiHokenNos;
     }
 
+    public CoP24WelfareReceInfModel()
+    {
+        ReceInf = new();
+        PtInf = new();
+        PtKohi1 = new();
+        PtKohi2 = new();
+        PtKohi3 = new();
+        PtKohi4 = new();
+        this.kohiHokenNos = new();
+    }
+
     /// <summary>
     /// 診療年月
     /// </summary>
@@ -82,10 +93,10 @@ public class CoP24WelfareReceInfModel
     public string WelfareJyukyusyaNo
     {
         get =>
-            kohiHokenNos.Contains(PtKohi1.HokenNo) ? CIUtil.Copy(PtKohi1.TokusyuNo, 5, 8) :
-            kohiHokenNos.Contains(PtKohi2.HokenNo) ? CIUtil.Copy(PtKohi2.TokusyuNo, 5, 8) :
-            kohiHokenNos.Contains(PtKohi3.HokenNo) ? CIUtil.Copy(PtKohi3.TokusyuNo, 5, 8) :
-            kohiHokenNos.Contains(PtKohi4.HokenNo) ? CIUtil.Copy(PtKohi4.TokusyuNo, 5, 8) :
+            kohiHokenNos.Contains(PtKohi1.HokenNo) ? CIUtil.Copy(PtKohi1.TokusyuNo ?? string.Empty, 5, 8) :
+            kohiHokenNos.Contains(PtKohi2.HokenNo) ? CIUtil.Copy(PtKohi2.TokusyuNo ?? string.Empty, 5, 8) :
+            kohiHokenNos.Contains(PtKohi3.HokenNo) ? CIUtil.Copy(PtKohi3.TokusyuNo ?? string.Empty, 5, 8) :
+            kohiHokenNos.Contains(PtKohi4.HokenNo) ? CIUtil.Copy(PtKohi4.TokusyuNo ?? string.Empty, 5, 8) :
             "";
     }
 
@@ -95,10 +106,10 @@ public class CoP24WelfareReceInfModel
     public string CityCode
     {
         get =>
-            kohiHokenNos.Contains(PtKohi1.HokenNo) ? CIUtil.Copy(PtKohi1.TokusyuNo, 1, 3) :
-            kohiHokenNos.Contains(PtKohi2.HokenNo) ? CIUtil.Copy(PtKohi2.TokusyuNo, 1, 3) :
-            kohiHokenNos.Contains(PtKohi3.HokenNo) ? CIUtil.Copy(PtKohi3.TokusyuNo, 1, 3) :
-            kohiHokenNos.Contains(PtKohi4.HokenNo) ? CIUtil.Copy(PtKohi4.TokusyuNo, 1, 3) :
+            kohiHokenNos.Contains(PtKohi1.HokenNo) ? CIUtil.Copy(PtKohi1.TokusyuNo ?? string.Empty, 1, 3) :
+            kohiHokenNos.Contains(PtKohi2.HokenNo) ? CIUtil.Copy(PtKohi2.TokusyuNo ?? string.Empty, 1, 3) :
+            kohiHokenNos.Contains(PtKohi3.HokenNo) ? CIUtil.Copy(PtKohi3.TokusyuNo ?? string.Empty, 1, 3) :
+            kohiHokenNos.Contains(PtKohi4.HokenNo) ? CIUtil.Copy(PtKohi4.TokusyuNo ?? string.Empty, 1, 3) :
             "";
     }
 
@@ -181,11 +192,11 @@ public class CoP24WelfareReceInfModel
     public bool TokkiContains(string tokkiCd)
     {
         return
-            CIUtil.Copy(ReceInf.Tokki, 1, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki, 3, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki, 5, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki, 7, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki, 9, 2) == tokkiCd;
+            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 1, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 3, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 5, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 7, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 9, 2) == tokkiCd;
     }
 
     /// <summary>
@@ -242,10 +253,10 @@ public class CoP24WelfareReceInfModel
     {
         switch (kohiIndex)
         {
-            case 1: return ReceInf.Kohi1Houbetu;
-            case 2: return ReceInf.Kohi2Houbetu;
-            case 3: return ReceInf.Kohi3Houbetu;
-            case 4: return ReceInf.Kohi4Houbetu;
+            case 1: return ReceInf.Kohi1Houbetu ?? string.Empty;
+            case 2: return ReceInf.Kohi2Houbetu ?? string.Empty;
+            case 3: return ReceInf.Kohi3Houbetu ?? string.Empty;
+            case 4: return ReceInf.Kohi4Houbetu ?? string.Empty;
         }
         return "";
     }
@@ -255,7 +266,7 @@ public class CoP24WelfareReceInfModel
     /// </summary>
     public string PtName
     {
-        get => PtInf.Name;
+        get => PtInf.Name ?? string.Empty;
     }
 
     /// <summary>
@@ -263,7 +274,7 @@ public class CoP24WelfareReceInfModel
     /// </summary>
     public string PtKanaName
     {
-        get => PtInf.KanaName;
+        get => PtInf.KanaName ?? string.Empty;
     }
 
     /// <summary>

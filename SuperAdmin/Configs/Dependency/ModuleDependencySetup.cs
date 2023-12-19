@@ -35,6 +35,11 @@ using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
 using UseCase.UserToken.GetInfoRefresh;
 using UseCase.UserToken.SiginRefresh;
+using UseCase.SystemStartDbs;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
+using Microsoft.Extensions.Caching.Memory;
+using UseCase.SuperAdmin.ExportCsvTenantList;
+using UseCase.SuperAdmin.ExportCsvLogList;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -112,6 +117,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<RestoreObjectS3TenantInputData, RestoreObjectS3TenantInteractor>();
             busBuilder.RegisterUseCase<UpdateDataTenantInputData, UpdateDataTenantInteractor>();
             busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
+            busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
