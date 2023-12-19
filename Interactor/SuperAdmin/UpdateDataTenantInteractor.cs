@@ -52,6 +52,7 @@ namespace Interactor.SuperAdmin
                 string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
 
                 string pathFolderScript = $"{pathFileExtract7z}\\updfile\\02_script";
+                //string pathFolderScript = $"D:\\7Z-nghiaduong2-e2cbf31a-11d2-4418-bbdf-05f4ea5ae431\\updfile\\02_script";
 
                 // Save file 7z
                 using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
@@ -66,7 +67,7 @@ namespace Interactor.SuperAdmin
                 }
 
                 // Execute file script in folder 02_script
-
+                    
                 // Create transaction executed 
                 string[] extractedFiles = Directory.GetFiles(pathFolderScript);
                 PostgresSqlAction.ExecuteSqlFiles(extractedFiles, "localhost", 5432,"test01",  "postgres", "1234$");

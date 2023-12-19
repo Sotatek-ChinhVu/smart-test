@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AWSSDK.Constants
+﻿namespace AWSSDK.Constants
 {
     public static class QueryConstant
     {
@@ -96,5 +90,8 @@ CREATE INDEX ""idx_AuditLogs_PtId"" ON ONLY public.""AuditLogs"" USING btree (""
                     (1, 1, '99201013', 0, '2021-05-30 01:23:14.071', 0, NULL, '2023-11-22 10:42:59.113', 1, 'CATNROSE'),
                     (1, 1, '02001000', 0, '2023-11-22 10:42:59.114', 1, 'CATNROSE', '2023-11-22 10:42:59.114', 1, 'CATNROSE');";
         public static string SqlUser = "INSERT INTO public.\"USER_MST\" (\"HP_ID\",\r\n\"ID\",\r\n\"USER_ID\",\r\n\"JOB_CD\",\r\n\"MANAGER_KBN\",\r\n\"KA_ID\",\r\n\"KANA_NAME\",\r\n\"NAME\",\r\n\"SNAME\",\r\n\"LOGIN_ID\",\r\n\"LOGIN_PASS\",\r\n\"MAYAKU_LICENSE_NO\",\r\n\"START_DATE\",\r\n\"END_DATE\",\r\n\"SORT_NO\",\r\n\"IS_DELETED\",\r\n\"CREATE_DATE\",\r\n\"CREATE_ID\",\r\n\"CREATE_MACHINE\",\r\n\"UPDATE_DATE\",\r\n\"UPDATE_ID\",\r\n\"UPDATE_MACHINE\",\r\n\"RENKEI_CD1\",\r\n\"DR_NAME\",\r\n\"LOGIN_TYPE\",\r\n\"HPKI_SN\",\r\n\"HPKI_ISSUER_DN\")\r\nVALUES(1, 0, 1001, 1, 7, 1, '', '', '', '{0}', '{1}', '', 0, 99999999, 0, 0, '2004-01-10 00:00:00.000', 0, NULL, '2023-10-10 00:11:18.558', 0, '', '', '', 0, NULL, NULL);";
+
+        public static string SaveSystemChangeLog = "INSERT INTO public.\"SYSTEM_CHANGE_LOG\" (\"FILE_NAME\",\"IS_PG\",\"IS_DB\",\"IS_MASTER\",\"IS_NOTE\",\"STATUS\",\"ERR_MESSAGE\",\"CREATE_DATE\",\"UPDATE_DATE\",\"IS_RUN\",\"IS_DRUG_PHOTO\")\r\n\tVALUES (@FileName, @IsPG, @IsDB, @IsMaster, @IsNote, @Status, @ErrMessage, @CreateDate, @UpdateDate, @IsRun, @IsDrugPhoto);\r\n";
+
     }
 }
