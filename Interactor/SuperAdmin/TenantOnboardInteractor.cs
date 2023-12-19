@@ -86,7 +86,7 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                else if (inputData.SizeType != ConfigConstant.SizeTypeMB && inputData.SizeType != ConfigConstant.SizeTypeGB)
+                else if (inputData.SizeType != ConfigConstant.SizeTypeGB)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSizeType);
                 }
@@ -94,24 +94,15 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
-                else if (inputData.SizeType == ConfigConstant.SizeTypeMB)
+                if (inputData.ClusterMode == ConfigConstant.TypeSharing)
                 {
-                    // default 150MB
-                    if (inputData.Size > 150)
+                    if (inputData.Size < 15 || inputData.Size > 250)
                         return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                else if (inputData.SizeType == ConfigConstant.SizeTypeGB)
+                else
                 {
-                    if (inputData.ClusterMode == ConfigConstant.TypeSharing)
-                    {
-                        if (inputData.Size > 250)
-                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                    }
-                    else
-                    {
-                        if (inputData.Size > 1024)
-                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                    }
+                    if (inputData.Size < 15 || inputData.Size > 1024)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
                 var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
                 var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
