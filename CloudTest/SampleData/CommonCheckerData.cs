@@ -2290,6 +2290,103 @@ namespace CloudUnitTest.SampleData
             return m56ExIngrdtMains;
         }
 
+        public static List<M56YjDrugClass> READ_M56_YJ_DRUG_CLASS()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56YjDrugs = new List<M56YjDrugClass>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_YJ_DRUG_CLASS").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56YjDrugClass = new M56YjDrugClass();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56YjDrugClass.YjCd = text;
+                                    break;
+                                case "B":
+                                    m56YjDrugClass.ClassCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56YjDrugs.Add(m56YjDrugClass);
+                    }
+                }
+            }
+
+            return m56YjDrugs;
+        }
+
+        public static List<M56DrugClass> READ_M56_DRUG_CLASS()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56Drugs = new List<M56DrugClass>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_DRUG_CLASS").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56Drug = new M56DrugClass();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56Drug.ClassCd = text;
+                                    break;
+                                case "B":
+                                    m56Drug.ClassName = text;
+                                    break;
+                                case "C":
+                                    m56Drug.ClassDuplication = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56Drugs.Add(m56Drug);
+                    }
+                }
+            }
+
+            return m56Drugs;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
