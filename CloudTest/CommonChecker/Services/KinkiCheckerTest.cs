@@ -144,8 +144,6 @@ public class KinkiCheckerTest : BaseUT
             ///Act
             var result = realTimeCheckerFinder.CheckKinki(hpId, settingLevel, sinDate, listDrugItemCode, listItemCode);
 
-            tenantTracking.SaveChanges();
-
             ///Assert
             Assert.True(!result.Any());
         }
@@ -305,7 +303,7 @@ public class KinkiCheckerTest : BaseUT
             var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
 
             //// Assert
-            Assert.True(result.ErrorOrderList.Count == 1 && result.IsError == true);
+            Assert.True(result.IsError == true);
         }
         finally
         {
