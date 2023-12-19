@@ -39,12 +39,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                         };
                         checkedResult.Add(error);
                     }
-                    else if (detail.ItemCd == ItemCdConst.Con_Refill && detail.Suryo > _systemGenerationConfRepository.RefillSetting(unitCheckerResult.Sinday))
+                    else if (detail.ItemCd == ItemCdConst.Con_Refill && detail.Suryo > _systemGenerationConfRepository.RefillSetting(HpID, unitCheckerResult.Sinday))
                     {
                         InvalidDataOrder error = new InvalidDataOrder()
                         {
                             ErrorType = ErrorType.RefillQuantityLimit,
-                            ItemName = "'" + detail.ItemName + "'の数量は" + _systemGenerationConfRepository.RefillSetting(unitCheckerResult.Sinday) + "以下を入力してください。"
+                            ItemName = "'" + detail.ItemName + "'の数量は" + _systemGenerationConfRepository.RefillSetting(HpID, unitCheckerResult.Sinday) + "以下を入力してください。"
                         };
                         checkedResult.Add(error);
                     }
