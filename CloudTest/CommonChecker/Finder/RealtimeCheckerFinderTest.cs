@@ -114,7 +114,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_005_CheckProDrug_Test_ItemCodeList_NotDuplicated()
+        public void TC_005_CheckProDrug()
         {
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -269,6 +269,73 @@ namespace CloudUnitTest.CommonChecker.Finder
             finally
             {
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.SaveChanges();
+            }
+
+        }
+
+        [Test]
+        public void TC_006_CheckProDrugForDuplication()
+        {
+
+            //Setup Data Test
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
+            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
+            tenantTracking.M12FoodAlrgy.AddRange(m12);
+            tenantTracking.M56ExEdIngredients.AddRange(m56ExEd);
+            tenantTracking.M56ProdrugCd.AddRange(m56Prodrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            //Setup Param
+            int hpId = 1;
+            long ptId = 111;
+            int sinDay = 20230101;
+            int setting = 0;
+
+            var itemCodeModelList = new List<ItemCodeModel>()
+                {
+                new ItemCodeModel("UT2700", "Id1"),
+                };
+            var listCompare = new List<ItemCodeModel>()
+                {
+                new ItemCodeModel("UT2701", "Id2"),
+                };
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckProDrugForDuplication(hpId, ptId, sinDay, itemCodeModelList, listCompare, setting);
+
+                // Assert
+                Assert.False(result.Any());
+            }
+            catch (Exception)
+            {
+                tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
+                tenantTracking.M12FoodAlrgy.RemoveRange(m12);
+                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEd);
+                tenantTracking.M56ProdrugCd.RemoveRange(m56Prodrugs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
+                tenantTracking.M12FoodAlrgy.RemoveRange(m12);
+                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEd);
+                tenantTracking.M56ProdrugCd.RemoveRange(m56Prodrugs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.SaveChanges();
             }
 
