@@ -46,6 +46,8 @@ public class P13KokhoSokatuCoReportService : IP13KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
     }
     #endregion
 
@@ -54,7 +56,6 @@ public class P13KokhoSokatuCoReportService : IP13KokhoSokatuCoReportService
     private int seikyuYm;
     private SeikyuType seikyuType;
     int diskKind;
-    int diskCnt;
     private bool hasNextPage;
     private int currentPage;
     #endregion
@@ -133,7 +134,7 @@ public class P13KokhoSokatuCoReportService : IP13KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     //国保
@@ -152,7 +153,7 @@ public class P13KokhoSokatuCoReportService : IP13KokhoSokatuCoReportService
                         totalData.Clear();
                         break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

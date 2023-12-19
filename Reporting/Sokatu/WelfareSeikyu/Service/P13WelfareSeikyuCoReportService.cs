@@ -49,6 +49,9 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
         _visibleFieldData = new();
         _visibleAtPrint = new();
         _systemConfig = systemConfig;
+        hpInf = new();
+        receInfs = new();
+        kohiHoubetus = new();
     }
     #endregion
 
@@ -177,8 +180,8 @@ public class P13WelfareSeikyuCoReportService : IP13WelfareSeikyuCoReportService
                 //負担者番号
                 if (curReceInf.FutansyaNo(kohiHoubetus) != "")
                 {
-                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(0, 2)));
-                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(4, 4)));
+                    listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus)?.Substring(0, 2) ?? string.Empty));
+                    listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus)?.Substring(4, 4) ?? string.Empty));
 
                 }
                 //受給者番号

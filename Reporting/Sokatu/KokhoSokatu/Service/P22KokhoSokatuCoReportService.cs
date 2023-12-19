@@ -59,6 +59,12 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kaMsts = new();
+        hokensyaNos = new();
+        curReceInfs = new();
     }
     #endregion
 
@@ -152,7 +158,7 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
                     const int maxRow = 7;
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (rowNo)
                         {
                             //国保
@@ -165,7 +171,7 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
                             case 5: wrkReces = curReceInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex] && r.IsRetFamily).ToList(); break;
                             case 6: wrkReces = curReceInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex] && r.IsRetPreSchool).ToList(); break;
                         }
-                        if (wrkReces == null) continue;
+                        if (wrkReces.Count == 0) continue;
 
                         countData wrkData = new countData();
                         //件数
@@ -222,14 +228,14 @@ public class P22KokhoSokatuCoReportService : IP22KokhoSokatuCoReportService
 
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (rowNo)
                         {
                             //国保
                             case 0: wrkReces = curReceInfs.Where(r => r.HokensyaNo == koukiNos[koukiIndex] && r.IsKoukiIppan).ToList(); break;
                             case 1: wrkReces = curReceInfs.Where(r => r.HokensyaNo == koukiNos[koukiIndex] && r.IsKoukiUpper).ToList(); break;
                         }
-                        if (wrkReces == null) continue;
+                        if (wrkReces.Count == 0) continue;
 
                         countData wrkData = new countData();
                         //件数

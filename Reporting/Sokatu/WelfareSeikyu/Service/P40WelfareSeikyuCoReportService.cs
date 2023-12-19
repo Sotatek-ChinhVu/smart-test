@@ -25,11 +25,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP40WelfareReceInfModel> receInfs;
-        private CoHpInfModel hpInf;
+        private List<CoP40WelfareReceInfModel> receInfs = new();
+        private CoHpInfModel hpInf = new();
 
-        private List<string> futansyaNos;
-        private string currentFutansyaNo;
+        private List<string> futansyaNos = new();
+        private string currentFutansyaNo = "";
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -144,7 +144,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoP40WelfareReceInfModel> wrkReces = null;
+                    List<CoP40WelfareReceInfModel> wrkReces = new();
 
                     string kohiHoubetu = kohiHoubetus[rowNo / 3];
 
@@ -154,7 +154,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKohiHoubetu(kohiHoubetu) && r.HokenRate == 20).ToList(); break;
                         case 2: wrkReces = curReceInfs.Where(r => r.IsKohiHoubetu(kohiHoubetu) && r.HokenRate != 30 && r.HokenRate != 20).ToList(); break;
                     }
-                    if (wrkReces == null || wrkReces.Count == 0) continue;
+                    if (wrkReces.Count == 0 || wrkReces.Count == 0) continue;
 
                     //件数
                     listDataPerPage.Add(new("count", 0, rowNo, wrkReces.Count.ToString()));
@@ -214,7 +214,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 futansyaNos = receInfs.GroupBy(r => r.FutansyaNo()).OrderBy(r => r.Key).Select(r => r.Key).ToList();
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
