@@ -2228,6 +2228,68 @@ namespace CloudUnitTest.SampleData
             return m56Prodrugs;
         }
 
+        public static List<M56ExIngrdtMain> READ_M56_EX_INGRDT_MAIN()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56ExIngrdtMains = new List<M56ExIngrdtMain>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_EX_INGRDT_MAIN").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56ExIngrdtMain = new M56ExIngrdtMain();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56ExIngrdtMain.YjCd = text;
+                                    break;
+                                case "B":
+                                    m56ExIngrdtMain.DrugKbn = text;
+                                    break;
+                                case "C":
+                                    m56ExIngrdtMain.YohoCd = text;
+                                    break;
+                                case "D":
+                                    m56ExIngrdtMain.HaigouFlg = text;
+                                    break;
+                                case "E":
+                                    m56ExIngrdtMain.YuekiFlg = text;
+                                    break;
+                                case "F":
+                                    m56ExIngrdtMain.KanpoFlg = text;
+                                    break;
+                                case "G":
+                                    m56ExIngrdtMain.ZensinsayoFlg = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56ExIngrdtMains.Add(m56ExIngrdtMain);
+                    }
+                }
+            }
+
+            return m56ExIngrdtMains;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
