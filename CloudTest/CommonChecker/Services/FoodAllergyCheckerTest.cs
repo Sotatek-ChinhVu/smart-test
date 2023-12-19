@@ -34,12 +34,13 @@ public class FoodAllergyCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        
+
         var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
         foodAllergyChecker.HpID = 1;
         foodAllergyChecker.PtID = 111;
         foodAllergyChecker.Sinday = 20230101;
 
+        //FoodAllergyLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -89,9 +90,6 @@ public class FoodAllergyCheckerTest : BaseUT
         }
     }
 
-    /// <summary>
-    ///
-    /// </summary>
     [Test]
     public void FoodAllergyChecker_002_CheckError_With_ItemCd_Is_PtAlrydrug()
     {
@@ -112,13 +110,12 @@ public class FoodAllergyCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        var cache = new MasterDataCacheService(TenantProvider);
         var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
         foodAllergyChecker.HpID = 1;
         foodAllergyChecker.PtID = 111;
         foodAllergyChecker.Sinday = 20230101;
-        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
+        //FoodAllergyLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -140,7 +137,6 @@ public class FoodAllergyCheckerTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
-        tenantTracking.SaveChanges();
 
         //Read data test
         var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
@@ -148,6 +144,9 @@ public class FoodAllergyCheckerTest : BaseUT
         tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
         tenantTracking.M12FoodAlrgy.AddRange(m12);
         tenantTracking.SaveChanges();
+
+        var cache = new MasterDataCacheService(TenantProvider);
+        foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
         try
         {
@@ -210,13 +209,13 @@ public class FoodAllergyCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        
+
         var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
         foodAllergyChecker.HpID = 1;
         foodAllergyChecker.PtID = 111;
         foodAllergyChecker.Sinday = 20230101;
-        
 
+        //FoodAllergyLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -289,13 +288,13 @@ public class FoodAllergyCheckerTest : BaseUT
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-       
+
         var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
         foodAllergyChecker.HpID = 1;
         foodAllergyChecker.PtID = 111;
         foodAllergyChecker.Sinday = 20230101;
-        
 
+        //FoodAllergyLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)

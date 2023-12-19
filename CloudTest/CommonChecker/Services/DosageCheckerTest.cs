@@ -62,6 +62,7 @@ public class DosageCheckerTest : BaseUT
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
 
+        //DosageDrinkingDrugSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -325,6 +326,7 @@ public class DosageCheckerTest : BaseUT
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
 
+        //DosageDrinkingDrugSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -428,6 +430,7 @@ public class DosageCheckerTest : BaseUT
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
 
+        //DosageDrugAsOrderSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 3);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -689,6 +692,7 @@ public class DosageCheckerTest : BaseUT
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
 
+        //DosageOtherDrugSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 4);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -756,6 +760,7 @@ public class DosageCheckerTest : BaseUT
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
 
+        //DosageDrinkingDrugSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -853,6 +858,7 @@ public class DosageCheckerTest : BaseUT
         var ptInfs = CommonCheckerData.ReadPtInf();
         tenantTracking.PtInfs.AddRange(ptInfs);
 
+        //DosageDrinkingDrugSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)

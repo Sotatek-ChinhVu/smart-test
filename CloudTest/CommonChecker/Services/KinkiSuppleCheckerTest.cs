@@ -42,6 +42,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         kinkiSuppleChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
+        //KinkiLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -130,6 +131,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         //setup SystemCof
+        //KinkiLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -212,8 +214,9 @@ public class KinkiSuppleCheckerTest : BaseUT
         kinkiSuppleChecker.PtID = 13934;
         kinkiSuppleChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        
+
         //setup SystemCof
+        //KinkiLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -299,6 +302,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
 
         //setup SystemCof
+        //KinkiLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -387,16 +391,13 @@ public class KinkiSuppleCheckerTest : BaseUT
         kinkiSuppleChecker.PtID = 13934;
         kinkiSuppleChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-        var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
-        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
-
-        //setup SystemCof
+        
+        //setup SystemCof KinkiLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
-            systemConf.Val = 1;
+            systemConf.Val = 3;
         }
         else
         {
@@ -409,7 +410,7 @@ public class KinkiSuppleCheckerTest : BaseUT
                 UpdateDate = DateTime.UtcNow,
                 CreateId = 2,
                 UpdateId = 2,
-                Val = 1
+                Val = 3
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
@@ -424,6 +425,10 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.M41SuppleIndexcodes.AddRange(m41IndexCode);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
         tenantTracking.SaveChanges();
+
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
 
         try
         {

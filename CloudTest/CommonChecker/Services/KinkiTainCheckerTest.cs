@@ -99,7 +99,7 @@ public class KinkiTainCheckerTest : BaseUT
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-        //Setup KinkiLevelSetting
+        //Setup KinkiLevelSetting 
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
