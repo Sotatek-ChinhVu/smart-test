@@ -47,10 +47,21 @@ namespace Infrastructure.Repositories
         private readonly TenantDataContext _tenantNextKarteInf;
         private readonly TenantDataContext _tenantTagInf;
         private readonly TenantDataContext _tenantCmtInf;
+
+        // No tracking data context to multiple thread query
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf1;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf2;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf3;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf4;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf5;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf6;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf7;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf8;
+        private readonly TenantNoTrackingDataContext _tenantRaiinListInf9;
         private readonly StackExchange.Redis.IDatabase _cache;
         private readonly IConfiguration _configuration;
         private readonly string key;
-        public FlowSheetRepository(ITenantProvider tenantProvider, ITenantProvider tenantRaiinInf, ITenantProvider tenantNextOrder, ITenantProvider tenantNextKarteInf, ITenantProvider tenantKarteInf, ITenantProvider tenantTagInf, ITenantProvider tenantCmtInf, IConfiguration configuration) : base(tenantProvider)
+        public FlowSheetRepository(ITenantProvider tenantProvider, ITenantProvider tenantRaiinInf, ITenantProvider tenantNextOrder, ITenantProvider tenantNextKarteInf, ITenantProvider tenantKarteInf, ITenantProvider tenantTagInf, ITenantProvider tenantCmtInf, IConfiguration configuration, ITenantProvider tenantRaiinListInf1, ITenantProvider tenantRaiinListInf2, ITenantProvider tenantRaiinListInf3, ITenantProvider tenantRaiinListInf4, ITenantProvider tenantRaiinListInf5, ITenantProvider tenantRaiinListInf6, ITenantProvider tenantRaiinListInf7, ITenantProvider tenantRaiinListInf8, ITenantProvider tenantRaiinListInf9) : base(tenantProvider)
         {
             _tenantHistory = tenantRaiinInf.GetNoTrackingDataContext();
             _tenantNextOrder = tenantNextOrder.GetNoTrackingDataContext();
@@ -58,6 +69,17 @@ namespace Infrastructure.Repositories
             _tenantNextKarteInf = tenantNextKarteInf.GetTrackingTenantDataContext();
             _tenantTagInf = tenantTagInf.GetTrackingTenantDataContext();
             _tenantCmtInf = tenantCmtInf.GetTrackingTenantDataContext();
+
+            // get tenant no tracking data context to get multiple thread
+            _tenantRaiinListInf1 = tenantRaiinListInf1.GetNoTrackingDataContext();
+            _tenantRaiinListInf2 = tenantRaiinListInf2.GetNoTrackingDataContext();
+            _tenantRaiinListInf3 = tenantRaiinListInf3.GetNoTrackingDataContext();
+            _tenantRaiinListInf4 = tenantRaiinListInf4.GetNoTrackingDataContext();
+            _tenantRaiinListInf5 = tenantRaiinListInf5.GetNoTrackingDataContext();
+            _tenantRaiinListInf6 = tenantRaiinListInf6.GetNoTrackingDataContext();
+            _tenantRaiinListInf7 = tenantRaiinListInf7.GetNoTrackingDataContext();
+            _tenantRaiinListInf8 = tenantRaiinListInf8.GetNoTrackingDataContext();
+            _tenantRaiinListInf9 = tenantRaiinListInf9.GetNoTrackingDataContext();
             _configuration = configuration;
             key = GetCacheKey();
             GetRedis();
@@ -149,13 +171,6 @@ namespace Infrastructure.Repositories
             });
 
             Console.WriteLine($"End GetListFlowSheet: {ptId} - {stopwatch.ElapsedMilliseconds}");
-
-            _tenantHistory.Dispose();
-            _tenantNextOrder.Dispose();
-            _tenantKarteInf.Dispose();
-            _tenantNextKarteInf.Dispose();
-            _tenantTagInf.Dispose();
-            _tenantCmtInf.Dispose();
 
             return flowSheetModelList;
         }
@@ -535,23 +550,78 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+
+            // Dispose data context multiple theread
+            _tenantHistory.Dispose();
+            _tenantNextOrder.Dispose();
+            _tenantKarteInf.Dispose();
+            _tenantNextKarteInf.Dispose();
+            _tenantTagInf.Dispose();
+            _tenantCmtInf.Dispose();
+            _tenantRaiinListInf1.Dispose();
+            _tenantRaiinListInf2.Dispose();
+            _tenantRaiinListInf3.Dispose();
+            _tenantRaiinListInf4.Dispose();
+            _tenantRaiinListInf5.Dispose();
+            _tenantRaiinListInf6.Dispose();
+            _tenantRaiinListInf7.Dispose();
+            _tenantRaiinListInf8.Dispose();
+            _tenantRaiinListInf9.Dispose();
         }
 
         public Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId)
         {
             var stopwatch = Stopwatch.StartNew();
-            var raiinListInfs =
-               (
-                  from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
-                  join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None)
-                  on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
-                  select new { raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
-               ).ToList();
+            List<QueryRaiinListInfModel> raiinListInfs = new();
+
+            // common query with raiinListInf
+            var raiinListInfQuery = from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
+                                    join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None)
+                                    on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                                    select new QueryRaiinListInfModel(raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty);
+
+            // get totalItem and get items per page
+            var total = raiinListInfQuery.Count();
+            var itemPerPage = total / 10;
+
+            // multiple thread to get data raiinListInf
+            var tastList1 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(NoTrackingDataContext, hpId, ptId).Skip(0 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList2 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf1, hpId, ptId).Skip(1 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList3 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf2, hpId, ptId).Skip(2 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList4 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf3, hpId, ptId).Skip(3 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList5 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf4, hpId, ptId).Skip(4 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList6 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf5, hpId, ptId).Skip(5 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList7 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf6, hpId, ptId).Skip(6 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList8 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf7, hpId, ptId).Skip(7 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList9 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf8, hpId, ptId).Skip(8 * itemPerPage).Take(itemPerPage).ToList());
+            var tastList10 = Task<List<QueryRaiinListInfModel>>.Factory.StartNew(() => QueryRaiinListInfItem(_tenantRaiinListInf9, hpId, ptId).Skip(9 * itemPerPage).Take(total - (9 * itemPerPage)).ToList());
+            Task.WaitAll(tastList1, tastList2, tastList3, tastList4, tastList5, tastList6, tastList7, tastList8, tastList9, tastList10);
+
+            raiinListInfs.AddRange(tastList1.Result);
+            raiinListInfs.AddRange(tastList2.Result);
+            raiinListInfs.AddRange(tastList3.Result);
+            raiinListInfs.AddRange(tastList4.Result);
+            raiinListInfs.AddRange(tastList5.Result);
+            raiinListInfs.AddRange(tastList6.Result);
+            raiinListInfs.AddRange(tastList7.Result);
+            raiinListInfs.AddRange(tastList8.Result);
+            raiinListInfs.AddRange(tastList9.Result);
+            raiinListInfs.AddRange(tastList10.Result);
 
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
+            stopwatch.Stop();
             Console.WriteLine($"End RaiinListInf Today - {ptId} - {stopwatch.ElapsedMilliseconds}");
+            return result;
+        }
+
+        private IQueryable<QueryRaiinListInfModel> QueryRaiinListInfItem(TenantNoTrackingDataContext dataContex, int hpId, long ptId)
+        {
+            var result = from raiinListInf in dataContex.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo != 0)
+                         join raiinListMst in dataContex.RaiinListDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None)
+                         on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
+                         select new QueryRaiinListInfModel(raiinListInf.SinDate, raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty);
             return result;
         }
 
