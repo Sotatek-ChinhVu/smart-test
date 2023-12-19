@@ -2115,6 +2115,119 @@ namespace CloudUnitTest.SampleData
             return ptFamilies;
         }
 
+        public static List<M56ExEdIngredients> Read_M56_EX_ED_INGREDIENTS()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56ExEdIngredients = new List<M56ExEdIngredients>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_EX_ED_INGREDIENTS").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56ExEd = new M56ExEdIngredients();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56ExEd.YjCd = text;
+                                    break;
+                                case "C":
+                                    m56ExEd.SeibunCd = text;
+                                    break;
+                                case "D":
+                                    m56ExEd.SeibunIndexCd = text;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int sbt);
+                                    m56ExEd.Sbt = sbt;
+                                    break;
+                                case "F":
+                                    m56ExEd.ProdrugCheck = text;
+                                    break;
+                                case "G":
+                                    m56ExEd.AnalogueCheck = text;
+                                    break;
+                                case "H":
+                                    m56ExEd.YokaiekiCheck = text;
+                                    break;
+                                case "I":
+                                    m56ExEd.TenkabutuCheck = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56ExEdIngredients.Add(m56ExEd);
+                    }
+                }
+            }
+
+            return m56ExEdIngredients;
+        }
+
+        public static List<M56ProdrugCd> READ_M56_PRODRUG_CD()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56Prodrugs = new List<M56ProdrugCd>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_PRODRUG_CD").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56Prodrug = new M56ProdrugCd();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56Prodrug.SeibunCd = text;
+                                    break;
+                                case "C":
+                                    m56Prodrug.KasseitaiCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56Prodrugs.Add(m56Prodrug);
+                    }
+                }
+            }
+
+            return m56Prodrugs;
+        }
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
