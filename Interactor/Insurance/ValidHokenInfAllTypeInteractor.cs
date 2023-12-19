@@ -750,9 +750,8 @@ namespace Interactor.Insurance
                     int ageEndMst = sHokenMstAgeEnd;
                     if ((ageStartMst != 0 || ageEndMst != 999) && (intAGE < ageStartMst || intAGE > ageEndMst))
                     {
-                        // update logic check age
-                        var paramsMessage = new string[] { "主保険の保険が適用年齢範囲外の", "この保険の適用年齢範囲は" + ageStartMst + "歳 〜 " + ageEndMst + "歳 です。" };
-                        message = string.Format(ErrorMessage.MessageType_Age, paramsMessage);
+                        var paramsMessage = new string[] { "主保険の保険が適用年齢範囲外の", "・この保険の適用年齢範囲は。" + ageStartMst + "歳 〜 " + ageEndMst + "歳 です。" };
+                        message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
                         validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidCheckAgeHokenMst, message, TypeMessage.TypeMessageError));
                     }
                 }
