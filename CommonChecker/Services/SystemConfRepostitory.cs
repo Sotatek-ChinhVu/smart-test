@@ -34,6 +34,13 @@ namespace CommonChecker.Services
             }
             return systemConf != null ? systemConf.Val : defaultValue;
         }
+
+        /// <summary>
+        /// Get SystemGenerationConf
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="presentDate"></param>
+        /// <returns></returns>
         public int RefillSetting(int hpId,int presentDate)
         {
             return GetSettingValue(hpId, 2002, 0, presentDate: presentDate, defaultValue: 999);
