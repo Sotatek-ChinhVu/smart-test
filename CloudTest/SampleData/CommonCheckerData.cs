@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Entity.Tenant;
+using Helper.Extension;
 
 namespace CloudUnitTest.SampleData
 {
@@ -2385,6 +2386,156 @@ namespace CloudUnitTest.SampleData
             }
 
             return m56Drugs;
+        }
+
+        public static List<M56ExAnalogue> READ_M56_EX_ANALOGUE()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56s = new List<M56ExAnalogue>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_EX_ANALOGUE").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56 = new M56ExAnalogue();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56.SeibunCd = text;
+                                    break;
+                                case "C":
+                                    m56.AnalogueCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56s.Add(m56);
+                    }
+                }
+            }
+
+            return m56s;
+        }
+
+        public static List<M56AlrgyDerivatives> READ_M56_ALRGY_DERIVATIVES()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56s = new List<M56AlrgyDerivatives>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_ALRGY_DERIVATIVES").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56 = new M56AlrgyDerivatives();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56.YjCd = text;
+                                    break;
+                                case "B":
+                                    m56.DrvalrgyCd = text;
+                                    break;
+                                case "C":
+                                    m56.SeibunCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56s.Add(m56);
+                    }
+                }
+            }
+
+            return m56s;
+        }
+
+        public static List<M56DrvalrgyCode> READ_M56_DRVALRGY_CODE()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56s = new List<M56DrvalrgyCode>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_DRVALRGY_CODE").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56 = new M56DrvalrgyCode();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56.DrvalrgyCd = text;
+                                    break;
+                                case "B":
+                                    m56.DrvalrgyName = text;
+                                    break;
+                                case "C":
+                                    m56.DrvalrgyGrp = text;
+                                    break;
+                                case "D":
+                                    m56.RankNo = text.AsInteger();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56s.Add(m56);
+                    }
+                }
+            }
+
+            return m56s;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)

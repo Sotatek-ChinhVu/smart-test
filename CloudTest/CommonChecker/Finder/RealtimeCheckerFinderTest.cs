@@ -116,71 +116,6 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_005_CheckProDrug()
-        {
-            //Setup Data Test
-            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
-            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
-            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
-            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
-            tenantTracking.M12FoodAlrgy.AddRange(m12);
-            tenantTracking.M56ExEdIngredients.AddRange(m56ExEd);
-            tenantTracking.M56ProdrugCd.AddRange(m56Prodrugs);
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.SaveChanges();
-
-            //Setup Param
-            int hpId = 1;
-            long ptId = 111;
-            int sinDay = 20230101;
-            int level = 4;
-            bool isDataOfDb = true;
-
-            var itemCodeModelList = new List<ItemCodeModel>()
-                {
-                new ItemCodeModel("UT2700", "Id001"),
-                new ItemCodeModel("UT2700", "Id002"),
-                };
-
-            var listCompare = new List<string>() { "UT2701" };
-            // Arrange
-            var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
-            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
-
-            try
-            {
-                // Act
-                var result = realtimcheckerfinder.CheckProDrug(hpId, ptId, sinDay, itemCodeModelList, listCompare);
-
-                // Assert
-                Assert.True(result.Any() && result.FirstOrDefault().Id == "Id001");
-            }
-            catch (Exception)
-            {
-                tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
-                tenantTracking.M12FoodAlrgy.RemoveRange(m12);
-                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEd);
-                tenantTracking.M56ProdrugCd.RemoveRange(m56Prodrugs);
-                tenantTracking.TenMsts.RemoveRange(tenMsts);
-                tenantTracking.SaveChanges();
-            }
-            finally
-            {
-                tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
-                tenantTracking.M12FoodAlrgy.RemoveRange(m12);
-                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEd);
-                tenantTracking.M56ProdrugCd.RemoveRange(m56Prodrugs);
-                tenantTracking.TenMsts.RemoveRange(tenMsts);
-                tenantTracking.SaveChanges();
-            }
-        }
-
-        [Test]
         public void TC_003_CheckDuplicatedComponentForDuplication_Test_Duplicated()
         {
 
@@ -276,6 +211,72 @@ namespace CloudUnitTest.CommonChecker.Finder
 
         }
 
+
+        [Test]
+        public void TC_005_CheckProDrug()
+        {
+            //Setup Data Test
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var alrgyFoods = CommonCheckerData.ReadPtAlrgyFood();
+            var m12 = CommonCheckerData.ReadM12FoodAlrgy("");
+            var m56ExEd = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56Prodrugs = CommonCheckerData.READ_M56_PRODRUG_CD();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
+            tenantTracking.M12FoodAlrgy.AddRange(m12);
+            tenantTracking.M56ExEdIngredients.AddRange(m56ExEd);
+            tenantTracking.M56ProdrugCd.AddRange(m56Prodrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            //Setup Param
+            int hpId = 1;
+            long ptId = 111;
+            int sinDay = 20230101;
+            int level = 4;
+            bool isDataOfDb = true;
+
+            var itemCodeModelList = new List<ItemCodeModel>()
+                {
+                new ItemCodeModel("UT2700", "Id001"),
+                new ItemCodeModel("UT2700", "Id002"),
+                };
+
+            var listCompare = new List<string>() { "UT2701" };
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckProDrug(hpId, ptId, sinDay, itemCodeModelList, listCompare);
+
+                // Assert
+                Assert.True(result.Any() && result.FirstOrDefault().Id == "Id001");
+            }
+            catch (Exception)
+            {
+                tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
+                tenantTracking.M12FoodAlrgy.RemoveRange(m12);
+                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEd);
+                tenantTracking.M56ProdrugCd.RemoveRange(m56Prodrugs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyFoods.RemoveRange(alrgyFoods);
+                tenantTracking.M12FoodAlrgy.RemoveRange(m12);
+                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEd);
+                tenantTracking.M56ProdrugCd.RemoveRange(m56Prodrugs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
         /// <summary>
         /// test yohocd checking equal yohocd listCompare
         /// </summary>
@@ -344,7 +345,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         /// test yohocd checking equal yohocd listCompare
         /// </summary>
         [Test]
-        public void TC_006_CheckProDrugForDuplication_Test_ZensinsayoFlg_Is_1()
+        public void TC_007_CheckProDrugForDuplication_Test_ZensinsayoFlg_Is_1()
         {
 
             //Setup Data Test
@@ -405,7 +406,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_007_CheckSameComponent()
+        public void TC_008_CheckSameComponent()
         {
 
             //Setup Data Test
@@ -449,7 +450,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_008_CheckDiseaseChecker_Test_IsDataDb_True()
+        public void TC_009_CheckDiseaseChecker_Test_IsDataDb_True()
         {
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -502,7 +503,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_008_CheckDiseaseChecker_Test_IsDataDb_False()
+        public void TC_010_CheckDiseaseChecker_Test_IsDataDb_False()
         {
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -573,7 +574,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_009_CheckDuplicatedClassForDuplication()
+        public void TC_011_CheckDuplicatedClassForDuplication()
         {
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -625,7 +626,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_009_CheckDuplicatedClassForDuplication_Test_Current_And_Checking_Are_Same_ItemCd()
+        public void TC_012_CheckDuplicatedClassForDuplication_Test_Current_And_Checking_Are_Same_ItemCd()
         {
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -675,5 +676,161 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.SaveChanges();
             }
         }
+
+        [Test]
+        public void TC_013_CheckSameComponentForDuplication_Test_Checking_And_Current_YohoCd_Are_Equal()
+        {
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
+            var m56ExAnalogues = CommonCheckerData.READ_M56_EX_ANALOGUE();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
+            tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
+            tenantTracking.M56ExAnalogue.AddRange(m56ExAnalogues);
+            tenantTracking.SaveChanges();
+
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int settingLevel = 0;
+            var listItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("UT2704", "id1"),
+        };
+
+            var compareItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("UT2705", "id1"),
+        };
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2704", "UT2705" }, sinDate, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                //Act
+                var result = realTimeCheckerFinder.CheckSameComponentForDuplication(hpId, ptId, sinDate, listItemCode, compareItemCode, settingLevel);
+
+                //Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2704" && result.First().Level == 3);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEdIngredients);
+                tenantTracking.M56ExAnalogue.RemoveRange(m56ExAnalogues);
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56ExIngrdtMains);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_014_CheckSameComponentForDuplication_Test_Checking_ZensinsayoFlg_Is_1()
+        {
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m56ExEdIngredients = CommonCheckerData.Read_M56_EX_ED_INGREDIENTS();
+            var m56ExIngrdtMains = CommonCheckerData.READ_M56_EX_INGRDT_MAIN();
+            var m56ExAnalogues = CommonCheckerData.READ_M56_EX_ANALOGUE();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56ExIngrdtMains);
+            tenantTracking.M56ExEdIngredients.AddRange(m56ExEdIngredients);
+            tenantTracking.M56ExAnalogue.AddRange(m56ExAnalogues);
+            tenantTracking.SaveChanges();
+
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int settingLevel = 0;
+            var listItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("UT2706", "id1"),
+        };
+
+            var compareItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("UT2707", "id2"),
+        };
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                //Act
+                var result = realTimeCheckerFinder.CheckSameComponentForDuplication(hpId, ptId, sinDate, listItemCode, compareItemCode, settingLevel);
+
+                //Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2706" && result.First().Level == 3);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.M56ExEdIngredients.RemoveRange(m56ExEdIngredients);
+                tenantTracking.M56ExAnalogue.RemoveRange(m56ExAnalogues);
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56ExIngrdtMains);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_015_CheckDuplicatedClass()
+        {
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m56AlrgyDerivatives = CommonCheckerData.READ_M56_ALRGY_DERIVATIVES();
+            var m56DrvalrgyCodes = CommonCheckerData.READ_M56_DRVALRGY_CODE();
+            tenantTracking.M56AlrgyDerivatives.AddRange(m56AlrgyDerivatives);
+            tenantTracking.M56DrvalrgyCode.AddRange(m56DrvalrgyCodes);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            var listItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("UT2706", "id1"),
+        };
+
+            var compareItemCode = new List<string>()
+        {
+            "UT2707",
+        };
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2706", "UT2707" }, sinDate, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                //Act
+                var result = realTimeCheckerFinder.CheckDuplicatedClass(hpId, ptId, sinDate, listItemCode, compareItemCode);
+
+                //Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2706" && result.First().Level == 4);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.M56AlrgyDerivatives.RemoveRange(m56AlrgyDerivatives);
+                tenantTracking.M56DrvalrgyCode.RemoveRange(m56DrvalrgyCodes);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+        
     }
 }
