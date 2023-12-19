@@ -154,7 +154,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKohiHoubetu(kohiHoubetu) && r.HokenRate == 20).ToList(); break;
                         case 2: wrkReces = curReceInfs.Where(r => r.IsKohiHoubetu(kohiHoubetu) && r.HokenRate != 30 && r.HokenRate != 20).ToList(); break;
                     }
-                    if (wrkReces == null || wrkReces.Count == 0) continue;
+                    if (wrkReces.Count == 0 || wrkReces.Count == 0) continue;
 
                     //件数
                     listDataPerPage.Add(new("count", 0, rowNo, wrkReces.Count.ToString()));

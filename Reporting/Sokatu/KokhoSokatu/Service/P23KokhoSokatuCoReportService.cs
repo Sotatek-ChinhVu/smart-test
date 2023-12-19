@@ -162,7 +162,7 @@ public class P23KokhoSokatuCoReportService : IP23KokhoSokatuCoReportService
                         case 2: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                         case 3: wrkReces = receInfs.ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -229,7 +229,7 @@ public class P23KokhoSokatuCoReportService : IP23KokhoSokatuCoReportService
                         case 1: wrkReces = curReceInfs.Where(r => r.IsRetAll).ToList(); break;
                         case 2: wrkReces = curReceInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数

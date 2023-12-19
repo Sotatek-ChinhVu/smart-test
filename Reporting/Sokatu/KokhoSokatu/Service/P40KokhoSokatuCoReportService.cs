@@ -157,7 +157,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
                         case 3: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                         case 4: wrkReces = receInfs.ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -221,7 +221,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
                             case 0: wrkReces = receInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex] && r.IsNrAll).ToList(); break;
                             case 1: wrkReces = receInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex] && r.IsRetAll).ToList(); break;
                         }
-                        if (wrkReces == null) continue;
+                        if (wrkReces.Count == 0) continue;
 
                         countData wrkData = new countData();
                         //件数

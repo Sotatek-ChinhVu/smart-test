@@ -148,7 +148,7 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
                     case 3: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     case 4: wrkReces = receInfs.Where(r => r.IsHeiyo).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 if (rowNo == 4)

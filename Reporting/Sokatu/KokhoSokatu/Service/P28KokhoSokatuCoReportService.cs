@@ -167,7 +167,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                             case 4: wrkReces = receInfs.Where(r => r.IsKoukiAll && !r.IsPrefIn).ToList(); break;
                             case 5: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                         }
-                        if (wrkReces == null) continue;
+                        if (wrkReces.Count == 0) continue;
 
                         countData wrkData = new countData();
                         //件数

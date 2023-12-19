@@ -171,7 +171,7 @@ public class P13KokhoSeikyuCoReportService : IP13KokhoSeikyuCoReportService
                     case 8: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                     case 9: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 if (new int[] { 2 }.Contains(rowNo) && wrkReces.Count >= 1)
                 {
@@ -217,7 +217,7 @@ public class P13KokhoSeikyuCoReportService : IP13KokhoSeikyuCoReportService
         //県外分のみ請求書を作成
         receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kokho, PrefKbn.PrefOut, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号の指定がある場合は絞り込み
-        var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
+        var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
         //保険者番号リストを取得
         hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();

@@ -164,7 +164,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
                         subData.Clear();
                         break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

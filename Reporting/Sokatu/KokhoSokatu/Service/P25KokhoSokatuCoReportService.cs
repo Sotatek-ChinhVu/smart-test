@@ -197,7 +197,7 @@ public class P25KokhoSokatuCoReportService : IP25KokhoSokatuCoReportService
                         case 2: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && !r.IsPrefIn).ToList(); break;
                         case 3: wrkReces = receInfs.Where(r => r.IsKoukiAll && !r.IsPrefIn).ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     listDataPerPage.Add(new("totalCount", 0, rowNo, wrkReces.Count.ToString()));
                 }
