@@ -3,6 +3,7 @@ using CommonChecker.Caches;
 using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.Models.Diseases;
+using Domain.Models.Family;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 
 namespace CloudUnitTest.CommonChecker.Finder
@@ -1111,6 +1112,121 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42Contraindis);
                 tenantTracking.M42ContraindiDisCon.RemoveRange(m42ContraindiDisCons);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_022_CheckContraindicationForFamilyDisease_Test_IsDataDb_True()
+        {
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
+            var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki();
+            var ptFamilies = CommonCheckerData.ReadPtFamily();
+            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
+            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
+            tenantTracking.PtFamilys.AddRange(ptFamilies);
+            tenantTracking.PtFamilyRekis.AddRange(ptFamilyRekis);
+            tenantTracking.SaveChanges();
+
+            int hpId = 1;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int level = 5;
+            bool isDataDb = true;
+            var listItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("937", "id1"),
+        };
+
+
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "937" }, sinDate, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                //Act
+                var result = realTimeCheckerFinder.CheckContraindicationForFamilyDisease(hpId, ptId, level, sinDate, listItemCode, new(), isDataDb);
+
+                //Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "937" && result.First().ByotaiCd == "3" && result.First().TenpuLevel == 2);
+            }
+            finally
+            {
+                tenantTracking.PtKioRekis.RemoveRange(ptKioRekis);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42Contraindis);
+                tenantTracking.M42ContraindiDisCon.RemoveRange(m42ContraindiDisCons);
+                tenantTracking.PtFamilyRekis.RemoveRange(ptFamilyRekis);
+                tenantTracking.PtFamilys.RemoveRange(ptFamilies);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_023_CheckContraindicationForFamilyDisease_Test_IsDataDb_False()
+        {
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
+            var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki();
+            var ptFamilies = CommonCheckerData.ReadPtFamily();
+            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
+            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
+            tenantTracking.PtFamilys.AddRange(ptFamilies);
+            tenantTracking.PtFamilyRekis.AddRange(ptFamilyRekis);
+            tenantTracking.SaveChanges();
+
+            int hpId = 1;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int level = 5;
+            bool isDataDb = true;
+            var listItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("937", "id1"),
+        };
+
+            var families = new List<FamilyModel>();
+
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "937" }, sinDate, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                //Act
+                var result = realTimeCheckerFinder.CheckContraindicationForFamilyDisease(hpId, ptId, level, sinDate, listItemCode, new(), isDataDb);
+
+                //Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "937" && result.First().ByotaiCd == "3" && result.First().TenpuLevel == 2);
+            }
+            finally
+            {
+                tenantTracking.PtKioRekis.RemoveRange(ptKioRekis);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.M42ContraindiDrugMainEx.RemoveRange(m42Contraindis);
+                tenantTracking.M42ContraindiDisCon.RemoveRange(m42ContraindiDisCons);
+                tenantTracking.PtFamilyRekis.RemoveRange(ptFamilyRekis);
+                tenantTracking.PtFamilys.RemoveRange(ptFamilies);
 
                 tenantTracking.SaveChanges();
             }
