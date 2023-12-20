@@ -29,8 +29,6 @@ using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using StackExchange.Redis;
 using Helper.Redis;
-using Helper.Constants;
-using Infrastructure.Common;
 
 namespace EmrCloudApi.Controller;
 
@@ -47,6 +45,10 @@ public class PdfCreatorController : CookieController
     private readonly string NoDataMessage = @"<meta charset=""utf-8"">
                                               <title>印刷対象が見つかりません。</title>
                                               <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
+                                              ";
+    private readonly string NotAuhorize = @"<meta charset=""utf-8"">
+                                              <title>Not authorize。</title>
+                                              <p style='text-align: center;font-size: 25px;font-weight: 300'>Not authorize。</p>
                                               ";
 
     public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
@@ -71,6 +73,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportKarte1)]
     public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var karte1Data = _reportService.GetKarte1ReportingData(HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
         return await RenderPdf(karte1Data, ReportType.Common, karte1Data.JobName);
     }
@@ -78,6 +85,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportNameLabel)]
     public async Task<IActionResult> GenerateNameLabelReport([FromQuery] NameLabelExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetNameLabelReportingData(request.PtId, request.KanjiName, request.SinDate);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -85,6 +97,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportDrugInfo)]
     public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var drugInfo = _reportService.SetOrderInfo(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(drugInfo, ReportType.DrugInfo, "薬情.pdf");
     }
@@ -92,6 +109,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportByomei)]
     public async Task<IActionResult> GenerateByomeiReport([FromQuery] ByomeiExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var byomeiData = _reportService.GetByomeiReportingData(HpId, request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
         return await RenderPdf(byomeiData, ReportType.Common, byomeiData.JobName);
     }
@@ -99,6 +121,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportOrderLabel)]
     public async Task<IActionResult> GenerateOrderLabelReport([FromQuery] OrderLabelExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         List<(int from, int to)> odrKouiKbns = new();
         foreach (var item in request.OdrKouiKbns)
         {
@@ -111,6 +138,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportSijisen)]
     public async Task<IActionResult> GenerateSijisenReport([FromQuery] SijisenExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var odrKouiKbns = new List<(int from, int to)>();
         foreach (var item in request.OdrKouiKbns)
         {
@@ -123,10 +155,10 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.MedicalRecordWebId)]
     public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
     {
-        // if HpId = -1, return status 401
+        // if HpId = -1, return 401 page
         if (HpId == -1)
         {
-            return Content("Not authorize page!!!", "text/html");
+            return Content(NotAuhorize, "text/html");
         }
         var data = _reportService.GetMedicalRecordWebIdReportingData(HpId, request.PtId, request.SinDate);
         return await RenderPdf(data, ReportType.Common, data.JobName);
@@ -135,6 +167,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.OutDrug)]
     public async Task<IActionResult> GetOutDrugReportingData([FromQuery] OutDrugRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetOutDrugReportingData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -142,6 +179,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ReceiptCheck)]
     public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetReceiptCheckCoReportService(HpId, request.PtIds, request.SeikyuYm);
         if (string.IsNullOrEmpty(data.DataJsonConverted))
         {
@@ -153,6 +195,11 @@ public class PdfCreatorController : CookieController
     [HttpPost(ApiPath.ReceiptList)]
     public async Task<IActionResult> GetReceiptListReport([FromForm] AccountingReportRequest requestStringJson)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<GetReceiptListRequest>(stringJson) ?? new();
 
@@ -169,6 +216,11 @@ public class PdfCreatorController : CookieController
     [HttpPost(ApiPath.PeriodReceiptReport)]
     public async Task<IActionResult> PeriodReceiptReport([FromForm] AccountingReportRequest requestStringJson)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<PeriodReceiptListRequest>(stringJson) ?? new();
         List<(int grpId, string grpCd)> grpConditions = new();
@@ -183,6 +235,11 @@ public class PdfCreatorController : CookieController
     [HttpPost(ApiPath.AccountingReport)]
     public async Task<IActionResult> GenerateAccountingReport([FromForm] AccountingReportRequest requestStringJson)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var stringJson = requestStringJson.JsonAccounting;
         var request = JsonSerializer.Deserialize<AccountingCoReportModelRequest>(stringJson) ?? new();
         var multiAccountDueListModels = request.MultiAccountDueListModels.Select(item => ConvertToCoAccountDueListModel(item)).ToList();
@@ -193,6 +250,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ReceiptReport)]
     public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetAccountingReportingData(HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
         return await RenderPdf(data, ReportType.Accounting, data.JobName);
     }
@@ -200,6 +262,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.GrowthCurve)]
     public async Task<IActionResult> GetGrowthCurvePrintData([FromQuery] GrowthCurvePrintDataRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         CommonReportingRequestModel data;
         if (request.Type == 0)
         {
@@ -215,6 +282,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetStatisticReportingData(HpId, request.FormName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType, request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -222,6 +294,11 @@ public class PdfCreatorController : CookieController
     [HttpPost(ApiPath.PatientManagement)]
     public async Task<IActionResult> GeneratePatientManagement([FromForm] StringObjectRequest requestString)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var request = JsonSerializer.Deserialize<PatientManagementRequest>(requestString.StringJson) ?? new();
         PatientManagementModel patientManagementModel = ConvertToPatientManagementModel(request.PatientManagement);
         var data = _reportService.GetPatientManagement(HpId, patientManagementModel);
@@ -231,6 +308,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetReceiptData(HpId, request.PtId, request.SinYm, request.HokenId, request.SeiKyuYm, request.HokenKbn, request.IsIncludeOutDrug, request.IsModePrint, request.isOpenedFromAccounting);
         var result = await RenderPdf(data, ReportType.Common, data.JobName);
         return result;
@@ -239,6 +321,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.SyojyoSyoki)]
     public async Task<IActionResult> SyojyoSyoki([FromQuery] SyojyoSyokiRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetSyojyoSyokiReportingData(HpId, request.PtId, request.SeiKyuYm, request.HokenId);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -246,6 +333,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.Kensalrai)]
     public async Task<IActionResult> Kensalrai([FromQuery] KensalraiRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetKensalraiData(HpId, request.SystemDate, request.FromDate, request.ToDate, request.CenterCd);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -253,6 +345,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         if (request.PrintType == 0)
         {
             var data = _reportService.GetReceiptPrint(HpId, request.FormName, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.DiskKind, request.DiskCnt, request.WelfareType, request.PrintHokensyaNos, request.HokenKbn, request.SelectedReseputoShubeusu, request.DepartmentId, request.DoctorId, request.PrintNoFrom, request.PrintNoTo, request.IncludeTester, request.IsIncludeOutDrug, request.Sort, request.PrintPtIds);
@@ -268,6 +365,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.KensaHistoryReport)]
     public async Task<IActionResult> KensaHistoryReport([FromQuery] KensaHistoryReportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         if (request.IraiDate != 0)
         {
             var data = _reportService.GetKensaHistoryPrint(HpId, request.UserId, request.PtId, request.SetId, request.IraiDate, request.StartDate, request.EndDate, request.ShowAbnormalKbn, request.SinDate);
@@ -283,6 +385,11 @@ public class PdfCreatorController : CookieController
     [HttpPost(ApiPath.MemoMsgPrint)]
     public async Task<IActionResult> MemoMsgPrint([FromForm] StringObjectRequest requestString)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var request = JsonSerializer.Deserialize<MemoMsgPrintRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetMemoMsgReportingData(request.ReportName, request.Title, request.ListMessage);
         return await RenderPdf(data, ReportType.Common, request.FileName);
@@ -291,6 +398,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ReceTarget)]
     public async Task<IActionResult> ReceTarget([FromQuery] ReceTargetRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetReceTargetPrint(HpId, request.SeikyuYm);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -298,6 +410,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.DrugNoteSeal)]
     public async Task<IActionResult> GetDrugNoteSealPrintData([FromQuery] DrugNoteSealPrintDataRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetDrugNoteSealPrintData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -305,6 +422,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.InDrug)]
     public async Task<IActionResult> GetInDrugPrintData([FromQuery] InDrugPrintDataRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetInDrugPrintData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -312,6 +434,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.Yakutai)]
     public async Task<IActionResult> Yakutai([FromQuery] YakutaiRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetYakutaiReportingData(HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -319,6 +446,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.KensaLabel)]
     public async Task<IActionResult> KensaLabel([FromQuery] KensaLabelRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetKensaLabelPrintData(HpId, request.PtId, request.RaiinNo, request.SinDate, new KensaPrinterModel(request.ItemCd, request.ContainerName, request.ContainerCd, request.Count, request.InoutKbn, request.OdrKouiKbn));
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -326,6 +458,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.AccountingCard)]
     public async Task<IActionResult> GetAccountingCardPrintData([FromQuery] AccountingCardReportingRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetAccountingCardReportingData(HpId, request.PtId, request.SinYm, request.HokenId, request.IncludeOutDrug);
 
         return await RenderPdf(data, ReportType.Common, data.JobName);
@@ -334,6 +471,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportKarte3)]
     public async Task<IActionResult> GetKarte3ReportingData([FromQuery] Karte3ReportingRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetKarte3ReportingData(HpId, request.PtId, request.StartSinYm, request.EndSinYm, request.IncludeHoken, request.IncludeJihi);
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -341,6 +483,11 @@ public class PdfCreatorController : CookieController
     [HttpPost(ApiPath.AccountingCardList)]
     public async Task<IActionResult> GetAccountingCardListReportingData([FromForm] StringObjectRequest requestString)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var request = JsonSerializer.Deserialize<AccountingCardListRequest>(requestString.StringJson) ?? new();
         var data = _reportService.GetAccountingCardListReportingData(HpId, request.Targets, request.IncludeOutDrug, request.KaName, request.TantoName, request.UketukeSbt, request.Hoken);
         return await RenderPdf(data, ReportType.Common, data.JobName);
@@ -349,6 +496,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.SetDownloadNameReport)]
     public IActionResult SetDownloadNameReportReportingData([FromQuery] SetDownloadNameReportRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         string key = "KensaIraiPdfReport_" + request.KeyReport;
         ContentDisposition cd = new ContentDisposition
         {
@@ -367,6 +519,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportKarte2)]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var inputData = new GetDataPrintKarte2InputData(request.PtId, HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder, request.EmptyMode);
 
         var outputData = _historyCommon.GetDataKarte2(inputData);
@@ -427,6 +584,11 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.GetDataPrintDrugInfo)]
     public async Task<IActionResult> GetDataPrintDrugInfo([FromQuery] GetDataPrintDrugInfoRequest request)
     {
+        // if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var inputData = new GetDataPrintDrugInfoInputData(HpId, request.SinDate, request.ItemCd, request.Level, string.Empty, request.YJCode, request.Type);
 
         var drugInfo = _commonDrugInf.GetDrugInforModel(inputData.HpId, inputData.SinDate, inputData.ItemCd);
@@ -496,18 +658,6 @@ public class PdfCreatorController : CookieController
                 }
             }
         }
-    }
-
-
-    [HttpGet("GetCookie")]
-    public void Write(string domain, string token)
-    {
-        CookieOptions options = new CookieOptions();
-        options.Expires = DateTime.Now.AddDays(1);
-        options.Path = "/";
-        var cookieObject = new CookieModel(domain, token);
-        string dataCookie = JsonSerializer.Serialize(cookieObject);
-        HttpContext.Response.Cookies.Append(DomainCookie.CookieReportKey, dataCookie, options);
     }
 
     #region private function
