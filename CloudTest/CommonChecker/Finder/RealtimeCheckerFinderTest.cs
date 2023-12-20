@@ -1198,13 +1198,22 @@ namespace CloudUnitTest.CommonChecker.Finder
             long ptId = 1231;
             int sinDate = 20230101;
             int level = 5;
-            bool isDataDb = true;
+            bool isDataDb = false;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("937", "id1"),
         };
 
-            var families = new List<FamilyModel>();
+            var families = new List<FamilyModel>
+            {
+                new FamilyModel(99999, ptId, 0, "UT", 99999, ptId, "UT", "kana name", 0, 19981212, 25, 0, 0, "Biko", 1,
+                                new List<PtFamilyRekiModel>
+                                {
+                                    new PtFamilyRekiModel(1, "250001", "Unit Test", "CMT", 1),
+                                }, 
+                                "Disease Name"
+                                )
+            };
 
             // Arrange
             var cache = new MasterDataCacheService(TenantProvider);
@@ -1214,7 +1223,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 //Act
-                var result = realTimeCheckerFinder.CheckContraindicationForFamilyDisease(hpId, ptId, level, sinDate, listItemCode, new(), isDataDb);
+                var result = realTimeCheckerFinder.CheckContraindicationForFamilyDisease(hpId, ptId, level, sinDate, listItemCode, families, isDataDb);
 
                 //Assert
                 Assert.True(result.Count == 1 && result.First().ItemCd == "937" && result.First().ByotaiCd == "3" && result.First().TenpuLevel == 2);
