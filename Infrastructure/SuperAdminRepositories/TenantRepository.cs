@@ -409,7 +409,7 @@ namespace Infrastructure.SuperAdminRepositories
 
         public TenantModel GetTenant(int tenantId)
         {
-            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId && ( item.Status == 12 || item.IsDeleted == 0));
+            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId && (item.Status == 12 || item.IsDeleted == 0));
             if (tenant == null)
             {
                 return new();
@@ -418,6 +418,17 @@ namespace Infrastructure.SuperAdminRepositories
             var result = GetStorageFullItem(tenantModel, true);
             tenantModel.ChangeStorageFull(result.storageFull, result.storageUsed);
             return tenantModel;
+        }
+
+        public List<TenantModel> GetByRdsId(int tenantId, string rdsIdentifier)
+        {
+            var listTenant = NoTrackingDataContext.Tenants.Where(item => item.TenantId == tenantId && item.RdsIdentifier == rdsIdentifier && item.IsDeleted == 0)
+                .Select(x => ConvertEntityToModel(x)).ToList();
+            if (listTenant == null)
+            {
+                return new();
+            }
+            return listTenant;
         }
 
         #region private function
@@ -877,7 +888,7 @@ namespace Infrastructure.SuperAdminRepositories
             return (storageFull, storageInDB);
         }
 
-        private TenantModel ConvertEntityToModel(Tenant tenant)
+        private static TenantModel ConvertEntityToModel(Tenant tenant)
         {
             return new TenantModel(
                        tenant.TenantId,
