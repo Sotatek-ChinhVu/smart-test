@@ -246,6 +246,7 @@ app.Use(async (context, next) =>
             {
                 await loggingHandler!.WriteLogStartAsync("Start request");
                 context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { context.Request?.Headers?["Login-Key"].ToString() ?? string.Empty });
+                context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" }); 
                 await next(context);
             }
             catch (Exception ex)
