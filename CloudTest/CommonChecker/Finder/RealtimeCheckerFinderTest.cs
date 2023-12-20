@@ -4,6 +4,7 @@ using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
+using Domain.Models.SpecialNote.PatientInfo;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
 
@@ -1754,6 +1755,83 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.SaveChanges();
             }
         }
-        
+
+        [Test]
+        public void TC_033TestAge_Test_DataDb_Is_False()
+        {
+            //Setup
+            int hpId = 1;
+            long ptId = 99999637;
+            int sinDay = 20230605;
+            int level = 10;
+            int ageTypeCheckSetting = 0;
+            var listItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("620001936", ""),
+            new ItemCodeModel("641210022", ""),
+            new ItemCodeModel("620525101", ""),
+            new ItemCodeModel("620003776", ""),
+            new ItemCodeModel("620004717", ""),
+            new ItemCodeModel("620525101", ""),
+            new ItemCodeModel("641210022", ""),
+            new ItemCodeModel("620004717", ""),
+            new ItemCodeModel("622634701", "")
+        };
+
+            var kensaInfDetailModels = new List<KensaInfDetailModel>
+            {
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230101, 0, "V0002", "50", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0),
+            };
+            bool isDataOfDb = false;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimcheckerfinder.CheckAge(hpId, ptId, sinDay, level, ageTypeCheckSetting, listItemCode, kensaInfDetailModels, isDataOfDb);
+
+            // Assert
+            Assert.True(result.Any());
+        }
+
+        [Test]
+        public void TC_034_TestAge_Return_Empty_When_Weight_And_Age_Less_Than_0()
+        {
+            //Setup
+            int hpId = 1;
+            long ptId = 99999637;
+            int sinDay = 0;
+            int level = 10;
+            int ageTypeCheckSetting = 0;
+            var listItemCode = new List<ItemCodeModel>()
+        {
+            new ItemCodeModel("620001936", ""),
+            new ItemCodeModel("641210022", ""),
+            new ItemCodeModel("620525101", ""),
+            new ItemCodeModel("620003776", ""),
+            new ItemCodeModel("620004717", ""),
+            new ItemCodeModel("620525101", ""),
+            new ItemCodeModel("641210022", ""),
+            new ItemCodeModel("620004717", ""),
+            new ItemCodeModel("622634701", "")
+        };
+
+            var kensaInfDetailModels = new List<KensaInfDetailModel>
+            {
+                new KensaInfDetailModel(hpId, ptId, 0, 0, -1, 0, "V0002", "-1", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0),
+            };
+            bool isDataOfDb = false;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimcheckerfinder.CheckAge(hpId, ptId, sinDay, level, ageTypeCheckSetting, listItemCode, kensaInfDetailModels, isDataOfDb);
+
+            // Assert
+            Assert.True(result.Count == 0);
+        }
     }
 }
