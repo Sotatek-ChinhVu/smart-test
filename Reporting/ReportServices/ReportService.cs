@@ -93,22 +93,43 @@ public class ReportService : IReportService
     private readonly IKensaHistoryCoReportService _kensaHistoryCoReportService;
     private readonly IKensaResultMultiCoReportService _kensaResultMultiCoReportService;
 
-    public ReportService(IConfiguration configuration)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService, IReceiptPrintService receiptPrintService, IMemoMsgCoReportService memoMsgCoReportService, IReceTargetCoReportService receTargetCoReportService, IDrugNoteSealCoReportService drugNoteSealCoReportService, IYakutaiCoReportService yakutaiCoReportService, IAccountingCardCoReportService accountingCardCoReportService, ICoAccountingFinder coAccountingFinder, IKarte3CoReportService karte3CoReportService, IAccountingCardListCoReportService accountingCardListCoReportService, IInDrugCoReportService inDrugCoReportService, IGrowthCurveA4CoReportService growthCurveA4CoReportService, IGrowthCurveA5CoReportService growthCurveA5CoReportService, IKensaLabelCoReportService kensaLabelCoReportService, IReceiptPrintExcelService receiptPrintExcelService, IImportCSVCoReportService importCSVCoReportService, IStaticsticExportCsvService staticsticExportCsvService, ISta9000CoReportService sta9000CoReportService, IKensaHistoryCoReportService kensaHistoryCoReportService, IKensaResultMultiCoReportService kensaResultMultiCoReportService)
     {
-        var container = new WindsorContainer();
-        container.Register(
-        Component.For<INameLabelService>().ImplementedBy<NameLabelService>().LifestyleTransient(),
-        Component.For<ICoNameLabelFinder>().ImplementedBy<CoNameLabelFinder>().LifestyleTransient(),
-        Component.For<ITenantProvider>().ImplementedBy<TenantProvider>().LifestyleTransient(),
-        Component.For<IHttpContextAccessor>().ImplementedBy<HttpContextAccessor>().LifestyleTransient(),
-            Component.For<IConfiguration>().add.LifestyleTransient()
-        );
-        _nameLabelService = container.Resolve<INameLabelService>();
-    }
-
-    public void NameLable()
-    {
-  
+        _orderLabelCoReportService = orderLabelCoReportService;
+        _drugInfoCoReportService = drugInfoCoReportService;
+        _sijisenReportService = sijisenReportService;
+        _byomeiService = byomeiService;
+        _karte1Service = karte1Service;
+        _nameLabelService = nameLabelService;
+        _medicalRecordWebIdReportService = medicalRecordWebIdReportService;
+        _receiptCheckCoReportService = receiptCheckCoReportService;
+        _receiptListCoReportService = receiptListCoReportService;
+        _outDrugCoReportService = outDrugCoReportService;
+        _accountingCoReportService = accountingCoReportService;
+        _statisticService = statisticService;
+        _receiptCoReportService = receiptCoReportService;
+        _patientManagementService = patientManagementService;
+        _syojyoSyokiCoReportService = syojyoSyokiCoReportService;
+        _kensaIraiCoReportService = kensaIraiCoReportService;
+        _receiptPrintService = receiptPrintService;
+        _memoMsgCoReportService = memoMsgCoReportService;
+        _receTargetCoReportService = receTargetCoReportService;
+        _drugNoteSealCoReportService = drugNoteSealCoReportService;
+        _yakutaiCoReportService = yakutaiCoReportService;
+        _accountingCardCoReportService = accountingCardCoReportService;
+        _coAccountingFinder = coAccountingFinder;
+        _karte3CoReportService = karte3CoReportService;
+        _accountingCardListCoReportService = accountingCardListCoReportService;
+        _inDrugCoReportService = inDrugCoReportService;
+        _growthCurveA4CoReportService = growthCurveA4CoReportService;
+        _growthCurveA5CoReportService = growthCurveA5CoReportService;
+        _kensaLabelCoReportService = kensaLabelCoReportService;
+        _receiptPrintExcelService = receiptPrintExcelService;
+        _importCSVCoReportService = importCSVCoReportService;
+        _staticsticExportCsvService = staticsticExportCsvService;
+        _sta9000CoReportService = sta9000CoReportService;
+        _kensaHistoryCoReportService = kensaHistoryCoReportService;
+        _kensaResultMultiCoReportService = kensaResultMultiCoReportService;
     }
 
     //Byomei
