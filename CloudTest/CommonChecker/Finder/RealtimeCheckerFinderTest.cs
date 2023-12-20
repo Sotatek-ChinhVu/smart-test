@@ -1439,7 +1439,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_026_CheckKinki_Test_currentOrderSubYjCode()
+        public void TC_028_CheckKinki_Test_currentOrderSubYjCode()
         {
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -1484,6 +1484,94 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.SaveChanges();
             }
 
+        }
+
+        [Test]
+        public void TC_029_CheckKinkiUser_Test_KINKI_MST()
+        {
+            ///Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("029", "029");
+            var kinkiMsts = CommonCheckerData.ReadKinkiMst("029");
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.KinkiMsts.AddRange(kinkiMsts);
+            tenantTracking.SaveChanges();
+
+            var hpId = 999;
+            var ptId = 1231;
+            var settingLevel = 4;
+            var sinDay = 20230101;
+            var listCurrentOrderCode = new List<ItemCodeModel>()
+        {
+            new("6111029", "id1")
+        };
+
+            var listAddedOrderCode = new List<ItemCodeModel>()
+        {
+            new("6404029", "id1")
+        };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "6111029", "6404029" }, sinDay, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            try
+            {
+                //Act
+                var result = realTimeCheckerFinder.CheckKinkiUser(hpId, settingLevel, sinDay, listCurrentOrderCode, listAddedOrderCode);
+
+                //Assert
+                Assert.True(result.Count == 1);
+            }
+            finally
+            {
+                tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_030_CheckKinkiUser_Test_LEVEL_IS_0_RETURN_NEW()
+        {
+            ///Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("029", "029");
+            var kinkiMsts = CommonCheckerData.ReadKinkiMst("029");
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.KinkiMsts.AddRange(kinkiMsts);
+            tenantTracking.SaveChanges();
+
+            var hpId = 999;
+            var ptId = 1231;
+            var settingLevel = 0;
+            var sinDay = 20230101;
+            var listCurrentOrderCode = new List<ItemCodeModel>()
+        {
+            new("6111029", "id1")
+        };
+
+            var listAddedOrderCode = new List<ItemCodeModel>()
+        {
+            new("6404029", "id1")
+        };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "6111029", "6404029" }, sinDay, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            try
+            {
+                //Act
+                var result = realTimeCheckerFinder.CheckKinkiUser(hpId, settingLevel, sinDay, listCurrentOrderCode, listAddedOrderCode);
+
+                //Assert
+                Assert.True(result.Count == 0);
+            }
+            finally
+            {
+                tenantTracking.KinkiMsts.RemoveRange(kinkiMsts);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
         }
     }
 }
