@@ -1,6 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.ReleasenoteRead;
+using UseCase.Releasenote.ReleasenoteRead;
 using UseCase.ReleasenoteRead;
 
 namespace EmrCloudApi.Presenters.ReleasenoteRead;
