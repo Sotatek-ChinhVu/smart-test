@@ -4,6 +4,7 @@ using Infrastructure.Common;
 using Helper.Constants;
 using System.IdentityModel.Tokens.Jwt;
 using Helper.Extension;
+using Helper.Common;
 
 namespace EmrCloudApi.Controller;
 
@@ -35,7 +36,7 @@ public class CookieController : ControllerBase
                 return -1;
             }
             var jwtToken = new JwtSecurityToken(cookie.Token);
-            if (jwtToken.ValidFrom < DateTime.UtcNow || jwtToken.ValidTo > DateTime.UtcNow)
+            if (jwtToken.ValidFrom < DateTime.UtcNow && jwtToken.ValidTo > DateTime.UtcNow)
             {
                 int result = jwtToken.Payload[ParamConstant.HpId].AsInteger();
                 if (result > 0)

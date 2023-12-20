@@ -27,7 +27,14 @@ namespace Infrastructure.SuperAdminRepositories
 
         public TenantModel Get(int tenantId)
         {
-            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.IsDeleted == 0).FirstOrDefault();
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && (t.Status == 12 || t.IsDeleted == 0)).FirstOrDefault();
+            var tenantModel = tenant == null ? new() : ConvertEntityToModel(tenant);
+            return tenantModel;
+        }
+
+        public TenantModel GetByStatus(int tenantId, byte status)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.Status == status && t.IsDeleted == 0).FirstOrDefault();
             var tenantModel = tenant == null ? new() : ConvertEntityToModel(tenant);
             return tenantModel;
         }
@@ -79,30 +86,27 @@ namespace Infrastructure.SuperAdminRepositories
 
         public int CreateTenant(TenantModel model)
         {
-            var tenant = new Tenant();
-            tenant.Hospital = model.Hospital;
-            tenant.AdminId = model.AdminId;
-            tenant.Password = model.Password;
-            tenant.SubDomain = model.SubDomain;
-
-            tenant.Status = 2; //Status: creating
-            tenant.Db = model.Db;
-            tenant.Size = model.Size;
-            tenant.SizeType = model.SizeType;
-            tenant.Type = model.Type;
-            tenant.EndPointDb = model.SubDomain;
-            tenant.EndSubDomain = model.SubDomain;
-            tenant.RdsIdentifier = model.RdsIdentifier;
-            tenant.UserConnect = model.UserConnect;
-            tenant.PasswordConnect = model.PasswordConnect;
-            tenant.IsDeleted = 0;
-
-            // created date and updated date uses utc time
-            tenant.CreateDate = DateTime.UtcNow;
-            tenant.UpdateDate = DateTime.UtcNow;
-            TrackingDataContext.Tenants.Add(tenant);
-            TrackingDataContext.SaveChanges();
-            return tenant.TenantId;
+            int tenantId = model.TenantId;
+            if (tenantId > 0)
+            {
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(i => i.TenantId == tenantId && i.IsDeleted == 0);
+                if (tenant != null)
+                {
+                    _AddTenant(tenant, model);
+                    TrackingDataContext.Tenants.Update(tenant);
+                    TrackingDataContext.SaveChanges();
+                    tenantId = tenant.TenantId;
+                }
+            }
+            else
+            {
+                var tenant = new Tenant();
+                _AddTenant(tenant, model);
+                TrackingDataContext.Tenants.Add(tenant);
+                TrackingDataContext.SaveChanges();
+                tenantId = tenant.TenantId;
+            }
+            return tenantId;
         }
 
         public bool UpdateInfTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier)
@@ -143,25 +147,31 @@ namespace Infrastructure.SuperAdminRepositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password)
+        public TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status)
         {
             try
             {
-                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && x.IsDeleted == 0);
+                var tenant = TrackingDataContext.Tenants.FirstOrDefault(x => x.TenantId == tenantId && (status == 12 || x.IsDeleted == 0));
                 if (tenant == null)
                 {
                     return new();
                 }
-                tenant.EndPointDb = endPoint;
-                tenant.Type = 1;
-                tenant.Status = 1;
-                tenant.SubDomain = subDomain;
-                tenant.Size = size;
-                tenant.SizeType = sizeType;
-                tenant.RdsIdentifier = dbIdentifier;
+
+                if (status == 1 && status == 9)
+                {
+                    tenant.EndPointDb = endPoint;
+                    tenant.Type = 1;
+                    tenant.Status = status;
+                    tenant.SubDomain = subDomain;
+                    tenant.Size = size;
+                    tenant.SizeType = sizeType;
+                    tenant.RdsIdentifier = dbIdentifier;
+                    tenant.AdminId = adminId;
+                    tenant.Password = password;
+                    tenant.EndSubDomain = endSubDomain;
+                }
+
                 tenant.Hospital = hospital;
-                tenant.AdminId = adminId;
-                tenant.Password = password;
 
                 // updated date uses utc time
                 tenant.UpdateDate = DateTime.UtcNow;
@@ -294,11 +304,11 @@ namespace Infrastructure.SuperAdminRepositories
             DisposeDataContext();
         }
 
-        public (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
+        public (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take, bool getDataReport = false)
         {
             int totalTenant = 0;
             List<TenantModel> result;
-            IQueryable<Tenant> query = NoTrackingDataContext.Tenants;
+            IQueryable<Tenant> query = NoTrackingDataContext.Tenants.Where(item => (item.Status == 12 || item.IsDeleted == 0));
             if (!searchModel.IsEmptyModel)
             {
                 // filte data ignore storageFull
@@ -309,9 +319,12 @@ namespace Infrastructure.SuperAdminRepositories
             if (!searchModel.StorageFull.Any() && !sortDictionary.ContainsKey(TenantEnum.StorageFull))
             {
                 // get totalTenant to FE
-                totalTenant = query.Count();
                 var querySortList = SortTenantQuery(query, sortDictionary);
-                querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
+                if (!getDataReport)
+                {
+                    totalTenant = query.Count();
+                    querySortList = (IOrderedQueryable<Tenant>)querySortList.Skip(skip).Take(take);
+                }
                 result = querySortList.Select(tenant => new TenantModel(
                                                             tenant.TenantId,
                                                             tenant.Hospital,
@@ -382,17 +395,21 @@ namespace Infrastructure.SuperAdminRepositories
                 result = tenantListFilterByStorageFull.DistinctBy(item => item.TenantId).ToList();
             }
             // get totalTenant to FE
-            totalTenant = result.Count;
-            result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
+            if (!getDataReport)
+            {
+                totalTenant = result.Count;
+                result = SortTenantList(result, sortDictionary).Skip(skip).Take(take).ToList();
+            }
+            else
+            {
+                result = SortTenantList(result, sortDictionary).ToList();
+            }
             return (result, totalTenant);
         }
 
         public TenantModel GetTenant(int tenantId)
         {
-            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId
-                                                                              // if get status tenant is teminated, get item is deleted
-                                                                              && ((item.Status != 12 && item.IsDeleted == 0)
-                                                                                   || (item.Status == 12 && item.IsDeleted == 1)));
+            var tenant = NoTrackingDataContext.Tenants.FirstOrDefault(item => item.TenantId == tenantId && ( item.Status == 12 || item.IsDeleted == 0));
             if (tenant == null)
             {
                 return new();
@@ -882,6 +899,28 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.RdsIdentifier,
                        tenant.UserConnect,
                        tenant.PasswordConnect);
+        }
+
+        private void _AddTenant(Tenant tenant, TenantModel model)
+        {
+            tenant.Hospital = model.Hospital;
+            tenant.AdminId = model.AdminId;
+            tenant.Password = model.Password;
+            tenant.SubDomain = model.SubDomain;
+            tenant.Status = 2; //Status: creating
+            tenant.Db = model.Db;
+            tenant.Size = model.Size;
+            tenant.SizeType = model.SizeType;
+            tenant.Type = model.Type;
+            tenant.EndPointDb = model.SubDomain;
+            tenant.EndSubDomain = model.SubDomain;
+            tenant.RdsIdentifier = model.RdsIdentifier;
+            tenant.UserConnect = model.UserConnect;
+            tenant.PasswordConnect = model.PasswordConnect;
+            tenant.IsDeleted = 0;
+            // created date and updated date uses utc time
+            tenant.CreateDate = DateTime.UtcNow;
+            tenant.UpdateDate = DateTime.UtcNow;
         }
         #endregion
     }
