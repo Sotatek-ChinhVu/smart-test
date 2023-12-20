@@ -3,7 +3,7 @@ using CommonChecker.Caches;
 using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.Models.Diseases;
-using Reporting.Calculate.Extensions;
+using Domain.Models.SpecialNote.PatientInfo;
 
 namespace CloudUnitTest.CommonChecker.Finder
 {
@@ -1009,6 +1009,31 @@ namespace CloudUnitTest.CommonChecker.Finder
 
                 tenantTracking.SaveChanges();
             }
+        }
+
+        [Test]
+        public void TC_019_CheckAge_Test_PatientInfo_Null()
+        {
+            //Setup
+            int hpId = 1;
+            long ptId = 0;
+            int sinDay = 20230605;
+            int level = 0;
+            int ageTypeCheckSetting = 1;
+            var listItemCode = new List<ItemCodeModel>();
+            var kensaInfDetailModels = new List<KensaInfDetailModel>();
+            bool isDataOfDb = true;
+
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimcheckerfinder.CheckAge(hpId, ptId, sinDay, level, ageTypeCheckSetting, listItemCode, kensaInfDetailModels, isDataOfDb);
+
+            // Assert
+            Assert.True(result.Count == 0);
         }
     }
 }
