@@ -810,6 +810,10 @@ using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using Interactor.LastDayInformation;
 using UseCase.LastDayInformation.GetLastDayInfoList;
 using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
+using Infrastructure.Repositoriesp;
+using Domain.Models.ReleasenoteRead;
+using UseCase.ReleasenoteRead;
+using Interactor.ReleasenoteRead;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1226,6 +1230,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
             services.AddTransient<ISmartKartePortRepository, SmartKartePortRepository>();
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
+            services.AddTransient<IReleasenoteReadRepository, ReleasenoteReadRepository>();
             ///services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
@@ -1798,6 +1803,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ImportKensaIraiInputData, ImportKensaIraiInteractor>();
             busBuilder.RegisterUseCase<GetRsvInfToConfirmInputData, GetRsvInfToConfirmInteractor>();
             busBuilder.RegisterUseCase<GetListQualificationInfInputData, GetListQualificationInfInteractor>();
+            busBuilder.RegisterUseCase<GetListReleasenoteReadInputData, GetListReleasenoteReadInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();

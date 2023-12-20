@@ -2,12 +2,14 @@
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Insurance;
 using EmrCloudApi.Presenters.MainMenu;
+using EmrCloudApi.Presenters.ReleasenoteRead;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.MainMenu;
 using EmrCloudApi.Requests.MainMenu.RequestItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Insurance;
 using EmrCloudApi.Responses.MainMenu;
+using EmrCloudApi.Responses.ReleasenoteRead;
 using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
@@ -31,6 +33,7 @@ using UseCase.MainMenu.KensaIraiReport;
 using UseCase.MainMenu.RsvInfToConfirm;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
+using UseCase.ReleasenoteRead;
 
 namespace EmrCloudApi.Controller;
 
@@ -263,6 +266,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new GetListQualificationInfPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetListQualificationInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListReleasenote)]
+    public ActionResult<Response<GetReleasenoteReadResponse>> GetListReleasenote()
+    {
+        var input = new GetListReleasenoteReadInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetReleasenoteReadPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetReleasenoteReadResponse>>(presenter.Result);
     }
 
     #region private function
