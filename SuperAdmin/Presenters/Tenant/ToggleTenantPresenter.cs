@@ -27,7 +27,7 @@ namespace SuperAdminAPI.Presenters.Tenant
         private string GetMessage(ToggleTenantStatus status) => status switch
         {
             ToggleTenantStatus.Successed => ResponseMessage.Success,
-            ToggleTenantStatus.Failed => ResponseMessage.Fail,
+            ToggleTenantStatus.Failed => ResponseMessage.Failed,
             ToggleTenantStatus.InvalidTenantId => ResponseMessage.InvalidTenantId,
             ToggleTenantStatus.TenantDoesNotExist => ResponseMessage.TenantDoesNotExist,
             _ => string.Empty
