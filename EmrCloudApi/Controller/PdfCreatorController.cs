@@ -78,7 +78,9 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.ExportNameLabel)]
     public async Task<IActionResult> GenerateNameLabelReport([FromQuery] NameLabelExportRequest request)
     {
+        _reportService.Instance(6);
         var data = _reportService.GetNameLabelReportingData(request.PtId, request.KanjiName, request.SinDate);
+        _reportService.ReleaseResource();
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
@@ -123,12 +125,15 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.MedicalRecordWebId)]
     public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
     {
+        _reportService.Instance(7);
+
         // if HpId = -1, return status 401
         if (HpId == -1)
         {
             return Content("Not authorize page!!!", "text/html");
         }
         var data = _reportService.GetMedicalRecordWebIdReportingData(HpId, request.PtId, request.SinDate);
+        _reportService.ReleaseResource();
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
