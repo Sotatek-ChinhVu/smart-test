@@ -147,8 +147,9 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         policy.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // allow credentials
     });
 });
 
@@ -246,7 +247,9 @@ app.Use(async (context, next) =>
             {
                 await loggingHandler!.WriteLogStartAsync("Start request");
                 context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { context.Request?.Headers?["Login-Key"].ToString() ?? string.Empty });
-                context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" }); 
+                context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" }); // allow credentials
+                context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" }); // allow header
+                context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" }); // allow methods
                 await next(context);
             }
             catch (Exception ex)
