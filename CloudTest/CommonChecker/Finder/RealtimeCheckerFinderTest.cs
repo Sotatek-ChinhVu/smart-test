@@ -7,6 +7,10 @@ using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
+using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
+using Entity.Tenant;
+using System.Linq.Expressions;
+using Reporting.Calculate.Extensions;
 
 namespace CloudUnitTest.CommonChecker.Finder
 {
@@ -1832,6 +1836,364 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Assert
             Assert.True(result.Count == 0);
+        }
+
+        /// <summary>
+        /// Kyodo = 3
+        /// SettingLevel = 3
+        /// isDataOfDb = true
+        /// </summary>
+        [Test]
+        public void TC_035_CheckKinkiOTC_Kyodo_Equal_SettingLevel()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 3;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2714", "Id1"),
+            new ItemCodeModel("UT2713", "Id2"),
+            };
+
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var tenMst = CommonCheckerData.ReadTenMst("","");
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var m01 = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMst);
+            tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
+            tenantTracking.M38Ingredients.AddRange(m38);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.M01Kinki.AddRange(m01);
+            tenantTracking.SaveChanges();
+
+            var ptOtcDrugModels = new List<PtOtcDrugModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 2 && result.First().ItemCd == "UT2714" && result.Last().ItemCd == "UT2713");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMst);
+                tenantTracking.PtOtcDrug.RemoveRange(ptOtcDrugs);
+                tenantTracking.M38Ingredients.RemoveRange(m38);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.M01Kinki.RemoveRange(m01);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Kyodo = 3
+        /// SettingLevel = 2
+        /// isDataOfDb = true
+        /// </summary>
+        [Test]
+        public void TC_036_CheckKinkiOTC_Kyodo_Greater_Than_SettingLevel()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 2;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2714", "Id1"),
+            new ItemCodeModel("UT2713", "Id2"),
+            };
+
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var tenMst = CommonCheckerData.ReadTenMst("", "");
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var m01 = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMst);
+            tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
+            tenantTracking.M38Ingredients.AddRange(m38);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.M01Kinki.AddRange(m01);
+            tenantTracking.SaveChanges();
+
+            var ptOtcDrugModels = new List<PtOtcDrugModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 0);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMst);
+                tenantTracking.PtOtcDrug.RemoveRange(ptOtcDrugs);
+                tenantTracking.M38Ingredients.RemoveRange(m38);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.M01Kinki.RemoveRange(m01);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Kyodo = 3
+        /// SettingLevel = 4
+        /// </summary>
+        [Test]
+        public void TC_037_CheckKinkiOTC_Kyodo_Less_Than_SettingLevel()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 4;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2714", "Id1"),
+            new ItemCodeModel("UT2713", "Id2"),
+            };
+
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var tenMst = CommonCheckerData.ReadTenMst("", "");
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var m01 = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMst);
+            tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
+            tenantTracking.M38Ingredients.AddRange(m38);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.M01Kinki.AddRange(m01);
+            tenantTracking.SaveChanges();
+
+            var ptOtcDrugModels = new List<PtOtcDrugModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 2 && result.First().ItemCd == "UT2714" && result.Last().ItemCd == "UT2713");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMst);
+                tenantTracking.PtOtcDrug.RemoveRange(ptOtcDrugs);
+                tenantTracking.M38Ingredients.RemoveRange(m38);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.M01Kinki.RemoveRange(m01);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Kyodo = 3
+        /// SettingLevel = 4
+        /// isDataOfDb = true
+        /// Result Empty List
+        /// </summary>
+        [Test]
+        public void TC_038_CheckKinkiOTC_Test_AddedOrderSubYjCode_IsNull()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 4;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT777777", "id1"),
+            };
+
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var tenMst = CommonCheckerData.ReadTenMst("", "");
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var m01 = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMst);
+            tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
+            tenantTracking.M38Ingredients.AddRange(m38);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.M01Kinki.AddRange(m01);
+            tenantTracking.SaveChanges();
+
+            var ptOtcDrugModels = new List<PtOtcDrugModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 0);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMst);
+                tenantTracking.PtOtcDrug.RemoveRange(ptOtcDrugs);
+                tenantTracking.M38Ingredients.RemoveRange(m38);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.M01Kinki.RemoveRange(m01);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// isDataOfDb = false
+        /// </summary>
+        [Test]
+        public void TC_039_CheckKinkiOTC_Test_IsDataDb_False()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 4;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2714", "Id1"),
+            };
+
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var tenMst = CommonCheckerData.ReadTenMst("", "");
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var m01 = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMst);
+            tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
+            tenantTracking.M38Ingredients.AddRange(m38);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.M01Kinki.AddRange(m01);
+            tenantTracking.SaveChanges();
+
+            var ptOtcDrugModels = new List<PtOtcDrugModelStandard>
+            {
+                new PtOtcDrugModelStandard(hpId, ptId, 0, 0, 99999, "Trade Name", 20221212, 20231212, "UT Cmt", 0),
+            };
+
+            bool isDataOfDb = false;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2714");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMst);
+                tenantTracking.PtOtcDrug.RemoveRange(ptOtcDrugs);
+                tenantTracking.M38Ingredients.RemoveRange(m38);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.M01Kinki.RemoveRange(m01);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// isDataOfDb = false
+        /// s.Otc7 == c.SubAYjCd && c.IsNeedToReplace
+        /// </summary>
+        [Test]
+        public void TC_040_CheckKinkiOTC_Test_IsNeedToReplace_IsTrue_And_Otc7_Equal_SubAYjCd()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 4;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2719", "Id1"),
+            };
+
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var tenMst = CommonCheckerData.ReadTenMst("", "");
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var m01 = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMst);
+            tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
+            tenantTracking.M38Ingredients.AddRange(m38);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.M01Kinki.AddRange(m01);
+            tenantTracking.SaveChanges();
+
+            var ptOtcDrugModels = new List<PtOtcDrugModelStandard>
+            {
+                new PtOtcDrugModelStandard(hpId, ptId, 0, 0, 99999, "Trade Name", 20221212, 20231212, "UT Cmt", 0),
+            };
+
+            bool isDataOfDb = false;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2719");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMst);
+                tenantTracking.PtOtcDrug.RemoveRange(ptOtcDrugs);
+                tenantTracking.M38Ingredients.RemoveRange(m38);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.M01Kinki.RemoveRange(m01);
+                tenantTracking.SaveChanges();
+            }
         }
     }
 }

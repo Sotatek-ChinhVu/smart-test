@@ -1035,7 +1035,7 @@ namespace CloudUnitTest.SampleData
             return kinkiMsts;
         }
 
-        public static List<PtOtherDrug> ReadPtOtherDrug(int ptId)
+        public static List<PtOtherDrug> ReadPtOtherDrug(long ptId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1316,10 +1316,6 @@ namespace CloudUnitTest.SampleData
                                 case "B":
                                     long.TryParse(text, out long ptId);
                                     ptOtcDrug.PtId = ptId;
-                                    break;
-                                case "C":
-                                    int.TryParse(text, out int seqNo);
-                                    ptOtcDrug.SeqNo = seqNo;
                                     break;
                                 case "D":
                                     int.TryParse(text, out int sortNo);
