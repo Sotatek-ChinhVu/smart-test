@@ -150,6 +150,12 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+
+    // add option CorsPolicy
+    options.AddPolicy("CorsPolicy",
+            builder => builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 });
 
 // Authentication
@@ -246,10 +252,11 @@ app.Use(async (context, next) =>
             {
                 await loggingHandler!.WriteLogStartAsync("Start request");
                 context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { context.Request?.Headers?["Origin"].ToString() ?? string.Empty });
+                context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" });
+                context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
+                context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
+                context.Response.Headers.Add("Access-Control-Max-Age", "7200");
                 context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { context.Request?.Headers?["Login-Key"].ToString() ?? string.Empty });
-                context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" }); // allow credentials
-                context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" }); // allow header
-                context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" }); // allow methods
                 await next(context);
             }
             catch (Exception ex)
@@ -265,6 +272,9 @@ app.Use(async (context, next) =>
 });
 
 app.UseCors();
+
+// add CorsPolicy
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 
