@@ -1,6 +1,8 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace AWSSDK.Common
 {
@@ -76,7 +78,7 @@ namespace AWSSDK.Common
                         Console.WriteLine($"Objects in folder '{sourceFolder}' not found.");
                         return;
                     }
-                    
+
                     foreach (var obj in listObjectsResponse.S3Objects)
                     {
                         var copyObjectRequest = new CopyObjectRequest
@@ -126,7 +128,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task DeleteObjectsInFolderAsync(AmazonS3Client sourceS3Client, string bucketName, string folderKey)
+        public static async Task DeleteObjectsInFolderAsync(AmazonS3Client destinationS3Client, string bucketName, string folderKey)
         {
             try
             {
@@ -139,7 +141,7 @@ namespace AWSSDK.Common
                 ListObjectsV2Response response;
                 do
                 {
-                    response = await sourceS3Client.ListObjectsV2Async(request);
+                    response = await destinationS3Client.ListObjectsV2Async(request);
 
                     Parallel.ForEach(response.S3Objects, obj =>
                     {
@@ -148,8 +150,8 @@ namespace AWSSDK.Common
                             BucketName = bucketName,
                             Key = obj.Key
                         };
-                        var sourceTransterUtility = new TransferUtility(sourceS3Client);
-                        sourceTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest).Wait();
+                        var destinationTransterUtility = new TransferUtility(destinationS3Client);
+                        destinationTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest).Wait();
                     });
 
                     request.ContinuationToken = response.NextContinuationToken;
@@ -206,6 +208,106 @@ namespace AWSSDK.Common
                 Console.WriteLine($"Error restore objects in folder '{folderKey}': '{ex.Message}'");
                 throw new Exception($"Error restore objects in folder '{folderKey}': '{ex.Message}'");
             }
+        }
+
+
+        public static async Task DeleteJunkFile(AmazonS3Client sourceClient, string sourceBucketName)
+        {
+            try
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                Console.WriteLine($"START: Schedule delete junk file s3.");
+                ListVersionsRequest request = new ListVersionsRequest
+                {
+                    BucketName = sourceBucketName,
+                };
+                ListVersionsResponse response;
+                do
+                {
+                    response = await sourceClient.ListVersionsAsync(request);
+                    var objectsToDelete = new ConcurrentBag<KeyVersion>();
+                    Parallel.ForEach(response.Versions, obj =>
+                    {
+                        if (CheckCondition(obj.Key))
+                        {
+                            var timeDifference = DateTime.UtcNow - obj.LastModified.ToUniversalTime();
+                            if (timeDifference.TotalDays > 1)
+                            {
+                                objectsToDelete.Add(new KeyVersion { Key = obj.Key, VersionId = obj.VersionId });
+                            }
+                        }
+                    });
+                    if (objectsToDelete.Any())
+                    {
+                        await BatchDeleteObjectsAsync(sourceClient, sourceBucketName, objectsToDelete);
+                    }
+                    request.KeyMarker = response.NextKeyMarker;
+                    request.VersionIdMarker = response.NextVersionIdMarker;
+
+                } while (response.IsTruncated);
+                sw.Stop();
+                Console.WriteLine(sw.Elapsed);
+                Console.WriteLine($"END: Schedule delete junk file s3.");
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"Exception Schedule delete junk file s3: {ex.Message}");
+            }
+        }
+
+        private static async Task BatchDeleteObjectsAsync(AmazonS3Client sourceClient, string sourceBucketName, ConcurrentBag<KeyVersion> objectsToDelete)
+        {
+            var objectsList = objectsToDelete.ToList();
+            var deleteObjectsRequest = new DeleteObjectsRequest
+            {
+                BucketName = sourceBucketName,
+                Objects = objectsList
+            };
+
+            try
+            {
+                var deleteObjectsResponse = await sourceClient.DeleteObjectsAsync(deleteObjectsRequest);
+
+                //Check the response for any errors
+                if (deleteObjectsResponse.DeleteErrors.Any())
+                {
+                    foreach (var error in deleteObjectsResponse.DeleteErrors)
+                    {
+                        Console.WriteLine($"Error Schedule delete junk file s3 - Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
+                    }
+                }
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"Exception Schedule delete junk file s3 - Batch Delete: {ex.Message}");
+            }
+        }
+        private static bool CheckCondition(string path)
+        {
+            char slash = '/';
+            string deleteString = "delete-";
+
+            int deleteStringLength = deleteString.Length;
+            char[] pathChars = path.ToCharArray();
+
+            if (path.Length >= deleteStringLength && path.Substring(0, deleteStringLength) == deleteString)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < pathChars.Length; i++)
+            {
+                if (pathChars[i] == slash)
+                {
+                    int remainingLength = path.Length - (i + 1);
+                    if (remainingLength >= deleteStringLength && path.Substring(i + 1, deleteStringLength) == deleteString)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

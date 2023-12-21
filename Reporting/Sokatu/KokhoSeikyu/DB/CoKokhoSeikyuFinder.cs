@@ -115,19 +115,19 @@ namespace Reporting.Sokatu.KokhoSeikyu.DB
             switch (kokhoKind)
             {
                 case KokhoKind.Kokho:
-                    joinQuery = joinQuery.Where(r => r.receInf.HokenKbn == HokenKbn.Kokho && (r.receInf.ReceSbt.Substring(1, 1) == "1" || r.receInf.ReceSbt.Substring(1, 1) == "4"));
+                    joinQuery = joinQuery.Where(r => r.receInf.HokenKbn == HokenKbn.Kokho && ((r.receInf.ReceSbt ?? string.Empty).Substring(1, 1) == "1" || (r.receInf.ReceSbt ?? string.Empty).Substring(1, 1) == "4"));
                     break;
                 case KokhoKind.Kouki:
-                    joinQuery = joinQuery.Where(r => r.receInf.HokenKbn == HokenKbn.Kokho && r.receInf.ReceSbt.Substring(1, 1) == "3");
+                    joinQuery = joinQuery.Where(r => r.receInf.HokenKbn == HokenKbn.Kokho && (r.receInf.ReceSbt ?? string.Empty).Substring(1, 1) == "3");
                     break;
                 case KokhoKind.Tokuyohi:
-                    joinQuery = joinQuery.Where(r => r.receInf.ReceSbt.Substring(0, 1) == "9" && new string[] { "1", "3", "4" }.Contains(r.receInf.ReceSbt.Substring(1, 1)));
+                    joinQuery = joinQuery.Where(r => (r.receInf.ReceSbt ?? string.Empty).Substring(0, 1) == "9" && new string[] { "1", "3", "4" }.Contains((r.receInf.ReceSbt ?? string.Empty).Substring(1, 1)));
                     break;
                 case KokhoKind.TokuyohiKokho:
-                    joinQuery = joinQuery.Where(r => r.receInf.ReceSbt.Substring(0, 1) == "9" && new string[] { "1", "4" }.Contains(r.receInf.ReceSbt.Substring(1, 1)));
+                    joinQuery = joinQuery.Where(r => (r.receInf.ReceSbt ?? string.Empty).Substring(0, 1) == "9" && new string[] { "1", "4" }.Contains((r.receInf.ReceSbt ?? string.Empty).Substring(1, 1)));
                     break;
                 case KokhoKind.TokuyohiKouki:
-                    joinQuery = joinQuery.Where(r => r.receInf.ReceSbt.Substring(0, 1) == "9" && new string[] { "3" }.Contains(r.receInf.ReceSbt.Substring(1, 1)));
+                    joinQuery = joinQuery.Where(r => (r.receInf.ReceSbt ?? string.Empty).Substring(0, 1) == "9" && new string[] { "3" }.Contains((r.receInf.ReceSbt ?? string.Empty).Substring(1, 1)));
                     break;
                 default:
                     joinQuery = joinQuery.Where(r => r.receInf.HokenKbn == HokenKbn.Kokho);
@@ -142,13 +142,13 @@ namespace Reporting.Sokatu.KokhoSeikyu.DB
             if (prefKbn == PrefKbn.PrefIn)
             {
                 joinQuery = joinQuery.Where(r =>
-                    prefIn.Contains(r.receInf.HokensyaNo.Substring(r.receInf.HokensyaNo.Length - 6, 2))
+                    prefIn.Contains(r.receInf.HokensyaNo ?? string.Empty.Substring((r.receInf.HokensyaNo ?? string.Empty).Length - 6, 2))
                 );
             }
             else if (prefKbn == PrefKbn.PrefOut)
             {
                 joinQuery = joinQuery.Where(r =>
-                    !prefIn.Contains(r.receInf.HokensyaNo.Substring(r.receInf.HokensyaNo.Length - 6, 2))
+                    !prefIn.Contains(r.receInf.HokensyaNo ?? string.Empty.Substring((r.receInf.HokensyaNo ?? string.Empty).Length - 6, 2))
                 );
             }
 

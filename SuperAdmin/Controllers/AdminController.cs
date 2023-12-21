@@ -110,7 +110,7 @@ namespace SuperAdmin.Controllers
         private string GetMessage(LoginStatus status) => status switch
         {
             LoginStatus.Successed => ResponseMessage.Success,
-            LoginStatus.Failed => ResponseMessage.Fail,
+            LoginStatus.Failed => ResponseMessage.Failed,
             LoginStatus.InvalidLoginId => ResponseMessage.InvalidLoginId,
             LoginStatus.InvalidPassWord => ResponseMessage.InvalidPassword,
             _ => string.Empty

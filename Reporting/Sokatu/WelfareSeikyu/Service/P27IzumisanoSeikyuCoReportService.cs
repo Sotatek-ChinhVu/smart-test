@@ -24,8 +24,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoWelfareReceInfModel> receInfs;
-        private CoHpInfModel hpInf;
+        private List<CoWelfareReceInfModel> receInfs = new();
+        private CoHpInfModel hpInf = new();
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;

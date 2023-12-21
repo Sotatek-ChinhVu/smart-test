@@ -38,7 +38,8 @@ namespace Interactor.Insurance
 
             try
             {
-                var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
+                // flag is false to get all hokenMst
+                var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate, false);
                 return new GetInsuranceListByIdOutputData(data, GetInsuranceListStatus.Successed);
             }
             finally

@@ -26,15 +26,16 @@ namespace SuperAdminAPI.Presenters.Tenant
         private string GetMessage(UpdateTenantStatus status) => status switch
         {
             UpdateTenantStatus.Successed => ResponseMessage.Success,
-            UpdateTenantStatus.Failed => ResponseMessage.Fail,
+            UpdateTenantStatus.Failed => ResponseMessage.Failed,
+            UpdateTenantStatus.InvalidAdminId => ResponseMessage.InvalidAdminId,
             UpdateTenantStatus.InvalidTenantId => ResponseMessage.InvalidTenantId,
             UpdateTenantStatus.InvalidSize => ResponseMessage.InvalidSize,
             UpdateTenantStatus.InvalidSizeType => ResponseMessage.InvalidSizeType,
-            UpdateTenantStatus.InvalidDomain => ResponseMessage.InvalidDomain,
+            UpdateTenantStatus.InvalidDomain => ResponseMessage.InvalidSubDomain,
             UpdateTenantStatus.NewDomainAleadyExist => ResponseMessage.NewDomainAleadyExist,
             UpdateTenantStatus.RdsDoesNotExist => ResponseMessage.TenantDbDoesNotExistInRDS,
             UpdateTenantStatus.TenantDoesNotExist => ResponseMessage.TenantDoesNotExist,
-            UpdateTenantStatus.FailedTenantIsPremium => ResponseMessage.FailedTenantIsPremium,
+            UpdateTenantStatus.NotAllowUpdateTenantDedicateToSharing => ResponseMessage.NotAllowUpdateTenantDedicateToSharing,
             _ => string.Empty
         };
     }

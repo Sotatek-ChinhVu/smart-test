@@ -57,6 +57,9 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
     }
     #endregion
 
@@ -121,7 +124,7 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
             return 1;
         }
         #endregion
@@ -136,7 +139,7 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsNrAll).ToList(); break;
@@ -145,13 +148,13 @@ public class P17KokhoSokatuCoReportService : IP17KokhoSokatuCoReportService
                     case 3: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     case 4: wrkReces = receInfs.Where(r => r.IsHeiyo).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 if (rowNo == 4)
                 {
                     //公費
-                    var prefAllHoubetus = SokatuUtil.GetKohiHoubetu(receInfs.Where(r => r.IsHeiyo).ToList(), null);
+                    var prefAllHoubetus = SokatuUtil.GetKohiHoubetu(receInfs.Where(r => r.IsHeiyo).ToList(), new());
                     foreach (var prefAllHoubetu in prefAllHoubetus)
                     {
                         wrkReces = receInfs.Where(r => r.IsHeiyo && r.IsKohi(prefAllHoubetu)).ToList();
