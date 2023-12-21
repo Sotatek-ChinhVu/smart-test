@@ -47,8 +47,9 @@ public class PdfCreatorController : CookieController
                                               <p style='text-align: center;font-size: 25px;font-weight: 300'>印刷対象が見つかりません。</p>
                                               ";
     private readonly string NotAuhorize = @"<meta charset=""utf-8"">
-                                              <title>Not authorize。</title>
-                                              <p style='text-align: center;font-size: 25px;font-weight: 300'>Not authorize。</p>
+                                              <title>エラー</title>
+                                              <p style='text-align: center;font-size: 25px;font-weight: 300'>閲覧権限がないため、ファイルを閲覧することができません。
+                                                                                                             SmartKarteにログインしてから、再度読み込みしてください。</p>
                                               ";
 
     public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
