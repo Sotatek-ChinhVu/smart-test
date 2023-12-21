@@ -4,6 +4,7 @@ using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.ValidMainInsurance;
 
@@ -538,22 +539,23 @@ namespace Interactor.Insurance
 
         private void IsValidTokkurei(ref List<ResultValidateInsurance<ValidMainInsuranceStatus>> validateDetails, int ptBirthday, int sinDate, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, string hokenSyaNo, bool isShahoOrKokuho, bool isExpirated)
         {
-            var message = "";
+            // get sinYm
+            int sinYm = CIUtil.Copy(sinDate.ToString(), 1, 6).AsInteger();
             int iYear = 0, iMonth = 0, iDay = 0;
             CIUtil.SDateToDecodeAge(ptBirthday, sinDate, ref iYear, ref iMonth, ref iDay);
             if (((iYear == 74 && iMonth == 11) || (iYear == 75 && iMonth == 0))
                 && CIUtil.Copy(ptBirthday.ToString(), 5, 2) == CIUtil.Copy(sinDate.ToString(), 5, 2)
                 && CIUtil.Copy(ptBirthday.ToString(), 7, 2) != "01"
                 && CIUtil.Copy(ptBirthday.ToString(), 5, 4) != "0229"
-                && (selectedHokenInfTokureiYm1 != sinDate)
-                && (selectedHokenInfTokureiYm2 != sinDate)
+                && (selectedHokenInfTokureiYm1 != sinYm) // compare selectedHokenInfTokureiYm1 with sinYm
+                && (selectedHokenInfTokureiYm2 != sinYm) // compare selectedHokenInfTokureiYm2 with sinYm
                 && !string.IsNullOrEmpty(hokenSyaNo.Trim())
                 && isShahoOrKokuho
                 && !isExpirated
                 )
             {
                 var paramsMessage = new string[] { "75歳到達月ですが、自己負担限度額の特例対象年月が入力されていません。", "保険", "無視する", "戻る" };
-                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
+                string message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
                 validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidTokkurei, message, TypeMessage.TypeMessageWarning));
             }
         }
