@@ -23,6 +23,7 @@ public class ExportCSVController : AuthorizeControllerBase
     [HttpPost(ApiPath.ExportPeriodReceipt)]
     public IActionResult GenerateKarteCsvReport([FromBody] ExportCsvRequest request)
     {
+        _reportService.Instance(11);
         var data = _reportService.OutputExcelForPeriodReceipt(HpId, request.StartDate, request.EndDate,
                                                               request.PtConditions.Select(p => new Tuple<long, int>(p.PtId, p.HokenId)).ToList(),
                                                               request.GrpConditions.Select(p => new Tuple<int, string>(p.GrpId, p.GrpCd)).ToList(),
@@ -31,6 +32,7 @@ public class ExportCSVController : AuthorizeControllerBase
         {
             return Ok("出力データがありません。");
         }
+        _reportService.ReleaseResource();
 
         return RenderCsv(data, "期間指定請求書リスト.csv");
     }
@@ -38,18 +40,22 @@ public class ExportCSVController : AuthorizeControllerBase
     [HttpGet(ApiPath.ExportStatics)]
     public IActionResult GenerateExportStatics([FromQuery] ExportCsvStaticsRequest request)
     {
+        _reportService.Instance(32);
         var data = _reportService.ExportCsv(HpId, request.MenuName, request.MenuId, request.TimeFrom, request.TimeTo, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, 
                                             request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo, request.IsPutColName, request.CoFileType);
         if (!data.Data.Any())
         {
             return Ok("EndNoData");
         }
+        _reportService.ReleaseResource();
+
         return RenderCsvStatics(data);
     }
 
     [HttpPost(ApiPath.ExportSta9000Csv)]
     public IActionResult ExportSta9000Csv([FromBody] ExportCsvSta9000Request request)
     {
+        _reportService.Instance(33);
         var data = _reportService.OutPutFileSta900(HpId, request.OutputColumns, request.IsPutColName, request.PtConf, request.HokenConf, request.ByomeiConf, request.RaiinConf, request.SinConf, request.KarteConf, request.KensaConf, request.PtIds, request.SortOrder, request.SortOrder2, request.SortOrder3);
         if (data.code == CoPrintExitCode.EndNoData && !string.IsNullOrEmpty(data.message))
         {
@@ -72,6 +78,7 @@ public class ExportCSVController : AuthorizeControllerBase
         {
             return Ok("EndInvalidArg");
         }
+        _reportService.ReleaseResource();
 
         return RenderCsv(data.data, request.OutputFileName + ".csv");
     }

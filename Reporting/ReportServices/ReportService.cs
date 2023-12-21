@@ -1,21 +1,20 @@
-﻿using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using Castle.Windsor.Installer;
-using Domain.Models.Accounting;
+﻿using Domain.Models.Accounting;
 using Domain.Models.KensaSet;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
-using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SystemConf;
 using Helper.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
+using Infrastructure.Options;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
@@ -33,6 +32,7 @@ using Reporting.CommonMasters.Config;
 using Reporting.CommonMasters.Enums;
 using Reporting.DailyStatic.DB;
 using Reporting.DailyStatic.Service;
+using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
 using Reporting.DrugNoteSeal.DB;
@@ -61,7 +61,6 @@ using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.DB;
-using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
 using Reporting.PatientManagement.DB;
 using Reporting.PatientManagement.Models;
@@ -97,6 +96,7 @@ using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
 using Reporting.Statistics.Sta1002.Service;
+using Reporting.Statistics.Sta1010.DB;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.DB;
 using Reporting.Statistics.Sta2001.Service;
@@ -143,7 +143,6 @@ using Reporting.SyojyoSyoki.DB;
 using Reporting.SyojyoSyoki.Service;
 using Reporting.Yakutai.DB;
 using Reporting.Yakutai.Service;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Reporting.ReportServices;
 
@@ -187,11 +186,15 @@ public class ReportService : IReportService
     private IConfiguration _configuration;
     private ServiceProvider _serviceProvider;
     private ILogger<EmrLogger> _logger;
+    private IOptions<AmazonS3Options> _option;
+    private ITenantProvider _tenantProvider;
 
-    public ReportService(IConfiguration configuration, ILogger<EmrLogger> logger)
+    public ReportService(IConfiguration configuration, ILogger<EmrLogger> logger, IOptions<AmazonS3Options> option, ITenantProvider tenantProvider)
     {
         _configuration = configuration;
         _logger = logger;
+        _option = option;
+        _tenantProvider = tenantProvider;
     }
     public void Instance(int service)
     {
@@ -206,13 +209,15 @@ public class ReportService : IReportService
 
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
-            _drugInfoCoReportService = ActivatorUtilities.CreateInstance<DrugInfoCoReportService>(_serviceProvider);
+            _orderLabelCoReportService = ActivatorUtilities.CreateInstance<OrderLabelCoReportService>(_serviceProvider);
         }
         if (service == 2)
         {
             serviceCollection.AddTransient<IDrugInfoCoReportService, DrugInfoCoReportService>();
             serviceCollection.AddTransient<ISystemConfRepository, SystemConfRepository>();
             serviceCollection.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            serviceCollection.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
+            serviceCollection.AddTransient<IOptions<AmazonS3Options>>(_ => _option);
 
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -305,7 +310,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<ICoAccountingFinder, CoAccountingFinder>();
             serviceCollection.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
             serviceCollection.AddTransient<ILogger<EmrLogger>>(_ => _logger);
-
+            serviceCollection.AddTransient<DbContextOptions>(_ => _tenantProvider.CreateNewTrackingAdminDbContextOption());
 
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -317,6 +322,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
             serviceCollection.AddTransient<IDailyStatisticCommandFinder, DailyStatisticCommandFinder>();
             serviceCollection.AddTransient<ISta1002CoReportService, Sta1002CoReportService>();
+            serviceCollection.AddTransient<ISta1010CoReportService, Sta1010CoReportService>();
             serviceCollection.AddTransient<ISta2001CoReportService, Sta2001CoReportService>();
             serviceCollection.AddTransient<ISta2003CoReportService, Sta2003CoReportService>();
             serviceCollection.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
@@ -340,7 +346,8 @@ public class ReportService : IReportService
 
 
             serviceCollection.AddTransient<ICoSta1002Finder, CoSta1002Finder>();
-            serviceCollection.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            serviceCollection.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
+            serviceCollection.AddTransient<Reporting.Statistics.DB.ICoHpInfFinder, Reporting.Statistics.DB.CoHpInfFinder>();
             serviceCollection.AddTransient<ICoSta1001Finder, CoSta1001Finder>();
             serviceCollection.AddTransient<ICoSta2001Finder, CoSta2001Finder>();
             serviceCollection.AddTransient<ICoSta2003Finder, CoSta2003Finder>();
@@ -377,7 +384,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
             serviceCollection.AddTransient<IAccountingRepository, AccountingRepository>();
             serviceCollection.AddTransient<ILogger<EmrLogger>>(_ => _logger);
-
+            serviceCollection.AddTransient<DbContextOptions>(_ => _tenantProvider.CreateNewTrackingAdminDbContextOption());
 
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -389,7 +396,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
             serviceCollection.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
             serviceCollection.AddTransient<ICoSta9000Finder, CoSta9000Finder>();
-            serviceCollection.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            serviceCollection.AddTransient<Reporting.Statistics.DB.ICoHpInfFinder, Reporting.Statistics.DB.CoHpInfFinder>();
             serviceCollection.AddTransient<ISystemConfig, SystemConfig>();
             serviceCollection.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
 
@@ -398,45 +405,14 @@ public class ReportService : IReportService
             _patientManagementService = ActivatorUtilities.CreateInstance<PatientManagementService>(_serviceProvider);
         }
         else if (service == 15)
-        {
-            serviceCollection.AddTransient<IPatientManagementService, PatientManagementService>();
-            serviceCollection.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
-            serviceCollection.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
-            serviceCollection.AddTransient<ICoSta9000Finder, CoSta9000Finder>();
-            serviceCollection.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
-            serviceCollection.AddTransient<ISystemConfig, SystemConfig>();
-            serviceCollection.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
-
-            // create service provider
-            _serviceProvider = serviceCollection.BuildServiceProvider();
-            _patientManagementService = ActivatorUtilities.CreateInstance<PatientManagementService>(_serviceProvider);
-        }
-        else if (service == 15)
-        {
-            serviceCollection.AddTransient<IPatientManagementService, PatientManagementService>();
-            serviceCollection.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
-            serviceCollection.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
-            serviceCollection.AddTransient<ICoSta9000Finder, CoSta9000Finder>();
-            serviceCollection.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
-            serviceCollection.AddTransient<ISystemConfig, SystemConfig>();
-            serviceCollection.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
-
-            // create service provider
-            _serviceProvider = serviceCollection.BuildServiceProvider();
-            _patientManagementService = ActivatorUtilities.CreateInstance<PatientManagementService>(_serviceProvider);
-        }
-        else if (service == 16)
         {
             serviceCollection.AddTransient<ISyojyoSyokiCoReportService, SyojyoSyokiCoReportService>();
-            serviceCollection.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
-            serviceCollection.AddTransient<ICoSta9000Finder, CoSta9000Finder>();
-            serviceCollection.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
-            serviceCollection.AddTransient<ISystemConfig, SystemConfig>();
+            serviceCollection.AddTransient<ICoSyojyoSyokiFinder, CoSyojyoSyokiFinder>();
             serviceCollection.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
 
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
-            _patientManagementService = ActivatorUtilities.CreateInstance<PatientManagementService>(_serviceProvider);
+            _syojyoSyokiCoReportService = ActivatorUtilities.CreateInstance<SyojyoSyokiCoReportService>(_serviceProvider);
         }
         else if (service == 16)
         {
@@ -600,6 +576,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<IEmrLogger, EmrLogger>();
             serviceCollection.AddTransient<ILoggingHandler, LoggingHandler>();
             serviceCollection.AddTransient<ILogger<EmrLogger>>(_ => _logger);
+            serviceCollection.AddTransient<DbContextOptions>(_ => _tenantProvider.CreateNewTrackingAdminDbContextOption());
 
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -647,10 +624,12 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
             serviceCollection.AddTransient<IEmrLogger, EmrLogger>();
             serviceCollection.AddTransient<ILoggingHandler, LoggingHandler>();
+            serviceCollection.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
             serviceCollection.AddTransient<ILogger<EmrLogger>>(_ => _logger);
+            serviceCollection.AddTransient<DbContextOptions>(_ => _tenantProvider.CreateNewTrackingAdminDbContextOption());
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
-            _yakutaiCoReportService = ActivatorUtilities.CreateInstance<YakutaiCoReportService>(_serviceProvider);
+            _accountingCardCoReportService = ActivatorUtilities.CreateInstance<AccountingCardCoReportService>(_serviceProvider);
         }
         else if (service == 23)
         {
@@ -679,6 +658,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<IEmrLogger, EmrLogger>();
             serviceCollection.AddTransient<ILoggingHandler, LoggingHandler>();
             serviceCollection.AddTransient<ILogger<EmrLogger>>(_ => _logger);
+            serviceCollection.AddTransient<DbContextOptions>(_ => _tenantProvider.CreateNewTrackingAdminDbContextOption());
 
             // create service provider
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -754,6 +734,7 @@ public class ReportService : IReportService
             serviceCollection.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
             serviceCollection.AddTransient<IDailyStatisticCommandFinder, DailyStatisticCommandFinder>();
             serviceCollection.AddTransient<ISta1002CoReportService, Sta1002CoReportService>();
+            serviceCollection.AddTransient<ISta1010CoReportService, Sta1010CoReportService>();
             serviceCollection.AddTransient<ISta2001CoReportService, Sta2001CoReportService>();
             serviceCollection.AddTransient<ISta2003CoReportService, Sta2003CoReportService>();
             serviceCollection.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
@@ -777,7 +758,8 @@ public class ReportService : IReportService
 
 
             serviceCollection.AddTransient<ICoSta1002Finder, CoSta1002Finder>();
-            serviceCollection.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            serviceCollection.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
+            serviceCollection.AddTransient<Reporting.Statistics.DB.ICoHpInfFinder, Reporting.Statistics.DB.CoHpInfFinder>();
             serviceCollection.AddTransient<ICoSta1001Finder, CoSta1001Finder>();
             serviceCollection.AddTransient<ICoSta2001Finder, CoSta2001Finder>();
             serviceCollection.AddTransient<ICoSta2003Finder, CoSta2003Finder>();
@@ -838,6 +820,7 @@ public class ReportService : IReportService
     public void ReleaseResource()
     {
         _serviceProvider.Dispose();
+        _tenantProvider.DisposeDataContext();
     }
 
     //Byomei
