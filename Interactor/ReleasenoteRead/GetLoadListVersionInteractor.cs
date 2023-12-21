@@ -1,8 +1,7 @@
 ﻿using Amazon.S3;
-using AWSSDK.Common;
 using AWSSDK.Constants;
 using Domain.Models.ReleasenoteRead;
-using Microsoft.AspNetCore.Mvc;
+using Helper.Constants;
 using UseCase.Releasenote.LoadListVersion;
 
 namespace Interactor.ReleasenoteRead
@@ -20,18 +19,17 @@ namespace Interactor.ReleasenoteRead
         {
             try
             {
-                var accessKey = "AKIAXSCVMXDLRLYZGZ6Q";
-                var secretKey = "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";
+                var accessKey = LoadListVersionEnum.AccessKey;
+                var secretKey = LoadListVersionEnum.SecretKey;
                 var config = new AmazonS3Config
                 {
                     RegionEndpoint = ConfigConstant.RegionSource
                 };
+
                 using (var s3Client = new AmazonS3Client(accessKey, secretKey, config))
                 {
-                    //_releasenoteReadRepository.DeleteJunkFile(s3Client, ConfigConstant.SourceBucketName).Wait();
-                    var result = _releasenoteReadRepository.GetLoadListVersion(inputData.HpId, inputData.UserId, s3Client, ConfigConstant.SourceBucketName);
+                    var result = _releasenoteReadRepository.GetLoadListVersion(inputData.HpId, inputData.UserId, s3Client);
                     return new GetLoadListVersionOutputData(result, GetLoadListVersionStatus.Successed);
-
                 }
             }
             finally

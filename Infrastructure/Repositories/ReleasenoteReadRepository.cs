@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using Domain.Models.ReleasenoteRead;
 using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -31,14 +32,14 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         return result;
     }
 
-    public async Task<List<ReleasenoteReadModel>> GetLoadListVersion(int hpId, int userId, AmazonS3Client sourceClient, string sourceBucketName)
+    public async Task<List<ReleasenoteReadModel>> GetLoadListVersion(int hpId, int userId, AmazonS3Client sourceClient)
     {
         var listHeader = GetListReleasenote(hpId, userId);
 
         ListObjectsV2Request request = new ListObjectsV2Request
         {
-            BucketName = "develop-smartkarte-images-bucket",
-            Prefix = "data/reference"
+            BucketName = LoadListVersionEnum.BucketName,
+            Prefix = LoadListVersionEnum.Prefix
         };
 
         ListObjectsV2Response response = await sourceClient.ListObjectsV2Async(request);
@@ -48,7 +49,7 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         {
             if (!s3Object.Key.EndsWith("/"))
             {
-                fileUrlTasks.Add(GetObjectUrlAsync(sourceClient, "develop-smartkarte-images-bucket", s3Object.Key));
+                fileUrlTasks.Add(GetObjectUrlAsync(sourceClient, LoadListVersionEnum.BucketName, s3Object.Key));
             }
         }
 
@@ -58,7 +59,7 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         foreach (var item in listHeader)
         {
             string path = string.Empty;
-            List<string> subfiles = new();
+            Dictionary<string, string> subfiles = new();
             for (int i = 0; i < fileUrls.Length; i++)
             {
                 if (fileUrls[i].Contains(item))
@@ -71,7 +72,7 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
 
                     if (fileUrls[i].Contains("subfiles"))
                     {
-                        subfiles.Add(fileUrls[i]);
+                        subfiles.Add(Path.GetFileNameWithoutExtension(uri.LocalPath), fileUrls[i]);
                     }
                 }
             }
