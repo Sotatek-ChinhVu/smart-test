@@ -4,19 +4,38 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Redis;
 using Helper.Util;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
 public class StatisticRepository : RepositoryBase, IStatisticRepository
 {
-    public StatisticRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly string key;
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
+    public StatisticRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
+        key = GetCacheKey() + CacheKeyConstant.ColumnSetting;
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
-
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
+    }
     public List<StatisticMenuModel> GetStatisticMenu(int hpId, int grpId)
     {
         var staMenuList = NoTrackingDataContext.StaMenus.Where(item => item.HpId == hpId
@@ -246,6 +265,33 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
     }
 
     #region private function
+
+    private IEnumerable<StaGrpModel> ReloadCache(int hpId, int grpId)
+    {
+        var finalKey = key + "_" + grpId;
+        var staGrpList = NoTrackingDataContext.StaGrps.Where(item => item.HpId == hpId && item.GrpId == grpId).ToList();
+        var staGrpMstList = staGrpList.Select(item => item.ReportId).Distinct().ToList();
+        var starMstList = NoTrackingDataContext.StaMsts.Where(item => item.HpId == hpId && staGrpMstList.Contains(item.ReportId)).ToList();
+        var result = staGrpList.Select(grp => new StaGrpModel(
+                                                  grp.GrpId,
+                                                  grp.ReportId,
+                                                  starMstList.FirstOrDefault(mst => mst.ReportId == grp.ReportId)?.ReportName ?? string.Empty,
+                                                  grp.SortNo
+                               )).ToList();
+        var json = JsonSerializer.Serialize(result);
+        _cache.StringSet(finalKey, json);
+
+        return result;
+    }
+    private IEnumerable<StaGrpModel> ReadCache(int grpId)
+    {
+        var finalKey = key + "_" + grpId;
+        var results = _cache.StringGet(finalKey);
+        var json = results.AsString();
+        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<StaGrpModel>>(json) : new();
+        return datas ?? new();
+    }
+
     private List<StatisticMenuModel> ConvertToStatisticList(List<StaMenu> staMenuList, List<StaConf> staConfigList)
     {
         List<StatisticMenuModel> result = new();
