@@ -12,6 +12,7 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
     public ReleasenoteReadRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
     }
+
     public List<string> GetListReleasenote(int hpId, int userId)
     {
         List<ReleasenoteRead> releasenote = NoTrackingDataContext.ReleasenoteReads.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
@@ -33,11 +34,13 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
     public async Task<List<ReleasenoteReadModel>> GetLoadListVersion(int hpId, int userId, AmazonS3Client sourceClient, string sourceBucketName)
     {
         var listHeader = GetListReleasenote(hpId, userId);
+
         ListObjectsV2Request request = new ListObjectsV2Request
         {
             BucketName = "develop-smartkarte-images-bucket",
             Prefix = "data/reference"
         };
+
         ListObjectsV2Response response = await sourceClient.ListObjectsV2Async(request);
         List<Task<string>> fileUrlTasks = new List<Task<string>>();
 
@@ -50,8 +53,8 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         }
 
         string[] fileUrls = await Task.WhenAll(fileUrlTasks);
-
         List<ReleasenoteReadModel> result = new List<ReleasenoteReadModel>();
+
         foreach (var item in listHeader)
         {
             string path = string.Empty;
@@ -72,7 +75,6 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
                     }
                 }
             }
-
             result.Add(new ReleasenoteReadModel(item, subfiles, path));
         }
 
