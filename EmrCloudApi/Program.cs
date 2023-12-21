@@ -245,6 +245,7 @@ app.Use(async (context, next) =>
             try
             {
                 await loggingHandler!.WriteLogStartAsync("Start request");
+                context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { context.Request?.Headers?["Origin"].ToString() ?? string.Empty });
                 context.Response.Headers.Add("Access-Control-Allow-Login-Key", new[] { context.Request?.Headers?["Login-Key"].ToString() ?? string.Empty });
                 context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" }); // allow credentials
                 context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" }); // allow header
