@@ -2148,6 +2148,9 @@ namespace CloudUnitTest.SampleData
                                 case "A":
                                     m56ExEd.YjCd = text;
                                     break;
+                                case "B":
+                                    m56ExEd.SeqNo = text;
+                                    break;
                                 case "C":
                                     m56ExEd.SeibunCd = text;
                                     break;
