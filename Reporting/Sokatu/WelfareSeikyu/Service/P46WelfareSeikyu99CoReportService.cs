@@ -25,9 +25,9 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoWelfareReceInfModel> receInfs;
-        private CoWelfareReceInfModel curReceInf;
-        private CoHpInfModel hpInf;
+        private List<CoWelfareReceInfModel> receInfs = new();
+        private CoWelfareReceInfModel curReceInf = new();
+        private CoHpInfModel hpInf = new();
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
         private readonly Dictionary<string, string> _singleFieldData;
         private readonly Dictionary<string, string> _extralData;
@@ -87,7 +87,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 //市町村番号
                 //二桁以下の時は0埋め二桁、二桁より多いときは下二桁を出力
-                string townNo = curReceInf.JyukyusyaNo(kohiHoubetus).PadLeft(2, '0');
+                string townNo = curReceInf.JyukyusyaNo(kohiHoubetus)?.PadLeft(2, '0') ?? string.Empty;
                 Dictionary<string, string> fieldDataPerPage = _setFieldData.ContainsKey(pageIndex) ? _setFieldData[pageIndex] : new();
                 pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
                 fieldDataPerPage.Add("cityCode", townNo.Substring(townNo.Length - 2));

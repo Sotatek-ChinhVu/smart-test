@@ -11,7 +11,7 @@ namespace Reporting.Sokatu.Common.Models
             KaMst = kaMst;
         }
 
-        public string KaName
+        public string? KaName
         {
             get => KaMst.KaName;
         }

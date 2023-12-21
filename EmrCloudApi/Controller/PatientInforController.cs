@@ -500,7 +500,7 @@ namespace EmrCloudApi.Controller
                                                                            x.EndDate,
                                                                            x.SikakuDate,
                                                                            x.KofuDate,
-                                                                           0,
+                                                                           x.ConfirmDates.OrderByDescending(item => item.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0, // get confirm date from confirmDateList
                                                                            x.KogakuKbn,
                                                                            x.TasukaiYm,
                                                                            x.TokureiYm1,
@@ -571,7 +571,7 @@ namespace EmrCloudApi.Controller
                                             x.HokenId,
                                             x.StartDate,
                                             x.EndDate,
-                                            0,
+                                            x.ConfirmDates.OrderByDescending(item => item.ConfirmDate).FirstOrDefault()?.ConfirmDate ?? 0, // get confirm date from confirmDateList
                                             x.Rate,
                                             x.GendoGaku,
                                             x.SikakuDate,

@@ -63,6 +63,11 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _extralData = new();
             _listTextData = new();
             _visibleFieldData = new();
+            hpInf = new();
+            receInfs = new();
+            hokensyaNames = new();
+            tokuyohiReceInfs = new();
+            kaMsts = new();
         }
 
         public CommonReportingRequestModel GetP11KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
@@ -152,7 +157,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         break;
                     }
 
-                    List<CoReceInfModel> curReceInfs = null;
+                    List<CoReceInfModel> curReceInfs = new();
                     switch (kbnIndex)
                     {
                         //後期高齢者
@@ -174,7 +179,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         //公費計
                         case 8: curReceInfs = receInfs.Where(r => r.IsHeiyo).ToList(); break;
                     }
-                    if (curReceInfs == null || (kbnIndex >= 2 && curReceInfs.Count == 0)) continue;
+                    if (curReceInfs.Count == 0 || (kbnIndex >= 2 && curReceInfs.Count == 0)) continue;
 
                     //
                     switch (kbnIndex)
@@ -196,7 +201,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                                 var wrkReces = curReceInfs.Where(r => r.HokensyaNo == hokensyaNos[hokIndex]).ToList();
 
                                 //保険者名
-                                //CoRep.ListText("hokensyaName", 0, rowNo, hokensyaNames.Find(h => h.HokensyaNo == hokensyaNos[hokIndex])?.Name ?? hokensyaNos[hokIndex]);
                                 listDataPerPage.Add(new("hokensyaName", 0, rowNo, hokensyaNos.Any() ? hokensyaNos[hokIndex] : string.Empty));
 
                                 countData wrkHokData = new countData();
@@ -256,7 +260,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         #endregion
                         #region 7:公費再掲
                         case 7:
-                            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs, null);
+                            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs, new());
 
                             for (int kohiIndex = currentKohiIndex; kohiIndex < kohiHoubetus.Count; kohiIndex++)
                             {

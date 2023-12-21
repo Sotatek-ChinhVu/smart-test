@@ -55,6 +55,10 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
+        welfareInfs = new();
     }
     #endregion
 
@@ -124,7 +128,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
             SetFieldData("reportMonth", wrkYmd.Month.ToString());
             SetFieldData("reportDay", wrkYmd.Day.ToString());
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
 
             return 1;
         }
@@ -144,7 +148,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = receInfs.Where(r => r.IsNrAll).ToList(); break;
@@ -153,7 +157,7 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
                         case 3: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                         case 4: wrkReces = receInfs.ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -211,13 +215,13 @@ public class P40KokhoSokatuCoReportService : IP40KokhoSokatuCoReportService
 
                     for (short colNo = 0; colNo <= 1; colNo++)
                     {
-                        List<CoReceInfModel> wrkReces = null;
+                        List<CoReceInfModel> wrkReces = new();
                         switch (colNo)
                         {
                             case 0: wrkReces = receInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex] && r.IsNrAll).ToList(); break;
                             case 1: wrkReces = receInfs.Where(r => r.HokensyaNo == kokhoNos[kokhoIndex] && r.IsRetAll).ToList(); break;
                         }
-                        if (wrkReces == null) continue;
+                        if (wrkReces.Count == 0) continue;
 
                         countData wrkData = new countData();
                         //件数

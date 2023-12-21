@@ -1,17 +1,11 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.WelfareSeikyu.DB;
 using Reporting.Sokatu.WelfareSeikyu.Mapper;
 using Reporting.Sokatu.WelfareSeikyu.Models;
 using Reporting.Structs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Sokatu.WelfareSeikyu.Service
 {
@@ -31,11 +25,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP35WelfareReceInfModel> receInfs;
-        private CoHpInfModel hpInf;
-        private List<(string code, string name)> cityNames;
-        private string currentFutansyaNo;
-        private string currentCityName;
+        private List<CoP35WelfareReceInfModel> receInfs = new();
+        private CoHpInfModel hpInf = new();
+        private List<(string code, string name)> cityNames = new();
+        private string currentFutansyaNo = "";
+        private string currentCityName = "";
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -158,8 +152,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     //入外
                     fieldDataPerPage.Add(string.Format("nyugai{0}", rowNo), curReceInf.GetNyugai().ToString());
                     //受給者証番号
-                    fieldDataPerPage.Add(string.Format("kigou{0}", rowNo), CIUtil.Copy(curReceInf.WelfareJyukyusyaNo.PadLeft(8, ' '), 1, 3));
-                    fieldDataPerPage.Add(string.Format("bangou{0}", rowNo), CIUtil.Copy(curReceInf.WelfareJyukyusyaNo.PadLeft(8, ' '), 4, 5));
+                    fieldDataPerPage.Add(string.Format("kigou{0}", rowNo), CIUtil.Copy(curReceInf.WelfareJyukyusyaNo?.PadLeft(8, ' ') ?? string.Empty, 1, 3));
+                    fieldDataPerPage.Add(string.Format("bangou{0}", rowNo), CIUtil.Copy(curReceInf.WelfareJyukyusyaNo?.PadLeft(8, ' ') ?? string.Empty, 4, 5));
                     //性別
                     fieldDataPerPage.Add(string.Format("sex{0}", rowNo), curReceInf.Sex.ToString());
                     //氏名
@@ -191,7 +185,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     fieldDataPerPage.Add(string.Format("seikyu{0}", rowNo), curReceInf.KohiFutan.ToString().PadLeft(7, ' '));
                     //一部負担金
                     fieldDataPerPage.Add(string.Format("futan{0}", rowNo), curReceInf.KohiReceFutan(kohiHoubetus).ToString().PadLeft(6, ' '));
-                    
+
                     if (!_setFieldData.ContainsKey(pageIndex))
                     {
                         _setFieldData.Add(pageIndex, fieldDataPerPage);
@@ -211,11 +205,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
 
             #endregion
 
-                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
-                {
-                    hasNextPage = _hasNextPage;
-                    return false;
-                }
+            if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+            {
+                hasNextPage = _hasNextPage;
+                return false;
+            }
 
             hasNextPage = _hasNextPage;
             return true;

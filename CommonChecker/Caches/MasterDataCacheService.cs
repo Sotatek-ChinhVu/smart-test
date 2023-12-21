@@ -23,7 +23,7 @@ namespace CommonChecker.Caches
         private readonly List<DosageDosage> _dosageDosageList = new List<DosageDosage>();
         private readonly SystemConfig _systemConfig;
         
-        private PtInf _ptInf = new PtInf();
+        private PtInf? _ptInf;
         private int _sinday;
 
         public MasterDataCacheService(ITenantProvider tenantProvider) : base(tenantProvider)
@@ -34,7 +34,7 @@ namespace CommonChecker.Caches
         public void InitCache(List<string> itemCodeList, int sinday, long ptId)
         {
             _sinday = sinday;
-            _ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId && p.IsDelete == 0) ?? new PtInf();
+            _ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId && p.IsDelete == 0);
             AddCacheList(itemCodeList);
         }
 
@@ -210,7 +210,11 @@ namespace CommonChecker.Caches
             return _kinkiMstList;
         }
 
-        public PtInf GetPtInf()
+        /// <summary>
+        /// PtInf
+        /// </summary>
+        /// <returns></returns>
+        public PtInf? GetPtInf()
         {
             return _ptInf;
         }
