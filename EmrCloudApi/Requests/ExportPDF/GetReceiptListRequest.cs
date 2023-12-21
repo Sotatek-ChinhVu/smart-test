@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class GetReceiptListRequest : ReportRequestBase
+public class GetReceiptListRequest
 {
     public int SeikyuYm { get; set; }
 
