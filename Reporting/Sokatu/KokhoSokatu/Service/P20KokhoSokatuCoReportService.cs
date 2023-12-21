@@ -62,6 +62,12 @@ public class P20KokhoSokatuCoReportService : IP20KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        kaMsts = new();
+        hokensyaNos = new();
+        curReceInfs = new();
     }
     #endregion
 
@@ -121,7 +127,7 @@ public class P20KokhoSokatuCoReportService : IP20KokhoSokatuCoReportService
             SetFieldData("seikyuYear", wrkYmd.Year.ToString());
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName);
+            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
             //印
             SetVisibleFieldData("inkan", seikyuYm < KaiseiDate.m202210);
 

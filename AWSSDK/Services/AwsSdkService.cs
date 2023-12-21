@@ -64,16 +64,12 @@ namespace AWSSDK.Services
             return false;
         }
 
-        public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
+        public bool DeleteTenantDb(string serverEndpoint, string tennantDB, string username, string password)
         {
             try
             {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                int port = 5432;
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -126,14 +122,14 @@ namespace AWSSDK.Services
 
         public async Task CreateFolderAsync(string bucketName, string folderName)
         {
-            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.CreateFolderAsync(sourceS3ClientDestination, bucketName, folderName);
+            var destinationS3Client = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CreateFolderAsync(destinationS3Client, bucketName, folderName);
         }
 
         public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
         {
-            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
+            var destinationS3Client = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.DeleteObjectsInFolderAsync(destinationS3Client, bucketName, folderKey);
         }
 
         public async Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type)

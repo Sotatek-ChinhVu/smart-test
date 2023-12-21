@@ -11,7 +11,7 @@ namespace EmrCloudApi.ScheduleTask
         }
 
 #if DEBUG
-        protected override string Schedule => "*/1 * * * *"; // every 1 min 
+        protected override string Schedule => "*/60 * * * *"; // every 60 min 
 #else
         protected override string Schedule => "*/60 * * * *"; // every 60 min 
 #endif

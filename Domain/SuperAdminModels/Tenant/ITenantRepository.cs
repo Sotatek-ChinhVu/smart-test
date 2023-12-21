@@ -6,6 +6,8 @@ public interface ITenantRepository
 {
     TenantModel Get(int tenantId);
 
+    TenantModel GetByStatus(int tenantId, byte status);
+
     int GetBySubDomainAndIdentifier(string subDomain, string Identifier);
 
     int SumSubDomainToDbIdentifier(string dbIdentifier);
@@ -16,11 +18,11 @@ public interface ITenantRepository
 
     bool UpdateStatusTenant(int tenantId, byte status);
 
-    TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password);
+    TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status);
 
     TenantModel TerminateTenant(int tenantId, byte TerminateStatus);
 
-    (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take);
+    (List<TenantModel> TenantList, int TotalTenant) GetTenantList(SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take, bool getDataReport = false);
 
     void RevokeInsertPermission();
 
@@ -30,5 +32,10 @@ public interface ITenantRepository
 
     bool CheckExistsSubDomain(string subDomain);
 
+    bool UpdateInfTenantStatus(int tenantId, byte status);
+
+    List<TenantModel> GetByRdsId(int tenantId, string rdsIdentifier);
+
     void ReleaseResource();
+
 }

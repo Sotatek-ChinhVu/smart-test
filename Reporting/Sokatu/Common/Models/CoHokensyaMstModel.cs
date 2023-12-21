@@ -13,12 +13,12 @@ namespace Reporting.Sokatu.Common.Models
 
         public string HokensyaNo
         {
-            get => HokensyaMst.HokensyaNo;
+            get => HokensyaMst.HokensyaNo ?? string.Empty;
         }
 
         public string Name
         {
-            get => HokensyaMst.Name;
+            get => HokensyaMst.Name ?? string.Empty;
         }
     }
 }

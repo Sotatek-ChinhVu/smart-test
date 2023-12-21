@@ -4,7 +4,6 @@
     {
         Successed = 1,
         InvalidTenantId = 2,
-        FailedTenantIsPremium = 3,
         Failed = 4,
         TenantDoesNotExist = 5,
         RdsDoesNotExist = 6,
@@ -15,6 +14,7 @@
         InvalidHospital = 11,
         InvalidAdminId = 12,
         InvalidPassword = 13,
-        TenantTypeDedicate = 14,
+        NotAllowUpdateTenantDedicateToSharing = 14,
+        TenantNotReadyToUpdate = 15
     }
 }

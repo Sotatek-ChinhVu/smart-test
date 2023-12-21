@@ -137,6 +137,9 @@ public class P20WelfareSokatuCoReportService : IP20WelfareSokatuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        hpInf = new();
+        receInfs = new();
+        cityNos = new();
     }
     #endregion
 
