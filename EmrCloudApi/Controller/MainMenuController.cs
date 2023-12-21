@@ -33,6 +33,7 @@ using UseCase.MainMenu.KensaIraiReport;
 using UseCase.MainMenu.RsvInfToConfirm;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
+using UseCase.Releasenote.LoadListVersion;
 using UseCase.ReleasenoteRead;
 
 namespace EmrCloudApi.Controller;
@@ -276,6 +277,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new GetReleasenoteReadPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetReleasenoteReadResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetLoadListVersion)]
+    public ActionResult<Response<GetLoadListVersionResponse>> GetLoadListVersion()
+    {
+        var input = new GetLoadListVersionInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetLoadListVersionPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetLoadListVersionResponse>>(presenter.Result);
     }
 
     #region private function
