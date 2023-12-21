@@ -16,7 +16,7 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
 
     public List<string> GetListReleasenote(int hpId, int userId)
     {
-        List<ReleasenoteRead> releasenote = NoTrackingDataContext.ReleasenoteReads.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
+        List<ReleasenoteRead> releasenote = NoTrackingDataContext.ReleasenoteReads.Where(u => u.HpId == hpId && u.UserId == userId).OrderByDescending(x => x.Version).ToList();
         if (releasenote == null)
         {
             return new List<string>();
