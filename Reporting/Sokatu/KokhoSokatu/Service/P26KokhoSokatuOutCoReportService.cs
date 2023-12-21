@@ -46,6 +46,8 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
     }
     #endregion
 
@@ -133,7 +135,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsNrElderIppan || r.IsNrElderUpper).ToList(); break;
@@ -162,7 +164,7 @@ public class P26KokhoSokatuOutCoReportService : IP26KokhoSokatuOutCoReportServic
                         subData.Clear();
                         break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

@@ -2,8 +2,8 @@
 {
     public class CoKohiHoubetuMstModel
     {
-        private string houbetu;
-        private string hokenNameCd;
+        private string houbetu = "";
+        private string hokenNameCd = "";
 
         public int PrefNo { get; set; }
 

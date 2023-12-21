@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class AccountingCardListRequest : ReportRequestBase
+public class AccountingCardListRequest
 {
     public List<TargetItem> Targets { get; set; } = new();
 

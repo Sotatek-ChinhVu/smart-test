@@ -923,7 +923,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 return listLevel;
             }
 
-            PtInf patientInfo = _tenMstCacheService.GetPtInf();
+            // If patientInfo is null return
+            PtInf? patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
                 return new List<AgeResultModel>();
@@ -1870,7 +1871,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public (double weight, double height) GetPtBodyInfo(int hpId, long ptId, int sinday, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
-            PtInf patientInfo = _tenMstCacheService.GetPtInf();
+            //// If patientInfo is null return
+            PtInf? patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
                 return new(0, 0);
@@ -1914,7 +1916,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double height, double weight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
-            PtInf patientInfo = _tenMstCacheService.GetPtInf();
+            //// If patientInfo is null return
+            PtInf? patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
                 return new List<DosageResultModel>();

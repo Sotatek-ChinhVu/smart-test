@@ -45,6 +45,8 @@ public class P21WelfareSokatuCoReportService : IP21WelfareSokatuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        hpInf = new();
+        receInfs = new();
     }
     #endregion
 
@@ -72,7 +74,6 @@ public class P21WelfareSokatuCoReportService : IP21WelfareSokatuCoReportService
             {
                 while (getData && hasNextPage)
                 {
-                    if (_formFileName == "") continue;
                     UpdateDrawForm();
                     currentPage++;
                 }

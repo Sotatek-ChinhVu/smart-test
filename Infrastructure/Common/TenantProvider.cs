@@ -2,12 +2,10 @@
 using Infrastructure.Common;
 using Helper.Redis;
 using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using PostgreDataContext;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -15,6 +13,8 @@ using System.Text.Json;
 using System.Text.Unicode;
 using StackExchange.Redis;
 using Helper.Extension;
+using System.IdentityModel.Tokens.Jwt;
+using Helper.Common;
 
 namespace Infrastructure.CommonDB
 {
@@ -43,23 +43,50 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
+            var queryString = _httpContextAccessor.HttpContext?.Request?.Path.Value ?? string.Empty + _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
+            if (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV"))
+            {
+                if (!string.IsNullOrEmpty(queryString) && _cache.KeyExists(queryString))
+                {
+                    return _cache.StringGet(queryString).ToString();
+                }
+            }
+           
             string dbSample = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
             {
-                return dbSample;
+                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+                {
+                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
+                }
+                    return dbSample;
             }
             var domainList = _configuration.GetSection("DomainList").Path;
             if (string.IsNullOrEmpty(domainList))
             {
+                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+                {
+                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
+                }
                 return dbSample;
             }
             var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
             if (string.IsNullOrEmpty(clientDomainInConfig))
             {
+                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+                {
+                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
+                }
                 return dbSample;
             }
+
+            if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+            {
+                _cache.StringSet(queryString, clientDomainInConfig, new TimeSpan(0, 0, 0, 10));
+            }
+
             return clientDomainInConfig;
         }
 
@@ -256,15 +283,41 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromQueryString()
         {
-            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value;
-            if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
+            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
+
+            // get domain from param
+            string clientDomain = SubStringToGetParam(queryString);
+
+            // get domain from cookie
+            if (string.IsNullOrEmpty(clientDomain))
             {
-                return string.Empty;
+                return GetDomainFromCookie();
             }
 
-            var clientDomain = SubStringToGetParam(queryString);
+            return clientDomain;
+        }
 
-            return clientDomain ?? string.Empty;
+        /// <summary>
+        /// Get domain from cookie
+        /// </summary>
+        public string GetDomainFromCookie()
+        {
+            string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies[DomainCookie.CookieReportKey] ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(cookieValue))
+            {
+                var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
+                if (cookie == null)
+                {
+                    return string.Empty;
+                }
+                var jwtToken = new JwtSecurityToken(cookie.Token);
+                if (jwtToken.ValidFrom < DateTime.UtcNow && jwtToken.ValidTo > DateTime.UtcNow)
+                {
+                    return cookie.Domain;
+                }
+            }
+            return string.Empty;
         }
 
         public string SubStringToGetParam(string queryString)

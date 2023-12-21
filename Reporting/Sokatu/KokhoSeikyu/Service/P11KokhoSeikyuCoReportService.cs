@@ -51,6 +51,13 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             _extralData = new();
             _listTextData = new();
             _visibleFieldData = new();
+            hpInf = new();
+            hokensyaNos = new();
+            receInfs = new();
+            currentHokensyaNo = "";
+            printHokensyaNos = new();
+            hokensyaNames = new();
+            tokuyohiReceInfs = new();
         }
         #endregion
 
@@ -168,7 +175,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         //国保
@@ -182,7 +189,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         case 6: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                         case 7: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     if (new int[] { 2 }.Contains(rowNo) && wrkReces.Count >= 1)
                     {
@@ -230,7 +237,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 const int maxKohiRow = 3;
                 int kohiIndex = (currentPage - 2) * maxKohiRow;
 
-                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
                 if (kohiHoubetus.Count == 0)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);
@@ -306,7 +313,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             tokuyohiReceInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.TokuyohiKokho, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
 
             //保険者番号の指定がある場合は絞り込み
-            var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
+            var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
                 receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
             wrkReceInfs.AddRange(tokuyohiReceInfs);
 
