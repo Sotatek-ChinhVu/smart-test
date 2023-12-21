@@ -9,6 +9,8 @@ namespace Interactor.SuperAdmin
 {
     public class DeleteJunkFileS3Interactor : IDeleteJunkFileS3InputPort
     {
+        private const accessKey = "AKIAXSCVMXDLRLYZGZ6Q";
+        private const secretKey = "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";
         private readonly AmazonS3Options _options;
         public DeleteJunkFileS3Interactor(IOptions<AmazonS3Options> optionsAccessor)
         {
@@ -18,8 +20,6 @@ namespace Interactor.SuperAdmin
         {
             try
             {
-                var accessKey = "AKIAXSCVMXDLRLYZGZ6Q";
-                var secretKey = "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";
                 var config = new AmazonS3Config
                 {
                     RegionEndpoint = ConfigConstant.RegionSource
