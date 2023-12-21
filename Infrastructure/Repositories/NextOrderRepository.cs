@@ -5,12 +5,16 @@ using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis; 
 using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -18,15 +22,31 @@ namespace Infrastructure.Repositories
     {
         private readonly IAmazonS3Service? _amazonS3Service;
         private readonly AmazonS3Options? _options;
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
 
-        public NextOrderRepository(ITenantProvider tenantProvider, IAmazonS3Service amazonS3Service, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
+        public NextOrderRepository(ITenantProvider tenantProvider, IAmazonS3Service amazonS3Service, IConfiguration configuration, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
         {
+            key = GetCacheKey() + CacheKeyConstant.GetNextOrderList;
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
             _amazonS3Service = amazonS3Service;
             _options = optionsAccessor.Value;
         }
 
         public NextOrderRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn)
@@ -165,6 +185,13 @@ namespace Infrastructure.Repositories
                 }
             }
             TrackingDataContext.SaveChanges();
+
+            // delete cache key
+            string finalKey = key + ptId;
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
+            }
 
             return rsvkrtNo;
         }
@@ -829,9 +856,25 @@ namespace Infrastructure.Repositories
 
         public List<NextOrderModel> GetList(int hpId, long ptId, bool isDeleted)
         {
-            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            List<NextOrderModel> result;
 
-            return allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new List<NextOrderModel>();
+            // check if exit cache, get data from cache
+            string finalKey = key + ptId;
+            if (_cache.KeyExists(finalKey))
+            {
+                var cacheString = _cache.StringGet(finalKey).ToString();
+                result = !string.IsNullOrEmpty(cacheString) ? JsonSerializer.Deserialize<List<NextOrderModel>>(cacheString) ?? new() : new();
+                return result;
+            }
+
+            // if not exist cache, get data from database
+            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            result = allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new();
+
+            // set cache data
+            var json = JsonSerializer.Serialize(result);
+            _cache.StringSet(finalKey, json);
+            return result;
         }
 
         private static NextOrderModel ConvertToModel(RsvkrtMst rsvkrtMst)
