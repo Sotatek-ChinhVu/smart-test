@@ -70,16 +70,6 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
                     {
                         subfiles.Add(fileUrls[i]);
                     }
-                    //string fileName = Path.GetFileName(uri.LocalPath);
-                    //string folderName = Path.GetDirectoryName(uri.LocalPath) ?? "";
-
-                    /*if (folderName.LastIndexOf("\\") != -1)
-                    {
-                        folderName = folderName.Substring(folderName.LastIndexOf("\\") + 1);
-                    }*/
-
-                    //Dictionary<string, string> fileNamePath = new Dictionary<string, string>();
-                    //fileNamePath.Add(fileName, fileUrls[i]);
                 }
             }
 
@@ -89,7 +79,6 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         return result;
     }
 
-    // Phương thức bất đồng bộ để lấy URL của file
     private async Task<string> GetObjectUrlAsync(AmazonS3Client client, string bucketName, string key)
     {
         return await Task.Run(() => GetObjectUrl(client, bucketName, key));
@@ -101,7 +90,7 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         {
             BucketName = bucketName,
             Key = objectKey,
-            Expires = DateTime.UtcNow.AddHours(1) // Thời gian hết hạn URL, bạn có thể điều chỉnh theo nhu cầu của mình
+            Expires = DateTime.UtcNow.AddHours(1)
         };
 
         string url = sourceClient.GetPreSignedURL(request);

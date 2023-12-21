@@ -812,7 +812,6 @@ using UseCase.LastDayInformation.GetLastDayInfoList;
 using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
 using Infrastructure.Repositoriesp;
 using Domain.Models.ReleasenoteRead;
-using UseCase.ReleasenoteRead;
 using Interactor.ReleasenoteRead;
 using UseCase.Releasenote.LoadListVersion;
 
@@ -1804,7 +1803,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ImportKensaIraiInputData, ImportKensaIraiInteractor>();
             busBuilder.RegisterUseCase<GetRsvInfToConfirmInputData, GetRsvInfToConfirmInteractor>();
             busBuilder.RegisterUseCase<GetListQualificationInfInputData, GetListQualificationInfInteractor>();
-            busBuilder.RegisterUseCase<GetListReleasenoteReadInputData, GetListReleasenoteReadInteractor>();
             busBuilder.RegisterUseCase<GetLoadListVersionInputData, GetLoadListVersionInteractor>();
 
             //TimeZoneConfGroup
