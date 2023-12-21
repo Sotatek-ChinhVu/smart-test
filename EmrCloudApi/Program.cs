@@ -146,16 +146,11 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .SetIsOriginAllowed(origin => true) // allow any origin
+              .AllowCredentials(); // allow credentials
     });
-
-    // add option CorsPolicy
-    options.AddPolicy("CorsPolicy",
-            builder => builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
 });
 
 // Authentication
@@ -272,9 +267,6 @@ app.Use(async (context, next) =>
 });
 
 app.UseCors();
-
-// add CorsPolicy
-app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 
