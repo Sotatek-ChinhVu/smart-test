@@ -753,6 +753,7 @@ namespace Infrastructure.Repositories
                 item.IsDeleted)).ToList();
         }
 
+        #region [cache GetListPaymentMethodMst]
         private IEnumerable<PaymentMethodMst> ReloadCache()
         {
             var finalKey = key;
@@ -774,6 +775,8 @@ namespace Infrastructure.Repositories
             var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<PaymentMethodMst>>(json) : new();
             return datas ?? new();
         }
+
+        #endregion [cache GetListPaymentMethodMst]
 
         public List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> kohiIds)
         {
