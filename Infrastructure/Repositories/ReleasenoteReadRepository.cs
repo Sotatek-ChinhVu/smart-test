@@ -60,6 +60,7 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         {
             string path = string.Empty;
             Dictionary<string, string> subfiles = new();
+
             for (int i = 0; i < fileUrls.Length; i++)
             {
                 if (fileUrls[i].Contains(item))
@@ -76,7 +77,11 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
                     }
                 }
             }
-            result.Add(new ReleasenoteReadModel(item, subfiles, path));
+
+            if (subfiles.Count != 0 || path != string.Empty)
+            {
+                result.Add(new ReleasenoteReadModel(item, subfiles, path));
+            }
         }
 
         return result;
