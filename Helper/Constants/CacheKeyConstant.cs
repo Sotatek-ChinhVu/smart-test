@@ -16,4 +16,5 @@ public static class CacheKeyConstant
     public const string SeikaturekiInfGetList = "SeikaturekiInfGetList";
     public const string ColumnSetting = "ColumnSetting";
     public const string GetStaGrp = "GetStaGrp";
+    public const string PaymentMethodMsts = "PaymentMethodMsts";
 }
