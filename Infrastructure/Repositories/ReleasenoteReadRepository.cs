@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime.Internal.Transform;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Domain.Models.ReleasenoteRead;
 using Entity.Tenant;
@@ -59,21 +60,25 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         foreach (var item in listHeader)
         {
             string path = string.Empty;
-            Dictionary<string, string> subfiles = new();
+            Dictionary<string, Dictionary<string, string>> subfiles = new();
 
             for (int i = 0; i < fileUrls.Length; i++)
             {
                 if (fileUrls[i].Contains(item))
                 {
                     Uri uri = new Uri(fileUrls[i]);
+
                     if (!fileUrls[i].Contains("subfiles"))
                     {
                         path = fileUrls[i];
                     }
 
+                    Dictionary<string, string> file = new();
+
                     if (fileUrls[i].Contains("subfiles"))
                     {
-                        subfiles.Add(Path.GetFileNameWithoutExtension(uri.LocalPath), fileUrls[i]);
+                        file.Add(Path.GetExtension(uri.LocalPath), fileUrls[i]);
+                        subfiles.Add(Path.GetFileNameWithoutExtension(uri.LocalPath), file);
                     }
                 }
             }
