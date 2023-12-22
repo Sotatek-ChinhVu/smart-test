@@ -3,9 +3,9 @@
     class CoInDrugPrintDataModel
     {
         public bool UnderLine { get; set; }   // 下線
-        public string RpNo { get; set; }
-        public string Data { get; set; }
-        public string Suuryo { get; set; }
-        public string Tani { get; set; }
+        public string RpNo { get; set; } = string.Empty;
+        public string Data { get; set; } = string.Empty;
+        public string Suuryo { get; set; } = string.Empty;
+        public string Tani { get; set; } = string.Empty;
     }
 }

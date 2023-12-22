@@ -1,15 +1,10 @@
 ﻿using Entity.Tenant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.InDrug.Model
 {
     public class CoPtAlrgyElseModel
     {
-        public PtAlrgyElse PtAlrgyElse { get; } = null;
+        public PtAlrgyElse PtAlrgyElse { get; } = new();
 
         public CoPtAlrgyElseModel(PtAlrgyElse ptAlrgyElse)
         {
@@ -58,7 +53,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string AlrgyName
         {
-            get { return PtAlrgyElse.AlrgyName; }
+            get { return PtAlrgyElse.AlrgyName ?? string.Empty; }
         }
 
         /// <summary>
@@ -85,7 +80,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string Cmt
         {
-            get { return PtAlrgyElse.Cmt; }
+            get { return PtAlrgyElse.Cmt ?? string.Empty; }
         }
 
         /// <summary>

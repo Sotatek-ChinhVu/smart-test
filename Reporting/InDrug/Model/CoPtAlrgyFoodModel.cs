@@ -4,8 +4,8 @@ namespace Reporting.InDrug.Model
 {
     public class CoPtAlrgyFoodModel
     {
-        public PtAlrgyFood PtAlrgyFood { get; } = null;
-        public M12FoodAlrgyKbn FoodAlrgyKbn { get; } = null;
+        public PtAlrgyFood PtAlrgyFood { get; } = new();
+        public M12FoodAlrgyKbn FoodAlrgyKbn { get; } = new();
 
         public CoPtAlrgyFoodModel(PtAlrgyFood ptAlrgyFood, M12FoodAlrgyKbn foodAlrgyKbn)
         {
@@ -55,7 +55,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string AlrgyKbn
         {
-            get { return PtAlrgyFood.AlrgyKbn; }
+            get { return PtAlrgyFood.AlrgyKbn ?? string.Empty; }
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string Cmt
         {
-            get { return PtAlrgyFood.Cmt; }
+            get { return PtAlrgyFood.Cmt ?? string.Empty; }
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string FoodName
         {
-            get { return FoodAlrgyKbn != null ? (FoodAlrgyKbn.FoodName ?? "") : ""; }
+            get { return FoodAlrgyKbn != new M12FoodAlrgyKbn() ? (FoodAlrgyKbn.FoodName ?? "") : ""; }
         }
     }
 }

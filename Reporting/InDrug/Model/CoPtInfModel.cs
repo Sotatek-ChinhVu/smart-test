@@ -1,17 +1,16 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Reporting.Sijisen.Model;
 
 namespace Reporting.InDrug.Model
 {
     public class CoPtInfModel
     {
-        public PtInf PtInf { get; } = null;
-        public PtCmtInf PtCmtInf { get; } = null;
+        public PtInf PtInf { get; } = new();
+        public PtCmtInf PtCmtInf { get; } = new();
 
-        public List<CoPtAlrgyDrugModel> PtAlrgyDrugs { get; } = null;
-        public List<CoPtAlrgyFoodModel> PtAlrgyFoods { get; } = null;
-        public List<CoPtAlrgyElseModel> PtAlrgyElses { get; } = null;
+        public List<CoPtAlrgyDrugModel> PtAlrgyDrugs { get; } = new();
+        public List<CoPtAlrgyFoodModel> PtAlrgyFoods { get; } = new();
+        public List<CoPtAlrgyElseModel> PtAlrgyElses { get; } = new();
         public CoPtInfModel(PtInf ptInf, int sinDate, PtCmtInf ptCmtInf, List<CoPtAlrgyDrugModel> ptAlrgyDrugs, List<CoPtAlrgyFoodModel> ptAlrgyFoods, List<CoPtAlrgyElseModel> ptAlrgyElses)
         {
             PtInf = ptInf;
@@ -22,6 +21,14 @@ namespace Reporting.InDrug.Model
             PtAlrgyElses = ptAlrgyElses;
         }
 
+        public CoPtInfModel()
+        {
+            PtInf = new();
+            PtCmtInf = new();
+            PtAlrgyDrugs = new();
+            PtAlrgyFoods = new();
+            PtAlrgyElses = new();
+        }
 
         public int SinDate { get; set; }
 
@@ -67,7 +74,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string KanaName
         {
-            get { return PtInf.KanaName; }
+            get { return PtInf.KanaName ?? string.Empty; }
         }
 
         /// <summary>
@@ -75,7 +82,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string Name
         {
-            get { return PtInf.Name; }
+            get { return PtInf.Name ?? string.Empty; }
         }
 
         /// <summary>
@@ -130,7 +137,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string HomePost
         {
-            get { return PtInf.HomePost; }
+            get { return PtInf.HomePost ?? string.Empty; }
         }
 
         /// <summary>
@@ -138,7 +145,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string HomeAddress1
         {
-            get { return PtInf.HomeAddress1; }
+            get { return PtInf.HomeAddress1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -146,7 +153,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string HomeAddress2
         {
-            get { return PtInf.HomeAddress2; }
+            get { return PtInf.HomeAddress2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -201,7 +208,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string Mail
         {
-            get { return PtInf.Mail; }
+            get { return PtInf.Mail ?? string.Empty; }
         }
 
         /// <summary>
@@ -209,7 +216,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string Setanusi
         {
-            get { return PtInf.Setanusi; }
+            get { return PtInf.Setanusi ?? string.Empty; }
         }
 
         /// <summary>
@@ -217,7 +224,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string Zokugara
         {
-            get { return PtInf.Zokugara; }
+            get { return PtInf.Zokugara ?? string.Empty; }
         }
 
         /// <summary>
@@ -225,7 +232,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string Job
         {
-            get { return PtInf.Job; }
+            get { return PtInf.Job ?? string.Empty; }
         }
 
         /// <summary>
@@ -233,7 +240,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string RenrakuName
         {
-            get { return PtInf.RenrakuName; }
+            get { return PtInf.RenrakuName ?? string.Empty; }
         }
 
         /// <summary>
@@ -241,7 +248,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string RenrakuPost
         {
-            get { return PtInf.RenrakuPost; }
+            get { return PtInf.RenrakuPost ?? string.Empty; }
         }
 
         /// <summary>
@@ -249,7 +256,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string RenrakuAddress1
         {
-            get { return PtInf.RenrakuAddress1; }
+            get { return PtInf.RenrakuAddress1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -257,7 +264,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string RenrakuAddress2
         {
-            get { return PtInf.RenrakuAddress2; }
+            get { return PtInf.RenrakuAddress2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -273,7 +280,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string RenrakuMemo
         {
-            get { return PtInf.RenrakuMemo; }
+            get { return PtInf.RenrakuMemo ?? string.Empty; }
         }
 
         /// <summary>
@@ -281,7 +288,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string OfficeName
         {
-            get { return PtInf.OfficeName; }
+            get { return PtInf.OfficeName ?? string.Empty; }
         }
 
         /// <summary>
@@ -289,7 +296,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string OfficePost
         {
-            get { return PtInf.OfficePost; }
+            get { return PtInf.OfficePost ?? string.Empty; }
         }
 
         /// <summary>
@@ -297,7 +304,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string OfficeAddress1
         {
-            get { return PtInf.OfficeAddress1; }
+            get { return PtInf.OfficeAddress1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -305,7 +312,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string OfficeAddress2
         {
-            get { return PtInf.OfficeAddress2; }
+            get { return PtInf.OfficeAddress2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -313,7 +320,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string OfficeTel
         {
-            get { return PtInf.OfficeTel; }
+            get { return PtInf.OfficeTel ?? string.Empty; }
         }
 
         /// <summary>
@@ -321,7 +328,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string OfficeMemo
         {
-            get { return PtInf.OfficeMemo; }
+            get { return PtInf.OfficeMemo ?? string.Empty; }
         }
 
         /// <summary>
@@ -372,7 +379,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string PtCmt
         {
-            get { return PtCmtInf != null ? (PtCmtInf.Text ?? "") : ""; }
+            get { return PtCmtInf != new PtCmtInf() ? (PtCmtInf.Text ?? "") : ""; }
         }
 
         /// <summary>
@@ -384,7 +391,7 @@ namespace Reporting.InDrug.Model
             {
                 List<string> ret = new List<string>();
 
-                if (PtAlrgyDrugs != null && PtAlrgyDrugs.Any())
+                if (PtAlrgyDrugs != new List<CoPtAlrgyDrugModel>() && PtAlrgyDrugs.Any())
                 {
                     foreach (CoPtAlrgyDrugModel ptAlrgyDrug in PtAlrgyDrugs.FindAll(p => p.DrugName != ""))
                     {
@@ -405,7 +412,7 @@ namespace Reporting.InDrug.Model
             {
                 List<string> ret = new List<string>();
 
-                if (PtAlrgyFoods != null && PtAlrgyFoods.Any())
+                if (PtAlrgyFoods != new List<CoPtAlrgyFoodModel>() && PtAlrgyFoods.Any())
                 {
                     foreach (CoPtAlrgyFoodModel ptAlrgyFood in PtAlrgyFoods.FindAll(p => p.FoodName != ""))
                     {
@@ -426,7 +433,7 @@ namespace Reporting.InDrug.Model
             {
                 List<string> ret = new List<string>();
 
-                if (PtAlrgyElses != null && PtAlrgyElses.Any())
+                if (PtAlrgyElses != new List<CoPtAlrgyElseModel>() && PtAlrgyElses.Any())
                 {
                     foreach (CoPtAlrgyElseModel ptAlrgyElse in PtAlrgyElses.FindAll(p => p.AlrgyName != ""))
                     {

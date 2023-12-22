@@ -1,6 +1,5 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Reporting.CommonMasters.Enums;
 using Reporting.InDrug.DB;
 using Reporting.InDrug.Mapper;
 using Reporting.InDrug.Model;
@@ -21,37 +20,12 @@ namespace Reporting.InDrug.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private CoInDrugModel coModel;
-
-        /// <summary>
-        /// 出力モード
-        /// 0:印刷
-        /// 1:ファイル
-        /// </summary>
-        private CoOutputMode OutputMode;
-        /// <summary>
-        /// ファイルタイプ
-        /// 0:バイナリ
-        /// 1:PDF
-        /// </summary>
-        private CoFileType FileType;
-        /// <summary>
-        /// 出力先フォルダ
-        /// </summary>
-        private string OutputDirectory;
-        /// <summary>
-        /// ファイル名
-        /// </summary>
-        private string OutputFileName;
-        /// <summary>
-        /// プリンタ名
-        /// </summary>
-        private string PrinterName;
+        private CoInDrugModel coModel = new();
 
         /// <summary>
         /// 印刷項目情報
         /// </summary>
-        private List<CoInDrugPrintDataModel> printOutData;
+        private List<CoInDrugPrintDataModel> printOutData = new();
 
         private int dataCharCount;
         private int dataRowCount;
@@ -102,7 +76,7 @@ namespace Reporting.InDrug.Service
                 this.sinDate = sinDate;
                 this.raiinNo = raiinNo;
                 coModel = GetData();
-                if (coModel != null)
+                if (coModel != new CoInDrugModel())
                 {
                     GetRowCount("fmInDrug.rse");
                     currentPage = 1;
@@ -132,33 +106,6 @@ namespace Reporting.InDrug.Service
         }
 
         #region Private function
-        /// <summary>
-        /// 監査ログ出力
-        /// </summary>
-        /*private void addAuditTrailLog()
-        {
-            string eventCd = EventCode.ReportInDrug;
-
-            string hosoku = "";
-
-            if (OutputMode == CoOutputMode.File)
-            {
-                hosoku += $"file:{OutputDirectory + OutputFileName} ";
-            }
-            else
-            {
-                hosoku += $"printer:{PrinterName} ";
-            }
-
-            ArgumentModel arg = new ArgumentModel();
-            arg.PtId = ptId;
-            arg.SinDate = sinDate;
-            arg.RaiinNo = raiinNo;
-            arg.EventCd = eventCd;
-            arg.Hosoku = hosoku;
-
-            ProcessEvent(arg);
-        }*/
         /// <summary>
         /// オーダーリスト生成
         /// </summary>
@@ -695,7 +642,7 @@ namespace Reporting.InDrug.Service
             }
             else
             {
-                return null;
+                return new();
             }
         }
 

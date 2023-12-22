@@ -2,21 +2,15 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Calculate.Extensions;
 using Reporting.InDrug.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.InDrug.DB
 {
     public class CoInDrugFinder : RepositoryBase, ICoInDrugFinder
     {
         public CoInDrugFinder(ITenantProvider tenantProvider) : base(tenantProvider)
-        { 
+        {
         }
 
         public void ReleaseResource()
@@ -56,13 +50,14 @@ namespace Reporting.InDrug.DB
 
             var entities = join.AsEnumerable().Select(
                 data =>
-                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, null, null, null)
+                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, new(), new(), new())
                 )
                 .ToList();
 
             List<CoPtInfModel> results = new List<CoPtInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(
                     new CoPtInfModel(
                         entity.PtInf,
@@ -74,7 +69,7 @@ namespace Reporting.InDrug.DB
                     ));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
         /// <summary>
         /// 患者薬剤アレルギー情報を取得する
@@ -142,7 +137,8 @@ namespace Reporting.InDrug.DB
 
             List<CoPtAlrgyFoodModel> results = new List<CoPtAlrgyFoodModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(
                     new CoPtAlrgyFoodModel(
                         entity.PtAlrgyFood,
@@ -232,7 +228,7 @@ namespace Reporting.InDrug.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,
@@ -249,11 +245,12 @@ namespace Reporting.InDrug.DB
 
             List<CoRaiinInfModel> results = new List<CoRaiinInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
         /// <summary>
         /// オーダー情報取得
@@ -267,8 +264,6 @@ namespace Reporting.InDrug.DB
         /// </returns>
         public List<CoOdrInfModel> FindOdrInf(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            const string conFncName = nameof(FindOdrInf);
-
             var odrInfs = NoTrackingDataContext.OdrInfs.FindListNoTrack(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -300,13 +295,14 @@ namespace Reporting.InDrug.DB
 
             List<CoOdrInfModel> results = new List<CoOdrInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new CoOdrInfModel(entity.OdrInf));
             });
 
             return results;
         }
-        
+
         /// <summary>
         /// オーダー詳細情報を取得する
         /// </summary>
@@ -317,8 +313,6 @@ namespace Reporting.InDrug.DB
         /// <returns></returns>
         public List<CoOdrInfDetailModel> FindOdrInfDetail(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            const string conFncName = nameof(FindOdrInfDetail);
-
             var odrInfs = NoTrackingDataContext.OdrInfs.FindListQueryableNoTrack(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -344,7 +338,7 @@ namespace Reporting.InDrug.DB
                     new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd.Trim() } equals
+                    new { odrInfDetail.HpId, ItemCd = (odrInfDetail.ItemCd ?? string.Empty).Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 orderby
@@ -368,7 +362,8 @@ namespace Reporting.InDrug.DB
                 .ToList();
             List<CoOdrInfDetailModel> results = new List<CoOdrInfDetailModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
 
                 results.Add(
                     new CoOdrInfDetailModel(

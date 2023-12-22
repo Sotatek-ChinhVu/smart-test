@@ -26,6 +26,7 @@ namespace Reporting.InDrug.Model
 
         // オーダー情報詳細
         public List<CoOdrInfDetailModel> OdrInfSyohosenBikoDetailModels;
+
         public CoInDrugModel(
             CoPtInfModel ptInf, CoRaiinInfModel raiinInf,
             List<CoOdrInfModel> odrInfs, List<CoOdrInfDetailModel> odrDtls)
@@ -38,6 +39,18 @@ namespace Reporting.InDrug.Model
             OdrInfSyohosenCommentDetailModels = odrDtls.FindAll(p => p.OdrKouiKbn == 100);
             OdrInfSyohosenBikoModels = odrInfs.FindAll(p => p.OdrKouiKbn == 101);
             OdrInfSyohosenBikoDetailModels = odrDtls.FindAll(p => p.OdrKouiKbn == 101);
+        }
+
+        public CoInDrugModel()
+        {
+            PtInfModel = new();
+            RaiinInfModel = new();
+            OdrInfModels = new();
+            OdrInfDetailModels = new();
+            OdrInfSyohosenCommentModels = new();
+            OdrInfSyohosenCommentDetailModels = new();
+            OdrInfSyohosenBikoModels = new();
+            OdrInfSyohosenBikoDetailModels = new();
         }
 
         /// <summary>
@@ -112,21 +125,21 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public string KaName
         {
-            get => RaiinInfModel != null ? RaiinInfModel.KaName : "";
+            get => RaiinInfModel != new CoRaiinInfModel() ? RaiinInfModel.KaName : "";
         }
         /// <summary>
         /// 担当医氏名
         /// </summary>
         public string TantoName
         {
-            get => RaiinInfModel != null ? RaiinInfModel.TantoName : "";
+            get => RaiinInfModel != new CoRaiinInfModel() ? RaiinInfModel.TantoName : "";
         }
         /// <summary>
         /// 受付番号
         /// </summary>
         public int UketukeNo
         {
-            get => RaiinInfModel != null ? RaiinInfModel.UketukeNo : 0;
+            get => RaiinInfModel != new CoRaiinInfModel() ? RaiinInfModel.UketukeNo : 0;
         }
         /// <summary>
         /// アレルギー情報
