@@ -421,7 +421,7 @@ namespace Interactor.SuperAdmin
                     {
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
-                        var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
+                        var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
                         var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId, model.Password);
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
