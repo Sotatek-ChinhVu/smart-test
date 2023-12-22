@@ -114,13 +114,13 @@ public class GrowthCurveA5CoReportService : GrowthCurveService, IGrowthCurveA5Co
         kanHeightPointCollection = new();
 
         //weigth
-        var weightInfo = kensaInfDetails.Where(item => item.KensaItemCd == IraiCodeConstant.WEIGHT_CODE).OrderBy(item => item.IraiDate).ToList();
+        var weightInfo = kensaInfDetails.Where(item => item?.KensaItemCd == IraiCodeConstant.WEIGHT_CODE).OrderBy(item => item?.IraiDate).ToList();
         foreach (var weightItem in weightInfo)
         {
             int age = 0;
             int month = 0;
             int day = 0;
-            CIUtil.SDateToDecodeAge(birthDay, weightItem.IraiDate, ref age, ref month, ref day);
+            CIUtil.SDateToDecodeAge(birthDay, weightItem == null ? 0 : weightItem.IraiDate, ref age, ref month, ref day);
             bool lessThan18 = age <= 18;
 
             if (lessThan18)
@@ -131,13 +131,13 @@ public class GrowthCurveA5CoReportService : GrowthCurveService, IGrowthCurveA5Co
         }
 
         //height
-        var heightInfo = kensaInfDetails.Where(item => item.KensaItemCd == IraiCodeConstant.HEIGHT_CODE).OrderBy(item => item.IraiDate).ToList();
+        var heightInfo = kensaInfDetails.Where(item => item?.KensaItemCd == IraiCodeConstant.HEIGHT_CODE).OrderBy(item => item?.IraiDate).ToList();
         foreach (var heightItem in heightInfo)
         {
             int age = 0;
             int month = 0;
             int day = 0;
-            CIUtil.SDateToDecodeAge(birthDay, heightItem.IraiDate, ref age, ref month, ref day);
+            CIUtil.SDateToDecodeAge(birthDay, heightItem == null ? 0 : heightItem.IraiDate, ref age, ref month, ref day);
 
             bool lessThan18 = age <= 18;
 
