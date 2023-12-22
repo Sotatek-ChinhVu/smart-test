@@ -158,6 +158,9 @@ namespace EmrCloudApi.Controller
                 {
                     CookieOptions options = new CookieOptions();
                     options.Expires = DateTime.Now.AddDays(-1);
+                    options.Path = "/";
+                    options.Secure = true;
+                    options.SameSite = SameSiteMode.None;
                     HttpContext.Response.Cookies.Append(DomainCookie.CookieReportKey, string.Empty, options);
                 }
             }
