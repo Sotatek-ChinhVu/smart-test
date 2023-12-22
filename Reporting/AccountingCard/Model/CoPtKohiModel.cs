@@ -172,7 +172,7 @@ namespace Reporting.AccountingCard.Model
             get
             {
                 return
-                    (KohiPriority == null ? 99999 : CIUtil.StrToIntDef(KohiPriority.PriorityNo, 99999)) * 1000 + CIUtil.StrToIntDef(HokenMst.Houbetu ?? string.Empty, 999);
+                    (KohiPriority == new KohiPriority() ? 99999 : CIUtil.StrToIntDef(KohiPriority.PriorityNo, 99999)) * 1000 + CIUtil.StrToIntDef(HokenMst.Houbetu ?? string.Empty, 999);
             }
         }
 
