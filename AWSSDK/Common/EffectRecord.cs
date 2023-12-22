@@ -137,10 +137,10 @@ namespace AWSSDK.Common
             return entity;
         }
 
-        private static void DeleteEntitiesByCriteria<T>(NpgsqlConnection connection, string tableName, string[] columns, List<object[]> valuesList)
+        private static void DeleteEntitiesByCriteria<T>(NpgsqlConnection connection, NpgsqlTransaction transaction, string tableName, string[] columns, List<object[]> valuesList)
         {
 
-            using (NpgsqlCommand deleteCommand = new NpgsqlCommand("", connection))
+            using (NpgsqlCommand deleteCommand = new NpgsqlCommand("", connection, transaction))
             {
                 for (int i = 0; i < valuesList.Count; i++)
                 {
@@ -193,7 +193,7 @@ namespace AWSSDK.Common
             return GetEntityByCriteria<TenMst>(connection, TenMstTableName, columns, values);
         }
 
-        private static void DeleteTenMsts(NpgsqlConnection connection, List<TenMst> tenMsts)
+        private static void DeleteTenMsts(NpgsqlConnection connection, NpgsqlTransaction transaction, List<TenMst> tenMsts)
         {
             List<object[]> valuesList = new List<object[]>();
 
@@ -204,7 +204,7 @@ namespace AWSSDK.Common
                 valuesList.Add(new object[] { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate });
             }
 
-            DeleteEntitiesByCriteria<TenMst>(connection, TenMstTableName, columns, valuesList);
+            DeleteEntitiesByCriteria<TenMst>(connection, transaction, TenMstTableName, columns, valuesList);
         }
 
         private static T GetDensiHaihan<T>(NpgsqlConnection connection, TempGenerationMst tempTenMst, string tableName) where T : new()
@@ -223,7 +223,7 @@ namespace AWSSDK.Common
             return GetEntityByCriteria<T>(connection, tableName, columns, values, optionScript);
         }
 
-        private static void DeleteDensiHaihan<T>(NpgsqlConnection connection, List<T> entities, string tableName)
+        private static void DeleteDensiHaihan<T>(NpgsqlConnection connection, NpgsqlTransaction transaction, List<T> entities, string tableName)
         {
             List<object[]> valuesList = new List<object[]>();
 
@@ -240,7 +240,7 @@ namespace AWSSDK.Common
                 valuesList.Add(new object[] { id, hpId, itemCd1, seqNo, userSetting });
             }
 
-            DeleteEntitiesByCriteria<T>(connection, tableName, columns, valuesList);
+            DeleteEntitiesByCriteria<T>(connection, transaction, tableName, columns, valuesList);
         }
 
         private static DensiHoukatu GetDensiHoukatu(NpgsqlConnection connection, TempGenerationMst tempTenMst)
@@ -259,7 +259,7 @@ namespace AWSSDK.Common
             return GetEntityByCriteria<DensiHoukatu>(connection, DensiHoukatuTableName, columns, values, optionScript);
         }
 
-        private static void DeleteDensiHoukatu(NpgsqlConnection connection, List<DensiHoukatu> densiHoukatus)
+        private static void DeleteDensiHoukatu(NpgsqlConnection connection, NpgsqlTransaction transaction, List<DensiHoukatu> densiHoukatus)
         {
             List<object[]> valuesList = new List<object[]>();
 
@@ -270,7 +270,7 @@ namespace AWSSDK.Common
                 valuesList.Add(new object[] { item.HpId, item.ItemCd, item.StartDate, item.SeqNo, item.UserSetting });
             }
 
-            DeleteEntitiesByCriteria<DensiHoukatu>(connection, DensiHoukatuTableName, columns, valuesList);
+            DeleteEntitiesByCriteria<DensiHoukatu>(connection, transaction, DensiHoukatuTableName, columns, valuesList);
         }
 
         private static DensiHojyo GetLatestDensiHojyo(NpgsqlConnection connection, TempGenerationMst tempTenMst)
@@ -289,7 +289,7 @@ namespace AWSSDK.Common
             return GetEntityByCriteria<DensiHojyo>(connection, DensiHojyoTableName, columns, values);
         }
 
-        private static void DeleteDensiHojyos(NpgsqlConnection connection, List<DensiHojyo> densiHojyos)
+        private static void DeleteDensiHojyos(NpgsqlConnection connection, NpgsqlTransaction transaction, List<DensiHojyo> densiHojyos)
         {
             List<object[]> valuesList = new List<object[]>();
 
@@ -300,7 +300,7 @@ namespace AWSSDK.Common
                 valuesList.Add(new object[] { item.HpId, item.ItemCd, item.StartDate });
             }
 
-            DeleteEntitiesByCriteria<DensiHojyo>(connection, DensiHojyoTableName, columns, valuesList);
+            DeleteEntitiesByCriteria<DensiHojyo>(connection, transaction, DensiHojyoTableName, columns, valuesList);
         }
 
         private static DensiHoukatuGrp GetDensiHoukatuGrp(NpgsqlConnection connection, TempGenerationMst tempTenMst)
@@ -319,7 +319,7 @@ namespace AWSSDK.Common
             return GetEntityByCriteria<DensiHoukatuGrp>(connection, DensiHoukatuGrpTableName, columns, values, optionScript);
         }
 
-        private static void DeleteDensiHoukatuGrp(NpgsqlConnection connection, List<DensiHoukatuGrp> densiHoukatus)
+        private static void DeleteDensiHoukatuGrp(NpgsqlConnection connection, NpgsqlTransaction transaction, List<DensiHoukatuGrp> densiHoukatus)
         {
             List<object[]> valuesList = new List<object[]>();
 
@@ -330,7 +330,7 @@ namespace AWSSDK.Common
                 valuesList.Add(new object[] { item.HpId, item.HoukatuGrpNo, item.ItemCd, item.StartDate, item.SeqNo, item.UserSetting });
             }
 
-            DeleteEntitiesByCriteria<DensiHoukatuGrp>(connection, DensiHoukatuGrpTableName, columns, valuesList);
+            DeleteEntitiesByCriteria<DensiHoukatuGrp>(connection, transaction, DensiHoukatuGrpTableName, columns, valuesList);
         }
 
         private static DensiSanteiKaisu GetDensiSanteiKaisu(NpgsqlConnection connection, TempGenerationMst tempTenMst)
@@ -349,7 +349,7 @@ namespace AWSSDK.Common
             return GetEntityByCriteria<DensiSanteiKaisu>(connection, DensiSanteiKaisuTableName, columns, values, optionScript);
         }
 
-        private static void DeleteDensiSanteiKaisus(NpgsqlConnection connection, List<DensiSanteiKaisu> densiHoukatus)
+        private static void DeleteDensiSanteiKaisus(NpgsqlConnection connection, NpgsqlTransaction transaction, List<DensiSanteiKaisu> densiHoukatus)
         {
             List<object[]> valuesList = new List<object[]>();
 
@@ -360,11 +360,11 @@ namespace AWSSDK.Common
                 valuesList.Add(new object[] { item.HpId, item.ItemCd, item.SeqNo, item.UserSetting, item.Id });
             }
 
-            DeleteEntitiesByCriteria<DensiSanteiKaisu>(connection, DensiSanteiKaisuTableName, columns, valuesList);
+            DeleteEntitiesByCriteria<DensiSanteiKaisu>(connection, transaction, DensiSanteiKaisuTableName, columns, valuesList);
         }
 
 
-        public static void ChangeTenMstGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeTenMstGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -502,7 +502,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteTenMsts.Count > 0)
                 {
-                    DeleteTenMsts(connection, deleteTenMsts);
+                    DeleteTenMsts(connection, transaction, deleteTenMsts);
                 }
             }
             catch (Exception ex)
@@ -512,7 +512,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHaiHanCustomGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHaiHanCustomGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -581,7 +581,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHaihan<DensiHaihanCustom>(connection, deleteMsts, DensiHaiHanCustomTableName);
+                    DeleteDensiHaihan<DensiHaihanCustom>(connection, transaction, deleteMsts, DensiHaiHanCustomTableName);
                 }
             }
             catch (Exception ex)
@@ -591,7 +591,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHaiHanDayGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHaiHanDayGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -660,7 +660,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHaihan<DensiHaihanDay>(connection, deleteMsts, DensiHaihanDayTableName);
+                    DeleteDensiHaihan<DensiHaihanDay>(connection, transaction, deleteMsts, DensiHaihanDayTableName);
                 }
             }
             catch (Exception ex)
@@ -670,7 +670,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHaihanKarteGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHaihanKarteGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -738,7 +738,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHaihan<DensiHaihanKarte>(connection, deleteMsts, DensiHaihanKarteTableName);
+                    DeleteDensiHaihan<DensiHaihanKarte>(connection, transaction, deleteMsts, DensiHaihanKarteTableName);
                 }
             }
             catch (Exception ex)
@@ -748,7 +748,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHaihanMonthGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHaihanMonthGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -817,7 +817,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHaihan<DensiHaihanMonth>(connection, deleteMsts, DensiHaihanMonthTableName);
+                    DeleteDensiHaihan<DensiHaihanMonth>(connection, transaction, deleteMsts, DensiHaihanMonthTableName);
                 }
             }
             catch (Exception ex)
@@ -827,7 +827,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHaihanWeekGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHaihanWeekGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -897,7 +897,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHaihan<DensiHaihanWeek>(connection, deleteMsts, DensiHaihanWeekTableName);
+                    DeleteDensiHaihan<DensiHaihanWeek>(connection, transaction, deleteMsts, DensiHaihanWeekTableName);
                 }
             }
             catch (Exception ex)
@@ -907,7 +907,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHojyoGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHojyoGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -970,7 +970,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHojyos(connection, deleteMsts);
+                    DeleteDensiHojyos(connection, transaction, deleteMsts);
                 }
             }
             catch (Exception ex)
@@ -980,7 +980,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHoukatuGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHoukatuGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -1049,7 +1049,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHoukatu(connection, deleteMsts);
+                    DeleteDensiHoukatu(connection, transaction, deleteMsts);
                 }
             }
             catch (Exception ex)
@@ -1059,7 +1059,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiHoukatuGrpGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiHoukatuGrpGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -1127,7 +1127,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiHoukatuGrp(connection, deleteMsts);
+                    DeleteDensiHoukatuGrp(connection, transaction, deleteMsts);
                 }
             }
             catch (Exception ex)
@@ -1137,7 +1137,7 @@ namespace AWSSDK.Common
             }
         }
 
-        public static void ChangeDensiSanteiKaisuGeneration(NpgsqlConnection connection, string tempTable)
+        public static void ChangeDensiSanteiKaisuGeneration(NpgsqlConnection connection, NpgsqlTransaction transaction, string tempTable)
         {
             try
             {
@@ -1207,7 +1207,7 @@ namespace AWSSDK.Common
                 }
                 if (deleteMsts.Count > 0)
                 {
-                    DeleteDensiSanteiKaisus(connection, deleteMsts);
+                    DeleteDensiSanteiKaisus(connection, transaction, deleteMsts);
                 }
             }
             catch (Exception ex)

@@ -228,7 +228,7 @@ namespace AWSSDK.Common
                                                             }
                                                         }
 
-                                                        MoveDataToBaseTable(connection);
+                                                        MoveDataToBaseTable(connection, transaction);
                                                     }
                                                     transaction.Commit();
                                                 }
@@ -380,7 +380,6 @@ namespace AWSSDK.Common
             }
         }
 
-
         private static List<string> GetAllPrimaryKeys(string tableName, NpgsqlConnection connection)
         {
             List<string> primaryKeyColumns = new List<string>();
@@ -406,7 +405,7 @@ namespace AWSSDK.Common
             return primaryKeyColumns;
         }
 
-        private static void MoveDataToBaseTable(NpgsqlConnection connection)
+        private static void MoveDataToBaseTable(NpgsqlConnection connection, NpgsqlTransaction transaction)
         {
             string script = string.Empty;
             try
@@ -514,34 +513,34 @@ namespace AWSSDK.Common
                     switch (_baseTable)
                     {
                         case "TEN_MST":
-                            EffectRecord.ChangeTenMstGeneration(connection, _tempTable);
+                            EffectRecord.ChangeTenMstGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HAIHAN_CUSTOM":
-                            EffectRecord.ChangeDensiHaiHanCustomGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHaiHanCustomGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HAIHAN_DAY":
-                            EffectRecord.ChangeDensiHaiHanDayGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHaiHanDayGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HAIHAN_KARTE":
-                            EffectRecord.ChangeDensiHaihanKarteGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHaihanKarteGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HAIHAN_MONTH":
-                            EffectRecord.ChangeDensiHaihanMonthGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHaihanMonthGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HAIHAN_WEEK":
-                            EffectRecord.ChangeDensiHaihanWeekGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHaihanWeekGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HOJYO":
-                            EffectRecord.ChangeDensiHojyoGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHojyoGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HOUKATU":
-                            EffectRecord.ChangeDensiHoukatuGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHoukatuGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_HOUKATU_GRP":
-                            EffectRecord.ChangeDensiHoukatuGrpGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiHoukatuGrpGeneration(connection, transaction, _tempTable);
                             break;
                         case "DENSI_SANTEI_KAISU":
-                            EffectRecord.ChangeDensiSanteiKaisuGeneration(connection, _tempTable);
+                            EffectRecord.ChangeDensiSanteiKaisuGeneration(connection, transaction, _tempTable);
                             break;
                     }
                 }
@@ -572,27 +571,7 @@ namespace AWSSDK.Common
                 return false;
             }
         }
-
-        private static bool ExecuteSqlScriptQuery(string sqlScript, NpgsqlConnection connection, NpgsqlTransaction transaction)
-        {
-
-            try
-            {
-                // Execute the SQL command
-                using (NpgsqlCommand command = new NpgsqlCommand(sqlScript, connection, transaction))
-                {
-                    command.CommandType = CommandType.Text;
-                    command.ExecuteNonQuery();
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Execute SqlFile fail: " + ex.Message);
-                return false;
-            }
-        }
-
+       
         public class TempGenerationMst
         {
             public int Hp_Id { get; set; }
