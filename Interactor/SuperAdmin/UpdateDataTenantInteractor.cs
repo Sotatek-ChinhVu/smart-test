@@ -1,4 +1,5 @@
 ﻿using AWSSDK.Common;
+using AWSSDK.Constants;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
@@ -50,27 +51,31 @@ namespace Interactor.SuperAdmin
 
                 string pathFile7z = $"{pathFolderUpdateDataTenant}\\{tenant.SubDomain}-{Guid.NewGuid()}.7z";
                 string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
+                pathFileExtract7z = "D:\\7Z-nghiaduong2-e2cbf31a-11d2-4418-bbdf-05f4ea5ae431";
+                string pathFolderScript = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_SQL}";
+                string pathFolderMaster = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_MASTER}";
 
-                string pathFolderScript = $"{pathFileExtract7z}\\updfile\\02_script";
-                //string pathFolderScript = $"D:\\7Z-nghiaduong2-e2cbf31a-11d2-4418-bbdf-05f4ea5ae431\\updfile\\02_script";
+                // Todo Replace path file linux
 
                 // Save file 7z
-                using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
-                {
-                    inputData.FileUpdateData.CopyTo(fileStream);
-                }
+                //using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
+                //{
+                //    inputData.FileUpdateData.CopyTo(fileStream);
+                //}
 
-                // Extract file 7z
-                using (var archive = SevenZipArchive.Open(pathFile7z, new ReaderOptions() { Password = passwordFile7z }))
-                {
-                    archive.ExtractToDirectory(pathFileExtract7z);
-                }
+                //// Extract file 7z
+                //using (var archive = SevenZipArchive.Open(pathFile7z, new ReaderOptions() { Password = passwordFile7z }))
+                //{
+                //    archive.ExtractToDirectory(pathFileExtract7z);
+                //}
 
                 // Execute file script in folder 02_script
-                    
+
                 // Create transaction executed 
                 string[] extractedFiles = Directory.GetFiles(pathFolderScript);
-                PostgresSqlAction.ExecuteSqlFiles(extractedFiles, "localhost", 5432,"test01",  "postgres", "1234$");
+                // Execute file script in folder 03_master
+                string[] subFoldersMasters = Directory.GetDirectories(pathFolderMaster);
+                UpdateDataTenant.ExcuteUpdateDataTenant(extractedFiles, "localhost", 5432, "postgres",  "postgres", "1234$", subFoldersMasters);
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
             finally
