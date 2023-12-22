@@ -60,16 +60,16 @@ namespace Reporting.Statistics.Sta2020.Service
         /// </summary>
         private readonly ICoSta2020Finder _staFinder;
         private readonly IReadRseReportFileService _readRseReportFileService;
-        private CoSta2020PrintConf _printConf;
+        private CoSta2020PrintConf _printConf = new();
 
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoSta2020PrintData> printDatas;
-        private List<string> headerL1;
-        private List<string> headerL2;
-        private List<CoSinKouiModel> sinKouis;
-        private CoHpInfModel hpInf;
+        private List<CoSta2020PrintData> printDatas = new();
+        private List<string> headerL1 = new();
+        private List<string> headerL2 = new();
+        private List<CoSinKouiModel> sinKouis = new();
+        private CoHpInfModel hpInf = new();
         private readonly BackgroundWorker? _backgroundWorker = null;
         private int HpId;
         private int _currentPage;

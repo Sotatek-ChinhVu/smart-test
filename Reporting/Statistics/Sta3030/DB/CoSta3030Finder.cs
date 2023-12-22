@@ -371,7 +371,7 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
                 var curByomeis = ptByomeis;
 
                 //病名と修飾語の組み合わせを分解
-                var searchCds = searchByomei?.Replace("　", " ").Split(' ');
+                var searchCds = searchByomei.Replace("　", " ").Split(' ');
                 foreach (string searchCd in searchCds)
                 {
                     if (!notFreeByomeiCds.Exists(b => b.Contains(searchCd)))
