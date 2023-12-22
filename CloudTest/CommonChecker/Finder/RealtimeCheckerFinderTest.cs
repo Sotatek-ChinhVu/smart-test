@@ -5,12 +5,11 @@ using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
-using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
-using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
-using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
-using Entity.Tenant;
-using System.Linq.Expressions;
 using Reporting.Calculate.Extensions;
+using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
+using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
+using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
+using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleModel;
 
 namespace CloudUnitTest.CommonChecker.Finder
 {
@@ -1861,7 +1860,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
             var m38 = CommonCheckerData.ReadM38Ingredients("");
-            var tenMst = CommonCheckerData.ReadTenMst("","");
+            var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
             var m01 = CommonCheckerData.ReadM01Kinki();
             tenantTracking.TenMsts.AddRange(tenMst);
@@ -2192,6 +2191,372 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.M38Ingredients.RemoveRange(m38);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.M01Kinki.RemoveRange(m01);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+
+        /// <summary>
+        /// isDataOfDb = true
+        /// Kyodo = 3
+        /// level = 4
+        /// </summary>
+        [Test]
+        public void TC_041_CheckKinkiSupple_Test_IsDataOfDb_And_Kyodo_Less_Than_LevelSetting()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 4;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2719", "Id1"),
+            };
+
+            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtSupples.AddRange(ptSupples);
+            tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
+            tenantTracking.M41SuppleIndexcodes.AddRange(m41SuppleIndexcodes);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
+
+            var ptSuppleModels = new List<PtSuppleModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiSupple(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptSuppleModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2719" && result.First().SeibunCd == "UT00002");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.PtSupples.RemoveRange(ptSupples);
+                tenantTracking.M41SuppleIndexdefs.RemoveRange(m41SuppleIndexdefs);
+                tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
+                tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// isDataOfDb = true
+        /// Kyodo = 3
+        /// level = 3
+        /// </summary>
+        [Test]
+        public void TC_042_CheckKinkiSupple_Test_IsDataOfDb_And_Kyodo_Equal_LevelSetting()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 3;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2719", "Id1"),
+            };
+
+            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtSupples.AddRange(ptSupples);
+            tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
+            tenantTracking.M41SuppleIndexcodes.AddRange(m41SuppleIndexcodes);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
+
+            var ptSuppleModels = new List<PtSuppleModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiSupple(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptSuppleModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2719" && result.First().SeibunCd == "UT00002");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.PtSupples.RemoveRange(ptSupples);
+                tenantTracking.M41SuppleIndexdefs.RemoveRange(m41SuppleIndexdefs);
+                tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
+                tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// isDataOfDb = true
+        /// Kyodo = 3
+        /// level = 2
+        /// Return EmptyList
+        /// </summary>
+        [Test]
+        public void TC_043_CheckKinkiSupple_Test_IsDataOfDb_And_Kyodo_Greater_Than_LevelSetting()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 2;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2719", "Id1"),
+            };
+
+            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtSupples.AddRange(ptSupples);
+            tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
+            tenantTracking.M41SuppleIndexcodes.AddRange(m41SuppleIndexcodes);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
+
+            var ptSuppleModels = new List<PtSuppleModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiSupple(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptSuppleModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 0);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.PtSupples.RemoveRange(ptSupples);
+                tenantTracking.M41SuppleIndexdefs.RemoveRange(m41SuppleIndexdefs);
+                tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
+                tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// isDataOfDb = true
+        /// Kyodo = 3
+        /// level = 3
+        /// addedOrderSubYjCode is null
+        /// Return EmptyList
+        /// </summary>
+        [Test]
+        public void TC_044_CheckKinkiSupple_Test_AddedOrderSubYjCode_IsNull()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 3;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT777777", "id1"),
+            };
+
+            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtSupples.AddRange(ptSupples);
+            tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
+            tenantTracking.M41SuppleIndexcodes.AddRange(m41SuppleIndexcodes);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
+
+            var ptSuppleModels = new List<PtSuppleModelStandard>();
+
+            bool isDataOfDb = true;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiSupple(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptSuppleModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 0);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.PtSupples.RemoveRange(ptSupples);
+                tenantTracking.M41SuppleIndexdefs.RemoveRange(m41SuppleIndexdefs);
+                tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
+                tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// isDataOfDb = false
+        /// Kyodo = 3
+        /// level = 3
+        /// StartDate = EndDate = Sinday
+        /// </summary>
+        [Test]
+        public void TC_045_CheckKinkiSupple_Test_IsDataOfDb_Is_False_Test_Sinday_Equal_StartDate_And_EndDate()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 3;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2719", "Id1"),
+            };
+
+            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtSupples.AddRange(ptSupples);
+            tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
+            tenantTracking.M41SuppleIndexcodes.AddRange(m41SuppleIndexcodes);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
+
+            var ptSuppleModels = new List<PtSuppleModelStandard>
+            {
+                new PtSuppleModelStandard(hpId, ptId, 0 , 0, "", "UNIT-TEST", sinDay, sinDay, "CMT", 0),
+            };
+
+            bool isDataOfDb = false;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiSupple(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptSuppleModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2719" && result.First().SeibunCd == "UT00002");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.PtSupples.RemoveRange(ptSupples);
+                tenantTracking.M41SuppleIndexdefs.RemoveRange(m41SuppleIndexdefs);
+                tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
+                tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// isDataOfDb = false
+        /// Kyodo = 3
+        /// level = 3
+        /// StartDate < Sinday < EndDate
+        /// </summary>
+        [Test]
+        public void TC_046_CheckKinkiSupple_Test_IsDataOfDb_Is_False_Test_Sinday_LessThan_StartDate_LessThan_EndDate()
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            //Setup
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDay = 20230101;
+            int settingLevel = 3;
+            var addedOrderItemCodeList = new List<ItemCodeModel>()
+            {
+            new ItemCodeModel("UT2719", "Id1"),
+            };
+
+            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtSupples.AddRange(ptSupples);
+            tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
+            tenantTracking.M41SuppleIndexcodes.AddRange(m41SuppleIndexcodes);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
+
+            var ptSuppleModels = new List<PtSuppleModelStandard>
+            {
+                new PtSuppleModelStandard(hpId, ptId, 0 , 0, "", "UNIT-TEST", 20221231, 20230102, "CMT", 0),
+            };
+
+            bool isDataOfDb = false;
+            // Arrange
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimcheckerfinder.CheckKinkiSupple(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptSuppleModels, isDataOfDb);
+
+                // Assert
+                Assert.True(result.Count == 1 && result.First().ItemCd == "UT2719" && result.First().SeibunCd == "UT00002");
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.PtSupples.RemoveRange(ptSupples);
+                tenantTracking.M41SuppleIndexdefs.RemoveRange(m41SuppleIndexdefs);
+                tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
+                tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
+
                 tenantTracking.SaveChanges();
             }
         }
