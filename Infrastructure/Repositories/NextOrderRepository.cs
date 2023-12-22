@@ -118,11 +118,38 @@ namespace Infrastructure.Repositories
 
         public long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
-            // get common data by hpId and ptId
+            #region get common data by hpId and ptId
             var rsvkrtMstList = TrackingDataContext.RsvkrtMsts.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
             var rsvkrtByomeiList = TrackingDataContext.RsvkrtByomeis.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
             var rsvkrtKarteInfList = TrackingDataContext.RsvkrtKarteInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
             var rsvkrtOdrInfList = TrackingDataContext.RsvkrtOdrInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
+            var kouiKbnMstList = NoTrackingDataContext.KouiKbnMsts.ToList();
+
+            // Get Raiin List Koui
+            var raiinListMstQuery = NoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0);
+            var raiinListDetailQuery = NoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0);
+            var raiinListKouiQuery = NoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0);
+            var raiinListKouiList = from raiinListKoui in raiinListKouiQuery
+                                    join raiinListDetail in raiinListDetailQuery on new { raiinListKoui.GrpId, raiinListKoui.KbnCd }
+                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
+                                    join raiinListMst in raiinListMstQuery on new { raiinListKoui.GrpId }
+                                                                           equals new { raiinListMst.GrpId }
+                                    select new { raiinListKoui };
+
+            List<RaiinListKoui> raiinListKouis = raiinListKouiList.Select(item => item.raiinListKoui).ToList();
+
+            // Get Raiin List Item
+            var raiinListItemQuery = NoTrackingDataContext.RaiinListItems.Where(item => item.IsExclude == 0
+                                                                                        && item.IsDeleted == 0);
+            var raiinListItemList = from raiinListItem in raiinListItemQuery
+                                    join raiinListDetail in raiinListDetailQuery on new { raiinListItem.GrpId, raiinListItem.KbnCd }
+                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
+                                    join raiinListMst in raiinListMstQuery on new { raiinListItem.GrpId }
+                                                                           equals new { raiinListMst.GrpId }
+                                    select new { raiinListItem };
+
+            List<RaiinListItem> raiinListItems = raiinListItemList.Select(item => item.raiinListItem).ToList();
+            #endregion get common data by hpId and ptId
 
             long rsvkrtNo = 0;
             long ptNum = GetPtNum(hpId, ptId);
@@ -189,7 +216,7 @@ namespace Infrastructure.Repositories
                         UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
                     SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
-                    SaveNextOrderRaiinListInf(userId, odrInfs);
+                    SaveNextOrderRaiinListInf(userId, odrInfs, kouiKbnMstList, raiinListKouis, raiinListItems);
                 }
             }
             TrackingDataContext.SaveChanges();
@@ -200,40 +227,11 @@ namespace Infrastructure.Repositories
             {
                 _cache.KeyDelete(finalKey);
             }
-
             return rsvkrtNo;
         }
 
-        public void SaveNextOrderRaiinListInf(int userId, List<RsvkrtOrderInfModel> nextOrderModels)
+        public void SaveNextOrderRaiinListInf(int userId, List<RsvkrtOrderInfModel> nextOrderModels, List<KouiKbnMst> kouiKbnMst, List<RaiinListKoui> raiinListKouis, List<RaiinListItem> raiinListItems)
         {
-            // Get Raiin List Koui
-            var raiinListMstQuery = TrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0);
-            var raiinListDetailQuery = TrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0);
-            var raiinListKouiQuery = TrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0);
-            var raiinListKouiList = from raiinListKoui in raiinListKouiQuery
-                                    join raiinListDetail in raiinListDetailQuery on new { raiinListKoui.GrpId, raiinListKoui.KbnCd }
-                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
-                                    join raiinListMst in raiinListMstQuery on new { raiinListKoui.GrpId }
-                                                                           equals new { raiinListMst.GrpId }
-                                    select new { raiinListKoui };
-
-            List<RaiinListKoui> raiinListKouis = raiinListKouiList.Select(item => item.raiinListKoui).ToList();
-
-            // Get Raiin List Item
-            var raiinListItemQuery = TrackingDataContext.RaiinListItems.Where(item => item.IsExclude == 0
-                                                                        && item.IsDeleted == 0);
-            var raiinListItemList = from raiinListItem in raiinListItemQuery
-                                    join raiinListDetail in raiinListDetailQuery on new { raiinListItem.GrpId, raiinListItem.KbnCd }
-                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
-                                    join raiinListMst in raiinListMstQuery on new { raiinListItem.GrpId }
-                                                                           equals new { raiinListMst.GrpId }
-                                    select new { raiinListItem };
-
-            List<RaiinListItem> raiinListItems = raiinListItemList.Select(item => item.raiinListItem).ToList();
-
-            // Get KouiKbnMst
-            List<KouiKbnMst> kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
-
             // Define Added RaiinListInf
             List<RaiinListInf> raiinListInfList = new();
 
