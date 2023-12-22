@@ -7,6 +7,10 @@ namespace Reporting.DailyStatic.Model;
 
 public class ConfigStatistic3060Model : StatisticModelBase
 {
+    public ConfigStatistic3060Model()
+    {
+    }
+
     public ConfigStatistic3060Model(StaMenu staMenu, List<StaConf> listStaConf)
     {
         StaMenu = staMenu;
