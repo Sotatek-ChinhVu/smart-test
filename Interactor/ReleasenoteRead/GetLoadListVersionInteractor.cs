@@ -29,7 +29,8 @@ namespace Interactor.ReleasenoteRead
                 using (var s3Client = new AmazonS3Client(accessKey, secretKey, config))
                 {
                     var result = _releasenoteReadRepository.GetLoadListVersion(inputData.HpId, inputData.UserId, s3Client);
-                    return new GetLoadListVersionOutputData(result, GetLoadListVersionStatus.Successed);
+                    var checkResult = result.Result;
+                    return new GetLoadListVersionOutputData(checkResult, GetLoadListVersionStatus.Successed);
                 }
             }
             finally

@@ -78,7 +78,11 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
                     if (fileUrls[i].Contains("subfiles"))
                     {
                         file.Add(Path.GetExtension(uri.LocalPath), fileUrls[i]);
-                        subfiles.Add(Path.GetFileNameWithoutExtension(uri.LocalPath), file);
+
+                        if (Path.GetExtension(uri.LocalPath) != ".db")
+                        {
+                            subfiles.Add(Path.GetFileNameWithoutExtension(uri.LocalPath), file);
+                        }
                     }
                 }
             }
