@@ -1,13 +1,10 @@
 ﻿using AWSSDK.Constants;
 using CsvHelper;
 using CsvHelper.Configuration;
-using Entity.Tenant;
 using Helper.Common;
 using Npgsql;
 using System.Data;
 using System.Globalization;
-using System.Transactions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AWSSDK.Common
 {
@@ -23,7 +20,17 @@ namespace AWSSDK.Common
         private static List<string> _columnHeaders;
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filePaths"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <param name="subFoldersMasters"></param>
+        /// <returns></returns>
         public static bool ExcuteUpdateDataTenant(string[] filePaths, string host, int port, string database, string user, string password, string[] subFoldersMasters)
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
@@ -40,19 +47,36 @@ namespace AWSSDK.Common
                     {
                         try
                         {
-                            // Execute all SQL files in a transaction
-                            //foreach (var filePath in filePaths)
-                            //{
-                            //    ExecuteSqlFile(filePath, connection, transaction);
-                            //}
+                            //Execute all SQL files in a transaction
+                            foreach (var filePath in filePaths)
+                            {
+                                ExecuteSqlScriptNonQuery(filePath, connection, transaction);
+                            }
 
                             foreach (var subFolder in subFoldersMasters)
                             {
-                                string preMstScript = "";
-                                //if (CIUtil.IsFileExisting(pathFile))
-                                //{ }
-                                // Excuted file presSql Mst
-                                //ExecuteSqlFile(preMstScript, connection, transaction);
+                                #region Run PreMstScript
+                                string preMstScript = Path.Combine(subFolder, UpdateConst.PRE_MST_SCRIPT);
+                                if (CIUtil.IsFileExisting(preMstScript))
+                                {
+                                    try
+                                    {
+                                        var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
+                                        if (!existCode)
+                                        {
+                                            return false;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
+                                        Console.WriteLine("Fail Run PreMstScript: " + ex.Message);
+                                        return false;
+                                    }
+                                }
+                                #endregion
+
+                                #region Read Csv file
                                 // Read file .h
                                 var headerFiles = Directory.GetFiles(subFolder, "*.h");
                                 if (headerFiles.Length > 0)
@@ -306,8 +330,29 @@ namespace AWSSDK.Common
                                     //UpdateProgressContent(folderPath);
                                     Console.WriteLine(subFolder + " Header file not exist!");
                                 }
+
+                                #endregion
+                                #region Run MstScript
                                 // Excuted file sql Mst
-                                ExecuteSqlScriptNonQuery(database, connection, transaction);
+                                string mstScript = Path.Combine(subFolder, UpdateConst.MST_SCRIPT);
+                                if (CIUtil.IsFileExisting(mstScript))
+                                {
+                                    try
+                                    {
+                                        var existCode = ExecuteSqlFile(mstScript, connection, transaction);
+                                        if (!existCode)
+                                        {
+                                            return false;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
+                                        Console.WriteLine("Fail Run MstScript: " + ex.Message);
+                                        return false;
+                                    }
+                                }
+                                #endregion
                             }
 
 
@@ -494,7 +539,7 @@ namespace AWSSDK.Common
                         break;
                 }
                 //Console.WriteLine(_moduleName, this, nameof(MoveDataToBaseTable), "Update master: " + script);
-                
+
                 int effectRecordCount = 0;
                 using (NpgsqlCommand command = new NpgsqlCommand(script, connection))
                 {
@@ -571,7 +616,33 @@ namespace AWSSDK.Common
                 return false;
             }
         }
-       
+
+        public static bool ExecuteSqlFile(string filePath, NpgsqlConnection connection, NpgsqlTransaction transaction)
+        {
+            try
+            {
+                // Read the content of the SQL file
+                string sqlScript;
+                using (StreamReader reader = new StreamReader(filePath))
+                {
+                    sqlScript = reader.ReadToEnd();
+                }
+
+                // Execute the SQL command
+                using (NpgsqlCommand command = new NpgsqlCommand("", connection, transaction))
+                {
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Execute Sql Files: {ex.Message}");
+                return false;
+            }
+        }
+
         public class TempGenerationMst
         {
             public int Hp_Id { get; set; }
