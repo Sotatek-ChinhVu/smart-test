@@ -9,8 +9,8 @@ namespace Interactor.SuperAdmin
 {
     public class DeleteJunkFileS3Interactor : IDeleteJunkFileS3InputPort
     {
-        private const accessKey = "AKIAXSCVMXDLRLYZGZ6Q";
-        private const secretKey = "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";
+        private const string accessKey = "AKIAXSCVMXDLRLYZGZ6Q";
+        private const string secretKey = "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";
         private readonly AmazonS3Options _options;
         public DeleteJunkFileS3Interactor(IOptions<AmazonS3Options> optionsAccessor)
         {
