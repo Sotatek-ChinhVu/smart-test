@@ -39,17 +39,17 @@ namespace Interactor.SuperAdmin
                         ConfigConstant.SourceBucketName,
                         inputData.ObjectName,
                         ConfigConstant.DestinationBucketName,
-                        inputData.ObjectName);
+                        inputData.Type);
                         restoreObjectS3.Wait();
-                        var message = inputData.ObjectName + $" is restore data S3 successfully.";
+                          var message = $"医療機関{inputData.ObjectName} のS3 データが復元されました。";
                         var notification = _notificationTaskRunRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                     }
                     catch (Exception ex)
                     {
-                        var message = inputData.ObjectName + $" is restore data S3 failed. {ex.Message}";
+                        var message = $"医療機関{inputData.ObjectName} のS3 データの回復に失敗しました: {ex.Message}";
                         var notification = _notificationTaskRunRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                     }
                     finally
                     {
@@ -57,16 +57,16 @@ namespace Interactor.SuperAdmin
                     }
                 });
 
-                var message = inputData.ObjectName + $" is restoring data S3.";
+                var message = $"医療機関{inputData.ObjectName} のS3 データを復元しています。";
                 var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiInfo, message);
-                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                 return new RestoreObjectS3TenantOutputData(RestoreObjectS3TenantStatus.Success);
             }
             catch (Exception ex)
             {
                 var message = inputData.ObjectName + $" is restore data S3 failed. {ex.Message}";
                 var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
-                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification).Wait();
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                 return new RestoreObjectS3TenantOutputData(RestoreObjectS3TenantStatus.Failed);
             }
             finally

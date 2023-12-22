@@ -1,4 +1,5 @@
-﻿using Helper.Common;
+﻿using Entity.Tenant;
+using Helper.Common;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
@@ -52,6 +53,11 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        curReceInfs = new();
+        kohiHoubetuMsts = new();
+        prefInOut = "";
     }
     #endregion
 
@@ -159,7 +165,7 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     //国保
@@ -172,7 +178,7 @@ public class P37KokhoSokatuCoReportService : IP37KokhoSokatuCoReportService
                     case 5: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                     case 6: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

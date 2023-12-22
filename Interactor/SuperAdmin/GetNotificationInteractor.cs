@@ -16,8 +16,8 @@ public class GetNotificationInteractor : IGetNotificationInputPort
     {
         try
         {
-            var result = _notificationRepository.GetNotificationList(inputData.Skip, inputData.Take);
-            return new GetNotificationOutputData(result, GetNotificationStatus.Successed);
+            var result = _notificationRepository.GetNotificationList(inputData.Skip, inputData.Take, inputData.OnlyUnreadNotifications);
+            return new GetNotificationOutputData(result.NotificationList, result.TotalItem, GetNotificationStatus.Successed);
         }
         finally
         {

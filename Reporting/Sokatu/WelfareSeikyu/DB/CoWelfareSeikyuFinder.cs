@@ -200,12 +200,12 @@ namespace Reporting.Sokatu.WelfareSeikyu.DB
 
         public List<CoWelfareReceInfModel> GetReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<int> kohiHokenNos, FutanCheck futanCheck, int hokenKbn)
         {
-            return getReceInf(hpId, seikyuYm, seikyuType, kohiHokenNos, null, futanCheck, hokenKbn, false);
+            return getReceInf(hpId, seikyuYm, seikyuType, kohiHokenNos, new(), futanCheck, hokenKbn, false);
         }
 
         public List<CoWelfareReceInfModel> GetReceInf(int hpId, int seikyuYm, SeikyuType seikyuType, List<string> kohiHoubetus, FutanCheck futanCheck, int hokenKbn, bool isReceKisai = false)
         {
-            return getReceInf(hpId, seikyuYm, seikyuType, null, kohiHoubetus, futanCheck, hokenKbn, isReceKisai);
+            return getReceInf(hpId, seikyuYm, seikyuType, new(), kohiHoubetus, futanCheck, hokenKbn, isReceKisai);
         }
 
         public bool IsOutDrugOrder(int hpId, long ptId, int sinYm)

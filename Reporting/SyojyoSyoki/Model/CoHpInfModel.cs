@@ -4,7 +4,7 @@ namespace Reporting.SyojyoSyoki.Model
 {
     public class CoHpInfModel
     {
-        public HpInf HpInf { get; } = null;
+        public HpInf HpInf { get; } = new();
 
         public CoHpInfModel(HpInf hpInf)
         {
@@ -36,7 +36,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string HpCd
         {
-            get { return HpInf.HpCd; }
+            get { return HpInf.HpCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string RousaiHpCd
         {
-            get { return HpInf.RousaiHpCd; }
+            get { return HpInf.RousaiHpCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string HpName
         {
-            get { return HpInf.HpName; }
+            get { return HpInf.HpName ?? string.Empty; }
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string ReceHpName
         {
-            get { return HpInf.ReceHpName; }
+            get { return HpInf.ReceHpName ?? string.Empty; }
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string KaisetuName
         {
-            get { return HpInf.KaisetuName; }
+            get { return HpInf.KaisetuName ?? string.Empty; }
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string PostCd
         {
-            get { return HpInf.PostCd; }
+            get { return HpInf.PostCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string Address1
         {
-            get { return HpInf.Address1; }
+            get { return HpInf.Address1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string Address2
         {
-            get { return HpInf.Address2; }
+            get { return HpInf.Address2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string Tel
         {
-            get { return HpInf.Tel; }
+            get { return HpInf.Tel ?? string.Empty; }
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string CreateMachine
         {
-            get { return HpInf.CreateMachine; }
+            get { return HpInf.CreateMachine ?? string.Empty; }
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string UpdateMachine
         {
-            get { return HpInf.UpdateMachine; }
+            get { return HpInf.UpdateMachine ?? string.Empty; }
         }
 
     }

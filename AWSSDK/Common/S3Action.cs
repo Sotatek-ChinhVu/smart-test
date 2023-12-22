@@ -1,6 +1,8 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using AWSSDK.Constants;
+using Amazon.S3.Transfer;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace AWSSDK.Common
 {
@@ -32,7 +34,101 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error creating folder: '{ex.Message}'");
             }
         }
-        public static async Task DeleteObjectsInFolderAsync(AmazonS3Client sourceS3Client, string bucketName, string folderKey)
+
+        /// <summary>
+        /// Create Folder backup
+        /// </summary>
+        /// <param name="s3Client"></param>
+        /// <param name="sourceBucket"></param>
+        /// <param name="sourceFolder"></param>
+        /// <param name="backupBucket"></param>
+        /// <param name="backupFolder"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task BackupFolderAsync(AmazonS3Client s3Client, string sourceBucket, string sourceFolder, string backupBucket, string backupFolder)
+        {
+            try
+            {
+                if (!sourceFolder.EndsWith("/"))
+                {
+                    sourceFolder += "/";
+                }
+
+                if (!backupFolder.EndsWith("/"))
+                {
+                    backupFolder += "/";
+                }
+
+                // Get list object in sourceFolder
+                var listObjectsRequest = new ListObjectsV2Request
+                {
+                    BucketName = sourceBucket,
+                    Prefix = sourceFolder,
+                };
+
+
+                // Coppy sourceFolder to backupFolder
+                ListObjectsV2Response listObjectsResponse;
+                do
+                {
+                    // Get list object pagiging
+                    listObjectsResponse = await s3Client.ListObjectsV2Async(listObjectsRequest);
+                    if (!listObjectsResponse.S3Objects.Any())
+                    {
+                        Console.WriteLine($"Objects in folder '{sourceFolder}' not found.");
+                        return;
+                    }
+
+                    foreach (var obj in listObjectsResponse.S3Objects)
+                    {
+                        var copyObjectRequest = new CopyObjectRequest
+                        {
+                            SourceBucket = sourceBucket,
+                            SourceKey = obj.Key,
+                            DestinationBucket = backupBucket,
+                            DestinationKey = backupFolder + obj.Key.Substring(sourceFolder.Length),
+                        };
+
+                        await s3Client.CopyObjectAsync(copyObjectRequest);
+                    }
+
+                    listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
+                } while (listObjectsResponse.IsTruncated);
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"S3 Error backing up folder: '{ex.Message}'");
+                throw new Exception($"S3 Error backing up folder: '{ex.Message}'");
+            }
+        }
+
+        /// <summary>
+        /// Uploads the specified file.Multiple threads are used to read the file and perform multiple uploads in parallel
+        /// </summary>
+        /// <param name="s3Client"></param>
+        /// <param name="bucketName"></param>
+        /// <param name="folderName"></param>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<bool> UploadFileWithProgressAsync(AmazonS3Client s3Client, string bucketName, string folderName, string filePath)
+        {
+            try
+            {
+                var transferUtility = new TransferUtility(s3Client);
+                await transferUtility.UploadAsync(filePath, bucketName, folderName);
+
+                Console.WriteLine($"Successfully uploaded {folderName} to {bucketName}.");
+                return true;
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"S3 Error uploading file: '{ex.Message}'");
+                throw new Exception($"S3 Error uploading file: '{ex.Message}'");
+            }
+        }
+
+        public static async Task DeleteObjectsInFolderAsync(AmazonS3Client destinationS3Client, string bucketName, string folderKey)
         {
             try
             {
@@ -45,18 +141,18 @@ namespace AWSSDK.Common
                 ListObjectsV2Response response;
                 do
                 {
-                    response = await sourceS3Client.ListObjectsV2Async(request);
+                    response = await destinationS3Client.ListObjectsV2Async(request);
 
-                    foreach (var obj in response.S3Objects)
+                    Parallel.ForEach(response.S3Objects, obj =>
                     {
                         var deleteObjectRequest = new DeleteObjectRequest
                         {
                             BucketName = bucketName,
                             Key = obj.Key
                         };
-
-                        await sourceS3Client.DeleteObjectAsync(deleteObjectRequest);
-                    }
+                        var destinationTransterUtility = new TransferUtility(destinationS3Client);
+                        destinationTransterUtility.S3Client.DeleteObjectAsync(deleteObjectRequest).Wait();
+                    });
 
                     request.ContinuationToken = response.NextContinuationToken;
                 } while (response.IsTruncated);
@@ -69,14 +165,14 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error deleting objects in folder: '{ex.Message}'");
             }
         }
-        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string sourceFolderKey, AmazonS3Client destinationClient, string destinationBucketName, string destinationFolderKey)
+        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string folderKey, AmazonS3Client destinationClient, string destinationBucketName)
         {
             try
             {
                 ListObjectsV2Request request = new ListObjectsV2Request
                 {
                     BucketName = sourceBucketName,
-                    Prefix = sourceFolderKey
+                    Prefix = folderKey
                 };
 
                 ListObjectsV2Response response;
@@ -85,32 +181,133 @@ namespace AWSSDK.Common
                     response = await sourceClient.ListObjectsV2Async(request);
                     if (!response.S3Objects.Any())
                     {
-                        Console.WriteLine($"Objects in folder '{sourceFolderKey}' not found.");
+                        Console.WriteLine($"Objects in folder '{folderKey}' not found.");
                         return;
                     }
-                    foreach (var obj in response.S3Objects)
+                    Parallel.ForEach(response.S3Objects, obj =>
                     {
                         var copyObjectRequest = new CopyObjectRequest
                         {
                             SourceBucket = sourceBucketName,
                             SourceKey = obj.Key,
                             DestinationBucket = destinationBucketName,
-                            DestinationKey = destinationFolderKey + obj.Key.Substring(sourceFolderKey.Length)
+                            DestinationKey = folderKey + obj.Key.Substring(folderKey.Length)
                         };
 
-                        await destinationClient.CopyObjectAsync(copyObjectRequest);
-                    }
+                        var destinationTransterUtility = new TransferUtility(destinationClient);
+                        destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
+                    });
 
                     request.ContinuationToken = response.NextContinuationToken;
                 } while (response.IsTruncated);
 
-                Console.WriteLine($"Objects in folder '{sourceFolderKey}' copied to '{destinationFolderKey}' successfully.");
+                Console.WriteLine($"Restore objects in folder '{folderKey}' successfully.");
             }
             catch (AmazonS3Exception ex)
             {
-                Console.WriteLine($"Error copying objects in folder: '{ex.Message}'");
-                throw new Exception($"Error copying objects in folder: '{ex.Message}'");
+                Console.WriteLine($"Error restore objects in folder '{folderKey}': '{ex.Message}'");
+                throw new Exception($"Error restore objects in folder '{folderKey}': '{ex.Message}'");
             }
+        }
+
+
+        public static async Task DeleteJunkFile(AmazonS3Client sourceClient, string sourceBucketName)
+        {
+            try
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                Console.WriteLine($"START: Schedule delete junk file s3.");
+                ListVersionsRequest request = new ListVersionsRequest
+                {
+                    BucketName = sourceBucketName,
+                };
+                ListVersionsResponse response;
+                do
+                {
+                    response = await sourceClient.ListVersionsAsync(request);
+                    var objectsToDelete = new ConcurrentBag<KeyVersion>();
+                    Parallel.ForEach(response.Versions, obj =>
+                    {
+                        if (CheckCondition(obj.Key))
+                        {
+                            var timeDifference = DateTime.UtcNow - obj.LastModified.ToUniversalTime();
+                            if (timeDifference.TotalDays > 1)
+                            {
+                                objectsToDelete.Add(new KeyVersion { Key = obj.Key, VersionId = obj.VersionId });
+                            }
+                        }
+                    });
+                    if (objectsToDelete.Any())
+                    {
+                        await BatchDeleteObjectsAsync(sourceClient, sourceBucketName, objectsToDelete);
+                    }
+                    request.KeyMarker = response.NextKeyMarker;
+                    request.VersionIdMarker = response.NextVersionIdMarker;
+
+                } while (response.IsTruncated);
+                sw.Stop();
+                Console.WriteLine(sw.Elapsed);
+                Console.WriteLine($"END: Schedule delete junk file s3.");
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"Exception Schedule delete junk file s3: {ex.Message}");
+            }
+        }
+
+        private static async Task BatchDeleteObjectsAsync(AmazonS3Client sourceClient, string sourceBucketName, ConcurrentBag<KeyVersion> objectsToDelete)
+        {
+            var objectsList = objectsToDelete.ToList();
+            var deleteObjectsRequest = new DeleteObjectsRequest
+            {
+                BucketName = sourceBucketName,
+                Objects = objectsList
+            };
+
+            try
+            {
+                var deleteObjectsResponse = await sourceClient.DeleteObjectsAsync(deleteObjectsRequest);
+
+                //Check the response for any errors
+                if (deleteObjectsResponse.DeleteErrors.Any())
+                {
+                    foreach (var error in deleteObjectsResponse.DeleteErrors)
+                    {
+                        Console.WriteLine($"Error Schedule delete junk file s3 - Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
+                    }
+                }
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"Exception Schedule delete junk file s3 - Batch Delete: {ex.Message}");
+            }
+        }
+        private static bool CheckCondition(string path)
+        {
+            char slash = '/';
+            string deleteString = "delete-";
+
+            int deleteStringLength = deleteString.Length;
+            char[] pathChars = path.ToCharArray();
+
+            if (path.Length >= deleteStringLength && path.Substring(0, deleteStringLength) == deleteString)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < pathChars.Length; i++)
+            {
+                if (pathChars[i] == slash)
+                {
+                    int remainingLength = path.Length - (i + 1);
+                    if (remainingLength >= deleteStringLength && path.Substring(i + 1, deleteStringLength) == deleteString)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

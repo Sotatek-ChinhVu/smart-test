@@ -36,6 +36,11 @@ using UseCase.UserToken.GetInfoRefresh;
 using UseCase.UserToken.SiginRefresh;
 using UseCase.SystemStartDbs;
 using UseCase.SuperAdmin.RestoreObjectS3Tenant;
+using Microsoft.Extensions.Caching.Memory;
+using UseCase.SuperAdmin.ExportCsvTenantList;
+using UseCase.SuperAdmin.ExportCsvLogList;
+using UseCase.SuperAdmin.DeleteJunkFileS3;
+using SuperAdminAPI.ScheduleTask;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -78,6 +83,7 @@ namespace SuperAdmin.Configs.Dependency
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
 
             services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            services.AddScoped<IDeleteJunkFileS3Service, DeleteJunkFileS3Service>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -88,6 +94,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IMigrationTenantHistoryRepository, MigrationTenantHistoryRepository>();
 
             services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
+            services.AddSingleton<IHostedService, TaskScheduleDeleteJunkFileS3>();
 
             services.AddTransient<INotificationRepository, NotificationRepository>();
         }
@@ -98,7 +105,7 @@ namespace SuperAdmin.Configs.Dependency
             var busBuilder = new SyncUseCaseBusBuilder(registration);
 
             busBuilder.RegisterUseCase<LoginInputData, LoginInteractor>();
-            busBuilder.RegisterUseCase<UpgradePremiumInputData, UpgradePremiumInteractor>();
+            busBuilder.RegisterUseCase<UpdateTenantInputData, UpdateTenantInteractor>();
             busBuilder.RegisterUseCase<TenantOnboardInputData, TenantOnboardInteractor>();
             busBuilder.RegisterUseCase<GetAuditLogListInputData, GetAuditLogListInteractor>();
             busBuilder.RegisterUseCase<TerminateTenantInputData, TerminateTenantInteractor>();
@@ -106,19 +113,24 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenantDetailInputData, GetTenantDetailInteractor>();
             busBuilder.RegisterUseCase<GetNotificationInputData, GetNotificationInteractor>();
             busBuilder.RegisterUseCase<UpdateNotificationInputData, UpdateNotificationInteractor>();
-            busBuilder.RegisterUseCase<StopedTenantInputData, StopedTenantInteractor>();
+            busBuilder.RegisterUseCase<ToggleTenantInputData, ToggleTenantInteractor>();
             busBuilder.RegisterUseCase<RestoreTenantInputData, RestoreTenantInteractor>();
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<RestoreObjectS3TenantInputData, RestoreObjectS3TenantInteractor>();
+            busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
+            busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             busBuilder.RegisterUseCase<RevokeInsertPermissionInputData, RevokeInsertPermissionInteractor>();
+            busBuilder.RegisterUseCase<DeleteJunkFileS3InputData, DeleteJunkFileS3Interactor>();
 
+            services.AddMemoryCache();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
+
         }
     }
 }

@@ -9,6 +9,18 @@ using SuperAdminAPI.Security;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEmrOptions(builder.Configuration);
+builder.Services.AddMemoryCache();
+
+int minWorker, minIOC;
+ThreadPool.GetMinThreads(out minWorker, out minIOC);
+if (ThreadPool.SetMinThreads(3000, minIOC))
+{
+    Console.WriteLine("Set Min thread");
+}
+else
+{
+    Console.WriteLine("Not set min thread");
+}
 
 // Add services to the container.
 #if DEBUG
