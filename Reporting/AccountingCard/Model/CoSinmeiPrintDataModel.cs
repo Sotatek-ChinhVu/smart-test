@@ -6,15 +6,15 @@
         {
         }
 
-        public string KouiNm { get; set; }
-        public string MeiData { get; set; }
-        public string Suuryo { get; set; }
-        public string Tani { get; set; }
-        public string Tensu { get; set; }
-        public string TotalTensu { get; set; }
-        public string EnTen { get; set; }
-        public string Kaisu { get; set; }
-        public string KaisuTani { get; set; }
-        public string TenKai { get; set; }
+        public string KouiNm { get; set; } = string.Empty;
+        public string MeiData { get; set; } = string.Empty;
+        public string Suuryo { get; set; } = string.Empty;
+        public string Tani { get; set; } = string.Empty;
+        public string Tensu { get; set; } = string.Empty;
+        public string TotalTensu { get; set; } = string.Empty;
+        public string EnTen { get; set; } = string.Empty;
+        public string Kaisu { get; set; } = string.Empty;
+        public string KaisuTani { get; set; } = string.Empty;
+        public string TenKai { get; set; } = string.Empty;
     }
 }
