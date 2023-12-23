@@ -96,13 +96,14 @@ namespace Infrastructure.CommonDB
                 return _configuration["TenantDb"] ?? string.Empty;
             }
             var key = "connect_db_" + clientDomain;
+            _cache.KeyDelete(key);
             if (_cache.KeyExists(key))
             {
                 return _cache.StringGet(key).ToString();
             }
             string tenantDb = "host={0};port=5432;database={1};user id={2};password={3}";
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
-            var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain == clientDomain && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
+            var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain.ToLower() == clientDomain && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
             if (tenant == null)
             {
                 tenantDb = _configuration["TenantDb"] ?? string.Empty;
