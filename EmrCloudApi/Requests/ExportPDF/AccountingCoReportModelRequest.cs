@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class AccountingCoReportModelRequest : ReportRequestBase
+public class AccountingCoReportModelRequest
 {
 
     public ConfirmationMode Mode { get; set; }

@@ -266,7 +266,7 @@ namespace Infrastructure.SuperAdminRepositories
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception Schedule Task: {ex.Message}");
+                    Console.WriteLine($"Exception Schedule Task Insert Permission: {ex.Message}");
                 }
             }
         }
@@ -282,9 +282,9 @@ namespace Infrastructure.SuperAdminRepositories
                 using (var grantCommand = new NpgsqlCommand())
                 {
                     grantCommand.Connection = connection;
-                    grantCommand.CommandText = $"GRANT INSERT ON ALL TABLES IN SCHEMA public TO {role}";
+                    grantCommand.CommandText = $"GRANT INSERT ON ALL TABLES IN SCHEMA public TO \"{role}\";";
                     grantCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task: GRANT INSERT DATABASE {dbName} SUCCESS");
+                    Console.WriteLine($"Schedule Task Insert Permission: GRANT INSERT DATABASE {dbName} SUCCESS");
                 }
             }
             else
@@ -292,9 +292,9 @@ namespace Infrastructure.SuperAdminRepositories
                 using (var revokeCommand = new NpgsqlCommand())
                 {
                     revokeCommand.Connection = connection;
-                    revokeCommand.CommandText = $"REVOKE INSERT ON ALL TABLES IN SCHEMA public FROM {role}";
+                    revokeCommand.CommandText = $"REVOKE INSERT ON ALL TABLES IN SCHEMA public FROM \"{role}\";";
                     revokeCommand.ExecuteNonQuery();
-                    Console.WriteLine($"Schedule Task: REVOKE INSERT DATABASE {dbName} SUCCESS");
+                    Console.WriteLine($"Schedule Task Insert Permission: REVOKE INSERT DATABASE {dbName} SUCCESS");
                 }
             }
         }

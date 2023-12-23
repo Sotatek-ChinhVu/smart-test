@@ -21,7 +21,6 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
     private int currentPage;
     private string currentHokensyaNo;
     private int dataRowCount;
-    private int count;
 
     /// <summary>
     /// CoReport Model
@@ -60,6 +59,13 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         _visibleFieldData = new();
         _reportConfigPerPage = new();
         _visibleAtPrint = new();
+        _reportConfigPerPage = new();
+        hpInf = new();
+        receInfs = new();
+        hokensyaNames = new();
+        hokensyaNos = new();
+        printHokensyaNos = new();
+        currentHokensyaNo = "";
     }
 
     #endregion
@@ -160,13 +166,13 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiIppan).ToList(); break;
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKoukiUpper).ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -190,7 +196,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
             const int maxKohiRow = 12;
             int kohiIndex = (currentPage - 1) * maxKohiRow;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
@@ -284,7 +290,7 @@ public class P28KoukiSeikyuCoReportService : IP28KoukiSeikyuCoReportService
         hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
         receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.NoSum);
         //保険者番号の指定がある場合は絞り込み
-        var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
+        var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
         //保険者番号リストを取得
         hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();

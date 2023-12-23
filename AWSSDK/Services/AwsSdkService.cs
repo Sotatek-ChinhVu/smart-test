@@ -122,14 +122,14 @@ namespace AWSSDK.Services
 
         public async Task CreateFolderAsync(string bucketName, string folderName)
         {
-            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.CreateFolderAsync(sourceS3ClientDestination, bucketName, folderName);
+            var destinationS3Client = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.CreateFolderAsync(destinationS3Client, bucketName, folderName);
         }
 
         public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
         {
-            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
+            var destinationS3Client = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
+            await S3Action.DeleteObjectsInFolderAsync(destinationS3Client, bucketName, folderKey);
         }
 
         public async Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type, bool prefixDelete)

@@ -15351,6 +15351,14 @@ namespace TenantMigration.Migrations
                         .HasColumnName("RAIIN_LIST_KBN")
                         .HasColumnOrder(6);
 
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("ID")
+                        .HasColumnOrder(7);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
                     b.Property<int>("KbnCd")
                         .HasColumnType("integer")
                         .HasColumnName("KBN_CD");

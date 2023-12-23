@@ -3,7 +3,7 @@ using Reporting.ReceiptList.Model;
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class ReceiptPrintExcelRequest : ReportRequestBase
+public class ReceiptPrintExcelRequest
 {
     public int PrefNo { get; set; }
 

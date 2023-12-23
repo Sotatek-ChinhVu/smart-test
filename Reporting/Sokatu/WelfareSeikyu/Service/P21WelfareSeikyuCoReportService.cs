@@ -59,6 +59,8 @@ public class P21WelfareSeikyuCoReportService : IP21WelfareSeikyuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        hpInf = new();
+        receInfs = new();
     }
     #endregion
 

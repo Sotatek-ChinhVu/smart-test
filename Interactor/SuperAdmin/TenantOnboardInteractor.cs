@@ -254,7 +254,7 @@ namespace Interactor.SuperAdmin
                 // Return message for Super Admin
                 Dictionary<string, string> result = new Dictionary<string, string>
                 {
-                    { "message", "Please wait for 45 minutes for all resources to be available" }
+                    { "message", "医療機関が作成されました。全てのリソースが得られるまで 45 分がかかります。" }
                 };
 
                 return result;
@@ -369,7 +369,7 @@ namespace Interactor.SuperAdmin
 
                     if (!ct.IsCancellationRequested)
                     {
-                        var message = $"{tenantUrl} is created successfuly.";
+                        var message = $"新しい医療機関 {tenantUrl} が作成されました。";
                         var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);
 
                         // Add info tenant for notification
@@ -387,7 +387,7 @@ namespace Interactor.SuperAdmin
             {
                 if (!ct.IsCancellationRequested)
                 {
-                    var message = $"{tenantUrl} is created failed: {ex.Message}";
+                    var message = $"新しい医療機関 {tenantUrl} の作成に失敗しました: {ex.Message}。";
                     var saveDBNotify = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                     var statusTenantFaild = ConfigConstant.StatusTenantDictionary()["failed"];
                     var updateStatus = _tenant2Repository.UpdateInfTenantStatus(tenantId, statusTenantFaild);
@@ -421,7 +421,7 @@ namespace Interactor.SuperAdmin
                     {
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
-                        var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
+                        var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
                         var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId, model.Password);
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;

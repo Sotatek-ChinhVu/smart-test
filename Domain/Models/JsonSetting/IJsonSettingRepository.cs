@@ -6,4 +6,6 @@ public interface IJsonSettingRepository : IRepositoryBase
 {
     JsonSettingModel? Get(int userId, string key);
     void Upsert(JsonSettingModel model);
+
+    List<JsonSettingModel> GetListFollowUserId(int userId);
 }

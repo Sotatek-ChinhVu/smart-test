@@ -47,6 +47,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             _listTextData = new();
             _visibleFieldData = new();
             _visibleAtPrint = new();
+            hpInf = new();
+            receInfs = new();
+            kohiHoubetus = new();
+            futansyaNos = new();
         }
         #endregion
 
@@ -160,8 +164,6 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                 var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
 
                 int kohiIndex = (currentPage - 1) * maxRow;
-
-                int totalCount = 0;
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {

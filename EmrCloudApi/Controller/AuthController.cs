@@ -6,10 +6,13 @@ using EmrCloudApi.Responses.Auth;
 using EmrCloudApi.Responses.UserToken;
 using EmrCloudApi.Security;
 using Helper.Constants;
+using Helper.Extension;
+using Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.User.GetByLoginId;
 using UseCase.UserToken.GetInfoRefresh;
@@ -22,10 +25,12 @@ namespace EmrCloudApi.Controller;
 public class AuthController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthController(UseCaseBus bus)
+    public AuthController(IHttpContextAccessor httpContextAccessor, UseCaseBus bus)
     {
         _bus = bus;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpPost("ExchangeToken"), Produces("application/json")]
@@ -60,6 +65,9 @@ public class AuthController : ControllerBase
 
         if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(resultRefreshToken.refreshToken))
         {
+            // set cookie
+            SetCookie(token);
+
             var successResult = GetSuccessResult(token, user.UserId, user.LoginId, user.Name, user.KanaName, user.KaId, user.JobCd == 1, user.ManagerKbn, user.Sname, user.HpId, resultRefreshToken.refreshToken, resultRefreshToken.refreshTokenExpiryTime);
             return Ok(successResult);
         }
@@ -114,6 +122,9 @@ public class AuthController : ControllerBase
                 new(ParamConstant.DepartmentId, principal.FindFirstValue(ParamConstant.DepartmentId)),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             });
+
+            // set cookie with new token
+            SetCookie(newToken);
 
             return new Response<RefreshTokenResponse>
             {
@@ -214,5 +225,27 @@ public class AuthController : ControllerBase
             return new(refreshToken, refreshTokenExpiryTime);
         else
             return new(string.Empty, DateTime.MinValue);
+    }
+
+    /// <summary>
+    /// Set Cookie to report author
+    /// </summary>
+    /// <param name="token"></param>
+    private void SetCookie(string token)
+    {
+        // get domain from headers
+        var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
+        string clientDomain = headers != null && headers.ContainsKey(ParamConstant.Domain) ? headers[ParamConstant.Domain].AsString() : string.Empty;
+
+        // set cookie
+        CookieOptions options = new CookieOptions();
+        options.Expires = DateTime.Now.AddDays(1);
+        options.Path = "/";
+        options.Secure = true;
+        options.SameSite = SameSiteMode.None;
+
+        var cookieObject = new CookieModel(clientDomain, token);
+        string dataCookie = JsonSerializer.Serialize(cookieObject);
+        HttpContext.Response.Cookies.Append(DomainCookie.CookieReportKey, dataCookie, options);
     }
 }

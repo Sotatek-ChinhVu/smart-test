@@ -611,4 +611,82 @@ public class DayLimitCheckerTest : BaseUT
             tenantTracking.SaveChanges();
         }
     }
+
+    [Test]
+    public void CheckDayLimit_014_HandleCheckOrder_ThrowsNotImplementedException()
+    {
+        //Setup
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+        };
+
+        var odrInfoModel = new OrdInfoModel(21, 0, ordInfDetails);
+
+        // Arrange
+        var ageChecker = new DayLimitChecker<OrdInfoModel, OrdInfoDetailModel>();
+        var unitChecker = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                RealtimeCheckerType.Days, odrInfoModel, 20230101, 111);
+
+        // Act and Assert
+        Assert.Throws<NotImplementedException>(() => ageChecker.HandleCheckOrder(unitChecker));
+    }
+
+    [Test]
+    public void CheckDayLimit_015_OdrKouiKbnIs21()
+    {
+        //Setup
+        var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel("id1", 20, "61" + "day013", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101" + "day013", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+        };
+
+        var odrInfoModel = new List<OrdInfoModel>()
+        {
+            new OrdInfoModel(20, 0, ordInfDetails),
+        };
+
+        var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                RealtimeCheckerType.Days, odrInfoModel, 20230101, 111, new(new(), new(), new()), new(), new(), true);
+
+        //Setup Data test
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var tenMsts = CommonCheckerData.ReadTenMst("day013", "day013");
+        var drugDayLimits = CommonCheckerData.ReadDrugDayLimit("day013");
+        var m10DayLimits = CommonCheckerData.ReadM10DayLimit("day013");
+
+        var dayLimitChecker = new DayLimitChecker<OrdInfoModel, OrdInfoDetailModel>();
+        dayLimitChecker.HpID = 999;
+        dayLimitChecker.PtID = 111;
+        dayLimitChecker.Sinday = 20230101;
+        var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+        var cache = new MasterDataCacheService(TenantProvider);
+        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        dayLimitChecker.InitFinder(tenantNoTracking, cache);
+
+        tenantTracking.TenMsts.AddRange(tenMsts);
+        tenantTracking.DrugDayLimits.AddRange(drugDayLimits);
+        tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+        tenantTracking.SaveChanges();
+
+        try
+        {
+            // Act
+            var result = dayLimitChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
+
+            // Assert
+            Assert.True(result.ErrorOrderList.Count == 0);
+        }
+        finally
+        {
+            //Clear Data test
+            tenantTracking.TenMsts.RemoveRange(tenMsts);
+            tenantTracking.DrugDayLimits.RemoveRange(drugDayLimits);
+            tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+        }
+    }
+
 }

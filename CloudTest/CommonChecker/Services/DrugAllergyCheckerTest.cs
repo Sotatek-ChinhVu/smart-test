@@ -6,6 +6,7 @@ using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
+using Entity.Tenant;
 
 namespace CloudUnitTest.CommonChecker.Services
 {
@@ -424,6 +425,181 @@ namespace CloudUnitTest.CommonChecker.Services
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
             }
+        }
+
+        [Test]
+        public void CheckDrugAllergyChecker_006_HandleCheckOrder_ThrowsNotImplementedException()
+        {
+            //Setup
+            var ordInfDetails = new List<OrdInfoDetailModel>()
+        {
+            new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+        };
+
+            var odrInfoModel = new OrdInfoModel(21, 0, ordInfDetails);
+
+            // Arrange
+            var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
+            var unitChecker = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                    RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 111);
+
+            // Act and Assert
+            Assert.Throws<NotImplementedException>(() => drugAllergy.HandleCheckOrder(unitChecker));
+        }
+
+        /// <summary>
+        /// IsDuplicatedComponentChecked setting = false
+        /// </summary>
+        [Test]
+        public void CheckDrugAllergyChecker_007_CheckingError_Test_ListDuplicatedItemCode()
+        {
+            var ordInfDetails = new List<OrdInfoDetailModel>()
+            {
+                new OrdInfoDetailModel( id: "id1",
+                                        sinKouiKbn: 20,
+                                        itemCd: "613110017",
+                                        itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                        suryo: 1,
+                                        unitName: "g",
+                                        termVal: 0,
+                                        syohoKbn: 2,
+                                        syohoLimitKbn: 1,
+                                        drugKbn: 1,
+                                        yohoKbn: 0,
+                                        ipnCd: "3112004M1",
+                                        bunkatu: "",
+                                        masterSbt: "Y",
+                                        bunkatuKoui: 0),
+
+                new OrdInfoDetailModel( id: "id2",
+                                        sinKouiKbn: 21,
+                                        itemCd: "Y101",
+                                        itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                        suryo: 1,
+                                        unitName: "・・･・・・",
+                                        termVal: 0,
+                                        syohoKbn: 0,
+                                        syohoLimitKbn: 0,
+                                        drugKbn: 0,
+                                        yohoKbn: 1,
+                                        ipnCd: "",
+                                        bunkatu: "",
+                                        masterSbt: "",
+                                        bunkatuKoui: 0),
+
+                // Duplicated
+                new OrdInfoDetailModel( id: "id1",
+                                        sinKouiKbn: 20,
+                                        itemCd: "620675301",
+                                        itemName: "・・ｭ・・ｫ・・ｫ・・・・・ｭ・・ｼ・・ｫ・・ｫ・・・・・ｻ・・ｫ・ｼ・・ｼ・・ｼ・・ｼ・・・ｼ・・ｼ・・ｼ・・ｼ・ﾎｼ・ｽ・",
+                                        suryo: 1,
+                                        unitName: "g",
+                                        termVal: 0,
+                                        syohoKbn: 2,
+                                        syohoLimitKbn: 1,
+                                        drugKbn: 1,
+                                        yohoKbn: 0,
+                                        ipnCd: "3112004M1",
+                                        bunkatu: "",
+                                        masterSbt: "Y",
+                                        bunkatuKoui: 0),
+
+                new OrdInfoDetailModel( id: "id2",
+                                        sinKouiKbn: 21,
+                                        itemCd: "Y101",
+                                        itemName: "・・・・ｼ・・・ｵｷ・ｺ・・・・",
+                                        suryo: 1,
+                                        unitName: "・・･・・・",
+                                        termVal: 0,
+                                        syohoKbn: 0,
+                                        syohoLimitKbn: 0,
+                                        drugKbn: 0,
+                                        yohoKbn: 1,
+                                        ipnCd: "",
+                                        bunkatu: "",
+                                        masterSbt: "",
+                                        bunkatuKoui: 0),
+            };
+
+            var odrInfoModel = new List<OrdInfoModel>()
+            {
+                new OrdInfoModel(odrKouiKbn: 21,santeiKbn: 0, ordInfDetails: ordInfDetails),
+                new OrdInfoModel(odrKouiKbn: 21,santeiKbn: 0, ordInfDetails: ordInfDetails)
+            };
+
+            var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
+                                                                    RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
+            tenantTracking.SaveChanges();
+
+            var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
+
+            drugAllergy.HpID = 999;
+            drugAllergy.PtID = 1231;
+            drugAllergy.Sinday = 20230101;
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            drugAllergy.InitFinder(tenantNoTracking, cache);
+            try
+            {
+                // Act
+             var result = drugAllergy.HandleCheckOrderList(unitCheckerForOrderListResult);
+
+                // Assert
+                Assert.True(result.ErrorOrderList.Count == 2 &&
+                            result.CheckerType == RealtimeCheckerType.DrugAllergy
+                    );
+            }
+            finally
+            {
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Setup systemconf
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="grpCd"></param>
+        /// <param name="grpEdaNo"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public double? SaveSystemConf(int hpId, int grpCd, int grpEdaNo, double value)
+        {
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2023 && p.GrpEdaNo == 2);
+            var val = systemConf?.Val ?? null;
+            if (systemConf != null)
+            {
+                systemConf.Val = value;
+            }
+            else
+            {
+                systemConf = new SystemConf
+                {
+                    HpId = hpId,
+                    GrpCd = grpCd,
+                    GrpEdaNo = grpEdaNo,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 2,
+                    UpdateId = 2,
+                    Val = value
+                };
+                tenantTracking.SystemConfs.Add(systemConf);
+            }
+
+            return val;
         }
     }
 }
