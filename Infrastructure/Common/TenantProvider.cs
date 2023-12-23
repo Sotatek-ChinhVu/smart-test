@@ -51,9 +51,10 @@ namespace Infrastructure.CommonDB
             var key = "connect_db_" + clientDomain;
             if (_cache.KeyExists(key))
             {
+                _cache.KeyDelete(key);
                 return _cache.StringGet(key).ToString();
             }
-            string tenantDb = $"host={0};port=5432;database={1};user id={2};password={3}";
+            string tenantDb = "host={0};port=5432;database={1};user id={2};password={3}";
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
             var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain == clientDomain && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
             if (tenant == null)
@@ -68,7 +69,7 @@ namespace Infrastructure.CommonDB
             _cache.StringSet(key, tenantDb);
             superAdminNoTrackingDataContext.Dispose();
 
-            return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte_new;user id=postgres;password=Emr!23456789";
+            return tenantDb;
         }
 
         public string GetAdminConnectionString()
