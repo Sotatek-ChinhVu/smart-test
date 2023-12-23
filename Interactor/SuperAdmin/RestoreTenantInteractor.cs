@@ -2,14 +2,13 @@
 using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
+using AWSSDK.Dto;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
 using UseCase.SuperAdmin.RestoreTenant;
 
 namespace Interactor.SuperAdmin
@@ -18,22 +17,36 @@ namespace Interactor.SuperAdmin
     {
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
-        private readonly IWebSocketService _webSocketService;
         private readonly INotificationRepository _notificationRepository;
+        private readonly ITenantRepository _tenantRepositoryRunTask;
+        private readonly INotificationRepository _notificationRepositoryRunTask;
         private readonly IConfiguration _configuration;
-        public RestoreTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, IWebSocketService webSocketService, INotificationRepository notificationRepository, IConfiguration configuration)
+        private readonly IMemoryCache _memoryCache;
+        public RestoreTenantInteractor(
+            ITenantRepository tenantRepository,
+            IAwsSdkService awsSdkService,
+            INotificationRepository notificationRepository,
+            ITenantRepository tenantRepositoryRunTask,
+            INotificationRepository notificationRepositoryRunTask,
+            IConfiguration configuration,
+            IMemoryCache memoryCache
+            )
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
-            _webSocketService = webSocketService;
             _notificationRepository = notificationRepository;
+            _tenantRepositoryRunTask = tenantRepositoryRunTask;
+            _notificationRepositoryRunTask = notificationRepositoryRunTask;
             _configuration = configuration;
+            _memoryCache = memoryCache;
 
         }
 
         public RestoreTenantOutputData Handle(RestoreTenantInputData inputData)
         {
-            string pathFileDumpRestore = _configuration["PathFileDumpRestore"];
+            IWebSocketService _webSocketService;
+            _webSocketService = (IWebSocketService)inputData.WebSocketService;
+            string pathFileDumpRestore = _configuration["PathFileDumpRestore"] ?? string.Empty;
 
             if (string.IsNullOrEmpty(pathFileDumpRestore))
             {
@@ -59,18 +72,24 @@ namespace Interactor.SuperAdmin
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.SnapshotNotAvailable);
                 }
 
-                CancellationTokenSource cts = new CancellationTokenSource();
-                _ = Task.Run(async () =>
+                var cts = new CancellationTokenSource();
+                CancellationToken ct = cts.Token;
+                _ = Task.Run(() =>
                 {
                     try
                     {
+                        ct.ThrowIfCancellationRequested();
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restoring"]);
+
+                        // Set tenant info to cache memory
+                        _memoryCache.Set(tenant.SubDomain, new TenantCacheMemory(cts, string.Empty));
+
                         Console.WriteLine($"Start  restore  tenant. RdsIdentifier: {tenant.RdsIdentifier}");
 
                         // Create snapshot backup
-                        var snapshotIdentifier = await _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier, ConfigConstant.RdsSnapshotBackupRestore);
+                        var snapshotIdentifier = _awsSdkService.CreateDBSnapshotAsync(tenant.RdsIdentifier, ConfigConstant.RdsSnapshotBackupRestore).Result;
 
-                        if (string.IsNullOrEmpty(snapshotIdentifier) || !await RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier))
+                        if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
                         {
                             throw new Exception("Snapshot is not Available");
                         }
@@ -78,27 +97,53 @@ namespace Interactor.SuperAdmin
                         // Create tmp RDS from snapshot
                         string rString = CommonConstants.GenerateRandomString(6);
                         var dbInstanceIdentifier = $"{tenant.SubDomain}-{rString}";
-                        var isSuccessRestoreInstance = await _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier);
-                        var endpoint = await CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId);
+
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+                            var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier).Result;
+                            // Set tenant info to cache memory
+                            _memoryCache.Set(tenant.SubDomain, new TenantCacheMemory(cts, dbInstanceIdentifier));
+                        }
+
+                        var endpoint = CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId).Result;
 
                         // Restore tenant dedicate
                         if (tenant.Type == ConfigConstant.TypeDedicate)
                         {
                             // Update data enpoint
-                            var updateEndPoint = _tenantRepository.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
+                            bool updateEndPoint = false;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                updateEndPoint = _tenantRepositoryRunTask.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
+                            }
+
                             if (!updateEndPoint)
                             {
                                 throw new Exception("Update end sub domain failed");
                             }
 
                             // delete old RDS
-                            await RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier);
-                            await RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+
+                                var actionDeleteOldRDS = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
+                                var checkDeleteActionOldRDS = RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result;
+                            }
+
                             // Finished restore
-                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                            var messenge = $"{tenant.EndSubDomain} is restore successfully.";
-                            var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
+                                var messenge = $"{tenant.EndSubDomain} is restore successfully.";
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(tenant.SubDomain);
+                            }
                             cts.Cancel();
                             return;
                         }
@@ -108,7 +153,7 @@ namespace Interactor.SuperAdmin
                         {
                             // dump data,
                             var pathFileDump = @$"{pathFileDumpRestore}{tenant.Db}.sql"; // path save file sql dump
-                            await PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
 
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
@@ -116,40 +161,65 @@ namespace Interactor.SuperAdmin
                                 throw new Exception("File sql dump doesn't exist");
                             }
 
-                            long length = new System.IO.FileInfo(pathFileDump).Length;
-                            if (length <= 0)
+                            if (!PostgresSqlAction.CheckingFinishedAccessedFile(pathFileDump))
                             {
                                 throw new Exception("Invalid file sql dump");
                             }
 
                             // restore db 
-                            await PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789");
+                            PostgresSqlAction.PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
 
-                            // delete Tmp db
-                            await RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier);
-                            await RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                // delete Tmp RDS
+                                var actionDeleteTmpRDS = RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier, true).Result;
+                                var checkDeleteActionTmpRDS = RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier).Result;
+                            }
                             // Finished restore
-                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                            var messenge = $"{tenant.EndSubDomain} is restore successfully.";
-                            var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
+                                var messenge = $"{tenant.EndSubDomain} is restore successfully.";
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(tenant.SubDomain);
+                            }
                             cts.Cancel();
                             return;
                         }
-
-                        // Check Restore success 
                     }
+
                     catch (Exception ex)
                     {
-                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                        // Notification  restore failed
-                        var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
-                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        await _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
+                            // Notification  restore failed
+                            var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
+                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                            // Add info tenant for notification
+                            notification.SetTenantId(tenant.TenantId);
+                            notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                            // Delete cache memory
+                            _memoryCache.Remove(tenant.SubDomain);
+                        }
                         cts.Cancel();
                         return;
                     }
-                });
+                    finally
+                    {
+                        _tenantRepositoryRunTask.ReleaseResource();
+                        _notificationRepositoryRunTask.ReleaseResource();
+                    }
+                }, cts.Token);
                 return new RestoreTenantOutputData(true, RestoreTenantStatus.Successed);
             }
             finally
@@ -160,175 +230,12 @@ namespace Interactor.SuperAdmin
         }
 
         /// <summary>
-        /// Genarate conent script dump db from tmp RDS
+        /// Checking RDS restore available.
         /// </summary>
-        /// <param name="outFile"></param>
-        /// <param name="host"></param>
-        /// <param name="port"></param>
-        /// <param name="database"></param>
-        /// <param name="user"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        private async Task PostgreSqlDump(string outFile, string host, int port, string database, string user, string password)
-        {
-            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
-            outFile = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? outFile : outFile.Replace("\\", "/");
-            string batchContent;
-
-            string dumpCommand =
-                 $"{Set} PGPASSWORD={password}\n" +
-                 $"pg_dump" + " -Fc" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // path file windown
-                batchContent = "" + dumpCommand + "  > " + "\"" + outFile + "\"" + "\n";
-            }
-            else
-            {
-                // path file linux
-                batchContent = "" + dumpCommand + "  > " + outFile + "\n";
-            }
-            if (System.IO.File.Exists(outFile)) System.IO.File.Delete(outFile);
-
-            await Execute(batchContent);
-        }
-
-        /// <summary>
-        ///  Genarate conent script resore db from file sql dump
-        /// </summary>
-        /// <param name="pathFileDump"></param>
-        /// <param name="host"></param>
-        /// <param name="port"></param>
-        /// <param name="database"></param>
-        /// <param name="user"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        private async Task PostgreSqlExcuteFileDump(string pathFileDump, string host, int port, string database, string user, string password)
-        {
-            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
-            pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
-            string batchContent;
-            string dumpCommand =
-                 $"{Set} PGPASSWORD={password}\n" +
-                 $"pg_restore" + " -F c" + " -h " + host + " -p " + port + " -d " + database + " -U " + user + "";
-            
-            
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // path file windown
-                batchContent = "" + dumpCommand + "  -c -v " + "\"" + pathFileDump + "\"" + "\n";
-            }
-            else
-            {   // path file linux
-                batchContent = "" + dumpCommand + "  -c -v " + pathFileDump + "\n";
-            }
-
-            await Execute(batchContent);
-        }
-
-        /// <summary>
-        ///  Create file .sh / .bat to execute conent script sql
-        /// </summary>
-        /// <param name="dumpCommand"></param>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <param name="tenantId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private Task Execute(string dumpCommand)
-        {
-            return Task.Run(() =>
-            {
-                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"));
-                try
-                {
-                    string batchContent = "";
-                    batchContent += $"{dumpCommand}";
-
-                    System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
-
-                    // Create process Grant execute permissions to file .sh
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    {
-                        // Grant execute permissions using chmod
-                        ProcessStartInfo chmodInfo = new ProcessStartInfo
-                        {
-                            FileName = "chmod",
-                            Arguments = $"+x {batFilePath}",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-
-                        using (System.Diagnostics.Process chmodProc = System.Diagnostics.Process.Start(chmodInfo))
-                        {
-                            chmodProc.WaitForExit();
-
-                            if (chmodProc.ExitCode != 0)
-                            {
-                                // Handle chmod error, if any
-                                string errorOutput = chmodProc.StandardError.ReadToEnd();
-                                Console.WriteLine($"chmod error: {errorOutput}");
-                                throw new Exception($"Failed to grant execute permissions to the script: {errorOutput}");
-                            }
-                        }
-                    }
-
-                    ProcessStartInfo info = ProcessInfoByOS(batFilePath);
-
-                    using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
-
-
-                    proc.WaitForExit();
-                    var exit = proc.ExitCode;
-
-
-                    proc.Close();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                    throw new Exception($"Execute sql Dump. {ex.Message}");
-
-                }
-                finally
-                {
-                    if (System.IO.File.Exists(batFilePath)) System.IO.File.Delete(batFilePath);
-                }
-            });
-        }
-
-        /// <summary>
-        /// Get process info
-        /// </summary>
-        /// <param name="batFilePath"></param>
-        /// <returns></returns>
-        private static ProcessStartInfo ProcessInfoByOS(string batFilePath)
-        {
-            ProcessStartInfo info;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                info = new ProcessStartInfo(batFilePath)
-                {
-                    Arguments = $"{batFilePath}"
-                };
-            }
-            else
-            {
-                info = new ProcessStartInfo("sh")
-                {
-                    Arguments = $"{batFilePath}"
-                };
-            }
-            //info.EnvironmentVariables.Add("PGPASSWORD", "1234$");
-            info.CreateNoWindow = true;
-            info.UseShellExecute = false;
-            info.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            info.RedirectStandardError = true;
-
-            return info;
-        }
-
-
         public async Task<Endpoint> CheckRestoredInstanceAvailableAsync(string dbInstanceIdentifier, int tenantId)
         {
             try

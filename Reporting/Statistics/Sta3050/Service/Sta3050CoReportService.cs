@@ -77,7 +77,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
     private List<CoSinKouiModel> sinKouis;
     private CoHpInfModel hpInf;
 
-    private List<PutColumn> putCurColumns = new();
+    private readonly List<PutColumn> putCurColumns = new();
     #endregion
 
     private readonly Dictionary<string, string> _singleFieldData;
@@ -106,6 +106,9 @@ public class Sta3050CoReportService : ISta3050CoReportService
         printConf = new();
         printDatas = new();
         rowCountFieldName = string.Empty;
+        headerL1 = new();
+        headerL2 = new();
+        sinKouis = new();
     }
 
     public CommonReportingRequestModel GetSta3050ReportingData(CoSta3050PrintConf printConf, int hpId, CoFileType outputFileType)
@@ -196,7 +199,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta3050PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta3050PrintData).GetProperty(colName)?.GetValue(printData);
                     AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                     if (baseListName == string.Empty && objectRseList.Contains(colName))
@@ -250,25 +253,25 @@ public class Sta3050CoReportService : ISta3050CoReportService
             bool pbTantoId = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(3);
 
             var sinYms = sinKouis?.GroupBy(s => s.SinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-            for (int ymCnt = 0; (pbSinYm && ymCnt <= sinYms.Count - 1) || ymCnt == 0; ymCnt++)
+            for (int ymCnt = 0; (pbSinYm && ymCnt <= sinYms?.Count - 1) || ymCnt == 0; ymCnt++)
             {
-                var kaIds = sinKouis.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-                for (int kaCnt = 0; (pbKaId && kaCnt <= kaIds.Count - 1) || kaCnt == 0; kaCnt++)
+                var kaIds = sinKouis?.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                for (int kaCnt = 0; (pbKaId && kaCnt <= kaIds?.Count - 1) || kaCnt == 0; kaCnt++)
                 {
-                    var tantoIds = sinKouis.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-                    for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds.Count - 1) || taCnt == 0; taCnt++)
+                    var tantoIds = sinKouis?.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                    for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds?.Count - 1) || taCnt == 0; taCnt++)
                     {
-                        var curDatas = sinKouis.Where(s =>
-                            (!pbSinYm || s.SinYm == sinYms[ymCnt]) &&
-                            (!pbKaId || s.KaId == kaIds[kaCnt]) &&
-                            (!pbTantoId || s.TantoId == tantoIds[taCnt])
+                        var curDatas = sinKouis?.Where(s =>
+                            (!pbSinYm || (sinYms != null && s.SinYm == sinYms[ymCnt])) &&
+                            (!pbKaId || (kaIds != null && s.KaId == kaIds[kaCnt])) &&
+                            (!pbTantoId || (tantoIds != null && s.TantoId == tantoIds[taCnt]))
                         ).ToList();
 
-                        if (curDatas.Count == 0) continue;
+                        if (curDatas?.Count == 0) continue;
 
                         #region ソート順
                         curDatas =
-                            curDatas
+                            curDatas?
                                 .OrderBy(s => pbSinYm ? s.SinDate : 0)
                                 .ThenBy(s => pbKaId ? s.KaId : 0)
                                 .ThenBy(s => pbTantoId ? s.TantoId : 0)
@@ -319,7 +322,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
                         string preSinKouiKbn = string.Empty;
                         string preItemCd = string.Empty;
                         string preItemName = string.Empty;
-                        foreach (var curData in curDatas)
+                        foreach (var curData in (curDatas ?? new()))
                         {
                             CoSta3050PrintData printData = new CoSta3050PrintData();
 
@@ -433,18 +436,18 @@ public class Sta3050CoReportService : ISta3050CoReportService
                             printData.RowType = RowType.Total;
                             printData.TotalCaption = string.Format(
                                 "◆小計    実人数 ({0}人)    日数({1}日)",
-                                curDatas.GroupBy(s => s.PtNum).Count().ToString("#,0"),
-                                curDatas.GroupBy(s => s.SinDate).Count().ToString("#,0")
+                                curDatas?.GroupBy(s => s.PtNum).Count().ToString("#,0"),
+                                curDatas?.GroupBy(s => s.SinDate).Count().ToString("#,0")
                             );
-                            printData.TotalSuryo = curDatas.Sum(s => s.TotalSuryo).ToString("#,0.00");
-                            printData.Money = curDatas.Sum(s => s.Money).ToString("#,0");
+                            printData.TotalSuryo = (curDatas ?? new()).Sum(s => s.TotalSuryo).ToString("#,0.00");
+                            printData.Money = (curDatas ?? new()).Sum(s => s.Money).ToString("#,0");
 
                             printDatas.Add(printData);
 
                             if (
-                                (pbSinYm && (ymCnt + 1 <= sinYms.Count - 1)) ||
-                                (pbKaId && (kaCnt + 1 <= kaIds.Count - 1)) ||
-                                (pbTantoId && (taCnt + 1 <= tantoIds.Count - 1))
+                                (pbSinYm && (ymCnt + 1 <= sinYms?.Count - 1)) ||
+                                (pbKaId && (kaCnt + 1 <= kaIds?.Count - 1)) ||
+                                (pbTantoId && (taCnt + 1 <= tantoIds?.Count - 1))
                             )
                             {
                                 //改ページ
@@ -464,13 +467,13 @@ public class Sta3050CoReportService : ISta3050CoReportService
                             //診療年月
                             if (pbSinYm)
                             {
-                                string wrkYm = CIUtil.Copy(CIUtil.SDateToShowSWDate(curDatas.First().SinYm * 100 + 1, 0, 1, 1), 1, 13);
+                                string wrkYm = CIUtil.Copy(CIUtil.SDateToShowSWDate((curDatas?.First().SinYm ?? 0) * 100 + 1, 0, 1, 1), 1, 13);
                                 headerL1.Add(wrkYm + "度");
                             }
                             //改ページ条件
                             List<string> wrkHeaders = new List<string>();
-                            if (pbKaId) wrkHeaders.Add(curDatas.First().KaSname);
-                            if (pbTantoId) wrkHeaders.Add(curDatas.First().TantoSname);
+                            if (pbKaId) wrkHeaders.Add(curDatas?.First().KaSname ?? string.Empty);
+                            if (pbTantoId) wrkHeaders.Add(curDatas?.First().TantoSname ?? string.Empty);
 
                             if (wrkHeaders.Count >= 1) headerL2.Add(string.Join("／", wrkHeaders));
                         }
@@ -489,11 +492,11 @@ public class Sta3050CoReportService : ISta3050CoReportService
             totalData.RowType = RowType.Total;
             totalData.TotalCaption = string.Format(
                 "◆合計    実人数 ({0}人)    日数({1}日)",
-                sinKouis.GroupBy(s => s.PtNum).Count().ToString("#,0"),
-                sinKouis.GroupBy(s => s.SinDate).Count().ToString("#,0")
+                sinKouis?.GroupBy(s => s.PtNum).Count().ToString("#,0"),
+                sinKouis?.GroupBy(s => s.SinDate).Count().ToString("#,0")
             );
-            totalData.TotalSuryo = sinKouis.Sum(s => s.TotalSuryo).ToString("#,0.00");
-            totalData.Money = sinKouis.Sum(s => s.Money).ToString("#,0");
+            totalData.TotalSuryo = (sinKouis ?? new()).Sum(s => s.TotalSuryo).ToString("#,0.00");
+            totalData.Money = (sinKouis ?? new()).Sum(s => s.Money).ToString("#,0");
             printDatas.Add(totalData);
         }
 
@@ -575,7 +578,6 @@ public class Sta3050CoReportService : ISta3050CoReportService
         }
 
         //データ
-        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -589,7 +591,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
 
             foreach (var column in putCurColumns)
             {
-                var value = typeof(CoSta3050PrintData).GetProperty(column.CsvColName).GetValue(csvData);
+                var value = typeof(CoSta3050PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
                 if (csvData.RowType == RowType.Total && !column.IsTotal)
                 {
                     value = string.Empty;

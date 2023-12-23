@@ -1,20 +1,19 @@
 ﻿using Helper.Constants;
-using Infrastructure.Common;
+using Helper.Extension;
 using Helper.Redis;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using PostgreDataContext;
+using StackExchange.Redis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
-using StackExchange.Redis;
-using Helper.Extension;
 
 namespace Infrastructure.CommonDB
 {
@@ -43,24 +42,32 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            string dbSample = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
             {
-                return dbSample;
+                return _configuration["TenantDb"] ?? string.Empty;
             }
-            var domainList = _configuration.GetSection("DomainList").Path;
-            if (string.IsNullOrEmpty(domainList))
+            var key = "connect_db_" + clientDomain;
+            if (_cache.KeyExists(key))
             {
-                return dbSample;
+                return _cache.StringGet(key).ToString();
             }
-            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
-            if (string.IsNullOrEmpty(clientDomainInConfig))
+            string tenantDb = $"host={0};port=5432;database={1};user id={2};password={3}";
+            var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
+            var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain == clientDomain && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
+            if (tenant == null)
             {
-                return dbSample;
+                tenantDb = _configuration["TenantDb"] ?? string.Empty;
             }
-            return clientDomainInConfig;
+            else
+            {
+                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
+            }
+            _cache.StringSet(key, tenantDb);
+            superAdminNoTrackingDataContext.Dispose();
+
+            return tenantDb;
         }
 
         public string GetAdminConnectionString()
@@ -87,7 +94,7 @@ namespace Infrastructure.CommonDB
                 return _cache.StringGet(key).AsInteger();
             }
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
-            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.SubDomain == domain)?.TenantId ?? 0;
+            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain == domain)?.TenantId ?? 0;
             _cache.StringSet(key, tenantId.ToString());
             return tenantId;
         }
@@ -256,15 +263,41 @@ namespace Infrastructure.CommonDB
 
         public string GetDomainFromQueryString()
         {
-            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value;
-            if (string.IsNullOrEmpty(queryString) || !queryString.Contains(ParamConstant.Domain))
+            var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
+
+            if (queryString.Contains("domain") || queryString.Contains("Domain"))
             {
-                return string.Empty;
+                // get domain from param
+                return SubStringToGetParam(queryString);
             }
+            else
+            {
+                // get domain from cookie
+                return GetDomainFromCookie();
+            }
+        }
 
-            var clientDomain = SubStringToGetParam(queryString);
+        /// <summary>
+        /// Get domain from cookie
+        /// </summary>
+        public string GetDomainFromCookie()
+        {
+            string cookieValue = _httpContextAccessor.HttpContext?.Request?.Cookies[DomainCookie.CookieReportKey] ?? string.Empty;
 
-            return clientDomain ?? string.Empty;
+            if (!string.IsNullOrEmpty(cookieValue))
+            {
+                var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
+                if (cookie == null || string.IsNullOrEmpty(cookie.Domain))
+                {
+                    return string.Empty;
+                }
+                var jwtToken = new JwtSecurityToken(cookie.Token);
+                if (jwtToken.ValidFrom < DateTime.UtcNow && jwtToken.ValidTo > DateTime.UtcNow)
+                {
+                    return cookie.Domain;
+                }
+            }
+            return string.Empty;
         }
 
         public string SubStringToGetParam(string queryString)

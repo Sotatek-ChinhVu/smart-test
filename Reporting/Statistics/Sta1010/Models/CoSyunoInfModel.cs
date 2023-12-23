@@ -27,7 +27,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 入金コメント
     /// </summary>
-    public string NyukinCmt { get; set; }
+    public string NyukinCmt { get; set; } = string.Empty;
 
     /// <summary>
     /// 保険種別コード

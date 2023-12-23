@@ -2,6 +2,12 @@
 {
     public interface ISystemConfigRepository
     {
-        public int RefillSetting(int presentDate);
+        /// <summary>
+        /// System GenerationConfig
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="presentDate"></param>
+        /// <returns></returns>
+        public int RefillSetting(int hpId, int presentDate);
     }
 }

@@ -48,6 +48,10 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
+        hpInf = new();
+        receInfs = new();
+        kaMsts = new();
+        curReceInfs = new();
     }
     #endregion
 
@@ -112,7 +116,7 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
                 //医療機関コード
                 SetFieldData(string.Format("hpCode{0}", i), hpInf.HpCd);
                 //診療科
-                SetFieldData(string.Format("kaName{0}", i), kaMsts[0].KaName);
+                SetFieldData(string.Format("kaName{0}", i), kaMsts[0].KaName ?? string.Empty);
                 //請求年月
                 CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(seikyuYm * 100 + 1);
                 SetFieldData(string.Format("seikyuGengo{0}", i), wrkYmd.Gengo);
@@ -168,7 +172,7 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = null;
+                List<CoReceInfModel> wrkReces = new();
                 switch (rowNo)
                 {
                     case 0: wrkReces = curReceInfs.Where(r => r.IsNrAll).ToList(); break;
@@ -177,7 +181,7 @@ public class P45KokhoSokatuCoReportService : IP45KokhoSokatuCoReportService
                     case 3: wrkReces = curReceInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     case 4: wrkReces = curReceInfs.ToList(); break;
                 }
-                if (wrkReces == null) continue;
+                if (wrkReces.Count == 0) continue;
 
                 countData wrkData = new countData();
                 //件数

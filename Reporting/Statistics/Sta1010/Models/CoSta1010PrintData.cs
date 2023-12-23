@@ -18,12 +18,12 @@ public class CoSta1010PrintData
     /// <summary>
     /// 合計行のキャプション
     /// </summary>
-    public string TotalCaption { get; set; }
+    public string TotalCaption { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計行の件数
     /// </summary>
-    public string TotalCount { get; set; }
+    public string TotalCount { get; set; } = string.Empty;
 
     /// <summary>
     /// 患者番号
@@ -38,12 +38,12 @@ public class CoSta1010PrintData
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string PtKanaName { get; set; }
+    public string PtKanaName { get; set; } = string.Empty;
 
     /// <summary>
     /// 氏名
     /// </summary>
-    public string PtName { get; set; }
+    public string PtName { get; set; } = string.Empty;
 
     /// <summary>
     /// 性別コード
@@ -53,7 +53,7 @@ public class CoSta1010PrintData
     /// <summary>
     /// 性別
     /// </summary>
-    public string Sex { get; set; }
+    public string Sex { get; set; } = string.Empty;
 
     /// <summary>
     /// 生年月日
@@ -71,32 +71,32 @@ public class CoSta1010PrintData
     /// <summary>
     /// 年齢
     /// </summary>
-    public string Age { get; set; }
+    public string Age { get; set; } = string.Empty;
 
     /// <summary>
     /// 郵便番号
     /// </summary>
-    public string HomePost { get; set; }
+    public string HomePost { get; set; } = string.Empty;
 
     /// <summary>
     /// 住所
     /// </summary>
-    public string HomeAddress { get; set; }
+    public string HomeAddress { get; set; } = string.Empty;
 
     /// <summary>
     /// 電話番号１
     /// </summary>
-    public string Tel1 { get; set; }
+    public string Tel1 { get; set; } = string.Empty;
 
     /// <summary>
     /// 電話番号２
     /// </summary>
-    public string Tel2 { get; set; }
+    public string Tel2 { get; set; } = string.Empty;
 
     /// <summary>
     /// 緊急連絡先電話番号
     /// </summary>
-    public string RenrakuTel { get; set; }
+    public string RenrakuTel { get; set; } = string.Empty;
 
     /// <summary>
     /// 診察日
@@ -119,7 +119,7 @@ public class CoSta1010PrintData
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname { get; set; }
+    public string KaSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 担当医ID
@@ -129,7 +129,7 @@ public class CoSta1010PrintData
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname { get; set; }
+    public string TantoSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 来院番号
@@ -139,62 +139,62 @@ public class CoSta1010PrintData
     /// <summary>
     /// 保険種別
     /// </summary>
-    public string HokenSbt { get; set; }
+    public string HokenSbt { get; set; } = string.Empty;
 
     /// <summary>
     /// 初再診
     /// </summary>
-    public string Syosaisin { get; set; }
+    public string Syosaisin { get; set; } = string.Empty;
 
     /// <summary>
     /// 請求額
     /// </summary>
-    public string SeikyuGaku { get; set; }
+    public string SeikyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 請求額(旧)
     /// </summary>
-    public string OldSeikyuGaku { get; set; }
+    public string OldSeikyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 請求額(新)
     /// </summary>
-    public string NewSeikyuGaku { get; set; }
+    public string NewSeikyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 調整額
     /// </summary>
-    public string AdjustFutan { get; set; }
+    public string AdjustFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 調整額(旧)
     /// </summary>
-    public string OldAdjustFutan { get; set; }
+    public string OldAdjustFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 調整額(新)
     /// </summary>
-    public string NewAdjustFutan { get; set; }
+    public string NewAdjustFutan { get; set; } = string.Empty;
 
     /// <summary>
     /// 合計請求額
     /// </summary>
-    public string TotalSeikyuGaku { get; set; }
+    public string TotalSeikyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 入金額
     /// </summary>
-    public string NyukinGaku { get; set; }
+    public string NyukinGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// 未収額
     /// </summary>
-    public string MisyuGaku { get; set; }
+    public string MisyuGaku { get; set; } = string.Empty;
 
     /// <summary>
     /// コメント
     /// </summary>
-    public string NyukinCmt { get; set; }
+    public string NyukinCmt { get; set; } = string.Empty;
 
     /// <summary>
     /// 最終来院日
@@ -212,5 +212,5 @@ public class CoSta1010PrintData
     /// <summary>
     /// 未収区分
     /// </summary>
-    public string MisyuKbn { get; set; }
+    public string MisyuKbn { get; set; } = string.Empty;
 }

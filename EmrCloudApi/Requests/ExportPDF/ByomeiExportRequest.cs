@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF
 {
-    public class ByomeiExportRequest : ReportRequestBase
+    public class ByomeiExportRequest
     {
         public long PtId { get; set; }
 

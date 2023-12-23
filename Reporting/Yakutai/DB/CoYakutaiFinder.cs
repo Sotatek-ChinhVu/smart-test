@@ -32,7 +32,7 @@ namespace Reporting.Yakutai.DB
                     p.HpId == hpId &&
                     p.StartDate <= sinDate)
                     .OrderByDescending(p => p.StartDate)
-                    .FirstOrDefault());
+                    .FirstOrDefault() ?? new());
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Reporting.Yakutai.DB
                 )
                 .ToList();
 
-            List<CoPtInfModel> results = new List<CoPtInfModel>();
+            List<CoPtInfModel> results = new();
 
             entities?.ForEach(entity =>
             {
@@ -88,7 +88,7 @@ namespace Reporting.Yakutai.DB
                     ));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
 
         /// <summary>
@@ -110,21 +110,11 @@ namespace Reporting.Yakutai.DB
             var userMsts = NoTrackingDataContext.UserMsts.Where(o =>
                 o.HpId == hpId &&
                 o.IsDeleted == DeleteStatus.None);
-            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(o =>
-                o.HpId == hpId &&
-                o.IsDeleted == DeleteStatus.None);
-            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(o =>
-            o.HpId == hpId &&
-            o.PtId == ptId &&
-                o.CmtKbn == 1 &&
-                o.RaiinNo == raiinNo
-                );
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinDate == sinDate &&
                 p.RaiinNo == raiinNo &&
-                //p.Status >= 5 &&
                 p.IsDeleted == DeleteStatus.None);
 
             var joinQuery = (
@@ -143,7 +133,7 @@ namespace Reporting.Yakutai.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,
@@ -165,7 +155,7 @@ namespace Reporting.Yakutai.DB
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
         /// <summary>
         /// オーダー情報取得
@@ -179,8 +169,6 @@ namespace Reporting.Yakutai.DB
         /// </returns>
         public List<CoOdrInfModel> FindOdrInf(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            const string conFncName = nameof(FindOdrInf);
-
             var odrInfs = NoTrackingDataContext.OdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -230,8 +218,6 @@ namespace Reporting.Yakutai.DB
         /// <returns></returns>
         public List<CoOdrInfDetailModel> FindOdrInfDetail(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            const string conFncName = nameof(FindOdrInfDetail);
-
             var odrInfs = NoTrackingDataContext.OdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -260,11 +246,11 @@ namespace Reporting.Yakutai.DB
                     new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd.Trim() } equals
+                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd ?? string.Empty.Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 join yohoInfMst in yohoInfMsts on
-                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd.Trim() } equals
+                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd ?? string.Empty.Trim() } equals
                     new { yohoInfMst.HpId, yohoInfMst.ItemCd } into yJoin
                 from yj in yJoin.DefaultIfEmpty()
                 orderby

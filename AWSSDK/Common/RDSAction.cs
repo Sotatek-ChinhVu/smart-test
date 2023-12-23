@@ -182,7 +182,7 @@ namespace AWSSDK.Common
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        command.CommandText = $"CREATE DATABASE {dbName}; CREATE ROLE {dbName} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
+                        command.CommandText = $"CREATE DATABASE \"{dbName}\"; CREATE ROLE \"{dbName}\" LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
                         command.ExecuteNonQuery();
                         Console.WriteLine($"Database '{dbName}' created successfully.");
                     }
@@ -193,7 +193,7 @@ namespace AWSSDK.Common
                 Console.WriteLine($"Error CreateDatabase: {ex.Message}");
                 throw new Exception($"CreateDatabase. {ex.Message}");
             }
-        }        
+        }
 
         public static void GenerateDumpfile(string tenantId)
         {
@@ -297,16 +297,12 @@ namespace AWSSDK.Common
             return dbSnapshotIdentifier;
         }
 
-        public static async Task<List<string>> GetListDatabase(string serverEndpoint)
+        public static async Task<List<string>> GetListDatabase(string serverEndpoint, string username, string password)
         {
             try
             {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                int port = 5432;
                 // Connection string format for PostgreSQL
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
                 var withOutDb = ConfigConstant.LISTSYSTEMDB;
                 string strWithoutDb = string.Join(", ", withOutDb);
                 strWithoutDb = "'" + strWithoutDb.Replace(", ", "', '") + "'";
@@ -345,7 +341,14 @@ namespace AWSSDK.Common
             }
         }
 
-        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier)
+        /// <summary>
+        /// Delete RDS instance
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <param name="SkipFinalSnapshot">Delete without create snapshot backup</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<bool> DeleteRDSInstanceAsync(string dbInstanceIdentifier, bool SkipFinalSnapshot = false)
         {
             try
             {
@@ -354,10 +357,13 @@ namespace AWSSDK.Common
                 var deleteRequest = new DeleteDBInstanceRequest
                 {
                     DBInstanceIdentifier = dbInstanceIdentifier,
-                    SkipFinalSnapshot = false
+                    SkipFinalSnapshot = SkipFinalSnapshot
                 };
 
-                deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, ConfigConstant.RdsSnapshotBackupTermiante);
+                if (!SkipFinalSnapshot)
+                {
+                    deleteRequest.FinalDBSnapshotIdentifier = GenareateDBSnapshotIdentifier(dbInstanceIdentifier, ConfigConstant.RdsSnapshotBackupTermiante);
+                }
 
                 var response = await rdsClient.DeleteDBInstanceAsync(deleteRequest);
 
@@ -371,6 +377,12 @@ namespace AWSSDK.Common
                     throw new Exception($"Delete RDS Instance. Code: {response?.HttpStatusCode}");
                 }
             }
+
+            // Exception instance doesn't exist
+            catch (DBInstanceNotFoundException)
+            {
+                return true;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: Delete RDS Instance. {ex.Message}");
@@ -378,6 +390,12 @@ namespace AWSSDK.Common
             }
         }
 
+        /// <summary>
+        /// Check RDS instance deleted
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static async Task<bool> CheckRDSInstanceDeleted(string dbInstanceIdentifier)
         {
             try
@@ -417,6 +435,11 @@ namespace AWSSDK.Common
                 // If the loop runs for the entire timeout duration, return false
                 throw new Exception("Checking Deleted RDSInstance timeout");
             }
+            // Exception instance doesn't exist
+            catch (DBInstanceNotFoundException)
+            {
+                return true;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
@@ -424,7 +447,7 @@ namespace AWSSDK.Common
             }
         }
 
-       public static async Task<string> GetLastSnapshot(string dbInstanceIdentifier)
+        public static async Task<string> GetLastSnapshot(string dbInstanceIdentifier)
         {
             try
             {
@@ -442,7 +465,7 @@ namespace AWSSDK.Common
                 var describeSnapshotsResponse = await rdsClient.DescribeDBSnapshotsAsync(describeSnapshotsRequest);
 
                 // Extract information about the latest snapshot
-                var snapshot = describeSnapshotsResponse.DBSnapshots.OrderByDescending(x=> x.SnapshotCreateTime).FirstOrDefault();
+                var snapshot = describeSnapshotsResponse.DBSnapshots.OrderByDescending(x => x.SnapshotCreateTime).FirstOrDefault();
                 if (snapshot != null && snapshot.Status.Equals("available", StringComparison.OrdinalIgnoreCase))
                 {
                     return snapshot.DBSnapshotIdentifier;
@@ -456,6 +479,40 @@ namespace AWSSDK.Common
             {
                 Console.WriteLine($"Error: {ex.Message}");
                 throw new Exception($"Get Last Snapshot. {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Check RDS instance exists 
+        /// </summary>
+        /// <param name="dbInstanceIdentifier"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<bool> CheckRDSInstanceExists(string dbInstanceIdentifier)
+        {
+            try
+            {
+                var rdsClient = new AmazonRDSClient();
+
+                var describeRequest = new DescribeDBInstancesRequest
+                {
+                    DBInstanceIdentifier = dbInstanceIdentifier
+                };
+
+                var describeResponse = await rdsClient.DescribeDBInstancesAsync(describeRequest);
+
+                // Check if the instance exists (status will be null if it doesn't)
+                return describeResponse.DBInstances.Count > 0;
+            }
+            // Exception instance doesn't exist
+            catch (DBInstanceNotFoundException)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw new Exception($"Checking RDSInstance existence failed. {ex.Message}");
             }
         }
     }

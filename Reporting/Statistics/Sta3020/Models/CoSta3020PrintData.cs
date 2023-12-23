@@ -23,32 +23,32 @@ namespace Reporting.Statistics.Sta3020.Models
         /// <summary>
         /// セット区分名称
         /// </summary>
-        public string SetKbnName { get; set; }
+        public string SetKbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 階層１
         /// </summary>
-        public string Level1 { get; set; }
+        public string Level1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 階層２
         /// </summary>
-        public string Level2 { get; set; }
+        public string Level2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 階層３
         /// </summary>
-        public string Level3 { get; set; }
+        public string Level3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 階層４
         /// </summary>
-        public string Level4 { get; set; }
+        public string Level4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 階層５
         /// </summary>
-        public string Level5 { get; set; }
+        public string Level5 { get; set; } = string.Empty;
 
         /// <summary>
         /// セットコード
@@ -58,17 +58,17 @@ namespace Reporting.Statistics.Sta3020.Models
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為名称
         /// </summary>
-        public string SetName { get; set; }
+        public string SetName { get; set; } = string.Empty;
 
         /// <summary>
         /// タイトル
         /// </summary>
-        public string IsTitle { get; set; }
+        public string IsTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// 選択方式
@@ -97,22 +97,22 @@ namespace Reporting.Statistics.Sta3020.Models
         /// <summary>
         /// 数量
         /// </summary>
-        public string Suryo { get; set; }
+        public string Suryo { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位
         /// </summary>
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査項目コード
         /// </summary>
-        public string KensaItemCd { get; set; }
+        public string KensaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 外注検査項目コード
         /// </summary>
-        public string CenterItemCd { get; set; }
+        public string CenterItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 有効期限
@@ -130,7 +130,7 @@ namespace Reporting.Statistics.Sta3020.Models
         /// <summary>
         /// 期限切れ
         /// </summary>
-        public string Expired { get; set; }
+        public string Expired { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番

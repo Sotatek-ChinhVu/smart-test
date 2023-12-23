@@ -18,7 +18,7 @@ public class P17WelfareSeikyuCoReportService : IP17WelfareSeikyuCoReportService
         /// <summary>
         /// 市町コード
         /// </summary>
-        public string cityNo;
+        public string cityNo = string.Empty;
 
         /// <summary>
         /// 公費の保険番号
@@ -70,6 +70,9 @@ public class P17WelfareSeikyuCoReportService : IP17WelfareSeikyuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
+        hpInf = new();
+        receInfs = new();
+        kohiHokenNos = new();
     }
     #endregion
 
@@ -149,7 +152,7 @@ public class P17WelfareSeikyuCoReportService : IP17WelfareSeikyuCoReportService
                 return 1;
             }
             int kohiHokenNo = receInfs[0].KohiHokenNo(kohiHokenNos);
-            string cityNo = CityKohis.Find(c => c.kohiHokenNo == kohiHokenNo).cityNo ?? string.Empty;
+            string cityNo = CityKohis.Find(c => c.kohiHokenNo == kohiHokenNo)?.cityNo ?? string.Empty;
             SetFieldData("cityNo", cityNo.ToString());
             //ページ数
             int totalPage = (int)Math.Ceiling((double)receInfs.Count / maxRow);
@@ -191,7 +194,7 @@ public class P17WelfareSeikyuCoReportService : IP17WelfareSeikyuCoReportService
                 listDataPerPage.Add(new("hokensyaNo", 0, rowNo, curReceInf.HokensyaNo));
                 //種別
                 int kohiHokenNo = curReceInf.KohiHokenNo(kohiHokenNos);
-                int sbt = CityKohis.Find(c => c.kohiHokenNo == kohiHokenNo).syubetu;
+                int sbt = CityKohis.Find(c => c.kohiHokenNo == kohiHokenNo)?.syubetu ?? 0;
                 listDataPerPage.Add(new("syubetu", 0, rowNo, sbt.ToString()));
                 //カナ氏名
                 listDataPerPage.Add(new("kanaName", 0, rowNo, CIUtil.ToWide(curReceInf.KanaName)));

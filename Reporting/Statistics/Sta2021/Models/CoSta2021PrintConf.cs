@@ -7,6 +7,10 @@
             MenuId = menuId;
         }
 
+        public CoSta2021PrintConf()
+        {
+        }
+
         /// <summary>
         /// STA_MENU.MENU_ID
         /// </summary>
@@ -15,12 +19,12 @@
         /// <summary>
         /// フォームファイル名
         /// </summary>
-        public string FormFileName { get; set; }
+        public string FormFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 帳票タイトル
         /// </summary>
-        public string ReportName { get; set; }
+        public string ReportName { get; set; } = string.Empty;
 
         /// <summary>
         /// テスト患者の有無
@@ -96,59 +100,59 @@
         /// <summary>
         /// 診療科ID
         /// </summary>
-        public List<int> KaIds { get; set; }
+        public List<int> KaIds { get; set; } = new();
 
         /// <summary>
         /// 担当医ID
         /// </summary>
-        public List<int> TantoIds { get; set; }
+        public List<int> TantoIds { get; set; } = new();
 
         /// <summary>
         /// 保険種別
         ///     0:自費 1:社保 2:国保 3:後期
         ///     10:労災 11:自賠 12:自費レセ
         /// </summary>
-        public List<int> HokenSbts { get; set; }
+        public List<int> HokenSbts { get; set; } = new();
 
         /// <summary>
         /// レセプト識別
         /// </summary>
-        public List<string> SinIds { get; set; }
+        public List<string> SinIds { get; set; } = new();
 
         /// <summary>
         /// 項目種別
         /// </summary>
-        public List<string> SinKouiKbns { get; set; }
+        public List<string> SinKouiKbns { get; set; } = new();
 
         /// <summary>
         /// 院内院外区分
         /// </summary>
-        public List<int> InoutKbns { get; set; }
+        public List<int> InoutKbns { get; set; } = new();
 
         /// <summary>
         /// 毒薬区分
         /// </summary>
-        public List<int> MadokuKbns { get; set; }
+        public List<int> MadokuKbns { get; set; } = new();
 
         /// <summary>
         /// 向精神薬区分
         /// </summary>
-        public List<int> KouseisinKbns { get; set; }
+        public List<int> KouseisinKbns { get; set; } = new();
 
         /// <summary>
         /// 後発医薬品区分
         /// </summary>
-        public List<int> KohatuKbns { get; set; }
+        public List<int> KohatuKbns { get; set; } = new();
 
         /// <summary>
         /// 採用区分
         /// </summary>
-        public List<int> IsAdopteds { get; set; }
+        public List<int> IsAdopteds { get; set; } = new();
 
         /// <summary>
         /// 検索項目
         /// </summary>
-        public List<string> ItemCds { get; set; }
+        public List<string> ItemCds { get; set; } = new();
 
         /// <summary>
         /// 検索項目の検索オプション

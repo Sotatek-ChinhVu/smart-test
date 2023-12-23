@@ -4,7 +4,7 @@ namespace Reporting.Yakutai.Model
 {
     public class CoYohoInfMstModel
     {
-        public YohoInfMst YohoInfMst { get; } = null;
+        public YohoInfMst YohoInfMst { get; set; }
 
         public CoYohoInfMstModel(YohoInfMst yohoInfMst)
         {
@@ -26,7 +26,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string ItemCd
         {
-            get { return YohoInfMst.ItemCd; }
+            get { return YohoInfMst.ItemCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string YohoSuffix
         {
-            get { return YohoInfMst.YohoSuffix; }
+            get { return YohoInfMst.YohoSuffix ?? string.Empty; }
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string CreateMachine
         {
-            get { return YohoInfMst.CreateMachine; }
+            get { return YohoInfMst.CreateMachine ?? string.Empty; }
         }
 
         /// <summary>
@@ -89,9 +89,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string UpdateMachine
         {
-            get { return YohoInfMst.UpdateMachine; }
+            get { return YohoInfMst.UpdateMachine ?? string.Empty; }
         }
-
-
     }
 }

@@ -31,10 +31,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         public string FutansyaNo()
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? CIUtil.Copy(PtKohi1.FutansyaNo, 3, 5) :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? CIUtil.Copy(PtKohi2.FutansyaNo, 3, 5) :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? CIUtil.Copy(PtKohi3.FutansyaNo, 3, 5) :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? CIUtil.Copy(PtKohi4.FutansyaNo, 3, 5) :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? CIUtil.Copy(PtKohi1.FutansyaNo ?? string.Empty, 3, 5) :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? CIUtil.Copy(PtKohi2.FutansyaNo ?? string.Empty, 3, 5) :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? CIUtil.Copy(PtKohi3.FutansyaNo ?? string.Empty, 3, 5) :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? CIUtil.Copy(PtKohi4.FutansyaNo ?? string.Empty, 3, 5) :
                 "";
         }
 

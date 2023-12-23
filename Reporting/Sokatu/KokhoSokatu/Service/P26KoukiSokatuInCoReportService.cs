@@ -1,4 +1,5 @@
-﻿using Helper.Common;
+﻿using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
@@ -37,6 +38,8 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _listTextData = new();
             _extralData = new();
             _visibleFieldData = new();
+            hpInf = new();
+            receInfs = new();
         }
         #endregion
 
@@ -101,14 +104,14 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = null;
+                    List<CoReceInfModel> wrkReces = new();
                     switch (rowNo)
                     {
                         case 0: wrkReces = receInfs.Where(r => r.IsKoukiIppan).ToList(); break;
                         case 1: wrkReces = receInfs.Where(r => r.IsKoukiUpper).ToList(); break;
                         case 2: wrkReces = receInfs.ToList(); break;
                     }
-                    if (wrkReces == null) continue;
+                    if (wrkReces.Count == 0) continue;
 
                     countData wrkData = new countData();
                     //件数
