@@ -1880,6 +1880,7 @@ namespace EmrCloudApi.Configs.Dependency
             //PrescriptionHistory
             busBuilder.RegisterUseCase<GetSinrekiFilterMstListInputData, GetSinrekiFilterMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSinrekiFilterMstListInputData, SaveSinrekiFilterMstListInteractor>();
+            busBuilder.RegisterUseCase<GetContentDrugUsageHistoryInputData, GetContentDrugUsageHistoryInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
