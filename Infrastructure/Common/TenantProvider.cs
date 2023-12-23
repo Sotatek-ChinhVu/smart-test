@@ -63,11 +63,12 @@ namespace Infrastructure.CommonDB
             else
             {
                 tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
+                Console.WriteLine("Connect:" + tenantDb);
             }
             _cache.StringSet(key, tenantDb);
             superAdminNoTrackingDataContext.Dispose();
 
-            return tenantDb;
+            return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte_new;user id=postgres;password=Emr!23456789";
         }
 
         public string GetAdminConnectionString()
