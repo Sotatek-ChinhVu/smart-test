@@ -2002,7 +2002,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOHO_CD")]
         [MaxLength(16)]
-        public string YohoCd { get; set; } = string.Empty;
+        public string? YohoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法補足区分
