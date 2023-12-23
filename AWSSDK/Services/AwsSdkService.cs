@@ -132,11 +132,11 @@ namespace AWSSDK.Services
             await S3Action.DeleteObjectsInFolderAsync(destinationS3Client, bucketName, folderKey);
         }
 
-        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type)
+        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type, bool prefixDelete)
         {
             string folderKey = type switch
             {
-                RestoreObjectS3TenantTypeEnum.All => objectName,
+                RestoreObjectS3TenantTypeEnum.All => $"{objectName}/",
                 RestoreObjectS3TenantTypeEnum.Files => $"{objectName}/store/files/",
                 RestoreObjectS3TenantTypeEnum.InsuranceCard => $"{objectName}/store/InsuranceCard/",
                 RestoreObjectS3TenantTypeEnum.Karte => $"{objectName}/store/karte/",
@@ -146,7 +146,7 @@ namespace AWSSDK.Services
             };
             var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
             var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, folderKey, sourceS3ClientDestination, destinationBucketName);
+            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, folderKey, sourceS3ClientDestination, destinationBucketName, prefixDelete);
         }
 
         private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
