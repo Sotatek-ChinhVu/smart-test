@@ -95,7 +95,7 @@ namespace Infrastructure.CommonDB
             {
                 return _configuration["TenantDb"] ?? string.Empty;
             }
-            var key = "connect_db_" + clientDomain;
+            var key = "connect_db_" + clientDomain.ToLower();
             _cache.KeyDelete(key);
             if (_cache.KeyExists(key))
             {
@@ -103,14 +103,14 @@ namespace Infrastructure.CommonDB
             }
             string tenantDb = "host={0};port=5432;database={1};user id={2};password={3}";
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
-            var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain.ToLower() == clientDomain && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
+            var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain.ToLower() == clientDomain.ToLower() && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
             if (tenant == null)
             {
                 tenantDb = _configuration["TenantDb"] ?? string.Empty;
             }
             else
             {
-                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
+                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, tenant.UserConnect.ToLower(), tenant.PasswordConnect);
                 Console.WriteLine("Connect:" + tenantDb);
             }
             _cache.StringSet(key, tenantDb);
