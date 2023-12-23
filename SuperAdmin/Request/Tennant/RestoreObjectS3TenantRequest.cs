@@ -8,5 +8,9 @@ namespace SuperAdminAPI.Request.Tennant
         public string ObjectName { get; set; } = string.Empty;
 
         public RestoreObjectS3TenantTypeEnum Type { get; set; }
+
+        public bool IsPrefixDelete {  get; set; }
+
+
     }
 }

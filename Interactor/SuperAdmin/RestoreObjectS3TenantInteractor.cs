@@ -39,7 +39,7 @@ namespace Interactor.SuperAdmin
                         ConfigConstant.SourceBucketName,
                         inputData.ObjectName,
                         ConfigConstant.DestinationBucketName,
-                        inputData.Type);
+                        inputData.Type, inputData.IsPrefixDelete);
                         restoreObjectS3.Wait();
                           var message = $"医療機関{inputData.ObjectName} のS3 データが復元されました。";
                         var notification = _notificationTaskRunRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, message);

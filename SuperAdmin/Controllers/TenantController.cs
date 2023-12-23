@@ -126,7 +126,7 @@ namespace SuperAdminAPI.Controllers
         [HttpPost("RestoreObjectS3Tenant")]
         public ActionResult<Response<RestoreObjectS3TenantResponse>> RestoreObjectS3Tenant([FromBody] RestoreObjectS3TenantRequest request)
         {
-            var input = new RestoreObjectS3TenantInputData(request.ObjectName, _webSocketService, request.Type);
+            var input = new RestoreObjectS3TenantInputData(request.ObjectName, _webSocketService, request.Type, request.IsPrefixDelete);
             var output = _bus.Handle(input);
             var presenter = new RestoreObjectS3TenantPresenter();
             presenter.Complete(output);

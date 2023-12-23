@@ -18,6 +18,12 @@ public class JsonSettingRepository : RepositoryBase, IJsonSettingRepository
         return entity is null ? null : ToModel(entity);
     }
 
+    public List<JsonSettingModel> GetListFollowUserId(int userId)
+    {
+        var entities = NoTrackingDataContext.JsonSettings.Where(e => e.UserId == userId).ToList();
+        return entities?.Select(e => ToModel(e)).ToList() ?? new();
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

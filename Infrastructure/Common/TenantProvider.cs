@@ -1,20 +1,19 @@
 ﻿using Helper.Constants;
-using Infrastructure.Common;
+using Helper.Extension;
 using Helper.Redis;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
+using StackExchange.Redis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
-using StackExchange.Redis;
-using Helper.Extension;
-using System.IdentityModel.Tokens.Jwt;
-using Helper.Common;
 
 namespace Infrastructure.CommonDB
 {
@@ -43,51 +42,32 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            var queryString = _httpContextAccessor.HttpContext?.Request?.Path.Value ?? string.Empty + _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
-            if (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV"))
-            {
-                if (!string.IsNullOrEmpty(queryString) && _cache.KeyExists(queryString))
-                {
-                    return _cache.StringGet(queryString).ToString();
-                }
-            }
-           
-            string dbSample = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
             {
-                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-                {
-                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
-                }
-                    return dbSample;
+                return _configuration["TenantDb"] ?? string.Empty;
             }
-            var domainList = _configuration.GetSection("DomainList").Path;
-            if (string.IsNullOrEmpty(domainList))
+            var key = "connect_db_" + clientDomain;
+            if (_cache.KeyExists(key))
             {
-                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-                {
-                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
-                }
-                return dbSample;
+                return _cache.StringGet(key).ToString();
             }
-            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
-            if (string.IsNullOrEmpty(clientDomainInConfig))
+            string tenantDb = $"host={0};port=5432;database={1};user id={2};password={3}";
+            var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
+            var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain == clientDomain && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
+            if (tenant == null)
             {
-                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-                {
-                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
-                }
-                return dbSample;
+                tenantDb = _configuration["TenantDb"] ?? string.Empty;
             }
+            else
+            {
+                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
+            }
+            _cache.StringSet(key, tenantDb);
+            superAdminNoTrackingDataContext.Dispose();
 
-            if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-            {
-                _cache.StringSet(queryString, clientDomainInConfig, new TimeSpan(0, 0, 0, 10));
-            }
-
-            return clientDomainInConfig;
+            return tenantDb;
         }
 
         public string GetAdminConnectionString()
@@ -114,7 +94,7 @@ namespace Infrastructure.CommonDB
                 return _cache.StringGet(key).AsInteger();
             }
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
-            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.SubDomain == domain)?.TenantId ?? 0;
+            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain == domain)?.TenantId ?? 0;
             _cache.StringSet(key, tenantId.ToString());
             return tenantId;
         }
@@ -285,16 +265,16 @@ namespace Infrastructure.CommonDB
         {
             var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
 
-            // get domain from param
-            string clientDomain = SubStringToGetParam(queryString);
-
-            // get domain from cookie
-            if (string.IsNullOrEmpty(clientDomain))
+            if (queryString.Contains("domain") || queryString.Contains("Domain"))
             {
+                // get domain from param
+                return SubStringToGetParam(queryString);
+            }
+            else
+            {
+                // get domain from cookie
                 return GetDomainFromCookie();
             }
-
-            return clientDomain;
         }
 
         /// <summary>
@@ -307,7 +287,7 @@ namespace Infrastructure.CommonDB
             if (!string.IsNullOrEmpty(cookieValue))
             {
                 var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
-                if (cookie == null)
+                if (cookie == null || string.IsNullOrEmpty(cookie.Domain))
                 {
                     return string.Empty;
                 }
