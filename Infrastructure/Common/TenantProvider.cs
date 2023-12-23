@@ -49,7 +49,6 @@ namespace Infrastructure.CommonDB
                 return _configuration["TenantDb"] ?? string.Empty;
             }
             var key = "connect_db_" + clientDomain;
-            _cache.KeyDelete(key);
             if (_cache.KeyExists(key))
             {
                 return _cache.StringGet(key).ToString();
@@ -267,7 +266,7 @@ namespace Infrastructure.CommonDB
         {
             var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
 
-            if (queryString.Contains("domain") || queryString.Contains("Domain"))
+            if (queryString.ToLower().Contains("domain"))
             {
                 // get domain from param
                 return SubStringToGetParam(queryString);
@@ -307,6 +306,10 @@ namespace Infrastructure.CommonDB
             try
             {
                 var indexStart = queryString.IndexOf(ParamConstant.Domain);
+                if (indexStart == -1)
+                {
+                    indexStart = queryString.IndexOf(ParamConstant.DomainUpper);
+                }
                 var indexSub = indexStart > 0 ? indexStart + 7 : 0;
                 var tempInedexEnd = queryString.IndexOf("&", indexStart);
                 var indexEndSub = 0;
