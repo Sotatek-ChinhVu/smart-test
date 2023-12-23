@@ -96,7 +96,6 @@ namespace Infrastructure.CommonDB
                 return _configuration["TenantDb"] ?? string.Empty;
             }
             var key = "connect_db_" + clientDomain.ToLower();
-            _cache.KeyDelete(key);
             if (_cache.KeyExists(key))
             {
                 return _cache.StringGet(key).ToString();
