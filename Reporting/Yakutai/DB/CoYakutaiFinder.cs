@@ -285,7 +285,7 @@ namespace Reporting.Yakutai.DB
                         new CoOdrInfDetailModel(
                             entity.OdrInfDetail,
                             entity.OdrInf,
-                            entity.TenMst ?? new(),
+                            entity.TenMst,
                             entity.YohoInfMst,
                             _systemConfig
                             ));
