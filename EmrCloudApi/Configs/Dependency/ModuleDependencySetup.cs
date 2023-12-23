@@ -356,6 +356,7 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
+using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.DrugInfor.GetSinrekiFilterMstList;
 using UseCase.DrugInfor.SaveSinrekiFilterMstList;
