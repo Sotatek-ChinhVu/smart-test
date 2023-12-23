@@ -42,6 +42,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
+            _cache.KeyDelete(key);
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
@@ -51,7 +52,6 @@ namespace Infrastructure.CommonDB
             var key = "connect_db_" + clientDomain;
             if (_cache.KeyExists(key))
             {
-                _cache.KeyDelete(key);
                 return _cache.StringGet(key).ToString();
             }
             string tenantDb = "host={0};port=5432;database={1};user id={2};password={3}";
