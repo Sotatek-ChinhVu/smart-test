@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class AccountingCardReportingRequest : ReportRequestBase
+public class AccountingCardReportingRequest
 {
     public int PtId { get; set; }
     public int SinYm { get; set; }

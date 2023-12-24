@@ -124,6 +124,7 @@ using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KensaHistory;
 using Interactor.KohiHokenMst;
+using Interactor.LastDayInformation;
 using Interactor.ListSetMst;
 using Interactor.Lock;
 using Interactor.Logger;
@@ -355,7 +356,10 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
+using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
+using UseCase.DrugInfor.GetSinrekiFilterMstList;
+using UseCase.DrugInfor.SaveSinrekiFilterMstList;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
 using UseCase.Family.GetMaybeFamilyList;
@@ -393,6 +397,7 @@ using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.InsuranceMst.SaveOrdInsuranceMst;
 using UseCase.IsUsingKensa;
 using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.GetAll;
 using UseCase.JsonSetting.Upsert;
 using UseCase.Ka.GetKaCodeList;
 using UseCase.Ka.GetKacodeMstYossi;
@@ -411,6 +416,8 @@ using UseCase.KensaHistory.GetListKensaSetDetail;
 using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.KensaHistory.UpdateKensaSet;
 using UseCase.KohiHokenMst.Get;
+using UseCase.LastDayInformation.GetLastDayInfoList;
+using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
 using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
@@ -1473,6 +1480,7 @@ namespace EmrCloudApi.Configs.Dependency
             // JsonSetting
             busBuilder.RegisterUseCase<GetJsonSettingInputData, GetJsonSettingInteractor>();
             busBuilder.RegisterUseCase<UpsertJsonSettingInputData, UpsertJsonSettingInteractor>();
+            busBuilder.RegisterUseCase<GetAllJsonSettingInputData, GetAllJsonSettingInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();

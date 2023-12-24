@@ -8,5 +8,6 @@ public class AmazonS3Options
     public string AwsSecretAccessKey { get; set; } = string.Empty;
     public string Region { get; set; } = string.Empty;
     public string BucketName { get; set; } = string.Empty;
+    public string BucketNameReplication { get; set; } = string.Empty;
     public string BaseAccessUrl { get; set; } = string.Empty;
 }

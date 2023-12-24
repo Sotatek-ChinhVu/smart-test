@@ -91,7 +91,5 @@ namespace Reporting.Yakutai.Model
         {
             get { return YohoInfMst.UpdateMachine ?? string.Empty; }
         }
-
-
     }
 }

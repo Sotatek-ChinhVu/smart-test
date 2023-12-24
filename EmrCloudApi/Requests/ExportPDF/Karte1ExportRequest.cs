@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class Karte1ExportRequest : ReportRequestBase
+public class Karte1ExportRequest
 {
     public long PtId { get; set; }
 

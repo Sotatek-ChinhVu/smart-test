@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Entity.Tenant;
+using Helper.Extension;
 
 namespace CloudUnitTest.SampleData
 {
@@ -1034,7 +1035,7 @@ namespace CloudUnitTest.SampleData
             return kinkiMsts;
         }
 
-        public static List<PtOtherDrug> ReadPtOtherDrug(int ptId)
+        public static List<PtOtherDrug> ReadPtOtherDrug(long ptId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1315,10 +1316,6 @@ namespace CloudUnitTest.SampleData
                                 case "B":
                                     long.TryParse(text, out long ptId);
                                     ptOtcDrug.PtId = ptId;
-                                    break;
-                                case "C":
-                                    int.TryParse(text, out int seqNo);
-                                    ptOtcDrug.SeqNo = seqNo;
                                     break;
                                 case "D":
                                     int.TryParse(text, out int sortNo);
@@ -2147,6 +2144,9 @@ namespace CloudUnitTest.SampleData
                                 case "A":
                                     m56ExEd.YjCd = text;
                                     break;
+                                case "B":
+                                    m56ExEd.SeqNo = text;
+                                    break;
                                 case "C":
                                     m56ExEd.SeibunCd = text;
                                     break;
@@ -2226,6 +2226,315 @@ namespace CloudUnitTest.SampleData
             }
 
             return m56Prodrugs;
+        }
+
+        public static List<M56ExIngrdtMain> READ_M56_EX_INGRDT_MAIN()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56ExIngrdtMains = new List<M56ExIngrdtMain>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_EX_INGRDT_MAIN").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56ExIngrdtMain = new M56ExIngrdtMain();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56ExIngrdtMain.YjCd = text;
+                                    break;
+                                case "B":
+                                    m56ExIngrdtMain.DrugKbn = text;
+                                    break;
+                                case "C":
+                                    m56ExIngrdtMain.YohoCd = text;
+                                    break;
+                                case "D":
+                                    m56ExIngrdtMain.HaigouFlg = text;
+                                    break;
+                                case "E":
+                                    m56ExIngrdtMain.YuekiFlg = text;
+                                    break;
+                                case "F":
+                                    m56ExIngrdtMain.KanpoFlg = text;
+                                    break;
+                                case "G":
+                                    m56ExIngrdtMain.ZensinsayoFlg = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56ExIngrdtMains.Add(m56ExIngrdtMain);
+                    }
+                }
+            }
+
+            return m56ExIngrdtMains;
+        }
+
+        public static List<M56YjDrugClass> READ_M56_YJ_DRUG_CLASS()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56YjDrugs = new List<M56YjDrugClass>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_YJ_DRUG_CLASS").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56YjDrugClass = new M56YjDrugClass();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56YjDrugClass.YjCd = text;
+                                    break;
+                                case "B":
+                                    m56YjDrugClass.ClassCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56YjDrugs.Add(m56YjDrugClass);
+                    }
+                }
+            }
+
+            return m56YjDrugs;
+        }
+
+        public static List<M56DrugClass> READ_M56_DRUG_CLASS()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56Drugs = new List<M56DrugClass>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_DRUG_CLASS").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56Drug = new M56DrugClass();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56Drug.ClassCd = text;
+                                    break;
+                                case "B":
+                                    m56Drug.ClassName = text;
+                                    break;
+                                case "C":
+                                    m56Drug.ClassDuplication = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56Drugs.Add(m56Drug);
+                    }
+                }
+            }
+
+            return m56Drugs;
+        }
+
+        public static List<M56ExAnalogue> READ_M56_EX_ANALOGUE()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56s = new List<M56ExAnalogue>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_EX_ANALOGUE").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56 = new M56ExAnalogue();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56.SeibunCd = text;
+                                    break;
+                                case "C":
+                                    m56.AnalogueCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56s.Add(m56);
+                    }
+                }
+            }
+
+            return m56s;
+        }
+
+        public static List<M56AlrgyDerivatives> READ_M56_ALRGY_DERIVATIVES()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56s = new List<M56AlrgyDerivatives>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_ALRGY_DERIVATIVES").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56 = new M56AlrgyDerivatives();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56.YjCd = text;
+                                    break;
+                                case "B":
+                                    m56.DrvalrgyCd = text;
+                                    break;
+                                case "C":
+                                    m56.SeibunCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56s.Add(m56);
+                    }
+                }
+            }
+
+            return m56s;
+        }
+
+        public static List<M56DrvalrgyCode> READ_M56_DRVALRGY_CODE()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var m56s = new List<M56DrvalrgyCode>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M56_DRVALRGY_CODE").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var m56 = new M56DrvalrgyCode();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    m56.DrvalrgyCd = text;
+                                    break;
+                                case "B":
+                                    m56.DrvalrgyName = text;
+                                    break;
+                                case "C":
+                                    m56.DrvalrgyGrp = text;
+                                    break;
+                                case "D":
+                                    m56.RankNo = text.AsInteger();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        m56s.Add(m56);
+                    }
+                }
+            }
+
+            return m56s;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)

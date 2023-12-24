@@ -40,6 +40,7 @@ namespace Infrastructure.Repositories
             #region PtHokenInf
             IQueryable<PtHokenInf> hokenInfQuery = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId && (isDeletedPtHokenInf || (h.IsDeleted == DeleteTypes.None || h.HokenId == maxIdHokenInf))).OrderByDescending(x => x.HokenId);
 
+            // if flag is true, get hokenMst between startDate and endDate
             var hokenMasterInfQuery = NoTrackingDataContext.HokenMsts.Where(h => h.HpId == hpId && (!flag || (h.StartDate <= sinDate && sinDate <= h.EndDate)) &&
                                                                             (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1))
                                      .GroupBy(x => new
