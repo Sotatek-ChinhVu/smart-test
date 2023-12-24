@@ -6,6 +6,10 @@ namespace Reporting.DailyStatic.Model;
 
 public class ConfigStatistic2021Model : StatisticModelBase
 {
+    public ConfigStatistic2021Model()
+    {
+    }
+
     public ConfigStatistic2021Model(StaMenu staMenu, List<StaConf> listStaConf)
     {
         StaMenu = staMenu;
@@ -404,7 +408,7 @@ public class ConfigStatistic2021Model : StatisticModelBase
             }
 
             var arrTemp = SinId.Split(' ');
-            return arrTemp?.ToList();
+            return arrTemp.ToList() ?? new();
         }
     }
 
