@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Helper.Messaging;
+using Microsoft.AspNetCore.Http;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.SuperAdmin.UpdateDataTenant
@@ -17,5 +18,8 @@ namespace UseCase.SuperAdmin.UpdateDataTenant
         public dynamic WebSocketService { get; private set; }
 
         public IFormFile FileUpdateData { get; private set; }
+        public CancellationToken CancellationToken { get; private set; }
+
+        public IMessenger Messenger { get; private set; }
     }
 }

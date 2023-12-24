@@ -1,12 +1,12 @@
 ﻿using AWSSDK.Common;
 using AWSSDK.Constants;
 using Domain.SuperAdminModels.Tenant;
+using Helper.Constants;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
-using SharpCompress.Archives;
-using SharpCompress.Archives.SevenZip;
 using UseCase.SuperAdmin.UpdateDataTenant;
-using ReaderOptions = SharpCompress.Readers.ReaderOptions;
 
 namespace Interactor.SuperAdmin
 {
@@ -14,6 +14,7 @@ namespace Interactor.SuperAdmin
     {
         private readonly ITenantRepository _tenantRepository;
         private readonly IConfiguration _configuration;
+        private IMessenger? _messenger;
         public UpdateDataTenantInteractor(
             ITenantRepository tenantRepository,
              IConfiguration configuration
@@ -24,6 +25,7 @@ namespace Interactor.SuperAdmin
         }
         public UpdateDataTenantOutputData Handle(UpdateDataTenantInputData inputData)
         {
+            _messenger = inputData.Messenger;
             try
             {
                 IWebSocketService _webSocketService;
@@ -74,14 +76,24 @@ namespace Interactor.SuperAdmin
                 // Create transaction executed 
                 string[] extractedFiles = Directory.GetFiles(pathFolderScript);
                 // Execute file script in folder 03_master
+
                 string[] subFoldersMasters = Directory.GetDirectories(pathFolderMaster);
-                UpdateDataTenant.ExcuteUpdateDataTenant(extractedFiles, "localhost", 5432, "postgres",  "postgres", "1234$", subFoldersMasters);
+
+                // Get all file  .sql, .csv, excuted
+
+                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, string.Empty, string.Empty));
+                UpdateDataTenant.ExcuteUpdateDataTenant(extractedFiles, "localhost", 5432, "postgres", "postgres", "1234$", subFoldersMasters);
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
             finally
             {
                 _tenantRepository.ReleaseResource();
             }
+        }
+
+        private void SendMessager(RecalculationStatus status)
+        {
+            _messenger!.Send(status);
         }
     }
 }

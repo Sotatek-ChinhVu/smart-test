@@ -1,11 +1,19 @@
 ﻿using Domain.SuperAdminModels.Tenant;
+using Helper.Constants;
+using Helper.Messaging;
+using Helper.Messaging.Data;
+using Infrastructure.Interfaces;
 using Interactor.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
 using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
+using System.Text;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
@@ -26,10 +34,19 @@ namespace SuperAdminAPI.Controllers
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
-        public TenantController(UseCaseBus bus, IWebSocketService webSocketService)
+        private readonly IMessenger _messenger;
+        private readonly ITenantProvider _tenantProvider;
+        private readonly IConfiguration _configuration;
+        private CancellationToken? _cancellationToken;
+        private HubConnection _connection;
+        private string uniqueKey;
+        private bool stopCalculate = false;
+        private bool allowNextStep = false;
+        public TenantController(UseCaseBus bus, IWebSocketService webSocketService, IMessenger messenger)
         {
             _bus = bus;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpPost("UpdateTenant")]
@@ -136,13 +153,117 @@ namespace SuperAdminAPI.Controllers
 
         [HttpPost("UpdateDataTenant")]
         [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
-        public ActionResult<Response<UpdateDataTenantResponse>> UpdateTenant([FromForm] UpdateDataTenantRequest request)
+        public void UpdateTenant([FromForm] UpdateDataTenantRequest request, CancellationToken cancellationToken)
         {
-            var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);
-            var output = _bus.Handle(input);
-            var presenter = new UpdateDataTenantPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
+            try
+            {
+                _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus); 
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
+                uniqueKey = Guid.NewGuid().ToString();
+                _cancellationToken = cancellationToken;
+                var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);
+                var output = _bus.Handle(input);
+            }
+            catch (Exception ex)
+            {
+                stopCalculate = true;
+                Console.WriteLine("Exception Cloud:" + ex.Message);
+                SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "", string.Empty));
+            }
+            finally
+            {
+                allowNextStep = true;
+                stopCalculate = true;
+                _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
+                HttpContext.Response.Body.Close();
+                _tenantProvider.DisposeDataContext();
+            }
+
+            //var presenter = new UpdateDataTenantPresenter();
+            //presenter.Complete(output);
+            //return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
+        }
+
+        private void StopCalculation(StopCalcStatus stopCalcStatus)
+        {
+            if (stopCalculate)
+            {
+                stopCalcStatus.CallFailCallback(stopCalculate);
+            }
+            else if (!_cancellationToken.HasValue)
+            {
+                stopCalcStatus.CallFailCallback(false);
+            }
+            else
+            {
+                stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+
+        private void UpdateRecalculationStatus(RecalculationStatus status)
+        {
+            if (!status.UniqueKey.Equals("NotConnectSocket") && (status.Type == 1 || status.Type == 2))
+            {
+                if (status.Message.Equals("StartCalculateMonth") || status.Message.Equals("StartFutanCalculateMain"))
+                {
+                    string domain = _tenantProvider.GetDomainFromHeader();
+                    string socketUrl = _configuration.GetSection("CalculateApi")["WssPath"]! + domain;
+                    _connection = new HubConnectionBuilder()
+                     .WithUrl(socketUrl)
+                     .Build();
+
+                    var connect = _connection.StartAsync();
+                    connect.Wait();
+                }
+
+                _connection.On<string, string>("ReceiveMessage", (function, data) =>
+                {
+                    if (function.Equals(FunctionCodes.SuperAdmin))
+                    {
+                        try
+                        {
+                            var objectStatus = JsonSerializer.Deserialize<RecalculationStatus>(data);
+                            if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
+                            {
+                                if (objectStatus.Type == CalculateStatusConstant.Invalid)
+                                {
+                                    stopCalculate = true;
+                                    allowNextStep = true;
+                                }
+                                SendMessage(objectStatus);
+                                if (objectStatus.Done)
+                                {
+                                    _connection.DisposeAsync();
+                                    allowNextStep = true;
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            allowNextStep = true;
+                            stopCalculate = true;
+                            Console.WriteLine("Exception Calculate:" + data);
+                            SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
+                            throw;
+                        }
+                    }
+                });
+            }
+            else
+            {
+                SendMessage(status);
+            }
+        }
+
+
+        private void SendMessage(RecalculationStatus status)
+        {
+            //var dto = new RecalculationDto(status);
+            string result = "\n" + "";
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
         }
     }
 }
