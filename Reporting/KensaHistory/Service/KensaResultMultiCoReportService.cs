@@ -564,11 +564,12 @@ namespace Reporting.KensaHistory.Service
                 date.Remove(item);
             }
 
-            if (kensaInfDetails.Count > 0 && date.Count > 0)
-            {
-                var iraiStart = date.First();
-                var iraiEnd = date.Last();
-            }
+            ///No use
+            ////if (kensaInfDetails.Count > 0 && date.Count > 0)
+            ////{
+            ////    var iraiStart = date.First();
+            ////    var iraiEnd = date.Last();
+            ////}
 
             foreach (var item in kensaInfDetails)
             {
