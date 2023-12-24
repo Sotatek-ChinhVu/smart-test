@@ -793,6 +793,34 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.SuperSetDetail.GetConversion;
+using UseCase.SuperSetDetail.SaveConversion;
+using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
+using Reporting.KensaHistory.DB;
+using Reporting.KensaHistory.Service;
+using UseCase.Reception.GetNextUketukeNoBySetting;
+using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
+using UseCase.MainMenu.GetOdrSetName;
+using UseCase.MainMenu.SaveOdrSet;
+using UseCase.Lock.CheckIsExistedOQLockInfo;
+using UseCase.SetMst.GetListSetGenerationMst;
+using Interactor.MedicalExamination.KensaIraiCommon;
+using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
+using UseCase.SmartKartePort.UpdatePort;
+using Interactor.SmartKartePort;
+using Domain.Models.SmartKartePort;
+using UseCase.SmartKartePort.GetPort;
+using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
+using UseCase.DrugInfor.GetSinrekiFilterMstList;
+using UseCase.DrugInfor.SaveSinrekiFilterMstList;
+using UseCase.DrugInfor.GetContentDrugUsageHistory;
+using Interactor.LastDayInformation;
+using UseCase.LastDayInformation.GetLastDayInfoList;
+using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
+using Infrastructure.Repositoriesp;
+using Domain.Models.ReleasenoteRead;
+using Interactor.ReleasenoteRead;
+using UseCase.Releasenote.LoadListVersion;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1209,6 +1237,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
             services.AddTransient<ISmartKartePortRepository, SmartKartePortRepository>();
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
+            services.AddTransient<IReleasenoteReadRepository, ReleasenoteReadRepository>();
             ///services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
@@ -1782,6 +1811,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ImportKensaIraiInputData, ImportKensaIraiInteractor>();
             busBuilder.RegisterUseCase<GetRsvInfToConfirmInputData, GetRsvInfToConfirmInteractor>();
             busBuilder.RegisterUseCase<GetListQualificationInfInputData, GetListQualificationInfInteractor>();
+            busBuilder.RegisterUseCase<GetLoadListVersionInputData, GetLoadListVersionInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
