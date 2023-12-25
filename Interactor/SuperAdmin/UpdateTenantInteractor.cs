@@ -313,6 +313,8 @@ namespace Interactor.SuperAdmin
                     }
                 }, cts.Token);
 
+                var key = "connect_db_" + oldTenant.EndSubDomain;
+                _cache.KeyDelete(key);
                 return new UpdateTenantOutputData(true, UpdateTenantStatus.Successed);
             }
             finally

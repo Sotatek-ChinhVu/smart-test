@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class OrderLabelExportRequest : ReportRequestBase
+public class OrderLabelExportRequest
 {
     public long PtId { get; set; }
 

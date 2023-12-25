@@ -83,7 +83,7 @@ public class ConfigStatistic3020Model : StatisticModelBase
     /// </summary>
     public string MenuName
     {
-        get => StaMenu.MenuName;
+        get => StaMenu.MenuName ?? string.Empty;
         set
         {
             StaMenu.MenuName = value;

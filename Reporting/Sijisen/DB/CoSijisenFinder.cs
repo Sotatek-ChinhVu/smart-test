@@ -58,7 +58,7 @@ namespace Reporting.Sijisen.DB
 
             var entities = join.AsEnumerable().Select(
                 data =>
-                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, null, null, null)
+                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, new(), new(), new())
                 )
                 .ToList();
 
@@ -77,7 +77,7 @@ namespace Reporting.Sijisen.DB
                     ));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
         /// <summary>
         /// 患者薬剤アレルギー情報を取得する
@@ -244,7 +244,7 @@ namespace Reporting.Sijisen.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,
@@ -268,7 +268,7 @@ namespace Reporting.Sijisen.DB
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst, entity.UketukeSbtMst, entity.RaiinCmtInf));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
 
         /// <summary>
@@ -331,7 +331,7 @@ namespace Reporting.Sijisen.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,
@@ -467,7 +467,7 @@ namespace Reporting.Sijisen.DB
                     new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd.Trim() } equals
+                    new { odrInfDetail.HpId, ItemCd = (odrInfDetail.ItemCd ?? string.Empty).Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 join kensaMst in kensaMsts on
@@ -638,7 +638,7 @@ namespace Reporting.Sijisen.DB
                     new { rsvKrtOdrInf.HpId, rsvKrtOdrInf.PtId, rsvKrtOdrInf.RsvkrtNo, rsvKrtOdrInf.RpNo, rsvKrtOdrInf.RpEdaNo } equals
                     new { rsvKrtOdrInfDetail.HpId, rsvKrtOdrInfDetail.PtId, rsvKrtOdrInfDetail.RsvkrtNo, rsvKrtOdrInfDetail.RpNo, rsvKrtOdrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { rsvKrtOdrInfDetail.HpId, ItemCd = rsvKrtOdrInfDetail.ItemCd.Trim() } equals
+                    new { rsvKrtOdrInfDetail.HpId, ItemCd = (rsvKrtOdrInfDetail.ItemCd ?? string.Empty).Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 join kensaMst in kensaMsts on

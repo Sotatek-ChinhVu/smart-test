@@ -870,12 +870,6 @@ namespace Reporting.Yakutai.Service
                     addOdrInfs.Add(yohoOdrInf);
                     addOdrInfDtls.AddRange(odrInfDtls.FindAll(p => p.RpNo == yohoOdrInf.RpNo && p.RpEdaNo == yohoOdrInf.RpEdaNo));
                 }
-
-                //if (addOdrInfs.Any() && 
-                //    addOdrInfDtls.Any(p=>
-                //        p.YohoKbn == 0 && 
-                //        !(string.IsNullOrEmpty(p.ItemCd)) && 
-                //        !(p.TenMst != null && p.TenMst.MasterSbt == "C")))
                 if (addOdrInfs.Any() && addOdrInfDtls.Any(p => p.YohoKbn == 0))
                 {
                     // 用法・コメント以外のオーダーあり 

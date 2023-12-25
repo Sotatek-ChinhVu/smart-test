@@ -56,7 +56,7 @@ namespace Reporting.GrowthCurve.Mapper
 
         public override string GetJobName()
         {
-            return  _jobName; 
+            return _jobName;
         }
 
         public override Dictionary<string, string> GetSingleFieldData()

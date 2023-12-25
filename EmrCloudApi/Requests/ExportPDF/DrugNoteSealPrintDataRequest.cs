@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class DrugNoteSealPrintDataRequest : ReportRequestBase
+public class DrugNoteSealPrintDataRequest
 {
     public long PtId { get; set; }
 

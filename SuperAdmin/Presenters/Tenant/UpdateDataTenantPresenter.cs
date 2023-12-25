@@ -18,7 +18,7 @@ namespace SuperAdminAPI.Presenters.Tenant
         private string GetMessage(UpdateDataTenantStatus status) => status switch
         {
             UpdateDataTenantStatus.Successed => ResponseMessage.Success,
-            UpdateDataTenantStatus.Failed => ResponseMessage.Fail,
+            UpdateDataTenantStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }
