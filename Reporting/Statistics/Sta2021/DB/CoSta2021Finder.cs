@@ -164,16 +164,16 @@ namespace Reporting.Statistics.Sta2021.DB
                             sinRp.SinId.ToString(),
                         Suryo = sinDetail.Suryo,
                         UnitName = sinDetail.UnitName,
-                        ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
+                        ItemCd = ((sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
                         ItemCdCmt =
                             (
-                                sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                                (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                                 tenMst.MasterSbt == "C" ? sinDetail.ItemName :
                                 sinDetail.ItemCd
                             ),
                         SrcItemCd =
                         (
-                            sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                            (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                             sinDetail.ItemCd == ItemCdConst.CommentFree ? sinDetail.ItemName :
                             sinDetail.ItemCd
                         ),

@@ -471,6 +471,7 @@
         public const string ImportKensaIrai = "ImportKensaIrai";
         public const string GetRsvInfToConfirm = "GetRsvInfToConfirm";
         public const string GetListQualificationInf = "GetListQualificationInf";
+        public const string GetLoadListVersion = "GetLoadListVersion";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";

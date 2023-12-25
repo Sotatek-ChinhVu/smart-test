@@ -40,6 +40,8 @@ using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using Microsoft.Extensions.Caching.Memory;
 using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.ExportCsvLogList;
+using UseCase.SuperAdmin.DeleteJunkFileS3;
+using SuperAdminAPI.ScheduleTask;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -82,6 +84,7 @@ namespace SuperAdmin.Configs.Dependency
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
 
             services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            services.AddScoped<IDeleteJunkFileS3Service, DeleteJunkFileS3Service>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -92,6 +95,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IMigrationTenantHistoryRepository, MigrationTenantHistoryRepository>();
 
             services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
+            services.AddSingleton<IHostedService, TaskScheduleDeleteJunkFileS3>();
 
             services.AddTransient<INotificationRepository, NotificationRepository>();
         }
@@ -123,6 +127,7 @@ namespace SuperAdmin.Configs.Dependency
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
 
             busBuilder.RegisterUseCase<RevokeInsertPermissionInputData, RevokeInsertPermissionInteractor>();
+            busBuilder.RegisterUseCase<DeleteJunkFileS3InputData, DeleteJunkFileS3Interactor>();
 
             services.AddMemoryCache();
             var bus = busBuilder.Build();

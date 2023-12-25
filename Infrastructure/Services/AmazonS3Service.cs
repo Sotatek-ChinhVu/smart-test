@@ -48,17 +48,28 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         _tenantProvider.DisposeDataContext();
     }
 
-    private string GetAccessUrl(string key)
-    {
-        return $"{_options.BaseAccessUrl}/{key}";
-    }
-
     public async Task<bool> DeleteObjectAsync(string key)
     {
         try
         {
-            var response = await _s3Client.DeleteObjectAsync(_options.BucketName, key);
-            return Convert.ToBoolean(response.DeleteMarker);
+            var listVersionsRequest = new ListVersionsRequest
+            {
+                BucketName = _options.BucketName,
+                Prefix = key
+            };
+            var listVersionsReplicationRequest = new ListVersionsRequest
+            {
+                BucketName = _options.BucketNameReplication,
+                Prefix = key
+            };
+
+            /// Delete 
+            await _DeleteObjectByBucket(listVersionsRequest, _options.BucketName);
+
+            ///Copy, delete replication
+            await _CopyObjectReplyCation(listVersionsReplicationRequest, key);
+            await _DeleteObjectByBucket(listVersionsReplicationRequest, _options.BucketNameReplication);
+            return true;
         }
         catch (AmazonS3Exception)
         {
@@ -215,7 +226,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
     public string GetAccessBaseS3() => $"{_options.BaseAccessUrl}/";
 
-    public async Task<(bool valid,string key)> S3FilePathIsExists(string locationFile)
+    public async Task<(bool valid, string key)> S3FilePathIsExists(string locationFile)
     {
         var listS3Objects = await _s3Client.ListObjectsV2Async(new ListObjectsV2Request
         {
@@ -226,4 +237,189 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
         return (listS3Objects.S3Objects.Any(), locationFile);
     }
+
+    #region Private function
+    private string GetAccessUrl(string key)
+    {
+        return $"{_options.BaseAccessUrl}/{key}";
+    }
+    private static string GetLeftName(string inputString)
+    {
+        int lastIndex = inputString.LastIndexOf('/');
+        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
+
+        if (lastIndex >= 0 && secondLastIndex >= 0)
+        {
+            string result = inputString.Substring(0, secondLastIndex + 1);
+            return result;
+        }
+        return string.Empty;
+    }
+    private static string GetRightName(string inputString)
+    {
+
+        int lastIndex = inputString.LastIndexOf('/');
+        int secondLastIndex = inputString.LastIndexOf('/', lastIndex - 1);
+
+        if (lastIndex >= 0 && secondLastIndex >= 0)
+        {
+            string result = inputString.Substring(secondLastIndex + 1, lastIndex - secondLastIndex - 1);
+            return result + "/";
+        }
+        return string.Empty;
+    }
+    private static string AddFrefixDelete(string inputString)
+    {
+        char separator = '/';
+        string[] segments = inputString.Split(separator);
+
+        for (int i = 0; i < segments.Length; i++)
+        {
+            if (!string.IsNullOrWhiteSpace(segments[i]))
+            {
+                segments[i] = $"delete-{segments[i]}";
+            }
+        }
+
+        return string.Join("/", segments);
+    }
+    private static string CutString(string substring1, string inputString)
+    {
+        int firstOccurrenceIndex = inputString.IndexOf(substring1);
+
+        if (firstOccurrenceIndex != -1)
+        {
+            string part1 = inputString.Substring(0, firstOccurrenceIndex);
+            string part2 = inputString.Substring(firstOccurrenceIndex + substring1.Length);
+            return part1 + part2;
+        }
+
+        return inputString;
+    }
+    private async Task _DeleteObjectByBucket(ListVersionsRequest listVersionsRequest, string bucketName)
+    {
+        ListVersionsResponse listVersionsResponse;
+        do
+        {
+            listVersionsResponse = await _s3Client.ListVersionsAsync(listVersionsRequest);
+
+            var objectsToDelete = listVersionsResponse.Versions
+                .Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId })
+                .ToList();
+
+            if (objectsToDelete.Any())
+            {
+                var deleteObjectsRequest = new DeleteObjectsRequest
+                {
+                    BucketName = bucketName,
+                    Objects = objectsToDelete
+                };
+
+                var deleteObjectsResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsRequest);
+
+                // Check the response for any errors
+                if (deleteObjectsResponse.DeleteErrors.Any())
+                {
+                    Console.WriteLine("Some objects could not be deleted. Error details:");
+                    foreach (var error in deleteObjectsResponse.DeleteErrors)
+                    {
+                        Console.WriteLine($"Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
+                    }
+                }
+            }
+
+            // Set markers for the next iteration
+            listVersionsRequest.KeyMarker = listVersionsResponse.NextKeyMarker;
+            listVersionsRequest.VersionIdMarker = listVersionsResponse.NextVersionIdMarker;
+
+        } while (listVersionsResponse.IsTruncated);
+        Console.WriteLine("Objects deleted in replication successfully.");
+
+    }
+    private async Task _CopyObjectReplyCation(ListVersionsRequest listVersionsReplicationRequest, string key)
+    {
+        if (!key.EndsWith("/"))
+        {
+            key += "/";
+        }
+        ListVersionsResponse listVersionsReplicationResponse;
+        do
+        {
+            listVersionsReplicationResponse = await _s3Client.ListVersionsAsync(listVersionsReplicationRequest);
+            /// Copy to Replication (frefix: delete-)
+            var listVersionLastest = listVersionsReplicationResponse.Versions.Where(i => i.IsLatest && i.IsDeleteMarker == false);
+            if (listVersionLastest.Any())
+            {
+                var rootFolder = string.Empty;
+                int count = key.Split("/").Length - 1;
+                if (count == 1)
+                {
+                    rootFolder = $"delete-{key}";
+                }
+                else
+                {
+                    rootFolder = GetLeftName(key) + "delete-" + GetRightName(key);
+                }
+                Parallel.ForEach(listVersionLastest, version =>
+                {
+                    try
+                    {
+                        var copyObjectRequest = new CopyObjectRequest
+                        {
+                            SourceBucket = _options.BucketNameReplication,
+                            SourceKey = version.Key,
+                            DestinationBucket = _options.BucketNameReplication,
+                        };
+                        if (version.Key.EndsWith("/"))
+                        {
+
+                            char separator = '/';
+                            var checkKey = key;
+                            if (!key.EndsWith(separator.ToString()))
+                            {
+                                checkKey = key + separator;
+                            }
+                            var cutString = CutString(checkKey, version.Key);
+                            copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+                        }
+                        else
+                        {
+                            if (listVersionLastest.Count() == 1)
+                            {
+                                if (rootFolder.EndsWith("/"))
+                                {
+                                    rootFolder = rootFolder.Substring(0, rootFolder.Length - 1);
+                                }
+                                copyObjectRequest.DestinationKey = rootFolder;
+                            }
+                            else
+                            {
+                                char separator = '/';
+                                var checkKey = key;
+                                if (!key.EndsWith(separator.ToString()))
+                                {
+                                    checkKey = key + separator;
+                                }
+                                var cutString = CutString(checkKey, version.Key);
+                                copyObjectRequest.DestinationKey = rootFolder + AddFrefixDelete(cutString);
+                            }
+
+                        }
+                        var copyObjectResponse = _s3Client.CopyObjectAsync(copyObjectRequest).Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Exception copy {version.Key}: {ex.Message}");
+                    }
+
+                });
+            }
+            // Set markers for the next iteration
+            listVersionsReplicationRequest.KeyMarker = listVersionsReplicationResponse.NextKeyMarker;
+            listVersionsReplicationRequest.VersionIdMarker = listVersionsReplicationResponse.NextVersionIdMarker;
+
+        } while (listVersionsReplicationResponse.IsTruncated);
+        Console.WriteLine("Objects copied to replication successfully.");
+    }
+    #endregion
 }

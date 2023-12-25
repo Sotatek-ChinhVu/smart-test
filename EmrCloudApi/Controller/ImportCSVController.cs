@@ -26,7 +26,10 @@ public class ImportCSVController : AuthorizeControllerBase
     [HttpPost(ApiPath.ReceListCsv)]
     public IActionResult GenerateKarteCsvReport([FromBody] ReceiptListExcelRequest request)
     {
+        _reportService.Instance(31);
         var data = _reportService.GetReceiptListExcel(HpId, request.SeikyuYm, ConvertToReceiptListAdvancedSearchInputData(HpId, request), request.IsIsExportTitle);
+        _reportService.ReleaseResource();
+
         return RenderCsv(data);
     }
 

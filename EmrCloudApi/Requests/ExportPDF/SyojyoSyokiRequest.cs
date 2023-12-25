@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class SyojyoSyokiRequest : ReportRequestBase
+public class SyojyoSyokiRequest
 {
     public long PtId { get; set; }
 
