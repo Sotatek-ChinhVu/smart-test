@@ -11,6 +11,9 @@ namespace UseCase.SuperAdmin.RestoreObjectS3Tenant
             Type = type;
             IsPrefixDelete = isPrefixDelete;
         }
+        /// <summary>
+        /// SubDomain
+        /// </summary>
         public string ObjectName { get; private set; }
 
         public dynamic WebSocketService { get; private set; }

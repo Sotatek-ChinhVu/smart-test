@@ -4,6 +4,7 @@ using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Entity.SuperAdmin;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
@@ -60,8 +61,8 @@ namespace Interactor.SuperAdmin
                 }
 
 
-                string pathFile7z = $"{pathFolderUpdateDataTenant}\\{tenant.SubDomain}-{Guid.NewGuid()}.7z";
-                string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
+                string pathFile7z = $"{pathFolderUpdateDataTenant}{tenant.SubDomain}-{Guid.NewGuid()}.7z";
+                string pathFileExtract7z = $"{pathFolderUpdateDataTenant}7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
                 string pathFolderScript = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_SQL}";
                 string pathFolderMaster = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_MASTER}";
 
