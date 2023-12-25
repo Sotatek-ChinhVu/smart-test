@@ -6,6 +6,8 @@ public interface ITenantRepository
 {
     TenantModel Get(int tenantId);
 
+    TenantModel GetTenantBySubDomain(string subDomain);
+
     TenantModel GetByStatus(int tenantId, byte status);
 
     int GetBySubDomainAndIdentifier(string subDomain, string Identifier);
@@ -17,6 +19,8 @@ public interface ITenantRepository
     bool UpdateInfTenant(int tenantId, byte status, string endSubDomain, string endPointDb, string dbIdentifier);
 
     bool UpdateStatusTenant(int tenantId, byte status);
+
+    bool UpdateTenantIsRestoreS3(int tenantId, bool isRestoredS3);
 
     TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status);
 
