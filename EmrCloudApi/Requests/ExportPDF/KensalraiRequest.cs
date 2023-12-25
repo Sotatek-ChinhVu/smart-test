@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class KensalraiRequest : ReportRequestBase
+public class KensalraiRequest
 {
     public int SystemDate { get; set; }
 

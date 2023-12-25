@@ -22,7 +22,7 @@ public class ExportCsvTenantListInteractor : IExportCsvTenantListInputPort
             List<string> result = new();
 
             // get tenant data from database
-            var tenantData = _tenantRepository.GetTenantList(inputData.SearchModel, inputData.SortDictionary, inputData.Skip, inputData.Take);
+            var tenantData = _tenantRepository.GetTenantList(inputData.SearchModel, inputData.SortDictionary, 0, 0, true);
             if (!tenantData.TenantList.Any())
             {
                 return new ExportCsvTenantListOutputData(new(), ExportCsvTenantListStatus.NoData);
@@ -32,14 +32,14 @@ public class ExportCsvTenantListInteractor : IExportCsvTenantListInputPort
             Dictionary<TenantEnum, string> columnNameDictionary = new();
             if (inputData.ColumnView.Any())
             {
-                foreach (var item in inputData.ColumnView.Where(item => ColumnTenantName.ColumnNameTenantDictionary.ContainsKey(item)).ToList())
+                foreach (var item in inputData.ColumnView.Where(item => ColumnCsvName.ColumnNameTenantDictionary.ContainsKey(item)).ToList())
                 {
-                    columnNameDictionary.Add(item, ColumnTenantName.ColumnNameTenantDictionary[item]);
+                    columnNameDictionary.Add(item, ColumnCsvName.ColumnNameTenantDictionary[item]);
                 }
             }
             else
             {
-                columnNameDictionary = ColumnTenantName.ColumnNameTenantDictionary;
+                columnNameDictionary = ColumnCsvName.ColumnNameTenantDictionary;
             }
             StringBuilder headerCsv = new();
             int index = 1;

@@ -45,7 +45,8 @@ namespace Interactor.SwapHoken
                 {
                     msg = _swapHokenRepository.IsPtHokenPatternUsed(inputData.HpId, inputData.PtId, inputData.HokenPid) ?
                         ""
-                        : "変換元の保険は一度も使用されていないため、" + Environment.NewLine + "選択できません。";
+                        // No break line when return message
+                        : "変換元の保険は一度も使用されていないため、選択できません。";
                 }
 
                 if(string.IsNullOrEmpty(msg)) 

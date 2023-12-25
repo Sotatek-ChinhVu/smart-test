@@ -40,7 +40,7 @@ public class CheckOpenFormController : AuthorizeControllerBase
     [HttpGet(ApiPath.ReceiptCheck)]
     public IActionResult CheckOpenReceiptCheck([FromQuery] ReceiptCheckRequest request)
     {
-        var data = _checkOpenReportingService.CheckOpenReceiptCheck(request.HpId, request.PtIds, request.SeikyuYm);
+        var data = _checkOpenReportingService.CheckOpenReceiptCheck(HpId, request.PtIds, request.SeikyuYm);
         return Ok(data);
     }
 

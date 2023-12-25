@@ -163,7 +163,6 @@ namespace Interactor.PatientInfor
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
             bool isPatientTempotary = model.Patient.PtId == 0 && !model.Insurances.Any(x => x.IsDeleted == DeleteTypes.None);
-            bool isPatientTest = model.Patient.IsTester == 1 && model.Patient.PtId == 0;
             bool isUpdate = model.Patient.PtId != 0;
             int hpId = model.Patient.HpId;
 
@@ -189,16 +188,10 @@ namespace Interactor.PatientInfor
                 }
             }
 
-            if (model.Patient.PtId == 0 && model.Patient.PtNum != 0)
+            if (model.Patient.PtId == 0 && model.Patient.PtNum != 0 && _systemConfRepository.GetSettingValue(1001, 0, model.Patient.HpId) == 1 && !CIUtil.PtNumCheckDigits(model.Patient.PtNum))
             {
-                if (_systemConfRepository.GetSettingValue(1001, 0, model.Patient.HpId) == 1)
-                {
-                    if (!CIUtil.PtNumCheckDigits(model.Patient.PtNum))
-                    {
-                        message = string.Format(ErrorMessage.MessageType_mNG01010, "患者番号");
-                        resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidPtNumCheckDigits, TypeMessage.TypeMessageError));
-                    }
-                }
+                message = string.Format(ErrorMessage.MessageType_mNG01010, "患者番号");
+                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidPtNumCheckDigits, TypeMessage.TypeMessageError));
             }
 
             if (model.Patient.HpId <= 0)
@@ -232,9 +225,9 @@ namespace Interactor.PatientInfor
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
 
-            // temp remove not need validate
-            //if (model.Patient.IsDead == 0 && model.Patient.DeathDate > 0)
-            //    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.DeathDate`"), SavePatientInforValidationCode.InvalidDeathDate, TypeMessage.TypeMessageError));
+            /// temp remove not need validate
+            ///if (model.Patient.IsDead == 0 && model.Patient.DeathDate > 0)
+            ///    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.DeathDate`"), SavePatientInforValidationCode.InvalidDeathDate, TypeMessage.TypeMessageError));
 
             if (model.Patient.HomePost != null && model.Patient.HomePost.Length > 7)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.HomePost`"), SavePatientInforValidationCode.InvalidHomePost, TypeMessage.TypeMessageError));
@@ -362,7 +355,7 @@ namespace Interactor.PatientInfor
                     resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].EdaNo`"), SavePatientInforValidationCode.PtSanteiInvalidEdaNo, TypeMessage.TypeMessageError));
 
                 if (model.PtSanteis[i].KbnVal < 0)
-                    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].KbnVal`"), SavePatientInforValidationCode.PtSanteiInvalidKbnVal, TypeMessage.TypeMessageError)); ;
+                    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].KbnVal`"), SavePatientInforValidationCode.PtSanteiInvalidKbnVal, TypeMessage.TypeMessageError));
 
                 if (model.PtSanteis[i].StartDate < 0)
                     resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].StartDate`"), SavePatientInforValidationCode.PtSanteiInvalidStartDate, TypeMessage.TypeMessageError));
@@ -524,23 +517,12 @@ namespace Interactor.PatientInfor
                 for (int i = 0; i < arraySpace.Length; i++)
                 {
                     var arrayName = name.Split(arraySpace[i]);
-                    if (arrayName != null)
+                    if (arrayName != null && arrayName.Length >= 2)
                     {
-                        if (arrayName.Length < 2 && arrayName.Length > 0)
-                        {
-                            continue;
-                        }
-                        else if (arrayName.Length >= 2)
-                        {
-                            int index = name.IndexOf(arraySpace[i]);
-                            lastName = name.Substring(0, index);
-                            firstName = name.Substring(index + 1).Trim();
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        continue;
+                        int index = name.IndexOf(arraySpace[i]);
+                        lastName = name.Substring(0, index);
+                        firstName = name.Substring(index + 1).Trim();
+                        break;
                     }
                 }
             }
@@ -575,14 +557,14 @@ namespace Interactor.PatientInfor
             if (_systemConfRepository.GetSettingValue(1005, 0, hpId) == 1)
             {
                 var validPattern = insurances?.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
-                                                                    !pattern.IsExpirated &&
-                                                                    !pattern.IsAddNew &&
-                                                                    !pattern.IsEmptyHoken &&
-                                                                    pattern.HokenInf.IsShahoOrKokuho &&
-                                                                    !(pattern.HokenInf.HokensyaNo.Length == 8
-                                                                        && (pattern.HokenInf.HokensyaNo.StartsWith("109") || pattern.HokenInf.HokensyaNo.StartsWith("99"))));
+                                                                !pattern.IsExpirated &&
+                                                                !pattern.IsAddNew &&
+                                                                !pattern.IsEmptyHoken &&
+                                                                pattern.HokenInf.IsShahoOrKokuho &&
+                                                                !(pattern.HokenInf.HokensyaNo.Length == 8
+                                                                    && (pattern.HokenInf.HokensyaNo.StartsWith("109") || pattern.HokenInf.HokensyaNo.StartsWith("99"))));
 
-                if (validPattern == null || validPattern.Count() == 0)
+                if (validPattern == null || !validPattern.Any())
                 {
                     return resultMessages;
                 }
@@ -598,13 +580,9 @@ namespace Interactor.PatientInfor
 
                     foreach (var pattern in validPattern)
                     {
-                        int confirmDate = pattern.HokenInf.ConfirmDate;
-                        if (!IsValidAgeCheckConfirm(ageCheck, pattern.HokenInf.ConfirmDate, birthDay, sinDay))
+                        if (!IsValidAgeCheckConfirm(ageCheck, pattern.HokenInf.ConfirmDate, birthDay, sinDay) && invalidAgeCheck <= ageCheck)
                         {
-                            if (invalidAgeCheck <= ageCheck)
-                            {
-                                invalidAgeCheck = ageCheck;
-                            }
+                            invalidAgeCheck = ageCheck;
                         }
                     }
                 }
@@ -637,35 +615,32 @@ namespace Interactor.PatientInfor
             ReactSavePatientInfo reactFromUI)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
-            if (sinDay >= 20080401)
+            if (sinDay >= 20080401 && insurances != null && insurances.Count > 0)
             {
-                if (insurances != null && insurances.Count > 0)
+                var PatternHokenOnly = insurances.Where(pattern => pattern.IsDeleted == 0 && pattern.IsExpirated == false);
+
+                int age = CIUtil.SDateToAge(birthDay, sinDay);
+
+                // hoken exist in at least 1 pattern
+                var inUsedHokens = hokenInfs.Where(hoken => hoken.HokenId > 0 && hoken.IsDeleted == 0 && hoken.IsExpirated == false
+                                                            && PatternHokenOnly.Any(pattern => pattern.HokenId == hoken.HokenId));
+
+                var elderHokenQuery = inUsedHokens.Where(hoken => hoken.EndDate >= sinDay
+                                                                    && hoken.HokensyaNo != null && hoken.HokensyaNo != ""
+                                                                    && hoken.HokensyaNo.Length == 8 && hoken.HokensyaNo.StartsWith("39"));
+
+                string message = string.Empty;
+                if (elderHokenQuery != null)
                 {
-                    var PatternHokenOnly = insurances.Where(pattern => pattern.IsDeleted == 0 && pattern.IsExpirated == false);
-
-                    int age = CIUtil.SDateToAge(birthDay, sinDay);
-
-                    // hoken exist in at least 1 pattern
-                    var inUsedHokens = hokenInfs.Where(hoken => hoken.HokenId > 0 && hoken.IsDeleted == 0 && hoken.IsExpirated == false
-                                                                && PatternHokenOnly.Any(pattern => pattern.HokenId == hoken.HokenId));
-
-                    var elderHokenQuery = inUsedHokens.Where(hoken => hoken.EndDate >= sinDay
-                                                                        && hoken.HokensyaNo != null && hoken.HokensyaNo != ""
-                                                                        && hoken.HokensyaNo.Length == 8 && hoken.HokensyaNo.StartsWith("39"));
-
-                    string message = string.Empty;
-                    if (elderHokenQuery != null)
+                    if (age >= 75 && !elderHokenQuery.Any() && !reactFromUI.ConfirmInsuranceElderlyLaterNotYetCovered)
                     {
-                        if (age >= 75 && elderHokenQuery.Count() == 0 && !reactFromUI.ConfirmInsuranceElderlyLaterNotYetCovered)
-                        {
-                            message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険が入力されていません。", "保険者証" });
-                            resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningInsuranceElderlyLaterNotYetCovered, TypeMessage.TypeMessageWarning));
-                        }
-                        else if (age < 65 && elderHokenQuery.Count() > 0 && !reactFromUI.ConfirmLaterInsuranceRegisteredPatientsElderInsurance)
-                        {
-                            message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険の対象外の患者に、後期高齢者保険が登録されています。", "保険者証" });
-                            resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningLaterInsuranceRegisteredPatientsElderInsurance, TypeMessage.TypeMessageWarning));
-                        }
+                        message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険が入力されていません。", "保険者証" });
+                        resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningInsuranceElderlyLaterNotYetCovered, TypeMessage.TypeMessageWarning));
+                    }
+                    else if (age < 65 && elderHokenQuery.Any() && !reactFromUI.ConfirmLaterInsuranceRegisteredPatientsElderInsurance)
+                    {
+                        message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険の対象外の患者に、後期高齢者保険が登録されています。", "保険者証" });
+                        resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningLaterInsuranceRegisteredPatientsElderInsurance, TypeMessage.TypeMessageWarning));
                     }
                 }
             }
@@ -779,7 +754,7 @@ namespace Interactor.PatientInfor
             if (isUpdateMode)
             {
                 var validPatternList = insurances.Where(pattern => pattern.IsDeleted == 0).ToList();
-                if (validPatternList.Count() > 0 && !validPatternList.Any(p => !p.IsEmptyModel))
+                if (validPatternList.Any() && !validPatternList.Any(p => !p.IsEmptyModel))
                 {
                     message = string.Format(ErrorMessage.MessageType_mInp00011, new string[] { "保険組合せ", "情報" });
                     resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidHokenPatternWhenUpdate, TypeMessage.TypeMessageError));
@@ -844,7 +819,7 @@ namespace Interactor.PatientInfor
             var allValidHoken = hokenInfs.Where(h => h.IsDeleted == 0 && !string.IsNullOrEmpty(h.HokensyaNo) && h.IsShahoOrKokuho);
             var duplicateQuery = allValidHoken.GroupBy(x => new { x.HokensyaNo, x.StartDate, x.EndDate })
                                         .Where(g => g.Count() > 1);
-            if (duplicateQuery != null && duplicateQuery.Count() > 0)
+            if (duplicateQuery != null && duplicateQuery.Any())
             {
                 return false;
             }
@@ -869,7 +844,7 @@ namespace Interactor.PatientInfor
                         (!string.IsNullOrEmpty(h.FutansyaNo) || !string.IsNullOrEmpty(h.JyukyusyaNo) || !string.IsNullOrEmpty(h.TokusyuNo)));
             var duplicateQuery = allValidKohi.GroupBy(x => new { x.FutansyaNo, x.JyukyusyaNo, x.TokusyuNo, x.StartDate, x.EndDate })
                                         .Where(g => g.Count() > 1);
-            if (duplicateQuery != null && duplicateQuery.Count() > 0)
+            if (duplicateQuery != null && duplicateQuery.Any())
             {
                 return false;
             }

@@ -6,13 +6,11 @@ namespace UseCase.SuperAdmin.ExportCsvTenantList;
 
 public class ExportCsvTenantListInputData : IInputData<ExportCsvTenantListOutputData>
 {
-    public ExportCsvTenantListInputData(List<TenantEnum> columnView, SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary, int skip, int take)
+    public ExportCsvTenantListInputData(List<TenantEnum> columnView, SearchTenantModel searchModel, Dictionary<TenantEnum, int> sortDictionary)
     {
         ColumnView = columnView;
         SearchModel = searchModel;
         SortDictionary = sortDictionary;
-        Skip = skip;
-        Take = take;
     }
 
     public List<TenantEnum> ColumnView { get; private set; }
@@ -20,8 +18,4 @@ public class ExportCsvTenantListInputData : IInputData<ExportCsvTenantListOutput
     public SearchTenantModel SearchModel { get; private set; }
 
     public Dictionary<TenantEnum, int> SortDictionary { get; private set; }
-
-    public int Skip { get; private set; }
-
-    public int Take { get; private set; }
 }
