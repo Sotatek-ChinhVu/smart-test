@@ -15,6 +15,7 @@
         public static readonly string TenantDoesNotExist = "医療機関が存在しません。";
         public static readonly string TenantDbDoesNotExistInRDS = " RDSに医療機関のデータベースが存在しません。";
         public static readonly string SubDomainExists = "サブドメインが登録されています。";
+        public static readonly string SubDomainDoesNotExist = "Subdomain does not exist";
         public static readonly string InvalidSubDomain = "サブドメインが無効です。";
         public static readonly string HopitalExists = "病院が登録されています。";
         public static readonly string InvalidIdNotification = "通知IDが存在しません。";
