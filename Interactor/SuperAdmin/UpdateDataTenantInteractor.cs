@@ -4,7 +4,6 @@ using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Helper.Messaging;
 using Helper.Messaging.Data;
-using Entity.SuperAdmin;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
