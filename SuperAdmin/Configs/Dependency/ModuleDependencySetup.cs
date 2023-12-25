@@ -35,18 +35,12 @@ using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
 using UseCase.UserToken.GetInfoRefresh;
 using UseCase.UserToken.SiginRefresh;
-using UseCase.SystemStartDbs;
-using UseCase.SuperAdmin.RestoreObjectS3Tenant;
-using Microsoft.Extensions.Caching.Memory;
-using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.ExportCsvLogList;
 using Helper.Messaging;
 using UseCase.SuperAdmin.DeleteJunkFileS3;
 using SuperAdminAPI.ScheduleTask;
 using UseCase.SuperAdmin.UploadDrugImage;
 using Domain.SuperAdminModels.SystemChangeLog;
-using Helper.Messaging;
-using UseCase.SuperAdmin.UploadReleaseFile;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -129,8 +123,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateDataTenantInputData, UpdateDataTenantInteractor>();
             busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
             busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
-            busBuilder.RegisterUseCase<UploadDrugImageInputData, UploadDrugImageInteractor>();
-            busBuilder.RegisterUseCase<UploadReleaseFileInputData, UploadReleaseFileInteractor>();
+            busBuilder.RegisterUseCase<UploadDrugImageAndReleaseInputData, UploadDrugImageAndReleaseInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

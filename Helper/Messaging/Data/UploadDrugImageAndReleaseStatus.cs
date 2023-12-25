@@ -2,9 +2,9 @@
 
 namespace Helper.Messaging.Data;
 
-public class UploadDrugImageStatus
+public class UploadDrugImageAndReleaseStatus
 {
-    public UploadDrugImageStatus(bool done, int length, int successCount, string folderName, string fileName, string message)
+    public UploadDrugImageAndReleaseStatus(bool done, int length, int successCount, string folderName, string fileName, string message)
     {
         Done = done;
         Length = length;

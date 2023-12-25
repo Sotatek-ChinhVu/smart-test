@@ -4,9 +4,9 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.SuperAdmin.UploadDrugImage;
 
-public class UploadDrugImageInputData : IInputData<UploadDrugImageOutputData>
+public class UploadDrugImageAndReleaseInputData : IInputData<UploadDrugImageAndReleaseOutputData>
 {
-    public UploadDrugImageInputData(IFormFile? fileUpdateData, IMessenger messenger)
+    public UploadDrugImageAndReleaseInputData(IFormFile? fileUpdateData, IMessenger messenger)
     {
         FileUpdateData = fileUpdateData;
         Messenger = messenger;
