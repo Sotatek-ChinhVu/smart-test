@@ -1,11 +1,14 @@
 ﻿using CloudUnitTest.SampleData;
 using CommonChecker.Caches;
+using CommonChecker.Caches.Interface;
 using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.DB;
+using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
-using Reporting.Calculate.Extensions;
+using Entity.Tenant;
+using Moq;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
@@ -2557,6 +2560,73 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.M41SuppleIndexcodes.RemoveRange(m41SuppleIndexcodes);
                 tenantTracking.M01Kinki.RemoveRange(m01Kinkis);
 
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_047_CheckDosage_When_PatientInfoIsNull_ReturnsEmptyList()
+        {
+            // Arrange
+            var mockTenMstCacheService = new Mock<IMasterDataCacheService>();
+            var cache = new MasterDataCacheService(TenantProvider);
+            // cache.InitCache(new List<string>() { }, sinDay, ptId);
+            var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            mockTenMstCacheService.Setup(x => x.GetPtInf()).Returns((PtInf?)null);
+
+            // Act
+            var result = realtimcheckerfinder.CheckDosage(1, 2, 3, new List<DrugInfo>(), true, 1.0, 70.0, 160.0, new List<KensaInfDetailModel>(), false);
+
+            // Assert
+            Assert.AreEqual(0, result.Count);
+        }
+
+        [Test]
+        public void TC_047_CheckDosage()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.SaveChanges();
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = false;
+            var ratioSetting = 9.9;
+            var currentHeight = 0;
+            var currenWeight = -1;
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "620160501",
+                    ItemName = "ＰＬ配合顆粒",
+                    SinKouiKbn = 21,
+                    Suryo = 100,
+                    TermVal = 0,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.SaveChanges();
             }
         }
