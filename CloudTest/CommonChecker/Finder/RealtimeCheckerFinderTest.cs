@@ -4021,5 +4021,1379 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.SaveChanges();
             }
         }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 1
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 2
+        /// DayMin = 0
+        /// DayMax = 0
+        /// DayLimit = 0
+        /// SinKouiKbn = 22
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// </summary>
+        [Test]
+        public void TC_062_CheckDosage_TEST_OnceLimit_Greater_Than_0()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 2,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 0,
+                    DayLimit = 0,
+                    DayUnit = 0,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 22,
+                    Suryo = 3,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 1
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 2
+        /// DayMax = 0
+        /// DayLimit = 0
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 1
+        /// </summary>
+        [Test]
+        public void TC_063_CheckDosage_TEST_DayMin_Greater_Than_0_And_Day_Unit_Is_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 2,
+                    DayMax = 0,
+                    DayLimit = 0,
+                    DayUnit = 1,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 3,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 80;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 1
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 2
+        /// DayMax = 0
+        /// DayLimit = 0
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 2
+        /// </summary>
+        [Test]
+        public void TC_064_CheckDosage_TEST_DayMin_Greater_Than_0_And_Day_Unit_Is_2()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 2,
+                    DayMax = 0,
+                    DayLimit = 0,
+                    DayUnit = 2,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 3,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 1
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 4
+        /// DayMax = 0
+        /// DayLimit = 0
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 3
+        /// </summary>
+        [Test]
+        public void TC_065_CheckDosage_TEST_DayMin_Greater_Than_0_And_Day_Unit_Is_Not_Equal_1_2()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 4,
+                    DayMax = 0,
+                    DayLimit = 0,
+                    DayUnit = 3,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 3,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 161
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayMax = 2
+        /// DayLimit = 0
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 1
+        /// </summary>
+        [Test]
+        public void TC_066_CheckDosage_TEST_DayMax_Greater_Than_0_And_Day_Unit_Is_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 2,
+                    DayLimit = 0,
+                    DayUnit = 1,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 161,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 80;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 161
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayMax = 2
+        /// DayLimit = 0
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 2
+        /// </summary>
+        [Test]
+        public void TC_067_CheckDosage_TEST_DayMax_Greater_Than_0_And_Day_Unit_Is_2()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 2,
+                    DayLimit = 0,
+                    DayUnit = 2,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 4,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = 180;
+            var currenWeight = 80;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 161
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayMax = 2
+        /// DayLimit = 0
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 3
+        /// </summary>
+        [Test]
+        public void TC_068_CheckDosage_TEST_DayMax_Greater_Than_0_And_Day_Unit_Is_Not_Equal_1_2()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 2,
+                    DayLimit = 0,
+                    DayUnit = 3,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 4,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 4
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayLimit = 2 => LimitDay = 2
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 3 DayMax = 2 => maxDay = 2
+        /// </summary>
+        [Test]
+        public void TC_069_CheckDosage_TEST_LimitDay_And_MaxDay_Greater_Than_0()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 2,
+                    DayLimit = 2,
+                    DayUnit = 3,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 4,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 161
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayLimit = 2 => LimitDay = 2
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 3 DayMax = 0 => maxDay = 0
+        /// </summary>
+        [Test]
+        public void TC_070_CheckDosage_TEST_LimitDay_Greater_Than_0_And_MaxDay_Is_0()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 0,
+                    DayLimit = 2,
+                    DayUnit = 3,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 4,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 161
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayLimit = 0 => LimitDay = 0
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 3 DayMax = 2 => maxDay = 2
+        /// </summary>
+        [Test]
+        public void TC_071_CheckDosage_TEST_LimitDay_Is_0_And_MaxDay_Is_Greater_Than_0()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 2,
+                    DayLimit = 0,
+                    DayUnit = 3,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 4,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 4
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayLimit = 2 => LimitDay = 2
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 3 DayMax = 3 => maxDay = 3
+        /// </summary>
+        [Test]
+        public void TC_072_CheckDosage_TEST_LimitDay_And_MaxDay_Greater_Than_0_LimitDay_LessThan_MaxDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 3,
+                    DayLimit = 2,
+                    DayUnit = 3,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 4,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// ItemCd = UT2720
+        /// RikikaUnit = g
+        /// RIKIKA_UNIT = g
+        /// UnitName = g
+        /// UnitName equal RIKIKA_UNIT & YAKKA_UNIT
+        /// TermVal > 0
+        /// Suryo = 4
+        /// OnceMin = 0
+        /// OnceMax = 0
+        /// OnceLimit = 0
+        /// DayMin = 0 
+        /// DayLimit = 2 => LimitDay = 2
+        /// SinKouiKbn = 21
+        /// minCheck = true
+        /// OnceUnit = 0
+        /// DayUnit = 3 DayMax = 0 => maxDay = 0
+        /// </summary>
+        [Test]
+        public void TC_073_CheckDosage_TEST_LimitDay_Greater_Than_0_And_MaxDay_Is_0()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var dosageMsts = new List<DosageMst>()
+            {
+                new DosageMst()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    SeqNo = 999999,
+                    OnceMin = 0,
+                    OnceMax = 0,
+                    OnceLimit = 0,
+                    OnceUnit = 0,
+                    DayMin = 0,
+                    DayMax = 0,
+                    DayLimit = 2,
+                    DayUnit = 3,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 0,
+                    UpdateId = 0
+                },
+            };
+            var dosageDrugs = new List<DosageDrug>
+            {
+                new DosageDrug()
+                {
+                    YjCd = "UT271026",
+                    DoeiCd = "",
+                    DgurKbn = "",
+                    KikakiUnit = "g",
+                    YakkaiUnit = "",
+                    RikikaRate = 0,
+                    RikikaUnit = "g",
+                    YoukaiekiCd = ""
+                },
+            };
+
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.DosageMsts.AddRange(dosageMsts);
+            tenantTracking.DosageDrugs.AddRange(dosageDrugs);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<DrugInfo>()
+            {
+                new DrugInfo()
+                {
+                    Id = "",
+                    ItemCD = "UT2720",
+                    ItemName = "UNIT_TEST",
+                    SinKouiKbn = 21,
+                    Suryo = 4,
+                    TermVal = 1,
+                    UnitName = "g",
+                    UsageQuantity = 1
+                }
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = -1;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DosageMsts.RemoveRange(dosageMsts);
+                tenantTracking.DosageDrugs.RemoveRange(dosageDrugs);
+                tenantTracking.PtInfs.RemoveRange(ptInfs);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
     }
 }
