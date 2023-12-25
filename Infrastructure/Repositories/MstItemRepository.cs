@@ -7827,9 +7827,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     public List<UserMstModel> GetListUser(int hpId, int userId, int sinDate)
     {
         List<UserMstModel> result;
-        var listYohoSetMst = TrackingDataContext.YohoSetMsts.Where(u => u.HpId == hpId &&
+        var listYohoSetMst = NoTrackingDataContext.YohoSetMsts.Where(u => u.HpId == hpId &&
                                                                                    u.IsDeleted == 0).OrderBy(u => u.UserId);
-        var listUser = TrackingDataContext.UserMsts.Where(u => u.HpId == hpId &&
+        var listUser = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId &&
                                                                                  u.StartDate <= sinDate &&
                                                                                  u.EndDate >= sinDate &&
                                                                                  u.IsDeleted == 0);

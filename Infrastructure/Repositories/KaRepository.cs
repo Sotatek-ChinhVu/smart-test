@@ -1,17 +1,36 @@
-﻿using Domain.Models.Ka;
+﻿using Amazon.Runtime.Internal.Util;
+using Domain.Models.Ka;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 
 namespace Infrastructure.Repositories;
 
 public class KaRepository : RepositoryBase, IKaRepository
 {
-    public KaRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly string key;
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
+    public KaRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
+        key = GetCacheKey();
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     public bool CheckKaId(int kaId)
@@ -101,6 +120,14 @@ public class KaRepository : RepositoryBase, IKaRepository
             mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
             mst.UpdateId = userId;
         }
+
+        // delete cache when save kaMstList
+        string finalKey = key + CacheKeyConstant.KaCacheService;
+        if (_cache.KeyExists(finalKey))
+        {
+            _cache.KeyDelete(finalKey);
+        }
+
         return TrackingDataContext.SaveChanges() > 0;
     }
 

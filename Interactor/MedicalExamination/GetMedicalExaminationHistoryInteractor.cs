@@ -1,5 +1,6 @@
 ﻿using Domain.Models.HistoryOrder;
 using Interactor.MedicalExamination.HistoryCommon;
+using System.Diagnostics;
 using UseCase.MedicalExamination.GetHistory;
 
 namespace Interactor.MedicalExamination
@@ -25,6 +26,9 @@ namespace Interactor.MedicalExamination
                     return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), validate, 0);
                 }
 
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
                 (int totalCount, List<HistoryOrderModel> historyOrderModelList) historyList = _historyOrderRepository.GetList(
                     inputData.HpId,
                     inputData.UserId,
@@ -37,6 +41,16 @@ namespace Interactor.MedicalExamination
                     inputData.RaiinNos,
                     inputData.IsShowApproval
                     );
+
+                stopWatch.Stop();
+                // Get the elapsed time as a TimeSpan value.
+                TimeSpan ts = stopWatch.Elapsed;
+
+                // Format and display the TimeSpan value.
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                    ts.Hours, ts.Minutes, ts.Seconds,
+                    ts.Milliseconds);
+                Console.WriteLine("RunTime History: " + elapsedTime);
                 return _historyCommon.GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList, new());
             }
             finally

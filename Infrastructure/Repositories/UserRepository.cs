@@ -4,20 +4,40 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
 {
     public class UserRepository : RepositoryBase, IUserRepository
     {
-        public UserRepository(ITenantProvider tenantProvider) : base(tenantProvider)
-        {
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
 
+        public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+        {
+            key = GetCacheKey();
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
+        }
+
         public bool CheckExistedId(List<long> ids)
         {
             var anyUsertMsts = NoTrackingDataContext.UserMsts.Count(u => ids.Contains(u.Id));
@@ -199,6 +219,14 @@ namespace Infrastructure.Repositories
                     }
                 }
                 TrackingDataContext.SaveChanges();
+
+                // delete cache when save userMstList
+                string finalKey = key + CacheKeyConstant.UserInfoCacheService;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -209,9 +237,7 @@ namespace Infrastructure.Repositories
                     return false;
                 }
                 throw;
-
             }
-
         }
 
         private static UserMstModel ToModel(UserMst u, List<KaMst> listKaMsts)
@@ -634,6 +660,14 @@ namespace Infrastructure.Repositories
 
                 }
             }
+
+            // delete cache when save userMstList
+            string finalKey = key + CacheKeyConstant.UserInfoCacheService;
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
+            }
+
             return TrackingDataContext.SaveChanges() > 0;
         }
 

@@ -1,4 +1,5 @@
 ﻿using Entity.Tenant;
+using Helper.Constants;
 using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
@@ -20,7 +21,7 @@ namespace Infrastructure.Services
         public UserInfoService(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
             _tenantProvider = tenantProvider;
-            key = GetCacheKey() + "SetMst";
+            key = GetCacheKey();
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
@@ -59,9 +60,10 @@ namespace Infrastructure.Services
         public void Reload()
         {
             // check if cache exists, load data from cache
-            if (_cache.KeyExists(key))
+            string finalKey = key + CacheKeyConstant.UserInfoCacheService;
+            if (_cache.KeyExists(finalKey))
             {
-                var stringJson = _cache.StringGet(key).AsString();
+                var stringJson = _cache.StringGet(finalKey).AsString();
                 if (!string.IsNullOrEmpty(stringJson))
                 {
                     _userInfoList = JsonSerializer.Deserialize<List<UserMst>>(stringJson) ?? new();
@@ -72,7 +74,7 @@ namespace Infrastructure.Services
             // if cache does not exists, get data from database then set to cache
             _userInfoList = _tenantProvider.GetNoTrackingDataContext().UserMsts.ToList();
             var jsonUserList = JsonSerializer.Serialize(_userInfoList);
-            _cache.StringSet(key, jsonUserList);
+            _cache.StringSet(finalKey, jsonUserList);
         }
 
         public void DisposeSource()
