@@ -87,7 +87,7 @@ namespace Interactor.SuperAdmin
             }
             catch (Exception ex)
             {
-                var message = inputData.ObjectName + $" is restore data S3 failed. {ex.Message}";
+                var message = $" 医療機関{inputData.ObjectName} のS3 データの回復に失敗しました。{ex.Message}";
                 var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, message);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
                 _tenantRepository.UpdateTenantIsRestoreS3(tenant.TenantId, false);
