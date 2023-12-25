@@ -87,9 +87,10 @@ namespace AWSSDK.Common
         /// <param name="database"></param>
         /// <param name="user"></param>
         /// <param name="password"></param>
-        public static void ExecuteSqlFiles(List<string> filePaths, string host, int port, string database, string user, string password)
+        public static void ExecuteSqlFiles(string[] filePaths, string host, int port, string database, string user, string password)
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
+            string filePathRun = string.Empty;
 
             try
             {
@@ -105,6 +106,7 @@ namespace AWSSDK.Common
                             // Execute all SQL files in a transaction
                             foreach (var filePath in filePaths)
                             {
+                                filePathRun = filePath;
                                 // Read the content of the SQL file
                                 string sqlScript;
                                 using (StreamReader reader = new StreamReader(filePath))
@@ -118,6 +120,24 @@ namespace AWSSDK.Common
                                     command.CommandType = CommandType.Text;
                                     command.ExecuteNonQuery();
                                 }
+
+                                // Save SYSTEM_CHANGE_LOG
+                                using (NpgsqlCommand command = new NpgsqlCommand(QueryConstant.SaveSystemChangeLog, connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@FileName", filePath);
+                                    command.Parameters.AddWithValue("@IsPG", 1);
+                                    command.Parameters.AddWithValue("@IsDB", 1);
+                                    command.Parameters.AddWithValue("@IsMaster", 1);
+                                    command.Parameters.AddWithValue("@IsNote", 0);
+                                    command.Parameters.AddWithValue("@Status", 9);
+                                    command.Parameters.AddWithValue("@ErrMessage", "");
+                                    command.Parameters.AddWithValue("@CreateDate", DateTime.Now);
+                                    command.Parameters.AddWithValue("@UpdateDate", DateTime.Now);
+                                    command.Parameters.AddWithValue("@IsRun", 0);
+                                    command.Parameters.AddWithValue("@IsDrugPhoto", 0);
+
+                                    command.ExecuteNonQuery();
+                                }
                             }
 
                             // If everything is successful, commit the transaction
@@ -128,6 +148,23 @@ namespace AWSSDK.Common
                             // If there's an error, rollback the transaction
                             transaction.Rollback();
                             Console.WriteLine($"Error executing SQL files: {ex.Message}");
+                            // Save SYSTEM_CHANGE_LOG
+                            using (NpgsqlCommand command = new NpgsqlCommand(QueryConstant.SaveSystemChangeLog, connection))
+                            {
+                                command.Parameters.AddWithValue("@FileName", filePathRun);
+                                command.Parameters.AddWithValue("@IsPG", 1);
+                                command.Parameters.AddWithValue("@IsDB", 1);
+                                command.Parameters.AddWithValue("@IsMaster", 1);
+                                command.Parameters.AddWithValue("@IsNote", 0);
+                                command.Parameters.AddWithValue("@Status", 9);
+                                command.Parameters.AddWithValue("@ErrMessage", ex.Message);
+                                command.Parameters.AddWithValue("@CreateDate", DateTime.Now);
+                                command.Parameters.AddWithValue("@UpdateDate", DateTime.Now);
+                                command.Parameters.AddWithValue("@IsRun", 0);
+                                command.Parameters.AddWithValue("@IsDrugPhoto", 0);
+
+                                command.ExecuteNonQuery();
+                            }
                         }
                     }
                 }
@@ -139,13 +176,13 @@ namespace AWSSDK.Common
         }
 
 
-    /// <summary>
-    ///  Create file .sh / .bat to execute conent script sql
-    /// </summary>
-    /// <param name="dumpCommand"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    private static Task Execute(string dumpCommand)
+        /// <summary>
+        ///  Create file .sh / .bat to execute conent script sql
+        /// </summary>
+        /// <param name="dumpCommand"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private static Task Execute(string dumpCommand)
         {
             return Task.Run(() =>
             {
