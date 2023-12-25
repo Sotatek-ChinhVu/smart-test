@@ -11,6 +11,7 @@ using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
 using System.Text;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
@@ -162,7 +163,7 @@ namespace SuperAdminAPI.Controllers
             {
                 stopCalculate = true;
                 Console.WriteLine("Exception Cloud:" + ex.Message);
-                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", 0));
             }
             finally
             {
@@ -204,7 +205,7 @@ namespace SuperAdminAPI.Controllers
             catch (Exception)
             {
                 stopCalculate = true;
-                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", 0));
                 throw;
             }
 
@@ -213,8 +214,7 @@ namespace SuperAdminAPI.Controllers
 
         private void SendMessage(UpdateDataTenantResult status)
         {
-            //var dto = new RecalculationDto(status);
-            string result = "\n" + "";
+            string result = "\n" + JsonSerializer.Serialize(status);
             var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
             HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
             HttpContext.Response.Body.FlushAsync();
