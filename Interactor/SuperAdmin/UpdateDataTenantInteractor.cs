@@ -35,8 +35,6 @@ namespace Interactor.SuperAdmin
             try
             {
                 _messenger = inputData.Messenger;
-                var statusCallBack = _messenger!.SendAsync(new StopUpdateDataTenantStatus());
-                bool isStopCalc = statusCallBack.Result.Result;
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 string pathFolderUpdateDataTenant = _configuration["PathFolderUpdateDataTenant"] ?? string.Empty;
@@ -110,34 +108,41 @@ namespace Interactor.SuperAdmin
                 totalFileExcute = totalFileExcute + totalHFiles + totalSqlFiles;
 
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
-                _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, totalFileExcute, 0, "", string.Empty));
+                _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, totalFileExcute, 0, "", 1));
                 var result = UpdateDataTenant.ExcuteUpdateDataTenant(listFileScriptSql, subFoldersMasters, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db,
                      tenant.UserConnect, tenant.PasswordConnect, inputData.CancellationToken, _messenger, totalFileExcute, pathFile7z);
-                if (result)
+
+                var statusCallBack = _messenger!.SendAsync(new StopUpdateDataTenantStatus());
+                bool isStopCalc = statusCallBack.Result.Result;
+                // Check stop api update data tenant
+                if (!isStopCalc)
                 {
-                    var messenge = $"{tenant.EndSubDomain} is update tenant successfully.";
-                    var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                    _tenantRepository.UpdateStatusTenant(inputData.TenantId, tenant.Status);
-                    // Add info tenant for notification
-                    notification.SetTenantId(tenant.TenantId);
-                    notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
-                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-                    return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
+                    if (result)
+                    {
+                        var messenge = $"{tenant.EndSubDomain} is update tenant successfully.";
+                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, tenant.Status);
+                        // Add info tenant for notification
+                        notification.SetTenantId(tenant.TenantId);
+                        notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
+                    }
+
+                    else
+                    {
+                        var messenge = $"{tenant.EndSubDomain} is update tenant failed.";
+                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["failed"]);
+                        // Add info tenant for notification
+                        notification.SetTenantId(tenant.TenantId);
+                        notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.Failed);
+
+                    }
                 }
-
-                else
-                {
-                    var messenge = $"{tenant.EndSubDomain} is update tenant failed.";
-                    var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                    _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["failed"]);
-                    // Add info tenant for notification
-                    notification.SetTenantId(tenant.TenantId);
-                    notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
-                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-                    return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.Failed);
-
-                }
-
+                return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
             finally
             {
