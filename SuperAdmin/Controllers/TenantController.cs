@@ -21,6 +21,7 @@ using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpdateDataTenant;
 using UseCase.SuperAdmin.UpgradePremium;
 using UseCase.SuperAdmin.UploadDrugImage;
+using UseCase.SuperAdmin.UploadReleaseFile;
 using UploadDrugImageStatus = Helper.Messaging.Data.UploadDrugImageStatus;
 
 namespace SuperAdminAPI.Controllers
@@ -263,7 +264,58 @@ namespace SuperAdminAPI.Controllers
                 status.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
             }
         }
+        #endregion UploadDrugImage
 
+        #region UploadReleaseFile
+        [HttpPost("UploadReleaseFile")]
+        public void UploadReleaseFile([FromForm] UploadReleaseFileRequest request, CancellationToken cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<UploadReleaseFileStatus>(this, ReturnUploadReleaseFileStatus);
+                _messenger.Register<StopUploadReleaseFile>(this, StopUploadReleaseFileStatus);
+                HttpContext.Response.ContentType = "application/json";
+
+                var input = new UploadReleaseFileInputData(request.FileUpdateData, _messenger);
+                _bus.Handle(input);
+            }
+            catch
+            {
+                stopUploadDrugImage = true;
+            }
+            finally
+            {
+                stopUploadDrugImage = true;
+                _messenger.Deregister<UploadReleaseFileStatus>(this, ReturnUploadReleaseFileStatus);
+                _messenger.Deregister<StopUploadReleaseFile>(this, StopUploadReleaseFileStatus);
+                HttpContext.Response.Body.Close();
+            }
+        }
+
+        private void ReturnUploadReleaseFileStatus(UploadReleaseFileStatus status)
+        {
+            string result = "\n" + JsonSerializer.Serialize(status);
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
+
+        private void StopUploadReleaseFileStatus(StopUploadReleaseFile status)
+        {
+            if (stopUploadDrugImage)
+            {
+                status.CallFailCallback(stopUploadDrugImage);
+            }
+            else if (!_cancellationToken.HasValue)
+            {
+                status.CallFailCallback(false);
+            }
+            else
+            {
+                status.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
         #endregion UploadDrugImage
     }
 }

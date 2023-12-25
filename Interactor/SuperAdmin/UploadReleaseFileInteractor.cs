@@ -6,11 +6,11 @@ using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
-using UseCase.SuperAdmin.UploadDrugImage;
+using UseCase.SuperAdmin.UploadReleaseFile;
 
 namespace Interactor.SuperAdmin;
 
-public class UploadDrugImageInteractor : IUploadDrugImageInputPort
+public class UploadReleaseFileInteractor : IUploadReleaseFileInputPort
 {
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IConfiguration _configuration;
@@ -18,17 +18,17 @@ public class UploadDrugImageInteractor : IUploadDrugImageInputPort
     private IMessenger? _messenger;
     private bool isStopProgress = false;
     private readonly List<string> fileUploaded = new();
-    private string filename = string.Empty, folderName = string.Empty;
+    private string filename = string.Empty;
     private int successCount = 0, totalFile = 0;
 
-    public UploadDrugImageInteractor(IAmazonS3Service amazonS3Service, IConfiguration configuration, ISystemChangeLogRepository systemChangeLogRepository)
+    public UploadReleaseFileInteractor(IAmazonS3Service amazonS3Service, IConfiguration configuration, ISystemChangeLogRepository systemChangeLogRepository)
     {
         _amazonS3Service = amazonS3Service;
         _configuration = configuration;
         _systemChangeLogRepository = systemChangeLogRepository;
     }
 
-    public UploadDrugImageOutputData Handle(UploadDrugImageInputData inputData)
+    public UploadReleaseFileOutputData Handle(UploadReleaseFileInputData inputData)
     {
         string pathFolderUpdateDataTenant = _configuration["PathFolderUpdateDataTenant"] ?? string.Empty;
         string pathFile7z = $"{pathFolderUpdateDataTenant}\\{Guid.NewGuid()}.7z";
@@ -39,8 +39,8 @@ public class UploadDrugImageInteractor : IUploadDrugImageInputPort
 
             if (inputData.FileUpdateData == null || !string.Equals(Path.GetExtension(inputData.FileUpdateData.FileName), ".7z", StringComparison.OrdinalIgnoreCase))
             {
-                SendMessager(new UploadDrugImageStatus(true, 0, 0, string.Empty, string.Empty, "This file is null or not in the correct format."));
-                return new UploadDrugImageOutputData();
+                SendMessager(new UploadReleaseFileStatus(true, 0, 0, string.Empty, "This file is null or not in the correct format."));
+                return new UploadReleaseFileOutputData();
             }
 
             // Save file 7z
@@ -56,36 +56,17 @@ public class UploadDrugImageInteractor : IUploadDrugImageInputPort
             }
 
             // get folder to upload file
-            pathFileExtract7z = $"{pathFileExtract7z}\\{CommonConstants.Drug_photo_05}";
-            string housouPath = $"{pathFileExtract7z}\\{CommonConstants.HouSou}";
-            string zaikeiPath = $"{pathFileExtract7z}\\{CommonConstants.ZaiKei}";
+            string uploadFilePath = $"{CommonConstants.Common}/{CommonConstants.Release_Version}/";
+            pathFileExtract7z = $"{pathFileExtract7z}\\{CommonConstants.Release_99}";
 
-            string uploadFilePath = $"{CommonConstants.Image}/{CommonConstants.Reference}/{CommonConstants.DrugPhoto}";
-            string uploadHousouFilePath = $"{uploadFilePath}/{CommonConstants.HouSou}/";
-            string uploadZaiKeiFilePath = $"{uploadFilePath}/{CommonConstants.ZaiKei}/";
+            var releaseFileList = Directory.GetFiles(pathFileExtract7z).ToList();
+            totalFile = releaseFileList.Count;
 
-            var housouFileList = Directory.GetFiles(housouPath).ToList();
-            var zaikeiFileList = Directory.GetFiles(zaikeiPath).ToList();
-            totalFile = housouFileList.Count + zaikeiFileList.Count;
+            // upload release file
+            UploadImageFileAction(releaseFileList, uploadFilePath);
 
-            // set folder name
-            folderName = CommonConstants.HouSou;
-
-            // upload housouFile
-            UploadImageFileAction(housouFileList, uploadHousouFilePath);
-
-            // check if continue progress
-            if (!isStopProgress)
-            {
-                // set folder name
-                folderName = CommonConstants.ZaiKei;
-
-                // upload zaikeiFile
-                UploadImageFileAction(zaikeiFileList, uploadZaiKeiFilePath);
-
-                // return success message
-                SendMessager(new UploadDrugImageStatus(true, totalFile, successCount, folderName, filename, string.Empty));
-            }
+            // return success message
+            SendMessager(new UploadReleaseFileStatus(true, totalFile, successCount, filename, string.Empty));
 
             // if stop progress, revert data
             if (isStopProgress)
@@ -100,7 +81,7 @@ public class UploadDrugImageInteractor : IUploadDrugImageInputPort
         catch (Exception ex)
         {
             // return error message
-            SendMessager(new UploadDrugImageStatus(false, totalFile, successCount, folderName, filename, ex.Message));
+            SendMessager(new UploadReleaseFileStatus(false, totalFile, successCount, filename, ex.Message));
         }
         finally
         {
@@ -109,17 +90,17 @@ public class UploadDrugImageInteractor : IUploadDrugImageInputPort
 
             //delete file temp
             File.Delete(pathFile7z);
-            Directory.Delete(pathFileExtract7z.Replace($"\\{CommonConstants.Drug_photo_05}", string.Empty), true);
+            Directory.Delete(pathFileExtract7z.Replace($"\\{CommonConstants.Release_99}", string.Empty), true);
         }
-        return new UploadDrugImageOutputData();
+        return new UploadReleaseFileOutputData();
     }
 
-    private void UploadImageFileAction(List<string> sourceFileList, string uploadFilePath)
+    private void UploadImageFileAction(List<string> releaseFileList, string uploadFilePath)
     {
-        foreach (var strPath in sourceFileList)
+        foreach (var strPath in releaseFileList)
         {
             // Check is stop progerss
-            var statusCallBack = _messenger!.SendAsync(new StopUploadDrugImage());
+            var statusCallBack = _messenger!.SendAsync(new StopUploadReleaseFile());
             isStopProgress = statusCallBack.Result.Result;
             if (isStopProgress)
             {
@@ -140,12 +121,12 @@ public class UploadDrugImageInteractor : IUploadDrugImageInputPort
                 break;
             }
 
-            // return message
-            SendMessager(new UploadDrugImageStatus(false, totalFile, successCount, folderName, filename, string.Empty));
+            // return message to controller
+            SendMessager(new UploadReleaseFileStatus(false, totalFile, successCount, filename, string.Empty));
         }
     }
 
-    private void SendMessager(UploadDrugImageStatus status)
+    private void SendMessager(UploadReleaseFileStatus status)
     {
         _messenger!.Send(status);
     }

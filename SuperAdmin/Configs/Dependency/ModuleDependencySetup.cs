@@ -46,6 +46,7 @@ using SuperAdminAPI.ScheduleTask;
 using UseCase.SuperAdmin.UploadDrugImage;
 using Domain.SuperAdminModels.SystemChangeLog;
 using Helper.Messaging;
+using UseCase.SuperAdmin.UploadReleaseFile;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -129,6 +130,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
             busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
             busBuilder.RegisterUseCase<UploadDrugImageInputData, UploadDrugImageInteractor>();
+            busBuilder.RegisterUseCase<UploadReleaseFileInputData, UploadReleaseFileInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
