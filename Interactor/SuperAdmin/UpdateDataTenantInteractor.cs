@@ -1,7 +1,6 @@
 ﻿using AWSSDK.Common;
 using AWSSDK.Constants;
 using Domain.SuperAdminModels.Tenant;
-using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.Realtime;
@@ -26,8 +25,16 @@ namespace Interactor.SuperAdmin
         public UpdateDataTenantOutputData Handle(UpdateDataTenantInputData inputData)
         {
             _messenger = inputData.Messenger;
+            Console.WriteLine($"tesst:888");
             try
             {
+
+                var statusCallBack = _messenger!.SendAsync(new StopCalcStatus());
+                var isStopCalc = statusCallBack.Result.Result;
+                Console.WriteLine($"tesst: {isStopCalc}");
+                Thread.Sleep(2000);
+
+
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 string pathFolderUpdateDataTenant = _configuration["PathFolderUpdateDataTenant"] ?? string.Empty;
@@ -71,18 +78,27 @@ namespace Interactor.SuperAdmin
                 //    archive.ExtractToDirectory(pathFileExtract7z);
                 //}
 
-                // Execute file script in folder 02_script
 
-                // Create transaction executed 
-                string[] extractedFiles = Directory.GetFiles(pathFolderScript);
-                // Execute file script in folder 03_master
+                int totalFileExcute = 0;
+                // File script in folder 02_script
+                string[] listFileScriptSql = Directory.GetFiles(pathFolderScript)
+                    .Where(file => Path.GetExtension(file).Equals(".sql", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
 
+                totalFileExcute += listFileScriptSql.Count();
+                // Subfolder in folder 03_master
                 string[] subFoldersMasters = Directory.GetDirectories(pathFolderMaster);
 
-                // Get all file  .sql, .csv, excuted
+                int totalHFiles = subFoldersMasters
+               .Select(subFolder => Directory.GetFiles(subFolder, "*.h").Length)
+               .Sum();
 
-                SendMessager(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, string.Empty, string.Empty));
-                UpdateDataTenant.ExcuteUpdateDataTenant(extractedFiles, "localhost", 5432, "postgres", "postgres", "1234$", subFoldersMasters);
+                totalFileExcute += totalHFiles;
+
+
+                SendMessager(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
+                UpdateDataTenant.ExcuteUpdateDataTenant(listFileScriptSql, subFoldersMasters, "localhost", 5432, "postgres",
+                    "postgres", "1234$", inputData.CancellationToken, _messenger);
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
             finally
@@ -91,7 +107,7 @@ namespace Interactor.SuperAdmin
             }
         }
 
-        private void SendMessager(RecalculationStatus status)
+        private void SendMessager(UpdateDataTenantResult status)
         {
             _messenger!.Send(status);
         }

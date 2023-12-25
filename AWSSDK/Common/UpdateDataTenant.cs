@@ -2,6 +2,8 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using Helper.Common;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Npgsql;
 using System.Data;
 using System.Globalization;
@@ -31,7 +33,8 @@ namespace AWSSDK.Common
         /// <param name="password"></param>
         /// <param name="subFoldersMasters"></param>
         /// <returns></returns>
-        public static bool ExcuteUpdateDataTenant(string[] filePaths, string host, int port, string database, string user, string password, string[] subFoldersMasters)
+        public static bool ExcuteUpdateDataTenant(string[] filePaths, string[] subFoldersMasters, string host, int port, string database,
+           string user, string password, CancellationToken cancellationToken, IMessenger? messenger)
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
             string filePathRun = string.Empty;
@@ -50,11 +53,25 @@ namespace AWSSDK.Common
                             //Execute all SQL files in a transaction
                             foreach (var filePath in filePaths)
                             {
+                                var statusCallBack = messenger!.SendAsync(new StopCalcStatus());
+                                bool isStopCalc = statusCallBack.Result.Result;
+                                if (isStopCalc)
+                                {
+                                    transaction.Rollback();
+                                    return false;
+                                }
                                 ExecuteSqlScriptNonQuery(filePath, connection, transaction);
                             }
 
                             foreach (var subFolder in subFoldersMasters)
                             {
+                                var statusCallBack = messenger!.SendAsync(new StopCalcStatus());
+                                bool isStopCalc = statusCallBack.Result.Result;
+                                if (isStopCalc)
+                                {
+                                    transaction.Rollback();
+                                    return false;
+                                }
                                 #region Run PreMstScript
                                 string preMstScript = Path.Combine(subFolder, UpdateConst.PRE_MST_SCRIPT);
                                 if (CIUtil.IsFileExisting(preMstScript))
@@ -393,7 +410,6 @@ namespace AWSSDK.Common
                 Console.WriteLine($"Error connecting to the database: {ex.Message}");
             }
         }
-
 
         private static void CreateTempTable(NpgsqlConnection connection, NpgsqlTransaction transaction)
         {

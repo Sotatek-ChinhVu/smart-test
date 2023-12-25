@@ -1,5 +1,4 @@
 ﻿using Domain.SuperAdminModels.Tenant;
-using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
@@ -7,7 +6,6 @@ using Interactor.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Configuration;
 using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
@@ -157,24 +155,24 @@ namespace SuperAdminAPI.Controllers
         {
             try
             {
-                _messenger.Register<RecalculationStatus>(this, UpdateRecalculationStatus); 
+                _messenger.Register<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
                 _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
                 uniqueKey = Guid.NewGuid().ToString();
                 _cancellationToken = cancellationToken;
-                var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);
+                var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData, cancellationToken, _messenger);
                 var output = _bus.Handle(input);
             }
             catch (Exception ex)
             {
                 stopCalculate = true;
                 Console.WriteLine("Exception Cloud:" + ex.Message);
-                SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "", string.Empty));
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
             }
             finally
             {
                 allowNextStep = true;
                 stopCalculate = true;
-                _messenger.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+                _messenger.Deregister<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
                 _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
                 _tenantProvider.DisposeDataContext();
@@ -201,11 +199,11 @@ namespace SuperAdminAPI.Controllers
             }
         }
 
-        private void UpdateRecalculationStatus(RecalculationStatus status)
+        private void UpdateRecalculationStatus(UpdateDataTenantResult status)
         {
-            if (!status.UniqueKey.Equals("NotConnectSocket") && (status.Type == 1 || status.Type == 2))
+            if (!status.UniqueKey.Equals("NotConnectSocket"))
             {
-                if (status.Message.Equals("StartCalculateMonth") || status.Message.Equals("StartFutanCalculateMain"))
+                if (status.Message.Equals("StartUpdateDataTenant"))
                 {
                     string domain = _tenantProvider.GetDomainFromHeader();
                     string socketUrl = _configuration.GetSection("CalculateApi")["WssPath"]! + domain;
@@ -223,14 +221,12 @@ namespace SuperAdminAPI.Controllers
                     {
                         try
                         {
-                            var objectStatus = JsonSerializer.Deserialize<RecalculationStatus>(data);
+                            var objectStatus = JsonSerializer.Deserialize<UpdateDataTenantResult>(data);
                             if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
                             {
-                                if (objectStatus.Type == CalculateStatusConstant.Invalid)
-                                {
-                                    stopCalculate = true;
-                                    allowNextStep = true;
-                                }
+                                stopCalculate = true;
+                                allowNextStep = true;
+
                                 SendMessage(objectStatus);
                                 if (objectStatus.Done)
                                 {
@@ -244,7 +240,7 @@ namespace SuperAdminAPI.Controllers
                             allowNextStep = true;
                             stopCalculate = true;
                             Console.WriteLine("Exception Calculate:" + data);
-                            SendMessage(new RecalculationStatus(true, CalculateStatusConstant.None, 0, 0, "再計算にエラーが発生しました。\n\rしばらくしてからもう一度お試しください。", string.Empty));
+                            SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
                             throw;
                         }
                     }
@@ -257,7 +253,7 @@ namespace SuperAdminAPI.Controllers
         }
 
 
-        private void SendMessage(RecalculationStatus status)
+        private void SendMessage(UpdateDataTenantResult status)
         {
             //var dto = new RecalculationDto(status);
             string result = "\n" + "";
