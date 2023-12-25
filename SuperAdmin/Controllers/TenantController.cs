@@ -35,6 +35,7 @@ namespace SuperAdminAPI.Controllers
         private readonly IMessenger _messenger;
         private CancellationToken? _cancellationToken;
         private bool stopUploadDrugImage = false;
+        private bool stopCalculate = false;
 
         public TenantController(UseCaseBus bus, IWebSocketService webSocketService, IMessenger messenger)
         {
@@ -147,13 +148,69 @@ namespace SuperAdminAPI.Controllers
 
         [HttpPost("UpdateDataTenant")]
         [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
-        public ActionResult<Response<UpdateDataTenantResponse>> UpdateDataTenant([FromForm] UpdateDataTenantRequest request)
+        public void UpdateDataTenant([FromForm] UpdateDataTenantRequest request, CancellationToken cancellationToken)
         {
-            var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);
-            var output = _bus.Handle(input);
-            var presenter = new UpdateDataTenantPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
+            try
+            {
+                _messenger.Register<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
+                _messenger.Register<StopUpdateDataTenantStatus>(this, StopCalculation);
+                _cancellationToken = cancellationToken;
+                var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData, cancellationToken, _messenger);
+            }
+            catch (Exception ex)
+            {
+                stopCalculate = true;
+                Console.WriteLine("Exception Cloud:" + ex.Message);
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
+            }
+            finally
+            {
+                stopCalculate = true;
+                _messenger.Deregister<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
+                _messenger.Deregister<StopUpdateDataTenantStatus>(this, StopCalculation);
+                HttpContext.Response.Body.Close();
+            }
+        }
+
+        private void StopCalculation(StopUpdateDataTenantStatus stopCalcStatus)
+        {
+            if (stopCalculate)
+            {
+                stopCalcStatus.CallFailCallback(stopCalculate);
+            }
+            else if (!_cancellationToken.HasValue)
+            {
+                stopCalcStatus.CallFailCallback(false);
+            }
+            else
+            {
+                stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+
+        private void UpdateRecalculationStatus(UpdateDataTenantResult status)
+        {
+            try
+            {
+                stopCalculate = status.Done;
+                SendMessage(status);
+
+            }
+            catch (Exception)
+            {
+                stopCalculate = true;
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
+                throw;
+            }
+
+        }
+
+        private void SendMessage(UpdateDataTenantResult status)
+        {
+            string result = "\n" + "";
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
         }
 
         #region UploadDrugImage

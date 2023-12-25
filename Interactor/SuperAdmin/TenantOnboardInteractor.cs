@@ -62,12 +62,12 @@ namespace Interactor.SuperAdmin
                     var tenantFaild = _tenantRepository.GetByStatus(inputData.TenantId, statusTenantFaild);
                     if (tenantFaild.TenantId == 0)
                     {
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.TenantOnboardFailed);
                     }
                     var teminatedTenant = TeminatedTenant(inputData.TenantId);
                     if (!teminatedTenant)
                     {
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.TenantOnboardFailed);
                     }
                 }
                 var checkValidSubDomain = CommonConstants.IsSubdomainValid(inputData.SubDomain);
@@ -121,7 +121,7 @@ namespace Interactor.SuperAdmin
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
                 {
                     Console.WriteLine($"Exception: {errorValue}");
-                    return new TenantOnboardOutputData(new TenantOnboardItem(errorValue), TenantOnboardStatus.Failed);
+                    return new TenantOnboardOutputData(new TenantOnboardItem(errorValue), TenantOnboardStatus.TenantOnboardFailed);
                 }
                 if (tenantOnboard.TryGetValue("message", out string? messageValue))
                 {
@@ -129,7 +129,7 @@ namespace Interactor.SuperAdmin
                 }
                 var data = new TenantOnboardItem(message);
 
-                return new TenantOnboardOutputData(data, TenantOnboardStatus.Successed);
+                return new TenantOnboardOutputData(data, TenantOnboardStatus.TenantOnboardSuccessed);
             }
             finally
             {

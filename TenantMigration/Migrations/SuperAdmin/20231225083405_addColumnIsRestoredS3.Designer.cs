@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations.SuperAdmin
 {
     [DbContext(typeof(SuperAdminContext))]
-    partial class SuperAdminContextModelSnapshot : ModelSnapshot
+    [Migration("20231225083405_addColumnIsRestoredS3")]
+    partial class addColumnIsRestoredS3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,69 +176,6 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.HasKey("Id");
 
                     b.ToTable("SCRIPTION");
-                });
-
-            modelBuilder.Entity("Entity.SuperAdmin.SystemChangeLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("ID")
-                        .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<string>("ErrMessage")
-                        .HasColumnType("text")
-                        .HasColumnName("ERR_MESSAGE");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("text")
-                        .HasColumnName("FILE_NAME");
-
-                    b.Property<int>("IsDb")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DB");
-
-                    b.Property<int>("IsDrugPhoto")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DRUG_PHOTO");
-
-                    b.Property<int>("IsMaster")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_MASTER");
-
-                    b.Property<int>("IsNote")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_NOTE");
-
-                    b.Property<int>("IsPg")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_PG");
-
-                    b.Property<int>("IsRun")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_RUN");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("STATUS");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<string>("Version")
-                        .HasColumnType("text")
-                        .HasColumnName("VERSION");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SYSTEM_CHANGE_LOG");
                 });
 
             modelBuilder.Entity("Entity.SuperAdmin.Tenant", b =>
