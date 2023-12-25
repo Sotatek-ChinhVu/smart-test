@@ -55,30 +55,35 @@ namespace AWSSDK.Common
                             {
                                 var statusCallBack = messenger!.SendAsync(new StopUpdateDataTenantStatus());
                                 bool isStopCalc = statusCallBack.Result.Result;
-                                
+
                                 // Check cancel update data tenant 
                                 if (isStopCalc)
                                 {
                                     transaction.Rollback();
-                                    messenger!.Send(new UpdateDataTenantResult(true, string.Empty, totalFileExcute, countFileExcute, "", string.Empty));
                                     return false;
                                 }
+
+                                messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+
                                 // Read the content of the SQL file
                                 string sqlScript;
                                 using (StreamReader reader = new StreamReader(filePath))
                                 {
                                     sqlScript = reader.ReadToEnd();
                                 }
-                                ExecuteSqlScriptNonQuery(sqlScript, connection, transaction);
+                                var result = ExecuteSqlScriptNonQuery(sqlScript, connection, transaction);
+                                if (!result)
+                                {
+                                    throw new Exception("Fail run sql script");
+                                }
                                 countFileExcute++;
                                 curentFile = Path.GetFileNameWithoutExtension(filePath);
-                                messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
                             }
 
                             foreach (var subFolder in subFoldersMasters)
                             {
                                 var statusCallBack = messenger!.SendAsync(new StopUpdateDataTenantStatus());
-                                
+
                                 // Check cancel update data tenant 
                                 bool isStopCalc = statusCallBack.Result.Result;
                                 if (isStopCalc)
@@ -90,28 +95,20 @@ namespace AWSSDK.Common
                                 string preMstScript = Path.Combine(subFolder, UpdateConst.PRE_MST_SCRIPT);
                                 if (CIUtil.IsFileExisting(preMstScript))
                                 {
-                                    try
+                                    messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+                                    var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
+                                    if (!existCode)
                                     {
-                                        var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
-                                        if (!existCode)
-                                        {
-                                            throw new Exception("Fail Run PreMstScript");
-                                        }
-                                        countFileExcute++;
-                                        // Read the content of the SQL file
-                                        string sqlScript;
-                                        using (StreamReader reader = new StreamReader(preMstScript))
-                                        {
-                                            sqlScript = reader.ReadToEnd();
-                                        }
-                                        curentFile = Path.GetFileNameWithoutExtension(sqlScript);
-                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+                                        throw new Exception("Fail Run PreMstScript fail:");
                                     }
-                                    catch (Exception ex)
+                                    countFileExcute++;
+                                    // Read the content of the SQL file
+                                    string sqlScript;
+                                    using (StreamReader reader = new StreamReader(preMstScript))
                                     {
-                                        // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
-                                        Console.WriteLine("Fail Run PreMstScript: " + ex.Message);
+                                        sqlScript = reader.ReadToEnd();
                                     }
+                                    curentFile = Path.GetFileNameWithoutExtension(sqlScript);
                                 }
                                 #endregion
 
@@ -142,7 +139,7 @@ namespace AWSSDK.Common
 
                                         countFileExcute++;
                                         curentFile = Path.GetFileNameWithoutExtension(headerFile);
-                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
                                         var csvFile = $"{headerFile.TrimEnd('h')}csv";
                                         if (CIUtil.IsFileExisting(csvFile))
@@ -196,7 +193,7 @@ namespace AWSSDK.Common
                                                     {
                                                         //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), e, headerFile);
                                                         Console.WriteLine("Fail to create temp table: " + e.Message);
-                                                         throw new Exception("Fail to create temp table: " + e.Message); ;
+                                                        throw new Exception("Fail to create temp table: " + e.Message); ;
                                                     }
                                                 }
 
@@ -379,29 +376,20 @@ namespace AWSSDK.Common
                                 string mstScript = Path.Combine(subFolder, UpdateConst.MST_SCRIPT);
                                 if (CIUtil.IsFileExisting(mstScript))
                                 {
-                                    try
-                                    {
-                                        countFileExcute++;
-                                        curentFile = Path.GetFileNameWithoutExtension(mstScript);
-                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+                                    countFileExcute++;
+                                    curentFile = Path.GetFileNameWithoutExtension(mstScript);
+                                    messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
-                                        // Read the content of the SQL file
-                                        string sqlScript;
-                                        using (StreamReader reader = new StreamReader(mstScript))
-                                        {
-                                            sqlScript = reader.ReadToEnd();
-                                        }
-                                        var existCode = ExecuteSqlFile(sqlScript, connection, transaction);
-                                        if (!existCode)
-                                        {
-                                            throw new Exception("Fail Run MstScript:");
-                                        }
-                                    }
-                                    catch (Exception ex)
+                                    // Read the content of the SQL file
+                                    string sqlScript;
+                                    using (StreamReader reader = new StreamReader(mstScript))
                                     {
-                                        // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
-                                        Console.WriteLine("Fail Run MstScript: " + ex.Message);
-                                        return false;
+                                        sqlScript = reader.ReadToEnd();
+                                    }
+                                    var existCode = ExecuteSqlFile(sqlScript, connection, transaction);
+                                    if (!existCode)
+                                    {
+                                        throw new Exception("Fail Run MstScript");
                                     }
                                 }
                                 #endregion
@@ -451,7 +439,7 @@ namespace AWSSDK.Common
 
                                 command.ExecuteNonQuery();
                             }
-                            messenger!.Send(new UpdateDataTenantResult(true, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, ex.Message, string.Empty));
+                            messenger!.Send(new UpdateDataTenantResult(true, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, $"Error: {curentFile} - " + ex.Message, 0));
                         }
                     }
                 }
@@ -461,7 +449,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error update data tenant: {ex.Message}");
-                return false; 
+                return false;
             }
         }
 
