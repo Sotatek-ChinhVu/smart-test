@@ -1,4 +1,6 @@
 ﻿using Domain.SuperAdminModels.Tenant;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Interactor.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +8,8 @@ using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
+using System.Text;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
@@ -16,6 +20,8 @@ using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpdateDataTenant;
 using UseCase.SuperAdmin.UpgradePremium;
+using UseCase.SuperAdmin.UploadDrugImage;
+using UploadDrugImageStatus = Helper.Messaging.Data.UploadDrugImageStatus;
 
 namespace SuperAdminAPI.Controllers
 {
@@ -26,10 +32,15 @@ namespace SuperAdminAPI.Controllers
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
-        public TenantController(UseCaseBus bus, IWebSocketService webSocketService)
+        private readonly IMessenger _messenger;
+        private CancellationToken? _cancellationToken;
+        private bool stopUploadDrugImage = false;
+
+        public TenantController(UseCaseBus bus, IWebSocketService webSocketService, IMessenger messenger)
         {
             _bus = bus;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpPost("UpdateTenant")]
@@ -91,7 +102,7 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<TerminateTenantResponse>>(presenter.Result);
         }
 
-        #region 
+        #region private function
         private SearchTenantModel GetSearchTenantModel(SearchTenantRequestItem requestItem)
         {
             return new SearchTenantModel(
@@ -136,7 +147,7 @@ namespace SuperAdminAPI.Controllers
 
         [HttpPost("UpdateDataTenant")]
         [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
-        public ActionResult<Response<UpdateDataTenantResponse>> UpdateTenant([FromForm] UpdateDataTenantRequest request)
+        public ActionResult<Response<UpdateDataTenantResponse>> UpdateDataTenant([FromForm] UpdateDataTenantRequest request)
         {
             var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);
             var output = _bus.Handle(input);
@@ -144,5 +155,58 @@ namespace SuperAdminAPI.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
         }
+
+        #region UploadDrugImage
+        [HttpPost("UploadDrugImage")]
+        public void UploadDrugImage([FromForm] UploadDrugImageRequest request, CancellationToken cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<UploadDrugImageStatus>(this, ReturnUploadDrugImageStatus);
+                _messenger.Register<StopUploadDrugImage>(this, StopUploadDrugImageStatus);
+                HttpContext.Response.ContentType = "application/json";
+
+                var input = new UploadDrugImageInputData(request.FileUpdateData, _messenger);
+                _bus.Handle(input);
+            }
+            catch
+            {
+                stopUploadDrugImage = true;
+            }
+            finally
+            {
+                stopUploadDrugImage = true;
+                _messenger.Deregister<UploadDrugImageStatus>(this, ReturnUploadDrugImageStatus);
+                _messenger.Deregister<StopUploadDrugImage>(this, StopUploadDrugImageStatus);
+                HttpContext.Response.Body.Close();
+            }
+        }
+
+        private void ReturnUploadDrugImageStatus(UploadDrugImageStatus status)
+        {
+            string result = "\n" + JsonSerializer.Serialize(status);
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
+
+        private void StopUploadDrugImageStatus(StopUploadDrugImage status)
+        {
+            if (stopUploadDrugImage)
+            {
+                status.CallFailCallback(stopUploadDrugImage);
+            }
+            else if (!_cancellationToken.HasValue)
+            {
+                status.CallFailCallback(false);
+            }
+            else
+            {
+                status.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+
+        #endregion UploadDrugImage
     }
 }

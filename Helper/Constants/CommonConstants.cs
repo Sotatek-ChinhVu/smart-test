@@ -18,4 +18,7 @@ public static class CommonConstants
     public const string ZaiKei = "zaikei";
     public const string Tempotary = "temp";
     public const string ReceiptcHen = "receiptchen";
+    public const string Housou = "housou";
+    public const string Zaikei = "zaikei";
+    public const string Drug_photo_05 = "05_drug_photo";
 }

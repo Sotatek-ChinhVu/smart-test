@@ -42,6 +42,9 @@ using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.ExportCsvLogList;
 using UseCase.SuperAdmin.DeleteJunkFileS3;
 using SuperAdminAPI.ScheduleTask;
+using UseCase.SuperAdmin.UploadDrugImage;
+using Domain.SuperAdminModels.SystemChangeLog;
+using Helper.Messaging;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -78,6 +81,8 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IAwsSdkService, AwsSdkService>();
             services.AddTransient<IWebSocketService, WebSocketService>();
+            services.AddTransient<ISystemChangeLogRepository, SystemChangeLogRepository>();
+            services.AddTransient<IMessenger, Messenger>();
 
 
             //Init follow transient so no need change transient
@@ -122,6 +127,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateDataTenantInputData, UpdateDataTenantInteractor>();
             busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
             busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
+            busBuilder.RegisterUseCase<UploadDrugImageInputData, UploadDrugImageInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
