@@ -68,6 +68,9 @@ namespace Entity.SuperAdmin
         [Column("PASSWORD_CONNECT")]
         public string PasswordConnect { get; set; } = string.Empty;
 
+        [Column("IS_RESTORE_S3")]
+        public bool IsRestoreS3 { get; set; }
+
         [Column("IS_DELETED")]
         public int IsDeleted { get; set; }
 
@@ -76,5 +79,6 @@ namespace Entity.SuperAdmin
 
         [Column("UPDATE_DATE")]
         public DateTime UpdateDate { get; set; }
+
     }
 }

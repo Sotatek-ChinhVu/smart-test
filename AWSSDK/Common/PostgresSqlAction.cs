@@ -77,6 +77,7 @@ namespace AWSSDK.Common
             await Execute(batchContent);
         }
 
+
         /// <summary>
         ///  Create file .sh / .bat to execute conent script sql
         /// </summary>

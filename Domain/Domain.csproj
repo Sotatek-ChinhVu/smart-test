@@ -26,4 +26,8 @@
     <Folder Include="Models\RaiinKbnKoui\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.9.42" />
+  </ItemGroup>
+
 </Project>

@@ -10,26 +10,27 @@ using EmrCloudApi.ScheduleTask;
 using Infrastructure.Common;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
-using Infrastructure.Logger;
 using Infrastructure.Services;
 using Infrastructure.SuperAdminRepositories;
 using Interactor.Realtime;
 using Interactor.SuperAdmin;
 using Interactor.SuperAdmin.AuditLog;
-using Interactor.SystemStartDbs;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using SuperAdminAPI.Services;
 using UseCase.Core.Builder;
 using UseCase.SuperAdmin.AuditLog;
+using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.GetNotification;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
 using UseCase.SuperAdmin.Login;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using UseCase.SuperAdmin.RestoreTenant;
 using UseCase.SuperAdmin.RevokeInsertPermission;
 using UseCase.SuperAdmin.StopedTenant;
 using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
+using UseCase.SuperAdmin.UpdateDataTenant;
 using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
 using UseCase.UserToken.GetInfoRefresh;
@@ -39,6 +40,7 @@ using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using Microsoft.Extensions.Caching.Memory;
 using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.ExportCsvLogList;
+using Helper.Messaging;
 using UseCase.SuperAdmin.DeleteJunkFileS3;
 using SuperAdminAPI.ScheduleTask;
 
@@ -77,7 +79,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IAwsSdkService, AwsSdkService>();
             services.AddTransient<IWebSocketService, WebSocketService>();
-
+            services.AddScoped<IMessenger, Messenger>();
 
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
@@ -118,6 +120,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<RestoreObjectS3TenantInputData, RestoreObjectS3TenantInteractor>();
+            busBuilder.RegisterUseCase<UpdateDataTenantInputData, UpdateDataTenantInteractor>();
             busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
             busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
 

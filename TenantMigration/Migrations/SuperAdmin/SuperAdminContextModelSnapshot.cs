@@ -221,6 +221,10 @@ namespace TenantMigration.Migrations.SuperAdmin
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
 
+                    b.Property<bool>("IsRestoreS3")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IS_RESTORE_S3");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text")

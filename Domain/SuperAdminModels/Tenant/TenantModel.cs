@@ -17,7 +17,7 @@ namespace Domain.SuperAdminModels.Tenant
             PasswordConnect = string.Empty;
         }
 
-        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect)
+        public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, int scheduleDate, int scheduleTime, DateTime createDate, string rdsIdentifier, string userConnect, string passwordConnect, bool isRestoreS3)
         {
             TenantId = tenantId;
             Hospital = hospital;
@@ -38,6 +38,8 @@ namespace Domain.SuperAdminModels.Tenant
             RdsIdentifier = rdsIdentifier;
             UserConnect = userConnect;
             PasswordConnect = passwordConnect;
+            IsRestoreS3 = isRestoreS3;
+
         }
 
         public TenantModel(int tenantId, string hospital, byte status, int adminId, string password, string subDomain, string db, int size, int sizeType, byte type, string endPointDb, string endSubDomain, int action, string rdsIdentifier, string userConnect, string passwordConnect)
@@ -117,6 +119,8 @@ namespace Domain.SuperAdminModels.Tenant
         public string UserConnect { get; private set; }
 
         public string PasswordConnect { get; private set; }
+
+        public bool IsRestoreS3 { get; private set; }
 
         /// <summary>
         /// Return StatusTenant to FE

@@ -2,6 +2,9 @@
 {
     public enum RestoreObjectS3TenantStatus
     {
-        Success = 1, Failed = 2
+        Success = 1,
+        Failed = 2,
+        SubdomainDoesNotExist = 3,
+        TenantIsProcessOfRestoreS3 = 4
     }
 }

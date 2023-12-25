@@ -24736,7 +24736,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("YJ_CD");
 
                     b.Property<string>("YohoCd")
-                        .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")
                         .HasColumnName("YOHO_CD");
