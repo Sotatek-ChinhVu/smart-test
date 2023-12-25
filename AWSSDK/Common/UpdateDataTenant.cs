@@ -418,8 +418,8 @@ namespace AWSSDK.Common
                                 command.Parameters.AddWithValue("@IsNote", 0);
                                 command.Parameters.AddWithValue("@Status", 9);
                                 command.Parameters.AddWithValue("@ErrMessage", "");
-                                command.Parameters.AddWithValue("@CreateDate", DateTime.Now);
-                                command.Parameters.AddWithValue("@UpdateDate", DateTime.Now);
+                                command.Parameters.AddWithValue("@CreateDate", CIUtil.GetJapanDateTimeNow());
+                                command.Parameters.AddWithValue("@UpdateDate", CIUtil.GetJapanDateTimeNow());
                                 command.Parameters.AddWithValue("@IsRun", 0);
                                 command.Parameters.AddWithValue("@IsDrugPhoto", 0);
 
@@ -444,8 +444,8 @@ namespace AWSSDK.Common
                                 command.Parameters.AddWithValue("@IsNote", 0);
                                 command.Parameters.AddWithValue("@Status", 8);
                                 command.Parameters.AddWithValue("@ErrMessage", ex.Message);
-                                command.Parameters.AddWithValue("@CreateDate", DateTime.Now);
-                                command.Parameters.AddWithValue("@UpdateDate", DateTime.Now);
+                                command.Parameters.AddWithValue("@CreateDate", CIUtil.GetJapanDateTimeNow());
+                                command.Parameters.AddWithValue("@UpdateDate", CIUtil.GetJapanDateTimeNow());
                                 command.Parameters.AddWithValue("@IsRun", 0);
                                 command.Parameters.AddWithValue("@IsDrugPhoto", 0);
 
