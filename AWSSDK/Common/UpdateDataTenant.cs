@@ -2,6 +2,8 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using Helper.Common;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Npgsql;
 using System.Data;
 using System.Globalization;
@@ -31,11 +33,12 @@ namespace AWSSDK.Common
         /// <param name="password"></param>
         /// <param name="subFoldersMasters"></param>
         /// <returns></returns>
-        public static bool ExcuteUpdateDataTenant(string[] filePaths, string host, int port, string database, string user, string password, string[] subFoldersMasters)
+        public static bool ExcuteUpdateDataTenant(string[] filePaths, string[] subFoldersMasters, string host, int port, string database,
+           string user, string password, CancellationToken cancellationToken, IMessenger? messenger, int totalFileExcute, string pathFile7z)
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
-            string filePathRun = string.Empty;
-
+            string curentFile = string.Empty;
+            int countFileExcute = 0;
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -50,11 +53,39 @@ namespace AWSSDK.Common
                             //Execute all SQL files in a transaction
                             foreach (var filePath in filePaths)
                             {
-                                ExecuteSqlScriptNonQuery(filePath, connection, transaction);
+                                var statusCallBack = messenger!.SendAsync(new StopUpdateDataTenantStatus());
+                                bool isStopCalc = statusCallBack.Result.Result;
+                                
+                                // Check cancel update data tenant 
+                                if (isStopCalc)
+                                {
+                                    transaction.Rollback();
+                                    messenger!.Send(new UpdateDataTenantResult(true, string.Empty, totalFileExcute, countFileExcute, "", string.Empty));
+                                    return false;
+                                }
+                                // Read the content of the SQL file
+                                string sqlScript;
+                                using (StreamReader reader = new StreamReader(filePath))
+                                {
+                                    sqlScript = reader.ReadToEnd();
+                                }
+                                ExecuteSqlScriptNonQuery(sqlScript, connection, transaction);
+                                countFileExcute++;
+                                curentFile = Path.GetFileNameWithoutExtension(filePath);
+                                messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
                             }
 
                             foreach (var subFolder in subFoldersMasters)
                             {
+                                var statusCallBack = messenger!.SendAsync(new StopUpdateDataTenantStatus());
+                                
+                                // Check cancel update data tenant 
+                                bool isStopCalc = statusCallBack.Result.Result;
+                                if (isStopCalc)
+                                {
+                                    transaction.Rollback();
+                                    return false;
+                                }
                                 #region Run PreMstScript
                                 string preMstScript = Path.Combine(subFolder, UpdateConst.PRE_MST_SCRIPT);
                                 if (CIUtil.IsFileExisting(preMstScript))
@@ -64,14 +95,22 @@ namespace AWSSDK.Common
                                         var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
                                         if (!existCode)
                                         {
-                                            return false;
+                                            throw new Exception("Fail Run PreMstScript");
                                         }
+                                        countFileExcute++;
+                                        // Read the content of the SQL file
+                                        string sqlScript;
+                                        using (StreamReader reader = new StreamReader(preMstScript))
+                                        {
+                                            sqlScript = reader.ReadToEnd();
+                                        }
+                                        curentFile = Path.GetFileNameWithoutExtension(sqlScript);
+                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
                                     }
                                     catch (Exception ex)
                                     {
                                         // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
                                         Console.WriteLine("Fail Run PreMstScript: " + ex.Message);
-                                        return false;
                                     }
                                 }
                                 #endregion
@@ -90,9 +129,8 @@ namespace AWSSDK.Common
                                         if (texts.Length < 4)
                                         {
                                             Console.WriteLine("HEADERファイルが不正です。:" + headerFile);
-                                            //IsCloseEnable = true;
                                             //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), "Header file not correct format. File: " + headerFile);
-                                            return false;
+                                            throw new Exception("HEADERファイルが不正です。:" + headerFile);
                                         }
 
                                         //clean temp variable
@@ -101,6 +139,10 @@ namespace AWSSDK.Common
                                         _type = string.Empty;
                                         _keyColumns = new List<string>();
                                         _primaryKeyColumns = new List<string>();
+
+                                        countFileExcute++;
+                                        curentFile = Path.GetFileNameWithoutExtension(headerFile);
+                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
 
                                         var csvFile = $"{headerFile.TrimEnd('h')}csv";
                                         if (CIUtil.IsFileExisting(csvFile))
@@ -154,7 +196,7 @@ namespace AWSSDK.Common
                                                     {
                                                         //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), e, headerFile);
                                                         Console.WriteLine("Fail to create temp table: " + e.Message);
-                                                        return false;
+                                                         throw new Exception("Fail to create temp table: " + e.Message); ;
                                                     }
                                                 }
 
@@ -194,7 +236,7 @@ namespace AWSSDK.Common
                                                     if (!exitCode)
                                                     {
                                                         //ErrorEndUpdate("Execute csv fail: " + csvFile);
-                                                        return false;
+                                                        throw new Exception("Execute Csv fail: " + csvFile);
                                                     }
 
                                                     if (!string.IsNullOrEmpty(_baseTable))
@@ -248,7 +290,7 @@ namespace AWSSDK.Common
                                                             if (!createConstraintsExitCode)
                                                             {
                                                                 //ErrorEndUpdate("Execute create constraints fail: " + createConstraintScript);
-                                                                return false;
+                                                                throw new Exception("Execute create constraints fail");
                                                             }
                                                         }
 
@@ -261,7 +303,7 @@ namespace AWSSDK.Common
                                                     //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), ex, headerFile);
                                                     transaction.Rollback();
                                                     //ErrorEndUpdate("Execute Csv fail: " + ex.Message);
-                                                    return false;
+                                                    throw new Exception("Execute Csv fail: " + ex.Message);
                                                 }
                                             }
                                             //type == CLRINS
@@ -278,7 +320,7 @@ namespace AWSSDK.Common
                                                 {
                                                     //ErrorEndUpdate("Error with truncate table! " + csvFile);
                                                     transaction.Rollback();
-                                                    return false;
+                                                    throw new Exception("Error with truncate table! " + csvFile);
                                                 }
                                                 transaction.Commit();
 
@@ -314,7 +356,7 @@ namespace AWSSDK.Common
                                                 if (!exitCode)
                                                 {
                                                     //ErrorEndUpdate("Execute csv fail with CLRINS: " + csvFile);
-                                                    return false;
+                                                    throw new Exception("Execute csv fail with CLRINS: " + csvFile);
                                                 }
                                             }
 
@@ -339,10 +381,20 @@ namespace AWSSDK.Common
                                 {
                                     try
                                     {
-                                        var existCode = ExecuteSqlFile(mstScript, connection, transaction);
+                                        countFileExcute++;
+                                        curentFile = Path.GetFileNameWithoutExtension(mstScript);
+                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+
+                                        // Read the content of the SQL file
+                                        string sqlScript;
+                                        using (StreamReader reader = new StreamReader(mstScript))
+                                        {
+                                            sqlScript = reader.ReadToEnd();
+                                        }
+                                        var existCode = ExecuteSqlFile(sqlScript, connection, transaction);
                                         if (!existCode)
                                         {
-                                            return false;
+                                            throw new Exception("Fail Run MstScript:");
                                         }
                                     }
                                     catch (Exception ex)
@@ -356,6 +408,24 @@ namespace AWSSDK.Common
                             }
 
 
+                            // Save SYSTEM_CHANGE_LOG
+                            using (NpgsqlCommand command = new NpgsqlCommand(QueryConstant.SaveSystemChangeLog, connection))
+                            {
+                                command.Parameters.AddWithValue("@FileName", pathFile7z);
+                                command.Parameters.AddWithValue("@IsPG", 1);
+                                command.Parameters.AddWithValue("@IsDB", 1);
+                                command.Parameters.AddWithValue("@IsMaster", 1);
+                                command.Parameters.AddWithValue("@IsNote", 0);
+                                command.Parameters.AddWithValue("@Status", 9);
+                                command.Parameters.AddWithValue("@ErrMessage", "");
+                                command.Parameters.AddWithValue("@CreateDate", CIUtil.GetJapanDateTimeNow());
+                                command.Parameters.AddWithValue("@UpdateDate", CIUtil.GetJapanDateTimeNow());
+                                command.Parameters.AddWithValue("@IsRun", 0);
+                                command.Parameters.AddWithValue("@IsDrugPhoto", 0);
+
+                                command.ExecuteNonQuery();
+                            }
+
                             // If everything is successful, commit the transaction
                             transaction.Commit();
                         }
@@ -367,33 +437,33 @@ namespace AWSSDK.Common
                             // Save SYSTEM_CHANGE_LOG
                             using (NpgsqlCommand command = new NpgsqlCommand(QueryConstant.SaveSystemChangeLog, connection))
                             {
-                                command.Parameters.AddWithValue("@FileName", filePathRun);
+                                command.Parameters.AddWithValue("@FileName", pathFile7z);
                                 command.Parameters.AddWithValue("@IsPG", 1);
                                 command.Parameters.AddWithValue("@IsDB", 1);
                                 command.Parameters.AddWithValue("@IsMaster", 1);
                                 command.Parameters.AddWithValue("@IsNote", 0);
-                                command.Parameters.AddWithValue("@Status", 9);
+                                command.Parameters.AddWithValue("@Status", 8);
                                 command.Parameters.AddWithValue("@ErrMessage", ex.Message);
-                                command.Parameters.AddWithValue("@CreateDate", DateTime.Now);
-                                command.Parameters.AddWithValue("@UpdateDate", DateTime.Now);
+                                command.Parameters.AddWithValue("@CreateDate", CIUtil.GetJapanDateTimeNow());
+                                command.Parameters.AddWithValue("@UpdateDate", CIUtil.GetJapanDateTimeNow());
                                 command.Parameters.AddWithValue("@IsRun", 0);
                                 command.Parameters.AddWithValue("@IsDrugPhoto", 0);
 
                                 command.ExecuteNonQuery();
                             }
+                            messenger!.Send(new UpdateDataTenantResult(true, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, ex.Message, string.Empty));
                         }
                     }
                 }
-                return false;
+                return true;
             }
 
             catch (Exception ex)
             {
-                return false;
-                Console.WriteLine($"Error connecting to the database: {ex.Message}");
+                Console.WriteLine($"Error update data tenant: {ex.Message}");
+                return false; 
             }
         }
-
 
         private static void CreateTempTable(NpgsqlConnection connection, NpgsqlTransaction transaction)
         {
