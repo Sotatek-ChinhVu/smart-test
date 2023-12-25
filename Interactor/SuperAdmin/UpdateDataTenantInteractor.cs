@@ -6,8 +6,11 @@ using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
+using SharpCompress.Archives;
+using SharpCompress.Archives.SevenZip;
 using System.Runtime.InteropServices;
 using UseCase.SuperAdmin.UpdateDataTenant;
+using ReaderOptions = SharpCompress.Readers.ReaderOptions;
 
 namespace Interactor.SuperAdmin
 {
@@ -72,17 +75,17 @@ namespace Interactor.SuperAdmin
                     pathFolderMaster = pathFolderMaster.Replace("\\", "/");
                 }
 
-                //// Save file 7z
-                //using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
-                //{
-                //    inputData.FileUpdateData.CopyTo(fileStream);
-                //}
+                // Save file 7z
+                using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
+                {
+                    inputData.FileUpdateData.CopyTo(fileStream);
+                }
 
-                //// Extract file 7z
-                //using (var archive = SevenZipArchive.Open(pathFile7z, new ReaderOptions() { Password = passwordFile7z }))
-                //{
-                //    archive.ExtractToDirectory(pathFileExtract7z);
-                //}
+                // Extract file 7z
+                using (var archive = SevenZipArchive.Open(pathFile7z, new ReaderOptions() { Password = passwordFile7z }))
+                {
+                    archive.ExtractToDirectory(pathFileExtract7z);
+                }
 
 
                 int totalFileExcute = 0;
@@ -106,7 +109,7 @@ namespace Interactor.SuperAdmin
 
                 totalFileExcute = totalFileExcute + totalHFiles + totalSqlFiles;
 
-
+                _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
                 _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, totalFileExcute, 0, "", string.Empty));
                 var result = UpdateDataTenant.ExcuteUpdateDataTenant(listFileScriptSql, subFoldersMasters, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db,
                      tenant.UserConnect, tenant.PasswordConnect, inputData.CancellationToken, _messenger, totalFileExcute, pathFile7z);
@@ -114,6 +117,7 @@ namespace Interactor.SuperAdmin
                 {
                     var messenge = $"{tenant.EndSubDomain} is update tenant successfully.";
                     var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                    _tenantRepository.UpdateStatusTenant(inputData.TenantId, tenant.Status);
                     // Add info tenant for notification
                     notification.SetTenantId(tenant.TenantId);
                     notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
@@ -125,6 +129,7 @@ namespace Interactor.SuperAdmin
                 {
                     var messenge = $"{tenant.EndSubDomain} is update tenant failed.";
                     var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                    _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["failed"]);
                     // Add info tenant for notification
                     notification.SetTenantId(tenant.TenantId);
                     notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
