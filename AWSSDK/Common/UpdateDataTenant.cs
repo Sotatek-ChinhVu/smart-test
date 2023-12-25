@@ -7,6 +7,7 @@ using Helper.Messaging.Data;
 using Npgsql;
 using System.Data;
 using System.Globalization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AWSSDK.Common
 {
@@ -38,13 +39,13 @@ namespace AWSSDK.Common
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
             string curentFile = string.Empty;
+            string curentFolder = string.Empty;
             int countFileExcute = 0;
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
-
                     // Begin a transaction
                     using (NpgsqlTransaction transaction = connection.BeginTransaction())
                     {
@@ -62,7 +63,9 @@ namespace AWSSDK.Common
                                     transaction.Rollback();
                                     return false;
                                 }
-
+                                curentFolder = UpdateConst.UPDATE_SQL;
+                                countFileExcute++;
+                                curentFile = Path.GetFileNameWithoutExtension(filePath);
                                 messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
                                 // Read the content of the SQL file
@@ -76,8 +79,7 @@ namespace AWSSDK.Common
                                 {
                                     throw new Exception("Fail run sql script");
                                 }
-                                countFileExcute++;
-                                curentFile = Path.GetFileNameWithoutExtension(filePath);
+
                             }
 
                             foreach (var subFolder in subFoldersMasters)
@@ -91,24 +93,25 @@ namespace AWSSDK.Common
                                     transaction.Rollback();
                                     return false;
                                 }
+                                curentFolder = UpdateConst.UPDATE_MASTER;
                                 #region Run PreMstScript
                                 string preMstScript = Path.Combine(subFolder, UpdateConst.PRE_MST_SCRIPT);
                                 if (CIUtil.IsFileExisting(preMstScript))
                                 {
+                                    curentFile = Path.GetFileNameWithoutExtension(preMstScript);
+                                    countFileExcute++;
                                     messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
                                     var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
                                     if (!existCode)
                                     {
                                         throw new Exception("Fail Run PreMstScript fail:");
                                     }
-                                    countFileExcute++;
                                     // Read the content of the SQL file
                                     string sqlScript;
                                     using (StreamReader reader = new StreamReader(preMstScript))
                                     {
                                         sqlScript = reader.ReadToEnd();
                                     }
-                                    curentFile = Path.GetFileNameWithoutExtension(sqlScript);
                                 }
                                 #endregion
 
@@ -293,12 +296,10 @@ namespace AWSSDK.Common
 
                                                         MoveDataToBaseTable(connection, transaction);
                                                     }
-                                                    transaction.Commit();
                                                 }
                                                 catch (Exception ex)
                                                 {
                                                     //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), ex, headerFile);
-                                                    transaction.Rollback();
                                                     //ErrorEndUpdate("Execute Csv fail: " + ex.Message);
                                                     throw new Exception("Execute Csv fail: " + ex.Message);
                                                 }
@@ -316,10 +317,8 @@ namespace AWSSDK.Common
                                                 catch (Exception)
                                                 {
                                                     //ErrorEndUpdate("Error with truncate table! " + csvFile);
-                                                    transaction.Rollback();
                                                     throw new Exception("Error with truncate table! " + csvFile);
                                                 }
-                                                transaction.Commit();
 
                                                 //then, insert
                                                 script = $"copy \"{_baseTable}\"";
@@ -416,12 +415,14 @@ namespace AWSSDK.Common
 
                             // If everything is successful, commit the transaction
                             transaction.Commit();
+                            messenger!.Send(new UpdateDataTenantResult(true, $"{curentFolder}/{curentFile}", totalFileExcute, countFileExcute, "", 2));
                         }
                         catch (Exception ex)
                         {
+                            messenger!.Send(new UpdateDataTenantResult(true, $"{curentFolder}/{curentFile}", totalFileExcute, countFileExcute, $"Error: {curentFile} - " + ex.Message, 0));
                             // If there's an error, rollback the transaction
-                            transaction.Rollback();
                             Console.WriteLine($"Error executing SQL files: {ex.Message}");
+                            transaction.Rollback();
                             // Save SYSTEM_CHANGE_LOG
                             using (NpgsqlCommand command = new NpgsqlCommand(QueryConstant.SaveSystemChangeLog, connection))
                             {
@@ -439,7 +440,6 @@ namespace AWSSDK.Common
 
                                 command.ExecuteNonQuery();
                             }
-                            messenger!.Send(new UpdateDataTenantResult(true, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, $"Error: {curentFile} - " + ex.Message, 0));
                         }
                     }
                 }
