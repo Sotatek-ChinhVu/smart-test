@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class ReceiptPrintRequest : ReportRequestBase
+public class ReceiptPrintRequest
 {
     public int PrefNo { get; set; }
 

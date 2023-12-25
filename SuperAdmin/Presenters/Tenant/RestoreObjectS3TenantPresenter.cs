@@ -18,7 +18,8 @@ namespace SuperAdminAPI.Presenters.Tenant
         private string GetMessage(RestoreObjectS3TenantStatus status) => status switch
         {
             RestoreObjectS3TenantStatus.Success => ResponseMessage.Success,
-            RestoreObjectS3TenantStatus.Failed => ResponseMessage.Fail,
+            RestoreObjectS3TenantStatus.Failed => ResponseMessage.Failed,
+            RestoreObjectS3TenantStatus.SubdomainDoesNotExist => ResponseMessage.SubDomainDoesNotExist,
             _ => string.Empty
         };
     }

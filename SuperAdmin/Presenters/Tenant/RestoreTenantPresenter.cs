@@ -27,7 +27,7 @@ namespace SuperAdminAPI.Presenters.Tenant
         private string GetMessage(RestoreTenantStatus status) => status switch
         {
             RestoreTenantStatus.Successed => ResponseMessage.Success,
-            RestoreTenantStatus.Failed => ResponseMessage.Fail,
+            RestoreTenantStatus.Failed => ResponseMessage.Failed,
             RestoreTenantStatus.InvalidTenantId => ResponseMessage.InvalidTenantId,
             RestoreTenantStatus.TenantDoesNotExist => ResponseMessage.TenantDoesNotExist,
             _ => string.Empty

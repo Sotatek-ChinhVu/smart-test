@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace Reporting.GrowthCurve.Model
+﻿namespace Reporting.GrowthCurve.Model
 {
     public class Line
     {
@@ -8,7 +6,8 @@ namespace Reporting.GrowthCurve.Model
         public Point To { get; set; }
         public Line()
         {
-
+            From = new Point(0, 0);
+            To = new Point(0, 0);
         }
         public Line(Point from, Point to)
         {
