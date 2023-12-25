@@ -1,15 +1,13 @@
 ﻿using AWSSDK.Common;
 using AWSSDK.Constants;
+using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
-using SharpCompress.Archives;
-using SharpCompress.Archives.SevenZip;
 using System.Runtime.InteropServices;
 using UseCase.SuperAdmin.UpdateDataTenant;
-using ReaderOptions = SharpCompress.Readers.ReaderOptions;
 
 namespace Interactor.SuperAdmin
 {
@@ -17,22 +15,25 @@ namespace Interactor.SuperAdmin
     {
         private readonly ITenantRepository _tenantRepository;
         private readonly IConfiguration _configuration;
+        private readonly INotificationRepository _notificationRepository;
         private IMessenger? _messenger;
         public UpdateDataTenantInteractor(
             ITenantRepository tenantRepository,
-             IConfiguration configuration
+             IConfiguration configuration,
+              INotificationRepository notificationRepository
             )
         {
             _tenantRepository = tenantRepository;
             _configuration = configuration;
+            _notificationRepository = notificationRepository;
         }
         public UpdateDataTenantOutputData Handle(UpdateDataTenantInputData inputData)
         {
-            _messenger = inputData.Messenger;
-            Console.WriteLine($"tesst:888");
             try
             {
-
+                _messenger = inputData.Messenger;
+                var statusCallBack = _messenger!.SendAsync(new StopUpdateDataTenantStatus());
+                bool isStopCalc = statusCallBack.Result.Result;
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 string pathFolderUpdateDataTenant = _configuration["PathFolderUpdateDataTenant"] ?? string.Empty;
@@ -58,10 +59,10 @@ namespace Interactor.SuperAdmin
 
                 string pathFile7z = $"{pathFolderUpdateDataTenant}\\{tenant.SubDomain}-{Guid.NewGuid()}.7z";
                 string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
+                pathFileExtract7z = "D:\\7Z-nghiaduong2-e2cbf31a-11d2-4418-bbdf-05f4ea5ae431";
                 string pathFolderScript = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_SQL}";
                 string pathFolderMaster = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_MASTER}";
 
-                pathFileExtract7z = "D:\\7Z-nghiaduong2-e2cbf31a-11d2-4418-bbdf-05f4ea5ae431";
 
                 // Replace path file linux
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -92,6 +93,7 @@ namespace Interactor.SuperAdmin
                 .ToArray();
 
                 totalFileExcute += listFileScriptSql.Count();
+
                 // Subfolder in folder 03_master
                 string[] subFoldersMasters = Directory.GetDirectories(pathFolderMaster);
 
@@ -99,17 +101,44 @@ namespace Interactor.SuperAdmin
                .Select(subFolder => Directory.GetFiles(subFolder, "*.h").Length)
                .Sum();
 
-                totalFileExcute += totalHFiles;
+                int totalSqlFiles = subFoldersMasters
+              .Select(subFolder => Directory.GetFiles(subFolder, "*.sql").Length)
+              .Sum();
+
+                totalFileExcute = totalFileExcute + totalHFiles + totalSqlFiles;
 
 
-                _messenger!.Send(new UpdateDataTenantResult(true, string.Empty, totalFileExcute, 0, "", string.Empty));
-                UpdateDataTenant.ExcuteUpdateDataTenant(listFileScriptSql, subFoldersMasters, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db,
-                    tenant.UserConnect, tenant.PasswordConnect, inputData.CancellationToken, _messenger);
-                return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
+                _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, totalFileExcute, 0, "", string.Empty));
+                var result = UpdateDataTenant.ExcuteUpdateDataTenant(listFileScriptSql, subFoldersMasters, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db,
+                     tenant.UserConnect, tenant.PasswordConnect, inputData.CancellationToken, _messenger, totalFileExcute, pathFile7z);
+                if (result)
+                {
+                    var messenge = $"{tenant.EndSubDomain} is update tenant successfully.";
+                    var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                    // Add info tenant for notification
+                    notification.SetTenantId(tenant.TenantId);
+                    notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                    return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
+                }
+
+                else
+                {
+                    var messenge = $"{tenant.EndSubDomain} is update tenant failed.";
+                    var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                    // Add info tenant for notification
+                    notification.SetTenantId(tenant.TenantId);
+                    notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                    return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.Failed);
+
+                }
+
             }
             finally
             {
                 _tenantRepository.ReleaseResource();
+                _notificationRepository.ReleaseResource();
             }
         }
     }

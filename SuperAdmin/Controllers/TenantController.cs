@@ -11,7 +11,6 @@ using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
 using System.Text;
-using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
@@ -33,13 +32,10 @@ namespace SuperAdminAPI.Controllers
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
         private readonly IMessenger _messenger;
-        private readonly ITenantProvider _tenantProvider;
         private readonly IConfiguration _configuration;
-        private CancellationToken? _cancellationToken;
-        private HubConnection _connection;
         private string uniqueKey;
+        private CancellationToken? _cancellationToken;
         private bool stopCalculate = false;
-        private bool allowNextStep = false;
         public TenantController(UseCaseBus bus, IWebSocketService webSocketService, IMessenger messenger)
         {
             _bus = bus;
@@ -151,7 +147,7 @@ namespace SuperAdminAPI.Controllers
 
         [HttpPost("UpdateDataTenant")]
         [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
-        public void UpdateTenant([FromForm] UpdateDataTenantRequest request, CancellationToken cancellationToken)
+        public void UpdateDataTenant([FromForm] UpdateDataTenantRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -170,12 +166,10 @@ namespace SuperAdminAPI.Controllers
             }
             finally
             {
-                allowNextStep = true;
                 stopCalculate = true;
                 _messenger.Deregister<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
                 _messenger.Deregister<StopUpdateDataTenantStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
-                _tenantProvider.DisposeDataContext();
             }
 
             //var presenter = new UpdateDataTenantPresenter();
@@ -184,7 +178,7 @@ namespace SuperAdminAPI.Controllers
         }
 
         private void StopCalculation(StopUpdateDataTenantStatus stopCalcStatus)
-        {   
+        {
             if (stopCalculate)
             {
                 stopCalcStatus.CallFailCallback(stopCalculate);
@@ -201,55 +195,19 @@ namespace SuperAdminAPI.Controllers
 
         private void UpdateRecalculationStatus(UpdateDataTenantResult status)
         {
-            if (!status.UniqueKey.Equals("NotConnectSocket"))
+            try
             {
-                if (status.Message.Equals("StartUpdateDataTenant"))
-                {
-                    string domain = _tenantProvider.GetDomainFromHeader();
-                    string socketUrl = _configuration.GetSection("CalculateApi")["WssPath"]! + domain;
-                    _connection = new HubConnectionBuilder()
-                     .WithUrl(socketUrl)
-                     .Build();
-
-                    var connect = _connection.StartAsync();
-                    connect.Wait();
-                }
-
-                _connection.On<string, string>("ReceiveMessage", (function, data) =>
-                {
-                    if (function.Equals(FunctionCodes.SuperAdmin))
-                    {
-                        try
-                        {
-                            var objectStatus = JsonSerializer.Deserialize<UpdateDataTenantResult>(data);
-                            if (objectStatus != null && objectStatus.UniqueKey.Equals(uniqueKey))
-                            {
-                                stopCalculate = true;
-                                allowNextStep = true;
-
-                                SendMessage(objectStatus);
-                                if (objectStatus.Done)
-                                {
-                                    _connection.DisposeAsync();
-                                    allowNextStep = true;
-                                }
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            allowNextStep = true;
-                            stopCalculate = true;
-                            Console.WriteLine("Exception Calculate:" + data);
-                            SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
-                            throw;
-                        }
-                    }
-                });
-            }
-            else
-            {
+                stopCalculate = status.Done;
                 SendMessage(status);
+
             }
+            catch (Exception)
+            {
+                stopCalculate = true;
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
+                throw;
+            }
+
         }
 
 
