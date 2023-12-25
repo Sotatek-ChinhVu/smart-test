@@ -3,8 +3,12 @@
     public static class ResponseMessage
     {
         public static readonly string InvalidRequest = "リクエストは無効です。";
-        public static readonly string Success = "新しい医療機関が作成されました。";
-        public static readonly string Failed = "新しい医療機関の作成に失敗しました。";
+        public static readonly string Success = "Success";
+        public static readonly string Failed = "Failed";
+        public static readonly string TenantOnboardSuccess = "新しい医療機関が作成されました。";
+        public static readonly string TenantOnboardFailed = "新しい医療機関の作成に失敗しました。";
+        public static readonly string RestoreS3Success = "医療機関のS3 データが復元されました。";
+        public static readonly string RestoreS3Failed = "医療機関のS3 データの回復に失敗しました。";
         public static readonly string InvalidLoginId = "ログインIDが無効です。";
         public static readonly string InvalidAdminId = "管理者IDが無効です。";
         public static readonly string InvalidPassword = "パスワードが無効です。";
