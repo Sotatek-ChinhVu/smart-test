@@ -1,10 +1,12 @@
 ﻿using AWSSDK.Common;
+using AWSSDK.Constants;
 using Domain.SuperAdminModels.Tenant;
 using Entity.SuperAdmin;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
+using System.Runtime.InteropServices;
 using UseCase.SuperAdmin.UpdateDataTenant;
 using ReaderOptions = SharpCompress.Readers.ReaderOptions;
 
@@ -51,9 +53,17 @@ namespace Interactor.SuperAdmin
 
                 string pathFile7z = $"{pathFolderUpdateDataTenant}{tenant.SubDomain}-{Guid.NewGuid()}.7z";
                 string pathFileExtract7z = $"{pathFolderUpdateDataTenant}7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
+                string pathFolderScript = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_SQL}";
+                string pathFolderMaster = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_MASTER}";
 
-                string pathFolderScript = $"{pathFileExtract7z}\\updfile\\02_script";
-                //string pathFolderScript = $"D:\\7Z-nghiaduong2-e2cbf31a-11d2-4418-bbdf-05f4ea5ae431\\updfile\\02_script";
+                // Replace path file linux
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+
+                    pathFile7z = pathFile7z.Replace("\\", "/");
+                    pathFolderScript = pathFolderScript.Replace("\\", "/");
+                    pathFolderMaster = pathFolderMaster.Replace("\\", "/");
+                }
 
                 // Save file 7z
                 using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
@@ -68,10 +78,12 @@ namespace Interactor.SuperAdmin
                 }
 
                 // Execute file script in folder 02_script
-                    
+
                 // Create transaction executed 
                 string[] extractedFiles = Directory.GetFiles(pathFolderScript);
-                PostgresSqlAction.ExecuteSqlFiles(extractedFiles, tenant.EndPointDb, 5432, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
+                // Execute file script in folder 03_master
+                string[] subFoldersMasters = Directory.GetDirectories(pathFolderMaster);
+                UpdateDataTenant.ExcuteUpdateDataTenant(extractedFiles, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect, subFoldersMasters);
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
             finally
