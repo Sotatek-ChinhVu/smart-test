@@ -156,7 +156,7 @@ namespace SuperAdminAPI.Controllers
             try
             {
                 _messenger.Register<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
-                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
+                _messenger.Register<StopUpdateDataTenantStatus>(this, StopCalculation);
                 uniqueKey = Guid.NewGuid().ToString();
                 _cancellationToken = cancellationToken;
                 var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData, cancellationToken, _messenger);
@@ -173,7 +173,7 @@ namespace SuperAdminAPI.Controllers
                 allowNextStep = true;
                 stopCalculate = true;
                 _messenger.Deregister<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
-                _messenger.Deregister<StopCalcStatus>(this, StopCalculation);
+                _messenger.Deregister<StopUpdateDataTenantStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
                 _tenantProvider.DisposeDataContext();
             }
@@ -183,8 +183,8 @@ namespace SuperAdminAPI.Controllers
             //return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
         }
 
-        private void StopCalculation(StopCalcStatus stopCalcStatus)
-        {
+        private void StopCalculation(StopUpdateDataTenantStatus stopCalcStatus)
+        {   
             if (stopCalculate)
             {
                 stopCalcStatus.CallFailCallback(stopCalculate);

@@ -40,6 +40,7 @@ using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 using Microsoft.Extensions.Caching.Memory;
 using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.ExportCsvLogList;
+using Helper.Messaging;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -76,7 +77,7 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IAwsSdkService, AwsSdkService>();
             services.AddTransient<IWebSocketService, WebSocketService>();
-
+            services.AddScoped<IMessenger, Messenger>();
 
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
