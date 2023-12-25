@@ -23,7 +23,7 @@ namespace AWSSDK.Common
 
 
         /// <summary>
-        /// 
+        /// Excute update data tenant
         /// </summary>
         /// <param name="filePaths"></param>
         /// <param name="host"></param>

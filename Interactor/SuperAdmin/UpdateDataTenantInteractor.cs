@@ -5,6 +5,9 @@ using Helper.Messaging;
 using Helper.Messaging.Data;
 using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
+using SharpCompress.Archives;
+using SharpCompress.Archives.SevenZip;
+using System.Runtime.InteropServices;
 using UseCase.SuperAdmin.UpdateDataTenant;
 
 namespace Interactor.SuperAdmin
@@ -60,23 +63,29 @@ namespace Interactor.SuperAdmin
 
                 string pathFile7z = $"{pathFolderUpdateDataTenant}\\{tenant.SubDomain}-{Guid.NewGuid()}.7z";
                 string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
-                pathFileExtract7z = "D:\\7Z-nghiaduong2-e2cbf31a-11d2-4418-bbdf-05f4ea5ae431";
                 string pathFolderScript = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_SQL}";
                 string pathFolderMaster = $"{pathFileExtract7z}\\{UpdateConst.UPD_FILE_FOLDER}\\{UpdateConst.UPDATE_MASTER}";
 
-                // Todo Replace path file linux
+                // Replace path file linux
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+
+                    pathFile7z = pathFile7z.Replace("\\", "/");
+                    pathFolderScript = pathFolderScript.Replace("\\", "/");
+                    pathFolderMaster = pathFolderMaster.Replace("\\", "/");
+                }
 
                 // Save file 7z
-                //using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
-                //{
-                //    inputData.FileUpdateData.CopyTo(fileStream);
-                //}
+                using (var fileStream = new FileStream(pathFile7z, FileMode.Create))
+                {
+                    inputData.FileUpdateData.CopyTo(fileStream);
+                }
 
-                //// Extract file 7z
-                //using (var archive = SevenZipArchive.Open(pathFile7z, new ReaderOptions() { Password = passwordFile7z }))
-                //{
-                //    archive.ExtractToDirectory(pathFileExtract7z);
-                //}
+                // Extract file 7z
+                using (var archive = SevenZipArchive.Open(pathFile7z, new ReaderOptions() { Password = passwordFile7z }))
+                {
+                    archive.ExtractToDirectory(pathFileExtract7z);
+                }
 
 
                 int totalFileExcute = 0;
@@ -99,6 +108,7 @@ namespace Interactor.SuperAdmin
                 SendMessager(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", string.Empty));
                 UpdateDataTenant.ExcuteUpdateDataTenant(listFileScriptSql, subFoldersMasters, "localhost", 5432, "postgres",
                     "postgres", "1234$", inputData.CancellationToken, _messenger);
+                UpdateDataTenant.ExcuteUpdateDataTenant(extractedFiles, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect, subFoldersMasters);
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
             finally
