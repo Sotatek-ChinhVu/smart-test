@@ -95,7 +95,7 @@ namespace AWSSDK.Common
                                         var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
                                         if (!existCode)
                                         {
-                                            return false;
+                                            throw new Exception("Fail Run PreMstScript");
                                         }
                                         countFileExcute++;
                                         // Read the content of the SQL file
@@ -111,7 +111,6 @@ namespace AWSSDK.Common
                                     {
                                         // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
                                         Console.WriteLine("Fail Run PreMstScript: " + ex.Message);
-                                        return false;
                                     }
                                 }
                                 #endregion
@@ -131,7 +130,7 @@ namespace AWSSDK.Common
                                         {
                                             Console.WriteLine("HEADERファイルが不正です。:" + headerFile);
                                             //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), "Header file not correct format. File: " + headerFile);
-                                            return false;
+                                            throw new Exception("HEADERファイルが不正です。:" + headerFile);
                                         }
 
                                         //clean temp variable
@@ -197,7 +196,7 @@ namespace AWSSDK.Common
                                                     {
                                                         //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), e, headerFile);
                                                         Console.WriteLine("Fail to create temp table: " + e.Message);
-                                                        return false;
+                                                         throw new Exception("Fail to create temp table: " + e.Message); ;
                                                     }
                                                 }
 
@@ -237,7 +236,7 @@ namespace AWSSDK.Common
                                                     if (!exitCode)
                                                     {
                                                         //ErrorEndUpdate("Execute csv fail: " + csvFile);
-                                                        return false;
+                                                        throw new Exception("Execute Csv fail: " + csvFile);
                                                     }
 
                                                     if (!string.IsNullOrEmpty(_baseTable))
@@ -291,7 +290,7 @@ namespace AWSSDK.Common
                                                             if (!createConstraintsExitCode)
                                                             {
                                                                 //ErrorEndUpdate("Execute create constraints fail: " + createConstraintScript);
-                                                                return false;
+                                                                throw new Exception("Execute create constraints fail");
                                                             }
                                                         }
 
@@ -304,7 +303,7 @@ namespace AWSSDK.Common
                                                     //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), ex, headerFile);
                                                     transaction.Rollback();
                                                     //ErrorEndUpdate("Execute Csv fail: " + ex.Message);
-                                                    return false;
+                                                    throw new Exception("Execute Csv fail: " + ex.Message);
                                                 }
                                             }
                                             //type == CLRINS
@@ -321,7 +320,7 @@ namespace AWSSDK.Common
                                                 {
                                                     //ErrorEndUpdate("Error with truncate table! " + csvFile);
                                                     transaction.Rollback();
-                                                    return false;
+                                                    throw new Exception("Error with truncate table! " + csvFile);
                                                 }
                                                 transaction.Commit();
 
@@ -357,7 +356,7 @@ namespace AWSSDK.Common
                                                 if (!exitCode)
                                                 {
                                                     //ErrorEndUpdate("Execute csv fail with CLRINS: " + csvFile);
-                                                    return false;
+                                                    throw new Exception("Execute csv fail with CLRINS: " + csvFile);
                                                 }
                                             }
 
@@ -395,7 +394,7 @@ namespace AWSSDK.Common
                                         var existCode = ExecuteSqlFile(sqlScript, connection, transaction);
                                         if (!existCode)
                                         {
-                                            return false;
+                                            throw new Exception("Fail Run MstScript:");
                                         }
                                     }
                                     catch (Exception ex)
