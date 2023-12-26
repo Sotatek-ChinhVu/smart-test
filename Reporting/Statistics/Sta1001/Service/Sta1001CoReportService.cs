@@ -172,7 +172,8 @@ namespace Reporting.Statistics.Sta1001.Service
 
                 if (printData.JihiSbtFutans != null)
                 {
-                    if (JihiSbtFutans == null)
+                    // check if JihiSbtFutans is null or empty, set default JihiSbtFutans data
+                    if (JihiSbtFutans == null || !JihiSbtFutans.Any())
                     {
                         JihiSbtFutans = new List<int>();
                         for (int i = 0; i <= printData.JihiSbtFutans.Count - 1; i++)
