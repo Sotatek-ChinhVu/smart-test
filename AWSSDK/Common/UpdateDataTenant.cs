@@ -66,7 +66,7 @@ namespace AWSSDK.Common
                                 curentFolder = UpdateConst.UPDATE_SQL;
                                 countFileExcute++;
                                 curentFile = Path.GetFileNameWithoutExtension(filePath);
-                                messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+                                messenger!.Send(new UpdateDataTenantResult( false, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
                                 // Read the content of the SQL file
                                 string sqlScript;
@@ -100,7 +100,7 @@ namespace AWSSDK.Common
                                 {
                                     curentFile = Path.GetFileNameWithoutExtension(preMstScript);
                                     countFileExcute++;
-                                    messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+                                    messenger!.Send(new UpdateDataTenantResult(false, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
                                     var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
                                     if (!existCode)
                                     {
@@ -142,7 +142,7 @@ namespace AWSSDK.Common
 
                                         countFileExcute++;
                                         curentFile = Path.GetFileNameWithoutExtension(headerFile);
-                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+                                        messenger!.Send(new UpdateDataTenantResult(false, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
                                         var csvFile = $"{headerFile.TrimEnd('h')}csv";
                                         if (CIUtil.IsFileExisting(csvFile))
@@ -377,7 +377,7 @@ namespace AWSSDK.Common
                                 {
                                     countFileExcute++;
                                     curentFile = Path.GetFileNameWithoutExtension(mstScript);
-                                    messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+                                    messenger!.Send(new UpdateDataTenantResult(false, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
                                     // Read the content of the SQL file
                                     string sqlScript;

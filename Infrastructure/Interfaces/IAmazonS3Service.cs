@@ -18,6 +18,8 @@ public interface IAmazonS3Service
 
     Task<bool> DeleteObjectAsync(string key);
 
+    Task<bool> DeleteLastestVerObjectAsync(string key);
+
     Task<bool> MoveObjectAsync(string sourceFile, string destinationFile);
 
     Task<bool> CopyObjectAsync(string sourceFile, string destinationFile);

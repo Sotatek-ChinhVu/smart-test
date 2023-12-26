@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Entity.Tenant
+namespace Entity.SuperAdmin
 {
     [Table(name: "SYSTEM_CHANGE_LOG")]
-    public class SystemChangeLog : EmrCloneable<SystemChangeLog>
+    public class SystemChangeLog
     {
         /// <summary>
         /// セットID
         /// 
         /// </summary>
-        
+
         [Column("ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
