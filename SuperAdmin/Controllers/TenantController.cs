@@ -156,6 +156,7 @@ namespace SuperAdminAPI.Controllers
                 HttpContext.Response.ContentType = "application/json";
                 _cancellationToken = cancellationToken;
                 var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData, cancellationToken, _messenger);
+                var output = _bus.Handle(input);
             }
             catch (Exception ex)
             {
@@ -192,13 +193,13 @@ namespace SuperAdminAPI.Controllers
         {
             try
             {
-                stopCalculate = status.Done;
+               // stopCalculate = status.Done;
                 SendMessage(status);
 
             }
             catch (Exception)
             {
-                stopCalculate = true;
+               // stopCalculate = true;
                 SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", 0));
                 throw;
             }

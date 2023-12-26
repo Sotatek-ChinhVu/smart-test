@@ -440,6 +440,7 @@ namespace AWSSDK.Common
 
                                 command.ExecuteNonQuery();
                             }
+                            return false;
                         }
                     }
                 }
