@@ -118,46 +118,52 @@ namespace Reporting.Statistics.Sta1001.Service
 
             public void AddValue(CoSta1001PrintData printData, int decMisyuGaku)
             {
-                Count++;
-                if (PtCount == null)
+                try
                 {
-                    PtCount = new List<string>();
-                }
-                if (printData.PtNum.AsString() != "" && !PtCount.Contains(printData.PtNum))
-                {
-                    PtCount.Add(printData.PtNum);
-                }
-                Tensu += int.Parse(printData.Tensu ?? "0", NumberStyles.Any);
-                NewTensu += int.Parse(printData.NewTensu ?? "0", NumberStyles.Any);
-                PtFutan += int.Parse(printData.PtFutan ?? "0", NumberStyles.Any);
-                PtFutanJihiRece += int.Parse(printData.PtFutanJihiRece ?? "0", NumberStyles.Any);
-                PtFutanElse += int.Parse(printData.PtFutanElse ?? "0", NumberStyles.Any);
-                JihiFutan += int.Parse(printData.JihiFutan ?? "0", NumberStyles.Any);
-                JihiTax += int.Parse(printData.JihiTax ?? "0", NumberStyles.Any);
-                AdjustFutan += int.Parse(printData.AdjustFutan ?? "0", NumberStyles.Any);
-                MenjyoGaku += int.Parse(printData.MenjyoGaku ?? "0", NumberStyles.Any);
-                SeikyuGaku += int.Parse(printData.SeikyuGaku ?? "0", NumberStyles.Any);
-                NewSeikyuGaku += int.Parse(printData.NewSeikyuGaku ?? "0", NumberStyles.Any);
-                NyukinGaku += int.Parse(printData.NyukinGaku ?? "0", NumberStyles.Any);
-                PreNyukinGaku += int.Parse(printData.PreNyukinGaku ?? "0", NumberStyles.Any);
-                MisyuGaku += int.Parse(printData.MisyuGaku ?? "0", NumberStyles.Any);
-                MisyuGaku -= decMisyuGaku;
-
-                if (printData.JihiSbtFutans != null)
-                {
-                    if (JihiSbtFutans == null)
+                    Count++;
+                    if (PtCount == null)
                     {
-                        JihiSbtFutans = new List<int>();
+                        PtCount = new List<string>();
+                    }
+                    if (printData.PtNum.AsString() != "" && !PtCount.Contains(printData.PtNum))
+                    {
+                        PtCount.Add(printData.PtNum);
+                    }
+                    Tensu += int.Parse(printData.Tensu ?? "0", NumberStyles.Any);
+                    NewTensu += int.Parse(printData.NewTensu ?? "0", NumberStyles.Any);
+                    PtFutan += int.Parse(printData.PtFutan ?? "0", NumberStyles.Any);
+                    PtFutanJihiRece += int.Parse(printData.PtFutanJihiRece ?? "0", NumberStyles.Any);
+                    PtFutanElse += int.Parse(printData.PtFutanElse ?? "0", NumberStyles.Any);
+                    JihiFutan += int.Parse(printData.JihiFutan ?? "0", NumberStyles.Any);
+                    JihiTax += int.Parse(printData.JihiTax ?? "0", NumberStyles.Any);
+                    AdjustFutan += int.Parse(printData.AdjustFutan ?? "0", NumberStyles.Any);
+                    MenjyoGaku += int.Parse(printData.MenjyoGaku ?? "0", NumberStyles.Any);
+                    SeikyuGaku += int.Parse(printData.SeikyuGaku ?? "0", NumberStyles.Any);
+                    NewSeikyuGaku += int.Parse(printData.NewSeikyuGaku ?? "0", NumberStyles.Any);
+                    NyukinGaku += int.Parse(printData.NyukinGaku ?? "0", NumberStyles.Any);
+                    PreNyukinGaku += int.Parse(printData.PreNyukinGaku ?? "0", NumberStyles.Any);
+                    MisyuGaku += int.Parse(printData.MisyuGaku ?? "0", NumberStyles.Any);
+                    MisyuGaku -= decMisyuGaku;
+
+                    if (printData.JihiSbtFutans != null)
+                    {
+                        if (JihiSbtFutans == null || JihiSbtFutans.Count == 0)
+                        {
+                            JihiSbtFutans = new List<int>();
+                            for (int i = 0; i <= printData.JihiSbtFutans.Count - 1; i++)
+                            {
+                                JihiSbtFutans.Add(0);
+                            }
+                        }
+
                         for (int i = 0; i <= printData.JihiSbtFutans.Count - 1; i++)
                         {
-                            JihiSbtFutans.Add(0);
+                            JihiSbtFutans[i] += int.Parse(printData.JihiSbtFutans[i] ?? "0", NumberStyles.Any);
                         }
                     }
-
-                    for (int i = 0; i <= printData.JihiSbtFutans.Count - 1; i++)
-                    {
-                        JihiSbtFutans[i] += int.Parse(printData.JihiSbtFutans[i] ?? "0", NumberStyles.Any);
-                    }
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
 
@@ -252,289 +258,295 @@ namespace Reporting.Statistics.Sta1001.Service
         {
             void MakePrintData()
             {
-                printDatas = new List<CoSta1001PrintData>();
-                headerL1 = new List<string>();
-                headerL2 = new List<string>();
-                int pageCount = 1;
-                int recNo = 0;
-
-                //改ページ条件
-                bool pbUketukeSbt = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(1);
-                bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(2);
-                bool pbTantoId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(3);
-
-                #region ソート順
-                syunoInfs =
-                    syunoInfs!
-                        .OrderBy(s => s.NyukinDate)
-                        .ThenBy(s => pbUketukeSbt ? s.UketukeSbt : 0)
-                        .ThenBy(s => pbKaId ? s.KaId : 0)
-                        .ThenBy(s => pbTantoId ? s.TantoId : 0)
-                        .ThenBy(s => s.NyukinDate == s.SinDate ? "0" : "1")
-                        .ThenBy(s =>
-                            _printConf.SortOpt1 == 1 ? "0" :
-                            _printConf.SortOrder1 == 1 ? s.PtKanaName :
-                            _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
-                            _printConf.SortOrder1 == 3 ? s.UketukeTime :
-                            _printConf.SortOrder1 == 4 ? s.KaikeiTime : "0")
-                        .ThenByDescending(s =>
-                            _printConf.SortOpt1 == 0 ? "0" :
-                            _printConf.SortOrder1 == 1 ? s.PtKanaName :
-                            _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
-                            _printConf.SortOrder1 == 3 ? s.UketukeTime :
-                            _printConf.SortOrder1 == 4 ? s.KaikeiTime : "0")
-                        .ThenBy(s =>
-                            _printConf.SortOpt2 == 1 ? "0" :
-                            _printConf.SortOrder2 == 1 ? s.PtKanaName :
-                            _printConf.SortOrder2 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
-                            _printConf.SortOrder2 == 3 ? s.UketukeTime :
-                            _printConf.SortOrder2 == 4 ? s.KaikeiTime : "0")
-                        .ThenByDescending(s =>
-                            _printConf.SortOpt2 == 0 ? "0" :
-                            _printConf.SortOrder2 == 1 ? s.PtKanaName :
-                            _printConf.SortOrder2 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
-                            _printConf.SortOrder2 == 3 ? s.UketukeTime :
-                            _printConf.SortOrder2 == 4 ? s.KaikeiTime : "0")
-                        .ThenBy(s =>
-                            _printConf.SortOpt3 == 1 ? "0" :
-                            _printConf.SortOrder3 == 1 ? s.PtKanaName :
-                            _printConf.SortOrder3 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
-                            _printConf.SortOrder3 == 3 ? s.UketukeTime :
-                            _printConf.SortOrder3 == 4 ? s.KaikeiTime : "0")
-                        .ThenByDescending(s =>
-                            _printConf.SortOpt3 == 0 ? "0" :
-                            _printConf.SortOrder3 == 1 ? s.PtKanaName :
-                            _printConf.SortOrder3 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
-                            _printConf.SortOrder3 == 3 ? s.UketukeTime :
-                            _printConf.SortOrder3 == 4 ? s.KaikeiTime : "0")
-                        .ThenBy(s => s.PtNum)
-                        .ThenBy(s => s.RaiinNo)
-                        .ThenBy(s => s.NyukinSortNo)
-                        .ToList();
-                #endregion
-
-                foreach (var syunoInf in syunoInfs)
+                try
                 {
-                    CoSta1001PrintData printData = new CoSta1001PrintData();
-                    CoSta1001PrintData prePrintData = printDatas.Count >= 1 ? printDatas.Last() : new CoSta1001PrintData() { UketukeSbt = -1 };
+                    printDatas = new List<CoSta1001PrintData>();
+                    headerL1 = new List<string>();
+                    headerL2 = new List<string>();
+                    int pageCount = 1;
+                    int recNo = 0;
 
                     //改ページ条件
-                    bool pageBreak =
-                        (printDatas.Count >= 1 && syunoInf.NyukinDate != prePrintData.NyukinDate) ||
-                        (pbUketukeSbt && syunoInf.UketukeSbt != prePrintData.UketukeSbt && prePrintData.UketukeSbt >= 0) ||
-                        (pbKaId && syunoInf.KaId != prePrintData.KaId && prePrintData.KaId > 0) ||
-                        (pbTantoId && syunoInf.TantoId != prePrintData.TantoId && prePrintData.TantoId > 0);
+                    bool pbUketukeSbt = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(1);
+                    bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(2);
+                    bool pbTantoId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(3);
 
-                    if (printDatas.Count >= 1 &&
-                        prePrintData.NyukinDate == prePrintData.SinDate &&
-                        (pageBreak || syunoInf.SinDate != prePrintData.SinDate))
+                    #region ソート順
+                    syunoInfs =
+                        syunoInfs!
+                            .OrderBy(s => s.NyukinDate)
+                            .ThenBy(s => pbUketukeSbt ? s.UketukeSbt : 0)
+                            .ThenBy(s => pbKaId ? s.KaId : 0)
+                            .ThenBy(s => pbTantoId ? s.TantoId : 0)
+                            .ThenBy(s => s.NyukinDate == s.SinDate ? "0" : "1")
+                            .ThenBy(s =>
+                                _printConf.SortOpt1 == 1 ? "0" :
+                                _printConf.SortOrder1 == 1 ? s.PtKanaName :
+                                _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
+                                _printConf.SortOrder1 == 3 ? s.UketukeTime :
+                                _printConf.SortOrder1 == 4 ? s.KaikeiTime : "0")
+                            .ThenByDescending(s =>
+                                _printConf.SortOpt1 == 0 ? "0" :
+                                _printConf.SortOrder1 == 1 ? s.PtKanaName :
+                                _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
+                                _printConf.SortOrder1 == 3 ? s.UketukeTime :
+                                _printConf.SortOrder1 == 4 ? s.KaikeiTime : "0")
+                            .ThenBy(s =>
+                                _printConf.SortOpt2 == 1 ? "0" :
+                                _printConf.SortOrder2 == 1 ? s.PtKanaName :
+                                _printConf.SortOrder2 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
+                                _printConf.SortOrder2 == 3 ? s.UketukeTime :
+                                _printConf.SortOrder2 == 4 ? s.KaikeiTime : "0")
+                            .ThenByDescending(s =>
+                                _printConf.SortOpt2 == 0 ? "0" :
+                                _printConf.SortOrder2 == 1 ? s.PtKanaName :
+                                _printConf.SortOrder2 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
+                                _printConf.SortOrder2 == 3 ? s.UketukeTime :
+                                _printConf.SortOrder2 == 4 ? s.KaikeiTime : "0")
+                            .ThenBy(s =>
+                                _printConf.SortOpt3 == 1 ? "0" :
+                                _printConf.SortOrder3 == 1 ? s.PtKanaName :
+                                _printConf.SortOrder3 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
+                                _printConf.SortOrder3 == 3 ? s.UketukeTime :
+                                _printConf.SortOrder3 == 4 ? s.KaikeiTime : "0")
+                            .ThenByDescending(s =>
+                                _printConf.SortOpt3 == 0 ? "0" :
+                                _printConf.SortOrder3 == 1 ? s.PtKanaName :
+                                _printConf.SortOrder3 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
+                                _printConf.SortOrder3 == 3 ? s.UketukeTime :
+                                _printConf.SortOrder3 == 4 ? s.KaikeiTime : "0")
+                            .ThenBy(s => s.PtNum)
+                            .ThenBy(s => s.RaiinNo)
+                            .ThenBy(s => s.NyukinSortNo)
+                            .ToList();
+                    #endregion
+
+                    foreach (var syunoInf in syunoInfs)
                     {
-                        //当日分合計
-                        AddTotalRecord("◆当日分合計", ref subTotal);
-                        //空行を追加
-                        printDatas.Add(new CoSta1001PrintData(RowType.Brank));
-                    }
+                        CoSta1001PrintData printData = new CoSta1001PrintData();
+                        CoSta1001PrintData prePrintData = printDatas.Count >= 1 ? printDatas.Last() : new CoSta1001PrintData() { UketukeSbt = -1 };
 
-                    if (printDatas.Count >= 1 &&
-                        prePrintData.NyukinDate != prePrintData.SinDate &&
-                        pageBreak)
-                    {
-                        //期間外合計
-                        AddTotalRecord("◆期間外合計", ref subTotal);
-                        //空行を追加
-                        printDatas.Add(new CoSta1001PrintData(RowType.Brank));
-                    }
+                        //改ページ条件
+                        bool pageBreak =
+                            (printDatas.Count >= 1 && syunoInf.NyukinDate != prePrintData.NyukinDate) ||
+                            (pbUketukeSbt && syunoInf.UketukeSbt != prePrintData.UketukeSbt && prePrintData.UketukeSbt >= 0) ||
+                            (pbKaId && syunoInf.KaId != prePrintData.KaId && prePrintData.KaId > 0) ||
+                            (pbTantoId && syunoInf.TantoId != prePrintData.TantoId && prePrintData.TantoId > 0);
 
-                    if (pageBreak)
-                    {
-                        recNo = 0;
-
-                        //合計
-                        AddTotalRecord("◆合計", ref total);
-
-                        //改ページ
-                        while (printDatas.Count % maxRow != 0)
+                        if (printDatas.Count >= 1 &&
+                            prePrintData.NyukinDate == prePrintData.SinDate &&
+                            (pageBreak || syunoInf.SinDate != prePrintData.SinDate))
                         {
+                            //当日分合計
+                            AddTotalRecord("◆当日分合計", ref subTotal);
                             //空行を追加
                             printDatas.Add(new CoSta1001PrintData(RowType.Brank));
                         }
-                        pageCount++;
 
-                        //ヘッダー情報
-                        while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1 && headerL2.Count >= 1)
+                        if (printDatas.Count >= 1 &&
+                            prePrintData.NyukinDate != prePrintData.SinDate &&
+                            pageBreak)
                         {
-                            headerL1.Add(headerL1.Last());
-                            headerL2.Add(headerL2.Last());
+                            //期間外合計
+                            AddTotalRecord("◆期間外合計", ref subTotal);
+                            //空行を追加
+                            printDatas.Add(new CoSta1001PrintData(RowType.Brank));
                         }
-                    }
 
-                    if (syunoInf.RaiinNo != prePrintData.RaiinNo)
-                    {
-                        //連番
-                        recNo++;
-                        printData.Seq = recNo.ToString();
-                    }
+                        if (pageBreak)
+                        {
+                            recNo = 0;
 
-                    /// todo quan.to
-                    ///if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak || outputFileType == CoFileType.Csv)
-                    if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak)
-                    {
-                        printData.PtNum = syunoInf.PtNum.ToString();
-                        printData.PtName = syunoInf.PtName;
-                        printData.PtKanaName = syunoInf.PtKanaName;
-                        printData.Syosaisin = syunoInf.Syosaisin;
-                        printData.HokenSbt = syunoInf.HokenSbt;
+                            //合計
+                            AddTotalRecord("◆合計", ref total);
+
+                            //改ページ
+                            while (printDatas.Count % maxRow != 0)
+                            {
+                                //空行を追加
+                                printDatas.Add(new CoSta1001PrintData(RowType.Brank));
+                            }
+                            pageCount++;
+
+                            //ヘッダー情報
+                            while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1 && headerL2.Count >= 1)
+                            {
+                                headerL1.Add(headerL1.Last());
+                                headerL2.Add(headerL2.Last());
+                            }
+                        }
+
+                        if (syunoInf.RaiinNo != prePrintData.RaiinNo)
+                        {
+                            //連番
+                            recNo++;
+                            printData.Seq = recNo.ToString();
+                        }
 
                         /// todo quan.to
-                        ///bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo && outputFileType == CoFileType.Csv;
-                        bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo;
-                        printData.Tensu = csvOmit ? "0" : syunoInf.Tensu.ToString("#,0");
-                        printData.NewTensu = csvOmit ? "0" : syunoInf.NewTensu.ToString("#,0");
-                        printData.PtFutan = csvOmit ? "0" : syunoInf.PtFutan.ToString("#,0");
-                        var ptFutanJihiReceDisplay = syunoInf.IsJihiRece ? syunoInf.PtFutan : 0;
-                        var ptFutanElseDisplay = !syunoInf.IsJihiRece ? syunoInf.PtFutan : 0;
-                        printData.PtFutanJihiRece = csvOmit ? "0" : ptFutanJihiReceDisplay.ToString("#,0");
-                        printData.PtFutanElse = csvOmit ? "0" : ptFutanElseDisplay.ToString("#,0");
-                        printData.JihiFutan = csvOmit ? "0" : syunoInf.JihiFutan.ToString("#,0");
-                        printData.JihiTax = csvOmit ? "0" : syunoInf.JihiTax.ToString("#,0");
-                        printData.AdjustFutan = csvOmit ? "0" : syunoInf.AdjustFutan.ToString("#,0");
-                        printData.MenjyoGaku = csvOmit ? "0" : syunoInf.MenjyoGaku.ToString("#,0");
-                        printData.SeikyuGaku = csvOmit ? "0" :
-                            syunoInfs.First(s =>
-                                s.RaiinNo == syunoInf.RaiinNo &&
-                                s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
-                            ).SeikyuGaku.ToString("#,0");
-                        printData.NewSeikyuGaku = csvOmit ? "0" :
-                            syunoInfs.First(s =>
-                                s.RaiinNo == syunoInf.RaiinNo &&
-                                s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
-                            ).NewSeikyuGaku.ToString("#,0");
-                        if (!csvOmit)
+                        ///if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak || outputFileType == CoFileType.Csv)
+                        if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak)
                         {
-                            List<string> wrkPrintFutans = new List<string>();
+                            printData.PtNum = syunoInf.PtNum.ToString();
+                            printData.PtName = syunoInf.PtName;
+                            printData.PtKanaName = syunoInf.PtKanaName;
+                            printData.Syosaisin = syunoInf.Syosaisin;
+                            printData.HokenSbt = syunoInf.HokenSbt;
 
-                            foreach (var jihiSbtMst in jihiSbtMsts)
+                            /// todo quan.to
+                            ///bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo && outputFileType == CoFileType.Csv;
+                            bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo;
+                            printData.Tensu = csvOmit ? "0" : syunoInf.Tensu.ToString("#,0");
+                            printData.NewTensu = csvOmit ? "0" : syunoInf.NewTensu.ToString("#,0");
+                            printData.PtFutan = csvOmit ? "0" : syunoInf.PtFutan.ToString("#,0");
+                            var ptFutanJihiReceDisplay = syunoInf.IsJihiRece ? syunoInf.PtFutan : 0;
+                            var ptFutanElseDisplay = !syunoInf.IsJihiRece ? syunoInf.PtFutan : 0;
+                            printData.PtFutanJihiRece = csvOmit ? "0" : ptFutanJihiReceDisplay.ToString("#,0");
+                            printData.PtFutanElse = csvOmit ? "0" : ptFutanElseDisplay.ToString("#,0");
+                            printData.JihiFutan = csvOmit ? "0" : syunoInf.JihiFutan.ToString("#,0");
+                            printData.JihiTax = csvOmit ? "0" : syunoInf.JihiTax.ToString("#,0");
+                            printData.AdjustFutan = csvOmit ? "0" : syunoInf.AdjustFutan.ToString("#,0");
+                            printData.MenjyoGaku = csvOmit ? "0" : syunoInf.MenjyoGaku.ToString("#,0");
+                            printData.SeikyuGaku = csvOmit ? "0" :
+                                syunoInfs.First(s =>
+                                    s.RaiinNo == syunoInf.RaiinNo &&
+                                    s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
+                                ).SeikyuGaku.ToString("#,0");
+                            printData.NewSeikyuGaku = csvOmit ? "0" :
+                                syunoInfs.First(s =>
+                                    s.RaiinNo == syunoInf.RaiinNo &&
+                                    s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
+                                ).NewSeikyuGaku.ToString("#,0");
+                            if (!csvOmit)
                             {
-                                var wrkFutan = jihiSbtFutans.Find(j => j.RaiinNo == syunoInf.RaiinNo && j.JihiSbt == jihiSbtMst.JihiSbt);
-                                wrkPrintFutans.Add(wrkFutan == null ? "0" : wrkFutan.JihiFutan.ToString("#,0"));
+                                List<string> wrkPrintFutans = new List<string>();
+
+                                foreach (var jihiSbtMst in jihiSbtMsts)
+                                {
+                                    var wrkFutan = jihiSbtFutans.Find(j => j.RaiinNo == syunoInf.RaiinNo && j.JihiSbt == jihiSbtMst.JihiSbt);
+                                    wrkPrintFutans.Add(wrkFutan == null ? "0" : wrkFutan.JihiFutan.ToString("#,0"));
+                                }
+                                printData.JihiSbtFutans = wrkPrintFutans;
                             }
-                            printData.JihiSbtFutans = wrkPrintFutans;
+
+                            printData.KaSname = syunoInf.KaSname;
+                            printData.TantoSname = syunoInf.TantoSname;
+                            printData.UketukeId = syunoInf.UketukeId;
+                            printData.UketukeSname = syunoInf.UketukeSname;
+
+                            string uketukeTime = syunoInf.UketukeTime;
+                            if (uketukeTime.AsString() != string.Empty)
+                            {
+                                uketukeTime = uketukeTime.PadLeft(4, '0');
+                                printData.UketukeTime = uketukeTime.Substring(0, 2) + ":" + uketukeTime.Substring(2, 2);
+                            }
+                            string kaikeiTime = syunoInf.KaikeiTime;
+                            if (kaikeiTime.AsString() != string.Empty)
+                            {
+                                kaikeiTime = kaikeiTime.PadLeft(4, '0');
+                                printData.KaikeiTime = kaikeiTime.Substring(0, 2) + ":" + kaikeiTime.Substring(2, 2);
+                            }
+
+                            printData.NyukinKbn = syunoInf.NyukinKbnName;
+                            printData.RaiinCmt = syunoInf.RaiinCmt;
                         }
+                        //キー情報
+                        printData.RaiinNo = syunoInf.RaiinNo;
+                        printData.OyaRaiinNo = syunoInf.OyaRaiinNo;
+                        printData.SinDate = syunoInf.SinDate;
+                        printData.NyukinDate = syunoInf.NyukinDate;
+                        printData.UketukeSbt = syunoInf.UketukeSbt;
+                        printData.KaId = syunoInf.KaId;
+                        printData.TantoId = syunoInf.TantoId;
+                        //入金情報
+                        printData.PaySname = syunoInf.PaySName;
+                        printData.PayCd = syunoInf.PayCd;
+                        printData.NyukinGaku = syunoInf.NyukinGaku.ToString("#,0");
+                        printData.PreNyukinGaku = syunoInf.NyukinDate != syunoInf.SinDate ? syunoInf.PreNyukinGaku.ToString("#,0") : "0";
+                        printData.MisyuGaku = syunoInf.MisyuGaku.ToString("#,0");
+                        printData.UketukeSbtName = syunoInf.UketukeSbtName;
+                        printData.NyukinUserId = syunoInf.NyukinUserId;
+                        printData.NyukinUserSname = syunoInf.NyukinUserSname;
+                        printData.NyukinTime = CIUtil.TryCIToTimeZone(syunoInf.NyukinTime);
+                        printData.NyukinCmt = syunoInf.NyukinCmt;
 
-                        printData.KaSname = syunoInf.KaSname;
-                        printData.TantoSname = syunoInf.TantoSname;
-                        printData.UketukeId = syunoInf.UketukeId;
-                        printData.UketukeSname = syunoInf.UketukeSname;
-
-                        string uketukeTime = syunoInf.UketukeTime;
-                        if (uketukeTime.AsString() != string.Empty)
+                        //同来院に同一日複数回入金されている場合は日単位で未収を計算する
+                        int decMisyuGaku = 0;
+                        if (syunoInf.RaiinNo == prePrintData.RaiinNo)
                         {
-                            uketukeTime = uketukeTime.PadLeft(4, '0');
-                            printData.UketukeTime = uketukeTime.Substring(0, 2) + ":" + uketukeTime.Substring(2, 2);
-                        }
-                        string kaikeiTime = syunoInf.KaikeiTime;
-                        if (kaikeiTime.AsString() != string.Empty)
-                        {
-                            kaikeiTime = kaikeiTime.PadLeft(4, '0');
-                            printData.KaikeiTime = kaikeiTime.Substring(0, 2) + ":" + kaikeiTime.Substring(2, 2);
+                            decMisyuGaku =
+                                int.Parse(prePrintData.MisyuGaku ?? "0", NumberStyles.Any);
+
+                            prePrintData.MisyuGaku = "0";
                         }
 
-                        printData.NyukinKbn = syunoInf.NyukinKbnName;
-                        printData.RaiinCmt = syunoInf.RaiinCmt;
+                        //合計
+                        grandTotal.AddValue(printData, decMisyuGaku);
+                        total.AddValue(printData, decMisyuGaku);
+                        subTotal.AddValue(printData, decMisyuGaku);
+
+                        //行追加
+                        printDatas.Add(printData);
+
+                        //ヘッダー情報
+                        if ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count)
+                        {
+                            //入金日
+                            string wrkNyukinDate = CIUtil.SDateToShowSWDate(printData.NyukinDate, 0, 1);
+                            if (_printConf.StartNyukinTime >= 0 || _printConf.EndNyukinTime >= 0)
+                            {
+                                wrkNyukinDate +=
+                                    string.Format(
+                                        " {0}～{1}",
+                                        _printConf.StartNyukinTime == -1 ? "" : CIUtil.TryCIToTimeZone(_printConf.StartNyukinTime),
+                                        _printConf.EndNyukinTime == -1 ? "" : CIUtil.TryCIToTimeZone(_printConf.EndNyukinTime)
+                                    );
+                            }
+                            headerL1.Add(wrkNyukinDate);
+                            //改ページ条件
+                            List<string> wrkHeaders = new List<string>();
+                            if (pbUketukeSbt) wrkHeaders.Add(printData.UketukeSbtName);
+                            if (pbKaId) wrkHeaders.Add(printData.KaSname);
+                            if (pbTantoId) wrkHeaders.Add(printData.TantoSname);
+
+                            if (wrkHeaders.Count >= 1) headerL2.Add(string.Join("／", wrkHeaders));
+                        }
                     }
-                    //キー情報
-                    printData.RaiinNo = syunoInf.RaiinNo;
-                    printData.OyaRaiinNo = syunoInf.OyaRaiinNo;
-                    printData.SinDate = syunoInf.SinDate;
-                    printData.NyukinDate = syunoInf.NyukinDate;
-                    printData.UketukeSbt = syunoInf.UketukeSbt;
-                    printData.KaId = syunoInf.KaId;
-                    printData.TantoId = syunoInf.TantoId;
-                    //入金情報
-                    printData.PaySname = syunoInf.PaySName;
-                    printData.PayCd = syunoInf.PayCd;
-                    printData.NyukinGaku = syunoInf.NyukinGaku.ToString("#,0");
-                    printData.PreNyukinGaku = syunoInf.NyukinDate != syunoInf.SinDate ? syunoInf.PreNyukinGaku.ToString("#,0") : "0";
-                    printData.MisyuGaku = syunoInf.MisyuGaku.ToString("#,0");
-                    printData.UketukeSbtName = syunoInf.UketukeSbtName;
-                    printData.NyukinUserId = syunoInf.NyukinUserId;
-                    printData.NyukinUserSname = syunoInf.NyukinUserSname;
-                    printData.NyukinTime = CIUtil.TryCIToTimeZone(syunoInf.NyukinTime);
-                    printData.NyukinCmt = syunoInf.NyukinCmt;
 
-                    //同来院に同一日複数回入金されている場合は日単位で未収を計算する
-                    int decMisyuGaku = 0;
-                    if (syunoInf.RaiinNo == prePrintData.RaiinNo)
+                    //合計行
+                    if (printDatas.Last().NyukinDate == printDatas.Last().SinDate)
                     {
-                        decMisyuGaku =
-                            int.Parse(prePrintData.MisyuGaku ?? "0", NumberStyles.Any);
-
-                        prePrintData.MisyuGaku = "0";
+                        AddTotalRecord("◆当日分合計", ref subTotal);
                     }
-
-                    //合計
-                    grandTotal.AddValue(printData, decMisyuGaku);
-                    total.AddValue(printData, decMisyuGaku);
-                    subTotal.AddValue(printData, decMisyuGaku);
-
-                    //行追加
-                    printDatas.Add(printData);
-
-                    //ヘッダー情報
-                    if ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count)
+                    else
                     {
-                        //入金日
-                        string wrkNyukinDate = CIUtil.SDateToShowSWDate(printData.NyukinDate, 0, 1);
-                        if (_printConf.StartNyukinTime >= 0 || _printConf.EndNyukinTime >= 0)
-                        {
-                            wrkNyukinDate +=
-                                string.Format(
-                                    " {0}～{1}",
-                                    _printConf.StartNyukinTime == -1 ? "" : CIUtil.TryCIToTimeZone(_printConf.StartNyukinTime),
-                                    _printConf.EndNyukinTime == -1 ? "" : CIUtil.TryCIToTimeZone(_printConf.EndNyukinTime)
-                                );
-                        }
-                        headerL1.Add(wrkNyukinDate);
-                        //改ページ条件
-                        List<string> wrkHeaders = new List<string>();
-                        if (pbUketukeSbt) wrkHeaders.Add(printData.UketukeSbtName);
-                        if (pbKaId) wrkHeaders.Add(printData.KaSname);
-                        if (pbTantoId) wrkHeaders.Add(printData.TantoSname);
-
-                        if (wrkHeaders.Count >= 1) headerL2.Add(string.Join("／", wrkHeaders));
+                        AddTotalRecord("◆期間外合計", ref subTotal);
                     }
-                }
 
-                //合計行
-                if (printDatas.Last().NyukinDate == printDatas.Last().SinDate)
-                {
-                    AddTotalRecord("◆当日分合計", ref subTotal);
-                }
-                else
-                {
-                    AddTotalRecord("◆期間外合計", ref subTotal);
-                }
-
-                //空行を追加
-                printDatas.Add(new CoSta1001PrintData(RowType.Brank));
-                //合計
-                AddTotalRecord("◆合計", ref total);
-
-                //ヘッダー情報
-                while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1 && headerL2.Count >= 1)
-                {
-                    headerL1.Add(headerL1.Last());
-                    headerL2.Add(headerL2.Last());
-                }
-
-                if (pageCount >= 2)
-                {
                     //空行を追加
                     printDatas.Add(new CoSta1001PrintData(RowType.Brank));
-                    printDatas.Add(new CoSta1001PrintData(RowType.Brank));
+                    //合計
+                    AddTotalRecord("◆合計", ref total);
 
-                    //総合計
-                    AddTotalRecord("◆総合計", ref grandTotal);
+                    //ヘッダー情報
+                    while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1 && headerL2.Count >= 1)
+                    {
+                        headerL1.Add(headerL1.Last());
+                        headerL2.Add(headerL2.Last());
+                    }
+
+                    if (pageCount >= 2)
+                    {
+                        //空行を追加
+                        printDatas.Add(new CoSta1001PrintData(RowType.Brank));
+                        printDatas.Add(new CoSta1001PrintData(RowType.Brank));
+
+                        //総合計
+                        AddTotalRecord("◆総合計", ref grandTotal);
+                    }
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
 
@@ -601,113 +613,123 @@ namespace Reporting.Statistics.Sta1001.Service
         #region Update Draw Form
         public void UpdateDrawForm()
         {
-            _hasNextPage = true;
-
-            #region SubMethod
-
-            #region Header
-
-            //タイトル
-            SetFieldData("Title", _printConf.ReportName);
-            //医療機関名
-            _extralData.Add("HeaderR_0_0_" + _currentPage, hpInf.HpName);
-            //作成日時
-            _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
-                CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
-            ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
-            //ページ数
-            int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
-            _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
-            //入金日
-            _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : "");
-            //改ページ条件
-            _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : "");
-
-            //期間
-            SetFieldData("Range",
-                string.Format(
-                    "期間: {0} ～ {1}",
-                    CIUtil.SDateToShowSWDate(_printConf.StartNyukinDate, 0, 1),
-                    CIUtil.SDateToShowSWDate(_printConf.EndNyukinDate, 0, 1)
-                )
-            );
-
-
-            #endregion
-
-            #region Body
-
-            int ptIndex = (_currentPage - 1) * maxRow;
-            int lineCount = 0;
-
-            //存在しているフィールドに絞り込み
-            var existsCols = putCurColumns.Where(p => _objectRseList.Contains(p.ColName)).Select(p => p.ColName).ToList();
-
-            for (short rowNo = 0; rowNo < maxRow; rowNo++)
+            try
             {
-                var celldata = new Dictionary<string, CellModel>();
+                _hasNextPage = true;
 
-                var printData = printDatas[ptIndex];
-                string baseListName = "";
+                #region SubMethod
 
-                //保険外金額（内訳）タイトル
-                foreach (var jihiSbtMst in jihiSbtMsts)
-                {
-                    SetFieldData(string.Format("tJihiFutanSbt{0}", jihiSbtMst.JihiSbt), jihiSbtMst.Name);
-                }
+                #region Header
 
-                //明細データ出力
-                foreach (var colName in existsCols)
-                {
-                    var value = typeof(CoSta1001PrintData).GetProperty(colName)?.GetValue(printData);
-                    string valueInput = value?.ToString() ?? string.Empty;
-                    celldata.Add(colName, new CellModel(valueInput));
-                    if (baseListName == "" && _objectRseList.Contains(colName))
-                    {
-                        baseListName = colName;
-                    }
-                }
-                //自費種別毎の金額
-                for (int i = 0; i <= jihiSbtMsts.Count - 1; i++)
-                {
-                    if (printData.JihiSbtFutans == null) break;
-                    var jihiSbtMst = jihiSbtMsts[i];
-                    celldata.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
-                }
+                //タイトル
+                SetFieldData("Title", _printConf.ReportName);
+                //医療機関名
+                _extralData.Add("HeaderR_0_0_" + _currentPage, hpInf.HpName);
+                //作成日時
+                _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
+                    CIUtil.ShowSDateToSDate(CIUtil.GetJapanDateTimeNow().ToString("yyyy/MM/dd")), 0, 1
+                ) + CIUtil.GetJapanDateTimeNow().ToString(" HH:mm") + "作成");
+                //ページ数
+                int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
+                _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
+                //入金日
+                _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : "");
+                //改ページ条件
+                _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : "");
 
-                //合計行キャプションと件数
-                celldata.Add("TotalCaption", new CellModel(printData.TotalCaption));
-                celldata.Add("TotalCount", new CellModel(printData.TotalCount));
-                celldata.Add("TotalPtCount", new CellModel(printData.TotalPtCount));
+                //期間
+                SetFieldData("Range",
+                    string.Format(
+                        "期間: {0} ～ {1}",
+                        CIUtil.SDateToShowSWDate(_printConf.StartNyukinDate, 0, 1),
+                        CIUtil.SDateToShowSWDate(_printConf.EndNyukinDate, 0, 1)
+                    )
+                );
 
-                //5行毎に区切り線を引く
-                lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
-                string rowNoKey = rowNo + "_" + _currentPage;
-                _extralData.Add("lineCount" + rowNoKey, lineCount.ToString());
 
-                if (lineCount == 5)
-                {
-                    lineCount = 0;
-                    if (!_extralData.ContainsKey("headerLine"))
-                    {
-                        _extralData.Add("headerLine", "true");
-                    }
-                    _extralData.Add("baseListName" + rowNoKey, baseListName);
-                    _extralData.Add("rowNo" + rowNoKey, rowNo.ToString());
-                }
+                #endregion
 
-                CellData.Add(celldata);
+                #region Body
 
-                ptIndex++;
+                int ptIndex = (_currentPage - 1) * maxRow;
                 if (ptIndex >= printDatas.Count)
                 {
-                    _hasNextPage = false;
-                    break;
+                    return;
                 }
-            }
+                int lineCount = 0;
 
-            #endregion
-            #endregion
+                //存在しているフィールドに絞り込み
+                var existsCols = putCurColumns.Where(p => _objectRseList.Contains(p.ColName)).Select(p => p.ColName).ToList();
+
+                for (short rowNo = 0; rowNo < maxRow; rowNo++)
+                {
+                    var celldata = new Dictionary<string, CellModel>();
+
+                    var printData = printDatas[ptIndex];
+                    string baseListName = "";
+
+                    //保険外金額（内訳）タイトル
+                    foreach (var jihiSbtMst in jihiSbtMsts)
+                    {
+                        SetFieldData(string.Format("tJihiFutanSbt{0}", jihiSbtMst.JihiSbt), jihiSbtMst.Name);
+                    }
+
+                    //明細データ出力
+                    foreach (var colName in existsCols)
+                    {
+                        var value = typeof(CoSta1001PrintData).GetProperty(colName)?.GetValue(printData);
+                        string valueInput = value?.ToString() ?? string.Empty;
+                        celldata.Add(colName, new CellModel(valueInput));
+                        if (baseListName == "" && _objectRseList.Contains(colName))
+                        {
+                            baseListName = colName;
+                        }
+                    }
+                    //自費種別毎の金額
+                    for (int i = 0; i <= jihiSbtMsts.Count - 1; i++)
+                    {
+                        if (printData.JihiSbtFutans == null || printData.JihiSbtFutans.Count == 0) break;
+                        var jihiSbtMst = jihiSbtMsts[i];
+                        celldata.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
+                    }
+
+                    //合計行キャプションと件数
+                    celldata.Add("TotalCaption", new CellModel(printData.TotalCaption));
+                    celldata.Add("TotalCount", new CellModel(printData.TotalCount));
+                    celldata.Add("TotalPtCount", new CellModel(printData.TotalPtCount));
+
+                    //5行毎に区切り線を引く
+                    lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
+                    string rowNoKey = rowNo + "_" + _currentPage;
+                    _extralData.Add("lineCount" + rowNoKey, lineCount.ToString());
+
+                    if (lineCount == 5)
+                    {
+                        lineCount = 0;
+                        if (!_extralData.ContainsKey("headerLine"))
+                        {
+                            _extralData.Add("headerLine", "true");
+                        }
+                        _extralData.Add("baseListName" + rowNoKey, baseListName);
+                        _extralData.Add("rowNo" + rowNoKey, rowNo.ToString());
+                    }
+
+                    CellData.Add(celldata);
+
+                    ptIndex++;
+                    if (ptIndex >= printDatas.Count)
+                    {
+                        _hasNextPage = false;
+                        break;
+                    }
+                }
+
+                #endregion
+                #endregion
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public CommonExcelReportingModel ExportCsv(CoSta1001PrintConf printConf, int dateFrom, int dateTo, string menuName, int hpId, bool isPutColName, bool isPutTotalRow)
