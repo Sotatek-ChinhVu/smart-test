@@ -1,4 +1,6 @@
 ﻿using Domain.SuperAdminModels.Tenant;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Interactor.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +8,8 @@ using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
 using SuperAdminAPI.Request.Tennant;
+using System.Text;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.SuperAdmin.GetTenant;
 using UseCase.SuperAdmin.GetTenantDetail;
@@ -16,6 +20,7 @@ using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpdateDataTenant;
 using UseCase.SuperAdmin.UpgradePremium;
+using UseCase.SuperAdmin.UploadDrugImage;
 
 namespace SuperAdminAPI.Controllers
 {
@@ -26,10 +31,16 @@ namespace SuperAdminAPI.Controllers
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
-        public TenantController(UseCaseBus bus, IWebSocketService webSocketService)
+        private readonly IMessenger _messenger;
+        private CancellationToken? _cancellationToken;
+        private bool stopUploadDrugImage = false;
+        private bool stopCalculate = false;
+
+        public TenantController(UseCaseBus bus, IWebSocketService webSocketService, IMessenger messenger)
         {
             _bus = bus;
             _webSocketService = webSocketService;
+            _messenger = messenger;
         }
 
         [HttpPost("UpdateTenant")]
@@ -91,7 +102,7 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<TerminateTenantResponse>>(presenter.Result);
         }
 
-        #region 
+        #region private function
         private SearchTenantModel GetSearchTenantModel(SearchTenantRequestItem requestItem)
         {
             return new SearchTenantModel(
@@ -136,13 +147,122 @@ namespace SuperAdminAPI.Controllers
 
         [HttpPost("UpdateDataTenant")]
         [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
-        public ActionResult<Response<UpdateDataTenantResponse>> UpdateTenant([FromForm] UpdateDataTenantRequest request)
+        public void UpdateDataTenant([FromForm] UpdateDataTenantRequest request, CancellationToken cancellationToken)
         {
-            var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData);
-            var output = _bus.Handle(input);
-            var presenter = new UpdateDataTenantPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
+            try
+            {
+                _messenger.Register<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
+                _messenger.Register<StopUpdateDataTenantStatus>(this, StopCalculation);
+                HttpContext.Response.ContentType = "application/json";
+                _cancellationToken = cancellationToken;
+                var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData, cancellationToken, _messenger);
+            }
+            catch (Exception ex)
+            {
+                stopCalculate = true;
+                Console.WriteLine("Exception Cloud:" + ex.Message);
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", 0));
+            }
+            finally
+            {
+                stopCalculate = true;
+                _messenger.Deregister<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
+                _messenger.Deregister<StopUpdateDataTenantStatus>(this, StopCalculation);
+                HttpContext.Response.Body.Close();
+            }
         }
+
+        private void StopCalculation(StopUpdateDataTenantStatus stopCalcStatus)
+        {
+            if (stopCalculate)
+            {
+                stopCalcStatus.CallFailCallback(stopCalculate);
+            }
+            else if (!_cancellationToken.HasValue)
+            {
+                stopCalcStatus.CallFailCallback(false);
+            }
+            else
+            {
+                stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+
+        private void UpdateRecalculationStatus(UpdateDataTenantResult status)
+        {
+            try
+            {
+                stopCalculate = status.Done;
+                SendMessage(status);
+
+            }
+            catch (Exception)
+            {
+                stopCalculate = true;
+                SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", 0));
+                throw;
+            }
+
+        }
+
+        private void SendMessage(UpdateDataTenantResult status)
+        {
+            string result = "\n" + JsonSerializer.Serialize(status);
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
+
+        #region UploadDrugImageAndRelease
+        [HttpPost("UploadDrugImageAndRelease")]
+        public void UploadDrugImageAndRelease([FromForm] UploadDrugImageAndReleaseRequest request, CancellationToken cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<UploadDrugImageAndReleaseStatus>(this, ReturnUploadDrugImageAndReleaseStatus);
+                _messenger.Register<StopUploadDrugImageAndRelease>(this, StopUploadDrugImageAndRelease);
+                HttpContext.Response.ContentType = "application/json";
+
+                var input = new UploadDrugImageAndReleaseInputData(request.FileUpdateData, _messenger);
+                _bus.Handle(input);
+            }
+            catch
+            {
+                stopUploadDrugImage = true;
+            }
+            finally
+            {
+                stopUploadDrugImage = true;
+                _messenger.Deregister<UploadDrugImageAndReleaseStatus>(this, ReturnUploadDrugImageAndReleaseStatus);
+                _messenger.Deregister<StopUploadDrugImageAndRelease>(this, StopUploadDrugImageAndRelease);
+                HttpContext.Response.Body.Close();
+            }
+        }
+
+        private void ReturnUploadDrugImageAndReleaseStatus(UploadDrugImageAndReleaseStatus status)
+        {
+            string result = "\n" + JsonSerializer.Serialize(status);
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
+
+        private void StopUploadDrugImageAndRelease(StopUploadDrugImageAndRelease status)
+        {
+            if (stopUploadDrugImage)
+            {
+                status.CallFailCallback(stopUploadDrugImage);
+            }
+            else if (!_cancellationToken.HasValue)
+            {
+                status.CallFailCallback(false);
+            }
+            else
+            {
+                status.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+        #endregion UploadDrugImageAndRelease
     }
 }
