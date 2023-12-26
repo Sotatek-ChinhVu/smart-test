@@ -3,6 +3,10 @@ using Entity.SuperAdmin;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Helper.Common;
+using Infrastructure.Services;
+using Domain.Constant;
+using static StackExchange.Redis.Role;
+using System.ComponentModel;
 
 namespace Infrastructure.SuperAdminRepositories;
 
@@ -12,25 +16,54 @@ public class SystemChangeLogRepository : SuperAdminRepositoryBase, ISystemChange
     {
     }
 
-    public void AddSystemChangeLog(SystemChangeLogModel model)
+    public void SaveSystemChangeLog(SystemChangeLogModel model)
     {
-        var logEntity = new SystemChangeLog()
+        var logEntity = TrackingDataContext.SystemChangeLogs.FirstOrDefault(item => item.Id == model.Id);
+        if (logEntity == null)
         {
-            FileName = model.FileName,
-            Version = model.Version,
-            IsPg = model.IsPg,
-            IsDb = model.IsDb,
-            IsMaster = model.IsMaster,
-            IsRun = model.IsRun,
-            IsNote = model.IsNote,
-            IsDrugPhoto = model.IsDrugPhoto,
-            Status = model.Status,
-            ErrMessage = model.ErrMessage,
-            CreateDate = CIUtil.GetJapanDateTimeNow(),
-            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-        };
-        TrackingDataContext.SystemChangeLogs.Add(logEntity);
+            logEntity = new SystemChangeLog()
+            {
+                Id = 0,
+
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+            };
+        }
+        logEntity.FileName = model.FileName;
+        logEntity.Version = model.Version;
+        logEntity.IsPg = model.IsPg;
+        logEntity.IsDb = model.IsDb;
+        logEntity.IsMaster = model.IsMaster;
+        logEntity.IsRun = model.IsRun;
+        logEntity.IsNote = model.IsNote;
+        logEntity.IsDrugPhoto = model.IsDrugPhoto;
+        logEntity.Status = model.Status;
+        logEntity.ErrMessage = model.ErrMessage;
+        if (logEntity.Id == 0)
+        {
+            TrackingDataContext.SystemChangeLogs.Add(logEntity);
+        }
         TrackingDataContext.SaveChanges();
+    }
+
+    public SystemChangeLogModel GetSystemChangeLog(string fileName, string ver)
+    {
+        var entity = NoTrackingDataContext.SystemChangeLogs.FirstOrDefault(item => item.Version == ver && item.FileName == fileName);
+        if (entity != null)
+        {
+            return new SystemChangeLogModel(
+                       entity.Id,
+                       entity.FileName ?? string.Empty,
+                       entity.Version ?? string.Empty,
+                       entity.IsPg,
+                       entity.IsDb,
+                       entity.IsMaster,
+                       entity.IsRun,
+                       entity.IsNote,
+                       entity.IsDrugPhoto,
+                       entity.Status,
+                       entity.ErrMessage ?? string.Empty);
+        }
+        return new SystemChangeLogModel(fileName, ver);
     }
 
     public void ReleaseResource()

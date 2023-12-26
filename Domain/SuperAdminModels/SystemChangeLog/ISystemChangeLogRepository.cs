@@ -2,7 +2,9 @@
 
 public interface ISystemChangeLogRepository
 {
-    void AddSystemChangeLog(SystemChangeLogModel model);
+    void SaveSystemChangeLog(SystemChangeLogModel model);
+
+    SystemChangeLogModel GetSystemChangeLog(string fileName, string ver);
 
     void ReleaseResource();
 }

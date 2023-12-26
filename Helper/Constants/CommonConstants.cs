@@ -23,4 +23,5 @@ public static class CommonConstants
     public const string Release_Version = "Release_Version";
     public const string Release_99 = "99_release";
     public const string Updfile = "updfile";
+    public const string SECTION_RELEASE = "releases";
 }
