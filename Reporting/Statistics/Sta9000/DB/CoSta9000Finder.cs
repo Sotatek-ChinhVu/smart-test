@@ -409,7 +409,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
                 if (sinConf.ItemCmts?.Count >= 1)
                 {
-                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd ?? string.Empty) || (p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName)));
+                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd ?? string.Empty) || (p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName ?? string.Empty)));
                 }
                 else
                 {
@@ -2079,10 +2079,10 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 );
             }
             //検索ワード
-            if (byomeiConf.SearchWord != string.Empty)
+            if (byomeiConf?.SearchWord != string.Empty)
             {
                 //スペース区切りでキーワードを分解
-                var values = byomeiConf.SearchWord?.Replace("　", " ").Split(' ');
+                var values = byomeiConf?.SearchWord?.Replace("　", " ").Split(' ');
                 List<string> searchWords = new List<string>();
                 if (values != null)
                 {
@@ -2090,7 +2090,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 }
 
                 var keywordConditions = searchWords.Select(keyword => $"%{keyword}%").Distinct().ToList();
-                if (byomeiConf.WordOpt == 0)
+                if (byomeiConf?.WordOpt == 0)
                 {
                     //or条件
                     ptByomeis = ptByomeis.Where(item => keywordConditions.Any(condition => EF.Functions.Like(item.Byomei ?? string.Empty, condition)));
@@ -2103,13 +2103,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             }
             //検索病名
             const string freeByomeiCd = "0000999";
-            if (byomeiConf.ByomeiCds?.Count >= 1)
+            if (byomeiConf?.ByomeiCds?.Count >= 1)
             {
                 //未コード化病名を除く
                 byomeiConf.ByomeiCds = byomeiConf.ByomeiCds.Where(s => s != freeByomeiCd).ToList();
             }
 
-            if (byomeiConf.ByomeiCdOpt == 0)
+            if (byomeiConf?.ByomeiCdOpt == 0)
             {
                 //or条件
                 if (byomeiConf.ByomeiCds?.Count >= 1 && byomeiConf.Byomeis?.Count >= 1)
@@ -2129,8 +2129,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             {
                 //and条件
                 List<string> wrkCds = new List<string>();
-                if (byomeiConf.ByomeiCds?.Count >= 1) wrkCds.AddRange(byomeiConf.ByomeiCds);
-                if (byomeiConf.Byomeis?.Count >= 1) wrkCds.AddRange(byomeiConf.Byomeis);
+                if (byomeiConf?.ByomeiCds?.Count >= 1) wrkCds.AddRange(byomeiConf.ByomeiCds);
+                if (byomeiConf?.Byomeis?.Count >= 1) wrkCds.AddRange(byomeiConf.Byomeis);
 
                 var wrkItems = ptByomeis;
 
@@ -2138,7 +2138,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 {
                     var wrkCd = wrkCds[i];
                     IQueryable<PtByomei> curItems;
-                    if ((byomeiConf.ByomeiCds ?? new()).Contains(wrkCd))
+                    if ((byomeiConf?.ByomeiCds ?? new()).Contains(wrkCd))
                     {
                         curItems = ptByomeis.Where(p => p.ByomeiCd == wrkCd);
                     }
@@ -2356,8 +2356,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                             ResultType = d.kensaDetail.ResultType ?? string.Empty,
                             AbnormalKbn = d.kensaDetail.AbnormalKbn ?? string.Empty,
                             StandardVal =
-                                d.ptInf.Sex == 1 ? d.kensaMstj?.MaleStd :
-                                d.ptInf.Sex == 2 ? d.kensaMstj?.FemaleStd :
+                                d.ptInf.Sex == 1 ? d.kensaMstj?.MaleStd ?? string.Empty:
+                                d.ptInf.Sex == 2 ? d.kensaMstj?.FemaleStd ?? string.Empty:
                                 string.Empty,
                             SortKey = string.Format
                                 (

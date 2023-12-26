@@ -1035,7 +1035,7 @@ namespace CloudUnitTest.SampleData
             return kinkiMsts;
         }
 
-        public static List<PtOtherDrug> ReadPtOtherDrug(int ptId)
+        public static List<PtOtherDrug> ReadPtOtherDrug(long ptId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1316,10 +1316,6 @@ namespace CloudUnitTest.SampleData
                                 case "B":
                                     long.TryParse(text, out long ptId);
                                     ptOtcDrug.PtId = ptId;
-                                    break;
-                                case "C":
-                                    int.TryParse(text, out int seqNo);
-                                    ptOtcDrug.SeqNo = seqNo;
                                     break;
                                 case "D":
                                     int.TryParse(text, out int sortNo);
@@ -2539,6 +2535,156 @@ namespace CloudUnitTest.SampleData
             }
 
             return m56s;
+        }
+
+        public static List<DosageMst> READ_DOSAGE_MST()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var dosageMsts = new List<DosageMst>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "DOSAGE_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var dosageMst = new DosageMst();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "B":
+                                    dosageMst.HpId = text.AsInteger();
+                                    break;
+                                case "C":
+                                    dosageMst.ItemCd = text;
+                                    break;
+                                case "D":
+                                    dosageMst.SeqNo = text.AsInteger();
+                                    break;
+                                case "E":
+                                    dosageMst.OnceMin = text.AsDouble();
+                                    break;
+                                case "F":
+                                    dosageMst.OnceMax = text.AsDouble();
+                                    break;
+                                case "G":
+                                    dosageMst.OnceLimit = text.AsInteger();
+                                    break;
+                                case "H":
+                                    dosageMst.OnceLimit = text.AsInteger();
+                                    break;
+                                case "I":
+                                    dosageMst.DayMin = text.AsInteger();
+                                    break;
+                                case "J":
+                                    dosageMst.DayMax = text.AsInteger();
+                                    break;
+                                case "K":
+                                    dosageMst.DayLimit = text.AsInteger();
+                                    break;
+                                case "L":
+                                    dosageMst.DayUnit = text.AsInteger();
+                                    break;
+                                case "M":
+                                    dosageMst.IsDeleted = text.AsInteger();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        dosageMst.CreateDate = DateTime.UtcNow;
+                        dosageMst.UpdateDate = DateTime.UtcNow;
+                        dosageMst.CreateMachine = "UNIT-TEST";
+                        dosageMst.UpdateMachine = "UNIT-TEST";
+                        dosageMst.CreateId = 2;
+
+                        dosageMsts.Add(dosageMst);
+                    }
+                }
+            }
+
+            return dosageMsts;
+        }
+
+        public static List<DosageDrug> READ_M46_DOSAGE_DRUG()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CommonCheckerTest.xlsx");
+            var dosageDrugs = new List<DosageDrug>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "M46_DOSAGE_DRUG").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var dosageDrug = new DosageDrug();
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+
+                            switch (columnName)
+                            {
+                                case "A":
+                                    dosageDrug.YjCd = text;
+                                    break;
+                                case "B":
+                                    dosageDrug.DoeiCd = text;
+                                    break;
+                                case "C":
+                                    dosageDrug.DgurKbn = text;
+                                    break;
+                                case "D":
+                                    dosageDrug.KikakiUnit = text;
+                                    break;
+                                case "E":
+                                    dosageDrug.YakkaiUnit = text;
+                                    break;
+                                case "F":
+                                    dosageDrug.RikikaRate = text.AsInteger();
+                                    break;
+                                case "G":
+                                    dosageDrug.RikikaUnit = text;
+                                    break;
+                                case "H":
+                                    dosageDrug.YoukaiekiCd = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        dosageDrugs.Add(dosageDrug);
+                    }
+                }
+            }
+
+            return dosageDrugs;
         }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)

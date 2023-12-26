@@ -44,28 +44,7 @@ namespace Reporting.KensaHistory.DB
         public PtInf GetPtInf(int hpId, long ptId)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
-            return ptInf;
-        }
-
-        private static (string, string) GetValueLowHigSdt(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                return (string.Empty, string.Empty);
-            }
-            else
-            {
-                string[] values = input.Split("-");
-
-                if (values.Length == 2)
-                {
-                    return (values[0], values[1]);
-                }
-                else
-                {
-                    return (string.Empty, string.Empty);
-                }
-            }
+            return ptInf ?? new();
         }
 
         public (List<CoKensaResultMultiModel>, List<long>) GetListKensaInfDetail(int hpId, int userId, long ptId, int setId, int startDate, int endDate, bool showAbnormalKbn)

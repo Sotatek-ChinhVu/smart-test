@@ -182,7 +182,7 @@ namespace AWSSDK.Common
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        command.CommandText = $"CREATE DATABASE {dbName}; CREATE ROLE {dbName} LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO {dbName};";
+                        command.CommandText = $"CREATE DATABASE \"{dbName}\"; CREATE ROLE \"{dbName}\" LOGIN PASSWORD '{passwordConnect}'; GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
                         command.ExecuteNonQuery();
                         Console.WriteLine($"Database '{dbName}' created successfully.");
                     }

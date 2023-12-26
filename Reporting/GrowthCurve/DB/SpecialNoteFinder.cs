@@ -24,7 +24,7 @@ public class SpecialNoteFinder : RepositoryBase, ISpecialNoteFinder
         return list;
     }
 
-    public List<KensaInfDetail> GetKensaInf(long ptId, int fromDate, int toDate, string itemCD)
+    public List<KensaInfDetail?> GetKensaInf(long ptId, int fromDate, int toDate, string itemCD)
     {
         var kensaInfDetailCollection = NoTrackingDataContext.KensaInfDetails.Where(item => item.PtId == ptId && (item.KensaItemCd ?? string.Empty).StartsWith("V") && item.IsDeleted == 0);
 
@@ -42,7 +42,9 @@ public class SpecialNoteFinder : RepositoryBase, ISpecialNoteFinder
         {
             kensaInfDetailCollection = kensaInfDetailCollection.Where(item => item.IraiDate <= toDate);
         }
+
         var kensaInfDetailList = kensaInfDetailCollection.ToList();
+
         return kensaInfDetailList.GroupBy(item => new { item.KensaItemCd, item.IraiDate })
                                  .Select(item => item.OrderByDescending(x => x.SeqNo).FirstOrDefault())
                                  .ToList();
