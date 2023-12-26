@@ -193,13 +193,11 @@ namespace SuperAdminAPI.Controllers
         {
             try
             {
-               // stopCalculate = status.Done;
                 SendMessage(status);
 
             }
             catch (Exception)
             {
-               // stopCalculate = true;
                 SendMessage(new UpdateDataTenantResult(true, string.Empty, 0, 0, "", 0));
                 throw;
             }
