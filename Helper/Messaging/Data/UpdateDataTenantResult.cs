@@ -9,14 +9,14 @@ namespace Helper.Messaging.Data
 {
     public class UpdateDataTenantResult
     {
-        public UpdateDataTenantResult(bool done, string currentItem, int length, int successCount, string message, string uniqueKey)
+        public UpdateDataTenantResult(bool done, string currentItem, int length, int currentCount, string message, byte status)
         {
             Done = done;
             CurrentItem = currentItem;
             Length = length;
-            SuccessCount = successCount;
+            CurrentCount = currentCount;
             Message = message;
-            UniqueKey = uniqueKey;
+            Status = status;
         }
 
         [JsonPropertyName("done")]
@@ -28,13 +28,15 @@ namespace Helper.Messaging.Data
         [JsonPropertyName("length")]
         public int Length { get; private set; }
 
-        [JsonPropertyName("successCount")]
-        public int SuccessCount { get; private set; }
+        [JsonPropertyName("currentCount")]
+        public int CurrentCount { get; private set; }
 
         [JsonPropertyName("message")]
         public string Message { get; private set; }
 
-        [JsonPropertyName("uniqueKey")]
-        public string UniqueKey { get; private set; }
+        [JsonPropertyName("status")]
+
+        // 1: running, 0 fail, 2 finished
+        public byte Status { get; private set; }
     }
 }

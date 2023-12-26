@@ -7,6 +7,7 @@ using Helper.Messaging.Data;
 using Npgsql;
 using System.Data;
 using System.Globalization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AWSSDK.Common
 {
@@ -38,13 +39,13 @@ namespace AWSSDK.Common
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
             string curentFile = string.Empty;
+            string curentFolder = string.Empty;
             int countFileExcute = 0;
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
-
                     // Begin a transaction
                     using (NpgsqlTransaction transaction = connection.BeginTransaction())
                     {
@@ -55,30 +56,36 @@ namespace AWSSDK.Common
                             {
                                 var statusCallBack = messenger!.SendAsync(new StopUpdateDataTenantStatus());
                                 bool isStopCalc = statusCallBack.Result.Result;
-                                
+
                                 // Check cancel update data tenant 
                                 if (isStopCalc)
                                 {
                                     transaction.Rollback();
-                                    messenger!.Send(new UpdateDataTenantResult(true, string.Empty, totalFileExcute, countFileExcute, "", string.Empty));
                                     return false;
                                 }
+                                curentFolder = UpdateConst.UPDATE_SQL;
+                                countFileExcute++;
+                                curentFile = Path.GetFileNameWithoutExtension(filePath);
+                                messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+
                                 // Read the content of the SQL file
                                 string sqlScript;
                                 using (StreamReader reader = new StreamReader(filePath))
                                 {
                                     sqlScript = reader.ReadToEnd();
                                 }
-                                ExecuteSqlScriptNonQuery(sqlScript, connection, transaction);
-                                countFileExcute++;
-                                curentFile = Path.GetFileNameWithoutExtension(filePath);
-                                messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+                                var result = ExecuteSqlScriptNonQuery(sqlScript, connection, transaction);
+                                if (!result)
+                                {
+                                    throw new Exception("Fail run sql script");
+                                }
+
                             }
 
                             foreach (var subFolder in subFoldersMasters)
                             {
                                 var statusCallBack = messenger!.SendAsync(new StopUpdateDataTenantStatus());
-                                
+
                                 // Check cancel update data tenant 
                                 bool isStopCalc = statusCallBack.Result.Result;
                                 if (isStopCalc)
@@ -86,31 +93,24 @@ namespace AWSSDK.Common
                                     transaction.Rollback();
                                     return false;
                                 }
+                                curentFolder = UpdateConst.UPDATE_MASTER;
                                 #region Run PreMstScript
                                 string preMstScript = Path.Combine(subFolder, UpdateConst.PRE_MST_SCRIPT);
                                 if (CIUtil.IsFileExisting(preMstScript))
                                 {
-                                    try
+                                    curentFile = Path.GetFileNameWithoutExtension(preMstScript);
+                                    countFileExcute++;
+                                    messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+                                    var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
+                                    if (!existCode)
                                     {
-                                        var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
-                                        if (!existCode)
-                                        {
-                                            throw new Exception("Fail Run PreMstScript");
-                                        }
-                                        countFileExcute++;
-                                        // Read the content of the SQL file
-                                        string sqlScript;
-                                        using (StreamReader reader = new StreamReader(preMstScript))
-                                        {
-                                            sqlScript = reader.ReadToEnd();
-                                        }
-                                        curentFile = Path.GetFileNameWithoutExtension(sqlScript);
-                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+                                        throw new Exception("Fail Run PreMstScript fail:");
                                     }
-                                    catch (Exception ex)
+                                    // Read the content of the SQL file
+                                    string sqlScript;
+                                    using (StreamReader reader = new StreamReader(preMstScript))
                                     {
-                                        // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
-                                        Console.WriteLine("Fail Run PreMstScript: " + ex.Message);
+                                        sqlScript = reader.ReadToEnd();
                                     }
                                 }
                                 #endregion
@@ -142,7 +142,7 @@ namespace AWSSDK.Common
 
                                         countFileExcute++;
                                         curentFile = Path.GetFileNameWithoutExtension(headerFile);
-                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
                                         var csvFile = $"{headerFile.TrimEnd('h')}csv";
                                         if (CIUtil.IsFileExisting(csvFile))
@@ -196,7 +196,7 @@ namespace AWSSDK.Common
                                                     {
                                                         //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), e, headerFile);
                                                         Console.WriteLine("Fail to create temp table: " + e.Message);
-                                                         throw new Exception("Fail to create temp table: " + e.Message); ;
+                                                        throw new Exception("Fail to create temp table: " + e.Message); ;
                                                     }
                                                 }
 
@@ -296,12 +296,10 @@ namespace AWSSDK.Common
 
                                                         MoveDataToBaseTable(connection, transaction);
                                                     }
-                                                    transaction.Commit();
                                                 }
                                                 catch (Exception ex)
                                                 {
                                                     //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), ex, headerFile);
-                                                    transaction.Rollback();
                                                     //ErrorEndUpdate("Execute Csv fail: " + ex.Message);
                                                     throw new Exception("Execute Csv fail: " + ex.Message);
                                                 }
@@ -319,10 +317,8 @@ namespace AWSSDK.Common
                                                 catch (Exception)
                                                 {
                                                     //ErrorEndUpdate("Error with truncate table! " + csvFile);
-                                                    transaction.Rollback();
                                                     throw new Exception("Error with truncate table! " + csvFile);
                                                 }
-                                                transaction.Commit();
 
                                                 //then, insert
                                                 script = $"copy \"{_baseTable}\"";
@@ -379,29 +375,20 @@ namespace AWSSDK.Common
                                 string mstScript = Path.Combine(subFolder, UpdateConst.MST_SCRIPT);
                                 if (CIUtil.IsFileExisting(mstScript))
                                 {
-                                    try
-                                    {
-                                        countFileExcute++;
-                                        curentFile = Path.GetFileNameWithoutExtension(mstScript);
-                                        messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", string.Empty));
+                                    countFileExcute++;
+                                    curentFile = Path.GetFileNameWithoutExtension(mstScript);
+                                    messenger!.Send(new UpdateDataTenantResult(totalFileExcute == countFileExcute, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
-                                        // Read the content of the SQL file
-                                        string sqlScript;
-                                        using (StreamReader reader = new StreamReader(mstScript))
-                                        {
-                                            sqlScript = reader.ReadToEnd();
-                                        }
-                                        var existCode = ExecuteSqlFile(sqlScript, connection, transaction);
-                                        if (!existCode)
-                                        {
-                                            throw new Exception("Fail Run MstScript:");
-                                        }
-                                    }
-                                    catch (Exception ex)
+                                    // Read the content of the SQL file
+                                    string sqlScript;
+                                    using (StreamReader reader = new StreamReader(mstScript))
                                     {
-                                        // ErrorEndUpdate("Execute preMstScript fail: " + ex.Message);
-                                        Console.WriteLine("Fail Run MstScript: " + ex.Message);
-                                        return false;
+                                        sqlScript = reader.ReadToEnd();
+                                    }
+                                    var existCode = ExecuteSqlFile(sqlScript, connection, transaction);
+                                    if (!existCode)
+                                    {
+                                        throw new Exception("Fail Run MstScript");
                                     }
                                 }
                                 #endregion
@@ -428,12 +415,14 @@ namespace AWSSDK.Common
 
                             // If everything is successful, commit the transaction
                             transaction.Commit();
+                            messenger!.Send(new UpdateDataTenantResult(true, $"{curentFolder}/{curentFile}", totalFileExcute, countFileExcute, "", 2));
                         }
                         catch (Exception ex)
                         {
+                            messenger!.Send(new UpdateDataTenantResult(true, $"{curentFolder}/{curentFile}", totalFileExcute, countFileExcute, $"Error: {curentFile} - " + ex.Message, 0));
                             // If there's an error, rollback the transaction
-                            transaction.Rollback();
                             Console.WriteLine($"Error executing SQL files: {ex.Message}");
+                            transaction.Rollback();
                             // Save SYSTEM_CHANGE_LOG
                             using (NpgsqlCommand command = new NpgsqlCommand(QueryConstant.SaveSystemChangeLog, connection))
                             {
@@ -451,7 +440,6 @@ namespace AWSSDK.Common
 
                                 command.ExecuteNonQuery();
                             }
-                            messenger!.Send(new UpdateDataTenantResult(true, $"{UpdateConst.UPDATE_MASTER}/{curentFile}", totalFileExcute, countFileExcute, ex.Message, string.Empty));
                         }
                     }
                 }
@@ -461,7 +449,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error update data tenant: {ex.Message}");
-                return false; 
+                return false;
             }
         }
 
