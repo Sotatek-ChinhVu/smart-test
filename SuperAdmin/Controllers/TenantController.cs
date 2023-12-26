@@ -154,6 +154,7 @@ namespace SuperAdminAPI.Controllers
             {
                 _messenger.Register<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
                 _messenger.Register<StopUpdateDataTenantStatus>(this, StopCalculation);
+                HttpContext.Response.ContentType = "application/json";
                 uniqueKey = Guid.NewGuid().ToString();
                 _cancellationToken = cancellationToken;
                 var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData, cancellationToken, _messenger);
