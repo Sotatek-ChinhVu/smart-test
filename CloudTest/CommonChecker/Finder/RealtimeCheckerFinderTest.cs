@@ -3672,5 +3672,473 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.SaveChanges();
             }
         }
+
+        [Test]
+        public void TC_087_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_LessThan_LimitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var drugDayLimit = new List<DrugDayLimit>()
+            {
+                new DrugDayLimit()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    StartDate = 20230101,
+                    EndDate = 20231212,
+                    LimitDay = 2,
+                    IsDeleted= 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 1,
+                    UpdateId = 1
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimit);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 1.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(0, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DrugDayLimits.RemoveRange(drugDayLimit);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_089_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_Equal_LimitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var drugDayLimit = new List<DrugDayLimit>()
+            {
+                new DrugDayLimit()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    StartDate = 20230101,
+                    EndDate = 20231212,
+                    LimitDay = 9,
+                    IsDeleted= 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 1,
+                    UpdateId = 1
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimit);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(0, result.Count);
+            }
+            finally
+            {
+                tenantTracking.DrugDayLimits.RemoveRange(drugDayLimit);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_090_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_GreaterThan_LimitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var drugDayLimit = new List<DrugDayLimit>()
+            {
+                new DrugDayLimit()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    StartDate = 20230101,
+                    EndDate = 20231212,
+                    LimitDay = 9,
+                    IsDeleted= 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 1,
+                    UpdateId = 1
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimit);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 10.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+                Assert.True(result.First().ItemCd == "UT2720" && result.First().LimitDay == 9 && result.First().UsingDay == 10 && result.First().YjCd == "UT271026");
+            }
+            finally
+            {
+                tenantTracking.DrugDayLimits.RemoveRange(drugDayLimit);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_091_CheckDayLimit_TEST_StartDate_And_EndDate_Is_Empty_And_UsingDay_LessThan_LitmitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "",
+                    EdDate = "",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 1.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(0, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_092_CheckDayLimit_TEST_Sinday_LessThan_StartDate()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "20240101",
+                    EdDate = "",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20231231;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(0, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_093_CheckDayLimit_TEST_EndDate_LessThan_Sinday()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "20240101",
+                    EdDate = "20251231",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20260101;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(0, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_094_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_And_EndDate_IsEmpty()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "",
+                    EdDate = "",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20260101;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+                Assert.True(result.First().YjCd == "UT271026" && result.First().ItemCd == "UT2720");
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Sinday > StartDate 
+        /// EndDate > Sindate
+        /// Sinday = 20230102, StartDate = 20230101, Endate = 20230103
+        /// </summary>
+        [Test]
+        public void TC_095_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_LessThan_Sinday_LessThan_EndDate()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "20230101",
+                    EdDate = "20230103",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230102;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+                Assert.True(result.First().YjCd == "UT271026" && result.First().ItemCd == "UT2720");
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
     }
 }
