@@ -16,6 +16,6 @@ namespace AWSSDK.Interfaces
         Task DeleteObjectsInFolderAsync(string bucketName, string folderKey);
         Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder);
         Task UploadFileAsync(string bucketName, string folderName, string filePath);
-        Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, RestoreObjectS3TenantTypeEnum type, bool prefixDelete);
+        Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, List<RestoreObjectS3TenantTypeEnum> type, bool prefixDelete);
     }
 }

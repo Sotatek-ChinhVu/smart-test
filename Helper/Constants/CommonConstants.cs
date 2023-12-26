@@ -18,4 +18,10 @@ public static class CommonConstants
     public const string ZaiKei = "zaikei";
     public const string Tempotary = "temp";
     public const string ReceiptcHen = "receiptchen";
+    public const string Drug_photo_05 = "05_drug_photo";
+    public const string Common = "Common";
+    public const string Release_Version = "Release_Version";
+    public const string Release_99 = "99_release";
+    public const string Updfile = "updfile";
+    public const string SECTION_RELEASE = "releases";
 }

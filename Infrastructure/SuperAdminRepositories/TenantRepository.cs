@@ -32,6 +32,13 @@ namespace Infrastructure.SuperAdminRepositories
             return tenantModel;
         }
 
+        public TenantModel GetTenantBySubDomain(string subDomain)
+        {
+            var tenant = NoTrackingDataContext.Tenants.Where(t => t.SubDomain.ToLower().Trim() == subDomain.ToLower().Trim() && t.IsDeleted == 0).FirstOrDefault();
+            var tenantModel = tenant == null ? new() : ConvertEntityToModel(tenant);
+            return tenantModel;
+        }
+
         public TenantModel GetByStatus(int tenantId, byte status)
         {
             var tenant = NoTrackingDataContext.Tenants.Where(t => t.TenantId == tenantId && t.Status == status && t.IsDeleted == 0).FirstOrDefault();
@@ -140,6 +147,19 @@ namespace Infrastructure.SuperAdminRepositories
             if (tenant != null)
             {
                 tenant.Status = status;
+
+                // updated date uses utc time
+                tenant.UpdateDate = DateTime.UtcNow;
+            }
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool UpdateTenantIsRestoreS3(int tenantId, bool isRestoredS3)
+        {
+            var tenant = TrackingDataContext.Tenants.FirstOrDefault(i => i.TenantId == tenantId);
+            if (tenant != null)
+            {
+                tenant.IsRestoreS3 = isRestoredS3;
 
                 // updated date uses utc time
                 tenant.UpdateDate = DateTime.UtcNow;
@@ -344,7 +364,8 @@ namespace Infrastructure.SuperAdminRepositories
                                                             tenant.CreateDate,
                                                             tenant.RdsIdentifier,
                                                             tenant.UserConnect,
-                                                            tenant.PasswordConnect))
+                                                            tenant.PasswordConnect,
+                                                            tenant.IsRestoreS3))
                                       .ToList();
                 result = ChangeStorageFull(result);
                 result = SortTenantList(result, sortDictionary).ToList();
@@ -369,7 +390,8 @@ namespace Infrastructure.SuperAdminRepositories
                                             tenant.CreateDate,
                                             tenant.RdsIdentifier,
                                             tenant.UserConnect,
-                                            tenant.PasswordConnect))
+                                            tenant.PasswordConnect,
+                                            tenant.IsRestoreS3))
                           .ToList();
             result = ChangeStorageFull(result);
             if (searchModel.StorageFull.Any())
@@ -909,7 +931,8 @@ namespace Infrastructure.SuperAdminRepositories
                        tenant.CreateDate,
                        tenant.RdsIdentifier,
                        tenant.UserConnect,
-                       tenant.PasswordConnect);
+                       tenant.PasswordConnect,
+                       tenant.IsRestoreS3);
         }
 
         private void _AddTenant(Tenant tenant, TenantModel model)

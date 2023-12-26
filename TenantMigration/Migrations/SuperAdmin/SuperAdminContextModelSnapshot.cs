@@ -136,6 +136,38 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.ToTable("NOTIFICATION");
                 });
 
+            modelBuilder.Entity("Entity.SuperAdmin.ReleasenoteRead", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("USER_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("Version")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("VERSION")
+                        .HasColumnOrder(3);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.HasKey("HpId", "UserId", "Version");
+
+                    b.ToTable("RELEASENOTE_READ");
+                });
+
             modelBuilder.Entity("Entity.SuperAdmin.Scription", b =>
                 {
                     b.Property<int>("Id")
@@ -173,6 +205,69 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.HasKey("Id");
 
                     b.ToTable("SCRIPTION");
+                });
+
+            modelBuilder.Entity("Entity.SuperAdmin.SystemChangeLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("ID")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<string>("ErrMessage")
+                        .HasColumnType("text")
+                        .HasColumnName("ERR_MESSAGE");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("text")
+                        .HasColumnName("FILE_NAME");
+
+                    b.Property<int>("IsDb")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DB");
+
+                    b.Property<int>("IsDrugPhoto")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DRUG_PHOTO");
+
+                    b.Property<int>("IsMaster")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_MASTER");
+
+                    b.Property<int>("IsNote")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_NOTE");
+
+                    b.Property<int>("IsPg")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_PG");
+
+                    b.Property<int>("IsRun")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_RUN");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("STATUS");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<string>("Version")
+                        .HasColumnType("text")
+                        .HasColumnName("VERSION");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SYSTEM_CHANGE_LOG");
                 });
 
             modelBuilder.Entity("Entity.SuperAdmin.Tenant", b =>
@@ -220,6 +315,10 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
+
+                    b.Property<bool>("IsRestoreS3")
+                        .HasColumnType("boolean")
+                        .HasColumnName("IS_RESTORE_S3");
 
                     b.Property<string>("Password")
                         .IsRequired()

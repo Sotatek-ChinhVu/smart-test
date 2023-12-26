@@ -19,6 +19,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<Tenant>().HasKey(a => new { a.TenantId });
             modelBuilder.Entity<UserToken>().HasKey(a => new { a.UserId, a.RefreshToken });
             modelBuilder.Entity<MigrationTenantHistory>().HasKey(a => new { a.Id });
+            modelBuilder.Entity<SystemChangeLog>().HasKey(a => new { a.Id });
+            modelBuilder.Entity<ReleasenoteRead>().HasKey(a => new { a.HpId, a.UserId, a.Version });
 
             modelBuilder.Entity<Admin>().HasIndex(a => new { a.LoginId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
             modelBuilder.Entity<Tenant>().HasIndex(a => new { a.Hospital }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
@@ -38,6 +40,10 @@ namespace PostgreDataContext
 
         public DbSet<UserToken> UserTokens { get; set; } = default!;
 
+        public DbSet<SystemChangeLog> SystemChangeLogs { get; set; } = default!;
+
         public DbSet<MigrationTenantHistory> MigrationTenantHistories { get; set; } = default!;
+
+        public DbSet<ReleasenoteRead> ReleasenoteReads { get; set; } = default!;
     }
 }
