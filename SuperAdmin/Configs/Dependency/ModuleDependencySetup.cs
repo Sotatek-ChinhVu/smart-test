@@ -35,14 +35,12 @@ using UseCase.SuperAdmin.UpdateNotification;
 using UseCase.SuperAdmin.UpgradePremium;
 using UseCase.UserToken.GetInfoRefresh;
 using UseCase.UserToken.SiginRefresh;
-using UseCase.SystemStartDbs;
-using UseCase.SuperAdmin.RestoreObjectS3Tenant;
-using Microsoft.Extensions.Caching.Memory;
-using UseCase.SuperAdmin.ExportCsvTenantList;
 using UseCase.SuperAdmin.ExportCsvLogList;
 using Helper.Messaging;
 using UseCase.SuperAdmin.DeleteJunkFileS3;
 using SuperAdminAPI.ScheduleTask;
+using UseCase.SuperAdmin.UploadDrugImage;
+using Domain.SuperAdminModels.SystemChangeLog;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -79,7 +77,9 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IAwsSdkService, AwsSdkService>();
             services.AddTransient<IWebSocketService, WebSocketService>();
-            services.AddScoped<IMessenger, Messenger>();
+            services.AddTransient<ISystemChangeLogRepository, SystemChangeLogRepository>();
+            services.AddTransient<IMessenger, Messenger>();
+
 
             //Init follow transient so no need change transient
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
@@ -123,6 +123,7 @@ namespace SuperAdmin.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateDataTenantInputData, UpdateDataTenantInteractor>();
             busBuilder.RegisterUseCase<ExportCsvTenantListInputData, ExportCsvTenantListInteractor>();
             busBuilder.RegisterUseCase<ExportCsvLogListInputData, ExportCsvLogListInteractor>();
+            busBuilder.RegisterUseCase<UploadDrugImageAndReleaseInputData, UploadDrugImageAndReleaseInteractor>();
 
             //SystemStartDb 
             //busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

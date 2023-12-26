@@ -1,11 +1,9 @@
 ﻿using Domain.SuperAdminModels.Tenant;
 using Helper.Messaging;
 using Helper.Messaging.Data;
-using Infrastructure.Interfaces;
 using Interactor.Realtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR.Client;
 using SuperAdmin.Responses;
 using SuperAdminAPI.Presenters.Tenant;
 using SuperAdminAPI.Reponse.Tenant;
@@ -22,6 +20,7 @@ using UseCase.SuperAdmin.TenantOnboard;
 using UseCase.SuperAdmin.TerminateTenant;
 using UseCase.SuperAdmin.UpdateDataTenant;
 using UseCase.SuperAdmin.UpgradePremium;
+using UseCase.SuperAdmin.UploadDrugImage;
 
 namespace SuperAdminAPI.Controllers
 {
@@ -33,10 +32,10 @@ namespace SuperAdminAPI.Controllers
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
         private readonly IMessenger _messenger;
-        private readonly IConfiguration _configuration;
-        private string uniqueKey;
         private CancellationToken? _cancellationToken;
+        private bool stopUploadDrugImage = false;
         private bool stopCalculate = false;
+
         public TenantController(UseCaseBus bus, IWebSocketService webSocketService, IMessenger messenger)
         {
             _bus = bus;
@@ -103,7 +102,7 @@ namespace SuperAdminAPI.Controllers
             return new ActionResult<Response<TerminateTenantResponse>>(presenter.Result);
         }
 
-        #region 
+        #region private function
         private SearchTenantModel GetSearchTenantModel(SearchTenantRequestItem requestItem)
         {
             return new SearchTenantModel(
@@ -155,10 +154,8 @@ namespace SuperAdminAPI.Controllers
                 _messenger.Register<UpdateDataTenantResult>(this, UpdateRecalculationStatus);
                 _messenger.Register<StopUpdateDataTenantStatus>(this, StopCalculation);
                 HttpContext.Response.ContentType = "application/json";
-                uniqueKey = Guid.NewGuid().ToString();
                 _cancellationToken = cancellationToken;
                 var input = new UpdateDataTenantInputData(request.TenantId, _webSocketService, request.FileUpdateData, cancellationToken, _messenger);
-                var output = _bus.Handle(input);
             }
             catch (Exception ex)
             {
@@ -173,10 +170,6 @@ namespace SuperAdminAPI.Controllers
                 _messenger.Deregister<StopUpdateDataTenantStatus>(this, StopCalculation);
                 HttpContext.Response.Body.Close();
             }
-
-            //var presenter = new UpdateDataTenantPresenter();
-            //presenter.Complete(output);
-            //return new ActionResult<Response<UpdateDataTenantResponse>>(presenter.Result);
         }
 
         private void StopCalculation(StopUpdateDataTenantStatus stopCalcStatus)
@@ -212,7 +205,6 @@ namespace SuperAdminAPI.Controllers
 
         }
 
-
         private void SendMessage(UpdateDataTenantResult status)
         {
             string result = "\n" + JsonSerializer.Serialize(status);
@@ -220,5 +212,57 @@ namespace SuperAdminAPI.Controllers
             HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
             HttpContext.Response.Body.FlushAsync();
         }
+
+        #region UploadDrugImageAndRelease
+        [HttpPost("UploadDrugImageAndRelease")]
+        public void UploadDrugImageAndRelease([FromForm] UploadDrugImageAndReleaseRequest request, CancellationToken cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+            try
+            {
+                _messenger.Register<UploadDrugImageAndReleaseStatus>(this, ReturnUploadDrugImageAndReleaseStatus);
+                _messenger.Register<StopUploadDrugImageAndRelease>(this, StopUploadDrugImageAndRelease);
+                HttpContext.Response.ContentType = "application/json";
+
+                var input = new UploadDrugImageAndReleaseInputData(request.FileUpdateData, _messenger);
+                _bus.Handle(input);
+            }
+            catch
+            {
+                stopUploadDrugImage = true;
+            }
+            finally
+            {
+                stopUploadDrugImage = true;
+                _messenger.Deregister<UploadDrugImageAndReleaseStatus>(this, ReturnUploadDrugImageAndReleaseStatus);
+                _messenger.Deregister<StopUploadDrugImageAndRelease>(this, StopUploadDrugImageAndRelease);
+                HttpContext.Response.Body.Close();
+            }
+        }
+
+        private void ReturnUploadDrugImageAndReleaseStatus(UploadDrugImageAndReleaseStatus status)
+        {
+            string result = "\n" + JsonSerializer.Serialize(status);
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
+
+        private void StopUploadDrugImageAndRelease(StopUploadDrugImageAndRelease status)
+        {
+            if (stopUploadDrugImage)
+            {
+                status.CallFailCallback(stopUploadDrugImage);
+            }
+            else if (!_cancellationToken.HasValue)
+            {
+                status.CallFailCallback(false);
+            }
+            else
+            {
+                status.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+        #endregion UploadDrugImageAndRelease
     }
 }
