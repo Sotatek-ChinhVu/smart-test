@@ -224,7 +224,7 @@ namespace SuperAdminAPI.Controllers
                 _messenger.Register<StopUploadDrugImageAndRelease>(this, StopUploadDrugImageAndRelease);
                 HttpContext.Response.ContentType = "application/json";
 
-                var input = new UploadDrugImageAndReleaseInputData(request.FileUpdateData, _messenger);
+                var input = new UploadDrugImageAndReleaseInputData(request.FileUpdateData, _messenger, _webSocketService);
                 _bus.Handle(input);
             }
             catch
