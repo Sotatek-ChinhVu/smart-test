@@ -119,7 +119,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .FirstOrDefault() ?? new PhysicalAverage();
         }
 
-        private List<M56ExIngrdtMain> GetDrugTypeInfo(int haigouSetting, List<string> itemCodeList)
+        internal List<M56ExIngrdtMain> GetDrugTypeInfo(int haigouSetting, List<string> itemCodeList)
         {
             return _tenMstCacheService
                 .GetM56ExIngrdtMainList(itemCodeList)

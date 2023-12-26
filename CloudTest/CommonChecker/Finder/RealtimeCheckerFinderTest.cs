@@ -9,6 +9,8 @@ using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
 using Moq;
+using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
+using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
@@ -4138,6 +4140,394 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
                 tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_096_TEST_GetYjCdListByItemCdList()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var hpId = 1;
+            var sinday = 20231212;
+            var ptId = 1231;
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2720", "id1"),
+                new ItemCodeModel("UT2719", "id2"),
+                new ItemCodeModel("UT2718", "id3"),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetYjCdListByItemCdList(hpId, listItem, sinday);
+
+                // Assert
+                Assert.AreEqual(3, result.Count);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_097_TEST_GetFoodAllergyByPtId_Test_IsDataOfDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230101;
+            var ptId = 1231;
+            var isDataOfDb = true;
+
+            var ptAlrgyFoods = new List<PtAlrgyFood>()
+            {
+                new PtAlrgyFood()
+                {
+                    HpId = 99999,
+                    PtId = 1231,
+                    SortNo = 1,
+                    IsDeleted = 0,
+                    StartDate = 20230101,
+                    EndDate = 20230101
+                },
+                new PtAlrgyFood()
+                {
+                    HpId = 99999,
+                    PtId = 1231,
+                    SortNo = 2,
+                    IsDeleted = 0,
+                    AlrgyKbn = "1",
+                    Cmt = "CMT TEST",
+                    StartDate = 20221231,
+                    EndDate = 20230102
+                }
+            };
+
+            tenantTracking.PtAlrgyFoods.AddRange(ptAlrgyFoods);
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyFoods.RemoveRange(ptAlrgyFoods);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_098_TEST_GetFoodAllergyByPtId_Test_IsDataOfDb_False()
+        {
+            //setup
+            var hpId = 99999;
+            var sinday = 20230101;
+            var ptId = 1231;
+            var isDataOfDb = false;
+
+            var ptAlrgyFoodModels = new List<PtAlrgyFoodModelStandard>()
+            {
+              new PtAlrgyFoodModelStandard(hpId, ptId, 111 , 0, "", 20230101, 20230101, "", 0, string.Empty),
+              new PtAlrgyFoodModelStandard(hpId, ptId, 111 , 0, "", 20221231, 20230102, "", 0, string.Empty),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, ptAlrgyFoodModels, isDataOfDb);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+
+        }
+
+        [Test]
+        public void TC_099_TEST_GetDrugAllergyByPtId_Test_IsDataOfDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230102;
+            var ptId = 1231;
+            var isDataOfDb = true;
+
+            var ptAlgryDrugs = new List<PtAlrgyDrug>()
+            {
+                new PtAlrgyDrug()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SortNo = 1,
+                    ItemCd = "UNIT-TEST",
+                    DrugName = "DrugName Test",
+                    StartDate = 20230101,
+                    EndDate = 20230103,
+                    Cmt = "",
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow ,
+                    CreateId = 2,
+                    UpdateId = 2
+                },
+
+                new PtAlrgyDrug()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SortNo = 2,
+                    ItemCd = "UNIT-TEST2",
+                    DrugName = "DrugName Test",
+                    StartDate = 20230102,
+                    EndDate = 20230102,
+                    Cmt = "",
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow ,
+                    CreateId = 2,
+                    UpdateId = 2
+                },
+            };
+
+            tenantTracking.PtAlrgyDrugs.AddRange(ptAlgryDrugs);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlgryDrugs);
+            }
+
+        }
+
+        [Test]
+        public void TC_100_TEST_GetDrugAllergyByPtId_Test_IsDataOfDb_False()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230102;
+            var ptId = 1231;
+            var isDataOfDb = false;
+
+            var ptAlrgyDrugModels = new List<PtAlrgyDrugModelStandard>()
+            {
+                new PtAlrgyDrugModelStandard (hpId, ptId, 111, 1, "11001100", "drug name", 20230101, 20230103, "", 0),
+                new PtAlrgyDrugModelStandard (hpId, ptId, 112, 2, "11001101", "drug name", 20230102, 20230102, "", 0),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, ptAlrgyDrugModels, isDataOfDb);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+        }
+
+        [Test]
+        public void TC_101_TEST_GetBodyInfo()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230105;
+            var ptId = 1231;
+            var kensaItemCd = "ItemCd9999";
+
+            var kensaInfs = new List<KensaInfDetail>()
+            {
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230101,
+                    RaiinNo = 99999999,
+                    IraiCd = 01234,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2
+                },
+
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230202,
+                    RaiinNo = 99999998,
+                    IraiCd = 01233,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2
+                },
+            };
+
+            tenantTracking.KensaInfDetails.AddRange(kensaInfs);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetBodyInfo(hpId, ptId, sinday, kensaItemCd);
+
+                // Assert
+                Assert.True(result.IraiCd == 01233);
+            }
+            finally
+            {
+                tenantTracking.KensaInfDetails.RemoveRange(kensaInfs);
+            }
+        }
+
+        [Test]
+        public void TC_102_TEST_GetCommonBodyInfo()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetCommonBodyInfo(birthDay, sinday);
+
+                // Assert
+                Assert.True(result.JissiYear == 2199 && result.AgeYear == 200);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+            }
+        }
+
+        [Test]
+        public void TC_103_TEST_GetDrugTypeInfo()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var haigouSetting = 1;
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+             new M56ExIngrdtMain()
+             {
+
+             }
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, sinday);
+
+                // Assert
+                Assert.True(result.JissiYear == 2199 && result.AgeYear == 200);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
             }
         }
     }
