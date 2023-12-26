@@ -109,7 +109,7 @@ public class Sta3060CoReportService : ISta3060CoReportService
     private class HokenKbn
     {
         public int TitleValue;
-        public string TitleName;
+        public string TitleName = string.Empty;
     }
 
     private readonly List<HokenKbn> hokenTitles = new List<HokenKbn>
@@ -372,7 +372,7 @@ public class Sta3060CoReportService : ISta3060CoReportService
                     printConf.ReportKbn == 3 ? coKouiTensus.First().TantoSname :
                     printConf.ReportKbn == 4 ? hokenTitles[rowNo].TitleName :
                     printConf.ReportKbn == 5 ? ageKbnTitles[rowNo] :
-                    printConf.ReportKbn == 6 ? coKouiTensus.First().PtNum.ToString().PadLeft(kouiTensus.Max(x => x.PtNum).ToString().Length) + " " + coKouiTensus.First().PtName :
+                    printConf.ReportKbn == 6 ? coKouiTensus.First().PtNum.ToString().PadLeft((kouiTensus ?? new()).Max(x => x.PtNum).ToString().Length) + " " + coKouiTensus.First().PtName :
                     string.Empty;
 
                 printData.SinYm = (pbSinYm || printConf.ReportKbn == 1) && coKouiTensus.Count() >= 1 ? coKouiTensus.First().SinYm : 0;

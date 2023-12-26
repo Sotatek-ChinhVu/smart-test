@@ -77,6 +77,53 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         }
     }
 
+    public async Task<bool> DeleteLastestVerObjectAsync(string key)
+    {
+        try
+        {
+            string bucketName = _options.BucketName;
+            var listVersionsRequest = new ListVersionsRequest
+            {
+                BucketName = bucketName,
+                Prefix = key
+            };
+
+            /// Delete 
+            var listVersionsResponse = await _s3Client.ListVersionsAsync(listVersionsRequest);
+
+            var objectsToDelete = listVersionsResponse.Versions
+                                  .Where(item => item.IsLatest)
+                                  .Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId })
+                                  .ToList();
+
+            if (objectsToDelete.Any())
+            {
+                var deleteObjectsRequest = new DeleteObjectsRequest
+                {
+                    BucketName = bucketName,
+                    Objects = objectsToDelete
+                };
+
+                var deleteObjectsResponse = await _s3Client.DeleteObjectsAsync(deleteObjectsRequest);
+
+                // Check the response for any errors
+                if (deleteObjectsResponse.DeleteErrors.Any())
+                {
+                    Console.WriteLine("Some objects could not be deleted. Error details:");
+                    foreach (var error in deleteObjectsResponse.DeleteErrors)
+                    {
+                        Console.WriteLine($"Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
+                    }
+                }
+            }
+            return true;
+        }
+        catch (AmazonS3Exception)
+        {
+            return false;
+        }
+    }
+
     public async Task<bool> MoveObjectAsync(string sourceFile, string destinationFile)
     {
         try

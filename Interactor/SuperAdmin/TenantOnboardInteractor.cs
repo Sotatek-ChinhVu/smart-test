@@ -4,12 +4,9 @@ using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using AWSSDK.Interfaces;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
-using Entity.SuperAdmin;
-using Infrastructure.SuperAdminRepositories;
 using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
@@ -62,12 +59,12 @@ namespace Interactor.SuperAdmin
                     var tenantFaild = _tenantRepository.GetByStatus(inputData.TenantId, statusTenantFaild);
                     if (tenantFaild.TenantId == 0)
                     {
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.TenantOnboardFailed);
                     }
                     var teminatedTenant = TeminatedTenant(inputData.TenantId);
                     if (!teminatedTenant)
                     {
-                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.Failed);
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.TenantOnboardFailed);
                     }
                 }
                 var checkValidSubDomain = CommonConstants.IsSubdomainValid(inputData.SubDomain);
@@ -86,7 +83,7 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.SubDomainExists);
                 }
-                else if (inputData.SizeType != ConfigConstant.SizeTypeMB && inputData.SizeType != ConfigConstant.SizeTypeGB)
+                else if (inputData.SizeType != ConfigConstant.SizeTypeGB)
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSizeType);
                 }
@@ -94,24 +91,15 @@ namespace Interactor.SuperAdmin
                 {
                     return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidClusterMode);
                 }
-                else if (inputData.SizeType == ConfigConstant.SizeTypeMB)
+                if (inputData.ClusterMode == ConfigConstant.TypeSharing)
                 {
-                    // default 150MB
-                    if (inputData.Size > 150)
+                    if (inputData.Size < 15 || inputData.Size > 250)
                         return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
-                else if (inputData.SizeType == ConfigConstant.SizeTypeGB)
+                else
                 {
-                    if (inputData.ClusterMode == ConfigConstant.TypeSharing)
-                    {
-                        if (inputData.Size > 250)
-                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                    }
-                    else
-                    {
-                        if (inputData.Size > 1024)
-                            return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
-                    }
+                    if (inputData.Size < 15 || inputData.Size > 1024)
+                        return new TenantOnboardOutputData(new(), TenantOnboardStatus.InvalidSize);
                 }
                 var dbName = CommonConstants.GenerateDatabaseName(inputData.SubDomain);
                 var tenantUrl = $"{inputData.SubDomain}.{ConfigConstant.Domain}";
@@ -121,7 +109,7 @@ namespace Interactor.SuperAdmin
                 if (tenantOnboard.TryGetValue("Error", out string? errorValue))
                 {
                     Console.WriteLine($"Exception: {errorValue}");
-                    return new TenantOnboardOutputData(new TenantOnboardItem(errorValue), TenantOnboardStatus.Failed);
+                    return new TenantOnboardOutputData(new TenantOnboardItem(errorValue), TenantOnboardStatus.TenantOnboardFailed);
                 }
                 if (tenantOnboard.TryGetValue("message", out string? messageValue))
                 {
@@ -129,7 +117,7 @@ namespace Interactor.SuperAdmin
                 }
                 var data = new TenantOnboardItem(message);
 
-                return new TenantOnboardOutputData(data, TenantOnboardStatus.Successed);
+                return new TenantOnboardOutputData(data, TenantOnboardStatus.TenantOnboardSuccessed);
             }
             finally
             {
