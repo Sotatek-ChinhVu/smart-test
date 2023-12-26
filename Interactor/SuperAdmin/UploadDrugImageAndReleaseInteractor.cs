@@ -134,7 +134,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             {
                 foreach (var deletedFile in fileUploaded)
                 {
-                    var response = _amazonS3Service.DeleteObjectAsync(deletedFile);
+                    var response = _amazonS3Service.DeleteLastestVerObjectAsync(deletedFile);
                     response.Wait();
                 }
             }
