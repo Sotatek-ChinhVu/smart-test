@@ -57,6 +57,11 @@ namespace Interactor.SuperAdmin
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.UploadFileIncorrectFormat7z);
                 }
 
+                if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && tenant.Status != ConfigConstant.StatusTenantDictionary()["stoped"] && tenant.Status != ConfigConstant.StatusTenantDictionary()["storage-full"])
+                {
+                    return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.TenantNotReadyToUpdate);
+                }
+
 
                 string pathFile7z = $"{pathFolderUpdateDataTenant}{tenant.SubDomain}-{Guid.NewGuid()}.7z";
                 string pathFileExtract7z = $"{pathFolderUpdateDataTenant}7Z-{tenant.SubDomain}-{Guid.NewGuid()}";
@@ -67,7 +72,6 @@ namespace Interactor.SuperAdmin
                 // Replace path file linux
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-
                     pathFile7z = pathFile7z.Replace("\\", "/");
                     pathFolderScript = pathFolderScript.Replace("\\", "/");
                     pathFolderMaster = pathFolderMaster.Replace("\\", "/");
@@ -84,7 +88,11 @@ namespace Interactor.SuperAdmin
                 {
                     archive.ExtractToDirectory(pathFileExtract7z);
                 }
-
+                // Check if extraction was successful
+                if (!Directory.Exists(pathFolderScript) || !Directory.Exists(pathFolderMaster))
+                {
+                    return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.UnzipFile7zError);
+                }
 
                 int totalFileExcute = 0;
                 // File script in folder 02_script
@@ -96,6 +104,11 @@ namespace Interactor.SuperAdmin
 
                 // Subfolder in folder 03_master
                 string[] subFoldersMasters = Directory.GetDirectories(pathFolderMaster);
+
+                if (subFoldersMasters.Length <= 0)
+                {
+                    return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.MasterFolderHasNoSubfolder);
+                }
 
                 int totalHFiles = subFoldersMasters
                .Select(subFolder => Directory.GetFiles(subFolder, "*.h").Length)
@@ -119,7 +132,7 @@ namespace Interactor.SuperAdmin
                 {
                     if (result)
                     {
-                        var messenge = $"{tenant.EndSubDomain} is update tenant successfully.";
+                        var messenge = $"{tenant.EndSubDomain} のデータアップデートが完了しました。";
                         var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, tenant.Status);
                         // Add info tenant for notification
@@ -131,7 +144,7 @@ namespace Interactor.SuperAdmin
 
                     else
                     {
-                        var messenge = $"{tenant.EndSubDomain} is update tenant failed.";
+                        var messenge = $"{tenant.EndSubDomain} のデータアップデートに失敗しました。エラー";
                         var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["failed"]);
                         // Add info tenant for notification
