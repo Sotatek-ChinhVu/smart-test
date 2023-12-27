@@ -29,7 +29,7 @@ public class GetLastRaiinInfsInteractor : IGetLastRaiinInfsInputPort
             if (inputData.IsLastVisit)
             {
                 var lastVisit = _receptionRepository.GetLastVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
-                if (lastVisit != new ReceptionModel())
+                if (lastVisit.HpId != 0 && lastVisit.PtId != 0 && lastVisit.RaiinNo != 0 && lastVisit.SinDate != 0)
                 {
                     result.Add(new ReceptionModel(lastVisit.HpId,
                                            lastVisit.PtId,
