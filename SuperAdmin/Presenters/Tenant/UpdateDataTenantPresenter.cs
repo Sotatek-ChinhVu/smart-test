@@ -19,6 +19,12 @@ namespace SuperAdminAPI.Presenters.Tenant
         {
             UpdateDataTenantStatus.Successed => ResponseMessage.Success,
             UpdateDataTenantStatus.Failed => ResponseMessage.Failed,
+            UpdateDataTenantStatus.InvalidTenantId => ResponseMessage.InvalidTenantId,
+            UpdateDataTenantStatus.TenantDoesNotExist => ResponseMessage.TenantDoesNotExist,
+            UpdateDataTenantStatus.TenantNotReadyToUpdate => ResponseMessage.TenantNotReadyToUpdate,
+            UpdateDataTenantStatus.UploadFileIncorrectFormat7z => ResponseMessage.UploadFileIncorrectFormat7z,
+            UpdateDataTenantStatus.UnzipFile7zError => ResponseMessage.UnzipFile7zError,
+            UpdateDataTenantStatus.MasterFolderHasNoSubfolder => ResponseMessage.MasterFolderHasNoSubfolder,
             _ => string.Empty
         };
     }

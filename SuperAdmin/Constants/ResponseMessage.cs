@@ -28,6 +28,10 @@
         public static readonly string NotAllowUpdateTenantDedicateToSharing = "共有タイプに専用の医療機関の更新を許可しません。";
         public static readonly string TenantIsTerminating = "医療機関が終了中です。";
         public static readonly string TenantIsNotAvailableToSortTerminate = "医療機関は論理的終了の準備ができません。";
+        public static readonly string TenantNotReadyToUpdate = "医療機関は更新する準備ができません。";
+        public static readonly string UploadFileIncorrectFormat7z = ".7zファイルではありません。";
+        public static readonly string UnzipFile7zError = ".7zファイルの展開に失敗しました。";
+        public static readonly string MasterFolderHasNoSubfolder = "masterFolder にはサブフォルダが存在しません。";
     }
 
 }

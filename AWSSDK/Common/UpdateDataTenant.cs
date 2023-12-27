@@ -77,7 +77,7 @@ namespace AWSSDK.Common
                                 var result = ExecuteSqlScriptNonQuery(sqlScript, connection, transaction);
                                 if (!result)
                                 {
-                                    throw new Exception("Fail run sql script");
+                                    throw new Exception("sqlスクリプトの実行には失敗しました。");
                                 }
 
                             }
@@ -104,7 +104,7 @@ namespace AWSSDK.Common
                                     var existCode = ExecuteSqlFile(preMstScript, connection, transaction);
                                     if (!existCode)
                                     {
-                                        throw new Exception("Fail Run PreMstScript fail:");
+                                        throw new Exception("preMstScriptスクリプトの実行には失敗しました。");
                                     }
                                     // Read the content of the SQL file
                                     string sqlScript;
@@ -130,7 +130,7 @@ namespace AWSSDK.Common
                                         {
                                             Console.WriteLine("HEADERファイルが不正です。:" + headerFile);
                                             //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), "Header file not correct format. File: " + headerFile);
-                                            throw new Exception("HEADERファイルが不正です。:" + headerFile);
+                                            throw new Exception("ヘッダファイルが不正です。:" + headerFile);
                                         }
 
                                         //clean temp variable
@@ -194,9 +194,7 @@ namespace AWSSDK.Common
                                                     }
                                                     catch (Exception e)
                                                     {
-                                                        //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), e, headerFile);
-                                                        Console.WriteLine("Fail to create temp table: " + e.Message);
-                                                        throw new Exception("Fail to create temp table: " + e.Message); ;
+                                                        throw new Exception("一時テーブルの作成に失敗しました。: " + e.Message); ;
                                                     }
                                                 }
 
@@ -235,8 +233,7 @@ namespace AWSSDK.Common
                                                     var exitCode = ExecuteSqlScriptNonQuery(script, connection, transaction);
                                                     if (!exitCode)
                                                     {
-                                                        //ErrorEndUpdate("Execute csv fail: " + csvFile);
-                                                        throw new Exception("Execute Csv fail: " + csvFile);
+                                                        throw new Exception("CSVファイルの処理に失敗しました。" + csvFile);
                                                     }
 
                                                     if (!string.IsNullOrEmpty(_baseTable))
@@ -290,7 +287,7 @@ namespace AWSSDK.Common
                                                             if (!createConstraintsExitCode)
                                                             {
                                                                 //ErrorEndUpdate("Execute create constraints fail: " + createConstraintScript);
-                                                                throw new Exception("Execute create constraints fail");
+                                                                throw new Exception("テーブルの制約の作成に失敗しました。");
                                                             }
                                                         }
 
@@ -301,7 +298,7 @@ namespace AWSSDK.Common
                                                 {
                                                     //Console.WriteLine(_moduleName, this, nameof(ReadCsvFile), ex, headerFile);
                                                     //ErrorEndUpdate("Execute Csv fail: " + ex.Message);
-                                                    throw new Exception("Execute Csv fail: " + ex.Message);
+                                                    throw new Exception("CSVファイルの処理に失敗しました。: " + ex.Message);
                                                 }
                                             }
                                             //type == CLRINS
@@ -316,8 +313,7 @@ namespace AWSSDK.Common
                                                 }
                                                 catch (Exception)
                                                 {
-                                                    //ErrorEndUpdate("Error with truncate table! " + csvFile);
-                                                    throw new Exception("Error with truncate table! " + csvFile);
+                                                    throw new Exception("テーブルのTRUNCATEに失敗しました。: " + csvFile);
                                                 }
 
                                                 //then, insert
@@ -352,21 +348,20 @@ namespace AWSSDK.Common
                                                 if (!exitCode)
                                                 {
                                                     //ErrorEndUpdate("Execute csv fail with CLRINS: " + csvFile);
-                                                    throw new Exception("Execute csv fail with CLRINS: " + csvFile);
+                                                    throw new Exception("CLRINSの実施に失敗しました。" + csvFile);
                                                 }
                                             }
 
                                         }
                                         else
                                         {
-                                            Console.WriteLine(subFolder + " Csv file not exist!");
+                                            throw new Exception(subFolder + " CSVファイルが見つかりません。"); 
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    //UpdateProgressContent(folderPath);
-                                    Console.WriteLine(subFolder + " Header file not exist!");
+                                    throw new Exception(subFolder + " 該当するヘッダファイルが見つかりません。");
                                 }
 
                                 #endregion
@@ -388,7 +383,7 @@ namespace AWSSDK.Common
                                     var existCode = ExecuteSqlFile(sqlScript, connection, transaction);
                                     if (!existCode)
                                     {
-                                        throw new Exception("Fail Run MstScript");
+                                        throw new Exception("preMstScript スクリプトの実行には失敗しました。");
                                     }
                                 }
                                 #endregion
