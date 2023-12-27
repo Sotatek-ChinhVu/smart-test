@@ -30,6 +30,77 @@ public class CoSyunoInfModel
     public int JihiTax { get; set; }
 
     /// <summary>
+    /// 保険外金額（非課税）
+    /// </summary>
+    public int JihiFutanTaxFree { get; set; }
+
+    #region '内税分'
+    /// <summary>
+    /// 保険外金額（内税/通常税率）
+    /// </summary>
+    public int JihiFutanTaxNr { get; set; }
+
+    /// <summary>
+    /// 保険外金額（内税/軽減税率）
+    /// </summary>
+    public int JihiFutanTaxGen { get; set; }
+
+    /// <summary>
+    /// 内消費税額（内税/通常税率）
+    /// </summary>
+    public int JihiTaxNr { get; set; }
+
+    /// <summary>
+    /// 内消費税額（内税/軽減税率）
+    /// </summary>
+    public int JihiTaxGen { get; set; }
+    #endregion
+
+    #region '外税分'
+    /// <summary>
+    /// 保険外金額（外税/通常税率）
+    /// </summary>
+    public int JihiFutanOuttaxNr { get; set; }
+
+    /// <summary>
+    /// 保険外金額（外税/軽減税率）
+    /// </summary>
+    public int JihiFutanOuttaxGen { get; set; }
+
+    /// <summary>
+    /// 内消費税額（外税/通常税率）
+    /// </summary>
+    public int JihiOuttaxNr { get; set; }
+
+    /// <summary>
+    /// 内消費税額（外税/軽減税率）
+    /// </summary>
+    public int JihiOuttaxGen { get; set; }
+    #endregion
+
+    #region '課税分(内税+外税)'
+    /// <summary>
+    /// 保険外金額（課税/通常税率）
+    /// </summary>
+    public int JihiFutanTaxNrSum => JihiFutanTaxNr + JihiFutanOuttaxNr;
+
+    /// <summary>
+    /// 保険外金額（課税/軽減税率）
+    /// </summary>
+    public int JihiFutanTaxGenSum => JihiFutanTaxGen + JihiFutanOuttaxGen;
+
+    /// <summary>
+    /// 消費税額（課税/通常税率）
+    /// </summary>
+    public int JihiTaxNrSum => JihiTaxNr + JihiOuttaxNr;
+
+    /// <summary>
+    /// 消費税額（課税/軽減税率）
+    /// </summary>
+    public int JihiTaxGenSum => JihiTaxGen + JihiOuttaxGen;
+    #endregion
+
+    /// <summary>
     /// 計算による調整額（KaikeInf.AdjustFutan）の正負反転
     /// </summary>
     public int KaikeiAdjustFutan { get; set; }
@@ -408,7 +479,7 @@ public class CoSyunoInfModel
             if (hokenSbt != "")
             {
                 //公費・後期..に本人家族は不要なので抜ける
-                if(!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
+                if (!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
                 {
                     switch (ReceSbt.Substring(3, 1))
                     {

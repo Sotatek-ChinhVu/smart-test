@@ -169,7 +169,7 @@ namespace Interactor.SuperAdmin
                                 }
                                 else
                                 {
-                                    throw new Exception("Create New subdomain failed");
+                                    throw new Exception("サブドメインの作成に失敗しました。\r\n");
                                 }
                             }
 
@@ -181,7 +181,7 @@ namespace Interactor.SuperAdmin
 
                                 if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
                                 {
-                                    throw new Exception("Snapshot is not Available");
+                                    throw new Exception("Snapshot が無効です。");
                                 }
 
                                 // Create new RDS Instance from snapshot
@@ -262,7 +262,7 @@ namespace Interactor.SuperAdmin
 
                             if (!ct.IsCancellationRequested) // Check task run is not canceled
                             {
-                                var messenge = $"{oldTenant.EndSubDomain} is update tenant successfully.";
+                                var messenge = $"{oldTenant.EndSubDomain} の情報更がが完了しました。";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
                                 // Add info tenant for notification
@@ -280,7 +280,7 @@ namespace Interactor.SuperAdmin
                         }
                         else
                         {
-                            throw new Exception("Update new data tenant failed");
+                            throw new Exception("の情報更新に失敗しました。エラー");
                         }
                     }
 
@@ -292,7 +292,7 @@ namespace Interactor.SuperAdmin
                         {
                             // Notification  upgrade failed
                             _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["update-failed"]);
-                            var messenge = $"{oldTenant.EndSubDomain} is update update failed. Error: {ex.Message}.";
+                            var messenge = $"{oldTenant.EndSubDomain} の情報更新に失敗しました。エラー: {ex.Message}.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                             // Add info tenant for notification
                             notification.SetTenantId(oldTenant.TenantId);
