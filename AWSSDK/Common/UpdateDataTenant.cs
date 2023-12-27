@@ -7,7 +7,6 @@ using Helper.Messaging.Data;
 using Npgsql;
 using System.Data;
 using System.Globalization;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AWSSDK.Common
 {
@@ -66,7 +65,7 @@ namespace AWSSDK.Common
                                 curentFolder = UpdateConst.UPDATE_SQL;
                                 countFileExcute++;
                                 curentFile = Path.GetFileNameWithoutExtension(filePath);
-                                messenger!.Send(new UpdateDataTenantResult( false, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
+                                messenger!.Send(new UpdateDataTenantResult(false, $"{UpdateConst.UPDATE_SQL}/{curentFile}", totalFileExcute, countFileExcute, "", 1));
 
                                 // Read the content of the SQL file
                                 string sqlScript;
@@ -355,7 +354,7 @@ namespace AWSSDK.Common
                                         }
                                         else
                                         {
-                                            throw new Exception(subFolder + " CSVファイルが見つかりません。"); 
+                                            throw new Exception(subFolder + " CSVファイルが見つかりません。");
                                         }
                                     }
                                 }

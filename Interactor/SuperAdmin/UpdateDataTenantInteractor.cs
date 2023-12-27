@@ -72,7 +72,6 @@ namespace Interactor.SuperAdmin
                 // Replace path file linux
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-
                     pathFile7z = pathFile7z.Replace("\\", "/");
                     pathFolderScript = pathFolderScript.Replace("\\", "/");
                     pathFolderMaster = pathFolderMaster.Replace("\\", "/");
