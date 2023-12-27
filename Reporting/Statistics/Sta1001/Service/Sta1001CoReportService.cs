@@ -743,7 +743,8 @@ namespace Reporting.Statistics.Sta1001.Service
                 //自費種別毎の金額
                 for (int i = 0; i <= jihiSbtMsts.Count - 1; i++)
                 {
-                    if (printData.JihiSbtFutans == null) break;
+                    // check null printData.JihiSbtFutans
+                    if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any()) break;
                     var jihiSbtMst = jihiSbtMsts[i];
                     celldata.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
                 }

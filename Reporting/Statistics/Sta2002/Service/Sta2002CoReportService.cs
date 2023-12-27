@@ -190,7 +190,8 @@ namespace Reporting.Statistics.Sta2002.Service
                     //自費種別毎の金額
                     for (int i = 0; i <= jihiSbtMsts.Count - 1; i++)
                     {
-                        if (printData.JihiSbtFutans == null) break;
+                        // check null printData.JihiSbtFutans
+                        if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any()) break;
 
                         var jihiSbtMst = jihiSbtMsts[i];
                         AddListData(ref data, string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), printData.JihiSbtFutans[i]);
