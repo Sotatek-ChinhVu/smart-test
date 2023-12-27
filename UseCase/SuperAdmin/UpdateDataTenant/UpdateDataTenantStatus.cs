@@ -12,7 +12,9 @@ namespace UseCase.SuperAdmin.UpdateDataTenant
         InvalidTenantId = 2,
         Failed = 3,
         TenantDoesNotExist = 4,
-        TenantNotAvailable = 5,
+        TenantNotReadyToUpdate = 5,
         UploadFileIncorrectFormat7z = 6,
+        UnzipFile7zError = 7,
+        MasterFolderHasNoSubfolder = 8,
     }
 }

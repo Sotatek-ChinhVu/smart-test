@@ -524,7 +524,10 @@ namespace Infrastructure.Repositories
 
                     index++;
                 }
-                ptInfQuery = ptInfQuery.Where(pt => ptOdrDetailTemp.Any(x => x == pt.PtId));
+
+                // get ptId list from ptOdrDetailTemp
+                var ptIdList = ptOdrDetailTemp.Distinct().ToList();
+                ptInfQuery = ptInfQuery.Where(pt => ptIdList.Contains(pt.PtId));
             }
 
             // Department

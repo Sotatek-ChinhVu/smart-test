@@ -64,7 +64,7 @@ namespace Interactor.SuperAdmin
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>
                 {
-                    string typeName = inputData.Type == 0 ? "stoped" : "start";
+                    string typeName = inputData.Type == 0 ? "停止" : "開始";
                     try
                     {
                         bool result;
@@ -78,7 +78,7 @@ namespace Interactor.SuperAdmin
                         }
                         if (result)
                         {
-                            var messenge = $"{tenant.EndSubDomain} is {typeName} successfully.";
+                            var messenge = $"{tenant.EndSubDomain} の {typeName} が完了しました。";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
                             // Add info tenant for notification
@@ -93,7 +93,7 @@ namespace Interactor.SuperAdmin
                     }
                     catch (Exception ex)
                     {
-                        var messenge = $"{tenant.EndSubDomain} is {typeName} failed. Error: {ex.Message}.";
+                        var messenge = $"{tenant.EndSubDomain} の {typeName} に失敗しました。エラー: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
 
                         // Add info tenant for notification

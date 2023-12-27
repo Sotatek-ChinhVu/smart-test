@@ -136,38 +136,6 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.ToTable("NOTIFICATION");
                 });
 
-            modelBuilder.Entity("Entity.SuperAdmin.ReleasenoteRead", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("USER_ID")
-                        .HasColumnOrder(2);
-
-                    b.Property<string>("Version")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("VERSION")
-                        .HasColumnOrder(3);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.HasKey("HpId", "UserId", "Version");
-
-                    b.ToTable("RELEASENOTE_READ");
-                });
-
             modelBuilder.Entity("Entity.SuperAdmin.Scription", b =>
                 {
                     b.Property<int>("Id")
