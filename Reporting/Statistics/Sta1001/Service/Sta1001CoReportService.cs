@@ -96,6 +96,7 @@ namespace Reporting.Statistics.Sta1001.Service
             new PutColumn("Seq", "No.", false)
         };
         #endregion
+
         private struct CountData
         {
             public int Count;
@@ -114,6 +115,19 @@ namespace Reporting.Statistics.Sta1001.Service
             public int NyukinGaku;
             public int PreNyukinGaku;
             public int MisyuGaku;
+            public int JihiFutanTaxFree;
+            public int JihiFutanTaxNrSum;
+            public int JihiFutanTaxGenSum;
+            public int JihiTaxNrSum;
+            public int JihiTaxGenSum;
+            public int JihiFutanTaxNr;
+            public int JihiFutanTaxGen;
+            public int JihiTaxNr;
+            public int JihiTaxGen;
+            public int JihiFutanOuttaxNr;
+            public int JihiFutanOuttaxGen;
+            public int JihiOuttaxNr;
+            public int JihiOuttaxGen;
             public List<int> JihiSbtFutans;
 
             public void AddValue(CoSta1001PrintData printData, int decMisyuGaku)
@@ -142,10 +156,24 @@ namespace Reporting.Statistics.Sta1001.Service
                 PreNyukinGaku += int.Parse(printData.PreNyukinGaku ?? "0", NumberStyles.Any);
                 MisyuGaku += int.Parse(printData.MisyuGaku ?? "0", NumberStyles.Any);
                 MisyuGaku -= decMisyuGaku;
+                JihiFutanTaxFree += int.Parse(printData.JihiFutanTaxFree ?? "0", NumberStyles.Any);
+                JihiFutanTaxNrSum += int.Parse(printData.JihiFutanTaxNrSum ?? "0", NumberStyles.Any);
+                JihiFutanTaxGenSum += int.Parse(printData.JihiFutanTaxGenSum ?? "0", NumberStyles.Any);
+                JihiTaxNrSum += int.Parse(printData.JihiTaxNrSum ?? "0", NumberStyles.Any);
+                JihiTaxGenSum += int.Parse(printData.JihiTaxGenSum ?? "0", NumberStyles.Any);
+                JihiFutanTaxNr += int.Parse(printData.JihiFutanTaxNr ?? "0", NumberStyles.Any);
+                JihiFutanTaxGen += int.Parse(printData.JihiFutanTaxGen ?? "0", NumberStyles.Any);
+                JihiTaxNr += int.Parse(printData.JihiTaxNr ?? "0", NumberStyles.Any);
+                JihiTaxGen += int.Parse(printData.JihiTaxGen ?? "0", NumberStyles.Any);
+                JihiFutanOuttaxNr += int.Parse(printData.JihiFutanOuttaxNr ?? "0", NumberStyles.Any);
+                JihiFutanOuttaxGen += int.Parse(printData.JihiFutanOuttaxGen ?? "0", NumberStyles.Any);
+                JihiOuttaxNr += int.Parse(printData.JihiOuttaxNr ?? "0", NumberStyles.Any);
+                JihiOuttaxGen += int.Parse(printData.JihiOuttaxGen ?? "0", NumberStyles.Any);
 
                 if (printData.JihiSbtFutans != null)
                 {
-                    if (JihiSbtFutans == null)
+                    // check if JihiSbtFutans is null or empty, set default JihiSbtFutans data
+                    if (JihiSbtFutans == null || !JihiSbtFutans.Any())
                     {
                         JihiSbtFutans = new List<int>();
                         for (int i = 0; i <= printData.JihiSbtFutans.Count - 1; i++)
@@ -179,6 +207,19 @@ namespace Reporting.Statistics.Sta1001.Service
                 NyukinGaku = 0;
                 PreNyukinGaku = 0;
                 MisyuGaku = 0;
+                JihiFutanTaxFree = 0;
+                JihiFutanTaxNrSum = 0;
+                JihiFutanTaxGenSum = 0;
+                JihiTaxNrSum = 0;
+                JihiTaxGenSum = 0;
+                JihiFutanTaxNr = 0;
+                JihiFutanTaxGen = 0;
+                JihiTaxNr = 0;
+                JihiTaxGen = 0;
+                JihiFutanOuttaxNr = 0;
+                JihiFutanOuttaxGen = 0;
+                JihiOuttaxNr = 0;
+                JihiOuttaxGen = 0;
                 JihiSbtFutans = new();
             }
         }
@@ -278,11 +319,11 @@ namespace Reporting.Statistics.Sta1001.Service
                             _printConf.SortOrder1 == 3 ? s.UketukeTime :
                             _printConf.SortOrder1 == 4 ? s.KaikeiTime : "0")
                         .ThenByDescending(s =>
-                            _printConf.SortOpt1 == 0 ? "0" :
-                            _printConf.SortOrder1 == 1 ? s.PtKanaName :
-                            _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
-                            _printConf.SortOrder1 == 3 ? s.UketukeTime :
-                            _printConf.SortOrder1 == 4 ? s.KaikeiTime : "0")
+                           _printConf.SortOpt1 == 0 ? "0" :
+                           _printConf.SortOrder1 == 1 ? s.PtKanaName :
+                           _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') :
+                           _printConf.SortOrder1 == 3 ? s.UketukeTime :
+                           _printConf.SortOrder1 == 4 ? s.KaikeiTime : "0")
                         .ThenBy(s =>
                             _printConf.SortOpt2 == 1 ? "0" :
                             _printConf.SortOrder2 == 1 ? s.PtKanaName :
@@ -361,10 +402,13 @@ namespace Reporting.Statistics.Sta1001.Service
                         pageCount++;
 
                         //ヘッダー情報
-                        while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1 && headerL2.Count >= 1)
+                        while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1)
                         {
                             headerL1.Add(headerL1.Last());
-                            headerL2.Add(headerL2.Last());
+                            if (headerL2.Count >= 1)
+                            {
+                                headerL2.Add(headerL2.Last());
+                            }
                         }
                     }
 
@@ -397,6 +441,19 @@ namespace Reporting.Statistics.Sta1001.Service
                         printData.PtFutanElse = csvOmit ? "0" : ptFutanElseDisplay.ToString("#,0");
                         printData.JihiFutan = csvOmit ? "0" : syunoInf.JihiFutan.ToString("#,0");
                         printData.JihiTax = csvOmit ? "0" : syunoInf.JihiTax.ToString("#,0");
+                        printData.JihiFutanTaxFree = csvOmit ? "0" : syunoInf.JihiFutanTaxFree.ToString("#,0");
+                        printData.JihiFutanTaxNrSum = csvOmit ? "0" : syunoInf.JihiFutanTaxNrSum.ToString("#,0");
+                        printData.JihiFutanTaxGenSum = csvOmit ? "0" : syunoInf.JihiFutanTaxGenSum.ToString("#,0");
+                        printData.JihiTaxNrSum = csvOmit ? "0" : syunoInf.JihiTaxNrSum.ToString("#,0");
+                        printData.JihiTaxGenSum = csvOmit ? "0" : syunoInf.JihiTaxGenSum.ToString("#,0");
+                        printData.JihiFutanTaxNr = csvOmit ? "0" : syunoInf.JihiFutanTaxNr.ToString("#,0");
+                        printData.JihiFutanTaxGen = csvOmit ? "0" : syunoInf.JihiFutanTaxGen.ToString("#,0");
+                        printData.JihiTaxNr = csvOmit ? "0" : syunoInf.JihiTaxNr.ToString("#,0");
+                        printData.JihiTaxGen = csvOmit ? "0" : syunoInf.JihiTaxGen.ToString("#,0");
+                        printData.JihiFutanOuttaxNr = csvOmit ? "0" : syunoInf.JihiFutanOuttaxNr.ToString("#,0");
+                        printData.JihiFutanOuttaxGen = csvOmit ? "0" : syunoInf.JihiFutanOuttaxGen.ToString("#,0");
+                        printData.JihiOuttaxNr = csvOmit ? "0" : syunoInf.JihiOuttaxNr.ToString("#,0");
+                        printData.JihiOuttaxGen = csvOmit ? "0" : syunoInf.JihiOuttaxGen.ToString("#,0");
                         printData.AdjustFutan = csvOmit ? "0" : syunoInf.AdjustFutan.ToString("#,0");
                         printData.MenjyoGaku = csvOmit ? "0" : syunoInf.MenjyoGaku.ToString("#,0");
                         printData.SeikyuGaku = csvOmit ? "0" :
@@ -521,10 +578,13 @@ namespace Reporting.Statistics.Sta1001.Service
                 AddTotalRecord("◆合計", ref total);
 
                 //ヘッダー情報
-                while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1 && headerL2.Count >= 1)
+                while ((int)Math.Ceiling((double)(printDatas.Count) / maxRow) > headerL1.Count && headerL1.Count >= 1)
                 {
                     headerL1.Add(headerL1.Last());
-                    headerL2.Add(headerL2.Last());
+                    if (headerL2.Count >= 1)
+                    {
+                        headerL2.Add(headerL2.Last());
+                    }
                 }
 
                 if (pageCount >= 2)
@@ -561,6 +621,19 @@ namespace Reporting.Statistics.Sta1001.Service
                         NyukinGaku = totalData.NyukinGaku.ToString("#,0"),
                         PreNyukinGaku = totalData.PreNyukinGaku.ToString("#,0"),
                         MisyuGaku = totalData.MisyuGaku.ToString("#,0"),
+                        JihiFutanTaxFree = totalData.JihiFutanTaxFree.ToString("#,0"),
+                        JihiFutanTaxNrSum = totalData.JihiFutanTaxNrSum.ToString("#,0"),
+                        JihiFutanTaxGenSum = totalData.JihiFutanTaxGenSum.ToString("#,0"),
+                        JihiTaxNrSum = totalData.JihiTaxNrSum.ToString("#,0"),
+                        JihiTaxGenSum = totalData.JihiTaxGenSum.ToString("#,0"),
+                        JihiFutanTaxNr = totalData.JihiFutanTaxNr.ToString("#,0"),
+                        JihiFutanTaxGen = totalData.JihiFutanTaxGen.ToString("#,0"),
+                        JihiTaxNr = totalData.JihiTaxNr.ToString("#,0"),
+                        JihiTaxGen = totalData.JihiTaxGen.ToString("#,0"),
+                        JihiFutanOuttaxNr = totalData.JihiFutanOuttaxNr.ToString("#,0"),
+                        JihiFutanOuttaxGen = totalData.JihiFutanOuttaxGen.ToString("#,0"),
+                        JihiOuttaxNr = totalData.JihiOuttaxNr.ToString("#,0"),
+                        JihiOuttaxGen = totalData.JihiOuttaxGen.ToString("#,0"),
                         JihiSbtFutans = totalData.JihiSbtFutans?.Select(j => j.ToString("#,0")).ToList() ?? new()
                     }
                 );

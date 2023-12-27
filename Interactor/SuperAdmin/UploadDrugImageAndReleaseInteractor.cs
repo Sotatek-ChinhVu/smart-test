@@ -1,8 +1,10 @@
-﻿using Domain.SuperAdminModels.SystemChangeLog;
+﻿using Domain.SuperAdminModels.Notification;
+using Domain.SuperAdminModels.SystemChangeLog;
 using Helper.Constants;
 using Helper.Messaging;
 using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
+using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
@@ -15,17 +17,19 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IConfiguration _configuration;
     private readonly ISystemChangeLogRepository _systemChangeLogRepository;
+    private readonly INotificationRepository _notificationRepository;
     private IMessenger? _messenger;
     private bool isStopProgress = false;
     private readonly List<string> fileUploaded = new();
     private string filename = string.Empty, folderName = string.Empty;
     private int successCount = 0, totalFile = 0;
 
-    public UploadDrugImageAndReleaseInteractor(IAmazonS3Service amazonS3Service, IConfiguration configuration, ISystemChangeLogRepository systemChangeLogRepository)
+    public UploadDrugImageAndReleaseInteractor(IAmazonS3Service amazonS3Service, IConfiguration configuration, ISystemChangeLogRepository systemChangeLogRepository, INotificationRepository notificationRepository)
     {
         _amazonS3Service = amazonS3Service;
         _configuration = configuration;
         _systemChangeLogRepository = systemChangeLogRepository;
+        _notificationRepository = notificationRepository;
     }
 
     public UploadDrugImageAndReleaseOutputData Handle(UploadDrugImageAndReleaseInputData inputData)
@@ -37,14 +41,14 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         List<string> housouFileList = new(), zaikeiFileList = new(), releaseFileList = new();
         SystemChangeLogModel systemChangeLog = new();
         int status = 1;
+        var _webSocketService = (IWebSocketService)inputData.WebSocketService;
 
         try
         {
             _messenger = inputData.Messenger;
-
             if (inputData.FileUpdateData == null || !string.Equals(Path.GetExtension(inputData.FileUpdateData.FileName), ".7z", StringComparison.OrdinalIgnoreCase))
             {
-                SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "This file is null or not in the correct format."));
+                SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "アップロードファイルが不正です。"));
                 return new UploadDrugImageAndReleaseOutputData();
             }
 
@@ -162,6 +166,20 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             systemChangeLog.UpdateStatus(status, errorMessage);
             _systemChangeLogRepository.SaveSystemChangeLog(systemChangeLog);
         }
+
+        // send notification if success file
+        // if status = 9, send message successfully
+        if (status == 9)
+        {
+            var messenge = $"医薬品画像およびリリースノートのアップロードが完了しました。";
+            var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotiSuccess, messenge);
+            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+        }
+        else
+        {
+            var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotifailure, errorMessage);
+            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+        }
         return new UploadDrugImageAndReleaseOutputData();
     }
 
@@ -178,7 +196,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         var dictionaryFileList = Directory.GetFiles(folderName).ToList();
         if (!dictionaryFileList.Contains(fileName))
         {
-            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.ini file dose not exist."));
+            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.iniファイルが存在しません。"));
             return null;
         }
 
@@ -186,7 +204,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         var lines = File.ReadLines(fileName).ToList();
         if (!lines.Contains($"[{CommonConstants.SECTION_RELEASE}]"))
         {
-            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.ini file is null or not in the correct format."));
+            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.iniファイルが空またはファイル形式が不正です。"));
             return null;
         }
         foreach (var line in lines)
@@ -218,7 +236,6 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         }
         return new ReleaseInfo(current, newVer, oldVer, releaseVer, type);
     }
-
 
     private SystemChangeLogModel AddSystemChangeLog(string zipFilePath, ReleaseInfo releaseInfo)
     {
