@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Domain.Models.ReleasenoteRead;
 using Entity.Tenant;
@@ -33,6 +32,55 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         return result;
     }
 
+    public async Task<bool> CheckShowReleaseNote(int hpId, int userId, AmazonS3Client sourceClient)
+    {
+        var listHeader = GetListReleasenote(hpId, userId);
+
+        ListObjectsV2Request request = new ListObjectsV2Request
+        {
+            BucketName = LoadListVersionEnum.BucketName,
+            Prefix = LoadListVersionEnum.Prefix
+        };
+
+        ListObjectsV2Response response = await sourceClient.ListObjectsV2Async(request);
+        List<Task<string>> fileUrlTasks = new List<Task<string>>();
+
+        foreach (S3Object s3Object in response.S3Objects)
+        {
+            if (!s3Object.Key.EndsWith("/"))
+            {
+                fileUrlTasks.Add(GetObjectUrlAsync(sourceClient, LoadListVersionEnum.BucketName, s3Object.Key));
+            }
+        }
+
+        string[] fileUrls = await Task.WhenAll(fileUrlTasks);
+        List<ReleasenoteReadModel> result = new List<ReleasenoteReadModel>();
+        List<string> headers = new List<string>();
+        bool showReleaseNote = true;
+
+        foreach (var item in fileUrls)
+        {
+            var header = GetFolderPath(item);
+            headers.Add(header);
+        }
+
+        headers = headers.Distinct().OrderByDescending(x => x).ToList();
+
+        foreach (var item in headers)
+        {
+            if (!listHeader.Contains(item))
+            {
+                showReleaseNote = true;
+                break;
+            }
+            else
+            {
+                showReleaseNote = false;
+            }
+        }
+        return showReleaseNote;
+    }
+
     public async Task<List<ReleasenoteReadModel>> GetLoadListVersion(int hpId, int userId, AmazonS3Client sourceClient)
     {
         var listHeader = GetListReleasenote(hpId, userId);
@@ -56,8 +104,17 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
 
         string[] fileUrls = await Task.WhenAll(fileUrlTasks);
         List<ReleasenoteReadModel> result = new List<ReleasenoteReadModel>();
+        List<string> headers = new List<string>();
 
-        foreach (var item in listHeader)
+        foreach (var item in fileUrls)
+        {
+            var header = GetFolderPath(item);
+            headers.Add(header);
+        }
+
+        headers = headers.Distinct().OrderByDescending(x => x).ToList();
+
+        foreach (var item in headers)
         {
             string path = string.Empty;
             Dictionary<string, Dictionary<string, string>> subfiles = new();
@@ -113,6 +170,16 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         string url = sourceClient.GetPreSignedURL(request);
 
         return url;
+    }
+
+    private string GetFolderPath(string url)
+    {
+        Uri uri = new Uri(url);
+        string path = uri.AbsolutePath;
+        string[] pathSegments = path.Split('/');
+        string versionSegment = Array.Find(pathSegments, s => s.Contains(".")) ?? "";
+
+        return versionSegment ?? string.Empty;
     }
 
     public void ReleaseResource()
