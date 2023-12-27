@@ -23,7 +23,7 @@ namespace Infrastructure.Repositories
 
         public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
-            key = GetCacheKey();
+            key = GetDomainKey();
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();

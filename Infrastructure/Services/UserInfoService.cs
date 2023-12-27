@@ -21,7 +21,7 @@ namespace Infrastructure.Services
         public UserInfoService(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
             _tenantProvider = tenantProvider;
-            key = GetCacheKey();
+            key = GetDomainKey();
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();

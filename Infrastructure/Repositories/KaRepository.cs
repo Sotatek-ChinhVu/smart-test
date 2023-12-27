@@ -18,7 +18,7 @@ public class KaRepository : RepositoryBase, IKaRepository
     private readonly IConfiguration _configuration;
     public KaRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
-        key = GetCacheKey();
+        key = GetDomainKey();
         _configuration = configuration;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
