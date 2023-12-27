@@ -145,7 +145,24 @@ public class ExportCsvController : ControllerBase
                 switch (item.Key)
                 {
                     case AuditLogEnum.LogType:
-                        workSheet.Cell(row, column).SetValue(auditLog.LogType);
+                        // update logic return logType
+                        string logTypeDisplay = auditLog.LogType;
+                        switch (auditLog.LogType)
+                        {
+                            case "START":
+                                logTypeDisplay = "開始";
+                                break;
+                            case "END":
+                                logTypeDisplay = "終わり";
+                                break;
+                            case "ERROR":
+                                logTypeDisplay = "エラー";
+                                break;
+                            case "INFO":
+                                logTypeDisplay = "情報";
+                                break;
+                        }
+                        workSheet.Cell(row, column).SetValue(logTypeDisplay);
                         break;
                     case AuditLogEnum.UserId:
                         workSheet.Cell(row, column).SetValue(auditLog.UserId.ToString());
@@ -154,7 +171,8 @@ public class ExportCsvController : ControllerBase
                         workSheet.Cell(row, column).SetValue(auditLog.LoginKey);
                         break;
                     case AuditLogEnum.LogDate:
-                        workSheet.Cell(row, column).SetValue(auditLog.LogDate.ToString("yyyy-MM-dd HH:mm:ss \"GMT\"zzz"));
+                        // update logDate display
+                        workSheet.Cell(row, column).SetValue(auditLog.LogDate.ToString("yyyy-MM-dd HH:mm:ss"));
                         break;
                     case AuditLogEnum.EventCd:
                         workSheet.Cell(row, column).SetValue(auditLog.EventCd);
@@ -163,7 +181,13 @@ public class ExportCsvController : ControllerBase
                         workSheet.Cell(row, column).SetValue(auditLog.PtId.ToString());
                         break;
                     case AuditLogEnum.SinDay:
-                        workSheet.Cell(row, column).SetValue(auditLog.SinDay.ToString());
+                        // change logic display sinday
+                        var sindayDisplay = auditLog.SinDay.ToString();
+                        if (sindayDisplay.Length == 8)
+                        {
+                            sindayDisplay = $"{auditLog.SinDay / 10000}-{(auditLog.SinDay % 10000) / 100}-{auditLog.SinDay % 100}";
+                        }
+                        workSheet.Cell(row, column).SetValue(sindayDisplay);
                         break;
                     case AuditLogEnum.RequestInfo:
                         // the maximum charaters of each cell in excel is 32767
@@ -176,6 +200,27 @@ public class ExportCsvController : ControllerBase
                         break;
                     case AuditLogEnum.Desciption:
                         workSheet.Cell(row, column).SetValue(auditLog.Desciption);
+                        break;
+                    case AuditLogEnum.HpId:
+                        workSheet.Cell(row, column).SetValue(auditLog.HpId);
+                        break;
+                    case AuditLogEnum.RaiinNo:
+                        workSheet.Cell(row, column).SetValue(auditLog.RaiinNo);
+                        break;
+                    case AuditLogEnum.ClientIP:
+                        workSheet.Cell(row, column).SetValue(auditLog.ClientIP);
+                        break;
+                    case AuditLogEnum.ThreadId:
+                        workSheet.Cell(row, column).SetValue(auditLog.ThreadId);
+                        break;
+                    case AuditLogEnum.DepartmentId:
+                        workSheet.Cell(row, column).SetValue(auditLog.DepartmentId);
+                        break;
+                    case AuditLogEnum.Path:
+                        workSheet.Cell(row, column).SetValue(auditLog.Path);
+                        break;
+                    case AuditLogEnum.LogId:
+                        workSheet.Cell(row, column).SetValue(auditLog.LogId);
                         break;
                 }
                 column++;
