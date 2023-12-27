@@ -172,16 +172,16 @@ namespace Reporting.Statistics.Sta2020.DB
                             sinRp.SinId.ToString(),
                     Suryo = sinDetail.Suryo * sinCount.Count,
                     //UnitName = sinDetail.UnitName,
-                    ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
+                    ItemCd = ((sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
                     ItemCdCmt =
                         (
-                            sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                            (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                             tenMst.MasterSbt == "C" ? sinDetail.ItemName :
                             sinDetail.ItemCd
                         ),
                     SrcItemCd =
                         (
-                            sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                            (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                             sinDetail.ItemCd == ItemCdConst.CommentFree ? sinDetail.ItemName :
                             sinDetail.ItemCd
                         ),
@@ -362,7 +362,6 @@ namespace Reporting.Statistics.Sta2020.DB
                         SinDate = data.SinDate,
                         SinId = data.SinId,
                         Suryo = data.Suryo,
-                        //UnitName = data.sinDetail.UnitName,
                         Money =
                             data.KizamiId == 1 ? (int)Math.Round(data.TenDetail * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
                             (int)Math.Round(data.Ten * data.Suryo * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
@@ -539,9 +538,9 @@ namespace Reporting.Statistics.Sta2020.DB
                     SrcItemCd = joinOdr.ItemCd == string.Empty || joinOdr.ItemCd == null ? joinOdr.ItemName : joinOdr.ItemCd,
                     ItemName = joinOdr.ItemName,
                     KaId = raiinInf.KaId,
-                    KaSname = kaMstj.KaSname,
+                    KaSname = kaMstj.KaSname ?? string.Empty,
                     TantoId = raiinInf.TantoId,
-                    TantoSname = tantoMst.Sname,
+                    TantoSname = tantoMst.Sname ?? string.Empty,
                     InoutKbn = joinOdr.InoutKbn,
                 }
             );
@@ -772,13 +771,13 @@ namespace Reporting.Statistics.Sta2020.DB
                     ItemCd = data.ItemCd,
                     ItemCdCmt = data.ItemCdCmt,
                     ItemName = data.ItemName,
-                    ItemKanaName1 = data.ItemKanaName1,
-                    ItemKanaName2 = data.ItemKanaName2,
-                    ItemKanaName3 = data.ItemKanaName3,
-                    ItemKanaName4 = data.ItemKanaName4,
-                    ItemKanaName5 = data.ItemKanaName5,
-                    ItemKanaName6 = data.ItemKanaName6,
-                    ItemKanaName7 = data.ItemKanaName7,
+                    ItemKanaName1 = data.ItemKanaName1 ?? string.Empty,
+                    ItemKanaName2 = data.ItemKanaName2 ?? string.Empty,
+                    ItemKanaName3 = data.ItemKanaName3 ?? string.Empty,
+                    ItemKanaName4 = data.ItemKanaName4 ?? string.Empty,
+                    ItemKanaName5 = data.ItemKanaName5 ?? string.Empty,
+                    ItemKanaName6 = data.ItemKanaName6 ?? string.Empty,
+                    ItemKanaName7 = data.ItemKanaName7 ?? string.Empty,
                     KaId = data.KaId,
                     KaSname = data.KaSname,
                     TantoId = data.TantoId,

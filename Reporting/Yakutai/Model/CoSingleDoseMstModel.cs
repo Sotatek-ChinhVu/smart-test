@@ -36,7 +36,5 @@ namespace Reporting.Yakutai.Model
         {
             get { return SingleDoseMst.Id; }
         }
-
-
     }
 }

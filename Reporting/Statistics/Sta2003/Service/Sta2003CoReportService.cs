@@ -298,7 +298,8 @@ public class Sta2003CoReportService : ISta2003CoReportService
                 //自費種別毎の金額
                 for (int i = 0; i <= _jihiSbtMsts.Count - 1; i++)
                 {
-                    if (printData.JihiSbtFutans == null) break;
+                    // check null printData.JihiSbtFutans
+                    if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any()) break;
 
                     var jihiSbtMst = _jihiSbtMsts[i];
                     AddListData(ref data, string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), printData.JihiSbtFutans[i]);
@@ -370,7 +371,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                             _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') : "0")
                         .ThenBy(s => s.NyukinDate == s.SinDate ? "0" : "1" + s.SinDate.ToString())
                         .ThenBy(s => s.PtNum)
-                        .ToList();
+                        .ToList() ?? new();
             #endregion
 
             var nyukinYms = _syunoInfs?.GroupBy(s => s.NyukinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();

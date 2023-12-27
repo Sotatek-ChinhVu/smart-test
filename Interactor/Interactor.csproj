@@ -12,6 +12,7 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="SharpCompress" Version="0.34.2" />
   </ItemGroup>
 
   <ItemGroup>

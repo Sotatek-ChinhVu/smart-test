@@ -8,6 +8,14 @@ public class CoSta3030PrintData
     public CoSta3030PrintData(RowType rowType = RowType.Data)
     {
         RowType = rowType;
+        Byomei = string.Empty;
+        ByomeiCd = string.Empty;
+        SyubyoKbn = string.Empty;
+        HosokuCmt = string.Empty;
+        Hoken = string.Empty;
+        HokenPid = string.Empty;
+        SettogoCd = string.Empty;
+        SetubigoCd = string.Empty;
     }
 
     /// <summary>

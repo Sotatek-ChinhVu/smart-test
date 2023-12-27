@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using AWSSDK.Constants;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
@@ -165,10 +166,60 @@ namespace AWSSDK.Common
                 throw new Exception($"S3 Error deleting objects in folder: '{ex.Message}'");
             }
         }
-        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string folderKey, AmazonS3Client destinationClient, string destinationBucketName)
+
+        static async Task DeleteAllVersionObject(string folderKey, AmazonS3Client s3Client, string bucketName)
+        {
+            var listVersionsRequest = new ListVersionsRequest
+            {
+                BucketName = bucketName,
+                Prefix = folderKey
+            };
+            ListVersionsResponse listVersionsResponse;
+            do
+            {
+                listVersionsResponse = await s3Client.ListVersionsAsync(listVersionsRequest);
+
+                var objectsToDelete = listVersionsResponse.Versions
+                    .Select(v => new KeyVersion { Key = v.Key, VersionId = v.VersionId })
+                    .ToList();
+
+                if (objectsToDelete.Any())
+                {
+                    var deleteObjectsRequest = new DeleteObjectsRequest
+                    {
+                        BucketName = bucketName,
+                        Objects = objectsToDelete
+                    };
+
+                    var deleteObjectsResponse = await s3Client.DeleteObjectsAsync(deleteObjectsRequest);
+
+                    // Check the response for any errors
+                    if (deleteObjectsResponse.DeleteErrors.Any())
+                    {
+                        Console.WriteLine("Some objects could not be deleted. Error details:");
+                        foreach (var error in deleteObjectsResponse.DeleteErrors)
+                        {
+                            Console.WriteLine($"Object Key: {error.Key}, VersionId: {error.VersionId}, Code: {error.Code}, Message: {error.Message}");
+                        }
+                    }
+                }
+
+                // Set markers for the next iteration
+                listVersionsRequest.KeyMarker = listVersionsResponse.NextKeyMarker;
+                listVersionsRequest.VersionIdMarker = listVersionsResponse.NextVersionIdMarker;
+
+            } while (listVersionsResponse.IsTruncated);
+        }
+
+        public static async Task CopyObjectsInFolderAsync(AmazonS3Client sourceClient, string sourceBucketName, string folderKey, AmazonS3Client destinationClient, string destinationBucketName, bool prefixDelete)
         {
             try
             {
+                if (!folderKey.EndsWith("/"))
+                {
+                    folderKey += "/";
+                }
+                var folder = folderKey;
                 ListObjectsV2Request request = new ListObjectsV2Request
                 {
                     BucketName = sourceBucketName,
@@ -181,21 +232,58 @@ namespace AWSSDK.Common
                     response = await sourceClient.ListObjectsV2Async(request);
                     if (!response.S3Objects.Any())
                     {
-                        Console.WriteLine($"Objects in folder '{folderKey}' not found.");
-                        return;
+                        if (!prefixDelete)
+                        {
+                            Console.WriteLine($"Objects in folder '{folder}' not found.");
+                            return;
+                        }
+
+                        int count = folderKey.Split("/").Length - 1;
+                        if (count == 1)
+                        {
+                            folderKey = $"delete-{folderKey}";
+                        }
+                        else
+                        {
+                            folderKey = CommonConstants.GetLeftName(folderKey) + "delete-" + CommonConstants.GetRightName(folderKey);
+                        }
+                        request.Prefix = folderKey;
+                        response = await sourceClient.ListObjectsV2Async(request);
+                        if (!response.S3Objects.Any())
+                        {
+                            Console.WriteLine($"Objects in folder '{folder}' not found.");
+                            return;
+                        }
                     }
                     Parallel.ForEach(response.S3Objects, obj =>
                     {
+                        var destinationKey = folderKey + obj.Key.Substring(folderKey.Length);
+
                         var copyObjectRequest = new CopyObjectRequest
                         {
+
                             SourceBucket = sourceBucketName,
                             SourceKey = obj.Key,
                             DestinationBucket = destinationBucketName,
-                            DestinationKey = folderKey + obj.Key.Substring(folderKey.Length)
-                        };
 
-                        var destinationTransterUtility = new TransferUtility(destinationClient);
-                        destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
+                        };
+                        if (prefixDelete)
+                        {
+                            destinationKey = CommonConstants.RemoveDeleteString(destinationKey);
+                            copyObjectRequest.DestinationKey = destinationKey;
+                            var destinationTransterUtility = new TransferUtility(destinationClient);
+                            destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
+                        }
+                        else
+                        {
+                            if (!CommonConstants.CheckCondition(destinationKey))
+                            {
+                                copyObjectRequest.DestinationKey = destinationKey;
+                                var destinationTransterUtility = new TransferUtility(destinationClient);
+                                destinationTransterUtility.S3Client.CopyObjectAsync(copyObjectRequest).Wait();
+                            }
+                        }
+                        DeleteAllVersionObject(folderKey, sourceClient, sourceBucketName).Wait();
                     });
 
                     request.ContinuationToken = response.NextContinuationToken;

@@ -1,20 +1,19 @@
 ﻿using Helper.Constants;
-using Infrastructure.Common;
+using Helper.Extension;
 using Helper.Redis;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
+using StackExchange.Redis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
-using StackExchange.Redis;
-using Helper.Extension;
-using System.IdentityModel.Tokens.Jwt;
-using Helper.Common;
 
 namespace Infrastructure.CommonDB
 {
@@ -43,6 +42,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
+#if DEBUG
             var queryString = _httpContextAccessor.HttpContext?.Request?.Path.Value ?? string.Empty + _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
             if (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV"))
             {
@@ -51,7 +51,7 @@ namespace Infrastructure.CommonDB
                     return _cache.StringGet(queryString).ToString();
                 }
             }
-           
+
             string dbSample = _configuration["TenantDb"] ?? string.Empty;
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
@@ -61,7 +61,7 @@ namespace Infrastructure.CommonDB
                 {
                     _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
                 }
-                    return dbSample;
+                return dbSample;
             }
             var domainList = _configuration.GetSection("DomainList").Path;
             if (string.IsNullOrEmpty(domainList))
@@ -88,6 +88,35 @@ namespace Infrastructure.CommonDB
             }
 
             return clientDomainInConfig;
+#else
+            string clientDomain = GetDomainFromHeader();
+            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
+            if (string.IsNullOrEmpty(clientDomain))
+            {
+                return _configuration["TenantDb"] ?? string.Empty;
+            }
+            var key = "connect_db_" + clientDomain.ToLower();
+            if (_cache.KeyExists(key))
+            {
+                return _cache.StringGet(key).ToString();
+            }
+            string tenantDb = "host={0};port=5432;database={1};user id={2};password={3}";
+            var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
+            var tenant = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain.ToLower() == clientDomain.ToLower() && item.IsDeleted == 0 && (item.Status == 1 || item.Status == 9));
+            if (tenant == null)
+            {
+                tenantDb = _configuration["TenantDb"] ?? string.Empty;
+            }
+            else
+            {
+                tenantDb = string.Format(tenantDb, tenant.EndPointDb, tenant.Db, tenant.UserConnect.ToLower(), tenant.PasswordConnect);
+                Console.WriteLine("Connect:" + tenantDb);
+            }
+            _cache.StringSet(key, tenantDb);
+            superAdminNoTrackingDataContext.Dispose();
+
+            return tenantDb;
+#endif
         }
 
         public string GetAdminConnectionString()
@@ -114,7 +143,7 @@ namespace Infrastructure.CommonDB
                 return _cache.StringGet(key).AsInteger();
             }
             var superAdminNoTrackingDataContext = CreateNewSuperAdminNoTrackingDataContext();
-            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.SubDomain == domain)?.TenantId ?? 0;
+            tenantId = superAdminNoTrackingDataContext.Tenants.FirstOrDefault(item => item.EndSubDomain == domain)?.TenantId ?? 0;
             _cache.StringSet(key, tenantId.ToString());
             return tenantId;
         }
@@ -285,16 +314,16 @@ namespace Infrastructure.CommonDB
         {
             var queryString = _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
 
-            // get domain from param
-            string clientDomain = SubStringToGetParam(queryString);
-
-            // get domain from cookie
-            if (string.IsNullOrEmpty(clientDomain))
+            if (queryString.ToLower().Contains("domain"))
             {
+                // get domain from param
+                return SubStringToGetParam(queryString);
+            }
+            else
+            {
+                // get domain from cookie
                 return GetDomainFromCookie();
             }
-
-            return clientDomain;
         }
 
         /// <summary>
@@ -307,7 +336,7 @@ namespace Infrastructure.CommonDB
             if (!string.IsNullOrEmpty(cookieValue))
             {
                 var cookie = JsonSerializer.Deserialize<CookieModel>(cookieValue);
-                if (cookie == null)
+                if (cookie == null || string.IsNullOrEmpty(cookie.Domain))
                 {
                     return string.Empty;
                 }
@@ -325,6 +354,10 @@ namespace Infrastructure.CommonDB
             try
             {
                 var indexStart = queryString.IndexOf(ParamConstant.Domain);
+                if (indexStart == -1)
+                {
+                    indexStart = queryString.IndexOf(ParamConstant.DomainUpper);
+                }
                 var indexSub = indexStart > 0 ? indexStart + 7 : 0;
                 var tempInedexEnd = queryString.IndexOf("&", indexStart);
                 var indexEndSub = 0;
@@ -340,6 +373,7 @@ namespace Infrastructure.CommonDB
                     }
                 }
                 var length = indexEndSub > indexSub ? indexEndSub - indexSub : 0;
+
                 return queryString.Substring(indexSub, length);
             }
             catch
@@ -424,9 +458,9 @@ namespace Infrastructure.CommonDB
         {
             //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
-                    {
-                        buider.EnableRetryOnFailure(maxRetryCount: 3);
-                    })
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
                     //.UseLoggerFactory(loggerFactory)
                     .Options;
             var factory = new PooledDbContextFactory<TenantDataContext>(options);
@@ -437,9 +471,9 @@ namespace Infrastructure.CommonDB
         {
             //ILoggerFactory loggerFactory = new LoggerFactory(new[] { new DatabaseLoggerProvider(_httpContextAccessor) });
             var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
-                {
-                    buider.EnableRetryOnFailure(maxRetryCount: 3);
-                })
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            })
                 //.UseLoggerFactory(loggerFactory)
                 .Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);

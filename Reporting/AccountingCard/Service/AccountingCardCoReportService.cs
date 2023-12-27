@@ -96,7 +96,7 @@ namespace Reporting.AccountingCard.Service
                 byomeiModels = new List<CoReceiptByomeiModel>();
                 tekiyoModels = new List<CoReceiptTekiyoModel>();
                 coModel = GetData();
-                if (coModel != null && coModel.PtInfModel != null)
+                if (coModel != null && coModel.PtInfModel != new CoPtInfModel())
                 {
                     _currentPage = 1;
                     hasNextPage = true;

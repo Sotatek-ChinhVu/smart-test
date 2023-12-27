@@ -6,6 +6,8 @@ using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
+using Helper.Constants;
+using Infrastructure.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text.Json;
@@ -28,11 +30,13 @@ namespace EmrCloudApi.Controller
         private readonly UseCaseBus _bus;
         private CancellationToken? _cancellationToken;
         private readonly IWebSocketService _webSocketService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LockController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
+        public LockController(UseCaseBus bus, IUserService userService, IHttpContextAccessor httpContextAccessor, IWebSocketService webSocketService) : base(userService)
         {
             _bus = bus;
             _webSocketService = webSocketService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost(ApiPath.AddLock)]
@@ -148,6 +152,17 @@ namespace EmrCloudApi.Controller
             if (output.Status == RemoveLockStatus.Successed)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.LockChanged, output.ResponseLockList);
+
+                // Reset cookie expire date
+                if (!string.IsNullOrEmpty(_httpContextAccessor.HttpContext?.Request.Cookies[DomainCookie.CookieReportKey]))
+                {
+                    CookieOptions options = new CookieOptions();
+                    options.Expires = DateTime.Now.AddDays(-1);
+                    options.Path = "/";
+                    options.Secure = true;
+                    options.SameSite = SameSiteMode.None;
+                    HttpContext.Response.Cookies.Append(DomainCookie.CookieReportKey, string.Empty, options);
+                }
             }
 
             var presenter = new RemoveLockPresenter();

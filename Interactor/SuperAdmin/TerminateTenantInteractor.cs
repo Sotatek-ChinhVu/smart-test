@@ -122,13 +122,13 @@ namespace Interactor.SuperAdmin
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
                             {
-                                throw new Exception("File sql dump doesn't exist");
+                                throw new Exception("sqldump 存在しません。");
                             }
 
                             long length = new System.IO.FileInfo(pathFileDump).Length;
                             if (length <= 0)
                             {
-                                throw new Exception("Invalid file sql dump");
+                                throw new Exception("Sqldump が無効です");
                             }
 
                             // Upload file sql dump to folder backup S3
@@ -188,7 +188,7 @@ namespace Interactor.SuperAdmin
                             {
                                 _tenantRepositoryRunTask.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
                                 // Notification  terminating success
-                                var messenge = tenant.EndSubDomain + $"is teminate successfully. ";
+                                var messenge = tenant.EndSubDomain + $"の終了が完了しました。";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
                                 // Add info tenant for notification
@@ -209,7 +209,7 @@ namespace Interactor.SuperAdmin
                     {
                         _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
                         // Notification  terminating failed
-                        var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
+                        var messenge = $"{tenant.EndSubDomain} の終了に失敗しました。エラー: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
 
                         // Add info tenant for notification
