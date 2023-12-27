@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.ReleasenoteRead
         public Response<GetLoadListVersionResponse> Result { get; private set; } = new();
         public void Complete(GetLoadListVersionOutputData outputData)
         {
-            Result.Data = new GetLoadListVersionResponse(outputData.Data, outputData.Status);
+            Result.Data = new GetLoadListVersionResponse(outputData.Data, outputData.ShowReleaseNote, outputData.Status);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
