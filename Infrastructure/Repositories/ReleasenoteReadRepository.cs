@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using Domain.Models.ReleasenoteRead;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -180,6 +181,24 @@ public class ReleasenoteReadRepository : RepositoryBase, IReleasenoteReadReposit
         string versionSegment = Array.Find(pathSegments, s => s.Contains(".")) ?? "";
 
         return versionSegment ?? string.Empty;
+    }
+
+    public bool UpdateListReleasenote(int hpId, int userId, List<string> versions)
+    {
+        foreach (var version in versions)
+        {
+            if (NoTrackingDataContext.ReleasenoteReads.Where(x => x.HpId == hpId && x.UserId == userId).Any(x => x.Version == version.Replace(".", ""))) continue;
+            var newEntity = new ReleasenoteRead()
+            {
+                HpId = hpId,
+                UserId = userId,
+                Version = version.Replace(".", ""),
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+            };
+            TrackingDataContext.ReleasenoteReads.Add(newEntity);
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public void ReleaseResource()
