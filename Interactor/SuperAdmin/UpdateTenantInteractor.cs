@@ -253,7 +253,7 @@ namespace Interactor.SuperAdmin
                         if (tenantUpgrade.TenantId > 0)
                         {
                             // set cache to tenantId
-                            var key = "cache_tenantId_" + tenantUpgrade.SubDomain;
+                            var key = Helper.Constants.CacheKeyConstant.CacheKeyTenantId + tenantUpgrade.EndSubDomain;
                             if (_cache.KeyExists(key))
                             {
                                 _cache.KeyDelete(key);
