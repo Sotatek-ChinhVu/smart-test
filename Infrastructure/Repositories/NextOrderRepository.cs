@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
 
         public NextOrderRepository(ITenantProvider tenantProvider, IAmazonS3Service amazonS3Service, IConfiguration configuration, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
         {
-            key = GetCacheKey() + CacheKeyConstant.GetNextOrderList;
+            key = GetDomainKey() + CacheKeyConstant.GetNextOrderList;
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
