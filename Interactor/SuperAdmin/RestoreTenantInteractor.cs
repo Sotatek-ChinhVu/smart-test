@@ -153,7 +153,7 @@ namespace Interactor.SuperAdmin
                         {
                             // dump data,
                             var pathFileDump = @$"{pathFileDumpRestore}{tenant.Db}.sql"; // path save file sql dump
-                            PostgresSqlAction.PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, ConfigConstant.PgUserDefault, ConfigConstant.PgPasswordDefault).Wait();
 
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
