@@ -177,6 +177,27 @@ public class ExportCsvController : ControllerBase
                     case AuditLogEnum.Desciption:
                         workSheet.Cell(row, column).SetValue(auditLog.Desciption);
                         break;
+                    case AuditLogEnum.HpId:
+                        workSheet.Cell(row, column).SetValue(auditLog.HpId);
+                        break;
+                    case AuditLogEnum.RaiinNo:
+                        workSheet.Cell(row, column).SetValue(auditLog.RaiinNo);
+                        break;
+                    case AuditLogEnum.ClientIP:
+                        workSheet.Cell(row, column).SetValue(auditLog.ClientIP);
+                        break;
+                    case AuditLogEnum.ThreadId:
+                        workSheet.Cell(row, column).SetValue(auditLog.ThreadId);
+                        break;
+                    case AuditLogEnum.DepartmentId:
+                        workSheet.Cell(row, column).SetValue(auditLog.DepartmentId);
+                        break;
+                    case AuditLogEnum.Path:
+                        workSheet.Cell(row, column).SetValue(auditLog.Path);
+                        break;
+                    case AuditLogEnum.LogId:
+                        workSheet.Cell(row, column).SetValue(auditLog.LogId);
+                        break;
                 }
                 column++;
             }
