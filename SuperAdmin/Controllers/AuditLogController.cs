@@ -21,28 +21,28 @@ public class AuditLogController : ControllerBase
         _bus = bus;
     }
 
-    [HttpPost("GetAuditLogList")]
-    public ActionResult<Response<GetAuditLogListResponse>> Login([FromBody] GetAuditLogListRequest request)
+    [HttpGet("GetAuditLogList")]
+    public ActionResult<Response<GetAuditLogListResponse>> Login([FromQuery] GetAuditLogListRequest request)
     {
         var searchModel = new AuditLogSearchModel(
-                              request.RequestModel.LogId,
-                              request.RequestModel.StartDate,
-                              request.RequestModel.EndDate,
-                              request.RequestModel.Domain,
-                              request.RequestModel.ThreadId,
-                              request.RequestModel.LogType,
-                              request.RequestModel.HpId,
-                              request.RequestModel.UserId,
-                              request.RequestModel.LoginKey,
-                              request.RequestModel.DepartmentId,
-                              request.RequestModel.SinDay,
-                              request.RequestModel.EventCd,
-                              request.RequestModel.PtId,
-                              request.RequestModel.RaiinNo,
-                              request.RequestModel.Path,
-                              request.RequestModel.RequestInfo,
-                              request.RequestModel.ClientIP,
-                              request.RequestModel.Desciption);
+                              request.LogId,
+                              request.StartDate,
+                              request.EndDate,
+                              request.Domain,
+                              request.ThreadId,
+                              request.LogType,
+                              request.HpId,
+                              request.UserId,
+                              request.LoginKey,
+                              request.DepartmentId,
+                              request.SinDay,
+                              request.EventCd,
+                              request.PtId,
+                              request.RaiinNo,
+                              request.Path,
+                              request.RequestInfo,
+                              request.ClientIP,
+                              request.Desciption);
         var input = new GetAuditLogListInputData(request.TenantId, searchModel, request.SortDictionary, request.Skip, request.Take);
         var output = _bus.Handle(input);
         var presenter = new GetAuditLogListPresenter();
