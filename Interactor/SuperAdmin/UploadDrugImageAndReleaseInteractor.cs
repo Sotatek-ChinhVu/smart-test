@@ -48,7 +48,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             _messenger = inputData.Messenger;
             if (inputData.FileUpdateData == null || !string.Equals(Path.GetExtension(inputData.FileUpdateData.FileName), ".7z", StringComparison.OrdinalIgnoreCase))
             {
-                SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "This file is null or not in the correct format."));
+                SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "アップロードファイルが不正です。"));
                 return new UploadDrugImageAndReleaseOutputData();
             }
 
@@ -171,7 +171,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         // if status = 9, send message successfully
         if (status == 9)
         {
-            var messenge = $"Upload drugImage and release file successfully.";
+            var messenge = $"医薬品画像およびリリースノートのアップロードが完了しました。";
             var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotiSuccess, messenge);
             _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
         }
@@ -196,7 +196,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         var dictionaryFileList = Directory.GetFiles(folderName).ToList();
         if (!dictionaryFileList.Contains(fileName))
         {
-            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.ini file dose not exist."));
+            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.iniファイルが存在しません。"));
             return null;
         }
 
@@ -204,7 +204,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         var lines = File.ReadLines(fileName).ToList();
         if (!lines.Contains($"[{CommonConstants.SECTION_RELEASE}]"))
         {
-            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.ini file is null or not in the correct format."));
+            SendMessager(new UploadDrugImageAndReleaseStatus(true, 0, 0, string.Empty, string.Empty, "release.iniファイルが空またはファイル形式が不正です。"));
             return null;
         }
         foreach (var line in lines)
