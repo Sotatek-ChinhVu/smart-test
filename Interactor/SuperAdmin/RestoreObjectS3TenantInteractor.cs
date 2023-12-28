@@ -83,7 +83,7 @@ namespace Interactor.SuperAdmin
                 var message = $"医療機関{inputData.ObjectName} のS3 データを復元しています。";
                 var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiInfo, message);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-                return new RestoreObjectS3TenantOutputData(RestoreObjectS3TenantStatus.Success);
+                return new RestoreObjectS3TenantOutputData(RestoreObjectS3TenantStatus.TenantIsProcessOfRestoreS3);
             }
             catch (Exception ex)
             {
