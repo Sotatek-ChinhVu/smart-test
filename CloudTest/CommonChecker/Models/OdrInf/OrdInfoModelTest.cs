@@ -1,4 +1,5 @@
 ﻿using CommonChecker.Models.OrdInfDetailModel;
+using Helper.Common;
 using Helper.Constants;
 
 namespace CloudUnitTest.CommonChecker.Models.OdrInf
@@ -1253,10 +1254,10 @@ namespace CloudUnitTest.CommonChecker.Models.OdrInf
                                          suryo: 1,
                                          unitName: "錠",
                                          termVal: 0,
-                                         syohoKbn: 2,
+                                         syohoKbn: 0,
                                          syohoLimitKbn: 0,
                                          drugKbn: 0,
-                                         yohoKbn: 0,
+                                         yohoKbn: 2,
                                          ipnCd: "1124017F4",
                                          bunkatu: "きみがすごくきれいだよ。",
                                          masterSbt: "Y",
@@ -1270,10 +1271,10 @@ namespace CloudUnitTest.CommonChecker.Models.OdrInf
                                          suryo: 1,
                                          unitName: "錠",
                                          termVal: 0,
-                                         syohoKbn: 1,
+                                         syohoKbn: 0,
                                          syohoLimitKbn: 0,
                                          drugKbn: 0,
-                                         yohoKbn: 0,
+                                         yohoKbn: 1,
                                          ipnCd: "1124017F4",
                                          bunkatu: "きみがすごくきれいだよ。",
                                          masterSbt: "Y",
@@ -1287,19 +1288,19 @@ namespace CloudUnitTest.CommonChecker.Models.OdrInf
                                          suryo: 1,
                                          unitName: "錠",
                                          termVal: 0,
-                                         syohoKbn: 3,
+                                         syohoKbn: 0,
                                          syohoLimitKbn: 0,
                                          drugKbn: 0,
-                                         yohoKbn: 0,
+                                         yohoKbn: 3,
                                          ipnCd: "1124017F4",
                                          bunkatu: "きみがすごくきれいだよ。",
                                          masterSbt: "Y",
                                          bunkatuKoui: 0);
 
             //Assert
-            Assert.AreEqual(ordInfDetail1.IsShohoBiko, true);
-            Assert.AreEqual(ordInfDetail2.IsShohoBiko, false);
-            Assert.AreEqual(ordInfDetail3.IsShohoBiko, false);
+            Assert.AreEqual(ordInfDetail1.IsSuppUsage, true);
+            Assert.AreEqual(ordInfDetail2.IsSuppUsage, false);
+            Assert.AreEqual(ordInfDetail3.IsSuppUsage, false);
         }
 
         [Test]
@@ -1411,6 +1412,301 @@ namespace CloudUnitTest.CommonChecker.Models.OdrInf
             Assert.AreEqual(string.Empty, case_1.DisplayedQuantity);
             Assert.AreEqual("99678999", case_2.DisplayedQuantity);
             Assert.AreEqual(string.Empty, case_3.DisplayedQuantity);
+        }
+
+        [Test]
+        public void TEST_018_OrdInfoDetailModel_IsEmpty()
+        {
+            //Setup
+            /// Actual IsEmpty = false
+            /// ItemCd is empty
+            var case_1 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 0,
+                                         itemCd: string.Empty,
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            /// Actual IsEmpty = false
+            /// ItemCd is null
+            var case_2 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 0,
+                                         itemCd: null,
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            /// Actual IsEmpty = false
+            /// ItemName is null
+            var case_3 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 0,
+                                         itemCd: "ABC",
+                                         itemName: null,
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            /// Actual IsEmpty = false
+            /// ItemName is empty
+            var case_4 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 0,
+                                         itemCd: "ABC",
+                                         itemName: string.Empty,
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            /// Actual IsEmpty = false
+            /// SinKouiKbn != 0
+            var case_5 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 1,
+                                         itemCd: "ABC",
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            /// Actual IsEmpty = true
+            var case_6 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 0,
+                                         itemCd: "",
+                                         itemName: "",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            /// Actual IsEmpty = true
+            var case_7 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 0,
+                                         itemCd: null,
+                                         itemName: null,
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            //Assert
+            Assert.AreEqual(false, case_1.IsEmpty);
+            Assert.AreEqual(false, case_2.IsEmpty);
+            Assert.AreEqual(false, case_3.IsEmpty);
+            Assert.AreEqual(false, case_4.IsEmpty);
+            Assert.AreEqual(false, case_5.IsEmpty);
+            Assert.AreEqual(false, case_6.IsEmpty);
+            Assert.AreEqual(true, case_7.IsEmpty);
+        }
+
+        [Test]
+        public void TEST_019_OrdInfoDetailModel_IsUsage()
+        {
+            //Setup
+            /// IsStandardUsage = true
+            var case_1 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 30,
+                                         itemCd: "1234",
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 1,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+            /// IsSuppUsage = true
+            var case_2 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 30,
+                                         itemCd: "1234",
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 2,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            /// IsInjectionUsage = true
+            var case_3 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 31,
+                                         itemCd: "1234",
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            //Assert
+            Assert.AreEqual(true, case_1.IsUsage);
+            Assert.AreEqual(true, case_2.IsUsage);
+            Assert.AreEqual(true, case_3.IsUsage);
+        }
+
+        [Test]
+        public void TEST_020_OrdInfoDetailModel_ReleasedType()
+        {
+            //Setup
+            var case_1 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 30,
+                                         itemCd: "1234",
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 0,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 1,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            var case_2 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 30,
+                                         itemCd: "1234",
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 0,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 1,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 1,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+            //Assert
+            Assert.AreEqual(ReleasedDrugType.None, case_1.ReleasedType);
+            Assert.AreEqual(ReleasedDrugType.Unchangeable, case_1.ReleasedType);
+        }
+
+        [Test]
+        public void TEST_021_OrdInfoDetailModel_DisplayItemName()
+        {
+            //Setup
+
+            //ItemCd Is @Bunkatu
+            var ordInfDetail1 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 30,
+                                         itemCd: ItemCdConst.Con_TouyakuOrSiBunkatu,
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 1,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+
+            //ItemCd != @Bunkatu
+            var ordInfDetail2 = new OrdInfoDetailModel(
+                                         id: "id1",
+                                         sinKouiKbn: 30,
+                                         itemCd: "ABC",
+                                         itemName: "ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」",
+                                         suryo: 1,
+                                         unitName: "錠",
+                                         termVal: 0,
+                                         syohoKbn: 2,
+                                         syohoLimitKbn: 0,
+                                         drugKbn: 0,
+                                         yohoKbn: 0,
+                                         ipnCd: "1124017F4",
+                                         bunkatu: "きみがすごくきれいだよ。",
+                                         masterSbt: "Y",
+                                         bunkatuKoui: 0);
+            //Assert
+            Assert.AreEqual("ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」" + TenUtils.GetBunkatu(0, "きみがすごくきれいだよ。"), ordInfDetail1.DisplayItemName);
+            Assert.AreEqual("ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」", ordInfDetail2.DisplayItemName);
         }
     }
 }
