@@ -7,6 +7,7 @@ using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 using PostgreDataContext;
 using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
@@ -2758,7 +2759,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             if (isDataOfDb)
             {
                 //Get data in db
-                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, "V0002");
+                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, IraiCodeConstant.WEIGHT_CODE);
 
                 if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
                 {
@@ -2767,8 +2768,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             }
             else
             {
+                //Filter KensaInf with KensaItemCd Is V0002
                 var weightInfo = kensaInfDetailModels
-                          .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == "V002" && !string.IsNullOrEmpty(k.ResultVal))
+                          .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == IraiCodeConstant.WEIGHT_CODE && !string.IsNullOrEmpty(k.ResultVal))
                           .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
                 if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
