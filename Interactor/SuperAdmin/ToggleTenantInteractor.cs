@@ -42,7 +42,7 @@ namespace Interactor.SuperAdmin
                     return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantDoesNotExist);
                 }
 
-                if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && inputData.Type==0)
+                if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && inputData.Type == 0)
                 {
                     return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantNotAvailable);
                 }
@@ -55,11 +55,15 @@ namespace Interactor.SuperAdmin
                 if (inputData.Type == 0)
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["stopping"]);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["stopping"], ConfigConstant.StatusTenantStopping));
                 }
                 else
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["starting"]);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["starting"], ConfigConstant.StatusTenantStopping));
                 }
+
+
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>

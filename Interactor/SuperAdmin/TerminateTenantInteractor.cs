@@ -79,7 +79,7 @@ namespace Interactor.SuperAdmin
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsNotAvailableToSortTerminate);
                 }
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
-
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"], ConfigConstant.StatusSuttingDown));
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>
                 {
