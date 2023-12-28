@@ -1,11 +1,13 @@
-﻿using CommonChecker.Models.OrdInfDetailModel;
+﻿using CommonChecker.Models;
+using CommonChecker.Models.OrdInf;
+using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using Helper.Common;
 using Helper.Constants;
 
-namespace CloudUnitTest.CommonChecker.Models.OdrInf
+namespace CloudUnitTest.CommonChecker.Models
 {
-    public class OrdInfoModelTest : BaseUT
+    public class CommonCheckerModelTest : BaseUT
     {
         [Test]
         public void TEST_001_OrdInfoDetailModel()
@@ -1773,6 +1775,479 @@ namespace CloudUnitTest.CommonChecker.Models.OdrInf
             Assert.AreEqual("0010", test.Id);
             Assert.AreEqual(10.0, test.UsingDay);
             Assert.AreEqual(10.0, test.LimitDay);
+        }
+
+        [Test]
+        public void TEST_025_DiseaseResultModel()
+        {
+            //Setup
+
+            var diseaseResult = new DiseaseResultModel()
+            {
+                DiseaseType = 3,
+                CmtCd = "0010",
+                Id = "0011",
+                TenpuLevel = 10,
+                ByotaiCd = "0012",
+                KijyoCd = "0013",
+                YjCd = "0014",
+            };
+
+            // Act & Assert
+            Assert.AreEqual(3, diseaseResult.DiseaseType);
+            Assert.AreEqual("0010", diseaseResult.CmtCd);
+            Assert.AreEqual("0011", diseaseResult.Id);
+            Assert.AreEqual("0012", diseaseResult.ByotaiCd);
+            Assert.AreEqual(10, diseaseResult.TenpuLevel);
+            Assert.AreEqual("0013", diseaseResult.KijyoCd);
+            Assert.AreEqual("0014", diseaseResult.YjCd);
+        }
+
+        [Test]
+        public void TEST_026_DosageResultModel()
+        {
+            //Setup
+
+            var test = new DosageResultModel()
+            {
+                ItemCd = "00110",
+                ItemName = "ItemName",
+                Id = "0011",
+                CurrentValue = 10.0,
+                SuggestedValue = 9.0,
+                UnitName = "Unit Name",
+                YjCd = "0014",
+                LabelChecking = DosageLabelChecking.OneMin,
+            };
+
+            // Act & Assert
+            Assert.AreEqual("ItemName", test.ItemName);
+            Assert.AreEqual("00110", test.ItemCd);
+            Assert.AreEqual("0011", test.Id);
+            Assert.AreEqual(10.0, test.CurrentValue);
+            Assert.AreEqual(9.0, test.SuggestedValue);
+            Assert.AreEqual("Unit Name", test.UnitName);
+            Assert.AreEqual("0014", test.YjCd);
+            Assert.AreEqual(DosageLabelChecking.OneMin, test.LabelChecking);
+            Assert.AreEqual(false, test.IsFromUserDefined);
+        }
+
+        [Test]
+        public void TEST_027_DrugAllergyResultModel()
+        {
+            //Setup
+
+            var test = new DrugAllergyResultModel()
+            {
+                Level = 10,
+                ItemCd = "ItemName",
+                YjCd = "0011",
+                AllergyItemCd = "00112",
+                AllergyYjCd = "ALLERGYYJCD",
+                SeibunCd = "SEIBUNCODE",
+                AllergySeibunCd = "0012",
+                Tag = "0013",
+                SeqNo = "0014",
+            };
+
+            // Act & Assert
+            Assert.AreEqual(10, test.Level);
+            Assert.AreEqual("ItemName", test.ItemCd);
+            Assert.AreEqual("0011", test.YjCd);
+            Assert.AreEqual("00112", test.AllergyItemCd);
+            Assert.AreEqual("ALLERGYYJCD", test.AllergyYjCd);
+            Assert.AreEqual("SEIBUNCODE", test.SeibunCd);
+            Assert.AreEqual("0012", test.AllergySeibunCd);
+            Assert.AreEqual("0013", test.Tag);
+            Assert.AreEqual("0014", test.SeqNo);
+        }
+
+        [Test]
+        public void TEST_028_DrugInfo()
+        {
+            //Setup
+
+            var test = new DrugInfo()
+            {
+                Id = "001",
+                UsageQuantity = 10.0,
+                ItemCD = "@REFILL",
+                ItemName = "ITEM NAME TEST",
+                Suryo = 9.0,
+                UnitName = "YAKKA"
+            };
+
+            // Act & Assert
+            Assert.AreEqual(10.0, test.UsageQuantity);
+            Assert.AreEqual("001", test.Id);
+            Assert.AreEqual("@REFILL", test.ItemCD);
+            Assert.AreEqual("ITEM NAME TEST", test.ItemName);
+            Assert.AreEqual(9.0, test.Suryo);
+            Assert.AreEqual("YAKKA", test.UnitName);
+        }
+
+        [Test]
+        public void TEST_029_DuplicationResultModel()
+        {
+            //Setup
+
+            var test = new DuplicationResultModel()
+            {
+                Level = 3,
+                ItemCd = "@REFILL",
+                DuplicatedItemCd = "830011000",
+                IsIppanCdDuplicated = true,
+                IppanCode = "830011003",
+                SeibunCd = "830011004",
+                AllergySeibunCd = "830011005",
+                Tag = "830011006",
+            };
+
+            // Act & Assert
+            Assert.AreEqual(false, test.IsComponentDuplicated);
+            Assert.AreEqual("", test.Id);
+            Assert.AreEqual(3, test.Level);
+            Assert.AreEqual("@REFILL", test.ItemCd);
+            Assert.AreEqual("830011000", test.DuplicatedItemCd);
+            Assert.AreEqual(true, test.IsIppanCdDuplicated);
+            Assert.AreEqual("830011003", test.IppanCode);
+            Assert.AreEqual("830011004", test.SeibunCd);
+            Assert.AreEqual("830011005", test.AllergySeibunCd);
+            Assert.AreEqual("830011006", test.Tag);
+        }
+
+        [Test]
+        public void TEST_030_ErrorInfoModel()
+        {
+            //Setup
+
+            var test = new ErrorInfoModel()
+            {
+                Id = "1",
+                FirstCellContent = "Duplicate item",
+                SecondCellContent = "Duplicate item @REFILL",
+                ThridCellContent = "Cannot Order",
+                FourthCellContent = "",
+                HighlightColorCode = "#000099",
+                SuggestedContent = "Suggest",
+                CheckingItemCd = "8301110",
+                CurrentItemCd = "8301112",
+                ErrorType = CommonCheckerType.DuplicationChecker,
+                ListLevelInfo = new(),
+            };
+
+            // Act & Assert
+            Assert.AreEqual("1", test.Id);
+            Assert.AreEqual("Duplicate item", test.FirstCellContent);
+            Assert.AreEqual("Duplicate item @REFILL", test.SecondCellContent);
+            Assert.AreEqual("Cannot Order", test.ThridCellContent);
+            Assert.AreEqual("", test.FourthCellContent);
+            Assert.AreEqual("#000099", test.HighlightColorCode);
+            Assert.AreEqual("Suggest", test.SuggestedContent);
+            Assert.AreEqual("8301110", test.CheckingItemCd);
+            Assert.AreEqual("8301112", test.CurrentItemCd);
+            Assert.AreEqual(CommonCheckerType.DuplicationChecker, test.ErrorType);
+            Assert.AreEqual(0, test.ListLevelInfo.Count);
+        }
+
+        [Test]
+        public void TEST_031_FoodAllergyResultModel()
+        {
+            //Setup
+
+            var test = new FoodAllergyResultModel()
+            {
+                PtId = 123111111111111,
+                AlrgyKbn = "Duplicate item",
+                ItemCd = "Duplicate item @REFILL",
+                YjCd = "Cannot Order",
+                TenpuLevel = "3",
+                AttentionCmt = "#000099",
+                WorkingMechanism = "Suggest",
+            };
+
+            // Act & Assert
+            Assert.AreEqual("", test.Id);
+            Assert.AreEqual("Duplicate item", test.AlrgyKbn);
+            Assert.AreEqual("Duplicate item @REFILL", test.ItemCd);
+            Assert.AreEqual("Cannot Order", test.YjCd);
+            Assert.AreEqual("3", test.TenpuLevel);
+            Assert.AreEqual("#000099", test.AttentionCmt);
+            Assert.AreEqual("Suggest", test.WorkingMechanism);
+            Assert.AreEqual(123111111111111, test.PtId);
+        }
+
+        [Test]
+        public void TEST_032_InvalidDataOrder()
+        {
+            //Setup
+
+            var test = new InvalidDataOrder()
+            {
+                ErrorType = ErrorType.Quantity,
+                ItemName = "item @REFILL",
+            };
+
+            // Act & Assert
+            Assert.AreEqual(ErrorType.Quantity, test.ErrorType);
+            Assert.AreEqual("item @REFILL", test.ItemName);
+        }
+
+        [Test]
+        public void TEST_033_ItemCodeModel()
+        {
+            //Setup
+
+            var test = new ItemCodeModel("12345", "ID5");
+
+            // Act & Assert
+            Assert.AreEqual("12345", test.ItemCd);
+            Assert.AreEqual("ID5", test.Id);
+        }
+
+        [Test]
+        public void TEST_034_KinkiErrorDetail()
+        {
+            //Setup
+
+            var test = new KinkiErrorDetail()
+            {
+                Level = 3,
+                CommentContent = "ABC",
+                SayokijyoContent = "Sayoki content",
+            };
+
+            // Act & Assert
+            Assert.AreEqual(3, test.Level);
+            Assert.AreEqual("ABC", test.CommentContent);
+            Assert.AreEqual("Sayoki content", test.SayokijyoContent);
+        }
+
+        [Test]
+        public void TEST_035_LevelInfoModel()
+        {
+            //Setup
+
+            var test = new LevelInfoModel()
+            {
+                Level = 3,
+                Title = "ABC",
+                BackgroundCode = "#000001F",
+                BorderBrushCode = "#000011F",
+                FirstItemName = "@REFILL",
+                SecondItemName = "DRUG",
+                Comment = "ITEM Refill",
+            };
+
+            // Act & Assert
+            Assert.AreEqual(3, test.Level);
+            Assert.AreEqual("ABC", test.Title);
+            Assert.AreEqual("#000001F", test.BackgroundCode);
+            Assert.AreEqual("#000011F", test.BorderBrushCode);
+            Assert.AreEqual("@REFILL", test.FirstItemName);
+            Assert.AreEqual("DRUG", test.SecondItemName);
+            Assert.AreEqual("ITEM Refill", test.Comment);
+            Assert.AreEqual(test.FirstItemName + (string.IsNullOrEmpty(test.SecondItemName) ? string.Empty : " × " + test.SecondItemName), test.Caption);
+            Assert.AreEqual(false, test.IsShowLevelButton);
+        }
+
+        [Test]
+        public void TEST_036_PtAlrgyDrugModel()
+        {
+            //Setup
+
+            var test = new PtAlrgyDrugModel(1, 1231, 1, 1, "@REFILL", "DRUG REFILL", 20230101, 20231212, "Item cmt", 1);
+
+            // Act & Assert
+            Assert.AreEqual(1, test.HpId);
+            Assert.AreEqual(1231, test.PtId);
+            Assert.AreEqual(1, test.SeqNo);
+            Assert.AreEqual(1, test.SortNo);
+            Assert.AreEqual("@REFILL", test.ItemCd);
+            Assert.AreEqual("DRUG REFILL", test.DrugName);
+            Assert.AreEqual(20230101, test.StartDate);
+            Assert.AreEqual(20231212, test.EndDate);
+            Assert.AreEqual("Item cmt", test.Cmt);
+            Assert.AreEqual(1, test.IsDeleted);
+        }
+
+        [Test]
+        public void TEST_037_PtAlrgyFoodModel()
+        {
+            //Setup
+
+            var test = new PtAlrgyFoodModel(1, 1231, 1, 1, "@REFILL", 20230101, 20231212, "Item cmt", 1, "CAKE");
+
+            // Act & Assert
+            Assert.AreEqual(1, test.HpId);
+            Assert.AreEqual(1231, test.PtId);
+            Assert.AreEqual(1, test.SeqNo);
+            Assert.AreEqual(1, test.SortNo);
+            Assert.AreEqual("@REFILL", test.AlrgyKbn);
+            Assert.AreEqual(20230101, test.StartDate);
+            Assert.AreEqual(20231212, test.EndDate);
+            Assert.AreEqual("Item cmt", test.Cmt);
+            Assert.AreEqual(1, test.IsDeleted);
+            Assert.AreEqual("CAKE", test.FoodName);
+        }
+
+        [Test]
+        public void TEST_038_PtKioRekiModel()
+        {
+            //Setup
+
+            var test = new PtKioRekiModel(1, 1231, 1, 1, "@REFILL", "1234F", "1235F", 20230110, "CAKE", 1);
+
+            // Act & Assert
+            Assert.AreEqual(1, test.HpId);
+            Assert.AreEqual(1231, test.PtId);
+            Assert.AreEqual(1, test.SeqNo);
+            Assert.AreEqual(1, test.SortNo);
+            Assert.AreEqual("@REFILL", test.ByomeiCd);
+            Assert.AreEqual("1234F", test.ByotaiCd);
+            Assert.AreEqual("1235F", test.Byomei);
+            Assert.AreEqual(20230110, test.StartDate);
+            Assert.AreEqual("CAKE", test.Cmt);
+            Assert.AreEqual(1, test.IsDeleted);
+        }
+
+        [Test]
+        public void TEST_039_PtOtcDrugModel()
+        {
+            //Setup
+
+            var test = new PtOtcDrugModel(1, 1231, 1, 1, 8400, "1234F", 20230110, 20241212, "CAKE", 1);
+
+            // Act & Assert
+            Assert.AreEqual(1, test.HpId);
+            Assert.AreEqual(1231, test.PtId);
+            Assert.AreEqual(1, test.SeqNo);
+            Assert.AreEqual(1, test.SortNo);
+            Assert.AreEqual(8400, test.SerialNum);
+            Assert.AreEqual("1234F", test.TradeName);
+            Assert.AreEqual(20230110, test.StartDate);
+            Assert.AreEqual(20241212, test.EndDate);
+            Assert.AreEqual("CAKE", test.Cmt);
+            Assert.AreEqual(1, test.IsDeleted);
+        }
+
+        [Test]
+        public void TEST_040_PtOtherDrugModel()
+        {
+            //Setup
+
+            var test = new PtOtherDrugModel(1, 1231, 1, 1, "1234F", "REFILL Drug", 20230101, 20231212, "Item Cmt", 1);
+
+            // Act & Assert
+            Assert.AreEqual(1, test.HpId);
+            Assert.AreEqual(1231, test.PtId);
+            Assert.AreEqual(1, test.SeqNo);
+            Assert.AreEqual(1, test.SortNo);
+            Assert.AreEqual("1234F", test.ItemCd);
+            Assert.AreEqual("REFILL Drug", test.DrugName);
+            Assert.AreEqual(20230101, test.StartDate);
+            Assert.AreEqual(20231212, test.EndDate);
+            Assert.AreEqual("Item Cmt", test.Cmt);
+            Assert.AreEqual(1, test.IsDeleted);
+        }
+
+        [Test]
+        public void TEST_041_PtSuppleModel()
+        {
+            //Setup
+
+            var test = new PtSuppleModel(1, 1231, 1, 1, "1234F", "REFILL Drug", 20230101, 20231212, "Item Cmt", 1);
+
+            // Act & Assert
+            Assert.AreEqual(1, test.HpId);
+            Assert.AreEqual(1231, test.PtId);
+            Assert.AreEqual(1, test.SeqNo);
+            Assert.AreEqual(1, test.SortNo);
+            Assert.AreEqual("1234F", test.IndexCd);
+            Assert.AreEqual("REFILL Drug", test.IndexWord);
+            Assert.AreEqual(20230101, test.StartDate);
+            Assert.AreEqual(20231212, test.EndDate);
+            Assert.AreEqual("Item Cmt", test.Cmt);
+            Assert.AreEqual(1, test.IsDeleted);
+        }
+
+        [Test]
+        public void TEST_042_OrdInfoModel_Test_IsDrug()
+        {
+            //Setup
+
+            var ordInfDetails = new List<OrdInfoDetailModel>()
+            {
+                new OrdInfoDetailModel("id1", 20, "UT", "Item Name", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+                new OrdInfoDetailModel("id2", 21, "UT", "Item Name", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+            };
+
+            var test1 = new OrdInfoModel(21, 0, ordInfDetails);
+            var test2 = new OrdInfoModel(22, 0, ordInfDetails);
+            var test3 = new OrdInfoModel(23, 0, ordInfDetails);
+            var test4 = new OrdInfoModel(19, 0, ordInfDetails);
+            var test5 = new OrdInfoModel(24, 0, ordInfDetails);
+
+            //Assert
+            Assert.AreEqual(true, test1.IsDrug);
+            Assert.AreEqual(true, test2.IsDrug);
+            Assert.AreEqual(true, test3.IsDrug);
+            Assert.AreEqual(false, test4.IsDrug);
+            Assert.AreEqual(false, test5.IsDrug);
+        }
+
+        [Test]
+        public void TEST_043_OrdInfoModel_Test_IsInjection()
+        {
+            //Setup
+
+            var ordInfDetails = new List<OrdInfoDetailModel>()
+            {
+                new OrdInfoDetailModel("id1", 20, "UT", "Item Name", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+                new OrdInfoDetailModel("id2", 21, "UT", "Item Name", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+            };
+
+            var test1 = new OrdInfoModel(30, 0, ordInfDetails);
+            var test2 = new OrdInfoModel(31, 0, ordInfDetails);
+            var test3 = new OrdInfoModel(34, 0, ordInfDetails);
+            var test4 = new OrdInfoModel(35, 0, ordInfDetails);
+            var test5 = new OrdInfoModel(29, 0, ordInfDetails);
+
+            //Assert
+            Assert.AreEqual(true, test1.IsInjection);
+            Assert.AreEqual(true, test2.IsInjection);
+            Assert.AreEqual(true, test3.IsInjection);
+            Assert.AreEqual(false, test4.IsInjection);
+            Assert.AreEqual(false, test5.IsInjection);
+        }
+
+        [Test]
+        public void TEST_044_OrdInfoModel_Test_OdrInfDetailModelsIgnoreEmpty()
+        {
+            //Setup
+
+            List<OrdInfoDetailModel> ordInfDetails1 = null;
+
+            var ordInfDetails2 = new List<OrdInfoDetailModel>()
+            {
+                new OrdInfoDetailModel("id1", 20, "UT", "Item Name", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+                new OrdInfoDetailModel("id2", 21, "UT", "Item Name", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+            };
+
+            var ordInfDetails3 = new List<OrdInfoDetailModel>()
+            {
+                new OrdInfoDetailModel("id1", 0, "", "", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
+                new OrdInfoDetailModel("id2", 0, "UT", "Item Name", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
+            };
+
+            var test1 = new OrdInfoModel(30, 0, ordInfDetails1);
+            var test2 = new OrdInfoModel(31, 0, ordInfDetails2);
+            var test3 = new OrdInfoModel(34, 0, ordInfDetails3);
+
+            //Assert
+            Assert.AreEqual(0, test1.OdrInfDetailModelsIgnoreEmpty.Count);
+            Assert.AreEqual(true, test2.OdrInfDetailModelsIgnoreEmpty.Count == 2);
+            Assert.AreEqual(true, test3.OdrInfDetailModelsIgnoreEmpty.Count == 1);
         }
     }
 }
