@@ -97,7 +97,6 @@ namespace Interactor.MedicalExamination
             finally
             {
                 _historyRepository.ReleaseResource();
-                _historyRepository.DisposeSource();
             }
         }
 
