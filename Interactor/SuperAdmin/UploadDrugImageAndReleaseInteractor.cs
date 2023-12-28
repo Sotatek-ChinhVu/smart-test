@@ -8,6 +8,7 @@ using Interactor.Realtime;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
 using SharpCompress.Archives.SevenZip;
+using System.Runtime.InteropServices;
 using UseCase.SuperAdmin.UploadDrugImage;
 
 namespace Interactor.SuperAdmin;
@@ -23,6 +24,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
     private readonly List<string> fileUploaded = new();
     private string filename = string.Empty, folderName = string.Empty;
     private int successCount = 0, totalFile = 0;
+    private readonly string slash;
 
     public UploadDrugImageAndReleaseInteractor(IAmazonS3Service amazonS3Service, IConfiguration configuration, ISystemChangeLogRepository systemChangeLogRepository, INotificationRepository notificationRepository)
     {
@@ -30,13 +32,16 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         _configuration = configuration;
         _systemChangeLogRepository = systemChangeLogRepository;
         _notificationRepository = notificationRepository;
+
+        // set slash to platform
+        slash = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\\" : "/";
     }
 
     public UploadDrugImageAndReleaseOutputData Handle(UploadDrugImageAndReleaseInputData inputData)
     {
         string pathFolderUpdateDataTenant = _configuration["PathFolderUpdateDataTenant"] ?? string.Empty;
-        string pathFile7z = $"{pathFolderUpdateDataTenant}\\{Guid.NewGuid()}.7z";
-        string pathFileExtract7z = $"{pathFolderUpdateDataTenant}\\7Z-{Guid.NewGuid()}";
+        string pathFile7z = $"{pathFolderUpdateDataTenant}{slash}{Guid.NewGuid()}.7z";
+        string pathFileExtract7z = $"{pathFolderUpdateDataTenant}7Z-{Guid.NewGuid()}";
         string uploadHousouFilePath = string.Empty, uploadZaiKeiFilePath = string.Empty, uploadFilePath = string.Empty, errorMessage = string.Empty;
         List<string> housouFileList = new(), zaikeiFileList = new(), releaseFileList = new();
         SystemChangeLogModel systemChangeLog = new();
@@ -63,7 +68,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             {
                 archive.ExtractToDirectory(pathFileExtract7z);
             }
-            pathFileExtract7z = $"{pathFileExtract7z}\\{CommonConstants.Updfile}";
+            pathFileExtract7z = $"{pathFileExtract7z}{slash}{CommonConstants.Updfile}";
 
             // create ReleateInfo
             var releaseInfo = CreateReleateInfo(pathFileExtract7z);
@@ -80,11 +85,11 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             var allFolder = Directory.GetDirectories(pathFileExtract7z).ToList();
 
             // get folder to upload drug image
-            if (allFolder.Contains($"{pathFileExtract7z}\\{CommonConstants.Drug_photo_05}"))
+            if (allFolder.Contains($"{pathFileExtract7z}{slash}{CommonConstants.Drug_photo_05}"))
             {
-                string drugImage7zPage = $"{pathFileExtract7z}\\{CommonConstants.Drug_photo_05}";
-                string housouPath = $"{drugImage7zPage}\\{CommonConstants.HouSou}";
-                string zaikeiPath = $"{drugImage7zPage}\\{CommonConstants.ZaiKei}";
+                string drugImage7zPage = $"{pathFileExtract7z}{slash}{CommonConstants.Drug_photo_05}";
+                string housouPath = $"{drugImage7zPage}{slash}{CommonConstants.HouSou}";
+                string zaikeiPath = $"{drugImage7zPage}{slash}{CommonConstants.ZaiKei}";
                 uploadFilePath = $"{CommonConstants.Image}/{CommonConstants.Reference}/{CommonConstants.DrugPhoto}";
                 uploadHousouFilePath = $"{uploadFilePath}/{CommonConstants.HouSou}/";
                 uploadZaiKeiFilePath = $"{uploadFilePath}/{CommonConstants.ZaiKei}/";
@@ -97,9 +102,9 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             }
 
             // get folder to upload release file
-            if (allFolder.Contains($"{pathFileExtract7z}\\{CommonConstants.Release_99}"))
+            if (allFolder.Contains($"{pathFileExtract7z}{slash}{CommonConstants.Release_99}"))
             {
-                string releaseFile7zPath = $"{pathFileExtract7z}\\{CommonConstants.Release_99}";
+                string releaseFile7zPath = $"{pathFileExtract7z}{slash}{CommonConstants.Release_99}";
                 uploadFilePath = $"{CommonConstants.Common}/{CommonConstants.Release_Version}/";
 
                 releaseFileList = Directory.GetFiles(releaseFile7zPath).ToList();
@@ -160,7 +165,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
 
             // delete file temp
             File.Delete(pathFile7z);
-            Directory.Delete(pathFileExtract7z.Replace($"\\{CommonConstants.Updfile}", string.Empty), true);
+            Directory.Delete(pathFileExtract7z.Replace($"{slash}{CommonConstants.Updfile}", string.Empty), true);
 
             // update system change log
             systemChangeLog.UpdateStatus(status, errorMessage);
@@ -190,7 +195,7 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
     /// <returns></returns>
     private ReleaseInfo? CreateReleateInfo(string folderName)
     {
-        string fileName = $"{folderName}\\release.ini";
+        string fileName = $"{folderName}{slash}release.ini";
         string current = string.Empty, newVer = string.Empty, oldVer = string.Empty, releaseVer = string.Empty, type = string.Empty;
 
         var dictionaryFileList = Directory.GetFiles(folderName).ToList();
