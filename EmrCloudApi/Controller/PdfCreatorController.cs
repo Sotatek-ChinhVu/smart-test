@@ -259,7 +259,8 @@ public class PdfCreatorController : CookieController
     public async Task<IActionResult> GenerateAccountingReport([FromForm] AccountingReportRequest requestStringJson)
     {
         _reportService.Instance(23);
-        // if HpId = -1, return 401 page
+        _reportService.Instance(11);
+        //if HpId = -1, return 401 page
         if (HpId == -1)
         {
             return Content(NotAuhorize, "text/html");
