@@ -821,6 +821,7 @@ using Infrastructure.Repositoriesp;
 using Domain.Models.ReleasenoteRead;
 using Interactor.ReleasenoteRead;
 using UseCase.Releasenote.LoadListVersion;
+using UseCase.Releasenote.UpdateListReleasenote;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -858,9 +859,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddTransient<IUserInfoService, UserInfoService>();
-            services.AddTransient<IKaService, KaService>();
-            services.AddTransient<ISystemConfigService, SystemConfigService>();
+            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<IKaService, KaService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
@@ -1812,6 +1812,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetRsvInfToConfirmInputData, GetRsvInfToConfirmInteractor>();
             busBuilder.RegisterUseCase<GetListQualificationInfInputData, GetListQualificationInfInteractor>();
             busBuilder.RegisterUseCase<GetLoadListVersionInputData, GetLoadListVersionInteractor>();
+            busBuilder.RegisterUseCase<UpdateListReleasenoteInputData, UpdateListReleasenoteInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();

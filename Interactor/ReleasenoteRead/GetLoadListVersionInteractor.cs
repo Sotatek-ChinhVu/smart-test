@@ -30,7 +30,10 @@ namespace Interactor.ReleasenoteRead
                 {
                     var result = _releasenoteReadRepository.GetLoadListVersion(inputData.HpId, inputData.UserId, s3Client);
                     var checkResult = result.Result;
-                    return new GetLoadListVersionOutputData(checkResult, GetLoadListVersionStatus.Successed);
+                    var showReleaseNote = _releasenoteReadRepository.CheckShowReleaseNote(inputData.HpId, inputData.UserId, s3Client);
+                    var checkShowReleaseNote = showReleaseNote.Result;
+
+                    return new GetLoadListVersionOutputData(checkResult, checkShowReleaseNote, GetLoadListVersionStatus.Successed);
                 }
             }
             finally

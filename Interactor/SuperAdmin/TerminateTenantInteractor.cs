@@ -74,11 +74,10 @@ namespace Interactor.SuperAdmin
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
                 }
 
-                if ((tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping) && inputData.Type == 1)
+                if ((tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping || tenant.StatusTenant == ConfigConstant.StatusTenantFailded) && inputData.Type == 1)
                 {
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsNotAvailableToSortTerminate);
                 }
-
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
@@ -116,19 +115,19 @@ namespace Interactor.SuperAdmin
                             _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.RestoreBucketName, backupFolderName).Wait();
 
                             // Dump DB backup
-                            var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // path save file sql dump
-                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
+                            var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // Path save file sql dump
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, ConfigConstant.PgUserDefault, ConfigConstant.PgPasswordDefault).Wait();
 
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
                             {
-                                throw new Exception("File sql dump doesn't exist");
+                                throw new Exception("sqldump 存在しません。");
                             }
 
                             long length = new System.IO.FileInfo(pathFileDump).Length;
                             if (length <= 0)
                             {
-                                throw new Exception("Invalid file sql dump");
+                                throw new Exception("Sqldump が無効です");
                             }
 
                             // Upload file sql dump to folder backup S3
@@ -172,7 +171,15 @@ namespace Interactor.SuperAdmin
                         }
 
                         // Delete DNS
-                        var deleteDNSAction = Route53Action.DeleteTenantDomain(tenant.SubDomain).Result;
+                        bool deleteDNSAction = false;
+                        if (Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result) // Check exist DNS
+                        {
+                            deleteDNSAction = Route53Action.DeleteTenantDomain(tenant.SubDomain).Result;
+                        }
+                        else
+                        {
+                            deleteDNSAction = true;
+                        }
 
                         // Delete item cname in cloud front
                         var deleteItemCnameAction = CloudFrontAction.RemoveItemCnameAsync(tenant.SubDomain).Result;
@@ -188,7 +195,7 @@ namespace Interactor.SuperAdmin
                             {
                                 _tenantRepositoryRunTask.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
                                 // Notification  terminating success
-                                var messenge = tenant.EndSubDomain + $"is teminate successfully. ";
+                                var messenge = tenant.EndSubDomain + $"の終了が完了しました。";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
                                 // Add info tenant for notification
@@ -209,7 +216,7 @@ namespace Interactor.SuperAdmin
                     {
                         _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminate-failed"]);
                         // Notification  terminating failed
-                        var messenge = $"{tenant.EndSubDomain} is teminate failed. Error: {ex.Message}.";
+                        var messenge = $"{tenant.EndSubDomain} の終了に失敗しました。エラー: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
 
                         // Add info tenant for notification

@@ -113,6 +113,15 @@ namespace Infrastructure.SuperAdminRepositories
                 TrackingDataContext.SaveChanges();
                 tenantId = tenant.TenantId;
             }
+
+            // set cache to tenantId
+            var key = CacheKeyConstant.CacheKeyTenantId + model.EndSubDomain;
+            if (_cache.KeyExists(key))
+            {
+                _cache.KeyDelete(key);
+                _cache.StringSet(key, tenantId.ToString());
+            }
+
             return tenantId;
         }
 
