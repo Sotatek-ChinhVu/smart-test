@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Cacche;
-using UseCase.Cache;
+using UseCase.Cache.RemoveCache;
 
 namespace Interactor.Cache;
 

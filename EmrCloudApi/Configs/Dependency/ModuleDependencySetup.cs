@@ -824,8 +824,8 @@ using UseCase.Releasenote.LoadListVersion;
 using UseCase.Releasenote.UpdateListReleasenote;
 using Domain.Models.Cacche;
 using Interactor.Cache;
-using UseCase.Cache;
 using UseCase.Cache.RemoveAllCache;
+using UseCase.Cache.RemoveCache;
 
 namespace EmrCloudApi.Configs.Dependency
 {
