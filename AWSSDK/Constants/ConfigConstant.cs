@@ -28,6 +28,8 @@ namespace AWSSDK.Constants
         public static string RdsSnapshotBackupRestore = "Bak-Restore";
         public static string ManagedCachingOptimized = "658327ea-f89d-4fab-a63d-7e88639e58f6";
         public static int PgPostDefault = 5432;
+        public static string PgUserDefault = "postgres";
+        public static string PgPasswordDefault = "Emr!23456789";
 
         public static string DestinationBucketName = "phuc-test-s3";
         public static string RestoreBucketName = "phuc-test-s3";
