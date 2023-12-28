@@ -859,9 +859,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddTransient<IUserInfoService, UserInfoService>();
-            services.AddTransient<IKaService, KaService>();
-            services.AddTransient<ISystemConfigService, SystemConfigService>();
+            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<IKaService, KaService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
