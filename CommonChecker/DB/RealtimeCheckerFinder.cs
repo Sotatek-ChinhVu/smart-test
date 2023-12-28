@@ -2768,7 +2768,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             else
             {
                 var weightInfo = kensaInfDetailModels
-                          .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == "V002" && !string.IsNullOrEmpty(k.ResultVal))
+                          .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == "V0002" && !string.IsNullOrEmpty(k.ResultVal))
                           .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
                 if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
