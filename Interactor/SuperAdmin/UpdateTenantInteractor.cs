@@ -246,7 +246,7 @@ namespace Interactor.SuperAdmin
                         if (!ct.IsCancellationRequested) // Check task run is not canceled
                         {
                             tenantUpgrade = _tenantRepositoryRunTask.UpdateTenant(inputData.TenantId, rdsIdentifier, endPointDb, inputData.SubDomain, inputData.Size,
-                                            inputData.SizeType, inputData.Hospital, inputData.AdminId, inputData.Password, endSubDomain, oldTenant.Status);
+                                            inputData.SizeType, inputData.Hospital, inputData.AdminId, inputData.Password, endSubDomain, oldTenant.Status, inputData.Type);
                         }
 
                         // Finished update tenant
