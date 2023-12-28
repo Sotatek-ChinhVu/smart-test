@@ -14,6 +14,8 @@ public static class CacheKeyConstant
     public const string PtPregnancyGetList = "PtPregnancyGetList";
     public const string PtCmtInfGetList = "PtCmtInfGetList";
     public const string SeikaturekiInfGetList = "SeikaturekiInfGetList";
+    public const string UserInfoCacheService = "UserInfoCacheService";
+    public const string KaCacheService = "KaCacheService";
     public const string GetNextOrderList = "GetNextOrderList";
     public const string ColumnSetting = "ColumnSetting";
     public const string GetStaGrp = "GetStaGrp";

@@ -142,7 +142,7 @@ namespace Interactor.MedicalExamination
                 _historyOrderRepository.ReleaseResource();
                 _insuranceRepository.ReleaseResource();
                 _patientInforRepository .ReleaseResource();
-                _historyOrderRepository.DisposeSource();
+                _amazonS3Service.Dispose();
             }
         }
 
