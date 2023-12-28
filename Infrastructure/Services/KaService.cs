@@ -1,23 +1,40 @@
 ﻿using Entity.Tenant;
+using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Infrastructure.Services
 {
-    public class KaService : IKaService
+    public class KaService : RepositoryBase, IKaService
     {
         private List<KaMst> _kaInfoList = new();
-        ///private readonly string _cacheKey;
         private readonly ITenantProvider _tenantProvider;
-        ///private readonly IMemoryCache _memoryCache;
-        public KaService(ITenantProvider tenantProvider)
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+
+        public KaService(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
             _tenantProvider = tenantProvider;
-            ///_memoryCache = memoryCache;
-            ///_cacheKey = "UserInfo-" + tenantProvider.GetClinicID();
-            ///if (!memoryCache.TryGetValue(_cacheKey, out _userInfoList))
-            ///{
+            key = GetDomainKey();
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
             Reload();
-            ///}
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public string GetNameById(int id)
@@ -32,8 +49,22 @@ namespace Infrastructure.Services
 
         public void Reload()
         {
+            // check if cache exists, load data from cache
+            string finalKey = key + CacheKeyConstant.KaCacheService;
+            if (_cache.KeyExists(finalKey))
+            {
+                var stringJson = _cache.StringGet(finalKey).AsString();
+                if (!string.IsNullOrEmpty(stringJson))
+                {
+                    _kaInfoList = JsonSerializer.Deserialize<List<KaMst>>(stringJson) ?? new();
+                    return;
+                }
+            }
+
+            // if cache does not exists, get data from database then set to cache
             _kaInfoList = _tenantProvider.GetNoTrackingDataContext().KaMsts.ToList();
-            ///_memoryCache.Set(_cacheKey, _userInfoList);
+            var jsonKaList = JsonSerializer.Serialize(_kaInfoList);
+            _cache.StringSet(finalKey, jsonKaList);
         }
 
         public void DisposeSource()

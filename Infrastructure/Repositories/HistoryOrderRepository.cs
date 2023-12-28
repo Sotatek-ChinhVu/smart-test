@@ -549,12 +549,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public void DisposeSource()
-        {
-            _userInfoService.DisposeSource();
-            _kaService.DisposeSource();
-        }
-
         #region private method
         private long SearchKarte(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)
         {

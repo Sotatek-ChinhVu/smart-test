@@ -1,5 +1,6 @@
 ﻿using Domain.Models.HistoryOrder;
 using Interactor.MedicalExamination.HistoryCommon;
+using System.Diagnostics;
 using UseCase.MedicalExamination.GetHistory;
 
 namespace Interactor.MedicalExamination
@@ -37,6 +38,7 @@ namespace Interactor.MedicalExamination
                     inputData.RaiinNos,
                     inputData.IsShowApproval
                     );
+
                 return _historyCommon.GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList, new());
             }
             finally

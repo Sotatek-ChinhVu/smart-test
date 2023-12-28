@@ -37,6 +37,13 @@ public static class ColumnCsvName
                 { AuditLogEnum.SinDay , "SinDay" },
                 { AuditLogEnum.RequestInfo , "リクエスト情報" },
                 { AuditLogEnum.Desciption , "説明" },
+                { AuditLogEnum.HpId , "HpId" },
+                { AuditLogEnum.RaiinNo , "RaiinNo" },
+                { AuditLogEnum.ClientIP , "ClientIP" },
+                { AuditLogEnum.ThreadId , "ThreadId" },
+                { AuditLogEnum.DepartmentId , "DepartmentId" },
+                { AuditLogEnum.Path , "Path" },
+                { AuditLogEnum.LogId , "LogId" },
             };
             return result;
         }
