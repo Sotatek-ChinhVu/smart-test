@@ -36,24 +36,29 @@ public class KaRepository : RepositoryBase, IKaRepository
 
     public bool CheckKaId(int kaId)
     {
+        // get KaMstList from kaService
         var check = _kaService.AllKaMstList().Any(k => k.KaId == kaId && k.IsDeleted == 0);
         return check;
     }
     public bool CheckKaId(List<int> kaIds)
     {
         kaIds = kaIds.Distinct().ToList();
+
+        // get KaMstList from kaService
         var countKaMsts = _kaService.AllKaMstList().Count(u => kaIds.Contains(u.KaId));
         return kaIds.Count == countKaMsts;
     }
 
     public KaMstModel GetByKaId(int kaId)
     {
+        // get KaMstList from kaService
         var entity = _kaService.AllKaMstList().FirstOrDefault(k => k.KaId == kaId && k.IsDeleted == DeleteTypes.None);
         return entity is null ? new KaMstModel() : ConvertToKaMstModel(entity);
     }
 
     public List<KaMstModel> GetList(int isDeleted)
     {
+        // get KaMstList from kaService
         return _kaService.AllKaMstList()
                .Where(k => (isDeleted == 2 || k.IsDeleted == isDeleted))
                .OrderBy(k => k.SortNo)
@@ -164,5 +169,6 @@ public class KaRepository : RepositoryBase, IKaRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
+        _kaService.DisposeSource();
     }
 }
