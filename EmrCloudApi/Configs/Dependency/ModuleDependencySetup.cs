@@ -822,6 +822,9 @@ using Domain.Models.ReleasenoteRead;
 using Interactor.ReleasenoteRead;
 using UseCase.Releasenote.LoadListVersion;
 using UseCase.Releasenote.UpdateListReleasenote;
+using Domain.Models.Cacche;
+using Interactor.Cache;
+using UseCase.Cache.RemoveCache;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1238,6 +1241,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISmartKartePortRepository, SmartKartePortRepository>();
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
             services.AddTransient<IReleasenoteReadRepository, ReleasenoteReadRepository>();
+            services.AddTransient<IRemoveCacheRepository, CacheRepository>();
             ///services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
@@ -1245,6 +1249,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             var registration = new ServiceRegistration(services);
             var busBuilder = new SyncUseCaseBusBuilder(registration);
+            busBuilder.RegisterUseCase<RemoveCacheInputData, RemoveCacheInteractor>();
 
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();

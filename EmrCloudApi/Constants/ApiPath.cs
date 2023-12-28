@@ -13,6 +13,7 @@
         public const string Revert = "Revert";
         public const string Delete = "Delete";
         public const string GetSettingValue = "GetSettingValue";
+        public const string RemoveCache = "RemoveCache";
 
         // SuperSet
         public const string Validate = "Validate";
