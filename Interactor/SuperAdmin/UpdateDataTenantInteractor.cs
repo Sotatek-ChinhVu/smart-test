@@ -42,6 +42,8 @@ namespace Interactor.SuperAdmin
 
                 if (inputData.TenantId <= 0)
                 {
+                    // send error message
+                    _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, 0, 0, "医療機関が無効です。", 0));
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.InvalidTenantId);
                 }
 
@@ -49,16 +51,22 @@ namespace Interactor.SuperAdmin
 
                 if (tenant == null || tenant.TenantId <= 0)
                 {
+                    // send error message
+                    _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, 0, 0, "医療機関が無効です。", 0));
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.TenantDoesNotExist);
                 }
 
                 if (!string.Equals(Path.GetExtension(inputData.FileUpdateData.FileName), ".7z", StringComparison.OrdinalIgnoreCase))
                 {
+                    // send error message
+                    _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, 0, 0, "アップロードファイルが不正です。", 0));
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.UploadFileIncorrectFormat7z);
                 }
 
                 if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && tenant.Status != ConfigConstant.StatusTenantDictionary()["stoped"] && tenant.Status != ConfigConstant.StatusTenantDictionary()["storage-full"])
                 {
+                    // send error message
+                    _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, 0, 0, "医療機関は更新する準備ができません。", 0));
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.TenantNotReadyToUpdate);
                 }
 
@@ -91,6 +99,8 @@ namespace Interactor.SuperAdmin
                 // Check if extraction was successful
                 if (!Directory.Exists(pathFolderScript) || !Directory.Exists(pathFolderMaster))
                 {
+                    // send error message
+                    _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, 0, 0, ".7zファイルの展開に失敗しました。", 0));
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.UnzipFile7zError);
                 }
 
@@ -107,6 +117,8 @@ namespace Interactor.SuperAdmin
 
                 if (subFoldersMasters.Length <= 0)
                 {
+                    // send error message
+                    _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, 0, 0, $"{pathFolderMaster} にはサブフォルダが存在しません。", 0));
                     return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.MasterFolderHasNoSubfolder);
                 }
 
