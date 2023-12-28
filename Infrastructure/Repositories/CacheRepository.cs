@@ -16,6 +16,17 @@ public class CacheRepository : RepositoryBase, IRemoveCacheRepository
         _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
 
+    public void RemoveAllCache()
+    {
+        var server = RedisConnectorHelper.Connection.GetServer(RedisConnectorHelper.Connection.GetEndPoints().First());
+        var keys = server.Keys().ToArray();
+
+        foreach (var key in keys)
+        {
+            _cache.KeyDelete(key.ToString());
+        }
+    }
+
     public bool RemoveCache(string keyCache)
     {
         bool result = false;

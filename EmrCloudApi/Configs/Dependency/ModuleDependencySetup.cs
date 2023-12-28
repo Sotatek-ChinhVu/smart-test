@@ -825,6 +825,7 @@ using UseCase.Releasenote.UpdateListReleasenote;
 using Domain.Models.Cacche;
 using Interactor.Cache;
 using UseCase.Cache;
+using UseCase.Cache.RemoveAllCache;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1251,6 +1252,7 @@ namespace EmrCloudApi.Configs.Dependency
             var registration = new ServiceRegistration(services);
             var busBuilder = new SyncUseCaseBusBuilder(registration);
             busBuilder.RegisterUseCase<RemoveCacheInputData, RemoveCacheInteractor>();
+            busBuilder.RegisterUseCase<RemoveAllCacheInputData, RemoveAllCacheInteractor>();
 
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();

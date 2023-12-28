@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.Cache;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Cache;
+using UseCase.Cache.RemoveAllCache;
 using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller
@@ -27,6 +28,16 @@ namespace EmrCloudApi.Controller
             var presenter = new RemoveCachePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<RemoveCacheResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.RemoveAllCache)]
+        public ActionResult<Response<RemoveAllCacheResponse>> RemoveAllCache()
+        {
+            var input = new RemoveAllCacheInputData();
+            var output = _bus.Handle(input);
+            var presenter = new RemoveAllCachePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<RemoveAllCacheResponse>>(presenter.Result);
         }
     }
 }

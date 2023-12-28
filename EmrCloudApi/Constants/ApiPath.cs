@@ -14,6 +14,7 @@
         public const string Delete = "Delete";
         public const string GetSettingValue = "GetSettingValue";
         public const string RemoveCache = "RemoveCache";
+        public const string RemoveAllCache = "RemoveAllCache";
 
         // SuperSet
         public const string Validate = "Validate";
