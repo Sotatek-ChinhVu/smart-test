@@ -13,22 +13,15 @@ public class RemoveCacheInteractor : IRemoveCacheInputPort
     }
     public RemoveCacheOutputData Handle(RemoveCacheInputData inputData)
     {
-        try
-        {
-            var result = _removeCacheRepository.RemoveCache(inputData.Key);
+        var result = _removeCacheRepository.RemoveCache(inputData.Key);
 
-            if (result)
-            {
-                return new RemoveCacheOutputData(RemoveCacheStaus.Successed);
-            }
-            else
-            {
-                return new RemoveCacheOutputData(RemoveCacheStaus.Failed);
-            }
-        }
-        finally 
+        if (result)
         {
-            _removeCacheRepository.ReleaseResource();
+            return new RemoveCacheOutputData(RemoveCacheStaus.Successed);
+        }
+        else
+        {
+            return new RemoveCacheOutputData(RemoveCacheStaus.Failed);
         }
     }
 }

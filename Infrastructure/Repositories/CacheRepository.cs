@@ -1,30 +1,21 @@
 ﻿using Domain.Models.Cacche;
 using Helper.Redis;
-using Infrastructure.Base;
-using Infrastructure.Interfaces;
-using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 
 namespace Infrastructure.Repositories;
 
-public class CacheRepository : RepositoryBase, IRemoveCacheRepository
+public class CacheRepository : IRemoveCacheRepository
 {
 
     private readonly IDatabase _cache;
-    public CacheRepository(IConfiguration configuration, ITenantProvider tenantProvider) : base(tenantProvider)
+    public CacheRepository()
     {
         _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
 
     public void RemoveAllCache()
     {
-        var server = RedisConnectorHelper.Connection.GetServer(RedisConnectorHelper.Connection.GetEndPoints().First());
-        var keys = server.Keys().ToArray();
-
-        foreach (var key in keys)
-        {
-            _cache.KeyDelete(key.ToString());
-        }
+        _cache.Execute("FLUSHDB");
     }
 
     public bool RemoveCache(string keyCache)
@@ -37,10 +28,5 @@ public class CacheRepository : RepositoryBase, IRemoveCacheRepository
         }
 
         return result;
-    }
-
-    public void ReleaseResource()
-    {
-        DisposeDataContext();
     }
 }

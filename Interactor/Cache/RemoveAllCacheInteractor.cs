@@ -13,16 +13,9 @@ namespace Interactor.Cache
         }
         public RemoveAllCacheOutputData Handle(RemoveAllCacheInputData inputData)
         {
-            try
-            {
-                _removeCacheRepository.RemoveAllCache();
+            _removeCacheRepository.RemoveAllCache();
 
-                return new RemoveAllCacheOutputData(RemoveAllCacheStaus.Successed);
-            }
-            finally
-            {
-                _removeCacheRepository.ReleaseResource();
-            }
+            return new RemoveAllCacheOutputData(RemoveAllCacheStaus.Successed);
         }
     }
 }

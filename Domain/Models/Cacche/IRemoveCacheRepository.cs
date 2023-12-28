@@ -1,8 +1,6 @@
-﻿using Domain.Common;
-
-namespace Domain.Models.Cacche
+﻿namespace Domain.Models.Cacche
 {
-    public interface IRemoveCacheRepository : IRepositoryBase
+    public interface IRemoveCacheRepository
     {
         bool RemoveCache(string keyCache);
 
