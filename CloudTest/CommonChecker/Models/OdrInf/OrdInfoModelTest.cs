@@ -1,4 +1,5 @@
 ﻿using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.Models;
 using Helper.Common;
 using Helper.Constants;
 
@@ -1707,6 +1708,71 @@ namespace CloudUnitTest.CommonChecker.Models.OdrInf
             //Assert
             Assert.AreEqual("ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」" + TenUtils.GetBunkatu(0, "きみがすごくきれいだよ。"), ordInfDetail1.DisplayItemName);
             Assert.AreEqual("ドネペジル塩酸塩ＯＤ錠５ｍｇ「ＤＳＰ」", ordInfDetail2.DisplayItemName);
+        }
+
+        [Test]
+        public void TEST_022_AgeResultModel()
+        {
+            //Setup
+
+            var ageResult = new AgeResultModel()
+            {
+                ItemCd = "ABC123!@#",
+                YjCd = "!@#$YJCODE",
+                TenpuLevel = "10",
+                AttentionCmtCd = "0",
+                WorkingMechanism = "0",
+                Id = "0010",
+            };
+
+            //Assert
+            Assert.AreEqual("ABC123!@#", ageResult.ItemCd);
+            Assert.AreEqual("!@#$YJCODE", ageResult.YjCd);
+            Assert.AreEqual("10", ageResult.TenpuLevel);
+            Assert.AreEqual("0", ageResult.AttentionCmtCd);
+            Assert.AreEqual("0", ageResult.WorkingMechanism);
+            Assert.AreEqual("0010", ageResult.Id);
+        }
+
+        [Test]
+        public void TEST_023_AutoCheckResultModel()
+        {
+            //Setup
+
+            var test = new AutoCheckResultModel()
+            {
+                ItemCd = "ABC123!@#",
+                ItemName = "きみがすごくきれいだよ。",
+                Id = "0010",
+            };
+
+            //Assert
+            Assert.AreEqual("ABC123!@#", test.ItemCd);
+            Assert.AreEqual("きみがすごくきれいだよ。", test.ItemName);
+            Assert.AreEqual("0010", test.Id);
+        }
+
+        [Test]
+        public void TEST_024_DayLimitResultModel()
+        {
+            //Setup
+
+            var test = new DayLimitResultModel()
+            {
+                ItemCd = "ABC123!@#",
+                ItemName = "きみがすごくきれいだよ。",
+                Id = "0010",
+                LimitDay = 10.0,
+                UsingDay = 10.0,
+                YjCd = "0010",
+            };
+
+            //Assert
+            Assert.AreEqual("ABC123!@#", test.ItemCd);
+            Assert.AreEqual("きみがすごくきれいだよ。", test.ItemName);
+            Assert.AreEqual("0010", test.Id);
+            Assert.AreEqual(10.0, test.UsingDay);
+            Assert.AreEqual(10.0, test.LimitDay);
         }
     }
 }
