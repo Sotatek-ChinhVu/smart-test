@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Cacche;
-using UseCase.Cache;
+using UseCase.Cache.RemoveCache;
 
 namespace Interactor.Cache;
 
@@ -26,7 +26,7 @@ public class RemoveCacheInteractor : IRemoveCacheInputPort
                 return new RemoveCacheOutputData(RemoveCacheStaus.Failed);
             }
         }
-        finally 
+        finally
         {
             _removeCacheRepository.ReleaseResource();
         }

@@ -5,7 +5,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Cache;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.Cache;
+using UseCase.Cache.RemoveCache;
 using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller

@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Cache;
-using UseCase.Cache;
+using UseCase.Cache.RemoveCache;
 
 namespace EmrCloudApi.Presenters.Cache
 {
