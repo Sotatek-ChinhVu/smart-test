@@ -152,6 +152,24 @@ public class CoKouiTensuModel
     public int Birthday { get; set; }
 
     /// <summary>
+    /// ６歳未満未就学児
+    /// </summary>
+    /// <returns></returns>
+    private bool isPreSchool()
+    {
+        return !CIUtil.IsStudent(Birthday, SinDate);
+    }
+
+    /// <summary>
+    /// 70歳以上
+    /// </summary>
+    /// <returns></returns>
+    private bool isElder()
+    {
+        return CIUtil.AgeChk(Birthday, SinDate, 70);
+    }
+
+    /// <summary>
     /// 保険区分
     ///		0:自費
     ///		1:社保

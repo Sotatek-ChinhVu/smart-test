@@ -113,7 +113,7 @@ public class CoKouiTensuModel
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname { get; set; } = string.Empty;
+    public string KaSname { get; set; }
 
     /// <summary>
     /// 担当医ID
@@ -123,7 +123,7 @@ public class CoKouiTensuModel
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname { get; set; } = string.Empty;
+    public string TantoSname { get; set; }
 
     /// <summary>
     /// 初再診区分
@@ -186,7 +186,7 @@ public class CoKouiTensuModel
     /// <summary>
     /// 法別番号
     /// </summary>
-    public string Houbetu { get; set; } = string.Empty;
+    public string Houbetu { get; set; }
 
     /// <summary>
     /// 公費件数
@@ -336,7 +336,7 @@ public class CoKouiTensuModel
     /// <summary>
     /// 患者氏名
     /// </summary>
-    public string PtName { get; set; } = string.Empty;
+    public string PtName { get; set; }
 
     /// <summary>
     /// 初診(TensuA の内、初診のみ)

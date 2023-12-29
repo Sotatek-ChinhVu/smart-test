@@ -19,12 +19,12 @@ public class CoSta2003PrintConf
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; } = string.Empty;
+    public string FormFileName { get; set; }
 
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; } = string.Empty;
+    public string ReportName { get; set; }
 
     /// <summary>
     /// テスト患者の有無
@@ -74,12 +74,12 @@ public class CoSta2003PrintConf
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public List<int> KaIds { get; set; } = new();
+    public List<int> KaIds { get; set; }
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public List<int> TantoIds { get; set; } = new();
+    public List<int> TantoIds { get; set; }
 
     /// <summary>
     /// 保険種別
@@ -94,7 +94,7 @@ public class CoSta2003PrintConf
     ///     12:自費
     ///     13:自レ
     /// </summary>
-    public List<int> HokenSbts { get; set; } = new();
+    public List<int> HokenSbts { get; set; }
 
     /// <summary>
     /// 診療点数

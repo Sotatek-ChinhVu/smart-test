@@ -15,12 +15,12 @@
         /// <summary>
         /// フォームファイル名
         /// </summary>
-        public string FormFileName { get; set; } = string.Empty;
+        public string FormFileName { get; set; }
 
         /// <summary>
         /// 帳票タイトル
         /// </summary>
-        public string ReportName { get; set; } = string.Empty;
+        public string ReportName { get; set; }
 
         /// <summary>
         /// テスト患者の有無
@@ -58,11 +58,11 @@
         /// <summary>
         /// 診療科ID
         /// </summary>
-        public List<int> KaIds { get; set; } = new();
+        public List<int> KaIds { get; set; }
 
         /// <summary>
         /// 担当医ID
         /// </summary>
-        public List<int> TantoIds { get; set; } = new();
+        public List<int> TantoIds { get; set; }
     }
 }
