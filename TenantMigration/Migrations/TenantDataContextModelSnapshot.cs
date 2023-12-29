@@ -6117,8 +6117,6 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "HokenId");
 
-                    b.HasIndex(new[] { "HpId", "RaiinNo" }, "KAIKEI_INF_IDX01");
-
                     b.ToTable("KAIKEI_INF");
                 });
 
