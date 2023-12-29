@@ -119,10 +119,11 @@ namespace Infrastructure.Repositories
         public long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
             #region get common data by hpId and ptId
-            var rsvkrtMstList = TrackingDataContext.RsvkrtMsts.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
-            var rsvkrtByomeiList = TrackingDataContext.RsvkrtByomeis.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
-            var rsvkrtKarteInfList = TrackingDataContext.RsvkrtKarteInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
-            var rsvkrtOdrInfList = TrackingDataContext.RsvkrtOdrInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == DeleteTypes.Deleted).ToList();
+            // get all data RsvkrtMst
+            var rsvkrtMstList = TrackingDataContext.RsvkrtMsts.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
+            var rsvkrtByomeiList = TrackingDataContext.RsvkrtByomeis.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
+            var rsvkrtKarteInfList = TrackingDataContext.RsvkrtKarteInfs.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
+            var rsvkrtOdrInfList = TrackingDataContext.RsvkrtOdrInfs.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
             var kouiKbnMstList = NoTrackingDataContext.KouiKbnMsts.ToList();
 
             // Get Raiin List Koui
