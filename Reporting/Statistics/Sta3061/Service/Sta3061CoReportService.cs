@@ -1,6 +1,7 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -9,6 +10,7 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3061.DB;
 using Reporting.Statistics.Sta3061.Mapper;
 using Reporting.Statistics.Sta3061.Models;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta3061.Service;
@@ -16,7 +18,7 @@ namespace Reporting.Statistics.Sta3061.Service;
 public class Sta3061CoReportService : ISta3061CoReportService
 {
     #region Constant
-    private readonly int maxRow = 4;
+    private int maxRow = 4;
     private const int pageBreakRow = 39;
 
     private readonly List<PutColumn> putRows = new List<PutColumn>
@@ -118,8 +120,8 @@ public class Sta3061CoReportService : ISta3061CoReportService
 
     private class HokenKbn
     {
-        public string TitleValue { get; set; } = string.Empty;
-        public string TitleName { get; set; } = string.Empty;
+        public string TitleValue { get; set; }
+        public string TitleName { get; set; }
     }
 
     private readonly List<HokenKbn> hokenTitles = new List<HokenKbn>
@@ -183,7 +185,6 @@ public class Sta3061CoReportService : ISta3061CoReportService
         headerL2 = new();
         kouiTensus = new();
         jihiSbtMsts = new();
-        ptGrpName = string.Empty;
     }
 
     public CommonReportingRequestModel GetSta3061ReportingData(CoSta3061PrintConf printConf, int hpId)
@@ -346,20 +347,20 @@ public class Sta3061CoReportService : ISta3061CoReportService
                     }
                     else
                     {
-                        value = (CoSta3061PrintData.CountDetail)typeof(CoSta3061PrintData)?.GetProperty(wrkRows[i].ColName)?.GetValue(printData) ?? new();
+                        value = (CoSta3061PrintData.CountDetail)typeof(CoSta3061PrintData).GetProperty(wrkRows[i].ColName).GetValue(printData);
                     }
                     short curRow = printJihi ? (short)(i - pageBreakRow) : i;
                     string rowNoKey = curRow + "_" + rowNo + "_" + currentPage;
-                    _extralData.Add("Count_" + rowNoKey, value?.Count ?? string.Empty);
+                    _extralData.Add("Count_" + rowNoKey, value.Count);
                     _extralData.Add("CountRow_" + rowNoKey, curRow.ToString());
 
-                    _extralData.Add("Tensu_" + rowNoKey, value?.Tensu ?? string.Empty);
+                    _extralData.Add("Tensu_" + rowNoKey, value.Tensu);
                     _extralData.Add("TensuRow_" + rowNoKey, curRow.ToString());
 
-                    _extralData.Add("RaiinTensu_" + rowNoKey, value?.RaiinTensu ?? string.Empty);
+                    _extralData.Add("RaiinTensu_" + rowNoKey, value.RaiinTensu);
                     _extralData.Add("RaiinTensuRow_" + rowNoKey, curRow.ToString());
 
-                    _extralData.Add("Rate_" + rowNoKey, value?.Rate ?? string.Empty);
+                    _extralData.Add("Rate_" + rowNoKey, value.Rate);
                     _extralData.Add("RateRow_" + rowNoKey, curRow.ToString());
 
                     if (rowNo >= 1) continue;
@@ -485,17 +486,17 @@ public class Sta3061CoReportService : ISta3061CoReportService
                 int ptCount = coKouiTensus.GroupBy(s => s.PtId).Count();        //⑤
 
                 //診察..その他
-                foreach (var colName in putRows.Select(item => item.ColName).ToList())
+                foreach (var putRow in putRows)
                 {
-                    if (colName == "Total1") break;
+                    if (putRow.ColName == "Total1") break;
 
-                    string countColName = "Count" + colName.Substring(5, colName.Length - 5);
-                    int wrkCount = CIUtil.RoundInt(coKouiTensus.Sum(s => typeof(CoKouiTensuModel).GetProperty(countColName)?.GetValue(s)?.AsDouble() ?? 0), 0);
-                    int wrkTensu = CIUtil.RoundInt(coKouiTensus.Sum(s => typeof(CoKouiTensuModel).GetProperty(colName)?.GetValue(s)?.AsDouble() ?? 0), 0);
+                    string countColName = "Count" + putRow.ColName.Substring(5, putRow.ColName.Length - 5);
+                    int wrkCount = CIUtil.RoundInt(coKouiTensus.Sum(s => typeof(CoKouiTensuModel).GetProperty(countColName).GetValue(s).AsDouble()), 0);
+                    int wrkTensu = CIUtil.RoundInt(coKouiTensus.Sum(s => typeof(CoKouiTensuModel).GetProperty(putRow.ColName).GetValue(s).AsDouble()), 0);
 
                     CoSta3061PrintData.CountDetail wrkDetail = new CoSta3061PrintData.CountDetail();
 
-                    if (subTotals.Contains(colName))
+                    if (subTotals.Contains(putRow.ColName))
                     {
                         wrkDetail.Count = subCount.ToString("#,0");
                         subCount = 0;
@@ -511,7 +512,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
                     wrkDetail.RaiinTensu = CIUtil.RoundInt(_divValue(wrkTensu, raiinCount), 0).ToString("#,0");
                     wrkDetail.Rate = CIUtil.RoundoffNum(_divValue(wrkTensu, coKouiTensus.Sum(s => s.TotalTensu)) * 100, 2).ToString("#,0.0");
 
-                    typeof(CoSta3061PrintData).GetProperty(colName)?.SetValue(printData, wrkDetail);
+                    typeof(CoSta3061PrintData).GetProperty(putRow.ColName).SetValue(printData, wrkDetail);
                 }
 
                 //合計①
@@ -520,8 +521,8 @@ public class Sta3061CoReportService : ISta3061CoReportService
                 printData.Total1.RaiinTensu = CIUtil.RoundInt(_divValue(coKouiTensus.Sum(s => s.TotalTensu), raiinCount), 0).ToString("#,0");
                 printData.Total1.Rate = printData.Total1.Count == "0" && printData.Total1.Tensu == "0" ? "0.0" : "100.0";
                 //構成比％
-                printData.Rate1.Count = string.Empty;  //後から計算
-                printData.Rate1.Tensu = CIUtil.RoundoffNum(_divValue(coKouiTensus.Sum(s => s.TotalTensu), kouiTensus?.Sum(s => s.TotalTensu) ?? 0) * 100, 2).ToString("#,0.0");
+                printData.Rate1.Count = null;  //後から計算
+                printData.Rate1.Tensu = CIUtil.RoundoffNum(_divValue(coKouiTensus.Sum(s => s.TotalTensu), kouiTensus.Sum(s => s.TotalTensu)) * 100, 2).ToString("#,0.0");
                 //１日当り平均　　①/③
                 printData.DayAvg1.Count = CIUtil.RoundoffNum(_divValue(totalCount, dayCount), 2).ToString("#,0.0");
                 printData.DayAvg1.Tensu = CIUtil.RoundoffNum(_divValue(coKouiTensus.Sum(s => s.TotalTensu), dayCount), 2).ToString("#,0.0");
@@ -558,8 +559,8 @@ public class Sta3061CoReportService : ISta3061CoReportService
                 printData.Total2.RaiinTensu = CIUtil.RoundInt(_divValue(coKouiTensus.Sum(s => s.Jihi), raiinCount), 0).ToString("#,0");
                 printData.Total2.Rate = printData.Total2.Count == "0" && printData.Total2.Tensu == "0" ? "0.0" : "100.0";
                 //構成比％
-                printData.Rate2.Count = string.Empty;  //後から計算
-                printData.Rate2.Tensu = CIUtil.RoundoffNum(_divValue(coKouiTensus.Sum(s => s.Jihi), kouiTensus?.Sum(s => s.Jihi) ?? 0) * 100, 2).ToString("#,0.0");
+                printData.Rate2.Count = null;  //後から計算
+                printData.Rate2.Tensu = CIUtil.RoundoffNum(_divValue(coKouiTensus.Sum(s => s.Jihi), kouiTensus.Sum(s => s.Jihi)) * 100, 2).ToString("#,0.0");
                 //１日当り平均　　②/③
                 printData.DayAvg2.Count = CIUtil.RoundoffNum(_divValue(jihiCount, dayCount), 2).ToString("#,0.0");
                 printData.DayAvg2.Tensu = CIUtil.RoundoffNum(_divValue(coKouiTensus.Sum(s => s.Jihi), dayCount), 2).ToString("#,0.0");
@@ -588,22 +589,22 @@ public class Sta3061CoReportService : ISta3061CoReportService
             }
 
             var sinYms = kouiTensus?.GroupBy(s => printConf.IsSinDate ? s.SinDate : s.SinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-            for (int ymCnt = 0; (pbSinYm && ymCnt <= sinYms?.Count - 1) || ymCnt == 0; ymCnt++)
+            for (int ymCnt = 0; (pbSinYm && ymCnt <= sinYms.Count - 1) || ymCnt == 0; ymCnt++)
             {
                 var kaIds = kouiTensus?.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-                for (int kaCnt = 0; (pbKaId && kaCnt <= kaIds?.Count - 1) || kaCnt == 0; kaCnt++)
+                for (int kaCnt = 0; (pbKaId && kaCnt <= kaIds.Count - 1) || kaCnt == 0; kaCnt++)
                 {
-                    var tantoIds = kouiTensus?.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
-                    for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds?.Count - 1) || taCnt == 0; taCnt++)
+                    var tantoIds = kouiTensus.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                    for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds.Count - 1) || taCnt == 0; taCnt++)
                     {
-                        var curDatas = kouiTensus?.Where(s =>
-                            (!(pbSinYm && !printConf.IsSinDate) || (sinYms != null && s.SinYm == sinYms[ymCnt]))
-                            && (!(pbSinYm && printConf.IsSinDate) || (sinYms != null && s.SinDate == sinYms[ymCnt]))
-                            && (!pbKaId || (kaIds != null && s.KaId == kaIds[kaCnt]))
-                            && (!pbTantoId || (tantoIds != null && s.TantoId == tantoIds[taCnt]))
+                        var curDatas = kouiTensus.Where(s =>
+                            (!(pbSinYm && !printConf.IsSinDate) || s.SinYm == sinYms[ymCnt])
+                            && (!(pbSinYm && printConf.IsSinDate) || s.SinDate == sinYms[ymCnt])
+                            && (!pbKaId || s.KaId == kaIds[kaCnt])
+                            && (!pbTantoId || s.TantoId == tantoIds[taCnt])
                         ).ToList();
 
-                        if (curDatas?.Count == 0) continue;
+                        if (curDatas.Count == 0) continue;
 
                         switch (printConf.ReportKbn)
                         {
@@ -611,7 +612,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
                                 //保険種別
                                 for (var i = 0; i <= hokenTitles.Count - 1; i++)
                                 {
-                                    var wrkDatas = curDatas?.Where(s => s.ReportKbnValue == hokenTitles[i].TitleValue).ToList() ?? new();
+                                    var wrkDatas = curDatas.Where(s => s.ReportKbnValue == hokenTitles[i].TitleValue).ToList();
 
                                     printDatas.Add(setPrintData(wrkDatas, i));
                                 }
@@ -620,22 +621,22 @@ public class Sta3061CoReportService : ISta3061CoReportService
                                 //年齢区分別
                                 for (var i = 0; i <= ageKbnTitles.Count() - 1; i++)
                                 {
-                                    var wrkDatas = curDatas?.Where(s => s.ReportKbnValue == i.ToString()).ToList() ?? new();
+                                    var wrkDatas = curDatas.Where(s => s.ReportKbnValue == i.ToString()).ToList();
 
                                     printDatas.Add(setPrintData(wrkDatas, i));
                                 }
                                 break;
                             default:
-                                List<string> grpValues = curDatas?
+                                List<string> grpValues = curDatas
                                     .GroupBy(k => k.ReportKbnValue)
                                     .OrderBy(k => string.IsNullOrEmpty(k.Key)) //分類なしを後ろにする
                                     .ThenBy(k => k.Key)
                                     .Select(k => k.Key)
-                                    .ToList() ?? new();
+                                    .ToList();
 
                                 foreach (var grpValue in grpValues)
                                 {
-                                    var wrkDatas = curDatas?.Where(s => s.ReportKbnValue == grpValue).ToList() ?? new();
+                                    var wrkDatas = curDatas.Where(s => s.ReportKbnValue == grpValue).ToList();
 
                                     printDatas.Add(setPrintData(wrkDatas));
                                 }
@@ -647,24 +648,22 @@ public class Sta3061CoReportService : ISta3061CoReportService
                         int total2Count = printDatas.Sum(p => int.Parse(!string.IsNullOrEmpty(p.Total2.Count) ? p.Total2.Count : "0", NumberStyles.Any));
                         foreach (var printData in printDatas)
                         {
-                            var total1 = !string.IsNullOrEmpty(printData.Total1.Count) ? printData.Total1.Count : "0";
-                            var total2 = !string.IsNullOrEmpty(printData.Total2.Count) ? printData.Total2.Count : "0";
-                            printData.Rate1.Count = (total1Count == 0 ? 0 : CIUtil.RoundoffNum((double)int.Parse(total1, NumberStyles.Any) / total1Count * 100, 2)).ToString("#,0.0");
-                            printData.Rate2.Count = (total2Count == 0 ? 0 : CIUtil.RoundoffNum((double)int.Parse(total2, NumberStyles.Any) / total2Count * 100, 2)).ToString("#,0.0");
+                            printData.Rate1.Count = (total1Count == 0 ? 0 : CIUtil.RoundoffNum((double)int.Parse(!string.IsNullOrEmpty(printData.Total1.Count) ? printData.Total1.Count : "0", NumberStyles.Any) / total1Count * 100, 2)).ToString("#,0.0");
+                            printData.Rate2.Count = (total2Count == 0 ? 0 : CIUtil.RoundoffNum((double)int.Parse(!string.IsNullOrEmpty(printData.Total2.Count) ? printData.Total2.Count : "0", NumberStyles.Any) / total2Count * 100, 2)).ToString("#,0.0");
                         }
 
                         //小計
                         if (pbSinYm || pbKaId || pbTantoId)
                         {
-                            printDatas.Add(setPrintData(curDatas ?? new()));
+                            printDatas.Add(setPrintData(curDatas));
 
                             printDatas.Last().RowType = RowType.Total;
                             printDatas.Last().ReportKbn = _titileFormat("合計");
 
                             //改ページ
-                            if ((pbSinYm && (ymCnt + 1 <= sinYms?.Count - 1)) ||
-                                (pbKaId && (kaCnt + 1 <= kaIds?.Count - 1)) ||
-                                (pbTantoId && (taCnt + 1 <= tantoIds?.Count - 1)))
+                            if ((pbSinYm && (ymCnt + 1 <= sinYms.Count - 1)) ||
+                                (pbKaId && (kaCnt + 1 <= kaIds.Count - 1)) ||
+                                (pbTantoId && (taCnt + 1 <= tantoIds.Count - 1)))
                             {
                                 //改ページ
                                 for (int i = printDatas.Count; i % maxRow != 0; i++)
@@ -685,12 +684,12 @@ public class Sta3061CoReportService : ISta3061CoReportService
                             {
                                 if (printConf.IsSinDate)
                                 {
-                                    string wrkYmd = CIUtil.SDateToShowSWDate(curDatas?.First().SinDate ?? 0, 0, 1, 1);
+                                    string wrkYmd = CIUtil.SDateToShowSWDate(curDatas.First().SinDate, 0, 1, 1);
                                     headerL1.Add(wrkYmd + (printConf.PtGrpId > 0 ? $"＜{ptGrpName}＞" : string.Empty));
                                 }
                                 else
                                 {
-                                    string wrkYm = CIUtil.Copy(CIUtil.SDateToShowSWDate(curDatas?.First().SinYm ?? 0 * 100 + 1, 0, 1, 1), 1, 13);
+                                    string wrkYm = CIUtil.Copy(CIUtil.SDateToShowSWDate(curDatas.First().SinYm * 100 + 1, 0, 1, 1), 1, 13);
                                     headerL1.Add(wrkYm + "度" + (printConf.PtGrpId > 0 ? $"＜{ptGrpName}＞" : string.Empty));
                                 }
                             }
@@ -700,8 +699,8 @@ public class Sta3061CoReportService : ISta3061CoReportService
                             }
                             //改ページ条件
                             List<string> wrkHeaders = new List<string>();
-                            if (pbKaId) wrkHeaders.Add(curDatas?.First().KaSname ?? string.Empty);
-                            if (pbTantoId) wrkHeaders.Add(curDatas?.First().TantoSname ?? string.Empty);
+                            if (pbKaId) wrkHeaders.Add(curDatas.First().KaSname);
+                            if (pbTantoId) wrkHeaders.Add(curDatas.First().TantoSname);
 
                             if (wrkHeaders.Count >= 1) headerL2.Add(string.Join("／", wrkHeaders));
                         }
@@ -713,7 +712,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
             if (!pbSinYm && !pbKaId && !pbTantoId)
             {
                 //合計
-                printDatas.Add(setPrintData(kouiTensus ?? new()));
+                printDatas.Add(setPrintData(kouiTensus));
 
                 printDatas.Last().RowType = RowType.Total;
                 printDatas.Last().ReportKbn = _titileFormat("合計");
@@ -793,7 +792,8 @@ public class Sta3061CoReportService : ISta3061CoReportService
         bool pbTantoId = new int[] { printConf.PageBreak1, printConf.PageBreak2, printConf.PageBreak3 }.Contains(3);
 
         //自費明細
-        var wrkRows = putRows.ToList();
+        List<PutColumn> wrkRows = new List<PutColumn>();
+        wrkRows = putRows.ToList();
 
         int jihiIndex = wrkRows.FindIndex(r => r.CsvColName == "JihiMeisai");
         wrkRows.RemoveAt(jihiIndex);
