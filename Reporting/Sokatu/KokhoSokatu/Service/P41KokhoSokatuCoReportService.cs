@@ -59,11 +59,6 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        receInfs = new();
-        hokensyaNames = new();
-        kaMsts = new();
-        printUnits = new();
     }
     #endregion
 
@@ -125,7 +120,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
             SetFieldData("seikyuYear", wrkYmd.Year.ToString());
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
+            SetFieldData("kaName", kaMsts[0].KaName);
 
             return 1;
         }
@@ -155,14 +150,14 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
                 //1枚目のみ記載する
                 for (short i = 0; i <= 1; i++)
                 {
-                    List<CoReceInfModel> wrkReces = new();
+                    List<CoReceInfModel> wrkReces = null;
                     //国保＋退職の合計と後期の合計
                     switch (i)
                     {
                         case 0: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                         case 1: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     }
-                    if (wrkReces.Count == 0) continue;
+                    if (wrkReces == null) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -222,7 +217,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
 
                     for (short colNo = 0; colNo <= 2; colNo++)
                     {
-                        List<CoReceInfModel> wrkReces = new();
+                        List<CoReceInfModel> wrkReces = null;
                         wrkReces = receInfs.Where(r => r.HokensyaNo == printUnits[hokIndex].HokensyaNo && (printUnits[hokIndex].HokenRate == -1 || r.HokenRate == printUnits[hokIndex].HokenRate)).ToList();
 
                         //国保・退職・後期それぞれの列に印字する
@@ -232,7 +227,7 @@ public class P41KokhoSokatuCoReportService : IP41KokhoSokatuCoReportService
                             case 1: wrkReces = wrkReces.Where(r => r.IsRetAll).ToList(); break;
                             case 2: wrkReces = wrkReces.Where(r => r.IsKoukiAll).ToList(); break;
                         }
-                        if (wrkReces.Count == 0) continue;
+                        if (wrkReces == null) continue;
 
                         countData wrkData = new countData();
                         //件数

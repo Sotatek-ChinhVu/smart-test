@@ -31,8 +31,6 @@ namespace Reporting.Sokatu.WelfareDisk.Service
         public P46WelfareDiskService(ICoWelfareSeikyuFinder welfareFinder)
         {
             _welfareFinder = welfareFinder;
-            hpInf = new();
-            receInfs = new();
         }
         #endregion
 
@@ -109,7 +107,7 @@ namespace Reporting.Sokatu.WelfareDisk.Service
             string seiYm = CIUtil.SDateToWDate(seikyuYm * 100 + 1).ToString();
             colDatas.Add(seiYm.Substring(0, 5));
             //市町村番号
-            string townNo = receInf.JyukyusyaNo(kohiHoubetus)?.PadLeft(2, '0') ?? string.Empty;
+            string townNo = receInf.JyukyusyaNo(kohiHoubetus).PadLeft(2, '0');
             colDatas.Add(townNo.Substring(townNo.Length - 2));
             //事業番号
             colDatas.Add("1");

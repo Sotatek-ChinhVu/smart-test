@@ -63,15 +63,6 @@ public class P11KoukiSeikyuCoReportService : IP11KoukiSeikyuCoReportService
         _extralData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
-        _reportConfigPerPage = new();
-        hpInf = new();
-        receInfs = new();
-        hokensyaNames = new();
-        hokensyaNos = new();
-        kohiHoubetuMsts = new();
-        printHokensyaNos = new();
-        currentHokensyaNo = "";
-        tokuyohiReceInfs = new();
     }
     #endregion
     public CommonReportingRequestModel GetP11KoukiSeikyuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
@@ -164,14 +155,14 @@ public class P11KoukiSeikyuCoReportService : IP11KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = new();
+                    List<CoReceInfModel> wrkReces = null;
                     switch (rowNo)
                     {
                         //国保
                         case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiIppan).ToList(); break;
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKoukiUpper).ToList(); break;
                     }
-                    if (wrkReces.Count == 0) continue;
+                    if (wrkReces == null) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -207,7 +198,7 @@ public class P11KoukiSeikyuCoReportService : IP11KoukiSeikyuCoReportService
             const int maxKohiRow = 2;
             int kohiIndex = (currentPage - 1) * maxKohiRow;
 
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
             if (kohiHoubetus.Count == 0)
             {
                 _listTextData.Add(pageIndex, listDataPerPage);
@@ -268,7 +259,7 @@ public class P11KoukiSeikyuCoReportService : IP11KoukiSeikyuCoReportService
         tokuyohiReceInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.TokuyohiKouki, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.NoSum);
 
         //保険者番号の指定がある場合は絞り込み
-        var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
+        var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
         wrkReceInfs.AddRange(tokuyohiReceInfs);
         //保険者番号リストを取得

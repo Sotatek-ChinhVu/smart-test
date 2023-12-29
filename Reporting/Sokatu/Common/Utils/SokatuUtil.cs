@@ -12,23 +12,23 @@ public static class SokatuUtil
 
         //公１法別
         var retNums = coReceInfs.Where(r =>
-            !excludeHoubetu.Contains(r.Kohi1Houbetu ?? string.Empty) && r.Kohi1ReceKisai
+            !excludeHoubetu.Contains(r.Kohi1Houbetu) && r.Kohi1ReceKisai
         ).GroupBy(r => r.Kohi1Houbetu).Select(r => r.Key).ToList();
         //公２法別
         var wrkNums = coReceInfs.Where(r =>
-            !excludeHoubetu.Contains(r.Kohi2Houbetu ?? string.Empty) && r.Kohi2ReceKisai
+            !excludeHoubetu.Contains(r.Kohi2Houbetu) && r.Kohi2ReceKisai
         ).GroupBy(r => r.Kohi2Houbetu).Select(r => r.Key).ToList();
         //公１法別 + 公２法別
         retNums = retNums.Union(wrkNums).ToList();
         //公３法別
         wrkNums = coReceInfs.Where(r =>
-            !excludeHoubetu.Contains(r.Kohi3Houbetu ?? string.Empty) && r.Kohi3ReceKisai
+            !excludeHoubetu.Contains(r.Kohi3Houbetu) && r.Kohi3ReceKisai
         ).GroupBy(r => r.Kohi3Houbetu).Select(r => r.Key).ToList();
         //公１法別 + 公２法別 + 公３法別
         retNums = retNums.Union(wrkNums).ToList();
         //公４法別
         wrkNums = coReceInfs.Where(r =>
-            !excludeHoubetu.Contains(r.Kohi4Houbetu ?? string.Empty) && r.Kohi4ReceKisai
+            !excludeHoubetu.Contains(r.Kohi4Houbetu) && r.Kohi4ReceKisai
         ).GroupBy(r => r.Kohi4Houbetu).Select(r => r.Key).ToList();
         //公１法別 + 公２法別 + 公３法別 + 公４法別
         retNums = retNums.Union(wrkNums).ToList();

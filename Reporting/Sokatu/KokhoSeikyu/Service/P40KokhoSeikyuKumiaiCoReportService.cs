@@ -48,11 +48,6 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             _extralData = new();
             _listTextData = new();
             _visibleFieldData = new();
-            hpInf = new();
-            hokensyaNos = new();
-            receInfs = new();
-            currentHokensyaNo = "";
-            printHokensyaNos = new();
         }
         #endregion
 
@@ -118,7 +113,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = new();
+                    List<CoReceInfModel> wrkReces = null;
                     switch (rowNo)
                     {
                         case 0: wrkReces = curReceInfs.Where(r => r.IsNrElderIppan).ToList(); break;
@@ -129,7 +124,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         case 5: wrkReces = curReceInfs.Where(r => (r.IsNrMine || r.IsNrFamily) && r.HokenRate != 20 && r.HokenRate != 30).ToList(); break;
                         case 6: wrkReces = curReceInfs.Where(r => r.IsNrPreSchool).ToList(); break;
                     }
-                    if (wrkReces.Count == 0) continue;
+                    if (wrkReces == null) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -176,7 +171,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 int maxKohiRow = currentPage == 2 ? 3 : 7;
                 int kohiIndex = (currentPage - 2) * 3 + (currentPage >= 4 ? (currentPage - 3) * 4 : 0);
 
-                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
+                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
                 if (kohiHoubetus.Count == 0)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);
@@ -251,7 +246,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
             receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kokho, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumPrefIn);
             //保険者番号の指定がある場合は絞り込み
-            var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
+            var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
                 receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
             //国保組合
             wrkReceInfs = wrkReceInfs.Where(r => r.IsKumiai).ToList();

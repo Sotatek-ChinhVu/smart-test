@@ -420,10 +420,10 @@ public class SyahoCoReportService : ISyahoCoReportService
             foreach (var coReceInf in coReceInfs)
             {
                 List<string> houbetus = new List<string>();
-                if (coReceInf.Kohi1ReceKisai) houbetus.Add(coReceInf.Kohi1Houbetu ?? string.Empty);
-                if (coReceInf.Kohi2ReceKisai) houbetus.Add(coReceInf.Kohi2Houbetu ?? string.Empty);
-                if (coReceInf.Kohi3ReceKisai) houbetus.Add(coReceInf.Kohi3Houbetu ?? string.Empty);
-                if (coReceInf.Kohi4ReceKisai) houbetus.Add(coReceInf.Kohi4Houbetu ?? string.Empty);
+                if (coReceInf.Kohi1ReceKisai) houbetus.Add(coReceInf.Kohi1Houbetu);
+                if (coReceInf.Kohi2ReceKisai) houbetus.Add(coReceInf.Kohi2Houbetu);
+                if (coReceInf.Kohi3ReceKisai) houbetus.Add(coReceInf.Kohi3Houbetu);
+                if (coReceInf.Kohi4ReceKisai) houbetus.Add(coReceInf.Kohi4Houbetu);
 
                 var wrkPair = string.Join("", houbetus.Distinct());
                 if (wrkPair != "1012" && wrkPair != "1210" && !retNums.Contains(wrkPair))
