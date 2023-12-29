@@ -229,8 +229,11 @@ namespace AWSSDK.Common
                                                     }
                                                     script += $" from '{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, csvFile)}' CSV HEADER encoding 'UTF8' null 'null_string';";
 
-                                                    var exitCode = ExecuteSqlScriptNonQuery(script, connection, transaction);
-                                                    if (!exitCode)
+                                                    try
+                                                    {
+                                                        PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password).Wait();
+                                                    }
+                                                    catch
                                                     {
                                                         throw new Exception("CSVファイルの処理に失敗しました。" + csvFile);
                                                     }
@@ -343,10 +346,12 @@ namespace AWSSDK.Common
                                                     }
                                                 }
                                                 script += $" from '{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, csvFile)}' CSV HEADER encoding 'UTF8' null 'null_string';"; ;
-                                                var exitCode = ExecuteSqlScriptNonQuery(script, connection, transaction);
-                                                if (!exitCode)
+                                                try
                                                 {
-                                                    //ErrorEndUpdate("Execute csv fail with CLRINS: " + csvFile);
+                                                    PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password).Wait();
+                                                }
+                                                catch
+                                                {
                                                     throw new Exception("CLRINSの実施に失敗しました。" + csvFile);
                                                 }
                                             }
@@ -444,6 +449,7 @@ namespace AWSSDK.Common
             catch (Exception ex)
             {
                 Console.WriteLine($"Error update data tenant: {ex.Message}");
+                messenger!.Send(new UpdateDataTenantResult(true, "", totalFileExcute, countFileExcute, $"Error: " + ex.Message, 0));
                 return false;
             }
         }
