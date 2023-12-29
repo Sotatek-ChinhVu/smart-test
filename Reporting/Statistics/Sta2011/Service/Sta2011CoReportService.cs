@@ -6,11 +6,9 @@ using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
-using Reporting.Statistics.Sta2010.Models;
 using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Mapper;
 using Reporting.Statistics.Sta2011.Models;
-using System.Linq;
 
 namespace Reporting.Statistics.Sta2011.Service
 {
@@ -20,13 +18,13 @@ namespace Reporting.Statistics.Sta2011.Service
         #region Constant
         private int _maxRow = 45;
 
-        private readonly List<PutColumn> csvTotalColumns = new List<PutColumn>
+        private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分"),
             new PutColumn("TotalCaption", "合計行")
         };
 
-        private readonly List<PutColumn> putColumns = new List<PutColumn>
+        private List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("SeikyuYmFmt", "請求年月", true, "SeikyuYm"),
             new PutColumn("IsZaiiso", "在医総"),
@@ -71,7 +69,7 @@ namespace Reporting.Statistics.Sta2011.Service
         private List<CoZaiReceInfModel> receInfs;
         private CoHpInfModel hpInf;
         private bool _hasNextPage;
-        private readonly List<PutColumn> putCurColumns = new();
+        private List<PutColumn> putCurColumns = new List<PutColumn>();
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
@@ -84,12 +82,6 @@ namespace Reporting.Statistics.Sta2011.Service
         {
             _staFinder = staFinder;
             _readRseReportFileService = readRseReportFileService;
-            _printConf = new();
-            printDatas = new();
-            headerL1 = new();
-            headerL2 = new();
-            receInfs = new();
-            hpInf = new();
         }
 
         public CommonReportingRequestModel GetSta2011ReportingData(CoSta2011PrintConf printConf, int hpId)
@@ -147,22 +139,22 @@ namespace Reporting.Statistics.Sta2011.Service
                         for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds.Count - 1) || taCnt == 0; taCnt++)
                         {
                             var curDatas = receInfs.Where(s =>
-                                (!pbZaiiso || s.IsZaiiso == isZaiisoes[zaiCnt]) &&
-                                (!pbKaId || s.KaId == kaIds[kaCnt]) &&
-                                (!pbTantoId || s.TantoId == tantoIds[taCnt])
+                                (pbZaiiso ? s.IsZaiiso == isZaiisoes[zaiCnt] : true) &&
+                                (pbKaId ? s.KaId == kaIds[kaCnt] : true) &&
+                                (pbTantoId ? s.TantoId == tantoIds[taCnt] : true)
                             ).ToList();
 
                             for (int rowNo = 0; rowNo <= _maxRow - 1; rowNo++)
                             {
                                 CoSta2011PrintData printData = new CoSta2011PrintData();
-                                List<CoZaiReceInfModel>? wrkReces = null;
+                                List<CoZaiReceInfModel> wrkReces = null;
 
-                                printData.SeikyuYm = curDatas.FirstOrDefault()?.SeikyuYm ?? 0;
-                                printData.IsZaiiso = pbZaiiso ? curDatas.FirstOrDefault()?.IsZaiiso.ToString() ?? string.Empty : string.Empty;
-                                printData.KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaId.ToString() ?? string.Empty : string.Empty;
-                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaSname ?? string.Empty : string.Empty;
-                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoId.ToString() ?? string.Empty : string.Empty;
-                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoSname ?? string.Empty : string.Empty;
+                                printData.SeikyuYm = curDatas.FirstOrDefault().SeikyuYm;
+                                printData.IsZaiiso = pbZaiiso ? curDatas.FirstOrDefault().IsZaiiso.ToString() : null;
+                                printData.KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaId.ToString() : null;
+                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaSname : null;
+                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoId.ToString() : null;
+                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoSname : null;
 
                                 if (_printConf.IsZaitaku)
                                 {
@@ -508,6 +500,8 @@ namespace Reporting.Statistics.Sta2011.Service
                                         //保険外
                                         case 40:
                                             //空行
+                                            //printDatas.Add(new CoSta2011PrintData(RowType.Brank));
+
                                             printData.HokenSbt1 = "保険外";
                                             printData.HokenSbt2 = "労災";
                                             wrkReces = curDatas.Where(r => new int[] { HokenKbn.RousaiShort, HokenKbn.RousaiLong, HokenKbn.AfterCare }.Contains(r.HokenKbn)).ToList();
@@ -524,6 +518,8 @@ namespace Reporting.Statistics.Sta2011.Service
                                         //総合計
                                         case 43:
                                             //空行
+                                            //printDatas.Add(new CoSta2011PrintData(RowType.Brank));
+
                                             printData.TotalCaption = "◆総合計";
                                             printData.RowType = RowType.Total;
                                             wrkReces = curDatas.ToList();
@@ -676,13 +672,18 @@ namespace Reporting.Statistics.Sta2011.Service
             hpInf = _staFinder.GetHpInf(HpId, _printConf.SeikyuYm * 100 + 1);
 
             //データ取得
-            List<CoReceInfModel> wrkReceInfs = _staFinder.GetReceInfs(HpId, _printConf, hpInf.PrefNo);
+            var wrkReceInfs = _staFinder.GetReceInfs(HpId, _printConf, hpInf.PrefNo);
             if ((wrkReceInfs?.Count ?? 0) == 0) return false;
 
             //在宅患者のリスト
             var zaitakuReces = _staFinder.GetZaitakuReces(HpId, _printConf);
 
-            receInfs = wrkReceInfs!.Select(wrkReceInf => new CoZaiReceInfModel(
+            receInfs = new List<CoZaiReceInfModel>();
+
+            foreach (var wrkReceInf in wrkReceInfs)
+            {
+                receInfs.Add(
+                    new CoZaiReceInfModel(
                         receInf: wrkReceInf.ReceInf,
                         ptHokenInf: wrkReceInf.PtHokenInf,
                         ptKohi1: wrkReceInf.PtKohi1,
@@ -700,7 +701,9 @@ namespace Reporting.Statistics.Sta2011.Service
                                 r.SinYm == wrkReceInf.SinYm &&
                                 r.HokenId == wrkReceInf.HokenId
                             ) >= 0
-                    )).ToList();
+                    )
+                );
+            }
 
             //印刷用データの作成
             MakePrintData();
@@ -710,15 +713,14 @@ namespace Reporting.Statistics.Sta2011.Service
         #endregion
 
         #region Update DrawForm
-        private void UpdateDrawForm()
+        private bool UpdateDrawForm()
         {
             _hasNextPage = true;
 
             #region SubMethod
 
             #region Header
-            //using void function because it not return data
-            void UpdateFormHeader()
+            int UpdateFormHeader()
             {
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
@@ -732,15 +734,16 @@ namespace Reporting.Statistics.Sta2011.Service
                 int totalPage = (int)Math.Ceiling((double)printDatas.Count / _maxRow);
                 _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
                 //請求年月
-                _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : string.Empty);
+                _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : "");
                 //改ページ条件
-                _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : string.Empty);
+                _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : "");
+
+                return 1;
             }
             #endregion
 
             #region Body
-            //using void function because it not return data
-            void UpdateFormBody()
+            int UpdateFormBody()
             {
                 int hokIndex = (_currentPage - 1) * _maxRow;
 
@@ -750,14 +753,14 @@ namespace Reporting.Statistics.Sta2011.Service
                 for (short rowNo = 0; rowNo < _maxRow; rowNo++)
                 {
                     var printData = printDatas[hokIndex];
-                    string baseListName = string.Empty;
+                    string baseListName = "";
 
                     Dictionary<string, CellModel> data = new();
                     //明細データ出力
                     foreach (var colName in existsCols)
                     {
-                        var value = typeof(CoSta2011PrintData).GetProperty(colName)?.GetValue(printData);
-                        AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
+                        var value = typeof(CoSta2011PrintData).GetProperty(colName).GetValue(printData);
+                        AddListData(ref data, colName, value == null ? "" : value.ToString());
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
@@ -789,12 +792,26 @@ namespace Reporting.Statistics.Sta2011.Service
                         break;
                     }
                 }
+
+                return hokIndex;
             }
             #endregion
 
             #endregion
-            UpdateFormHeader();
-            UpdateFormBody();
+
+            try
+            {
+                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void SetFieldData(string field, string value)
@@ -866,6 +883,7 @@ namespace Reporting.Statistics.Sta2011.Service
             }
 
             //データ
+            int totalRow = csvDatas.Count;
             int rowOutputed = 0;
             foreach (var csvData in csvDatas)
             {
@@ -875,11 +893,11 @@ namespace Reporting.Statistics.Sta2011.Service
 
             string RecordData(CoSta2011PrintData csvData)
             {
-                List<string> colDatas = new();
+                List<string> colDatas = new List<string>();
 
                 foreach (var column in putCurColumns)
                 {
-                    var value = typeof(CoSta2011PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                    var value = typeof(CoSta2011PrintData).GetProperty(column.CsvColName).GetValue(csvData);
                     if (csvData.RowType == RowType.Total && !column.IsTotal)
                     {
                         value = string.Empty;
@@ -888,7 +906,7 @@ namespace Reporting.Statistics.Sta2011.Service
                     {
                         value = (int)value;
                     }
-                    colDatas.Add("\"" + (value == null ? string.Empty : value.ToString()) + "\"");
+                    colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
                 }
 
                 return string.Join(",", colDatas);
