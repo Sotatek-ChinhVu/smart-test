@@ -20,12 +20,12 @@ public class CoSta3061PrintConf
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; } = string.Empty;
+    public string FormFileName { get; set; }
 
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; } = string.Empty;
+    public string ReportName { get; set; }
 
     /// <summary>
     /// テスト患者の有無
@@ -101,19 +101,19 @@ public class CoSta3061PrintConf
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public List<int> KaIds { get; set; } = new();
+    public List<int> KaIds { get; set; }
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public List<int> TantoIds { get; set; } = new();
+    public List<int> TantoIds { get; set; }
 
     /// <summary>
     /// 保険種別
     ///     0:自費 1:社保 2:国保 3:後期
     ///     10:労災 11:自賠 12:自費レセ
     /// </summary>
-    public List<int> HokenSbts { get; set; } = new();
+    public List<int> HokenSbts { get; set; }
 
     /// <summary>
     /// 患者分類

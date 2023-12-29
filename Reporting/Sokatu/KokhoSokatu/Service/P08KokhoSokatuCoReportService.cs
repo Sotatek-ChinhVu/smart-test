@@ -1,4 +1,6 @@
 ﻿using Helper.Common;
+using Helper.Constants;
+using Microsoft.EntityFrameworkCore.Internal;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;
@@ -30,7 +32,7 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
     #region Init properties
     private int hpId;
     private int seikyuYm;
-    private SeikyuType seikyuType;
+    private SeikyuType seikyuType; 
     private bool hasNextPage;
     private int currentPage;
     #endregion
@@ -54,8 +56,6 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        receInfs = new();
     }
     #endregion
 
@@ -130,7 +130,7 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsNrAll).ToList(); break;
@@ -141,7 +141,7 @@ public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
                     case 5: wrkReces = receInfs.Where(r => r.IsKoukiAll && r.IsHeiyo).ToList(); break;
                     case 6: wrkReces = receInfs.Where(r => r.IsKoukiAll && r.IsHeiyo).ToList(); break;
                 }
-                if (wrkReces.Count == 0) continue;
+                if (wrkReces == null) continue;
 
                 countData wrkData = new countData();
                 if (rowNo == 2)

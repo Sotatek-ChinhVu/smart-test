@@ -44,7 +44,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string PtName
         {
-            get => PtInf.Name ?? string.Empty;
+            get => PtInf.Name;
         }
 
         public string PtNameJis
@@ -52,14 +52,14 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
             get
             {
                 string wrkName = string.Empty;
-                string errWord = CIUtil.Chk_JISKj(PtInf.Name ?? string.Empty, out wrkName);
+                string errWord = CIUtil.Chk_JISKj(PtInf.Name, out wrkName);
                 if (string.IsNullOrEmpty(errWord))
                 {
-                    return PtInf.Name ?? string.Empty;
+                    return PtInf.Name;
                 }
                 else
                 {
-                    return PtInf.KanaName ?? string.Empty;
+                    return PtInf.KanaName;
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// <summary>
         /// 受給者証番号
         /// </summary>
-        public string? JyukyusyaNo
+        public string JyukyusyaNo
         {
             get =>
                 kohiHokens.Exists(x => x.HokenNo == PtKohi1.HokenNo && x.HokenEdaNo == PtKohi1.HokenEdaNo) ? PtKohi1.JyukyusyaNo :

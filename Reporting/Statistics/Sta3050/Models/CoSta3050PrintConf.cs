@@ -28,12 +28,12 @@ public class CoSta3050PrintConf
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; } = string.Empty;
+    public string FormFileName { get; set; }
 
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; } = string.Empty;
+    public string ReportName { get; set; }
 
     /// <summary>
     /// テスト患者の有無
@@ -139,59 +139,59 @@ public class CoSta3050PrintConf
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public List<int> KaIds { get; set; } = new();
+    public List<int> KaIds { get; set; }
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public List<int> TantoIds { get; set; } = new();
+    public List<int> TantoIds { get; set; }
 
     /// <summary>
     /// 保険種別
     ///     1:社保 2:国保 3:後期
     ///     10:労災 11:自賠 12:自費レセ
     /// </summary>
-    public List<int> HokenSbts { get; set; } = new();
+    public List<int> HokenSbts { get; set; }
 
     /// <summary>
     /// レセプト識別
     /// </summary>
-    public List<string> SinIds { get; set; } = new();
+    public List<string> SinIds { get; set; }
 
     /// <summary>
     /// 項目種別
     /// </summary>
-    public List<string> SinKouiKbns { get; set; } = new();
+    public List<string> SinKouiKbns { get; set; }
 
     /// <summary>
     /// 院内院外区分
     /// </summary>
-    public List<int> InoutKbns { get; set; } = new();
+    public List<int> InoutKbns { get; set; }
 
     /// <summary>
     /// 毒薬区分
     /// </summary>
-    public List<int> MadokuKbns { get; set; } = new();
+    public List<int> MadokuKbns { get; set; }
 
     /// <summary>
     /// 向精神薬区分
     /// </summary>
-    public List<int> KouseisinKbns { get; set; } = new();
+    public List<int> KouseisinKbns { get; set; }
 
     /// <summary>
     /// 後発医薬品区分
     /// </summary>
-    public List<int> KohatuKbns { get; set; } = new();
+    public List<int> KohatuKbns { get; set; }
 
     /// <summary>
     /// 採用区分
     /// </summary>
-    public List<int> IsAdopteds { get; set; } = new();
+    public List<int> IsAdopteds { get; set; }
 
     /// <summary>
     /// 検索項目
     /// </summary>
-    public List<string> ItemCds { get; set; } = new();
+    public List<string> ItemCds { get; set; }
 
     /// <summary>
     /// 検索項目の検索オプション
@@ -202,7 +202,7 @@ public class CoSta3050PrintConf
     /// <summary>
     /// 検索ワード
     /// </summary>
-    public string SearchWord { get; set; } = string.Empty;
+    public string SearchWord { get; set; }
 
     /// <summary>
     /// 検索ワードの検索オプション

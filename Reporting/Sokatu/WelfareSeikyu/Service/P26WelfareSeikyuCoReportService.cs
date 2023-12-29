@@ -25,8 +25,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoWelfareReceInfModel> receInfs = new();
-        private CoHpInfModel hpInf = new();
+        private List<CoWelfareReceInfModel> receInfs;
+        private CoHpInfModel hpInf;
 
         private int totalTensu;
         private int totalKohiFutan;
@@ -224,8 +224,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                         //本家
                         listDataPerPage.Add(new("honkeKbn", 0, rowNo, curReceInf.ReceSbt.Substring(3, 1)));
                         //負担者番号
-                        listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus)?.Substring(0, 2) ?? string.Empty));
-                        listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus)?.Substring(4, 4) ?? string.Empty));
+                        listDataPerPage.Add(new("futansyaNo0", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(0, 2)));
+                        listDataPerPage.Add(new("futansyaNo1", 0, rowNo, curReceInf.FutansyaNo(kohiHoubetus).Substring(4, 4)));
                         //受給者番号
                         listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, string.Format("{0, 7}", curReceInf.JyukyusyaNo(kohiHoubetus))));
                         //診療年月
@@ -426,7 +426,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     return false;
                 }
             }
-            catch 
+            catch (Exception e)
             {
                 hasNextPage = _hasNextPage = false;
                 return false;

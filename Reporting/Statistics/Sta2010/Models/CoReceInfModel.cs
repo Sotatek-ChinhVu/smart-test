@@ -16,9 +16,9 @@ namespace Reporting.Statistics.Sta2010.Models
         public UserMst TantoMst { get; private set; }
 
         //true: 政令指定都市及び、広域連合を代表番号にまとめる
-        private readonly bool changeMainHokensyaNo = false;
+        private bool changeMainHokensyaNo = false;
         //都道府県番号
-        private readonly int prefNo;
+        private int prefNo;
 
         public CoReceInfModel(ReceInf receInf, PtHokenInf ptHokenInf,
             PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4,
@@ -107,7 +107,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsNrMine
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "2";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "2";
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsNrPreSchool
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "4";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "4";
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsNrFamily
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "6";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "6";
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsNrElderIppan
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "8";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "8";
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsNrElderUpper
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "0";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "0";
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsNrAll
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1";
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsKohiOnly
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "2" && ReceInf.ReceSbt.Substring(3, 1) == "2";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "2" && ReceInf.ReceSbt.Substring(3, 1) == "2";
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsKoukiIppan
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "8";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "8";
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsKoukiUpper
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "0";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "0";
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsKoukiAll
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "3";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "3";
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsRetMine
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "2";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "2";
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsRetPreSchool
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "4";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "4";
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsRetFamily
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "6";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "6";
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsRetElderIppan
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "8";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "8";
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsRetElderUpper
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "0";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "0";
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsRetAll
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4";
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public bool IsHeiyo
         {
-            get => ReceInf.ReceSbt?.Substring(2, 1) != "1";
+            get => ReceInf.ReceSbt.Substring(2, 1) != "1";
         }
         #endregion
 
@@ -262,10 +262,10 @@ namespace Reporting.Statistics.Sta2010.Models
             get
             {
                 string myPrefNo = string.Format("{0:D2}", prefNo);
-                string kohi1PrefNo = PtKohi1?.FutansyaNo?.AsString().Substring(2, 2) ?? string.Empty;
-                string kohi2PrefNo = PtKohi2?.FutansyaNo?.AsString().Substring(2, 2) ?? string.Empty;
-                string kohi3PrefNo = PtKohi3?.FutansyaNo?.AsString().Substring(2, 2) ?? string.Empty;
-                string kohi4PrefNo = PtKohi4?.FutansyaNo?.AsString().Substring(2, 2) ?? string.Empty;
+                string kohi1PrefNo = PtKohi1?.FutansyaNo.AsString().Substring(2, 2);
+                string kohi2PrefNo = PtKohi2?.FutansyaNo.AsString().Substring(2, 2);
+                string kohi3PrefNo = PtKohi3?.FutansyaNo.AsString().Substring(2, 2);
+                string kohi4PrefNo = PtKohi4?.FutansyaNo.AsString().Substring(2, 2);
 
                 return
                     (ReceInf.Kohi1ReceKisai == 1 && kohi1PrefNo != myPrefNo) ||
@@ -287,11 +287,11 @@ namespace Reporting.Statistics.Sta2010.Models
         public bool TokkiContains(string tokkiCd)
         {
             return
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 1, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 3, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 5, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 7, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 9, 2) == tokkiCd;
+                CIUtil.Copy(ReceInf.Tokki, 1, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 3, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 5, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 7, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 9, 2) == tokkiCd;
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public string Kohi1Houbetu
         {
-            get => ReceInf.Kohi1Houbetu ?? string.Empty;
+            get => ReceInf.Kohi1Houbetu;
         }
 
         /// <summary>
@@ -309,7 +309,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public string Kohi2Houbetu
         {
-            get => ReceInf.Kohi2Houbetu ?? string.Empty;
+            get => ReceInf.Kohi2Houbetu;
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public string Kohi3Houbetu
         {
-            get => ReceInf.Kohi3Houbetu ?? string.Empty;
+            get => ReceInf.Kohi3Houbetu;
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public string Kohi4Houbetu
         {
-            get => ReceInf.Kohi4Houbetu ?? string.Empty;
+            get => ReceInf.Kohi4Houbetu;
         }
 
         /// <summary>
@@ -433,12 +433,31 @@ namespace Reporting.Statistics.Sta2010.Models
         }
 
         /// <summary>
+        /// レセプト種別
+        ///     11x2: 本人
+        ///     11x4: 未就学者          
+        ///     11x6: 家族          
+        ///     11x8: 高齢一般・低所          
+        ///     11x0: 高齢７割          
+        ///     12x2: 公費          
+        ///     13x8: 後期一般・低所          
+        ///     13x0: 後期７割          
+        ///     14x2: 退職本人          
+        ///     14x4: 退職未就学者          
+        ///     14x6: 退職家族          
+        /// </summary>
+        //public string ReceSbt
+        //{
+        //    get => ReceInf.ReceSbt;
+        //}
+
+        /// <summary>
         /// 法別番号
         /// 
         /// </summary>        
         public string Houbetu
         {
-            get => ReceInf.Houbetu ?? string.Empty;
+            get => ReceInf.Houbetu;
         }
 
         /// <summary>
@@ -448,7 +467,7 @@ namespace Reporting.Statistics.Sta2010.Models
         {
             get
             {
-                string hokensyaNo = ReceInf.HokensyaNo?.AsString() ?? string.Empty;
+                string hokensyaNo = ReceInf.HokensyaNo.AsString() ?? string.Empty;
                 return
                     ReceInf.HokenKbn == Helper.Constants.HokenKbn.Syaho ? hokensyaNo : mainHokensyaNo;
             }
@@ -461,7 +480,7 @@ namespace Reporting.Statistics.Sta2010.Models
         {
             get
             {
-                string hokensyaNo = ReceInf.HokensyaNo?.AsString() ?? string.Empty;
+                string hokensyaNo = ReceInf.HokensyaNo.AsString();
 
                 //広域連合
                 if (hokensyaNo.Length == 8)
@@ -563,7 +582,7 @@ namespace Reporting.Statistics.Sta2010.Models
                 prefIn.Add(string.Format("{0:D2}", prefNo));
                 prefIn.Add(string.Format("{0:D2}", prefNo + 50));
 
-                return prefIn.Contains(ReceInf.HokensyaNo?.Substring(ReceInf.HokensyaNo.Length - 6, 2) ?? string.Empty);
+                return prefIn.Contains(ReceInf.HokensyaNo.Substring(ReceInf.HokensyaNo.Length - 6, 2));
             }
         }
 
@@ -572,7 +591,7 @@ namespace Reporting.Statistics.Sta2010.Models
         /// </summary>
         public int ReceCnt
         {
-            get => ReceInf.ReceSbt?.Substring(2, 1).AsInteger() ?? 0;
+            get => ReceInf.ReceSbt.Substring(2, 1).AsInteger();
         }
 
         /// <summary>
@@ -582,13 +601,13 @@ namespace Reporting.Statistics.Sta2010.Models
         {
             get
             {
-                if (ReceInf.ReceSbt?.Substring(1, 1) != "2")
+                if (ReceInf.ReceSbt.Substring(1, 1) != "2")
                 {
-                    return ReceInf.ReceSbt?.Substring(2, 1).AsInteger() - 1 ?? 0;
+                    return ReceInf.ReceSbt.Substring(2, 1).AsInteger() - 1;
                 }
                 else
                 {
-                    return ReceInf.ReceSbt?.Substring(2, 1).AsInteger() ?? 0;
+                    return ReceInf.ReceSbt.Substring(2, 1).AsInteger();
                 }
             }
         }

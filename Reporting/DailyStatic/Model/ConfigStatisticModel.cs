@@ -8,7 +8,7 @@ namespace Reporting.DailyStatic.Model;
 
 public class ConfigStatisticModel
 {
-    private StaMenu _staMenu = new();
+    private StaMenu _staMenu;
     public StaMenu StaMenu
     {
         get
@@ -47,7 +47,7 @@ public class ConfigStatisticModel
         }
     }
 
-    private List<StaConf> _listStaConf = new();
+    private List<StaConf> _listStaConf;
     public List<StaConf> ListStaConf
     {
         get
@@ -86,20 +86,20 @@ public class ConfigStatisticModel
         }
     }
 
-    public ConfigStatistic2021Model ConfigStatistic2021 { get; set; } = new();
-    public ConfigStatistic3001Model ConfigStatistic3001 { get; set; } = new();
-    public ConfigStatistic3010Model ConfigStatistic3010 { get; set; } = new();
-    public ConfigStatistic3020Model ConfigStatistic3020 { get; set; } = new();
-    public ConfigStatistic3030Model ConfigStatistic3030 { get; set; } = new();
+    public ConfigStatistic2021Model ConfigStatistic2021 { get; set; }
+    public ConfigStatistic3001Model ConfigStatistic3001 { get; set; }
+    public ConfigStatistic3010Model ConfigStatistic3010 { get; set; }
+    public ConfigStatistic3020Model ConfigStatistic3020 { get; set; }
+    public ConfigStatistic3030Model ConfigStatistic3030 { get; set; }
 
-    public ConfigStatistic3040Model ConfigStatistic3040 { get; set; } = new();
-    public ConfigStatistic3041Model ConfigStatistic3041 { get; set; } = new();
-    public ConfigStatistic3050Model ConfigStatistic3050 { get; set; } = new();
-    public ConfigStatistic3060Model ConfigStatistic3060 { get; set; } = new();
-    public ConfigStatistic3061Model ConfigStatistic3061 { get; set; } = new();
-    public ConfigStatistic3070Model ConfigStatistic3070 { get; set; } = new();
-    public ConfigStatistic3071Model ConfigStatistic3071 { get; set; } = new();
-    public ConfigStatistic3080Model ConfigStatistic3080 { get; set; } = new();
+    public ConfigStatistic3040Model ConfigStatistic3040 { get; set; }
+    public ConfigStatistic3041Model ConfigStatistic3041 { get; set; }
+    public ConfigStatistic3050Model ConfigStatistic3050 { get; set; }
+    public ConfigStatistic3060Model ConfigStatistic3060 { get; set; }
+    public ConfigStatistic3061Model ConfigStatistic3061 { get; set; }
+    public ConfigStatistic3070Model ConfigStatistic3070 { get; set; }
+    public ConfigStatistic3071Model ConfigStatistic3071 { get; set; }
+    public ConfigStatistic3080Model ConfigStatistic3080 { get; set; }
 
     private int _reportId = -1;
 
@@ -4556,6 +4556,29 @@ public class ConfigStatisticModel
         }
     }
 
+    //public InputItemTenMstViewModel ListTenMstInput
+    //{
+    //    get
+    //    {
+    //        switch ((StatisticReportType)ReportId)
+    //        {
+    //            case StatisticReportType.Sta3010:
+    //                return ConfigStatistic3010.ListTenMstInput;
+    //            default:
+    //                return new InputItemTenMstViewModel();
+    //        }
+    //    }
+    //    set
+    //    {
+    //        switch ((StatisticReportType)ReportId)
+    //        {
+    //            case StatisticReportType.Sta3010:
+    //                ConfigStatistic3010.ListTenMstInput = value;
+    //                break;
+    //        }
+    //    }
+    //}
+
     /// <summary>
     /// 検索項目の検索オプション -Or
     /// </summary>
@@ -4614,7 +4637,7 @@ public class ConfigStatisticModel
         }
     }
 
-    public List<string> ListSetKbnName { get; set; } = new();
+    public List<string> ListSetKbnName { get; set; }
 
     /// <summary>
     /// セット区分名称1

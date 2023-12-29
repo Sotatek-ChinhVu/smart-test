@@ -1,4 +1,9 @@
 ﻿using Entity.Tenant;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Reporting.Accounting.Model;
 
@@ -24,7 +29,7 @@ public class PtGrpNameMstModel
 
     public List<PtGrpItemModel> PtGrpItemModels { get; set; }
 
-    public string GrpItemSelected { get; set; } = string.Empty;
+    public string GrpItemSelected { get; set; }
 
     public bool IsSelecteAllGrpItem
     {

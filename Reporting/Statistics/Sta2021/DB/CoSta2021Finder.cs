@@ -56,10 +56,12 @@ namespace Reporting.Statistics.Sta2021.DB
 
             var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
             var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
-            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.ItemCd != null && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR" && s.IsDeleted == DeleteStatus.None);
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR" && s.IsDeleted == DeleteStatus.None);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
+            //ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
+            //ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId);
             #region 条件指定
             //診療科
@@ -128,7 +130,7 @@ namespace Reporting.Statistics.Sta2021.DB
                     new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } equals
                     new { sinDetail.HpId, sinDetail.PtId, sinDetail.SinYm, sinDetail.RpNo, sinDetail.SeqNo }
                 join tenMst in tenMsts on
-                    new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd != null && sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
+                    new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
                     new { tenMst.HpId, tenMst.ItemCd }
                 join ptInf in ptInfs on
                     new { sinCount.HpId, sinCount.PtId } equals
@@ -164,16 +166,19 @@ namespace Reporting.Statistics.Sta2021.DB
                             sinRp.SinId.ToString(),
                         Suryo = sinDetail.Suryo,
                         UnitName = sinDetail.UnitName,
-                        ItemCd = ((sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
+                        //TotalSuryo = sinDetail.Suryo * sinCount.Count,
+                        //Money = (int)Math.Round(sinDetail.Ten * sinCount.Count * (sinKoui.EntenKbn == 0 ? 10 : 1), MidpointRounding.AwayFromZero),
+                        //Money = (int)Math.Round(sinDetail.Ten * sinCount.Count * (sinKoui.EntenKbn == 0 ? 10 : 1)),
+                        ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
                         ItemCdCmt =
                             (
-                                (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                                sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                                 tenMst.MasterSbt == "C" ? sinDetail.ItemName :
                                 sinDetail.ItemCd
                             ),
                         SrcItemCd =
                         (
-                            (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                            sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                             sinDetail.ItemCd == ItemCdConst.CommentFree ? sinDetail.ItemName :
                             sinDetail.ItemCd
                         ),
@@ -212,6 +217,8 @@ namespace Reporting.Statistics.Sta2021.DB
                     qg.Key.SinId,
                     qg.Key.UnitName,
                     Count = qg.Sum(x => x.sinCount.Count),
+                    //Money = qg.Sum(x => (int)Math.Round(x.sinDetail.Ten * x.sinCount.Count * (x.sinKoui.EntenKbn == 0 ? 10 : 1), MidpointRounding.AwayFromZero)),
+                    //Money = qg.Sum(x => (int)Math.Round(x.sinDetail.Ten * x.sinCount.Count * (x.sinKoui.EntenKbn == 0 ? 10 : 1))),
                     qg.Key.ItemCd,
                     qg.Key.ItemCdCmt,
                     qg.Key.SrcItemCd,
@@ -291,13 +298,13 @@ namespace Reporting.Statistics.Sta2021.DB
                         wrkItemCd.ItemCd != wrkItemCd.SanteiItemCd &&
                         wrkItemCd.SanteiItemCd != ItemCdConst.NoSantei)
                     {
-                        printConf.ItemCds[i] = wrkItemCd.SanteiItemCd ?? string.Empty;
+                        printConf.ItemCds[i] = wrkItemCd.SanteiItemCd;
                     }
                 }
             }
             #region コメントマスター(CO)の名称取得
             var itemCmts = new List<string>();
-            foreach (var itemCd in printConf.ItemCds?.Where(i => i.StartsWith("CO")).ToList() ?? new())
+            foreach (var itemCd in printConf.ItemCds.Where(i => i.StartsWith("CO")))
             {
                 var sinDate = printConf.StartSinYm * 100 + 1;
 
@@ -314,8 +321,8 @@ namespace Reporting.Statistics.Sta2021.DB
                     itemCmts.Add(itemName);
                 }
             }
-            printConf.ItemCds?.AddRange(itemCmts);
-            printConf.ItemCds?.RemoveAll(i => i.StartsWith("CO"));
+            printConf.ItemCds.AddRange(itemCmts);
+            printConf.ItemCds.RemoveAll(i => i.StartsWith("CO"));
             #endregion
             if (printConf.ItemCds?.Count >= 1 && printConf.SearchWord.AsString() != "")
             {
@@ -404,6 +411,8 @@ namespace Reporting.Statistics.Sta2021.DB
             var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
+            //ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
+            //ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.Status > 3);
             #region 条件指定
             //診療科
@@ -592,6 +601,30 @@ namespace Reporting.Statistics.Sta2021.DB
                     qg.Key.SinId,
                     qg.Key.UnitName,
                     Count = qg.Sum(x => new int[] { 21, 22, 23 }.Contains(x.joinOdr.OdrKouiKbn) ? x.joinOdr.DaysCnt : 1),
+                    //Money = qg.Sum
+                    //    (x =>
+                    //        (int)Math.Round(
+                    //            (
+                    //                new int[] { 5, 6, 7, 9 }.Contains(x.joinOdr.TenId) ? 0 :
+                    //                x.joinOdr.TenId == 8 ? -x.joinOdr.Ten :
+                    //                x.joinOdr.TenId == 10 ? x.joinOdr.Ten / 10 :
+                    //                x.joinOdr.TenId == 11 ? x.joinOdr.Ten * 10 :
+                    //                x.joinOdr.Ten
+                    //            ) *
+                    //            (
+                    //                (
+                    //                    new string[] { "@SHIN", "@JIKAN" }.Contains(x.joinOdr.ItemCd) ? x.joinOdr.Suryo :
+                    //                    x.joinOdr.Suryo == 0 ? 1 :
+                    //                    x.joinOdr.TermVal == 0 ? x.joinOdr.Suryo :
+                    //                    //Math.Round(x.joinOdr.Suryo * x.joinOdr.TermVal, 3, MidpointRounding.AwayFromZero)
+                    //                    Math.Round(x.joinOdr.Suryo * x.joinOdr.TermVal * 1000) / 1000
+                    //                ) * (
+                    //                    new int[] { 21, 22, 23 }.Contains(x.joinOdr.OdrKouiKbn) ? x.joinOdr.DaysCnt : 1
+                    //                )
+                    //            )
+                    //            //,MidpointRounding.AwayFromZero
+                    //        ) * (new int[] { 1, 2, 4, 10, 11, 99 }.Contains(x.joinOdr.TenId) ? 1 : 10)
+                    //    ),
                     qg.Key.ItemCd,
                     qg.Key.ItemCdCmt,
                     qg.Key.SrcItemCd,

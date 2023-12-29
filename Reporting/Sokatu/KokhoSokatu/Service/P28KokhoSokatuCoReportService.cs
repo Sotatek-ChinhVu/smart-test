@@ -53,11 +53,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             _listTextData = new();
             _extralData = new();
             _visibleFieldData = new();
-            hpInf = new();
-            receInfs = new();
-            hokensyaNames = new();
-            kaMsts = new();
-            hokensyaNos = new();
         }
         #endregion
 
@@ -127,11 +122,11 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 {
                     if (i == 0)
                     {
-                        SetFieldData("kaName", kaMsts[i].KaName ?? string.Empty);
+                        SetFieldData("kaName", kaMsts[i].KaName);
                     }
                     else
                     {
-                        listDataPerPage.Add(new("kaNames", 0, (short)(i - 1), kaMsts.Any() ? kaMsts[i].KaName ?? string.Empty : string.Empty));
+                        listDataPerPage.Add(new("kaNames", 0, (short)(i - 1), kaMsts.Any() ? kaMsts[i].KaName : string.Empty));
                     }
                 }
 
@@ -155,7 +150,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                     //1枚目のみ記載する
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        List<CoReceInfModel> wrkReces = new();
+                        List<CoReceInfModel> wrkReces = null;
                         switch (rowNo)
                         {
                             //国保
@@ -167,7 +162,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                             case 4: wrkReces = receInfs.Where(r => r.IsKoukiAll && !r.IsPrefIn).ToList(); break;
                             case 5: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                         }
-                        if (wrkReces.Count == 0) continue;
+                        if (wrkReces == null) continue;
 
                         countData wrkData = new countData();
                         //件数
