@@ -199,7 +199,7 @@ namespace Infrastructure.Repositories
                     else
                     {
                         var checkExistRsvkrtOrder = rsvkrtMstList.Any(x => x.RsvkrtKbn == 0 &&
-                                                                         x.RsvDate == nextOrderModel.RsvDate);
+                                                                         x.RsvDate == nextOrderModel.RsvDate && x.IsDeleted == DeleteTypes.None);
 
                         if (checkExistRsvkrtOrder && !isDeletedRsvKrtDate.Contains(nextOrderModel.RsvDate)) continue;
 
