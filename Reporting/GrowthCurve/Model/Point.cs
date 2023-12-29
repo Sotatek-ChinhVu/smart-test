@@ -11,8 +11,6 @@
         {
             X = x;
             Y = y;
-            From = new Point(0, 0);
-            To = new Point(0, 0);
         }
 
         public Point(Point from, Point to)
