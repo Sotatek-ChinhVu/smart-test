@@ -5,12 +5,10 @@
         public CoSta2021PrintConf(int menuId)
         {
             MenuId = menuId;
-            SearchWord = string.Empty;
         }
 
         public CoSta2021PrintConf()
         {
-            SearchWord = string.Empty;
         }
 
         /// <summary>

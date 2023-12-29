@@ -4,10 +4,6 @@ namespace Reporting.Statistics.Sta3060.Models;
 
 public class CoKouiTensuModel
 {
-    public CoKouiTensuModel()
-    {
-    }
-
     /// <summary>
     /// 集計区分
     /// </summary>

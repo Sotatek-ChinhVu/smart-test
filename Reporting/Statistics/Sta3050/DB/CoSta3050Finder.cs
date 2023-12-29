@@ -324,16 +324,16 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 UnitName = sinDetail.UnitName,
                 Count = sinCount.Count,
                 TotalSuryo = sinDetail.Suryo * sinCount.Count,
-                ItemCd = ((sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
+                ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
                 ItemCdCmt =
                     (
-                        (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                        sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                         tenMst.MasterSbt == "C" ? sinDetail.ItemName :
                         sinDetail.ItemCd
                     ),
                 SrcItemCd =
                     (
-                        (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                        sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                         sinDetail.ItemCd == ItemCdConst.CommentFree ? sinDetail.ItemName :
                         sinDetail.ItemCd
                     ),

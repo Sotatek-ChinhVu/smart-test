@@ -371,7 +371,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                             _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') : "0")
                         .ThenBy(s => s.NyukinDate == s.SinDate ? "0" : "1" + s.SinDate.ToString())
                         .ThenBy(s => s.PtNum)
-                        .ToList() ?? new();
+                        .ToList();
             #endregion
 
             var nyukinYms = _syunoInfs?.GroupBy(s => s.NyukinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
