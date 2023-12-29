@@ -1,22 +1,27 @@
-﻿namespace Reporting.DrugInfo.Model;
+﻿using System.Text.Json.Serialization;
+
+namespace Reporting.DrugInfo.Model;
 
 public class DrugInfoData
 {
     public DrugInfoData(int selectedFormType, int reportType, List<DrugInfoModel> drugInfoList)
     {
-        this.selectedFormType = selectedFormType;
-        this.reportType = reportType;
-        this.drugInfoList = drugInfoList;
+        SelectedFormType = selectedFormType;
+        ReportType = reportType;
+        DrugInfoList = drugInfoList;
     }
 
     public DrugInfoData()
     {
-        drugInfoList = new();
+        DrugInfoList = new();
     }
 
-    public int selectedFormType { get; private set; }
+    [JsonPropertyName("selectedFormType")]
+    public int SelectedFormType { get; private set; }
 
-    public int reportType { get; private set; }
+    [JsonPropertyName("reportType")]
+    public int ReportType { get; private set; }
 
-    public List<DrugInfoModel> drugInfoList { get; private set; }
+    [JsonPropertyName("drugInfoList")]
+    public List<DrugInfoModel> DrugInfoList { get; private set; }
 }

@@ -800,13 +800,7 @@ public class PdfCreatorController : CookieController
 
     private async Task<IActionResult> RenderPdf(DrugInfoData data, ReportType reportType, string fileName)
     {
-        bool returnNoData = !data.drugInfoList.Any();
-        return await ActionReturnPDF(returnNoData, data, reportType, fileName);
-    }
-
-    private async Task<IActionResult> RenderPdf(CoOutDrugReportingOutputData data, ReportType reportType, string fileName)
-    {
-        bool returnNoData = !data.Data.Any();
+        bool returnNoData = !data.DrugInfoList.Any();
         return await ActionReturnPDF(returnNoData, data, reportType, fileName);
     }
 
@@ -822,10 +816,8 @@ public class PdfCreatorController : CookieController
         {
             return Content(NoDataMessage, "text/html");
         }
-        var json = JsonSerializer.Serialize(data);
-        StringContent jsonContent = (reportType == ReportType.DrugInfo)
-          ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
-          new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+
+        StringContent jsonContent = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
@@ -850,7 +842,6 @@ public class PdfCreatorController : CookieController
             using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
             {
                 var byteData = streamingData.ToArray();
-
                 return File(byteData, "application/pdf");
             }
         }
