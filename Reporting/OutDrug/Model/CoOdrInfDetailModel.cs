@@ -7,13 +7,13 @@ public class CoOdrInfDetailModel
 {
     public OdrInfDetail OdrInfDetail { get; set; }
     public OdrInf OdrInf { get; set; }
-    public TenMst? TenMst { get; set; }
-    public YohoMst? YohoMst { get; set; }
+    public TenMst TenMst { get; set; }
+    public YohoMst YohoMst { get; set; }
     public PtHokenPattern PtHokenPattern { get; set; }
 
     readonly string[] _bunkatu;
 
-    public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst? tenMst, PtHokenPattern ptHokenPattern, YohoMst? yohoMst)
+    public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst tenMst, PtHokenPattern ptHokenPattern, YohoMst yohoMst)
     {
         OdrInfDetail = odrInfDetail;
         OdrInf = odrInf;
