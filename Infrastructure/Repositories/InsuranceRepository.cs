@@ -6,10 +6,14 @@ using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Helper.Mapping;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Text.Json;
@@ -18,8 +22,24 @@ namespace Infrastructure.Repositories
 {
     public class InsuranceRepository : RepositoryBase, IInsuranceRepository
     {
-        public InsuranceRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        public InsuranceRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
+            key = GetDomainKey();
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, bool flag = true, bool isDeletedPtHokenInf = false)
@@ -1411,7 +1431,23 @@ namespace Infrastructure.Repositories
 
         public List<KohiPriorityModel> GetKohiPriorityList()
         {
-            return NoTrackingDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
+            List<KohiPriority> kohiPriorities = new();
+            // check if cache exists, load data from cache
+            string finalKey = key + CacheKeyConstant.KohiPriority;
+            if (_cache.KeyExists(finalKey))
+            {
+                var stringJson = _cache.StringGet(finalKey).AsString();
+                if (!string.IsNullOrEmpty(stringJson))
+                {
+                    kohiPriorities = JsonSerializer.Deserialize<List<KohiPriority>>(stringJson) ?? new();
+                    return kohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
+                }
+            }
+            // if cache does not exists, get data from database then set to cache
+            kohiPriorities = NoTrackingDataContext.KohiPriorities.ToList();
+            var jsonData = JsonSerializer.Serialize(kohiPriorities);
+            _cache.StringSet(finalKey, jsonData);
+            return kohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
         }
 
         public void ReleaseResource()
