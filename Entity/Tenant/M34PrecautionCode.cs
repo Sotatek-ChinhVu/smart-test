@@ -1,15 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Table(name: "M34_PRECAUTION_CODE")]
-    /// <summary>
-    /// create index to speed up performance
-    /// </summary>
-    [Index(nameof(AgeMin), nameof(AgeMax), nameof(SexCd), Name = "M34_PRECAUTION_CODE_AGE_MIN_IDX")]
-
     public class M34PrecautionCode : EmrCloneable<M34PrecautionCode>
     {
         /// <summary>
