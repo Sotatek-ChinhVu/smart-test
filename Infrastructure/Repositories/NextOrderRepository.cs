@@ -158,15 +158,15 @@ namespace Infrastructure.Repositories
             var isDeletedRsvKrtDate = nextOrderModels.Where(n => n.IsDeleted == DeleteTypes.Deleted).Select(n => n.RsvDate).ToList();
             foreach (var nextOrderModel in nextOrderModels)
             {
+                var oldNextOrder = rsvkrtMstList.FirstOrDefault(m => m.RsvkrtNo == nextOrderModel.RsvkrtNo);
                 odrInfs.AddRange(nextOrderModel.RsvkrtOrderInfs);
                 var maxRpNo = GetMaxRpNo(hpId, ptId);
                 var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
                 if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
                 {
-                    var rsvkrtMst = rsvkrtMstList.FirstOrDefault(r => r.RsvDate == nextOrderModel.RsvDate && r.RsvkrtNo == nextOrderModel.RsvkrtNo);
-                    if (rsvkrtMst != null)
+                    if (oldNextOrder != null && oldNextOrder.IsDeleted == DeleteTypes.None)
                     {
-                        rsvkrtMst.IsDeleted = nextOrderModel.IsDeleted;
+                        oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
                         foreach (var item in nextOrderModel.RsvkrtOrderInfs.Where(o => o.IsDeleted == DeleteTypes.Deleted || o.IsDeleted == DeleteTypes.Confirm))
                         {
                             var orderInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && item.IsDeleted == DeleteTypes.None && o.RsvkrtNo == item.RsvkrtNo);
@@ -181,21 +181,24 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var oldNextOrder = rsvkrtMstList.FirstOrDefault(m => m.RsvkrtNo == nextOrderModel.RsvkrtNo);
 
                     if (oldNextOrder != null)
                     {
-                        oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
-                        oldNextOrder.RsvDate = nextOrderModel.RsvDate;
-                        oldNextOrder.RsvName = nextOrderModel.RsvName;
-                        oldNextOrder.SortNo = nextOrderModel.SortNo;
-                        oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
-                        oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        oldNextOrder.UpdateId = userId;
-                        rsvkrtNo = oldNextOrder.RsvkrtNo;
-                        UpsertByomei(ref rsvkrtByomeiList, userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
-                        UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                        UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
+                        if (oldNextOrder.IsDeleted == DeleteTypes.None)
+                        {
+                            oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
+                            oldNextOrder.RsvDate = nextOrderModel.RsvDate;
+                            oldNextOrder.RsvName = nextOrderModel.RsvName;
+                            oldNextOrder.SortNo = nextOrderModel.SortNo;
+                            oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
+                            oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            oldNextOrder.UpdateId = userId;
+                            rsvkrtNo = oldNextOrder.RsvkrtNo;
+                            UpsertByomei(ref rsvkrtByomeiList, userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
+                            UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                            UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
+                        }
+
                     }
                     else
                     {
@@ -216,8 +219,11 @@ namespace Infrastructure.Repositories
                         UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
                         UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
-                    SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
-                    SaveNextOrderRaiinListInf(userId, odrInfs, kouiKbnMstList, raiinListKouis, raiinListItems);
+                    if (oldNextOrder?.IsDeleted == DeleteTypes.None)
+                    {
+                        SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
+                        SaveNextOrderRaiinListInf(userId, odrInfs, kouiKbnMstList, raiinListKouis, raiinListItems);
+                    }
                 }
             }
             TrackingDataContext.SaveChanges();
@@ -400,7 +406,7 @@ namespace Infrastructure.Repositories
                 var oldOrderInf = oldOrderInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == rsvkrtNo && o.RpNo == orderInf.RpNo && o.RpEdaNo == orderInf.RpEdaNo && o.IsDeleted == DeleteTypes.None);
                 if (orderInf.IsDeleted == DeleteTypes.Deleted || orderInf.IsDeleted == DeleteTypes.Confirm)
                 {
-                    if (oldOrderInf != null)
+                    if (oldOrderInf != null && oldOrderInf.IsDeleted == DeleteTypes.None)
                     {
                         oldOrderInf.IsDeleted = orderInf.IsDeleted;
                         oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -409,17 +415,20 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    RsvkrtOdrInf orderInfEntity;
+                    RsvkrtOdrInf? orderInfEntity = null;
                     if (oldOrderInf != null)
                     {
-                        oldOrderInf.IsDeleted = DeleteTypes.Deleted;
-                        oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        oldOrderInf.CreateId = userId;
-                        orderInf.ChangeDate(rsvDate);
-                        orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, oldOrderInf.RpNo, orderInf, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1);
-                        TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
-                        var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(oldOrderInf.RpNo, od, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1));
-                        TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
+                        if (oldOrderInf.IsDeleted == DeleteTypes.None)
+                        {
+                            oldOrderInf.IsDeleted = DeleteTypes.Deleted;
+                            oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            oldOrderInf.CreateId = userId;
+                            orderInf.ChangeDate(rsvDate);
+                            orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, oldOrderInf.RpNo, orderInf, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1);
+                            TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
+                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(oldOrderInf.RpNo, od, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1));
+                            TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
+                        }
                     }
                     else
                     {
@@ -432,7 +441,10 @@ namespace Infrastructure.Repositories
                     }
 
                     // add orderInfEntity to rsvkrtOrderInfEntityList
-                    rsvkrtOrderInfEntityList.Add(orderInfEntity);
+                    if (orderInfEntity != null)
+                    {
+                        rsvkrtOrderInfEntityList.Add(orderInfEntity);
+                    }
                 }
             }
         }
@@ -450,7 +462,7 @@ namespace Infrastructure.Repositories
             var oldKarteInf = rsvkrtKarteInfEntityList.FirstOrDefault(o => o.RsvkrtNo == rsvkrtNo);
             if (karteInf.IsDeleted == DeleteTypes.Deleted || karteInf.IsDeleted == DeleteTypes.Confirm)
             {
-                if (oldKarteInf != null)
+                if (oldKarteInf != null && oldKarteInf.IsDeleted == DeleteTypes.None)
                 {
                     oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
                     oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -459,15 +471,18 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                RsvkrtKarteInf karteInfEntity;
+                RsvkrtKarteInf? karteInfEntity = null;
                 if (oldKarteInf != null)
                 {
-                    seqNo++;
-                    oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
-                    oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    oldKarteInf.CreateId = userId;
-                    karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, karteInf.RsvkrtNo, seqNo);
-                    TrackingDataContext.Add(karteInfEntity);
+                    if (oldKarteInf.IsDeleted == DeleteTypes.None)
+                    {
+                        seqNo++;
+                        oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
+                        oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        oldKarteInf.CreateId = userId;
+                        karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, karteInf.RsvkrtNo, seqNo);
+                        TrackingDataContext.Add(karteInfEntity);
+                    }
                 }
                 else
                 {
@@ -476,7 +491,10 @@ namespace Infrastructure.Repositories
                 }
 
                 // add karteInfEntity to rsvkrtKarteInfEntityList
-                rsvkrtKarteInfEntityList.Add(karteInfEntity);
+                if (karteInfEntity != null)
+                {
+                    rsvkrtKarteInfEntityList.Add(karteInfEntity);
+                }
             }
         }
 
@@ -497,18 +515,16 @@ namespace Infrastructure.Repositories
         private void UpsertByomei(ref List<RsvkrtByomei> rsvkrtByomeiEntityList, int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
             var allOldByomeis = rsvkrtByomeiEntityList.Where(o => o.RsvkrtNo == rsvkrtNo).ToList();
-            var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
             foreach (var byomei in byomeis)
             {
-                var oldByomei = oldByomeis.FirstOrDefault(item => item.HpId == byomei.HpId
+                var oldByomei = allOldByomeis.FirstOrDefault(item => item.HpId == byomei.HpId
                                                                   && item.PtId == byomei.PtId
                                                                   && item.RsvkrtNo == rsvkrtNo
-                                                                  && item.IsDeleted == DeleteTypes.None
                                                                   && item.SeqNo == byomei.SeqNo);
 
                 if (byomei.IsDeleted == DeleteTypes.Deleted)
                 {
-                    if (oldByomei != null)
+                    if (oldByomei != null && oldByomei.IsDeleted == DeleteTypes.None)
                     {
                         oldByomei.IsDeleted = DeleteTypes.Deleted;
                         oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -519,38 +535,41 @@ namespace Infrastructure.Repositories
                 {
                     if (oldByomei != null)
                     {
-                        oldByomei.ByomeiCd = byomei.ByomeiCd;
-                        oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.Byomei = byomei.Byomei;
-                        oldByomei.SyobyoKbn = byomei.SyobyoKbn;
-                        oldByomei.SikkanKbn = byomei.SikkanKbn;
-                        oldByomei.NanbyoCd = byomei.NanbyoCd;
-                        oldByomei.HosokuCmt = byomei.HosokuCmt;
-                        oldByomei.IsNodspKarte = byomei.IsNodspKarte;
-                        oldByomei.IsNodspRece = byomei.IsNodspRece;
-                        oldByomei.IsDeleted = byomei.IsDeleted;
-                        oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        oldByomei.UpdateId = userId;
+                        if (oldByomei.IsDeleted == DeleteTypes.None)
+                        {
+                            oldByomei.ByomeiCd = byomei.ByomeiCd;
+                            oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.Byomei = byomei.Byomei;
+                            oldByomei.SyobyoKbn = byomei.SyobyoKbn;
+                            oldByomei.SikkanKbn = byomei.SikkanKbn;
+                            oldByomei.NanbyoCd = byomei.NanbyoCd;
+                            oldByomei.HosokuCmt = byomei.HosokuCmt;
+                            oldByomei.IsNodspKarte = byomei.IsNodspKarte;
+                            oldByomei.IsNodspRece = byomei.IsNodspRece;
+                            oldByomei.IsDeleted = byomei.IsDeleted;
+                            oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            oldByomei.UpdateId = userId;
+                        }
                     }
                     else
                     {
