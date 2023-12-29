@@ -1,20 +1,20 @@
-﻿using Emr.Report.OutDrug.Model;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Reporting.CommonMasters.Config;
-using Reporting.CommonMasters.Constants;
 using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
-using Reporting.OutDrug.Constants;
 using Reporting.OutDrug.DB;
-using Reporting.OutDrug.Mapper;
 using Reporting.OutDrug.Model;
-using Reporting.OutDrug.Utils;
+using System.Text;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
-using System.Text;
+using Reporting.OutDrug.Utils;
 using HokenSbtKbn = Reporting.CommonMasters.Constants.HokenSbtKbn;
+using Emr.Report.OutDrug.Model;
+using Reporting.OutDrug.Constants;
+using Helper.Extension;
+using Reporting.CommonMasters.Constants;
+using Reporting.OutDrug.Mapper;
 
 namespace Reporting.OutDrug.Service;
 
@@ -285,7 +285,6 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                         if (_printQrPage)
                         {
-                            pageIndex++;
                             // QRを印字しきれなかった時は、QR印字用のページを印刷
                             _printoutType = OutDrugPrintOutType.QR;
                             formfile = "fmOutDrug_P2.rse";
@@ -668,55 +667,16 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         // QR専用紙の印字
         void UpdateQR()
         {
-            /// Check key in dictionary and set value
-            if (visibleFieldListPerPage.ContainsKey("lblHikae"))
-            {
-                visibleFieldListPerPage["lblHikae"] = _repeatKai == 1;
-            }
-            else
-            {
-                visibleFieldListPerPage.Add("lblHikae", _repeatKai == 1);
-            }
-            
+            // 控えの場合は印字
+            visibleFieldListPerPage.Add("lblHikae", _repeatKai == 1);
             // QR
-            if (setFieldDataPerPage.ContainsKey("qr_OutDrg"))
-            {
-                setFieldDataPerPage["qr_OutDrg"] = $"Page {_printPage}";
-            }
-            else
-            {
-                setFieldDataPerPage.Add("qr_OutDrg", _coModel.QRData());
-            }
-            
+            setFieldDataPerPage.Add("qr_OutDrg", _coModel.QRData());
             // ページ
-            if (setFieldDataPerPage.ContainsKey("dfPage"))
-            {
-                setFieldDataPerPage["dfPage"] = $"Page {_printPage}";
-            }
-            else
-            {
-                setFieldDataPerPage.Add("dfPage", $"Page {_printPage}");
-            }
-
+            setFieldDataPerPage.Add("dfPage", $"Page {_printPage}");
             // 患者番号
-            if (setFieldDataPerPage.ContainsKey("dfPtNum"))
-            {
-                setFieldDataPerPage["dfPtNum"] = _coModel.PrintData?.PtNum.AsString() ?? string.Empty;
-            }
-            else
-            {
-                setFieldDataPerPage.Add("dfPtNum", _coModel.PrintData?.PtNum.AsString() ?? string.Empty);
-            }
-            
+            setFieldDataPerPage.Add("dfPtNum", _coModel.PrintData?.PtNum.AsString() ?? string.Empty);
             // 患者氏名
-            if (setFieldDataPerPage.ContainsKey("dfPtKanjiName"))
-            {
-                setFieldDataPerPage["dfPtKanjiName"] = _coModel.PrintData?.PtName ?? string.Empty;
-            }
-            else
-            {
-                setFieldDataPerPage.Add("dfPtKanjiName", _coModel.PrintData?.PtName ?? string.Empty);
-            }
+            setFieldDataPerPage.Add("dfPtKanjiName", _coModel.PrintData?.PtName ?? string.Empty);
         }
 
         // 分割指示
