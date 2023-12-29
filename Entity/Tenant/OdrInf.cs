@@ -10,6 +10,11 @@ namespace Entity.Tenant
     [Table("ODR_INF")]
     [Serializable]
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(IsDeleted), Name = "ODR_INF_IDX01")]
+
+    /// <summary>
+    /// create index to speed up performance
+    /// </summary>
+    [Index(nameof(RaiinNo), nameof(OdrKouiKbn), nameof(InoutKbn), nameof(IsDeleted), Name = "ODR_INF_RAIIN_NO_IDX")]
     public class OdrInf : EmrCloneable<OdrInf>
     {
         /// <summary>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231208104710_addIndex")]
+    partial class addIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -6117,8 +6120,6 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "HokenId");
 
-                    b.HasIndex(new[] { "HpId", "RaiinNo" }, "KAIKEI_INF_IDX01");
-
                     b.ToTable("KAIKEI_INF");
                 });
 
@@ -6811,8 +6812,6 @@ namespace TenantMigration.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.HasKey("HpId", "SeqNo");
-
-                    b.HasIndex(new[] { "PtId", "IsDeleted", "KensaItemCd" }, "KENSA_INF_DETAIL_PT_ID_IDX");
 
                     b.ToTable("KENSA_INF_DETAIL");
                 });
@@ -15352,14 +15351,6 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("RAIIN_LIST_KBN")
                         .HasColumnOrder(6);
-
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ID")
-                        .HasColumnOrder(7);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("KbnCd")
                         .HasColumnType("integer")
@@ -24738,6 +24729,7 @@ namespace TenantMigration.Migrations
                         .HasColumnName("YJ_CD");
 
                     b.Property<string>("YohoCd")
+                        .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")
                         .HasColumnName("YOHO_CD");
