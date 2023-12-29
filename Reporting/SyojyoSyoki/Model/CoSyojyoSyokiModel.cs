@@ -27,6 +27,19 @@ namespace Reporting.SyojyoSyoki.Model
             PtKohi4 = ptKohi4;
         }
 
+        public CoSyojyoSyokiModel()
+        {
+            HpInf = new();
+            SyoukiInfs = new();
+            ReceInf = new();
+            PtInf = new();
+            PtHokenInf = new();
+            PtKohi1 = new();
+            PtKohi2 = new();
+            PtKohi3 = new();
+            PtKohi4 = new();
+        }
+
         /// <summary>
         /// 患者番号
         /// </summary>
