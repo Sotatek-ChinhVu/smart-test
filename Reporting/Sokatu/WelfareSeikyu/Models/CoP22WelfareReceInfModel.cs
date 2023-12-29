@@ -7,7 +7,7 @@ public class CoP22WelfareReceInfModel
 {
     public ReceInf ReceInf { get; private set; }
     public PtInf PtInf { get; private set; }
-    public PtKohi PtKohi1 { get; private set; } = new();
+    public PtKohi PtKohi1 { get; private set; }
     public PtKohi PtKohi2 { get; private set; }
     public PtKohi PtKohi3 { get; private set; }
     public PtKohi PtKohi4 { get; private set; }
@@ -23,16 +23,6 @@ public class CoP22WelfareReceInfModel
         PtKohi3 = ptKohi3;
         PtKohi4 = ptKohi4;
         this.kohiHoubetus = kohiHoubetus;
-    }
-    public CoP22WelfareReceInfModel()
-    {
-        ReceInf = new();
-        PtInf = new();
-        PtKohi1 = new();
-        PtKohi2 = new();
-        PtKohi3 = new();
-        PtKohi4 = new();
-        this.kohiHoubetus = new();
     }
 
     /// <summary>
@@ -111,10 +101,10 @@ public class CoP22WelfareReceInfModel
     public int KohiFutan
     {
         get =>
-            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? ReceInf.Kohi1Futan :
-            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? ReceInf.Kohi2Futan :
-            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? ReceInf.Kohi3Futan :
-            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? ReceInf.Kohi4Futan :
+            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? ReceInf.Kohi1Futan :
+            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? ReceInf.Kohi2Futan :
+            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? ReceInf.Kohi3Futan :
+            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? ReceInf.Kohi4Futan :
             0;
     }
     public int PtFutan
@@ -125,38 +115,38 @@ public class CoP22WelfareReceInfModel
     public string WelfareHoubetu
     {
         get =>
-            kohiHoubetus.Contains(ReceInf?.Kohi1Houbetu ?? string.Empty) ? ReceInf?.Kohi1Houbetu ?? string.Empty :
-            kohiHoubetus.Contains(ReceInf?.Kohi2Houbetu ?? string.Empty) ? ReceInf?.Kohi2Houbetu ?? string.Empty :
-            kohiHoubetus.Contains(ReceInf?.Kohi3Houbetu ?? string.Empty) ? ReceInf?.Kohi3Houbetu ?? string.Empty :
-            kohiHoubetus.Contains(ReceInf?.Kohi4Houbetu ?? string.Empty) ? ReceInf?.Kohi4Houbetu ?? string.Empty :
+            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? ReceInf.Kohi1Houbetu :
+            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? ReceInf.Kohi2Houbetu :
+            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? ReceInf.Kohi3Houbetu :
+            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? ReceInf.Kohi4Houbetu :
             "";
     }
 
-    public string? WelfareJyukyusyaNo
+    public string WelfareJyukyusyaNo
     {
         get =>
-            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1.JyukyusyaNo :
-            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2.JyukyusyaNo :
-            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3.JyukyusyaNo :
-            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4.JyukyusyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.JyukyusyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.JyukyusyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.JyukyusyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.JyukyusyaNo :
             "";
     }
-    public string? WelfareFutansyaNo
+    public string WelfareFutansyaNo
     {
         get =>
-            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1.FutansyaNo :
-            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2.FutansyaNo :
-            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3.FutansyaNo :
-            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4.FutansyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.FutansyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.FutansyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.FutansyaNo :
+            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.FutansyaNo :
             "";
     }
-    public string? WelfareTokusyuNo
+    public string WelfareTokusyuNo
     {
         get =>
-            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1.TokusyuNo :
-            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2.TokusyuNo :
-            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3.TokusyuNo :
-            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4.TokusyuNo :
+            kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.TokusyuNo :
+            kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.TokusyuNo :
+            kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.TokusyuNo :
+            kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.TokusyuNo :
             "";
     }
     /// <summary>
@@ -230,7 +220,7 @@ public class CoP22WelfareReceInfModel
     /// </summary>
     public string Houbetu
     {
-        get => ReceInf.Houbetu ?? string.Empty;
+        get => ReceInf.Houbetu;
     }
 
     /// <summary>
@@ -242,10 +232,10 @@ public class CoP22WelfareReceInfModel
     {
         switch (kohiIndex)
         {
-            case 1: return ReceInf.Kohi1Houbetu ?? string.Empty;
-            case 2: return ReceInf.Kohi2Houbetu ?? string.Empty;
-            case 3: return ReceInf.Kohi3Houbetu ?? string.Empty;
-            case 4: return ReceInf.Kohi4Houbetu ?? string.Empty;
+            case 1: return ReceInf.Kohi1Houbetu;
+            case 2: return ReceInf.Kohi2Houbetu;
+            case 3: return ReceInf.Kohi3Houbetu;
+            case 4: return ReceInf.Kohi4Houbetu;
         }
         return "";
     }
@@ -255,10 +245,10 @@ public class CoP22WelfareReceInfModel
     /// </summary>
     public bool IsKokuhoKumiai
     {
-        get => ReceInf.HokensyaNo?.Length < 6 ? false :
+        get => ReceInf.HokensyaNo.Length < 6 ? false :
             ReceInf.HokenKbn == Helper.Constants.HokenKbn.Kokho &&
-            ReceInf.ReceSbt?.Substring(1, 1) != "3" &&   //後期以外
-            ReceInf.HokensyaNo?.Substring(ReceInf.HokensyaNo.Length - 6, 6).Substring(2, 1) == "3";
+            ReceInf.ReceSbt.Substring(1, 1) != "3" &&   //後期以外
+            ReceInf.HokensyaNo.Substring(ReceInf.HokensyaNo.Length - 6, 6).Substring(2, 1) == "3";
     }
 
     /// <summary>
@@ -266,7 +256,7 @@ public class CoP22WelfareReceInfModel
     /// </summary>
     public string ReceSbt
     {
-        get => ReceInf.ReceSbt ?? string.Empty;
+        get => ReceInf.ReceSbt;
     }
 
     /// <summary>
@@ -290,17 +280,17 @@ public class CoP22WelfareReceInfModel
     /// </summary>
     public bool IsElder
     {
-        get => ReceInf.ReceSbt?.Substring(3, 1) == "0" || ReceInf.ReceSbt?.Substring(3, 1) == "8";
+        get => ReceInf.ReceSbt.Substring(3, 1) == "0" || ReceInf.ReceSbt.Substring(3, 1) == "8";
     }
 
     public bool TokkiContains(string tokkiCd)
     {
         return
-            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 1, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 3, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 5, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 7, 2) == tokkiCd ||
-            CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 9, 2) == tokkiCd;
+            CIUtil.Copy(ReceInf.Tokki, 1, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki, 3, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki, 5, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki, 7, 2) == tokkiCd ||
+            CIUtil.Copy(ReceInf.Tokki, 9, 2) == tokkiCd;
     }
 
     public int KogakuKbn
@@ -321,7 +311,7 @@ public class CoP22WelfareReceInfModel
     /// </summary>
     public string PtName
     {
-        get => PtInf.Name ?? string.Empty;
+        get => PtInf.Name;
     }
     /// <summary>
     /// 生年月日

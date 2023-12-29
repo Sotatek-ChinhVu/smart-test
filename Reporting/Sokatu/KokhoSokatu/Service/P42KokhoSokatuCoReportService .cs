@@ -1,5 +1,4 @@
-﻿using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.KokhoSokatu.DB;
@@ -36,8 +35,6 @@ public class P42KokhoSokatuCoReportService : IP42KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        receInfs = new();
     }
     #endregion
 
@@ -153,13 +150,14 @@ public class P42KokhoSokatuCoReportService : IP42KokhoSokatuCoReportService
             //国保
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
+                    //case 0: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && (r.IsPrefIn || (r.IsPrefIn && r.IsKumiai))).ToList(); break;
                     case 0: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && r.IsPrefIn).ToList(); break;
                     case 1: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && !r.IsPrefIn).ToList(); break;
                 }
-                if (wrkReces.Count == 0) continue;
+                if (wrkReces == null) continue;
 
                 //保険者数
                 int kokhoSeikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Count();
@@ -169,13 +167,13 @@ public class P42KokhoSokatuCoReportService : IP42KokhoSokatuCoReportService
             //後期
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsKoukiAll && r.IsPrefIn).ToList(); break;
                     case 1: wrkReces = receInfs.Where(r => r.IsKoukiAll && !r.IsPrefIn).ToList(); break;
                 }
-                if (wrkReces.Count == 0) continue;
+                if (wrkReces == null) continue;
 
                 //保険者数
                 int koukiSeikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Count();
