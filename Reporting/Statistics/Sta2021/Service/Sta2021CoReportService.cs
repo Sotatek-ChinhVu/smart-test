@@ -338,8 +338,8 @@ namespace Reporting.Statistics.Sta2021.Service
                                     {
                                         printDatas.Last().SinYm.Add(sinYm);
                                         printDatas.Last().SinYmS.Add(CIUtil.SMonthToShowSMonth(sinYm));
-                                        printDatas.Last().Counts.Add("0");
-                                        printDatas.Last().Moneys.Add("0");
+                                        printDatas.Last().Counts.Add(string.Empty);
+                                        printDatas.Last().Moneys.Add(string.Empty);
                                     }
                                 }
                             }
@@ -371,8 +371,8 @@ namespace Reporting.Statistics.Sta2021.Service
                             {
                                 printDatas.Last().SinYm.Add(sinYm);
                                 printDatas.Last().SinYmS.Add(CIUtil.SMonthToShowSMonth(sinYm));
-                                printDatas.Last().Counts.Add("0");
-                                printDatas.Last().Moneys.Add("0");
+                                printDatas.Last().Counts.Add(string.Empty);
+                                printDatas.Last().Moneys.Add(string.Empty);
                             }
                         }
 
