@@ -346,7 +346,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
                     }
                     else
                     {
-                        value = (CoSta3061PrintData.CountDetail?)typeof(CoSta3061PrintData)?.GetProperty(wrkRows[i].ColName)?.GetValue(printData) ?? new();
+                        value = (CoSta3061PrintData.CountDetail)typeof(CoSta3061PrintData)?.GetProperty(wrkRows[i].ColName)?.GetValue(printData) ?? new();
                     }
                     short curRow = printJihi ? (short)(i - pageBreakRow) : i;
                     string rowNoKey = curRow + "_" + rowNo + "_" + currentPage;
@@ -844,7 +844,7 @@ public class Sta3061CoReportService : ISta3061CoReportService
                 }
                 else
                 {
-                    value = (CoSta3061PrintData.CountDetail?)typeof(CoSta3061PrintData).GetProperty(wrkRows[i].ColName)?.GetValue(csvData) ?? new();
+                    value = (CoSta3061PrintData.CountDetail)typeof(CoSta3061PrintData).GetProperty(wrkRows[i].ColName).GetValue(csvData);
                 }
                 retDatas[i + 3] += ",\"" + value.Count + "\"";
                 retDatas[i + 3] += ",\"" + value.Tensu + "\"";

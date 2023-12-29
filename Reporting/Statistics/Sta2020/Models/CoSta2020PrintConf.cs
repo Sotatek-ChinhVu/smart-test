@@ -11,10 +11,6 @@
             EndSinYm = -1;
         }
 
-        public CoSta2020PrintConf()
-        {
-        }
-
         /// <summary>
         /// STA_MENU.MENU_ID
         /// </summary>
