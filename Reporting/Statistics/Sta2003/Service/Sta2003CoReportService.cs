@@ -298,8 +298,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                 //自費種別毎の金額
                 for (int i = 0; i <= _jihiSbtMsts.Count - 1; i++)
                 {
-                    // check null printData.JihiSbtFutans
-                    if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any()) break;
+                    if (printData.JihiSbtFutans == null) break;
 
                     var jihiSbtMst = _jihiSbtMsts[i];
                     AddListData(ref data, string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), printData.JihiSbtFutans[i]);
