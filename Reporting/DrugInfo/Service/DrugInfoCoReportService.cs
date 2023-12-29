@@ -354,8 +354,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         int gender = drugInfoModel.Sex == "M" ? 1 : 2;
         var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender, drugInfList, tenMstList, m34DrugInfoMainList, m34IndicationCodeList, m34PrecautionList, m34PrecautionCodeList, allSystemConfigList);
 
-        // check null drugInfs
-        if (drugInfs == null || !drugInfs.Any()) return;
+        if (drugInfs == null) return;
 
         int nLen = 60;
 
@@ -451,8 +450,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         int gender = drugInfoModel.Sex == "M" ? 1 : 2;
         var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender, drugInfList, tenMstList, m34DrugInfoMainList, m34IndicationCodeList, m34PrecautionList, m34PrecautionCodeList, allSystemConfigList);
 
-        // check null drugInfs
-        if (drugInfs == null || !drugInfs.Any()) return;
+        if (drugInfs == null) return;
 
         int nLen = 72;
 

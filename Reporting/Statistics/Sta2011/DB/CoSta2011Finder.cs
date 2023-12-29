@@ -64,8 +64,7 @@ namespace Reporting.Statistics.Sta2011.DB
         /// <returns></returns>
         public List<CoZaitakuModel> GetZaitakuReces(int hpId, CoSta2011PrintConf printConf)
         {
-            // check null printConf.ZaitakuItems
-            if (printConf.ZaitakuItems == null || !printConf.ZaitakuItems.Any()) return new();
+            if (printConf.ZaitakuItems == null) return new();
 
             var receInfs = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
