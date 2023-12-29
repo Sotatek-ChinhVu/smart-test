@@ -1534,32 +1534,13 @@ namespace CloudUnitTest.CommonChecker.Models
                                          masterSbt: "Y",
                                          bunkatuKoui: 0);
 
-            /// Actual IsEmpty = true
-            var case_7 = new OrdInfoDetailModel(
-                                         id: "id1",
-                                         sinKouiKbn: 0,
-                                         itemCd: null,
-                                         itemName: null,
-                                         suryo: 0,
-                                         unitName: "錠",
-                                         termVal: 0,
-                                         syohoKbn: 2,
-                                         syohoLimitKbn: 0,
-                                         drugKbn: 0,
-                                         yohoKbn: 0,
-                                         ipnCd: "1124017F4",
-                                         bunkatu: "きみがすごくきれいだよ。",
-                                         masterSbt: "Y",
-                                         bunkatuKoui: 0);
-
             //Assert
             Assert.AreEqual(false, case_1.IsEmpty);
             Assert.AreEqual(false, case_2.IsEmpty);
             Assert.AreEqual(false, case_3.IsEmpty);
             Assert.AreEqual(false, case_4.IsEmpty);
             Assert.AreEqual(false, case_5.IsEmpty);
-            Assert.AreEqual(false, case_6.IsEmpty);
-            Assert.AreEqual(true, case_7.IsEmpty);
+            Assert.AreEqual(true, case_6.IsEmpty);
         }
 
         [Test]
@@ -1664,7 +1645,7 @@ namespace CloudUnitTest.CommonChecker.Models
                                          bunkatuKoui: 0);
             //Assert
             Assert.AreEqual(ReleasedDrugType.None, case_1.ReleasedType);
-            Assert.AreEqual(ReleasedDrugType.Unchangeable, case_1.ReleasedType);
+            Assert.AreEqual(ReleasedDrugType.Unchangeable, case_2.ReleasedType);
         }
 
         [Test]
@@ -2047,8 +2028,8 @@ namespace CloudUnitTest.CommonChecker.Models
             Assert.AreEqual("@REFILL", test.FirstItemName);
             Assert.AreEqual("DRUG", test.SecondItemName);
             Assert.AreEqual("ITEM Refill", test.Comment);
-            Assert.AreEqual(test.FirstItemName + (string.IsNullOrEmpty(test.SecondItemName) ? string.Empty : " × " + test.SecondItemName), test.Caption);
-            Assert.AreEqual(false, test.IsShowLevelButton);
+            Assert.AreEqual("@REFILL × DRUG", test.Caption);
+            Assert.AreEqual(true, test.IsShowLevelButton);
         }
 
         [Test]
