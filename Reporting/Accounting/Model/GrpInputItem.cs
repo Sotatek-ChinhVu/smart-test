@@ -4,5 +4,5 @@ public class GrpInputItem
 {
     public int GrpId { get; set; }
 
-    public string GrpCd { get; set; } = string.Empty;
+    public string GrpCd { get; set; }
 }
