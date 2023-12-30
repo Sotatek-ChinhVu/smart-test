@@ -36,7 +36,7 @@ public class AuthController : ControllerBase
     [HttpPost("ExchangeToken"), Produces("application/json")]
     public ActionResult<Response<ExchangeTokenResponse>> ExchangeToken([FromBody] ExchangeTokenRequest req)
     {
-        var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
+        var getUserInput = new GetUserByLoginIdInputData(req.LoginId, req.Password);
         var getUserOutput = _bus.Handle(getUserInput);
         var user = getUserOutput.User;
         if (user is null)
@@ -45,11 +45,11 @@ public class AuthController : ControllerBase
             return BadRequest(errorResult);
         }
 
-        if (req.Password != user.LoginPass)
-        {
-            var errorResult = GetErrorResult("The password is invalid.");
-            return BadRequest(errorResult);
-        }
+        //if (req.Password != user.LoginPass)
+        //{
+        //    var errorResult = GetErrorResult("The password is invalid.");
+        //    return BadRequest(errorResult);
+        //}
 
         // The claims that will be persisted in the tokens.
         var claims = new Claim[]

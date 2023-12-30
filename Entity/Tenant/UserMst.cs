@@ -200,5 +200,15 @@ namespace Entity.Tenant
         [Column("HPKI_ISSUER_DN")]
         [MaxLength(100)]
         public string? HpkiIssuerDn { get; set; } = string.Empty;
+
+        [Column(name: "HASH_PASSWORD")]
+        public byte[] HashPassword { get; set; } = new byte[0];
+
+        /// <summary>
+        /// 連携コード１
+        /// </summary>
+        [Column(name: "SALT")]
+        [MaxLength(14)]
+        public byte[] Salt { get; set; } = new byte[0];
     }
 }
