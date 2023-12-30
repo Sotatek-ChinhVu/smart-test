@@ -5,6 +5,7 @@ using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.User;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
@@ -55,6 +56,7 @@ public class UserController : AuthorizeControllerBase
         return new ActionResult<Response<GetUserListResponse>>(presenter.Result);
     }
 
+    [AllowAnonymous]
     [HttpPost(ApiPath.UpsertList)]
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {

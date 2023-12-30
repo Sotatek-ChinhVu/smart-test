@@ -836,7 +836,8 @@ namespace Infrastructure.Repositories
 
         public bool VerifyHash(byte[] password, byte[] salt, byte[] hash)
         {
-            return CreateHash(password, salt) == hash;
+            var temp = CreateHash(password, salt);
+            return Encoding.UTF8.GetString(temp) == Encoding.UTF8.GetString(hash);
         }
 
     }

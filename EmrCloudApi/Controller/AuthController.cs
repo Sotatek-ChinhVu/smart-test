@@ -153,7 +153,7 @@ public class AuthController : ControllerBase
     [HttpPost("AppToken"), Produces("application/json")]
     public ActionResult<Response<AppTokenResponse>> AppToken([FromBody] AppTokenRequest req)
     {
-        var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
+        var getUserInput = new GetUserByLoginIdInputData(req.LoginId, req.Password);
         var getUserOutput = _bus.Handle(getUserInput);
         var user = getUserOutput.User;
         if (user is null)
