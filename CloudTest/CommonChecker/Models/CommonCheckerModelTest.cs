@@ -1,7 +1,9 @@
 ﻿using CommonChecker.Models;
+using CommonChecker.Models.Futan;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 
@@ -2229,6 +2231,89 @@ namespace CloudUnitTest.CommonChecker.Models
             Assert.AreEqual(0, test1.OdrInfDetailModelsIgnoreEmpty.Count);
             Assert.AreEqual(true, test2.OdrInfDetailModelsIgnoreEmpty.Count == 2);
             Assert.AreEqual(true, test3.OdrInfDetailModelsIgnoreEmpty.Count == 1);
+        }
+
+        [Test]
+        public void TEST_045_SanteiCntCheckModel()
+        {
+            //Setup
+            var santeicntCheck1 = new SanteiCntCheck()
+            {
+                TermCnt = 1,
+                TermSbt = 2,
+                CntType = 3,
+                MaxCnt = 123456789,
+                TargetCd = "1234F"
+            };
+
+            var santeicntCheck2 = new SanteiCntCheck()
+            {
+                TargetCd = null
+            };
+
+            var test1 = new SanteiCntCheckModel(santeicntCheck1);
+            var test2 = new SanteiCntCheckModel(santeicntCheck2);
+            Assert.AreEqual(1, test1.TermCnt);
+            Assert.AreEqual(2, test1.TermSbt);
+            Assert.AreEqual(3, test1.CntType);
+            Assert.AreEqual(123456789, test1.MaxCnt);
+            Assert.AreEqual("1234F", test1.TargetCd);
+            Assert.AreEqual("", test2.TargetCd);
+        }
+
+        [Test]
+        public void TEST_046_SanteiGrpDetailModel()
+        {
+            //Setup
+            
+
+            var santeiGrpDetail = new SanteiGrpDetail()
+            {
+                SanteiGrpCd = 2
+            };
+
+            var test = new SanteiGrpDetailModel(santeiGrpDetail);
+
+            Assert.AreEqual(2, test.SanteiGroupCd);
+        }
+
+        [Test]
+        public void TEST_047_LevelInfoModel()
+        {
+            //Setup
+
+            var test = new LevelInfoModel()
+            {
+                Level = 3,
+                Title = "ABC",
+                BackgroundCode = "#000001F",
+                BorderBrushCode = "#000011F",
+                FirstItemName = "@REFILL",
+                SecondItemName = "",
+                Comment = "ITEM Refill",
+            };
+
+            var test2 = new LevelInfoModel()
+            {
+                Level = 3,
+                Title = "ABC",
+                BackgroundCode = "#000001F",
+                BorderBrushCode = "#000011F",
+                FirstItemName = "@REFILL",
+                SecondItemName = null,
+                Comment = "ITEM Refill",
+            };
+            // Act & Assert
+            Assert.AreEqual(3, test.Level);
+            Assert.AreEqual("ABC", test.Title);
+            Assert.AreEqual("#000001F", test.BackgroundCode);
+            Assert.AreEqual("#000011F", test.BorderBrushCode);
+            Assert.AreEqual("@REFILL", test.FirstItemName);
+            Assert.AreEqual("", test.SecondItemName);
+            Assert.AreEqual("ITEM Refill", test.Comment);
+            Assert.AreEqual("@REFILL", test.Caption);
+            Assert.AreEqual(true, test.IsShowLevelButton);
+            Assert.AreEqual("@REFILL", test2.Caption);
         }
     }
 }
