@@ -237,7 +237,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return result ?? new List<DayLimitResultModel>();
     }
 
-    private List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
+    public List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
     {
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listError = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
         if (CheckerCondition.IsCheckingDuplication)
@@ -347,7 +347,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     }
 
     #region Check
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckFoodAllergy(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckFoodAllergy(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> foodAllergyChecker =
             new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -360,7 +360,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDrugAllergy(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDrugAllergy(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> drugAllergyChecker =
             new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -402,7 +402,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDosage(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDosage(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> dosageChecker =
            new DosageChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -418,7 +418,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDisease(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDisease(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> diseaseChecker =
             new DiseaseChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -432,7 +432,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiOTC(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiOTC(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiOTCChecker =
             new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -446,7 +446,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiTain(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiTain(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiTainChecker =
             new KinkiTainChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -460,7 +460,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiSupple(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiSupple(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiSuppleChecker =
             new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -474,7 +474,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckDuplication(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
+    public UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckDuplication(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> duplicationChecker =
             new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -489,7 +489,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckKinki(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
+    public UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckKinki(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiChecker =
             new KinkiChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -504,7 +504,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiUser(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
+    public UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiUser(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiUserChecker =
             new KinkiUserChecker<OrdInfoModel, OrdInfoDetailModel>()
