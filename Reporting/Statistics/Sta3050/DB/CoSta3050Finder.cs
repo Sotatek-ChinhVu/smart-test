@@ -346,9 +346,9 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 ItemKanaName6 = tenMst.KanaName6,
                 ItemKanaName7 = tenMst.KanaName7,
                 KaId = raiinInf.KaId,
-                KaSname = kaMstj != null ? kaMstj.KaSname : string.Empty, // check null kaMst
+                KaSname = kaMstj.KaSname,
                 TantoId = raiinInf.TantoId,
-                TantoSname = tantoMst != null ? tantoMst.Sname : string.Empty, // check null tantoMst
+                TantoSname = tantoMst.Sname,
                 SinKouiKbn =
                         tenMst.MasterSbt == "T" && tenMst.SinKouiKbn != 77 ? "T" :
                         tenMst.MasterSbt == "C" ? "99" :
@@ -382,33 +382,31 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             }
         );
 
-        var resultQuery = joinQuery.ToList();
-
         #region 条件指定
         //診療行為区分
         if (printConf.SinKouiKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => printConf.SinKouiKbns.Contains(s.SinKouiKbn)).ToList();
+            joinQuery = joinQuery.Where(s => printConf.SinKouiKbns.Contains(s.SinKouiKbn));
         }
         //麻毒区分
         if (printConf.MadokuKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => s.DrugKbn == 0 || printConf.MadokuKbns.Contains(s.MadokuKbn)).ToList();
+            joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.MadokuKbns.Contains(s.MadokuKbn));
         }
         //向精神薬区分
         if (printConf.KouseisinKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => s.DrugKbn == 0 || printConf.KouseisinKbns.Contains(s.KouseisinKbn)).ToList();
+            joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.KouseisinKbns.Contains(s.KouseisinKbn));
         }
         //後発医薬品区分
         if (printConf.KohatuKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => s.DrugKbn == 0 || printConf.KohatuKbns.Contains(s.KohatuKbn)).ToList();
+            joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.KohatuKbns.Contains(s.KohatuKbn));
         }
         //採用区分
         if (printConf.IsAdopteds?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => printConf.IsAdopteds.Contains(s.IsAdopted)).ToList();
+            joinQuery = joinQuery.Where(s => printConf.IsAdopteds.Contains(s.IsAdopted));
         }
         //検索項目＆検索ワード
         if (printConf.ItemCds?.Count >= 1 && printConf.SearchWord.AsString() != "")
@@ -424,36 +422,38 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 if (printConf.SearchOpt == 0)
                 {
                     //or条件
-                    resultQuery = resultQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.Any(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.Any(key => r.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    resultQuery = resultQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.All(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.All(key => r.ItemName.Contains(key)));
                 }
             }
             else
             {
                 //and条件
-                var ptIdList = resultQuery.Select(r => new { r.PtId, r.SrcItemCd })
-                                        .GroupBy(r => r.PtId)
-                                        .Select(r => new
-                                        {
-                                            ptId = r.Key,
-                                            ItemCdList = r.Select(k => k.SrcItemCd).Distinct()
-                                        })
-                                        .Where(r => printConf.ItemCds.All(key => r.ItemCdList.Contains(key)))
-                                        .Select(r => r.ptId).ToList();
+                // get ptId from joinQuery
+                var ptSrcItemCdList = joinQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                                               .GroupBy(r => r.PtId)
+                                               .Select(r => new
+                                               {
+                                                   ptId = r.Key,
+                                                   ItemCdList = r.Select(k => k.SrcItemCd)
+                                               }).ToList();
+                var ptIdList = ptSrcItemCdList.Where(r => printConf.ItemCds.All(key => r.ItemCdList.Contains(key)))
+                                              .Select(r => r.ptId)
+                                              .ToList();
 
                 if (printConf.SearchOpt == 0)
                 {
                     //or条件
-                    resultQuery = resultQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.Any(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.Any(key => r.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    resultQuery = resultQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.All(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.All(key => r.ItemName.Contains(key)));
                 }
             }
         }
@@ -463,22 +463,24 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             if (printConf.ItemSearchOpt == 0)
             {
                 //or条件
-                resultQuery = resultQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key)).ToList();
+                joinQuery = joinQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key));
             }
             else
             {
                 //and条件
-                var ptIdList = resultQuery.Select(r => new { r.PtId, r.SrcItemCd })
-                                            .GroupBy(r => r.PtId)
-                                            .Select(r => new
-                                            {
-                                                ptId = r.Key,
-                                                ItemCdList = r.Select(k => k.SrcItemCd).Distinct()
-                                            })
-                                            .Where(r => printConf.ItemCds.All(key => r.ItemCdList.Contains(key)))
-                                            .Select(r => r.ptId).ToList();
+                // get ptId from joinQuery
+                var ptSrcItemCdList = joinQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                                               .GroupBy(r => r.PtId)
+                                               .Select(r => new
+                                               {
+                                                   ptId = r.Key,
+                                                   ItemCdList = r.Select(k => k.SrcItemCd)
+                                               }).ToList();
+                var ptIdList = ptSrcItemCdList.Where(r => printConf.ItemCds.All(key => r.ItemCdList.Contains(key)))
+                                              .Select(r => r.ptId)
+                                              .ToList();
                 //該当患者が多いとき、SQL作成でオーバーフローが発生していたため、Any→Containsに修正
-                resultQuery = resultQuery.Where(r => ptIdList.Contains(r.PtId) && printConf.ItemCds.Any(key => r.SrcItemCd == key)).ToList();
+                joinQuery = joinQuery.Where(r => ptIdList.Contains(r.PtId) && printConf.ItemCds.Any(key => r.SrcItemCd == key));
             }
         }
         //検索ワード
@@ -492,17 +494,17 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             if (printConf.SearchOpt == 0)
             {
                 //or条件
-                resultQuery = resultQuery.Where(r => searchWords.Any(key => r.ItemName.Contains(key))).ToList();
+                joinQuery = joinQuery.Where(r => searchWords.Any(key => r.ItemName.Contains(key)));
             }
             else
             {
                 //and条件
-                resultQuery = resultQuery.Where(r => searchWords.All(key => r.ItemName.Contains(key))).ToList();
+                joinQuery = joinQuery.Where(r => searchWords.All(key => r.ItemName.Contains(key)));
             }
         }
         #endregion
 
-        var retData = resultQuery.Select(
+        var retData = joinQuery.AsEnumerable().Select(
             data =>
                 new CoSinKouiModel()
                 {
