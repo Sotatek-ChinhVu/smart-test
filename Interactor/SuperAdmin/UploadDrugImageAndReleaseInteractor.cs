@@ -136,6 +136,9 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
 
                 // return success message
                 SendMessager(new UploadDrugImageAndReleaseStatus(true, totalFile, successCount, folderName, filename, string.Empty));
+
+                // if success, set status = 9
+                status = 9;
             }
 
             // if stop progress, revert data
@@ -147,9 +150,6 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
                     response.Wait();
                 }
             }
-
-            // if success, set status = 9
-            status = 9;
         }
         catch (Exception ex)
         {
@@ -182,8 +182,11 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
         }
         else
         {
-            var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotifailure, errorMessage);
-            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotifailure, errorMessage);
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+            }
         }
         return new UploadDrugImageAndReleaseOutputData();
     }
