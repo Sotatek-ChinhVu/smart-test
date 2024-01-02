@@ -41,7 +41,6 @@ using UseCase.SuperAdmin.DeleteJunkFileS3;
 using SuperAdminAPI.ScheduleTask;
 using UseCase.SuperAdmin.UploadDrugImage;
 using Domain.SuperAdminModels.SystemChangeLog;
-using SuperAdminAPI.BackgroundService;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -98,7 +97,6 @@ namespace SuperAdmin.Configs.Dependency
             services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
             services.AddSingleton<IHostedService, TaskScheduleDeleteJunkFileS3>();
             services.AddTransient<INotificationRepository, NotificationRepository>();
-            services.AddTransient<IHostedService, RunProcessor>();
         }
 
         private void SetupUseCase(IServiceCollection services)
