@@ -22,4 +22,5 @@ public static class CacheKeyConstant
     public const string GetStaGrp = "GetStaGrp";
     public const string PaymentMethodMsts = "PaymentMethodMsts";
     public const string StaGrpModel = "StaGrpModel";
+    public const string InsuranceScanByPtId = "InsuranceScanByPtId";
 }

@@ -13,9 +13,12 @@ using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Helper.Mapping;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
@@ -24,9 +27,23 @@ namespace Infrastructure.Repositories
     {
         private const string startGroupOrderKey = "group_";
         private readonly IReceptionRepository _receptionRepository;
-        public PatientInforRepository(ITenantProvider tenantProvider, IReceptionRepository receptionRepository) : base(tenantProvider)
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        public PatientInforRepository(ITenantProvider tenantProvider, IReceptionRepository receptionRepository, IConfiguration configuration) : base(tenantProvider)
         {
             _receptionRepository = receptionRepository;
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId, int sinDate)
@@ -1365,6 +1382,13 @@ namespace Infrastructure.Repositories
                     dest.UpdateId = userId;
                     return dest;
                 }));
+
+                // check if cache exists, delete cache
+                string finalKey = GetDomainKey() + CacheKeyConstant.InsuranceScanByPtId + patientInsert.PtId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
             }
             #endregion
 
@@ -1947,6 +1971,13 @@ namespace Infrastructure.Repositories
                             }
                         }
                     }
+                }
+
+                // check if cache exists, delete cache
+                string finalKey = GetDomainKey() + CacheKeyConstant.InsuranceScanByPtId + patientInfo.PtId;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
                 }
             }
             #endregion

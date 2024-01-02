@@ -6,10 +6,15 @@ using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Helper.Mapping;
+using Helper.Redis;
 using Infrastructure.Base;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Text.Json;
@@ -18,8 +23,23 @@ namespace Infrastructure.Repositories
 {
     public class InsuranceRepository : RepositoryBase, IInsuranceRepository
     {
-        public InsuranceRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+
+        public InsuranceRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, bool flag = true, bool isDeletedPtHokenInf = false)
@@ -1386,20 +1406,6 @@ namespace Infrastructure.Repositories
             return new HokenMstModel();
         }
 
-        public bool DeleteInsuranceScan(int hpId, long seqNo, int userId)
-        {
-            var model = TrackingDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == hpId && x.SeqNo == seqNo && x.IsDeleted == DeleteStatus.None);
-
-            if (model is null)
-                return false;
-
-            model.IsDeleted = DeleteStatus.DeleteFlag;
-            model.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            model.UpdateId = userId;
-
-            return TrackingDataContext.SaveChanges() > 0;
-        }
-
         public bool CheckHokenPatternUsed(int hpId, long ptId, int hokenPid)
         {
             return NoTrackingDataContext.OdrInfs.Any(
@@ -1422,24 +1428,45 @@ namespace Infrastructure.Repositories
         public List<InsuranceScanModel> GetListInsuranceScanByPtId(int hpId, long ptId)
         {
             Stream nullMemory = Stream.Null;
-            var datas = NoTrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
-            if (datas.Any())
+            List<PtHokenScan> insuranceScanList = new();
+
+            // check if cache exists, load data from cache
+            string finalKey = GetDomainKey() + CacheKeyConstant.InsuranceScanByPtId + ptId;
+            if (_cache.KeyExists(finalKey))
             {
-                return datas.Select(x => new InsuranceScanModel(
-                                    x.HpId,
-                                    x.PtId,
-                                    x.SeqNo,
-                                    x.HokenGrp,
-                                    x.HokenId,
-                                    x.FileName ?? string.Empty,
-                                    nullMemory,
-                                    x.IsDeleted,
-                                    x.UpdateDate.ToString("yyyy/MM/dd HH:mm"))).ToList();
+                var stringJson = _cache.StringGet(finalKey).AsString();
+                if (!string.IsNullOrEmpty(stringJson))
+                {
+                    insuranceScanList = JsonSerializer.Deserialize<List<PtHokenScan>>(stringJson) ?? new();
+                    return insuranceScanList.Select(x => new InsuranceScanModel(
+                                                             x.HpId,
+                                                             x.PtId,
+                                                             x.SeqNo,
+                                                             x.HokenGrp,
+                                                             x.HokenId,
+                                                             x.FileName ?? string.Empty,
+                                                             nullMemory,
+                                                             x.IsDeleted,
+                                                             x.UpdateDate.ToString("yyyy/MM/dd HH:mm"))).ToList(); ;
+                }
             }
-            else
-            {
-                return new List<InsuranceScanModel>();
-            }
+
+            // if cache does not exists, get data from database then set to cache
+            insuranceScanList = NoTrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+            var jsonData = JsonSerializer.Serialize(insuranceScanList);
+            _cache.StringSet(finalKey, jsonData);
+
+            var result = insuranceScanList.Select(x => new InsuranceScanModel(
+                                                       x.HpId,
+                                                       x.PtId,
+                                                       x.SeqNo,
+                                                       x.HokenGrp,
+                                                       x.HokenId,
+                                                       x.FileName ?? string.Empty,
+                                                       nullMemory,
+                                                       x.IsDeleted,
+                                                       x.UpdateDate.ToString("yyyy/MM/dd HH:mm"))).ToList();
+            return result;
         }
 
         public int GetHokenKbnByHokenId(int hpId, int hokenId, long ptId)
