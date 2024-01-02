@@ -34,7 +34,7 @@ namespace AWSSDK.Common
         /// <param name="subFoldersMasters"></param>
         /// <returns></returns>
         public static bool ExcuteUpdateDataTenant(string[] filePaths, string[] subFoldersMasters, string host, int port, string database,
-           string user, string password, CancellationToken cancellationToken, IMessenger? messenger, int totalFileExcute, string pathFile7z)
+           string user, string password, CancellationToken cancellationToken, IMessenger? messenger, int totalFileExcute, string pathFile7z, string pathFolderUpdateDataTenant)
         {
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
             string curentFile = string.Empty;
@@ -201,7 +201,7 @@ namespace AWSSDK.Common
                                                 try
                                                 {
                                                     // Import data
-                                                    string script = $"copy \"{_tempTable}\"";
+                                                    string script = $"\\copy \"{_tempTable}\"";
 
                                                     int columnIndex = 0;
                                                     if (_columnHeaders.Count == 1)
@@ -231,7 +231,7 @@ namespace AWSSDK.Common
 
                                                     try
                                                     {
-                                                        PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password).Wait();
+                                                        PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password, pathFolderUpdateDataTenant).Wait();
                                                     }
                                                     catch
                                                     {
@@ -319,7 +319,7 @@ namespace AWSSDK.Common
                                                 }
 
                                                 //then, insert
-                                                script = $"copy \"{_baseTable}\"";
+                                                script = $"\\copy \"{_baseTable}\"";
 
                                                 int columnIndex = 0;
                                                 if (_columnHeaders.Count == 1)
@@ -348,7 +348,7 @@ namespace AWSSDK.Common
                                                 script += $" from '{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, csvFile)}' CSV HEADER encoding 'UTF8' null 'null_string';"; ;
                                                 try
                                                 {
-                                                    PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password).Wait();
+                                                    PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password, pathFolderUpdateDataTenant).Wait();
                                                 }
                                                 catch
                                                 {
