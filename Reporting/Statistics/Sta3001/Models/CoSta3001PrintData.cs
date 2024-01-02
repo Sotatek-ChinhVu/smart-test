@@ -9,22 +9,6 @@ namespace Reporting.Statistics.Sta3001.Models
         {
             RowType = rowType;
             KohatuKbn = -1;
-            ItemCd = string.Empty;
-            Name = string.Empty;
-            KanaName1 = string.Empty;
-            KanaName2 = string.Empty;
-            KanaName3 = string.Empty;
-            KanaName4 = string.Empty;
-            KanaName5 = string.Empty;
-            KanaName6 = string.Empty;
-            KanaName7 = string.Empty;
-            Suryo = string.Empty;
-            OdrUnitName = string.Empty;
-            Price = string.Empty;
-            ReceUnitName = string.Empty;
-            IpnName = string.Empty;
-            ReceName = string.Empty;
-            YjCd = string.Empty;
         }
 
         /// <summary>

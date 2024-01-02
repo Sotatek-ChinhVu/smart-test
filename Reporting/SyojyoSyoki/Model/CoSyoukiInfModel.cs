@@ -4,8 +4,8 @@ namespace Reporting.SyojyoSyoki.Model
 {
     public class CoSyoukiInfModel
     {
-        public SyoukiInf SyoukiInf { get; } = new();
-        public SyoukiKbnMst SyoukiKbnMst { get; } = new();
+        public SyoukiInf SyoukiInf { get; } = null;
+        public SyoukiKbnMst SyoukiKbnMst { get; } = null;
 
         public CoSyoukiInfModel(SyoukiInf syoukiInf, SyoukiKbnMst syoukiKbnMst)
         {
@@ -82,7 +82,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string Syouki
         {
-            get { return SyoukiInf.Syouki ?? string.Empty; }
+            get { return SyoukiInf.Syouki; }
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public string KbnName
         {
-            get { return SyoukiKbnMst.Name ?? string.Empty; }
+            get { return SyoukiKbnMst.Name; }
         }
 
     }

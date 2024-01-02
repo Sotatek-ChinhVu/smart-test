@@ -18,7 +18,7 @@ namespace Reporting.Statistics.Sta2011.Models
         /// <summary>
         /// 合計行のキャプション
         /// </summary>
-        public string TotalCaption { get; set; } = string.Empty;
+        public string TotalCaption { get; set; }
 
         /// <summary>
         /// 請求年月
@@ -36,86 +36,86 @@ namespace Reporting.Statistics.Sta2011.Models
         /// <summary>
         /// 在医総
         /// </summary>
-        public string IsZaiiso { get; set; } = string.Empty;
+        public string IsZaiiso { get; set; }
 
         /// <summary>
         /// 診療科ID
         /// </summary>
-        public string KaId { get; set; } = string.Empty;
+        public string KaId { get; set; }
 
         /// <summary>
         /// 診療科略称
         /// </summary>
-        public string KaSname { get; set; } = string.Empty;
+        public string KaSname { get; set; }
 
         /// <summary>
         /// 担当医ID
         /// </summary>
-        public string TantoId { get; set; } = string.Empty;
+        public string TantoId { get; set; }
 
         /// <summary>
         /// 担当医略称
         /// </summary>
-        public string TantoSname { get; set; } = string.Empty;
+        public string TantoSname { get; set; }
 
         /// <summary>
         /// 保険種別（階層１）
         /// </summary>
-        public string HokenSbt1 { get; set; } = string.Empty;
+        public string HokenSbt1 { get; set; }
 
         /// <summary>
         /// 保険種別（階層２）
         /// </summary>
-        public string HokenSbt2 { get; set; } = string.Empty;
+        public string HokenSbt2 { get; set; }
 
         /// <summary>
         /// 件数
         /// </summary>
-        public string Count { get; set; } = string.Empty;
+        public string Count { get; set; }
 
         /// <summary>
         /// 実日数
         /// </summary>
-        public string Nissu { get; set; } = string.Empty;
+        public string Nissu { get; set; }
 
         /// <summary>
         /// 点数
         /// </summary>
-        public string Tensu { get; set; } = string.Empty;
+        public string Tensu { get; set; }
 
         /// <summary>
         /// 一部負担金
         /// </summary>
-        public string Futan { get; set; } = string.Empty;
+        public string Futan { get; set; }
 
         /// <summary>
         /// 件数(公費併用分)
         /// </summary>
-        public string KohiCount { get; set; } = string.Empty;
+        public string KohiCount { get; set; }
 
         /// <summary>
         /// 実日数(公費併用分)
         /// </summary>
-        public string KohiNissu { get; set; } = string.Empty;
+        public string KohiNissu { get; set; }
 
         /// <summary>
         /// 点数(公費併用分)
         /// </summary>
-        public string KohiTensu { get; set; } = string.Empty;
+        public string KohiTensu { get; set; }
 
         /// <summary>
         /// 一部負担金(公費併用分)
         /// </summary>
-        public string KohiFutan { get; set; } = string.Empty;
+        public string KohiFutan { get; set; }
 
         /// <summary>
         /// 窓口負担
         /// </summary>
-        public string PtFutan { get; set; } = string.Empty;
+        public string PtFutan { get; set; }
 
         /// <summary>
         /// 振込予定額
         /// </summary>
-        public string Furikomi { get; set; } = string.Empty;
+        public string Furikomi { get; set; }
     }
 }

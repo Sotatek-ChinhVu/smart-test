@@ -78,9 +78,6 @@ namespace Reporting.AccountingCard.Service
             _tenantProvider = tenantProvider;
             _emrLogger = emrLogger;
             _readRseReportFileService = readRseReportFileService;
-            coModel = new();
-            byomeiModels = new();
-            tekiyoModels = new();
         }
 
         public CommonReportingRequestModel GetAccountingCardReportingData(int hpId, long ptId, int sinYm, int hokenId, bool includeOutDrug)
@@ -96,7 +93,7 @@ namespace Reporting.AccountingCard.Service
                 byomeiModels = new List<CoReceiptByomeiModel>();
                 tekiyoModels = new List<CoReceiptTekiyoModel>();
                 coModel = GetData();
-                if (coModel != null && coModel.PtInfModel != new CoPtInfModel())
+                if (coModel != null && coModel.PtInfModel != null)
                 {
                     _currentPage = 1;
                     hasNextPage = true;
@@ -245,7 +242,7 @@ namespace Reporting.AccountingCard.Service
                     lineCount++;
                 }
 
-                return byomeiModels.Count + lineCount;
+                return byomeiModels.Count() + lineCount;
             }
 
             //病名転帰日、出力設定でない場合は空文字を返す
@@ -265,9 +262,9 @@ namespace Reporting.AccountingCard.Service
 
             // 1行1病名
             int byoIndex = 1;
-            for (int j = 0; j < coModel.PtByomeiModels?.Count; j++)
+            for (int j = 0; j < coModel.PtByomeiModels.Count(); j++)
             {
-                if (byomeiModels.Count < _byomeiRowCount)
+                if (byomeiModels.Count() < _byomeiRowCount)
                 {
                     string tmpLine = coModel.PtByomeiModels[j].ReceByomei;
 
@@ -275,7 +272,7 @@ namespace Reporting.AccountingCard.Service
 
                     if (lineCount > _byomeiRowCount || (lineCount == _byomeiRowCount && (coModel.PtByomeiModels.Count - j - 1 > 0)))
                     {
-                        for (int k = byomeiModels.Count; k < _byomeiRowCount - 1; k++)
+                        for (int k = byomeiModels.Count(); k < _byomeiRowCount - 1; k++)
                         {
                             byomeiModels.Add(new CoReceiptByomeiModel());
                         }
@@ -348,7 +345,7 @@ namespace Reporting.AccountingCard.Service
             // 明細
             int tmpSinId = 0;
 
-            List<SinMeiDataModel> sinmeiDatas = coModel.SinMeiViewModel?.SinMei ?? new();
+            List<SinMeiDataModel> sinmeiDatas = coModel.SinMeiViewModel.SinMei;
 
             foreach (SinMeiDataModel sinmeiData in sinmeiDatas)
             {
@@ -455,7 +452,7 @@ namespace Reporting.AccountingCard.Service
         /// </summary>
         /// <param name="hasNextPage"></param>
         /// <returns></returns>
-        private void UpdateDrawForm()
+        private bool UpdateDrawForm()
         {
             bool _hasNextPage = true;
             #region SubMethod
@@ -766,6 +763,7 @@ namespace Reporting.AccountingCard.Service
                         }
                         else
                         {
+                            //listDataPerPage.Add($"lsDayMaru", j, i, "〇");
                             listDataPerPage.Add(new($"lsDayCount", j, i, tekiyoModels[dataIndex].DayCount[j].ToString()));
                         }
                     }
@@ -792,9 +790,10 @@ namespace Reporting.AccountingCard.Service
             if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
             {
                 hasNextPage = _hasNextPage;
-                return;
+                return false;
             }
             hasNextPage = _hasNextPage;
+            return true;
         }
 
         /// <summary>
@@ -803,6 +802,9 @@ namespace Reporting.AccountingCard.Service
         /// <returns></returns>
         private CoAccountingCardModel GetData()
         {
+            // 診療日
+            int sinDate = CIUtil.GetLastDateOfMonth(_sinYm * 100 + 1);
+
             // 会計情報
             List<CoKaikeiInfModel> kaikeiInfModels = _finder.FindKaikeiInf(_hpId, _ptId, _sinYm, _hokenId);
 

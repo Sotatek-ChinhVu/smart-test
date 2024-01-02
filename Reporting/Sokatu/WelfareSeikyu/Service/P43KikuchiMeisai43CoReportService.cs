@@ -42,9 +42,9 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP43WelfareReceInfModel> receInfs = new();
-        private List<CoP43WelfareReceInfModel> curReceInfs = new();
-        private CoHpInfModel hpInf = new();
+        private List<CoP43WelfareReceInfModel> receInfs;
+        private List<CoP43WelfareReceInfModel> curReceInfs;
+        private CoHpInfModel hpInf;
         private pageType curPgType = 0;
         private List<pageType> tgtPgType = new List<pageType>();
         #endregion
@@ -93,7 +93,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     {
                         // 国保/社保に分けて作成
                         curPgType = pgType;
-
+                        curReceInfs = null;
                         switch (curPgType)
                         {
                             case pageType.Kokuho:
@@ -173,7 +173,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var wrkRece = curReceInfs[ptIndex];
 
                     //受給者証番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece.TokusyuNo(kohiHokenNos) ?? string.Empty));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece.TokusyuNo(kohiHokenNos)));
                     //氏名
                     listDataPerPage.Add(new("ptName", 0, rowNo, wrkRece.PtName));
                     //生年月日(g ee・MM・dd)

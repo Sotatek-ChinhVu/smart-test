@@ -47,9 +47,6 @@ public class P33KokhoSokatuCoReportService : IP33KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        receInfs = new();
-        kaMsts = new();
     }
     #endregion
 
@@ -104,7 +101,7 @@ public class P33KokhoSokatuCoReportService : IP33KokhoSokatuCoReportService
             //医療機関コード
             SetFieldData("hpCode", hpInf.HpCd);
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
+            SetFieldData("kaName", kaMsts[0].KaName);
             //医療機関情報
             SetFieldData("address1", hpInf.Address1);
             SetFieldData("address2", hpInf.Address2);
@@ -142,14 +139,14 @@ public class P33KokhoSokatuCoReportService : IP33KokhoSokatuCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && !r.IsPrefIn).ToList(); break;
                     case 1: wrkReces = receInfs.Where(r => (r.IsNrAll || r.IsRetAll) && r.IsPrefIn).ToList(); break;
                     case 2: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                 }
-                if (wrkReces.Count == 0) continue;
+                if (wrkReces == null) continue;
 
                 countData wrkData = new countData();
                 //件数
@@ -166,14 +163,14 @@ public class P33KokhoSokatuCoReportService : IP33KokhoSokatuCoReportService
             #region 後期高齢
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsKoukiAll && !r.IsPrefIn).ToList(); break;
                     case 1: wrkReces = receInfs.Where(r => r.IsKoukiAll && r.IsPrefIn).ToList(); break;
                     case 2: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                 }
-                if (wrkReces.Count == 0) continue;
+                if (wrkReces == null) continue;
 
                 countData wrkData = new countData();
                 //件数

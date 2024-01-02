@@ -31,16 +31,16 @@ public interface ICoSta9000Finder : IRepositoryBase
     /// </summary>
     List<CoDrugOdrModel> GetDrugOrders(
         int hpId,
-        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
-        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf
+        CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
+        CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf
     );
 
     /// <summary>
     /// 病名情報
     /// </summary>
     List<CoPtByomeiModel> GetPtByomeis(
-        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
-        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf
+        CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
+        CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf
     );
 
     /// <summary>
@@ -57,8 +57,8 @@ public interface ICoSta9000Finder : IRepositoryBase
     /// </summary>
     List<CoRaiinInfModel> GetRaiinInfs(
         int hpId,
-        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
-        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf
+        CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
+        CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf
     );
 
     /// <summary>
