@@ -27,9 +27,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
     public bool IsOrderChecking { get; set; } = true;
 
-    private int _hpID;
-    private long _ptID;
-    private int _sinday;
+    public int _hpID;
+    public long _ptID;
+    public int _sinday;
     private Dictionary<string, string> _itemNameDictionary;
     private Dictionary<string, string> _componentNameDictionary;
     private Dictionary<string, string> _analogueNameDictionary;

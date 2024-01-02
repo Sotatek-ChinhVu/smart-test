@@ -3,6 +3,7 @@ using CommonChecker.Caches;
 using CommonChecker.DB;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
@@ -10,6 +11,7 @@ using Domain.Models.Diseases;
 using Entity.Tenant;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using Moq;
+using Reporting.Calculate.Futan.Models;
 using UseCase.Family;
 using UseCase.MedicalExamination.SaveMedical;
 
@@ -23,7 +25,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            
             var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -37,17 +39,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
             var specialNoteItem = new SpecialNoteItem();
             var ptDiseaseModels = new List<PtDiseaseModel>();
             var familyItems = new List<FamilyItem>();
-            var isDataOfDb = true;
 
             #region Setup data test
 
-            //FoodAllergyLevelSetting
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
+            //FoodAllergyLevelSetting
             var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 0);
             var temp = systemConf?.Val ?? 0;
             if (systemConf != null)
             {
-                systemConf.Val = 4;
+                systemConf.Val = 3;
             }
             else
             {
@@ -60,7 +62,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     UpdateDate = DateTime.UtcNow,
                     CreateId = 2,
                     UpdateId = 2,
-                    Val = 4
+                    Val = 3
                 };
                 tenantTracking.SystemConfs.Add(systemConf);
             }
@@ -71,15 +73,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
             tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
             tenantTracking.M12FoodAlrgy.AddRange(m12);
             tenantTracking.SaveChanges();
-            var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-            var cache = new MasterDataCacheService(TenantProvider);
-            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
 
             // Set up your CheckerCondition
-
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
                                                       isCheckingDuplication: false,
                                                       isCheckingKinki: false,
@@ -92,6 +90,9 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                       isCheckingAutoCheck: false
                                                       );
 
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
             try
             {
                 // Act
@@ -118,7 +119,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -192,10 +193,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 new OrdInfoModel(odrKouiKbn: 21,santeiKbn: 0, ordInfDetails: ordInfDetails),
                 new OrdInfoModel(odrKouiKbn: 21,santeiKbn: 0, ordInfDetails: ordInfDetails)
             };
-            var specialNoteItem = new SpecialNoteItem();
-            var ptDiseaseModels = new List<PtDiseaseModel>();
-            var familyItems = new List<FamilyItem>();
-            var isDataOfDb = true;
 
             #region Setup data test
 
@@ -210,10 +207,13 @@ namespace CloudUnitTest.CommonChecker.Interactor
             var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
             var cache = new MasterDataCacheService(TenantProvider);
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
 
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
             // Set up your CheckerCondition
 
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
@@ -256,7 +256,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -341,13 +340,12 @@ namespace CloudUnitTest.CommonChecker.Interactor
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
-            var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-            var cache = new MasterDataCacheService(TenantProvider);
-            var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
-
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
             // Set up your CheckerCondition
 
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
@@ -390,7 +388,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
             new OrdInfoDetailModel("id1", 20, "611170008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -434,14 +431,16 @@ namespace CloudUnitTest.CommonChecker.Interactor
             tenantTracking.PtAlrgyFoods.AddRange(alrgyFoods);
             tenantTracking.M12FoodAlrgy.AddRange(m12);
             tenantTracking.SaveChanges();
-            var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-            var cache = new MasterDataCacheService(TenantProvider);
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
 
             // Set up your CheckerCondition
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
 
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
                                                       isCheckingDuplication: false,
@@ -481,7 +480,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
             var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "6220816AGE", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -528,15 +526,15 @@ namespace CloudUnitTest.CommonChecker.Interactor
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M14AgeCheck.AddRange(m14);
             tenantTracking.SaveChanges();
-            var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-            var cache = new MasterDataCacheService(TenantProvider);
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
 
             // Set up your CheckerCondition
-
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
                                                       isCheckingDuplication: false,
                                                       isCheckingKinki: false,
@@ -577,7 +575,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
             var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, "6220816AGE", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -624,15 +621,15 @@ namespace CloudUnitTest.CommonChecker.Interactor
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M14AgeCheck.AddRange(m14);
             tenantTracking.SaveChanges();
-            var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-            var cache = new MasterDataCacheService(TenantProvider);
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
 
             // Set up your CheckerCondition
-
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
                                                       isCheckingDuplication: false,
                                                       isCheckingKinki: false,
@@ -672,7 +669,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
             var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, itemCd: "937DIS008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -728,15 +724,15 @@ namespace CloudUnitTest.CommonChecker.Interactor
             tenantTracking.PtFamilyRekis.AddRange(ptFamilyReki);
             tenantTracking.PtFamilys.AddRange(ptFamilies);
             tenantTracking.SaveChanges();
-            var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-            var cache = new MasterDataCacheService(TenantProvider);
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
 
             // Set up your CheckerCondition
-
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
                                                       isCheckingDuplication: false,
                                                       isCheckingKinki: false,
@@ -779,7 +775,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
             //Mock
             var realtimeOrderErrorFinder = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
-            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
             var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel("id1", 20, itemCd: "937DIS008", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
@@ -835,15 +830,15 @@ namespace CloudUnitTest.CommonChecker.Interactor
             tenantTracking.PtFamilyRekis.AddRange(ptFamilyReki);
             tenantTracking.PtFamilys.AddRange(ptFamilies);
             tenantTracking.SaveChanges();
-            var foodAllergyChecker = new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
-            var cache = new MasterDataCacheService(TenantProvider);
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
-            foodAllergyChecker.InitFinder(tenantNoTracking, cache);
 
             #endregion
 
             // Set up your CheckerCondition
-
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, realtimeOrderErrorFinder.Object);
+            commonMedicalCheck._hpID = 1;
+            commonMedicalCheck._ptID = 111;
+            commonMedicalCheck._sinday = 20230101;
             commonMedicalCheck.CheckerCondition = new RealTimeCheckerCondition(
                                                       isCheckingDuplication: false,
                                                       isCheckingKinki: false,
