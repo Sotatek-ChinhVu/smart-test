@@ -857,7 +857,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDrugAllergyWithNoMasterData
-    private List<ErrorInfoModel> ProcessDataForDrugAllergyWithNoMasterData(List<DrugAllergyResultModel> allergyInfo)
+    public List<ErrorInfoModel> ProcessDataForDrugAllergyWithNoMasterData(List<DrugAllergyResultModel> allergyInfo)
     {
         List<ErrorInfoModel> result = new();
         allergyInfo.ForEach((a) =>
@@ -1314,7 +1314,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForKinkiUser
-    private List<ErrorInfoModel> ProcessDataForKinkiUser(List<KinkiResultModel> kinkiErrorInfo)
+    public List<ErrorInfoModel> ProcessDataForKinkiUser(List<KinkiResultModel> kinkiErrorInfo)
     {
         List<ErrorInfoModel> result = new();
         kinkiErrorInfo.ForEach((k) =>
@@ -1352,7 +1352,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDayLimit
-    private List<ErrorInfoModel> ProcessDataForDayLimit(List<DayLimitResultModel> dayLimitError)
+    public List<ErrorInfoModel> ProcessDataForDayLimit(List<DayLimitResultModel> dayLimitError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DayLimitResultModel dayLimit in dayLimitError)
