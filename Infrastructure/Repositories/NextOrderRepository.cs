@@ -219,7 +219,8 @@ namespace Infrastructure.Repositories
                         UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
                         UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
-                    if (oldNextOrder?.IsDeleted == DeleteTypes.None)
+                    // if add new nextOrder or oldNextOrder is deleted, save file nextOrder and OrderRaiinListInf
+                    if (oldNextOrder == null || oldNextOrder?.IsDeleted == DeleteTypes.None)
                     {
                         SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
                         SaveNextOrderRaiinListInf(userId, odrInfs, kouiKbnMstList, raiinListKouis, raiinListItems);
