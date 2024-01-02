@@ -94,8 +94,10 @@ namespace SuperAdmin.Configs.Dependency
             services.AddTransient<ITenantRepository, TenantRepository>();
             services.AddTransient<IAdminAuditLogRepository, AdminAuditLogRepository>();
             services.AddTransient<IMigrationTenantHistoryRepository, MigrationTenantHistoryRepository>();
+
             services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
             services.AddSingleton<IHostedService, TaskScheduleDeleteJunkFileS3>();
+
             services.AddTransient<INotificationRepository, NotificationRepository>();
         }
 
