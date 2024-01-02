@@ -20,13 +20,15 @@ namespace Infrastructure.Repositories
         private readonly string key;
         private readonly IDatabase _cache;
         private readonly IConfiguration _configuration;
+        private readonly IUserInfoService _userInfoService;
 
-        public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+        public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration, IUserInfoService userInfoService) : base(tenantProvider)
         {
             key = GetDomainKey();
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
+            _userInfoService = userInfoService;
         }
 
         public void GetRedis()
@@ -40,36 +42,42 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedId(List<long> ids)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Count(u => ids.Contains(u.Id));
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Count(u => ids.Contains(u.Id));
             return ids.Count == anyUsertMsts;
         }
 
         public bool CheckExistedUserId(int userId)
         {
-            return NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+            // get data from UserMstList
+            return _userInfoService.AllUserMstList().Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
 
         public bool CheckExistedUserIdCreate(List<int> userIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => userIds.Contains(u.UserId) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedUserIdUpdate(List<long> ids, List<int> userIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => userIds.Contains(u.UserId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdCreate(List<string> loginIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
@@ -84,26 +92,18 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public void Delete(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<UserMstModel> GetAll()
-        {
-            return NoTrackingDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
-        }
-
         public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll)
         {
             if (isAll)
             {
-                var query = NoTrackingDataContext.UserMsts;
+                // get data from UserMstList
+                var query = _userInfoService.AllUserMstList();
                 return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, new())).ToList();
             }
             else
             {
-                var query = NoTrackingDataContext.UserMsts.Where(u =>
+                // get data from UserMstList
+                var query = _userInfoService.AllUserMstList().Where(u =>
                     u.StartDate <= sinDate
                     && u.EndDate >= sinDate
                     && u.IsDeleted == DeleteTypes.None);
@@ -123,31 +123,36 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
-            var result = NoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
+            // get data from UserMstList
+            var result = _userInfoService.AllUserMstList().Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId);
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds)
         {
-            var result = NoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId)).AsEnumerable();
+            // get data from UserMstList
+            var result = _userInfoService.AllUserMstList().Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId));
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds)
         {
-            var result = NoTrackingDataContext.UserMsts.Where(d => userIds.Contains(d.UserId)).AsEnumerable();
+            // get data from UserMstList
+            var result = _userInfoService.AllUserMstList().Where(d => userIds.Contains(d.UserId));
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public UserMstModel GetByUserId(int userId)
         {
-            var entity = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None);
+                        // get data from UserMstList
+            var entity = _userInfoService.AllUserMstList().FirstOrDefault(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None);
             return entity is null ? new UserMstModel() : ToModel(entity);
         }
 
         public UserMstModel GetByUserId(int userId, int sinDate)
         {
-            var entity = NoTrackingDataContext.UserMsts
+            // get data from UserMstList
+            var entity = _userInfoService.AllUserMstList()
                 .FirstOrDefault(u => u.UserId == userId
                                     && u.IsDeleted == DeleteTypes.None
                                     && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
@@ -157,25 +162,19 @@ namespace Infrastructure.Repositories
         public UserMstModel? GetByLoginId(string loginId)
         {
             var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
-            var entity = NoTrackingDataContext.UserMsts
-                .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
+
+            // get data from UserMstList
+            var entity = _userInfoService.AllUserMstList()
+                .FirstOrDefault(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow);
             return entity is null ? null : ToModel(entity);
         }
 
         public int MaxUserId()
         {
-            return NoTrackingDataContext.UserMsts.Max(u => u.UserId);
+            // get data from UserMstList
+            return _userInfoService.AllUserMstList().Max(u => u.UserId);
         }
 
-        public UserMstModel Read(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(UserMstModel user)
-        {
-            throw new NotImplementedException();
-        }
         public bool Upsert(List<UserMstModel> upsertUserList, int userId)
         {
             try
@@ -314,7 +313,8 @@ namespace Infrastructure.Repositories
 
         public bool CheckLoginInfo(string userName, string password)
         {
-            return NoTrackingDataContext.UserMsts.Any(u => u.LoginId == userName && u.LoginPass == password);
+            // get data from UserMstList
+            return _userInfoService.AllUserMstList().Any(u => u.LoginId == userName && u.LoginPass == password);
         }
 
         public bool MigrateDatabase()
@@ -326,6 +326,7 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+            _userInfoService.DisposeSource();
         }
 
         public bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, int userId)
@@ -416,7 +417,9 @@ namespace Infrastructure.Repositories
         {
             var listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
             var listUserPermissionOfUserDefault = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).ToList();
-            var isDoctor = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
+
+            // get data from UserMstList
+            var isDoctor = _userInfoService.AllUserMstList().FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
             if (string.IsNullOrEmpty(permisionCode))
             {
                 return PermissionType.NotAvailable;
@@ -440,7 +443,8 @@ namespace Infrastructure.Repositories
 
         public List<UserMstModel> GetUsersByCurrentUser(int hpId, int currentUser)
         {
-            var infoCurrent = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == currentUser);
+            // get data from UserMstList
+            var infoCurrent = _userInfoService.AllUserMstList().FirstOrDefault(u => u.UserId == currentUser);
             if (infoCurrent is null) return new List<UserMstModel>();
 
             IQueryable<UserMst> listUsers = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId &&
@@ -673,7 +677,8 @@ namespace Infrastructure.Repositories
 
         public bool UserIdIsExistInDb(int userId)
         {
-            return NoTrackingDataContext.UserMsts.Any(x => x.UserId == userId);
+            // get data from UserMstList
+            return _userInfoService.AllUserMstList().Any(x => x.UserId == userId);
         }
 
         public List<int> ListJobCdValid(int hpId)
@@ -781,7 +786,8 @@ namespace Infrastructure.Repositories
 
         public UserMstModel GetUserInfo(int hpId, int userId)
         {
-            var user = NoTrackingDataContext.UserMsts
+            // get data from UserMstList
+            var user = _userInfoService.AllUserMstList()
                 .FirstOrDefault(x => x.HpId == hpId &&
                                      x.UserId == userId);
 

@@ -23,4 +23,5 @@ public static class CacheKeyConstant
     public const string PaymentMethodMsts = "PaymentMethodMsts";
     public const string StaGrpModel = "StaGrpModel";
     public const string KohiPriority = "KohiPriority";
+    public const string SystemGenerationConf = "SystemGenerationConf";
 }

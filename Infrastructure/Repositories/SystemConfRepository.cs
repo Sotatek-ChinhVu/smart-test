@@ -486,6 +486,14 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             });
         }
 
+        // remove key when save SystemGenerationConf
+        int hpId = systemConfMenuModels.FirstOrDefault()?.HpId ?? 0;
+        var finalKey = GetDomainKey() + CacheKeyConstant.SystemGenerationConf + hpId;
+        if (_cache.KeyExists(finalKey))
+        {
+            _cache.KeyDelete(finalKey);
+        }
+
         return TrackingDataContext.SaveChanges() > 0;
     }
 
