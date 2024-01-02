@@ -55,12 +55,14 @@ namespace Interactor.SuperAdmin
                 if (inputData.Type == 0)
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["stopping"]);
-                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["stopping"], ConfigConstant.StatusTenantStopping));
+                    var messenge = tenant.EndSubDomain + $"が停止中です。";
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusNotiSuccess, ConfigConstant.StatusTenantStopping, messenge));
                 }
                 else
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["starting"]);
-                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["starting"], ConfigConstant.StatusTenantStopping));
+                    var messenge = tenant.EndSubDomain + $"が開始中です。";
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusNotiSuccess, ConfigConstant.StatusTenantStopping, messenge));
                 }
 
 
