@@ -86,9 +86,9 @@ public class Sta3070CoReportService : ISta3070CoReportService
     private class ColTitle
     {
         public int TitleValue;
-        public string TitleA1Name = string.Empty;
-        public string TitleA2Name = string.Empty;
-        public string TitleBName = string.Empty;
+        public string TitleA1Name;
+        public string TitleA2Name;
+        public string TitleBName;
     }
 
     private readonly List<ColTitle> hokenTitles = new List<ColTitle>
@@ -183,7 +183,6 @@ public class Sta3070CoReportService : ISta3070CoReportService
         printConf = new();
         printDatas = new();
         headerL1 = new();
-        raiinInfs = new();
     }
 
     public CommonReportingRequestModel GetSta3070ReportingData(CoSta3070PrintConf printConf, int hpId, CoFileType outputFileType)
@@ -279,7 +278,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
                 //明細データ出力
                 foreach (var recName in existsRecs)
                 {
-                    var value = typeof(CoSta3070PrintData).GetProperty(recName)?.GetValue(printData);
+                    var value = typeof(CoSta3070PrintData).GetProperty(recName).GetValue(printData);
                     AddListData(ref data, recName, value == null ? string.Empty : value.ToString() ?? string.Empty);
 
                     if (baseListName == string.Empty && objectRseList.Contains(recName))
@@ -427,6 +426,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
                         default:
                             break;
                     }
+                    ;
 
                     string newVal = wrksyukeiData.GroupBy(s => raiinTypes[i] == "Pt" ? s.PtId : s.RaiinNo).Count().ToString("#,0");
                     printData.SetMemberValue(raiinTypes[i] + raiinSubTypes[j] + "Cnt", newVal);
@@ -453,12 +453,12 @@ public class Sta3070CoReportService : ISta3070CoReportService
             bool pbTantoId = outputFileType != CoFileType.Csv && coFileType != CoFileType.Csv && new int[] { printConf.PgBreak1, printConf.PgBreak2, printConf.PgBreak3 }.Contains(3);
 
             //ソート順
-            raiinInfs = raiinInfs?.OrderBy(r => pbSinYm ? r.SinYm : 0)
+            raiinInfs = raiinInfs.OrderBy(r => pbSinYm ? r.SinYm : 0)
                 .ThenBy(r => pbKaId ? r.KaId : 0)
                 .ThenBy(r => pbTantoId ? r.TantoId : 0)
                 .ThenBy(r => r.ReportKbnValue)
                 .ThenBy(r => r.SinDate)
-                .ToList() ?? new();
+                .ToList();
 
             TotalCnt pgtotal = new TotalCnt();
 
@@ -566,14 +566,14 @@ public class Sta3070CoReportService : ISta3070CoReportService
                                     {
                                         //診療科別
                                         clA1Name = string.Format("({0})", wrkDatas.First().KaId);
-                                        clA2Name = wrkDatas.First().KaSname ?? string.Empty;
+                                        clA2Name = wrkDatas.First().KaSname;
                                         clBName = string.Format("{0}.{1}", wrkDatas.First().KaId, wrkDatas.First().KaSname);
                                     }
                                     else if (printConf.ReportKbn == 3)
                                     {
                                         //担当医別
                                         clA1Name = string.Format("({0})", wrkDatas.First().TantoId);
-                                        clA2Name = wrkDatas.First().TantoSname ?? string.Empty;
+                                        clA2Name = wrkDatas.First().TantoSname;
                                         clBName = string.Format("{0}.{1}", wrkDatas.First().TantoId, wrkDatas.First().TantoSname);
                                     }
                                     printDatas.Add(SetPrintData(wrkDatas, pgtotal, clA1Name, clA2Name, clBName));
@@ -592,8 +592,8 @@ public class Sta3070CoReportService : ISta3070CoReportService
                             //改ページ条件
                             List<string> wrkHeaders = new List<string>();
                             if (pbSinYm) wrkHeaders.Add(CIUtil.SMonthToShowSWMonth(sinYms[ymCnt]));
-                            if (pbKaId) wrkHeaders.Add(curDatas.First().KaSname ?? string.Empty);
-                            if (pbTantoId) wrkHeaders.Add(curDatas.First().TantoSname ?? string.Empty);
+                            if (pbKaId) wrkHeaders.Add(curDatas.First().KaSname);
+                            if (pbTantoId) wrkHeaders.Add(curDatas.First().TantoSname);
                             headerL1.Add(string.Join("／", wrkHeaders));
                         }
 
@@ -613,7 +613,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
         raiinInfs = _finder.GetRaiinInfs(hpId, printConf);
         if ((raiinInfs?.Count ?? 0) == 0) return false;
 
-        hpInf = _finder.GetHpInf(hpId, raiinInfs?.FirstOrDefault()?.SinDate ?? 0);
+        hpInf = _finder.GetHpInf(hpId, raiinInfs.FirstOrDefault()?.SinDate ?? 0);
 
         //印刷用データの作成
         MakePrintData();
@@ -628,6 +628,65 @@ public class Sta3070CoReportService : ISta3070CoReportService
         {
             _singleFieldData.Add(field, value);
         }
+    }
+
+    private float StrToFloatDef(string inputString, float defaultValue)
+    {
+        float output;
+        if (float.TryParse(inputString, out output))
+        {
+            return output;
+        }
+        else
+        {
+            return defaultValue;
+        }
+    }
+
+    private object SetMemberValue(object obj, string memberName, object newValue)
+    {
+        var memInf = GetMemberInfo(obj, memberName);
+
+        if (memInf == null)
+            throw new Exception("memberName");
+
+        var oldValue = obj.GetMemberValue(memberName);
+
+        if (memInf is System.Reflection.PropertyInfo propertyInfo)
+            propertyInfo.SetValue(obj, newValue, null);
+        else if (memInf is System.Reflection.FieldInfo fieldInfo)
+            fieldInfo.SetValue(obj, newValue);
+        else
+            throw new Exception();
+
+        return oldValue;
+    }
+
+    private System.Reflection.MemberInfo GetMemberInfo(object obj, string memberName)
+    {
+        var prps = new List<System.Reflection.PropertyInfo>();
+
+        prps.Add(obj.GetType().GetProperty(memberName,
+                                           System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance |
+                                           System.Reflection.BindingFlags.FlattenHierarchy));
+        prps = Enumerable.ToList(Enumerable.Where(prps, i => !ReferenceEquals(i, null)));
+        if (prps.Count != 0)
+            return prps[0];
+
+        var flds = new List<System.Reflection.FieldInfo>();
+
+        flds.Add(obj.GetType().GetField(memberName,
+                                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance |
+                                        System.Reflection.BindingFlags.FlattenHierarchy));
+
+        //to add more types of properties
+
+        flds = Enumerable.ToList(Enumerable.Where(flds, i => !ReferenceEquals(i, null)));
+
+        if (flds.Count != 0)
+            return flds[0];
+
+        return null;
     }
 
     private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
@@ -657,6 +716,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
         var csvDatas = printDatas.Where(p => p.RowType == RowType.Data).ToList();
         if (csvDatas.Count == 0) return new CommonExcelReportingModel(fileName + ".csv", fileName, retDatas);
 
+        int totalRow = putRecords.Count;
         int rowOutputed = 0;
         foreach (var putRecord in putRecords)
         {
@@ -679,7 +739,7 @@ public class Sta3070CoReportService : ISta3070CoReportService
             //データ
             foreach (var putData in putDatas)
             {
-                var value = typeof(CoSta3070PrintData).GetProperty(putRec.ColName)?.GetValue(putData);
+                var value = typeof(CoSta3070PrintData).GetProperty(putRec.ColName).GetValue(putData);
                 colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
             }
 

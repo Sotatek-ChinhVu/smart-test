@@ -60,7 +60,7 @@ namespace Reporting.Statistics.Sta2020.DB
 
             var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId);
             var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(x => x.HpId == hpId);
-            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && s.ItemCd != null && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
             var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             if (!printConf.IsTester)
@@ -135,7 +135,7 @@ namespace Reporting.Statistics.Sta2020.DB
                     new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } equals
                     new { sinDetail.HpId, sinDetail.PtId, sinDetail.SinYm, sinDetail.RpNo, sinDetail.SeqNo }
                 join tenMst in tenMsts on
-                    new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd != null && sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
+                    new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
                     new { tenMst.HpId, tenMst.ItemCd }
                 join ptInf in ptInfs on
                     new { sinCount.HpId, sinCount.PtId } equals
@@ -282,13 +282,13 @@ namespace Reporting.Statistics.Sta2020.DB
                         wrkItemCd.ItemCd != wrkItemCd.SanteiItemCd &&
                         wrkItemCd.SanteiItemCd != ItemCdConst.NoSantei)
                     {
-                        printConf.ItemCds[i] = wrkItemCd.SanteiItemCd ?? string.Empty;
+                        printConf.ItemCds[i] = wrkItemCd.SanteiItemCd;
                     }
                 }
             }
             #region コメントマスター(CO)の名称取得
-            List<string> itemCmts = new();
-            foreach (var itemCd in printConf.ItemCds?.Where(i => i.StartsWith("CO")).ToList() ?? new())
+            var itemCmts = new List<string>();
+            foreach (var itemCd in printConf.ItemCds.Where(i => i.StartsWith("CO")))
             {
                 var sinDate = printConf.StartSinYm >= 0 ? printConf.StartSinYm * 100 + 1 : printConf.StartSinDate;
 
@@ -305,8 +305,8 @@ namespace Reporting.Statistics.Sta2020.DB
                     itemCmts.Add(itemName);
                 }
             }
-            printConf.ItemCds?.AddRange(itemCmts);
-            printConf.ItemCds?.RemoveAll(i => i.StartsWith("CO"));
+            printConf.ItemCds.AddRange(itemCmts);
+            printConf.ItemCds.RemoveAll(i => i.StartsWith("CO"));
             #endregion
             if (printConf.ItemCds?.Count >= 1 && printConf.SearchWord.AsString() != "")
             {

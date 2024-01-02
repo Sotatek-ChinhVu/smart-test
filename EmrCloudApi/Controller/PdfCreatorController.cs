@@ -29,6 +29,7 @@ using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using StackExchange.Redis;
 using Helper.Redis;
+using Reporting.OutDrug.Model.Output;
 
 namespace EmrCloudApi.Controller;
 

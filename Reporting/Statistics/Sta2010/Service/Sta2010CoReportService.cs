@@ -21,13 +21,6 @@ namespace Reporting.Statistics.Sta2010.Service
         {
             _readRseReportFileService = readRseReportFileService;
             _staFinder = staFinder;
-            printDatas = new();
-            headerL1 = new();
-            headerL2 = new();
-            receInfs = new();
-            kohiHoubetuMsts = new();
-            hokensyaNames = new();
-            hpInf = new();
         }
 
         public CommonReportingRequestModel GetSta2010ReportingData(CoSta2010PrintConf printConf, int hpId)
@@ -62,14 +55,14 @@ namespace Reporting.Statistics.Sta2010.Service
         }
 
         #region Constant
-        private readonly int maxRow = 45;
+        private int maxRow = 45;
 
-        private readonly List<PutColumn> csvTotalColumns = new List<PutColumn>
+        private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分")
         };
 
-        private readonly List<PutColumn> putColumns = new List<PutColumn>
+        private List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("SeikyuYmFmt", "請求年月", false, "SeikyuYm"),
             new PutColumn("IsZaiiso", "在医総"),
@@ -114,11 +107,11 @@ namespace Reporting.Statistics.Sta2010.Service
         private CoFileType? coFileType;
         private bool isPutTotalRow;
 
-        private readonly Dictionary<string, string> _singleFieldData = new();
-        private readonly Dictionary<string, string> _extralData = new();
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new();
+        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
+        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
 
-        private readonly List<PutColumn> putCurColumns = new();
+        private List<PutColumn> putCurColumns = new List<PutColumn>();
         #endregion
 
         #region Load Data
@@ -162,7 +155,7 @@ namespace Reporting.Statistics.Sta2010.Service
         {
             return
                 kohiHoubetuMsts.Find(k => k.PrefNo == 0 && k.Houbetu == houbetu)?.HokenNameCd ??
-                kohiHoubetuMsts.Find(k => k.PrefNo == hpInf.PrefNo && k.Houbetu == houbetu)?.HokenNameCd ?? string.Empty;
+                kohiHoubetuMsts.Find(k => k.PrefNo == hpInf.PrefNo && k.Houbetu == houbetu)?.HokenNameCd;
         }
 
         //公費の組合せを取得する
@@ -195,19 +188,19 @@ namespace Reporting.Statistics.Sta2010.Service
                 bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(2);
                 bool pbTantoId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(3);
 
-                var isZaiisoes = receInfs!.GroupBy(s => s.IsZaiiso).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                var isZaiisoes = receInfs.GroupBy(s => s.IsZaiiso).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                 for (int zaiCnt = 0; (pbZaiiso && zaiCnt < isZaiisoes.Count) || zaiCnt == 0; zaiCnt++)
                 {
-                    var kaIds = receInfs!.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                    var kaIds = receInfs.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                     for (int kaCnt = 0; (pbKaId && kaCnt <= kaIds.Count - 1) || kaCnt == 0; kaCnt++)
                     {
-                        var tantoIds = receInfs!.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                        var tantoIds = receInfs.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                         for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds.Count - 1) || taCnt == 0; taCnt++)
                         {
-                            var curDatas = receInfs!.Where(s =>
-                                (!pbZaiiso || s.IsZaiiso == isZaiisoes[zaiCnt]) &&
-                                (!pbKaId || s.KaId == kaIds[kaCnt]) &&
-                                (!pbTantoId || s.TantoId == tantoIds[taCnt])
+                            var curDatas = receInfs.Where(s =>
+                                (pbZaiiso ? s.IsZaiiso == isZaiisoes[zaiCnt] : true) &&
+                                (pbKaId ? s.KaId == kaIds[kaCnt] : true) &&
+                                (pbTantoId ? s.TantoId == tantoIds[taCnt] : true)
                             ).ToList();
 
                             int curRecNo = Math.Max(printDatas.Count - 1, 0);
@@ -231,12 +224,12 @@ namespace Reporting.Statistics.Sta2010.Service
 
                             for (int i = curRecNo; i < printDatas.Count; i++)
                             {
-                                printDatas[i].SeikyuYm = curDatas.FirstOrDefault()?.SeikyuYm ?? 0;
-                                printDatas[i].IsZaiiso = pbZaiiso ? curDatas.FirstOrDefault()?.IsZaiiso.ToString() ?? string.Empty : string.Empty;
-                                printDatas[i].KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaId.ToString() ?? string.Empty : string.Empty;
-                                printDatas[i].KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaSname ?? string.Empty : string.Empty;
-                                printDatas[i].TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoId.ToString() ?? string.Empty : string.Empty;
-                                printDatas[i].TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoSname ?? string.Empty : string.Empty;
+                                printDatas[i].SeikyuYm = curDatas.FirstOrDefault().SeikyuYm;
+                                printDatas[i].IsZaiiso = pbZaiiso ? curDatas.FirstOrDefault().IsZaiiso.ToString() : null;
+                                printDatas[i].KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaId.ToString() : null;
+                                printDatas[i].KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaSname : null;
+                                printDatas[i].TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoId.ToString() : null;
+                                printDatas[i].TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoSname : null;
                             }
 
                             //ヘッダー情報
@@ -293,7 +286,7 @@ namespace Reporting.Statistics.Sta2010.Service
                 for (int rowNo = 0; rowNo <= 56; rowNo++)
                 {
                     CoSta2010PrintData printData = new CoSta2010PrintData();
-                    List<CoReceInfModel>? wrkReces = null;
+                    List<CoReceInfModel> wrkReces = null;
 
                     switch (rowNo)
                     {
@@ -308,7 +301,7 @@ namespace Reporting.Statistics.Sta2010.Service
                             break;
                         case 2:
                             printData.HokenSbt2 = "医保(70歳以上一般・低所得)単独";
-                            if (receDatas.Any(r => r.IsNrElderIppan && !r.IsHeiyo))
+                            if (receDatas.Where(r => r.IsNrElderIppan && !r.IsHeiyo).Count() >= 1)
                             {
                                 printDatas.Add(printData);
                             }
@@ -361,7 +354,7 @@ namespace Reporting.Statistics.Sta2010.Service
                             break;
                         case 14:
                             printData.HokenSbt2 = "医保(70歳以上7割)単独";
-                            if (receDatas.Any(r => r.IsNrElderUpper && !r.IsHeiyo))
+                            if (receDatas.Where(r => r.IsNrElderUpper && !r.IsHeiyo).Count() >= 1)
                             {
                                 printDatas.Add(printData);
                             }
@@ -407,7 +400,7 @@ namespace Reporting.Statistics.Sta2010.Service
                             break;
                         case 24:
                             printData.HokenSbt2 = "医保(本人)単独";
-                            if (receDatas.Any(r => r.IsNrMine && !r.IsHeiyo))
+                            if (receDatas.Where(r => r.IsNrMine && !r.IsHeiyo).Count() >= 1)
                             {
                                 printDatas.Add(printData);
                             }
@@ -465,6 +458,7 @@ namespace Reporting.Statistics.Sta2010.Service
                             break;
                         case 37:
                             printData.HokenSbt2 = "医保(家族)単独";
+                            if (receDatas.Where(r => r.IsNrFamily && !r.IsHeiyo).Count() >= 1)
                             {
                                 printDatas.Add(printData);
                             }
@@ -510,7 +504,7 @@ namespace Reporting.Statistics.Sta2010.Service
                             break;
                         case 47:
                             printData.HokenSbt2 = "医保(6歳)単独";
-                            if (receDatas.Any(r => r.IsNrPreSchool && !r.IsHeiyo))
+                            if (receDatas.Where(r => r.IsNrPreSchool && !r.IsHeiyo).Count() >= 1)
                             {
                                 printDatas.Add(printData);
                             }
@@ -559,7 +553,7 @@ namespace Reporting.Statistics.Sta2010.Service
                     if ((wrkReces?.Count ?? 0) == 0) continue;
 
                     //集計
-                    printData.Count = wrkReces!.Count.ToString("#,0");
+                    printData.Count = wrkReces.Count.ToString("#,0");
                     printData.Nissu = wrkReces.Sum(r => r.HokenNissu).ToString("#,0");
                     printData.Tensu = wrkReces.Sum(r => r.Tensu).ToString("#,0");
                     printData.Futan = wrkReces.Sum(r => r.HokenReceFutan).ToString("#,0");
@@ -579,7 +573,7 @@ namespace Reporting.Statistics.Sta2010.Service
                 int totalCount2 = 0;
 
                 #region 公費と医保の併用
-                List<string> kohiHoubetus = GetKohiHoubetu(receDatas.Where(r => r.IsNrAll && r.IsHeiyo).ToList(), new());
+                List<string> kohiHoubetus = GetKohiHoubetu(receDatas.Where(r => r.IsNrAll && r.IsHeiyo).ToList(), null);
                 if (kohiHoubetus.Count >= 1)
                 {
                     printDatas.Add(new CoSta2010PrintData(RowType.Brank));
@@ -662,6 +656,7 @@ namespace Reporting.Statistics.Sta2010.Service
                     for (int i = 0; i <= 1; i++)
                     {
                         string wrkHoubetu = kohiHoubetus[pariNo].Substring(i * 2, 2);
+                        short rowNo = (short)(pariNo * 2 + i);
 
                         List<CoReceInfModel> wrkReces = receDatas.Where(r =>
                             r.IsKohiOnly &&
@@ -723,7 +718,7 @@ namespace Reporting.Statistics.Sta2010.Service
                 #endregion
 
                 #region 公費単独
-                kohiHoubetus = GetKohiHoubetu(receDatas.Where(r => r.IsKohiOnly && !r.IsHeiyo).ToList(), new());
+                kohiHoubetus = GetKohiHoubetu(receDatas.Where(r => r.IsKohiOnly && !r.IsHeiyo).ToList(), null);
                 if (kohiHoubetus.Count >= 1)
                 {
                     if (totalCount2 == 0)
@@ -876,7 +871,7 @@ namespace Reporting.Statistics.Sta2010.Service
                         for (int rowNo = 0; rowNo <= 11; rowNo++)
                         {
                             CoSta2010PrintData printData = new CoSta2010PrintData();
-                            List<CoReceInfModel>? wrkReces = null;
+                            List<CoReceInfModel> wrkReces = null;
 
                             switch (rowNo)
                             {
@@ -940,7 +935,7 @@ namespace Reporting.Statistics.Sta2010.Service
                             if ((wrkReces?.Count ?? 0) == 0) continue;
 
                             //集計
-                            printData.Count = wrkReces!.Count.ToString("#,0");
+                            printData.Count = wrkReces.Count.ToString("#,0");
                             printData.Nissu = wrkReces.Sum(r => r.HokenNissu).ToString("#,0");
                             printData.Tensu = wrkReces.Sum(r => r.Tensu).ToString("#,0");
                             printData.Futan = wrkReces.Sum(r => r.HokenReceFutan).ToString("#,0");
@@ -958,7 +953,7 @@ namespace Reporting.Statistics.Sta2010.Service
                         #endregion
 
                         #region 公費負担医療
-                        var kohiHoubetus = GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
+                        var kohiHoubetus = GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
                         if (kohiHoubetus.Count >= 1) printDatas.Add(new CoSta2010PrintData(RowType.Brank));
 
                         //集計
@@ -1071,7 +1066,7 @@ namespace Reporting.Statistics.Sta2010.Service
                         for (int rowNo = 0; rowNo <= 3; rowNo++)
                         {
                             CoSta2010PrintData printData = new CoSta2010PrintData();
-                            List<CoReceInfModel>? wrkReces = null;
+                            List<CoReceInfModel> wrkReces = null;
 
                             switch (rowNo)
                             {
@@ -1087,7 +1082,7 @@ namespace Reporting.Statistics.Sta2010.Service
                                 case 2:
                                     printData.HokenSbt3 = "7割";
                                     wrkReces = curReceInfs.Where(r => r.IsKoukiUpper).ToList();
-                                    break;
+                                    break; ;
                                 case 3:
                                     printData.RowType = RowType.Total;
                                     printData.HokenSbt3 = "◆小計";
@@ -1097,7 +1092,7 @@ namespace Reporting.Statistics.Sta2010.Service
                             if ((wrkReces?.Count ?? 0) == 0) continue;
 
                             //集計
-                            printData.Count = wrkReces!.Count.ToString("#,0");
+                            printData.Count = wrkReces.Count.ToString("#,0");
                             printData.Nissu = wrkReces.Sum(r => r.HokenNissu).ToString("#,0");
                             printData.Tensu = wrkReces.Sum(r => r.Tensu).ToString("#,0");
                             printData.Futan = wrkReces.Sum(r => r.HokenReceFutan).ToString("#,0");
@@ -1115,7 +1110,7 @@ namespace Reporting.Statistics.Sta2010.Service
                         #endregion
 
                         #region 公費負担医療
-                        var kohiHoubetus = GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
+                        var kohiHoubetus = GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
                         if (kohiHoubetus.Count >= 1) printDatas.Add(new CoSta2010PrintData(RowType.Brank));
 
                         //集計
@@ -1193,7 +1188,7 @@ namespace Reporting.Statistics.Sta2010.Service
                 for (int rowNo = 0; rowNo <= 5; rowNo++)
                 {
                     CoSta2010PrintData printData = new CoSta2010PrintData();
-                    List<CoReceInfModel>? wrkReces = null;
+                    List<CoReceInfModel> wrkReces = null;
 
                     switch (rowNo)
                     {
@@ -1208,7 +1203,7 @@ namespace Reporting.Statistics.Sta2010.Service
                         case 2:
                             printData.HokenSbt2 = "アフターケア";
                             wrkReces = receDatas.Where(r => r.HokenKbn == HokenKbn.AfterCare).ToList();
-                            break;
+                            break; ;
                         case 3:
                             printData.RowType = RowType.Total;
                             printData.HokenSbt2 = "◆労災計";
@@ -1226,7 +1221,7 @@ namespace Reporting.Statistics.Sta2010.Service
                     if ((wrkReces?.Count ?? 0) == 0) continue;
 
                     //集計
-                    printData.Count = wrkReces!.Count.ToString("#,0");
+                    printData.Count = wrkReces.Count.ToString("#,0");
                     printData.Nissu = wrkReces.Sum(r => r.HokenNissu).ToString("#,0");
                     printData.Tensu = wrkReces.Sum(r => r.Tensu).ToString("#,0");
                     printData.Futan = "-";
@@ -1265,7 +1260,7 @@ namespace Reporting.Statistics.Sta2010.Service
             kohiHoubetuMsts = _staFinder.GetKohiHoubetuMst(HpId, _printConf.SeikyuYm);
             //保険者名を取得
             hokensyaNames = _staFinder.GetHokensyaName(HpId,
-                receInfs!.Where(r => r.HokenKbn == HokenKbn.Kokho).GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList()
+                receInfs.Where(r => r.HokenKbn == HokenKbn.Kokho).GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList()
             );
 
             //印刷用データの作成
@@ -1276,14 +1271,14 @@ namespace Reporting.Statistics.Sta2010.Service
         #endregion
 
         #region Update Draw Form
-        private void UpdateDrawForm()
+        private bool UpdateDrawForm()
         {
             _hasNextPage = true;
 
             #region SubMethod
 
             #region Header
-            void UpdateFormHeader()
+            int UpdateFormHeader()
             {
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
@@ -1300,11 +1295,13 @@ namespace Reporting.Statistics.Sta2010.Service
                 _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : "");
                 //改ページ条件
                 _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : "");
+
+                return 1;
             }
             #endregion
 
             #region Body
-            void UpdateFormBody()
+            int UpdateFormBody()
             {
                 int hokIndex = (_currentPage - 1) * maxRow;
 
@@ -1321,8 +1318,8 @@ namespace Reporting.Statistics.Sta2010.Service
                     //明細データ出力
                     foreach (var colName in existsCols)
                     {
-                        var value = typeof(CoSta2010PrintData).GetProperty(colName)?.GetValue(printData);
-                        AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
+                        var value = typeof(CoSta2010PrintData).GetProperty(colName).GetValue(printData);
+                        AddListData(ref data, colName, value == null ? "" : value.ToString());
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
@@ -1351,13 +1348,26 @@ namespace Reporting.Statistics.Sta2010.Service
                         break;
                     }
                 }
+
+                return hokIndex;
             }
             #endregion
 
             #endregion
 
-            UpdateFormHeader();
-            UpdateFormBody();
+            try
+            {
+                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void SetFieldData(string field, string value)
@@ -1431,6 +1441,7 @@ namespace Reporting.Statistics.Sta2010.Service
             }
 
             //データ
+            int totalRow = csvDatas.Count;
             int rowOutputed = 0;
             foreach (var csvData in csvDatas)
             {
@@ -1444,7 +1455,7 @@ namespace Reporting.Statistics.Sta2010.Service
 
                 foreach (var column in putCurColumns)
                 {
-                    var value = typeof(CoSta2010PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                    var value = typeof(CoSta2010PrintData).GetProperty(column.CsvColName).GetValue(csvData);
                     if (csvData.RowType == RowType.Total && !column.IsTotal)
                     {
                         value = string.Empty;
