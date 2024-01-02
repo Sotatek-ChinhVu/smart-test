@@ -38,7 +38,6 @@ namespace Interactor.SuperAdmin
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
                 string pathFolderUpdateDataTenant = _configuration["PathFolderUpdateDataTenant"] ?? string.Empty;
-                pathFolderUpdateDataTenant = "D:\\";
                 string passwordFile7z = _configuration["PasswordFile7z"] ?? string.Empty;
 
                 if (inputData.TenantId <= 0)
