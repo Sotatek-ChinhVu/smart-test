@@ -1147,7 +1147,7 @@ namespace Infrastructure.Repositories
             // if have only 1 doctor in user list
             if (doctors.Count == 1)
             {
-                return doctors[0].Id;
+                return doctors[0].UserId;
             }
 
             if (isDoctor)
@@ -1206,7 +1206,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return doctors.Count > 0 ? doctors[0].Id : 0;
+            return doctors.Count > 0 ? doctors[0].UserId : 0;
         }
 
         public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)
