@@ -206,7 +206,6 @@ public class UserController : AuthorizeControllerBase
         return new ActionResult<Response<GetUserInfoResponse>>(presenter.Result);
     }
 
-    [AllowAnonymous]
     [HttpGet("UpdateHashPassword")]
     public ActionResult<Response<UpdateHashPasswordResponse>> UpdateHashPassword()
     {

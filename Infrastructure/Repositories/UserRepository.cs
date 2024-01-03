@@ -823,6 +823,7 @@ namespace Infrastructure.Repositories
                 byte[] salt = GenerateSalt();
                 byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(user.LoginPass ?? string.Empty), salt);
                 user.HashPassword = hashPassword;
+                user.Salt = salt;
             }
             TrackingDataContext.SaveChanges();
         }
@@ -852,7 +853,5 @@ namespace Infrastructure.Repositories
             var inputHash = CreateHash(password, salt);
             return Encoding.UTF8.GetString(inputHash) == Encoding.UTF8.GetString(hash);
         }
-
-
     }
 }

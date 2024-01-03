@@ -826,6 +826,7 @@ using Domain.Models.Cacche;
 using Interactor.Cache;
 using UseCase.Cache.RemoveAllCache;
 using UseCase.Cache.RemoveCache;
+using UseCase.User.UpdateHashPassword;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1268,6 +1269,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<GetUserInfoInputData, GetUserInfoInteractor>();
+            busBuilder.RegisterUseCase<UpdateHashPasswordInputData, UpdateHashPasswordInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
