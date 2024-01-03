@@ -170,22 +170,22 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             // update system change log
             systemChangeLog.UpdateStatus(status, errorMessage);
             _systemChangeLogRepository.SaveSystemChangeLog(systemChangeLog);
-        }
 
-        // send notification if success file
-        // if status = 9, send message successfully
-        if (status == 9)
-        {
-            var messenge = $"医薬品画像およびリリースノートのアップロードが完了しました。";
-            var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotiSuccess, messenge);
-            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(errorMessage))
+            // send notification if success file
+            // if status = 9, send message successfully
+            if (status == 9)
             {
-                var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotifailure, errorMessage);
+                var messenge = $"医薬品画像およびリリースノートのアップロードが完了しました。";
+                var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotiSuccess, messenge);
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotifailure, errorMessage);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                }
             }
         }
         return new UploadDrugImageAndReleaseOutputData();
