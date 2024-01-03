@@ -1025,7 +1025,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDisease
-    private List<ErrorInfoModel> ProcessDataForDisease(List<DiseaseResultModel> diseaseInfo)
+    public List<ErrorInfoModel> ProcessDataForDisease(List<DiseaseResultModel> diseaseInfo)
     {
         string DiseaseTypeName(int DiseaseType)
         {
@@ -1381,7 +1381,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDosage
-    private List<ErrorInfoModel> ProcessDataForDosage(List<DosageResultModel> listDosageError)
+    public List<ErrorInfoModel> ProcessDataForDosage(List<DosageResultModel> listDosageError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DosageResultModel dosage in listDosageError)

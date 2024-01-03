@@ -1870,5 +1870,173 @@ namespace CloudUnitTest.CommonChecker.Interactor
             Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("原則禁忌が望ましい"));
             Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("\r\nWorkingMechanism Test 1\r\n\r\n\r\nWorkingMechanism Test 2\r\n\r\n"));
         }
+
+        [Test]
+        public void TC_040_ProcessDataForDisease_LevelInfo_IsNotNull()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var diseaseInfo = new List<DiseaseResultModel>
+            {
+                new DiseaseResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  DiseaseType = 1,
+                  TenpuLevel = 2
+                },
+                new DiseaseResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj888888",
+                  ByotaiCd = "Byo999999",
+                  DiseaseType = 2,
+                  TenpuLevel = 2
+                },
+                new DiseaseResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1236",
+                  DiseaseType = 2,
+                  YjCd = "Yj888888",
+                  ByotaiCd = "Byo999999",
+                  TenpuLevel = 2
+                },
+                new DiseaseResultModel()
+                {
+                  Id = "4",
+                  ItemCd = "UT1236",
+                  DiseaseType = 3,
+                  YjCd = "Yj9999",
+                  ByotaiCd = "Byo999999",
+                  TenpuLevel = 3
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDisease(diseaseInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(4));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DiseaseChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("既往歴"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#ff9999"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#ff5454"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("原則禁忌"));
+            Assert.That(result[1].FirstCellContent, Is.EqualTo("家族歴"));
+            Assert.That(result[2].FirstCellContent, Is.EqualTo("家族歴"));
+            Assert.That(result[3].FirstCellContent, Is.EqualTo("現疾患"));
+        }
+        
+        [Test]
+        public void TC_041_ProcessDataForDosage_LabelChecking_OneMin()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.OneMin,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.OneMin,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一回量／最小値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#0000ff"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo(""));
+        }
+
+        [Test]
+        public void TC_042_ProcessDataForDosage_LabelChecking_OneMax()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.OneMax,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.OneMax,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一回量／最大値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#f12c47"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
     }
 }
