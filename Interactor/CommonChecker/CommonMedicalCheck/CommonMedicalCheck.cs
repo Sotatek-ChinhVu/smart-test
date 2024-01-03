@@ -1107,7 +1107,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForKinki
-    private List<ErrorInfoModel> ProcessDataForKinki(RealtimeCheckerType checkingType, List<KinkiResultModel> kinkiErrorInfo)
+    public List<ErrorInfoModel> ProcessDataForKinki(RealtimeCheckerType checkingType, List<KinkiResultModel> kinkiErrorInfo)
     {
         string GetCheckingTitle()
         {
@@ -1453,7 +1453,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDuplication
-    private List<ErrorInfoModel> ProcessDataForDuplication(List<DuplicationResultModel> listDuplicationError)
+    public List<ErrorInfoModel> ProcessDataForDuplication(List<DuplicationResultModel> listDuplicationError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DuplicationResultModel duplicationError in listDuplicationError)
@@ -1533,7 +1533,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region RemoveDuplicatedErrorInfo
-    private List<KinkiResultModel> RemoveDuplicatedErrorInfo(List<KinkiResultModel> originList)
+    public List<KinkiResultModel> RemoveDuplicatedErrorInfo(List<KinkiResultModel> originList)
     {
         List<KinkiResultModel> subResult = new();
         originList.ForEach(k =>
