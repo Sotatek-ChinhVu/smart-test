@@ -953,9 +953,9 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool IsHokenInfInUsed(int hpId, long ptId, int hokenId)
+        public bool IsHokenInfInUsed(int hpId, long ptId, int hokenPId)
         {
-            var result = NoTrackingDataContext.PtByomeis.Any(p => p.HpId == hpId && p.PtId == ptId && p.HokenPid == hokenId && p.IsDeleted == 0);
+            var result = NoTrackingDataContext.PtByomeis.Any(p => p.HpId == hpId && p.PtId == ptId && p.HokenPid == hokenPId && p.IsDeleted == 0);
             return result;
         }
     }

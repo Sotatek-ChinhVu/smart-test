@@ -153,7 +153,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.IsHokenInfInUsed)]
         public ActionResult<Response<UpdateByomeiSetMstResponse>> IsHokenInfInUsed([FromQuery] IsHokenInfInUsedRequest request)
         {
-            var input = new IsHokenInfInUsedInputData(HpId, request.PtId, request.HokenId);
+            var input = new IsHokenInfInUsedInputData(HpId, request.PtId, request.HokenPId);
             var output = _bus.Handle(input);
             var presenter = new IsHokenInfInUsedPresenter();
             presenter.Complete(output);

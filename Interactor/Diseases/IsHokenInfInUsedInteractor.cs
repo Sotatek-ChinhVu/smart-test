@@ -16,7 +16,7 @@ public class IsHokenInfInUsedInteractor : IIsHokenInfInUsedInputPort
     {
         try
         {
-            return new IsHokenInfInUsedOutputData(_ptDiseaseRepository.IsHokenInfInUsed(inputData.HpId, inputData.PtId, inputData.HokenId), IsHokenInfInUsedStatus.Successed);
+            return new IsHokenInfInUsedOutputData(_ptDiseaseRepository.IsHokenInfInUsed(inputData.HpId, inputData.PtId, inputData.HokenPId), IsHokenInfInUsedStatus.Successed);
         }
         finally
         {
