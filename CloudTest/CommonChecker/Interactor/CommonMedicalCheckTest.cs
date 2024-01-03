@@ -2874,7 +2874,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         /// CheckingType = KinkiSupplement
         /// </summary>
         [Test]
-        public void TC_057_ProcessDataForKinki()
+        public void TC_057_ProcessDataForKinki_KinkiSupplement()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
 
@@ -2935,6 +2935,156 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 Is.EqualTo("\r\n※\r\n\r\n"));
             Assert.That(result.First().ListLevelInfo.First().Comment,
                 Is.EqualTo("\r\n※\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// CheckingType = KinkiOTC
+        /// </summary>
+        [Test]
+        public void TC_058_ProcessDataForKinki_KinkiOTC()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1"
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiOTC;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(OTC)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. "));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("\r\n※\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("\r\n※\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// CheckingType = KinkiTain
+        /// </summary>
+        [Test]
+        public void TC_059_ProcessDataForKinki_KinkiOTC()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1",
+                  CommentCode = "C1235",
+                  SayokijyoCode = "Sa1235"
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            commonMedicalCheck._kinkiCommentDictionary = new Dictionary<string, string>
+            {
+                {"C1234", "CommentContent_Mocked_Test_1" },
+                {"C1235", "CommentContent_Mocked_Test_2" },
+            };
+
+            commonMedicalCheck._kijyoCommentDictionary = new Dictionary<string, string>
+            {
+                {"Sa1234", "SayokijyoContent_Test_1" },
+                {"Sa1235", "SayokijyoContent_Test_2" },
+            };
+
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiTain;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(他院)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. "));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_2\r\n※SayokijyoContent_Test_2\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\n※SayokijyoContent_Test_1\r\n\r\n"));
         }
     }
 }
