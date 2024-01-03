@@ -521,6 +521,7 @@
 
         //ByomeiSetMst
         public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
+        public const string IsHokenInfInUsed = "IsHokenInfInUsed";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";

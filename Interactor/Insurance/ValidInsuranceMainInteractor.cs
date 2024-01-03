@@ -107,7 +107,8 @@ namespace Interactor.Insurance
                 validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidSinDate, string.Empty, TypeMessage.TypeMessageError));
             }
 
-            if (inputData.PtBirthday < 0)
+            // validate birthday type
+            if (CIUtil.IntToDate(inputData.PtBirthday) == new DateTime())
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidPtBirthday, string.Empty, TypeMessage.TypeMessageError));
             }
@@ -625,6 +626,12 @@ namespace Interactor.Insurance
                 int firstDay = birthDay / 100 * 100 + 1;
                 int nextMonth = CIUtil.DateTimeToInt(CIUtil.IntToDate(firstDay).AddMonths(1));
                 birthDay = nextMonth;
+
+                // validate birthday
+                if (birthDay.ToString().Length != 8 || birthDay <= 0)
+                {
+                    return true;
+                }
             }
             if (CIUtil.AgeChk(birthDay, sinDate, ageCheck)
                 && !CIUtil.AgeChk(birthDay, confirmDate, ageCheck))

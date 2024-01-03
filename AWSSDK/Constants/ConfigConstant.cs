@@ -43,6 +43,7 @@ namespace AWSSDK.Constants
         public static byte StatusTenantFailded = 2;
         public static byte StatusTenantTeminated = 7;
         public static byte StatusTenantStopped = 5;
+        public static byte StatusSuttingDown = 6;
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>
