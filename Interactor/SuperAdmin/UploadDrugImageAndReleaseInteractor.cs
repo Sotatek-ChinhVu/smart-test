@@ -136,6 +136,9 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
 
                 // return success message
                 SendMessager(new UploadDrugImageAndReleaseStatus(true, totalFile, successCount, folderName, filename, string.Empty));
+
+                // if success, set status = 9
+                status = 9;
             }
 
             // if stop progress, revert data
@@ -147,9 +150,6 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
                     response.Wait();
                 }
             }
-
-            // if success, set status = 9
-            status = 9;
         }
         catch (Exception ex)
         {
@@ -170,20 +170,23 @@ public class UploadDrugImageAndReleaseInteractor : IUploadDrugImageAndReleaseInp
             // update system change log
             systemChangeLog.UpdateStatus(status, errorMessage);
             _systemChangeLogRepository.SaveSystemChangeLog(systemChangeLog);
-        }
 
-        // send notification if success file
-        // if status = 9, send message successfully
-        if (status == 9)
-        {
-            var messenge = $"医薬品画像およびリリースノートのアップロードが完了しました。";
-            var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotiSuccess, messenge);
-            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
-        }
-        else
-        {
-            var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotifailure, errorMessage);
-            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+            // send notification if success file
+            // if status = 9, send message successfully
+            if (status == 9)
+            {
+                var messenge = $"医薬品画像およびリリースノートのアップロードが完了しました。";
+                var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotiSuccess, messenge);
+                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    var notification = _notificationRepository.CreateNotification(AWSSDK.Constants.ConfigConstant.StatusNotifailure, errorMessage);
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                }
+            }
         }
         return new UploadDrugImageAndReleaseOutputData();
     }

@@ -7,6 +7,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System.ComponentModel;
 
 namespace Infrastructure.Repositories
@@ -258,7 +259,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    byomeiName =  ptByomei.Byomei ?? (byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? string.Empty);
+                    byomeiName = ptByomei.Byomei ?? (byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd)?.Byomei ?? string.Empty);
                 }
 
                 var ptDiseaseModel = new PtDiseaseModel(
@@ -932,7 +933,7 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
             return true;
         }
-        
+
         public Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds)
         {
             var result = new Dictionary<string, string>();
@@ -949,6 +950,12 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            return result;
+        }
+
+        public bool IsHokenInfInUsed(int hpId, long ptId, int hokenPId)
+        {
+            var result = NoTrackingDataContext.PtByomeis.Any(p => p.HpId == hpId && p.PtId == ptId && p.HokenPid == hokenPId && p.IsDeleted == 0);
             return result;
         }
     }

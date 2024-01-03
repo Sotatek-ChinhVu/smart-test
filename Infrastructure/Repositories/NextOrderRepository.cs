@@ -7,6 +7,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Redis;
 using Infrastructure.Base;
+using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
@@ -72,7 +73,7 @@ namespace Infrastructure.Repositories
         public RsvkrtKarteInfModel GetKarteInf(int hpId, long ptId, long rsvkrtNo)
         {
 
-            var karteInf = NoTrackingDataContext.RsvkrtKarteInfs.FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo && k.IsDeleted == DeleteTypes.None);
+            var karteInf = NoTrackingDataContext.RsvkrtKarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo && k.IsDeleted == DeleteTypes.None).OrderByDescending(o => o.SeqNo).FirstOrDefault();
 
             var karteModel = ConvertKarteInfToModel(karteInf ?? new());
 
@@ -219,7 +220,8 @@ namespace Infrastructure.Repositories
                         UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
                         UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
-                    if (oldNextOrder?.IsDeleted == DeleteTypes.None)
+                    // if add new nextOrder or oldNextOrder is deleted, save file nextOrder and OrderRaiinListInf
+                    if (oldNextOrder == null || oldNextOrder?.IsDeleted == DeleteTypes.None)
                     {
                         SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
                         SaveNextOrderRaiinListInf(userId, odrInfs, kouiKbnMstList, raiinListKouis, raiinListItems);
@@ -474,9 +476,9 @@ namespace Infrastructure.Repositories
                 RsvkrtKarteInf? karteInfEntity = null;
                 if (oldKarteInf != null)
                 {
-                    if (oldKarteInf.IsDeleted == DeleteTypes.None)
+                    if (oldKarteInf.IsDeleted == DeleteTypes.None && karteInf.Text != oldKarteInf.Text || (oldKarteInf.RichText != null && karteInf.RichText != Encoding.UTF8.GetString(oldKarteInf.RichText)))
                     {
-                        seqNo++;
+                            seqNo++;
                         oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
                         oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldKarteInf.CreateId = userId;
@@ -486,8 +488,11 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, rsvkrtNo);
-                    TrackingDataContext.Add(karteInfEntity);
+                    if (!string.IsNullOrEmpty(karteInf.Text) && !string.IsNullOrEmpty(karteInf.RichText))
+                    {
+                        karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, rsvkrtNo);
+                        TrackingDataContext.Add(karteInfEntity);
+                    }
                 }
 
                 // add karteInfEntity to rsvkrtKarteInfEntityList
