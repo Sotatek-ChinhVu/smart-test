@@ -1,4 +1,5 @@
-﻿using CommonChecker.DB;
+﻿using Amazon.Runtime.Internal.Transform;
+using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
@@ -1260,6 +1261,385 @@ namespace CloudUnitTest.CommonChecker.Interactor
             Assert.That(errorInfo.ListLevelInfo.First().SecondItemName, Is.EqualTo(""));
             Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(0));
             Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("投与日数制限（101日）を超えています。"));
+        }
+
+        [Test]
+        public void TC_028_ProcessDataForDrugAllergy_Level_1()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 1,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 1,
+                  SeibunCd = "77777"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" } };
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(1));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※アレルギー登録薬「」と成分（Name Test 1）が同じです。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_029_ProcessDataForDrugAllergy_Level_2()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 2,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 2,
+                  SeibunCd = "77777"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) =>  $"MockedComponentName");
+
+            commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" } };
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(2));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」の成分（Name Test 1）はアレルギー登録薬「」の成分（MockedComponentName）と活性体成分（Name Test 1）が同じです。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_030_ProcessDataForDrugAllergy_Level_3()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 3,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 3,
+                  SeibunCd = "77777",
+                  AllergySeibunCd = "888888",
+                  Tag = "Tag9999"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" }, { "888888", "Component_Mocked_Test_2" } };
+            commonMedicalCheck._analogueNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1"} };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(3));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」の成分（Name Test 1）はアレルギー登録薬「」の成分（Component_Mocked_Test_2）の類似成分（Mocked_Tag_Name_1）です。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_031_ProcessDataForDrugAllergy_Level_4()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 4,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 4,
+                  SeibunCd = "66667"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 4,
+                  SeibunCd = "77777",
+                  AllergySeibunCd = "888888",
+                  Tag = "Tag9999"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(3));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(4));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」はアレルギー登録薬「」と同じ系統（Mocked_Tag_Name_1）の成分を含みます。\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// Level < 0  and Level > 4
+        /// </summary>
+        [Test]
+        public void TC_032_ProcessDataForDrugAllergy_YjCd_Equal_AllergyYjCd()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "YJ1234",
+                  Level = 4,
+                  SeibunCd = "66666"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(4));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("※アレルギー登録薬です。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_033_ProcessDataForDrugAllergy_Level_OutOfRange_0_To_4()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = -1,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 5,
+                  SeibunCd = "77777",
+                  AllergySeibunCd = "888888",
+                  Tag = "Tag9999"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.First().ListLevelInfo.First().Comment, Is.EqualTo(string.Empty));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo(string.Empty));
+        }
+
+        /// <summary>
+        /// IsNoMasterData() Is True
+        /// </summary>
+        [Test]
+        public void TC_034_ProcessDataForDrugAllergy_IsNoMasterData_IsTrue()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  Level = 1
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(true);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.ListLevelInfo.First().FirstItemName, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.ListLevelInfo.First().SecondItemName, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("※アレルギー登録薬です。"));
         }
     }
 }

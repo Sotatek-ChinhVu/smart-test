@@ -758,7 +758,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDrugAllergy
-    private List<ErrorInfoModel> ProcessDataForDrugAllergy(List<DrugAllergyResultModel> allergyInfo)
+    public List<ErrorInfoModel> ProcessDataForDrugAllergy(List<DrugAllergyResultModel> allergyInfo)
     {
         if (_realtimeOrderErrorFinder.IsNoMasterData())
         {
