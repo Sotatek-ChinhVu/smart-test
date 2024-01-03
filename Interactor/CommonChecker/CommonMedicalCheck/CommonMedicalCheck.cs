@@ -958,7 +958,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForAge
-    private List<ErrorInfoModel> ProcessDataForAge(List<AgeResultModel> ages)
+    public List<ErrorInfoModel> ProcessDataForAge(List<AgeResultModel> ages)
     {
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
         var errorGroup = (from a in ages

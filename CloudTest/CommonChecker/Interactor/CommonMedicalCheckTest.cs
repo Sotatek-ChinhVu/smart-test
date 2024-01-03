@@ -1779,5 +1779,96 @@ namespace CloudUnitTest.CommonChecker.Interactor
             Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#999999"));
             Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo(""));
         }
+
+        [Test]
+        public void TC_038_ProcessDataForAge_()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var ages = new List<AgeResultModel>
+            {
+                new AgeResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "0"
+                },
+            };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForAge(ages);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.AgeChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("投与年齢"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#d8e4bc"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#c8c8c8"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("情報なし"));
+        }
+
+        [Test]
+        public void TC_039_ProcessDataForAge_LevelInfo_IsNotNull()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var ages = new List<AgeResultModel>
+            {
+                new AgeResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "4"
+                },
+                new AgeResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj888888",
+                  WorkingMechanism = "WorkingMechanism Test 2",
+                  TenpuLevel = "4"
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForAge(ages);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.AgeChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("投与年齢"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#ff9999"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#ff5454"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("原則禁忌が望ましい"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("\r\nWorkingMechanism Test 1\r\n\r\n\r\nWorkingMechanism Test 2\r\n\r\n"));
+        }
     }
 }
