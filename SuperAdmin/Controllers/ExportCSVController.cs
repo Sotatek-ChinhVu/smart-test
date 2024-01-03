@@ -68,7 +68,7 @@ public class ExportCsvController : ControllerBase
         {
             return Ok("出力データがありません。");
         }
-        return RenderAuditLogExcel(request.ColumnView, output.AuditLogList, "AuditLogList.xlsx");
+        return RenderAuditLogExcel(request.ColumnView, output.AuditLogList, "AuditLogList.xlsx", request.TimeZone);
     }
 
     #region private function
@@ -102,7 +102,7 @@ public class ExportCsvController : ControllerBase
         return File(result, contentType, fileName);
     }
 
-    private IActionResult RenderAuditLogExcel(List<AuditLogEnum> columnView, List<AuditLogModel> auditLogList, string fileName)
+    private IActionResult RenderAuditLogExcel(List<AuditLogEnum> columnView, List<AuditLogModel> auditLogList, string fileName, int timeZone)
     {
         ContentDisposition cd = new ContentDisposition
         {
@@ -145,24 +145,7 @@ public class ExportCsvController : ControllerBase
                 switch (item.Key)
                 {
                     case AuditLogEnum.LogType:
-                        // update logic return logType
-                        string logTypeDisplay = auditLog.LogType;
-                        switch (auditLog.LogType)
-                        {
-                            case "START":
-                                logTypeDisplay = "開始";
-                                break;
-                            case "END":
-                                logTypeDisplay = "終わり";
-                                break;
-                            case "ERROR":
-                                logTypeDisplay = "エラー";
-                                break;
-                            case "INFO":
-                                logTypeDisplay = "情報";
-                                break;
-                        }
-                        workSheet.Cell(row, column).SetValue(logTypeDisplay);
+                        workSheet.Cell(row, column).SetValue(auditLog.LogType);
                         break;
                     case AuditLogEnum.UserId:
                         workSheet.Cell(row, column).SetValue(auditLog.UserId.ToString());
@@ -171,8 +154,9 @@ public class ExportCsvController : ControllerBase
                         workSheet.Cell(row, column).SetValue(auditLog.LoginKey);
                         break;
                     case AuditLogEnum.LogDate:
-                        // update logDate display
-                        workSheet.Cell(row, column).SetValue(auditLog.LogDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                        // update logDate display by timezone
+                        var logDate = auditLog.LogDate.AddHours(timeZone);
+                        workSheet.Cell(row, column).SetValue(logDate.ToString("yyyy-MM-dd HH:mm:ss"));
                         break;
                     case AuditLogEnum.EventCd:
                         workSheet.Cell(row, column).SetValue(auditLog.EventCd);
