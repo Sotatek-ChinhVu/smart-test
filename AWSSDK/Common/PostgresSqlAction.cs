@@ -88,15 +88,18 @@ namespace AWSSDK.Common
         /// <param name="password"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task PostgreSqlExcuteScript(string contentScript, string host, int port, string database, string user, string password)
+        public static async Task PostgreSqlExcuteScript(string contentScript, string host, int port, string database, string user, string password, string pathFolderUpdateDataTenant)
         {
             try
             {
                 Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
                 string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+                string sqlFilePath = Path.Combine(pathFolderUpdateDataTenant, $"{Guid.NewGuid()}.sql");
+                // Save script sql to file
+                System.IO.File.WriteAllText(sqlFilePath, contentScript.ToString(), Encoding.ASCII);
                 string batchContent =
                       $"{Set} PGPASSWORD={password}\n" +
-                    $"psql -h {host} -p {port} -U {user} -d {database} -c {contentScript} 2> /app/update-data-tenant/log-excute-sql.txt";
+                    $"psql -h {host} -p {port} -U {user} -d {database} -f {sqlFilePath} 2> /app/update-data-tenant/log-excute-sql.txt";
                 await Execute(batchContent);
             }
             catch (Exception ex)

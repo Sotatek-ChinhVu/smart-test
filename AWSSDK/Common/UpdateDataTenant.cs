@@ -34,8 +34,9 @@ namespace AWSSDK.Common
         /// <param name="subFoldersMasters"></param>
         /// <returns></returns>
         public static bool ExcuteUpdateDataTenant(string[] filePaths, string[] subFoldersMasters, string host, int port, string database,
-           string user, string password, CancellationToken cancellationToken, IMessenger? messenger, int totalFileExcute, string pathFile7z)
+           string user, string password, CancellationToken cancellationToken, IMessenger? messenger, int totalFileExcute, string pathFile7z, string pathFolderUpdateDataTenant)
         {
+            //PostgresSqlAction.PostgreSqlExcuteScript("", host, port, database, user, password, pathFolderUpdateDataTenant).Wait();
             string connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};";
             string curentFile = string.Empty;
             string curentFolder = string.Empty;
@@ -189,7 +190,7 @@ namespace AWSSDK.Common
                                                     //create temp table
                                                     try
                                                     {
-                                                        CreateTempTable(connection, transaction);
+                                                        CreateTempTable(connectionString);
                                                     }
                                                     catch (Exception e)
                                                     {
@@ -201,7 +202,7 @@ namespace AWSSDK.Common
                                                 try
                                                 {
                                                     // Import data
-                                                    string script = $"copy \"{_tempTable}\"";
+                                                    string script = $"\\copy \"{_tempTable}\"";
 
                                                     int columnIndex = 0;
                                                     if (_columnHeaders.Count == 1)
@@ -231,7 +232,7 @@ namespace AWSSDK.Common
 
                                                     try
                                                     {
-                                                        PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password).Wait();
+                                                        PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password, pathFolderUpdateDataTenant).Wait();
                                                     }
                                                     catch
                                                     {
@@ -319,7 +320,7 @@ namespace AWSSDK.Common
                                                 }
 
                                                 //then, insert
-                                                script = $"copy \"{_baseTable}\"";
+                                                script = $"\\copy \"{_baseTable}\"";
 
                                                 int columnIndex = 0;
                                                 if (_columnHeaders.Count == 1)
@@ -348,7 +349,7 @@ namespace AWSSDK.Common
                                                 script += $" from '{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, csvFile)}' CSV HEADER encoding 'UTF8' null 'null_string';"; ;
                                                 try
                                                 {
-                                                    PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password).Wait();
+                                                    PostgresSqlAction.PostgreSqlExcuteScript(script, host, port, database, user, password, pathFolderUpdateDataTenant).Wait();
                                                 }
                                                 catch
                                                 {
@@ -454,28 +455,31 @@ namespace AWSSDK.Common
             }
         }
 
-        private static void CreateTempTable(NpgsqlConnection connection, NpgsqlTransaction transaction)
+        private static void CreateTempTable(string connectionString)
         {
             if (string.IsNullOrEmpty(_tempTable))
             {
                 _tempTable = _baseTable + "_temp";
             }
+
             // Clone from base table exclude constraints
             string script = "DROP TABLE IF EXISTS \"" + _tempTable + "\"; "
                 + @"CREATE TABLE """ + _tempTable + @""" AS SELECT * FROM """ + _baseTable + @""" WHERE 1 = 2;";
             try
             {
-                //Console.WriteLine(_moduleName, this, nameof(CreateTempTable), "Create temp table: " + script);
                 // Execute the SQL command
-                using (NpgsqlCommand command = new NpgsqlCommand(script, connection, transaction))
+                using (NpgsqlConnection connection2 = new NpgsqlConnection(connectionString))
                 {
-                    command.CommandType = CommandType.Text;
-                    command.ExecuteNonQuery();
+                    connection2.Open();
+                    using (NpgsqlCommand command = new NpgsqlCommand(script, connection2))
+                    {
+                        command.CommandType = CommandType.Text;
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
             catch (Exception ex)
             {
-                //Console.WriteLine(_moduleName, this, nameof(CreateTempTable), ex, script);
                 throw;
             }
             finally

@@ -135,7 +135,7 @@ namespace Interactor.SuperAdmin
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["updating"]);
                 _messenger!.Send(new UpdateDataTenantResult(false, string.Empty, totalFileExcute, 0, "", 1));
                 var result = UpdateDataTenant.ExcuteUpdateDataTenant(listFileScriptSql, subFoldersMasters, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db,
-                     tenant.UserConnect, tenant.PasswordConnect, inputData.CancellationToken, _messenger, totalFileExcute, pathFile7z);
+                     tenant.UserConnect, tenant.PasswordConnect, inputData.CancellationToken, _messenger, totalFileExcute, pathFile7z, pathFolderUpdateDataTenant);
 
                 var statusCallBack = _messenger!.SendAsync(new StopUpdateDataTenantStatus());
                 bool isStopCalc = statusCallBack.Result.Result;
@@ -166,6 +166,11 @@ namespace Interactor.SuperAdmin
                         return new UpdateDataTenantOutputData(false, UpdateDataTenantStatus.Failed);
 
                     }
+                }
+                else
+                {
+                    // Cancel api,  update status tenant 
+                    _tenantRepository.UpdateStatusTenant(inputData.TenantId, tenant.Status);
                 }
                 return new UpdateDataTenantOutputData(true, UpdateDataTenantStatus.Successed);
             }
