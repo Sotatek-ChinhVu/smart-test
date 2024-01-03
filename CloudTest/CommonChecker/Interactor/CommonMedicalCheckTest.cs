@@ -3005,7 +3005,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         }
 
         /// <summary>
-        /// CheckingType = KinkiTain
+        /// CheckingType = KinkiOTC
         /// </summary>
         [Test]
         public void TC_059_ProcessDataForKinki_KinkiOTC()
