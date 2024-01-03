@@ -38,13 +38,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         /// <param name="kohiHoubetus">法別番号</param>
         /// <returns></returns>
-        public string? JyukyusyaNo(List<string> kohiHoubetus)
+        public string JyukyusyaNo(List<string> kohiHoubetus)
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3.JyukyusyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4.JyukyusyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.JyukyusyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.JyukyusyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.JyukyusyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.JyukyusyaNo :
                 "";
         }
 
@@ -53,13 +53,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         /// <param name="kohiHoubetus">法別番号</param>
         /// <returns></returns>
-        public string? FutansyaNo(List<string> kohiHoubetus)
+        public string FutansyaNo(List<string> kohiHoubetus)
         {
             return
-                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu ?? string.Empty) ? PtKohi1.FutansyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu ?? string.Empty) ? PtKohi2.FutansyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu ?? string.Empty) ? PtKohi3.FutansyaNo :
-                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu ?? string.Empty) ? PtKohi4.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi1Houbetu) ? PtKohi1.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi2Houbetu) ? PtKohi2.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi3Houbetu) ? PtKohi3.FutansyaNo :
+                kohiHoubetus.Contains(ReceInf.Kohi4Houbetu) ? PtKohi4.FutansyaNo :
                 "";
         }
 
@@ -110,7 +110,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string HokensyaNo
         {
-            get => ReceInf.HokensyaNo ?? string.Empty;
+            get => ReceInf.HokensyaNo;
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string ReceSbt
         {
-            get => ReceInf.ReceSbt ?? string.Empty;
+            get => ReceInf.ReceSbt;
         }
 
         /// <summary>
@@ -170,11 +170,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         {
             switch (tokkiNo)
             {
-                case 1: return CIUtil.Copy(ReceInf.Tokki1 ?? string.Empty, 1, 2);
-                case 2: return CIUtil.Copy(ReceInf.Tokki2 ?? string.Empty, 1, 2);
-                case 3: return CIUtil.Copy(ReceInf.Tokki3 ?? string.Empty, 1, 2);
-                case 4: return CIUtil.Copy(ReceInf.Tokki4 ?? string.Empty, 1, 2);
-                case 5: return CIUtil.Copy(ReceInf.Tokki5 ?? string.Empty, 1, 2);
+                case 1: return CIUtil.Copy(ReceInf.Tokki1, 1, 2);
+                case 2: return CIUtil.Copy(ReceInf.Tokki2, 1, 2);
+                case 3: return CIUtil.Copy(ReceInf.Tokki3, 1, 2);
+                case 4: return CIUtil.Copy(ReceInf.Tokki4, 1, 2);
+                case 5: return CIUtil.Copy(ReceInf.Tokki5, 1, 2);
             }
             return "";
 
@@ -194,10 +194,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
                 {
                     switch (i)
                     {
-                        case 1: return ReceInf.Kohi1Houbetu ?? string.Empty;
-                        case 2: return ReceInf.Kohi2Houbetu ?? string.Empty;
-                        case 3: return ReceInf.Kohi3Houbetu ?? string.Empty;
-                        case 4: return ReceInf.Kohi4Houbetu ?? string.Empty;
+                        case 1: return ReceInf.Kohi1Houbetu;
+                        case 2: return ReceInf.Kohi2Houbetu;
+                        case 3: return ReceInf.Kohi3Houbetu;
+                        case 4: return ReceInf.Kohi4Houbetu;
                     }
                 }
             }
@@ -233,7 +233,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string PtName
         {
-            get => PtInf.Name ?? string.Empty;
+            get => PtInf.Name;
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string PtKanaName
         {
-            get => PtInf.KanaName ?? string.Empty;
+            get => PtInf.KanaName;
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public string Honka
         {
-            get => CIUtil.Copy(ReceInf.ReceSbt ?? string.Empty, 4, 1);
+            get => CIUtil.Copy(ReceInf.ReceSbt, 4, 1);
         }
     }
 }

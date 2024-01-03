@@ -32,7 +32,7 @@ public class CoAccountingCardListFinder : RepositoryBase, ICoAccountingCardListF
 
         if (ptInf == null)
         {
-            return new();
+            return null;
         }
         return new CoPtInfModel(ptInf, sinDate);
     }

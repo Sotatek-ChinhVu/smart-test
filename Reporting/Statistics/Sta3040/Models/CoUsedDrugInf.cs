@@ -6,6 +6,12 @@ public class CoUsedDrugInf
 {
     public CoUsedDrugInf()
     {
+        SinYm = 0;
+        SuryoKaisu = 0;
+        Suryo = 0;
+        Price = 0;
+        TermVal = 0;
+        CnvVal = 0;
     }
 
     /// <summary>
@@ -24,12 +30,12 @@ public class CoUsedDrugInf
     /// <summary>
     /// 診療行為コード
     /// </summary>
-    public string ItemCd { get; set; } = string.Empty;
+    public string ItemCd { get; set; }
 
     /// <summary>
     /// 請求名称
     /// </summary>
-    public string ReceName { get; set; } = string.Empty;
+    public string ReceName { get; set; }
 
     /// <summary>
     /// 数量回数
@@ -44,7 +50,7 @@ public class CoUsedDrugInf
     /// <summary>
     /// レセ単位名称
     /// </summary>
-    public string ReceUnitName { get; set; } = string.Empty;
+    public string ReceUnitName { get; set; }
 
     /// <summary>
     /// 薬価
@@ -54,12 +60,12 @@ public class CoUsedDrugInf
     /// <summary>
     /// 区分
     /// </summary>
-    public string Kbn { get; set; } = string.Empty;
+    public string Kbn { get; set; }
 
     /// <summary>
     /// 単位
     /// </summary>
-    public string UnitName { get; set; } = string.Empty;
+    public string UnitName { get; set; }
 
     /// <summary>
     /// 単位換算値
@@ -74,5 +80,5 @@ public class CoUsedDrugInf
     /// <summary>
     /// 換算有無
     /// </summary>
-    public string ExistCnvVal { get; set; } = string.Empty;
+    public string ExistCnvVal { get; set; }
 }

@@ -25,7 +25,7 @@
         /// <summary>
         /// 診療識別
         /// </summary>
-        public string SinId { get; set; } = string.Empty;
+        public string SinId { get; set; }
 
         /// <summary>
         /// 診療識別名称
@@ -75,6 +75,11 @@
         public double Suryo { get; set; }
 
         /// <summary>
+        /// 単位名称
+        /// </summary>
+        //public string UnitName { get; set; }
+
+        /// <summary>
         /// 金額
         /// </summary>
         public int Money { get; set; }
@@ -82,7 +87,7 @@
         /// <summary>
         /// 診療行為区分
         /// </summary>
-        public string SinKouiKbn { get; set; } = string.Empty;
+        public string SinKouiKbn { get; set; }
 
         /// <summary>
         /// 診療行為区分名称
@@ -134,28 +139,28 @@
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        public string ItemCd { get; set; } = string.Empty;
+        public string ItemCd { get; set; }
 
         /// <summary>
         /// 診療行為コード（フリーコメントの場合は名称を入れる）
         /// </summary>
-        public string ItemCdCmt { get; set; } = string.Empty;
+        public string ItemCdCmt { get; set; }
 
         /// <summary>
         /// 診療行為名称
         /// </summary>
-        public string ItemName { get; set; } = string.Empty;
+        public string ItemName { get; set; }
 
         /// <summary>
         /// 診療行為カナ名称
         /// </summary>
-        public string ItemKanaName1 { get; set; } = string.Empty;
-        public string ItemKanaName2 { get; set; } = string.Empty;
-        public string ItemKanaName3 { get; set; } = string.Empty;
-        public string ItemKanaName4 { get; set; } = string.Empty;
-        public string ItemKanaName5 { get; set; } = string.Empty;
-        public string ItemKanaName6 { get; set; } = string.Empty;
-        public string ItemKanaName7 { get; set; } = string.Empty;
+        public string ItemKanaName1 { get; set; }
+        public string ItemKanaName2 { get; set; }
+        public string ItemKanaName3 { get; set; }
+        public string ItemKanaName4 { get; set; }
+        public string ItemKanaName5 { get; set; }
+        public string ItemKanaName6 { get; set; }
+        public string ItemKanaName7 { get; set; }
 
         /// <summary>
         /// 麻毒区分
@@ -180,7 +185,7 @@
         /// <summary>
         /// 診療科略称
         /// </summary>
-        public string KaSname { get; set; } = string.Empty;
+        public string KaSname { get; set; }
 
         /// <summary>
         /// 担当医ID
@@ -190,6 +195,6 @@
         /// <summary>
         /// 担当医略称
         /// </summary>
-        public string TantoSname { get; set; } = string.Empty;
+        public string TantoSname { get; set; }
     }
 }

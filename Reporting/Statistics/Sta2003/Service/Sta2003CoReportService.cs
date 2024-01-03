@@ -29,7 +29,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
     private List<CoJihiSbtMstModel> _jihiSbtMsts;
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
-    private readonly List<PutColumn> putCurColumns = new();
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
 
     private int _currentPage;
     private string _rowCountFieldName = string.Empty;
@@ -37,7 +37,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
     private bool _hasNextPage;
     private CoFileType? coFileType;
 
-    private readonly List<PutColumn> csvTotalColumns = new()
+    private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分"),
             new PutColumn("TotalCaption", "合計行"),
@@ -66,7 +66,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
     #region Constant
     private int maxRow = 43;
 
-    private readonly List<PutColumn> putColumns = new()
+    private List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("NyukinYmFmt", "診療年月", false, "NyukinYm"),
             new PutColumn("KaId", "診療科ID", false),
@@ -120,7 +120,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
         public void AddValue(CoSta2003PrintData printData)
         {
             Count++;
-            if (PtCount == null) PtCount = new();
+            if (PtCount == null) PtCount = new List<string>();
             if (printData.PtNum.AsString() != "" && !PtCount.Contains(printData.PtNum))
             {
                 PtCount.Add(printData.PtNum);
@@ -162,7 +162,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
         public void Clear()
         {
             Count = 0;
-            PtCount = new();
+            PtCount = null;
             RaiinCount = 0;
             RaiinDayCount = 0;
             NewTensu = 0;
@@ -178,7 +178,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
             MisyuGaku = 0;
             PostNyukinGaku = 0;
             PostAdjustFutan = 0;
-            JihiSbtFutans = new();
+            JihiSbtFutans = null;
         }
     }
 
@@ -286,7 +286,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta2003PrintData).GetProperty(colName)?.GetValue(printData);
+                    var value = typeof(CoSta2003PrintData).GetProperty(colName).GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
                     AddListData(ref data, colName, valueInput);
 
@@ -298,8 +298,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                 //自費種別毎の金額
                 for (int i = 0; i <= _jihiSbtMsts.Count - 1; i++)
                 {
-                    // check null printData.JihiSbtFutans
-                    if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any()) break;
+                    if (printData.JihiSbtFutans == null) break;
 
                     var jihiSbtMst = _jihiSbtMsts[i];
                     AddListData(ref data, string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), printData.JihiSbtFutans[i]);
@@ -371,7 +370,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
                             _printConf.SortOrder1 == 2 ? s.PtNum.ToString().PadLeft(10, '0') : "0")
                         .ThenBy(s => s.NyukinDate == s.SinDate ? "0" : "1" + s.SinDate.ToString())
                         .ThenBy(s => s.PtNum)
-                        .ToList() ?? new();
+                        .ToList();
             #endregion
 
             var nyukinYms = _syunoInfs?.GroupBy(s => s.NyukinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
@@ -492,6 +491,8 @@ public class Sta2003CoReportService : ISta2003CoReportService
 
             printData.NyukinYm = nyukinYm;
 
+            //todo anh.vu3
+            //if (prePtNum != rowDatas.First().PtNum || outputFileType == CoFileType.Csv)
             if (prePtNum != rowDatas.First().PtNum || coFileType == CoFileType.Csv)
             {
                 printData.PtNum = isTotalRow ? "" : rowDatas.First().PtNum.ToString();
@@ -693,6 +694,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
         }
 
         //データ
+        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {
@@ -706,7 +708,7 @@ public class Sta2003CoReportService : ISta2003CoReportService
 
             foreach (var column in putCurColumns)
             {
-                var value = typeof(CoSta2003PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                var value = typeof(CoSta2003PrintData).GetProperty(column.CsvColName).GetValue(csvData);
                 if (csvData.RowType == RowType.Total && !column.IsTotal)
                 {
                     value = string.Empty;

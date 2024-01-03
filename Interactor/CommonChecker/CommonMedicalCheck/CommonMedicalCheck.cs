@@ -27,24 +27,24 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
     public bool IsOrderChecking { get; set; } = true;
 
-    private int _hpID;
-    private long _ptID;
-    private int _sinday;
-    private Dictionary<string, string> _itemNameDictionary;
-    private Dictionary<string, string> _componentNameDictionary;
-    private Dictionary<string, string> _analogueNameDictionary;
-    private Dictionary<string, string> _drvalrgyNameDictionary;
-    private Dictionary<string, string> _foodNameDictionary;
-    private Dictionary<string, string> _diseaseNameDictionary;
-    private Dictionary<string, string> _kinkiCommentDictionary;
-    private Dictionary<string, string> _kijyoCommentDictionary;
-    private Dictionary<string, string> _oTCItemNameDictionary;
-    private Dictionary<string, string> _oTCComponentInfoDictionary;
-    private Dictionary<string, string> _supplementComponentInfoDictionary;
-    private Dictionary<string, string> _suppleItemNameDictionary;
-    private Dictionary<string, string> _usageDosageDictionary;
-    private Dictionary<string, string> _itemNameByItemCodeDictionary;
-    private readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
+    public int _hpID;
+    public long _ptID;
+    public int _sinday;
+    public Dictionary<string, string> _itemNameDictionary;
+    public Dictionary<string, string> _componentNameDictionary;
+    public Dictionary<string, string> _analogueNameDictionary;
+    public Dictionary<string, string> _drvalrgyNameDictionary;
+    public Dictionary<string, string> _foodNameDictionary;
+    public Dictionary<string, string> _diseaseNameDictionary;
+    public Dictionary<string, string> _kinkiCommentDictionary;
+    public Dictionary<string, string> _kijyoCommentDictionary;
+    public Dictionary<string, string> _oTCItemNameDictionary;
+    public Dictionary<string, string> _oTCComponentInfoDictionary;
+    public Dictionary<string, string> _supplementComponentInfoDictionary;
+    public Dictionary<string, string> _suppleItemNameDictionary;
+    public Dictionary<string, string> _usageDosageDictionary;
+    public Dictionary<string, string> _itemNameByItemCodeDictionary;
+    public readonly IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
 
     private readonly double _currentHeight = 0;
     private readonly double _currentWeight = 0;
@@ -618,7 +618,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listErrorInfoModel;
     }
 
-    private void GetItemCdError(List<UnitCheckInfoModel> listErrorInfo)
+    public void GetItemCdError(List<UnitCheckInfoModel> listErrorInfo)
     {
         List<string> itemNameList = new();
         List<string> componentNameList = new();
@@ -857,7 +857,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDrugAllergyWithNoMasterData
-    private List<ErrorInfoModel> ProcessDataForDrugAllergyWithNoMasterData(List<DrugAllergyResultModel> allergyInfo)
+    public List<ErrorInfoModel> ProcessDataForDrugAllergyWithNoMasterData(List<DrugAllergyResultModel> allergyInfo)
     {
         List<ErrorInfoModel> result = new();
         allergyInfo.ForEach((a) =>
@@ -1314,7 +1314,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForKinkiUser
-    private List<ErrorInfoModel> ProcessDataForKinkiUser(List<KinkiResultModel> kinkiErrorInfo)
+    public List<ErrorInfoModel> ProcessDataForKinkiUser(List<KinkiResultModel> kinkiErrorInfo)
     {
         List<ErrorInfoModel> result = new();
         kinkiErrorInfo.ForEach((k) =>
@@ -1352,7 +1352,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDayLimit
-    private List<ErrorInfoModel> ProcessDataForDayLimit(List<DayLimitResultModel> dayLimitError)
+    public List<ErrorInfoModel> ProcessDataForDayLimit(List<DayLimitResultModel> dayLimitError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DayLimitResultModel dayLimit in dayLimitError)

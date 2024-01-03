@@ -60,7 +60,7 @@ namespace Reporting.Statistics.Sta2020.DB
 
             var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId);
             var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(x => x.HpId == hpId);
-            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && s.ItemCd != null && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
             var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             if (!printConf.IsTester)
@@ -135,7 +135,7 @@ namespace Reporting.Statistics.Sta2020.DB
                     new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } equals
                     new { sinDetail.HpId, sinDetail.PtId, sinDetail.SinYm, sinDetail.RpNo, sinDetail.SeqNo }
                 join tenMst in tenMsts on
-                    new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd != null && sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
+                    new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
                     new { tenMst.HpId, tenMst.ItemCd }
                 join ptInf in ptInfs on
                     new { sinCount.HpId, sinCount.PtId } equals
@@ -172,16 +172,16 @@ namespace Reporting.Statistics.Sta2020.DB
                             sinRp.SinId.ToString(),
                     Suryo = sinDetail.Suryo * sinCount.Count,
                     //UnitName = sinDetail.UnitName,
-                    ItemCd = ((sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
+                    ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
                     ItemCdCmt =
                         (
-                            (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                            sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                             tenMst.MasterSbt == "C" ? sinDetail.ItemName :
                             sinDetail.ItemCd
                         ),
                     SrcItemCd =
                         (
-                            (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                            sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                             sinDetail.ItemCd == ItemCdConst.CommentFree ? sinDetail.ItemName :
                             sinDetail.ItemCd
                         ),
@@ -282,13 +282,13 @@ namespace Reporting.Statistics.Sta2020.DB
                         wrkItemCd.ItemCd != wrkItemCd.SanteiItemCd &&
                         wrkItemCd.SanteiItemCd != ItemCdConst.NoSantei)
                     {
-                        printConf.ItemCds[i] = wrkItemCd.SanteiItemCd ?? string.Empty;
+                        printConf.ItemCds[i] = wrkItemCd.SanteiItemCd;
                     }
                 }
             }
             #region コメントマスター(CO)の名称取得
-            List<string> itemCmts = new();
-            foreach (var itemCd in printConf.ItemCds?.Where(i => i.StartsWith("CO")).ToList() ?? new())
+            var itemCmts = new List<string>();
+            foreach (var itemCd in printConf.ItemCds.Where(i => i.StartsWith("CO")))
             {
                 var sinDate = printConf.StartSinYm >= 0 ? printConf.StartSinYm * 100 + 1 : printConf.StartSinDate;
 
@@ -305,8 +305,8 @@ namespace Reporting.Statistics.Sta2020.DB
                     itemCmts.Add(itemName);
                 }
             }
-            printConf.ItemCds?.AddRange(itemCmts);
-            printConf.ItemCds?.RemoveAll(i => i.StartsWith("CO"));
+            printConf.ItemCds.AddRange(itemCmts);
+            printConf.ItemCds.RemoveAll(i => i.StartsWith("CO"));
             #endregion
             if (printConf.ItemCds?.Count >= 1 && printConf.SearchWord.AsString() != "")
             {
@@ -362,6 +362,7 @@ namespace Reporting.Statistics.Sta2020.DB
                         SinDate = data.SinDate,
                         SinId = data.SinId,
                         Suryo = data.Suryo,
+                        //UnitName = data.sinDetail.UnitName,
                         Money =
                             data.KizamiId == 1 ? (int)Math.Round(data.TenDetail * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
                             (int)Math.Round(data.Ten * data.Suryo * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
@@ -538,9 +539,9 @@ namespace Reporting.Statistics.Sta2020.DB
                     SrcItemCd = joinOdr.ItemCd == string.Empty || joinOdr.ItemCd == null ? joinOdr.ItemName : joinOdr.ItemCd,
                     ItemName = joinOdr.ItemName,
                     KaId = raiinInf.KaId,
-                    KaSname = kaMstj.KaSname ?? string.Empty,
+                    KaSname = kaMstj.KaSname,
                     TantoId = raiinInf.TantoId,
-                    TantoSname = tantoMst.Sname ?? string.Empty,
+                    TantoSname = tantoMst.Sname,
                     InoutKbn = joinOdr.InoutKbn,
                 }
             );
@@ -771,13 +772,13 @@ namespace Reporting.Statistics.Sta2020.DB
                     ItemCd = data.ItemCd,
                     ItemCdCmt = data.ItemCdCmt,
                     ItemName = data.ItemName,
-                    ItemKanaName1 = data.ItemKanaName1 ?? string.Empty,
-                    ItemKanaName2 = data.ItemKanaName2 ?? string.Empty,
-                    ItemKanaName3 = data.ItemKanaName3 ?? string.Empty,
-                    ItemKanaName4 = data.ItemKanaName4 ?? string.Empty,
-                    ItemKanaName5 = data.ItemKanaName5 ?? string.Empty,
-                    ItemKanaName6 = data.ItemKanaName6 ?? string.Empty,
-                    ItemKanaName7 = data.ItemKanaName7 ?? string.Empty,
+                    ItemKanaName1 = data.ItemKanaName1,
+                    ItemKanaName2 = data.ItemKanaName2,
+                    ItemKanaName3 = data.ItemKanaName3,
+                    ItemKanaName4 = data.ItemKanaName4,
+                    ItemKanaName5 = data.ItemKanaName5,
+                    ItemKanaName6 = data.ItemKanaName6,
+                    ItemKanaName7 = data.ItemKanaName7,
                     KaId = data.KaId,
                     KaSname = data.KaSname,
                     TantoId = data.TantoId,

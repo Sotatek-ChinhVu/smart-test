@@ -21,7 +21,6 @@ namespace Reporting.Byomei.Model
         {
             PtHokenInfModel = new();
             ListByomei = new();
-            PtInf = new();
         }
 
         public int FromDay { get; set; }

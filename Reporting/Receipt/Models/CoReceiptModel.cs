@@ -7,18 +7,35 @@ namespace Reporting.Receipt.Models
 {
     public class CoReceiptModel
     {
-        private readonly ReceInfModel _receInfModel;
-        private readonly PtInfModel _ptInfModel;
-        private readonly HokenDataModel _hokenDataModel;
-        private readonly List<KohiDataModel> _kohiDataModels;
-        private readonly List<KohiDataModel> _kohiDataModelsAll;
-        private readonly List<SyobyoDataModel> _syobyoDataModels;
-        private readonly List<SinMeiDataModel> _sinMeiDataModels;
-        private readonly PtKyuseiModel _ptKyuseiModel;
-        private readonly RousaiReceiptModel _rousaiReceiptModel;
-        private readonly SyobyoKeikaModel _syobyoKeikaModel;
-        private readonly HpInfModel _hpInfModel;
-        private readonly CoReceiptTensuModel _coReceiptTensuModel;
+        private ReceInfModel _receInfModel;
+        private PtInfModel _ptInfModel;
+        private HokenDataModel _hokenDataModel;
+        private List<KohiDataModel> _kohiDataModels;
+        private List<KohiDataModel> _kohiDataModelsAll;
+        private List<SyobyoDataModel> _syobyoDataModels;
+        private List<SinMeiDataModel> _sinMeiDataModels;
+        //private List<SyojyoSyokiModel> _syojyoSyokiModels;
+        private PtKyuseiModel _ptKyuseiModel;
+        private RousaiReceiptModel _rousaiReceiptModel;
+        private SyobyoKeikaModel _syobyoKeikaModel;
+        //private RecedenRirekiInfModel _recedenRirekiInfModel;
+        private HpInfModel _hpInfModel;
+
+        private List<int> _tuuinDays;
+
+        private CoReceiptTensuModel _coReceiptTensuModel;
+
+        private int _receiptNo;
+        private int _futanKbn;
+
+        private int _recordYm;
+        private int _sinDate;
+        private int _kensaDate;
+        private int _zenkaiKensaDate;
+
+        private int _afterSyokei;
+        private int _afterSyokeiGaku_I;
+        private int _afterSyokeiGaku_RO;
 
         /// <summary>
         /// レセプト情報
@@ -56,7 +73,11 @@ namespace Reporting.Receipt.Models
         /// <summary>
         /// レセプト番号
         /// </summary>
-        public int ReceiptNo { get; set; }
+        public int ReceiptNo
+        {
+            get { return _receiptNo; }
+            set { _receiptNo = value; }
+        }
         /// <summary>
         /// レセプト種別
         /// </summary>
@@ -152,7 +173,11 @@ namespace Reporting.Receipt.Models
         /// <summary>
         /// 負担区分
         /// </summary>
-        public int FutanKbn { get; set; }
+        public int FutanKbn
+        {
+            get { return _futanKbn; }
+            set { _futanKbn = value; }
+        }
         /// <summary>
         /// 特記事項
         /// </summary>
@@ -164,7 +189,7 @@ namespace Reporting.Receipt.Models
         {
             get
             {
-                List<string> ret = new();
+                List<string> ret = new List<string>();
                 int index = 0;
 
                 for (int i = 1; i <= 5; i++)
@@ -276,7 +301,7 @@ namespace Reporting.Receipt.Models
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
                 if (_syobyoKeikaModel != null)
                 {
                     ret = _syobyoKeikaModel.Keika;
@@ -342,7 +367,7 @@ namespace Reporting.Receipt.Models
 
         public int KohiCount
         {
-            get { return _kohiDataModels.Count; }
+            get { return _kohiDataModels.Count(); }
         }
         /// <summary>
         /// KOHI_DATAから法別番号を取得する
@@ -352,7 +377,7 @@ namespace Reporting.Receipt.Models
         public string KohiHoubetu(int index)
         {
             string ret = "";
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].Houbetu;
             }
@@ -362,7 +387,7 @@ namespace Reporting.Receipt.Models
         public string KohiHoubetuAll(int index)
         {
             string ret = "";
-            if (index >= 1 && index <= _kohiDataModelsAll.Count)
+            if (index >= 1 && index <= _kohiDataModelsAll.Count())
             {
                 ret = _kohiDataModelsAll[index - 1].Houbetu;
             }
@@ -556,7 +581,7 @@ namespace Reporting.Receipt.Models
         {
             string ret = "";
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].FutansyaNo;
             }
@@ -573,7 +598,7 @@ namespace Reporting.Receipt.Models
         {
             string ret = "";
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].JyukyusyaNo;
             }
@@ -589,7 +614,7 @@ namespace Reporting.Receipt.Models
         {
             string ret = "";
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].TokusyuNo;
             }
@@ -605,7 +630,7 @@ namespace Reporting.Receipt.Models
         {
             int ret = 0;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].Rate;
             }
@@ -666,10 +691,26 @@ namespace Reporting.Receipt.Models
         {
             int? ret = null;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].JituNissu;
             }
+
+            //switch (index)
+            //{
+            //    case 1:
+            //        ret = _receInfModel.Kohi1Nissu;
+            //        break;
+            //    case 2:
+            //        ret = _receInfModel.Kohi2Nissu;
+            //        break;
+            //    case 3:
+            //        ret = _receInfModel.Kohi3Nissu;
+            //        break;
+            //    case 4:
+            //        ret = _receInfModel.Kohi4Nissu;
+            //        break;
+            //}
             return ret;
         }
         /// <summary>
@@ -695,10 +736,26 @@ namespace Reporting.Receipt.Models
         {
             int? ret = null;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].ReceTen;
             }
+
+            //switch (index)
+            //{
+            //    case 1:
+            //        ret = _receInfModel.Kohi1ReceTensu;
+            //        break;
+            //    case 2:
+            //        ret = _receInfModel.Kohi2ReceTensu;
+            //        break;
+            //    case 3:
+            //        ret = _receInfModel.Kohi3ReceTensu;
+            //        break;
+            //    case 4:
+            //        ret = _receInfModel.Kohi4ReceTensu;
+            //        break;
+            //}
             return ret;
         }
 
@@ -711,7 +768,7 @@ namespace Reporting.Receipt.Models
         {
             int? ret = null;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].Tensu;
             }
@@ -759,10 +816,25 @@ namespace Reporting.Receipt.Models
         public int? KohiReceFutan(int index)
         {
             int? ret = null;
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].ReceFutan;
             }
+            //switch (index)
+            //{
+            //    case 1:
+            //        ret = _receInfModel.Kohi1ReceFutan;
+            //        break;
+            //    case 2:
+            //        ret = _receInfModel.Kohi2ReceFutan;
+            //        break;
+            //    case 3:
+            //        ret = _receInfModel.Kohi3ReceFutan;
+            //        break;
+            //    case 4:
+            //        ret = _receInfModel.Kohi4ReceFutan;
+            //        break;
+            //}
             return ret;
         }
         public int? KohiReceFutanReceInf(int index)
@@ -793,10 +865,25 @@ namespace Reporting.Receipt.Models
         public int? KohiKyufu(int index)
         {
             int? ret = null;
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].ReceKyufu;
             }
+            //switch (index)
+            //{
+            //    case 1:
+            //        ret = _receInfModel.Kohi1ReceKyufu;
+            //        break;
+            //    case 2:
+            //        ret = _receInfModel.Kohi2ReceKyufu;
+            //        break;
+            //    case 3:
+            //        ret = _receInfModel.Kohi3ReceKyufu;
+            //        break;
+            //    case 4:
+            //        ret = _receInfModel.Kohi4ReceKyufu;
+            //        break;
+            //}
             return ret;
         }
         /// <summary>
@@ -943,7 +1030,7 @@ namespace Reporting.Receipt.Models
         /// </summary>
         public int SinMeiCount
         {
-            get { return _sinMeiDataModels.Count; }
+            get { return _sinMeiDataModels.Count(); }
         }
 
         /// <summary>
@@ -964,7 +1051,7 @@ namespace Reporting.Receipt.Models
         {
             int ret = 0;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].HokenId;
             }
@@ -976,7 +1063,7 @@ namespace Reporting.Receipt.Models
         {
             int ret = 0;
 
-            if (index >= 1 && index <= _kohiDataModelsAll.Count)
+            if (index >= 1 && index <= _kohiDataModelsAll.Count())
             {
                 ret = _kohiDataModelsAll[index - 1].HokenId;
             }
@@ -988,7 +1075,7 @@ namespace Reporting.Receipt.Models
         {
             int ret = 0;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].HokenNo;
             }
@@ -1000,7 +1087,7 @@ namespace Reporting.Receipt.Models
         {
             int ret = 0;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].HokenEdaNo;
             }
@@ -1012,7 +1099,7 @@ namespace Reporting.Receipt.Models
         {
             int ret = 0;
 
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].PrefNo;
             }
@@ -1153,27 +1240,51 @@ namespace Reporting.Receipt.Models
         /// <summary>
         /// アフターケア小計額
         /// </summary>
-        public int AfterSyokei { get; set; }
+        public int AfterSyokei
+        {
+            get => _afterSyokei;
+            set { _afterSyokei = value; }
+        }
         /// <summary>
         /// アフターケア小計額イ
         /// </summary>
-        public int AfterSyokeiGaku_I { get; set; }
+        public int AfterSyokeiGaku_I
+        {
+            get => _afterSyokeiGaku_I;
+            set { _afterSyokeiGaku_I = value; }
+        }
         /// <summary>
         /// アフターケア小計額ロ
         /// </summary>
-        public int AfterSyokeiGaku_RO { get; set; }
+        public int AfterSyokeiGaku_RO
+        {
+            get => _afterSyokeiGaku_RO;
+            set { _afterSyokeiGaku_RO = value; }
+        }
         /// <summary>
         /// 診療日（アフターケア用）
         /// </summary>
-        public int SinDate { get; set; }
+        public int SinDate
+        {
+            get => _sinDate;
+            set { _sinDate = value; }
+        }
         /// <summary>
         /// 検査日（アフターケア用）
         /// </summary>
-        public int KensaDate { get; set; }
+        public int KensaDate
+        {
+            get => _kensaDate;
+            set { _kensaDate = value; }
+        }
         /// <summary>
         /// 前回検査日（アフターケア用）
         /// </summary>
-        public int ZenkaiKensaDate { get; set; }
+        public int ZenkaiKensaDate
+        {
+            get => _zenkaiKensaDate;
+            set { _zenkaiKensaDate = value; }
+        }
         /// <summary>
         /// 傷病コード
         /// </summary>
@@ -1269,7 +1380,11 @@ namespace Reporting.Receipt.Models
         /// <summary>
         /// 通院日（自賠責用）
         /// </summary>
-        public List<int> TuuinDays { get; set; } = new();
+        public List<int> TuuinDays
+        {
+            get => _tuuinDays;
+            set { _tuuinDays = value; }
+        }
         /// <summary>
         /// 自賠保険会社名
         /// </summary>
@@ -1377,7 +1492,7 @@ namespace Reporting.Receipt.Models
         public int? KohiFutan(int index)
         {
             int? ret = null;
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].Futan;
             }
@@ -1412,7 +1527,7 @@ namespace Reporting.Receipt.Models
         public int? KohiFutan10en(int index)
         {
             int? ret = null;
-            if (index >= 1 && index <= _kohiDataModels.Count)
+            if (index >= 1 && index <= _kohiDataModels.Count())
             {
                 ret = _kohiDataModels[index - 1].Futan10en;
             }
@@ -1450,6 +1565,8 @@ namespace Reporting.Receipt.Models
         {
             string ret = "";
 
+            List<KohiDataModel> _kohiDatas = _kohiDataModels.FindAll(p => p.Houbetu == "99");
+
             if (_kohiDataModels.Any())
             {
                 ret = CIUtil.Copy(_kohiDataModels.First().TokusyuNo, 1, 3);
@@ -1467,7 +1584,22 @@ namespace Reporting.Receipt.Models
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
+
+                //if (_receInfModel != null &&
+                //    _receInfModel.KogakuOverKbn > 0 &&
+                //    new int[] { 4, 5 }.Contains(_receInfModel.KogakuKbn) &&
+                //    HospitalInfo.Instance.PrefCD == 25)
+                //{
+                //    if (_receInfModel.KogakuKbn == 4)
+                //    {
+                //        ret = "低所得Ⅰ";
+                //    }
+                //    else if (_receInfModel.KogakuKbn == 5)
+                //    {
+                //        ret = "低所得Ⅱ";
+                //    }
+                //}
 
                 return ret;
             }

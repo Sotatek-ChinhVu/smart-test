@@ -50,13 +50,6 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             _extralData = new();
             _visibleFieldData = new();
             _listTextData = new();
-            hpInf = new();
-            hokensyaNos = new();
-            receInfs = new();
-            currentHokensyaNo = "";
-            printHokensyaNos = new();
-            hokensyaNames = new();
-            kaMsts = new();
         }
         #endregion
 
@@ -158,7 +151,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 fieldDataPerPage.Add("hokensyaNo", currentHokensyaNo);
                 _setFieldData.Add(pageIndex, fieldDataPerPage);
                 //診療科
-                SetFieldData("kaName", kaMsts[0]?.KaName ?? string.Empty);
+                SetFieldData("kaName", kaMsts[0].KaName);
                 return 1;
             }
             #endregion
@@ -178,7 +171,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                     for (short rowNo = 0; rowNo < maxRow; rowNo++)
                     {
-                        wrkReces = new();
+                        wrkReces = null;
                         switch (rowNo)
                         {
                             //国保
@@ -195,7 +188,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                             case 9: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                             case 10: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                         }
-                        if (wrkReces.Count == 0) continue;
+                        if (wrkReces == null) continue;
 
                         countData wrkData = new countData();
                         //件数
@@ -244,11 +237,12 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         listDataPerPage.Add(new("kohiTensu", 0, rowNo, wrkData.Tensu.ToString()));
                         listDataPerPage.Add(new("kohiFutan", 0, rowNo, wrkData.Futan.ToString()));
                     }
-                    _hasNextPage = !curReceInfs.FirstOrDefault()?.IsPrefIn ?? false;
+                    _hasNextPage = !curReceInfs.FirstOrDefault().IsPrefIn;
                 }
 
                 _listTextData.Add(pageIndex, listDataPerPage);
                 //県外保険者は2ページ目も印刷する
+
 
                 return 1;
             }
@@ -283,7 +277,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             kaMsts = _kokhoFinder.GetKaMst(hpId);
             receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kokho, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.NoSum);
             //保険者番号の指定がある場合は絞り込み
-            var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
+            var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
                 receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
             //保険者番号リストを取得（県内→県外）
             hokensyaNos = wrkReceInfs.Where(r => r.IsPrefIn).GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
