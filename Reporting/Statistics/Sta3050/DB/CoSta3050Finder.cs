@@ -408,10 +408,6 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         {
             joinQuery = joinQuery.Where(s => printConf.IsAdopteds.Contains(s.IsAdopted));
         }
-
-        // get joinQuery data into list to easier query
-        var resultQuery = joinQuery.ToList();
-
         //検索項目＆検索ワード
         if (printConf.ItemCds?.Count >= 1 && printConf.SearchWord.AsString() != "")
         {
@@ -426,18 +422,18 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 if (printConf.SearchOpt == 0)
                 {
                     //or条件
-                    resultQuery = resultQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.Any(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.Any(key => r.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    resultQuery = resultQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.All(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key) || searchWords.All(key => r.ItemName.Contains(key)));
                 }
             }
             else
             {
                 //and条件
-                var ptIdList = resultQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                var ptIdList = joinQuery.AsEnumerable().Select(r => new { r.PtId, r.SrcItemCd })
                                         .GroupBy(r => r.PtId)
                                         .Select(r => new
                                         {
@@ -450,12 +446,12 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 if (printConf.SearchOpt == 0)
                 {
                     //or条件
-                    resultQuery = resultQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.Any(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.Any(key => r.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    resultQuery = resultQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.All(key => r.ItemName.Contains(key))).ToList();
+                    joinQuery = joinQuery.Where(r => (ptIdList.Any(key => r.PtId == key) && printConf.ItemCds.Any(key => r.SrcItemCd == key)) || searchWords.All(key => r.ItemName.Contains(key)));
                 }
             }
         }
@@ -465,12 +461,12 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             if (printConf.ItemSearchOpt == 0)
             {
                 //or条件
-                resultQuery = resultQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key)).ToList();
+                joinQuery = joinQuery.Where(r => printConf.ItemCds.Any(key => r.SrcItemCd == key));
             }
             else
             {
                 //and条件
-                var ptIdList = resultQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                var ptIdList = joinQuery.AsEnumerable().Select(r => new { r.PtId, r.SrcItemCd })
                                             .GroupBy(r => r.PtId)
                                             .Select(r => new
                                             {
@@ -480,7 +476,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                                             .Where(r => printConf.ItemCds.All(key => r.ItemCdList.Contains(key)))
                                             .Select(r => r.ptId).ToList();
                 //該当患者が多いとき、SQL作成でオーバーフローが発生していたため、Any→Containsに修正
-                resultQuery = resultQuery.Where(r => ptIdList.Contains(r.PtId) && printConf.ItemCds.Any(key => r.SrcItemCd == key)).ToList();
+                joinQuery = joinQuery.Where(r => ptIdList.Contains(r.PtId) && printConf.ItemCds.Any(key => r.SrcItemCd == key));
             }
         }
         //検索ワード
@@ -494,17 +490,17 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             if (printConf.SearchOpt == 0)
             {
                 //or条件
-                resultQuery = resultQuery.Where(r => searchWords.Any(key => r.ItemName.Contains(key))).ToList();
+                joinQuery = joinQuery.Where(r => searchWords.Any(key => r.ItemName.Contains(key)));
             }
             else
             {
                 //and条件
-                resultQuery = resultQuery.Where(r => searchWords.All(key => r.ItemName.Contains(key))).ToList();
+                joinQuery = joinQuery.Where(r => searchWords.All(key => r.ItemName.Contains(key)));
             }
         }
         #endregion
 
-        var retData = resultQuery.Select(
+        var retData = joinQuery.AsEnumerable().Select(
             data =>
                 new CoSinKouiModel()
                 {
