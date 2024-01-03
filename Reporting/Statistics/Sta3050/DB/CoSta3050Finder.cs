@@ -382,34 +382,36 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             }
         );
 
-        var resultQuery = joinQuery.ToList();
-
         #region 条件指定
         //診療行為区分
         if (printConf.SinKouiKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => printConf.SinKouiKbns.Contains(s.SinKouiKbn)).ToList();
+            joinQuery = joinQuery.Where(s => printConf.SinKouiKbns.Contains(s.SinKouiKbn));
         }
         //麻毒区分
         if (printConf.MadokuKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => s.DrugKbn == 0 || printConf.MadokuKbns.Contains(s.MadokuKbn)).ToList();
+            joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.MadokuKbns.Contains(s.MadokuKbn));
         }
         //向精神薬区分
         if (printConf.KouseisinKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => s.DrugKbn == 0 || printConf.KouseisinKbns.Contains(s.KouseisinKbn)).ToList();
+            joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.KouseisinKbns.Contains(s.KouseisinKbn));
         }
         //後発医薬品区分
         if (printConf.KohatuKbns?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => s.DrugKbn == 0 || printConf.KohatuKbns.Contains(s.KohatuKbn)).ToList();
+            joinQuery = joinQuery.Where(s => s.DrugKbn == 0 || printConf.KohatuKbns.Contains(s.KohatuKbn));
         }
         //採用区分
         if (printConf.IsAdopteds?.Count >= 1)
         {
-            resultQuery = resultQuery.Where(s => printConf.IsAdopteds.Contains(s.IsAdopted)).ToList();
+            joinQuery = joinQuery.Where(s => printConf.IsAdopteds.Contains(s.IsAdopted));
         }
+
+        // get joinQuery data into list to easier query
+        var resultQuery = joinQuery.ToList();
+
         //検索項目＆検索ワード
         if (printConf.ItemCds?.Count >= 1 && printConf.SearchWord.AsString() != "")
         {
