@@ -13,11 +13,6 @@ public class CoPtByomeiModel
         PtByomei = ptByomei;
     }
 
-    public CoPtByomeiModel()
-    {
-        PtByomei = new();
-    }
-
     /// <summary>
     /// 患者ID
     /// </summary>

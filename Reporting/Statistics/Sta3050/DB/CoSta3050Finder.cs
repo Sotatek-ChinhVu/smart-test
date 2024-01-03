@@ -69,7 +69,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         #region 条件指定（診療識別）
         if (printConf.SinIds?.Count >= 1)
         {
-            List<int> sinIds = new();
+            List<int> sinIds = new List<int>();
             foreach (var sinId in printConf.SinIds)
             {
                 switch (sinId)
@@ -112,14 +112,14 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                     wrkItemCd.ItemCd != wrkItemCd.SanteiItemCd &&
                     wrkItemCd.SanteiItemCd != ItemCdConst.NoSantei)
                 {
-                    printConf.ItemCds[i] = wrkItemCd.SanteiItemCd ?? string.Empty;
+                    printConf.ItemCds[i] = wrkItemCd.SanteiItemCd;
                 }
             }
         }
         #endregion
         #region コメントマスター(CO)の名称取得
         var itemCmts = new List<string>();
-        foreach (var itemCd in (printConf.ItemCds?.Where(i => i.StartsWith("CO")).ToList() ?? new()))
+        foreach (var itemCd in printConf.ItemCds.Where(i => i.StartsWith("CO")))
         {
             var sinDate = printConf.StartSinYm >= 0 ? printConf.StartSinYm * 100 + 1 : printConf.StartSinDate;
 
@@ -136,11 +136,11 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 itemCmts.Add(itemName);
             }
         }
-        printConf.ItemCds?.AddRange(itemCmts);
-        printConf.ItemCds?.RemoveAll(i => i.StartsWith("CO"));
+        printConf.ItemCds.AddRange(itemCmts);
+        printConf.ItemCds.RemoveAll(i => i.StartsWith("CO"));
         #endregion
 
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.ItemCd != null && s.IsDeleted == DeleteStatus.None && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.IsDeleted == DeleteStatus.None && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR");
         #region 速度向上のため sinKouiDetails を先に絞り込む
         if (printConf.ItemCds?.Count >= 1 && printConf.ItemSearchOpt == 0)
         {
@@ -163,14 +163,14 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                         sinKouiDetails = sinKouiDetails.Where(s =>
                             filterCds.Any(key => s.ItemCd == key ||
                             filterCds.Any(key => s.OdrItemCd == key)) ||
-                            searchWords.Any(key => s.ItemName != null && s.ItemName.Contains(key))
+                            searchWords.Any(key => s.ItemName.Contains(key))
                         );
                     }
                     else
                     {
                         sinKouiDetails = sinKouiDetails.Where(s =>
                             filterCds.Any(key => s.ItemCd == key) ||
-                            searchWords.Any(key => s.ItemName != null && s.ItemName.Contains(key))
+                            searchWords.Any(key => s.ItemName.Contains(key))
                         );
                     }
                 }
@@ -182,14 +182,14 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                         sinKouiDetails = sinKouiDetails.Where(s =>
                             filterCds.Any(key => s.ItemCd == key ||
                             filterCds.Any(key => s.OdrItemCd == key)) ||
-                            searchWords.All(key => s.ItemName != null && s.ItemName.Contains(key))
+                            searchWords.All(key => s.ItemName.Contains(key))
                         );
                     }
                     else
                     {
                         sinKouiDetails = sinKouiDetails.Where(s =>
                             filterCds.Any(key => s.ItemCd == key) ||
-                            searchWords.All(key => s.ItemName != null && s.ItemName.Contains(key))
+                            searchWords.All(key => s.ItemName.Contains(key))
                         );
                     }
                 }
@@ -280,7 +280,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } equals
                 new { sinDetail.HpId, sinDetail.PtId, sinDetail.SinYm, sinDetail.RpNo, sinDetail.SeqNo }
             join tenMst in tenMsts on
-                new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd != null && sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
+                new { sinDetail.HpId, ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd) } equals
                 new { tenMst.HpId, tenMst.ItemCd }
             join ptInf in ptInfs on
                 new { sinCount.HpId, sinCount.PtId } equals
@@ -324,16 +324,16 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 UnitName = sinDetail.UnitName,
                 Count = sinCount.Count,
                 TotalSuryo = sinDetail.Suryo * sinCount.Count,
-                ItemCd = ((sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
+                ItemCd = (sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd : sinDetail.ItemCd),
                 ItemCdCmt =
                     (
-                        (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                        sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                         tenMst.MasterSbt == "C" ? sinDetail.ItemName :
                         sinDetail.ItemCd
                     ),
                 SrcItemCd =
                     (
-                        (sinDetail.OdrItemCd ?? string.Empty).StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
+                        sinDetail.OdrItemCd.StartsWith("Z") && sinDetail.ItemSbt == 0 && sinDetail.RecId == "TO" ? sinDetail.OdrItemCd :
                         sinDetail.ItemCd == ItemCdConst.CommentFree ? sinDetail.ItemName :
                         sinDetail.ItemCd
                     ),
@@ -433,7 +433,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             else
             {
                 //and条件
-                var ptIdList = joinQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                var ptIdList = joinQuery.AsEnumerable().Select(r => new { r.PtId, r.SrcItemCd })
                                         .GroupBy(r => r.PtId)
                                         .Select(r => new
                                         {
@@ -466,7 +466,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             else
             {
                 //and条件
-                var ptIdList = joinQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                var ptIdList = joinQuery.AsEnumerable().Select(r => new { r.PtId, r.SrcItemCd })
                                             .GroupBy(r => r.PtId)
                                             .Select(r => new
                                             {

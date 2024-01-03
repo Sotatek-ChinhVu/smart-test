@@ -124,7 +124,7 @@ namespace Reporting.Statistics.Sta3020.DB
                         KensaItemCd = kensaMstJoin.KensaItemCd == null ? string.Empty : kensaMstJoin.KensaItemCd,
                         CenterItemCd1 = kensaMstJoin.CenterItemCd1 == null ? string.Empty : kensaMstJoin.CenterItemCd1,
                         CenterItemCd2 = kensaMstJoin.CenterItemCd2 == null ? string.Empty : kensaMstJoin.CenterItemCd2,
-                        MaxEndDate = maxTenMstJoin.MaxEndDate
+                        MaxEndDate = maxTenMstJoin.MaxEndDate == null ? 0 : maxTenMstJoin.MaxEndDate
                     }
                 ).AsEnumerable();
 

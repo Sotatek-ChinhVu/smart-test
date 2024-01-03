@@ -148,7 +148,7 @@ namespace Reporting.Statistics.Sta3001.DB
                     new { maxIpnName.HpId, maxIpnName.IpnNameCd, maxIpnName.StartDate }
                 select new
                 {
-                    HpId = ipnNameMst.HpId == 0 ? 0 : ipnNameMst.HpId,
+                    HpId = ipnNameMst.HpId == null ? 0 : ipnNameMst.HpId,
                     IpnNameCd = ipnNameMst.IpnNameCd == null ? string.Empty : ipnNameMst.IpnNameCd,
                     IpnName = ipnNameMst.IpnName == null ? string.Empty : ipnNameMst.IpnName
                 }

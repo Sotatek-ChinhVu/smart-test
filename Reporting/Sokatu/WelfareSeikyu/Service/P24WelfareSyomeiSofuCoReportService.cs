@@ -23,10 +23,10 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP24WelfareReceInfModel> receInfs = new();
-        private CoHpInfModel hpInf = new();
-        private List<string> cityCodes = new();
-        private string currentCityCode = "";
+        private List<CoP24WelfareReceInfModel> receInfs;
+        private CoHpInfModel hpInf;
+        private List<string> cityCodes;
+        private string currentCityCode;
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;

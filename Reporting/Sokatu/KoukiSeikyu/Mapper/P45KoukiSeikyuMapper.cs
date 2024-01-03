@@ -8,6 +8,8 @@ public class P45KoukiSeikyuMapper : CommonReportingRequest
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<int, List<ListTextObject>> _listTextData;
     private readonly Dictionary<string, string> _extralData;
+    private readonly string _formFileNameP1;
+    private readonly string _formFileNameP2;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly Dictionary<int, ReportConfigModel> _reportConfigPerPage;
     private readonly Dictionary<string, string> _fileName;

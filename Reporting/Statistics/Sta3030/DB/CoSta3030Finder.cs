@@ -318,28 +318,28 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
         if (printConf.ByomeiWords != string.Empty)
         {
             //スペース区切りでキーワードを分解
-            var values = printConf?.ByomeiWords?.Replace("　", " ").Split(' ');
+            string[] values = printConf?.ByomeiWords?.Replace("　", " ").Split(' ');
             List<string> searchWords = new List<string>();
             if (values != null)
             {
                 searchWords.AddRange(values);
             }
 
-            if (printConf?.ByomeiWordOpt == 0)
+            if (printConf.ByomeiWordOpt == 0)
             {
                 //or条件
-                ptByomeis = ptByomeis.Where(p => searchWords.Any(key => p.Byomei != null && p.Byomei.Contains(key)));
+                ptByomeis = ptByomeis.Where(p => searchWords.Any(key => p.Byomei.Contains(key)));
             }
             else
             {
                 //and条件
-                ptByomeis = ptByomeis.Where(p => searchWords.All(key => p.Byomei != null && p.Byomei.Contains(key)));
+                ptByomeis = ptByomeis.Where(p => searchWords.All(key => p.Byomei.Contains(key)));
             }
         }
         #endregion
 
         #region 検索病名
-        if (printConf?.ByomeiCds?.Count > 0 || printConf?.FreeByomeis?.Count > 0)
+        if (printConf.ByomeiCds?.Count > 0 || printConf.FreeByomeis?.Count > 0)
         {
             const string freeByomeiCd = "0000999";
             var notFreeByomeiCds = printConf.ByomeiCds;
@@ -350,8 +350,8 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
             }
 
             //未コード化病名の病名を加える
-            List<string> searchByomeis = printConf?.ByomeiCds ?? new();
-            if (printConf?.FreeByomeis?.Count > 0)
+            List<string> searchByomeis = printConf.ByomeiCds;
+            if (printConf.FreeByomeis?.Count > 0)
             {
                 if (searchByomeis?.Count > 0)
                 {
@@ -371,7 +371,7 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
                 var curByomeis = ptByomeis;
 
                 //病名と修飾語の組み合わせを分解
-                var searchCds = searchByomei.Replace("　", " ").Split(' ');
+                string[]? searchCds = searchByomei?.Replace("　", " ").Split(' ');
                 foreach (string searchCd in searchCds)
                 {
                     if (!notFreeByomeiCds.Exists(b => b.Contains(searchCd)))
@@ -404,7 +404,7 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
                     wrkByomeis = wrkByomeis == null ? curByomeis : wrkByomeis.Union(curByomeis);
                 }
 
-                if (printConf?.ByomeiCdOpt == 1)
+                if (printConf.ByomeiCdOpt == 1)
                 {
                     //指定されたすべての病名を持つ患者                        
                     allByomeiPts = (
@@ -424,7 +424,7 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
                 }
             }
 
-            if (printConf?.ByomeiCdOpt == 1)
+            if (printConf.ByomeiCdOpt == 1)
             {
                 //and条件
                 //指定された病名のうち、すべての病名を持つ患者の病名
@@ -449,6 +449,6 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
 
         #endregion
 
-        return ptByomeis!;
+        return ptByomeis;
     }
 }

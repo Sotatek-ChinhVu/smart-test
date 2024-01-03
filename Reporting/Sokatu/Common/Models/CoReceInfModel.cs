@@ -33,25 +33,13 @@ namespace Reporting.Sokatu.Common.Models
             this.prefNo = prefNo;
         }
 
-        public CoReceInfModel()
-        {
-            ReceInf = new();
-            PtHokenInf = new();
-            PtKohi1 = new();
-            PtKohi2 = new();
-            PtKohi3 = new();
-            PtKohi4 = new();
-            changeMainHokensyaNo = new();
-            this.prefNo = new();
-        }
-
         #region レセプト種別
         /// <summary>
         /// 11x2: 本人
         /// </summary>
         public bool IsNrMine
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "2";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "2";
         }
 
         /// <summary>
@@ -59,7 +47,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsNrPreSchool
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "4";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "4";
         }
 
         /// <summary>
@@ -67,7 +55,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsNrFamily
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "6";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "6";
         }
 
         /// <summary>
@@ -75,7 +63,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsNrElderIppan
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "8";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "8";
         }
 
         /// <summary>
@@ -83,7 +71,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsNrElderUpper
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "0";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1" && ReceInf.ReceSbt.Substring(3, 1) == "0";
         }
 
         /// <summary>
@@ -91,7 +79,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsNrAll
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "1";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "1";
         }
 
         /// <summary>
@@ -99,7 +87,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsKohiOnly
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "2" && ReceInf.ReceSbt.Substring(3, 1) == "2";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "2" && ReceInf.ReceSbt.Substring(3, 1) == "2";
         }
 
         /// <summary>
@@ -107,7 +95,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsKoukiIppan
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "8";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "8";
         }
 
         /// <summary>
@@ -115,7 +103,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsKoukiUpper
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "0";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "3" && ReceInf.ReceSbt.Substring(3, 1) == "0";
         }
 
         /// <summary>
@@ -123,7 +111,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsKoukiAll
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "3";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "3";
         }
 
         /// <summary>
@@ -131,7 +119,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsRetMine
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "2";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "2";
         }
 
         /// <summary>
@@ -139,7 +127,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsRetPreSchool
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "4";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "4";
         }
 
         /// <summary>
@@ -147,7 +135,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsRetFamily
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "6";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "6";
         }
 
         /// <summary>
@@ -155,7 +143,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsRetElderIppan
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "8";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "8";
         }
 
         /// <summary>
@@ -163,7 +151,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsRetElderUpper
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "0";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4" && ReceInf.ReceSbt.Substring(3, 1) == "0";
         }
 
         /// <summary>
@@ -171,7 +159,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsRetAll
         {
-            get => ReceInf.ReceSbt?.Substring(1, 1) == "4";
+            get => ReceInf.ReceSbt.Substring(1, 1) == "4";
         }
 
         /// <summary>
@@ -179,7 +167,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsHeiyo
         {
-            get => ReceInf.ReceSbt?.Substring(2, 1) != "1";
+            get => ReceInf.ReceSbt.Substring(2, 1) != "1";
         }
         #endregion
 
@@ -220,10 +208,10 @@ namespace Reporting.Sokatu.Common.Models
             get
             {
                 string myPrefNo = string.Format("{0:D2}", prefNo);
-                string kohi1PrefNo = CIUtil.Copy(PtKohi1?.FutansyaNo?.AsString() ?? string.Empty, 3, 2);
-                string kohi2PrefNo = CIUtil.Copy(PtKohi2?.FutansyaNo?.AsString() ?? string.Empty, 3, 2);
-                string kohi3PrefNo = CIUtil.Copy(PtKohi3?.FutansyaNo?.AsString() ?? string.Empty, 3, 2);
-                string kohi4PrefNo = CIUtil.Copy(PtKohi4?.FutansyaNo?.AsString() ?? string.Empty, 3, 2);
+                string kohi1PrefNo = CIUtil.Copy(PtKohi1?.FutansyaNo.AsString(), 3, 2);
+                string kohi2PrefNo = CIUtil.Copy(PtKohi2?.FutansyaNo.AsString(), 3, 2);
+                string kohi3PrefNo = CIUtil.Copy(PtKohi3?.FutansyaNo.AsString(), 3, 2);
+                string kohi4PrefNo = CIUtil.Copy(PtKohi4?.FutansyaNo.AsString(), 3, 2);
 
                 return
                     (ReceInf.Kohi1ReceKisai == 1 && kohi1PrefNo != myPrefNo) ||
@@ -245,18 +233,18 @@ namespace Reporting.Sokatu.Common.Models
         public bool TokkiContains(string tokkiCd)
         {
             return
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 1, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 3, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 5, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 7, 2) == tokkiCd ||
-                CIUtil.Copy(ReceInf.Tokki ?? string.Empty, 9, 2) == tokkiCd;
+                CIUtil.Copy(ReceInf.Tokki, 1, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 3, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 5, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 7, 2) == tokkiCd ||
+                CIUtil.Copy(ReceInf.Tokki, 9, 2) == tokkiCd;
         }
 
         /// <summary>
         /// 公１法別
         /// 
         /// </summary>
-        public string? Kohi1Houbetu
+        public string Kohi1Houbetu
         {
             get => ReceInf.Kohi1Houbetu;
         }
@@ -265,7 +253,7 @@ namespace Reporting.Sokatu.Common.Models
         /// 公２法別
         /// 
         /// </summary>
-        public string? Kohi2Houbetu
+        public string Kohi2Houbetu
         {
             get => ReceInf.Kohi2Houbetu;
         }
@@ -274,7 +262,7 @@ namespace Reporting.Sokatu.Common.Models
         /// 公３法別
         /// 
         /// </summary>
-        public string? Kohi3Houbetu
+        public string Kohi3Houbetu
         {
             get => ReceInf.Kohi3Houbetu;
         }
@@ -283,7 +271,7 @@ namespace Reporting.Sokatu.Common.Models
         /// 公４法別
         /// 
         /// </summary>
-        public string? Kohi4Houbetu
+        public string Kohi4Houbetu
         {
             get => ReceInf.Kohi4Houbetu;
         }
@@ -541,7 +529,7 @@ namespace Reporting.Sokatu.Common.Models
         /// 法別番号
         /// 
         /// </summary>        
-        public string? Houbetu
+        public string Houbetu
         {
             get => ReceInf.Houbetu;
         }
@@ -553,7 +541,7 @@ namespace Reporting.Sokatu.Common.Models
         {
             get
             {
-                string hokensyaNo = ReceInf.HokensyaNo ?? string.Empty.AsString();
+                string hokensyaNo = ReceInf.HokensyaNo.AsString();
                 return
                     ReceInf.HokenKbn == HokenKbn.Syaho ? hokensyaNo : mainHokensyaNo;
             }
@@ -566,7 +554,7 @@ namespace Reporting.Sokatu.Common.Models
         {
             get
             {
-                string hokensyaNo = ReceInf.HokensyaNo ?? string.Empty.AsString();
+                string hokensyaNo = ReceInf.HokensyaNo.AsString();
 
                 //広域連合
                 if (hokensyaNo.Length == 8)
@@ -674,7 +662,7 @@ namespace Reporting.Sokatu.Common.Models
                 prefIn.Add(string.Format("{0:D2}", prefNo));
                 prefIn.Add(string.Format("{0:D2}", prefNo + 50));
 
-                return prefIn.Contains(ReceInf.HokensyaNo?.Substring(ReceInf.HokensyaNo.Length - 6, 2) ?? string.Empty);
+                return prefIn.Contains(ReceInf.HokensyaNo.Substring(ReceInf.HokensyaNo.Length - 6, 2));
             }
         }
 
@@ -685,7 +673,7 @@ namespace Reporting.Sokatu.Common.Models
         {
             get
             {
-                int wrkPrefNo = CIUtil.StrToIntDef(ReceInf.HokensyaNo?.Substring(ReceInf.HokensyaNo.Length - 6, 2) ?? string.Empty, 0);
+                int wrkPrefNo = CIUtil.StrToIntDef(ReceInf.HokensyaNo.Substring(ReceInf.HokensyaNo.Length - 6, 2), 0);
                 if (wrkPrefNo > 50)
                 {
                     wrkPrefNo -= 50;
@@ -700,7 +688,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public bool IsKumiai
         {
-            get => ReceInf.HokenKbn == 2 && ReceInf.HokensyaNo?.Substring(ReceInf.HokensyaNo.Length - 6, 6).Substring(2, 1) == "3";
+            get => ReceInf.HokenKbn == 2 && ReceInf.HokensyaNo.Substring(ReceInf.HokensyaNo.Length - 6, 6).Substring(2, 1) == "3";
         }
 
         /// <summary>
@@ -708,7 +696,7 @@ namespace Reporting.Sokatu.Common.Models
         /// </summary>
         public int ReceCnt
         {
-            get => ReceInf.ReceSbt?.Substring(2, 1).AsInteger() ?? 0;
+            get => ReceInf.ReceSbt.Substring(2, 1).AsInteger();
         }
 
         /// <summary>

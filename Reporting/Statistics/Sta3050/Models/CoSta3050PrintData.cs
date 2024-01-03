@@ -19,7 +19,7 @@ public class CoSta3050PrintData
     /// <summary>
     /// 合計行のキャプション
     /// </summary>
-    public string TotalCaption { get; set; } = string.Empty;
+    public string TotalCaption { get; set; }
 
     /// <summary>
     /// 診療日
@@ -29,7 +29,7 @@ public class CoSta3050PrintData
     /// <summary>
     /// 診療日 (yyyy/MM/dd)
     /// </summary>
-    public string SinDateS { get; set; } = string.Empty;
+    public string SinDateS { get; set; }
 
     /// <summary>
     /// 患者番号
@@ -39,12 +39,12 @@ public class CoSta3050PrintData
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string PtKanaName { get; set; } = string.Empty;
+    public string PtKanaName { get; set; }
 
     /// <summary>
     /// 氏名
     /// </summary>
-    public string PtName { get; set; } = string.Empty;
+    public string PtName { get; set; }
 
     /// <summary>
     /// 性別コード
@@ -121,7 +121,7 @@ public class CoSta3050PrintData
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname { get; set; } = string.Empty;
+    public string KaSname { get; set; }
 
     /// <summary>
     /// 担当医ID
@@ -131,62 +131,62 @@ public class CoSta3050PrintData
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname { get; set; } = string.Empty;
+    public string TantoSname { get; set; }
 
     /// <summary>
     /// 診療識別
     /// </summary>
-    public string SinId { get; set; } = string.Empty;
+    public string SinId { get; set; }
 
     /// <summary>
     /// 診療行為区分
     /// </summary>
-    public string SinKouiKbn { get; set; } = string.Empty;
+    public string SinKouiKbn { get; set; }
 
     /// <summary>
     /// 診療行為コード
     /// </summary>
-    public string ItemCd { get; set; } = string.Empty;
+    public string ItemCd { get; set; }
 
     /// <summary>
     /// 診療行為名称
     /// </summary>
-    public string ItemName { get; set; } = string.Empty;
+    public string ItemName { get; set; }
 
     /// <summary>
     /// 単価
     /// </summary>
-    public string Ten { get; set; } = string.Empty;
+    public string Ten { get; set; }
 
     /// <summary>
     /// 単価(単位)
     /// </summary>
-    public string TenUnit { get; set; } = string.Empty;
+    public string TenUnit { get; set; }
 
     /// <summary>
     /// 数量
     /// </summary>
-    public string Suryo { get; set; } = string.Empty;
+    public string Suryo { get; set; }
 
     /// <summary>
     /// 単位名称
     /// </summary>
-    public string UnitName { get; set; } = string.Empty;
+    public string UnitName { get; set; }
 
     /// <summary>
     /// 回数
     /// </summary>
-    public string Count { get; set; } = string.Empty;
+    public string Count { get; set; }
 
     /// <summary>
     /// 合計数量
     /// </summary>
-    public string TotalSuryo { get; set; } = string.Empty;
+    public string TotalSuryo { get; set; }
 
     /// <summary>
     /// 金額
     /// </summary>
-    public string Money { get; set; } = string.Empty;
+    public string Money { get; set; }
 
     /// <summary>
     /// 初再診コード
@@ -218,7 +218,7 @@ public class CoSta3050PrintData
     /// <summary>
     /// 保険種別
     /// </summary>
-    public string HokenSbt { get; set; } = string.Empty;
+    public string HokenSbt { get; set; }
 
     /// <summary>
     /// 院内院外区分
@@ -345,20 +345,20 @@ public class CoSta3050PrintData
     /// <summary>
     /// 公１法別
     /// </summary>
-    public string Kohi1Houbetu { get; set; } = string.Empty;
+    public string Kohi1Houbetu { get; set; }
 
     /// <summary>
     /// 公２法別
     /// </summary>
-    public string Kohi2Houbetu { get; set; } = string.Empty;
+    public string Kohi2Houbetu { get; set; }
 
     /// <summary>
     /// 公３法別
     /// </summary>
-    public string Kohi3Houbetu { get; set; } = string.Empty;
+    public string Kohi3Houbetu { get; set; }
 
     /// <summary>
     /// 公４法別
     /// </summary>
-    public string Kohi4Houbetu { get; set; } = string.Empty;
+    public string Kohi4Houbetu { get; set; }
 }

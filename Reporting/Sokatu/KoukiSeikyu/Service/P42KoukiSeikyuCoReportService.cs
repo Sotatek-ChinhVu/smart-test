@@ -67,13 +67,6 @@ public class P42KoukiSeikyuCoReportService : IP42KoukiSeikyuCoReportService
         _visibleFieldData = new();
         _visibleAtPrint = new();
         _reportConfigPerPage = new();
-        hpInf = new();
-        receInfs = new();
-        hokensyaNames = new();
-        hokensyaNos = new();
-        kohiHoubetuMsts = new();
-        printHokensyaNos = new();
-        currentHokensyaNo = "";
     }
     #endregion
 
@@ -172,13 +165,13 @@ public class P42KoukiSeikyuCoReportService : IP42KoukiSeikyuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = new();
+                    List<CoReceInfModel> wrkReces = null;
                     switch (rowNo)
                     {
                         case 0: wrkReces = curReceInfs.Where(r => r.IsKoukiIppan).ToList(); break;
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKoukiUpper).ToList(); break;
                     }
-                    if (wrkReces.Count == 0) continue;
+                    if (wrkReces == null) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -289,7 +282,7 @@ public class P42KoukiSeikyuCoReportService : IP42KoukiSeikyuCoReportService
         hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
         receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kouki, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号の指定がある場合は絞り込み
-        var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
+        var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
         //保険者番号リストを取得（県外→県内）
         hokensyaNos = wrkReceInfs.Where(r => !r.IsPrefIn).GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();

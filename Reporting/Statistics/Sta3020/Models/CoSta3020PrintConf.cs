@@ -10,11 +10,6 @@ namespace Reporting.Statistics.Sta3020.Models
             StdDate = CIUtil.DateTimeToInt(DateTime.Today);
         }
 
-        public CoSta3020PrintConf()
-        {
-            StdDate = CIUtil.DateTimeToInt(DateTime.Today);
-        }
-
         /// <summary>
         /// STA_MENU.MENU_ID
         /// </summary>
@@ -23,12 +18,12 @@ namespace Reporting.Statistics.Sta3020.Models
         /// <summary>
         /// 帳票タイトル
         /// </summary>
-        public string ReportName { get; set; } = string.Empty;
+        public string ReportName { get; set; }
 
         /// <summary>
         /// フォームファイル名
         /// </summary>
-        public string FormFileName { get; set; } = string.Empty;
+        public string FormFileName { get; set; }
 
         /// <summary>
         /// 基準日
@@ -117,7 +112,7 @@ namespace Reporting.Statistics.Sta3020.Models
         /// <summary>
         /// 検索ワード
         /// </summary>
-        public string SearchWord { get; set; } = string.Empty;
+        public string SearchWord { get; set; }
 
         /// <summary>
         /// 検索ワードリスト
@@ -154,6 +149,6 @@ namespace Reporting.Statistics.Sta3020.Models
         /// <summary>
         /// 検索項目
         /// </summary>
-        public List<string> ItemCds { get; set; } = new();
+        public List<string> ItemCds { get; set; }
     }
 }

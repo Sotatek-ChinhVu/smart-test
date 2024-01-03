@@ -5,6 +5,7 @@ using Infrastructure.Interfaces;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3071.Models;
+using System.Collections.Generic;
 
 namespace Reporting.Statistics.Sta3071.DB;
 
@@ -93,12 +94,12 @@ public class CoSta3071Finder : RepositoryBase, ICoSta3071Finder
                     JikanKbn = data.raiinInf.JikanKbn,
                     MinSinDate = data.sinkanInf.MinSinDate,
                     KaId = data.raiinInf.KaId,
-                    KaSname = data.kaMstj?.KaSname ?? string.Empty,
+                    KaSname = data.kaMstj?.KaSname,
                     TantoId = data.raiinInf.TantoId,
-                    TantoSname = data.tantoMst?.Sname ?? string.Empty,
+                    TantoSname = data.tantoMst?.Sname,
                     HokenKbn = data.kaikeiInf.HokenKbn,
                     HokenSbtCd = data.kaikeiInf.HokenSbtCd,
-                    Houbetu = data.kaikeiInf.Houbetu ?? string.Empty
+                    Houbetu = data.kaikeiInf.Houbetu
                 }
         ).ToList();
 

@@ -154,7 +154,7 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
     /// </summary>
     /// <param name="listSinryoSbts">診療識別リスト</param>
     /// <returns></returns>
-    private Expression<Func<OdrInf, bool>>? CreateOdrKouiKbnExpression(List<int> listSinryoSbts)
+    private Expression<Func<OdrInf, bool>> CreateOdrKouiKbnExpression(List<int> listSinryoSbts)
     {
         var param = Expression.Parameter(typeof(OdrInf));
         Expression? expression = null;
@@ -262,10 +262,7 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
                     break;
             }
 
-            if (expressionOdrInf != null)
-            {
-                expression = expression == null ? expressionOdrInf : Expression.Or(expression, expressionOdrInf);
-            }
+            expression = expression == null ? expressionOdrInf : Expression.Or(expression, expressionOdrInf);
         }
 
         return expression != null

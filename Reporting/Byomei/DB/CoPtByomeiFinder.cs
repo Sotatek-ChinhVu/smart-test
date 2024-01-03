@@ -24,7 +24,7 @@ public class CoPtByomeiFinder : RepositoryBase, ICoPtByomeiFinder
                  p.HpId == hpId &&
                  p.PtId == ptId &&
                  p.IsDelete == DeleteStatus.None
-            ).FirstOrDefault() ?? new();
+            ).FirstOrDefault();
     }
 
     public List<PtByomei> GetPtByomei(int hpId, long ptId, int fromDay, int toDay,
