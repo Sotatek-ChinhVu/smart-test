@@ -1641,5 +1641,143 @@ namespace CloudUnitTest.CommonChecker.Interactor
             Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(1));
             Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("※アレルギー登録薬です。"));
         }
+
+        [Test]
+        public void TC_035_ProcessDataForFoodAllergy_Test_AllergyInfo_IsEmpty_List()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<FoodAllergyResultModel>();
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForFoodAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+
+        /// <summary>
+        /// 1 <= level && level <= 3
+        /// </summary>
+        [Test]
+        public void TC_036_ProcessDataForFoodAllergy()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<FoodAllergyResultModel>
+            {
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 1 ",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "2"
+                },
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 2",
+                  WorkingMechanism = "WorkingMechanism Test 2",
+                  TenpuLevel = "2"
+                }
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Mocked_YjCd_Name_1" } };
+
+            commonMedicalCheck._foodNameDictionary = new Dictionary<string, string> { { "9988", "Mocked_AlrgyKbn_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForFoodAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.FoodAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Mocked_YjCd_Name_1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("Mocked_AlrgyKbn_Name_1"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Mocked_YjCd_Name_1 × Mocked_AlrgyKbn_Name_1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("Attention Comment Test 1 \r\nWorkingMechanism Test 1\r\n\r\nAttention Comment Test 2\r\nWorkingMechanism Test 2\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// Test level = 0 & level = 4
+        /// </summary>
+        [Test]
+        public void TC_037_ProcessDataForFoodAllergy()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<FoodAllergyResultModel>
+            {
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 1 ",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "0"
+                },
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 2",
+                  WorkingMechanism = "WorkingMechanism Test 2",
+                  TenpuLevel = "4"
+                }
+            };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForFoodAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.FoodAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(2));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#FFFFFF"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#999999"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo(""));
+        }
     }
 }

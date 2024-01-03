@@ -889,7 +889,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForFoodAllergy
-    private List<ErrorInfoModel> ProcessDataForFoodAllergy(List<FoodAllergyResultModel> allergyInfo)
+    public List<ErrorInfoModel> ProcessDataForFoodAllergy(List<FoodAllergyResultModel> allergyInfo)
     {
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
