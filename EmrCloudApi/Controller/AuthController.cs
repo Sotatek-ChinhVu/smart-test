@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
         var user = getUserOutput.User;
         if (user is null)
         {
-            var errorResult = GetErrorResult("The loginId is invalid.");
+            var errorResult = GetErrorResult("The loginId or password is invalid.");
             return BadRequest(errorResult);
         }
 

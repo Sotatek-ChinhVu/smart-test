@@ -815,10 +815,23 @@ namespace Infrastructure.Repositories
             return ToModel(user ?? new());
         }
 
+        public void UpdateHashPassword()
+        {
+            var users = TrackingDataContext.UserMsts.ToList();
+            foreach (var user in users)
+            {
+                byte[] salt = GenerateSalt();
+                byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(user.LoginPass ?? string.Empty), salt);
+                user.HashPassword = hashPassword;
+            }
+            TrackingDataContext.SaveChanges();
+        }
 
         private byte[] CreateHash(byte[] password, byte[] salt)
         {
             using var argon2 = new Argon2id(password);
+            var preper = _configuration["Pepper"] ?? string.Empty;
+            salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
             argon2.Salt = salt;
             argon2.DegreeOfParallelism = 8;
             argon2.Iterations = 4;
@@ -836,9 +849,10 @@ namespace Infrastructure.Repositories
 
         public bool VerifyHash(byte[] password, byte[] salt, byte[] hash)
         {
-            var temp = CreateHash(password, salt);
-            return Encoding.UTF8.GetString(temp) == Encoding.UTF8.GetString(hash);
+            var inputHash = CreateHash(password, salt);
+            return Encoding.UTF8.GetString(inputHash) == Encoding.UTF8.GetString(hash);
         }
+
 
     }
 }

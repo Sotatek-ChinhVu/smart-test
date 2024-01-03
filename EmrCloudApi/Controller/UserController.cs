@@ -17,6 +17,7 @@ using UseCase.User.GetListJobMst;
 using UseCase.User.GetListUserByCurrentUser;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.SaveListUserMst;
+using UseCase.User.UpdateHashPassword;
 using UseCase.User.UpsertList;
 using UseCase.User.UserInfo;
 
@@ -203,6 +204,19 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetUserInfoResponse>>(presenter.Result);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("UpdateHashPassword")]
+    public ActionResult<Response<UpdateHashPasswordResponse>> UpdateHashPassword()
+    {
+        var input = new UpdateHashPasswordInputData();
+        var output = _bus.Handle(input);
+        var presenter = new UpdateHashPasswordPresenter();
+
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateHashPasswordResponse>>(presenter.Result);
     }
 
 }

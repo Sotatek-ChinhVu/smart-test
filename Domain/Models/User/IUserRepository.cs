@@ -79,5 +79,7 @@ namespace Domain.Models.User
         UserMstModel GetUserInfo(int hpId, int userId);
 
         List<UserMstModel> GetUsersByPermission(int hpId, int managerKbn);
+
+        void UpdateHashPassword();
     }
 }
