@@ -45,11 +45,12 @@ public class AuthController : ControllerBase
             return BadRequest(errorResult);
         }
 
-        //if (req.Password != user.LoginPass)
-        //{
-        //    var errorResult = GetErrorResult("The password is invalid.");
-        //    return BadRequest(errorResult);
-        //}
+        ///Check user and pasword in repository
+        ///if (req.Password != user.LoginPass)
+        ///{
+        ///    var errorResult = GetErrorResult("The password is invalid.");
+        ///    return BadRequest(errorResult);
+        ///}
 
         // The claims that will be persisted in the tokens.
         var claims = new Claim[]
