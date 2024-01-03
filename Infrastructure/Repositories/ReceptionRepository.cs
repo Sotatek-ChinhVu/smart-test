@@ -1145,7 +1145,7 @@ namespace Infrastructure.Repositories
             var isDoctor = NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
             var doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
             // if have only 1 doctor in user list
-            if (doctors.Count == 2)
+            if (doctors.Count == 1)
             {
                 return doctors[1].Id;
             }
