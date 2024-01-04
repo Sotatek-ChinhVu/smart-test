@@ -758,7 +758,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDrugAllergy
-    private List<ErrorInfoModel> ProcessDataForDrugAllergy(List<DrugAllergyResultModel> allergyInfo)
+    public List<ErrorInfoModel> ProcessDataForDrugAllergy(List<DrugAllergyResultModel> allergyInfo)
     {
         if (_realtimeOrderErrorFinder.IsNoMasterData())
         {
@@ -889,7 +889,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForFoodAllergy
-    private List<ErrorInfoModel> ProcessDataForFoodAllergy(List<FoodAllergyResultModel> allergyInfo)
+    public List<ErrorInfoModel> ProcessDataForFoodAllergy(List<FoodAllergyResultModel> allergyInfo)
     {
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
@@ -958,7 +958,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForAge
-    private List<ErrorInfoModel> ProcessDataForAge(List<AgeResultModel> ages)
+    public List<ErrorInfoModel> ProcessDataForAge(List<AgeResultModel> ages)
     {
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
         var errorGroup = (from a in ages
@@ -1025,7 +1025,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDisease
-    private List<ErrorInfoModel> ProcessDataForDisease(List<DiseaseResultModel> diseaseInfo)
+    public List<ErrorInfoModel> ProcessDataForDisease(List<DiseaseResultModel> diseaseInfo)
     {
         string DiseaseTypeName(int DiseaseType)
         {
@@ -1107,7 +1107,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForKinki
-    private List<ErrorInfoModel> ProcessDataForKinki(RealtimeCheckerType checkingType, List<KinkiResultModel> kinkiErrorInfo)
+    public List<ErrorInfoModel> ProcessDataForKinki(RealtimeCheckerType checkingType, List<KinkiResultModel> kinkiErrorInfo)
     {
         string GetCheckingTitle()
         {
@@ -1381,7 +1381,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDosage
-    private List<ErrorInfoModel> ProcessDataForDosage(List<DosageResultModel> listDosageError)
+    public List<ErrorInfoModel> ProcessDataForDosage(List<DosageResultModel> listDosageError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DosageResultModel dosage in listDosageError)
@@ -1453,7 +1453,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDuplication
-    private List<ErrorInfoModel> ProcessDataForDuplication(List<DuplicationResultModel> listDuplicationError)
+    public List<ErrorInfoModel> ProcessDataForDuplication(List<DuplicationResultModel> listDuplicationError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DuplicationResultModel duplicationError in listDuplicationError)
@@ -1533,7 +1533,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region RemoveDuplicatedErrorInfo
-    private List<KinkiResultModel> RemoveDuplicatedErrorInfo(List<KinkiResultModel> originList)
+    public List<KinkiResultModel> RemoveDuplicatedErrorInfo(List<KinkiResultModel> originList)
     {
         List<KinkiResultModel> subResult = new();
         originList.ForEach(k =>
