@@ -45,6 +45,4 @@ public class ExportAuditLogListRequest
     public Dictionary<AuditLogEnum, int> SortDictionary { get; set; } = new();
 
     public List<AuditLogEnum> ColumnView { get; set; } = new();
-
-    public int TimeZone { get; set; }
 }

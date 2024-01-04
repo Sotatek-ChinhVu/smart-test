@@ -68,7 +68,7 @@ public class ExportCsvController : ControllerBase
         {
             return Ok("出力データがありません。");
         }
-        return RenderAuditLogExcel(request.ColumnView, output.AuditLogList, "AuditLogList.xlsx", request.TimeZone);
+        return RenderAuditLogExcel(request.ColumnView, output.AuditLogList, "AuditLogList.xlsx");
     }
 
     #region private function
@@ -102,7 +102,7 @@ public class ExportCsvController : ControllerBase
         return File(result, contentType, fileName);
     }
 
-    private IActionResult RenderAuditLogExcel(List<AuditLogEnum> columnView, List<AuditLogModel> auditLogList, string fileName, int timeZone)
+    private IActionResult RenderAuditLogExcel(List<AuditLogEnum> columnView, List<AuditLogModel> auditLogList, string fileName)
     {
         ContentDisposition cd = new ContentDisposition
         {
@@ -154,9 +154,7 @@ public class ExportCsvController : ControllerBase
                         workSheet.Cell(row, column).SetValue(auditLog.LoginKey);
                         break;
                     case AuditLogEnum.LogDate:
-                        // update logDate display by timezone
-                        var logDate = auditLog.LogDate.AddHours(timeZone);
-                        workSheet.Cell(row, column).SetValue(logDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                        workSheet.Cell(row, column).SetValue(auditLog.LogDate.ToString("yyyy-MM-dd HH:mm:ss \"GMT\"zzz"));
                         break;
                     case AuditLogEnum.EventCd:
                         workSheet.Cell(row, column).SetValue(auditLog.EventCd);
