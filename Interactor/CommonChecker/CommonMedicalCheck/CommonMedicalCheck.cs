@@ -1557,7 +1557,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     }
     #endregion
 
-    private SpecialNoteFull ConvertToSpecialNoteModel(SpecialNoteItem specialNoteItem)
+    public SpecialNoteFull ConvertToSpecialNoteModel(SpecialNoteItem specialNoteItem)
     {
         var summaryInfModel = new SummaryInfModel(
                 specialNoteItem.SummaryTab.Id,
@@ -1630,7 +1630,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return specialNoteModel;
     }
 
-    private FamilyModel ConvertToFamilyModel(FamilyItem familyItem)
+    public FamilyModel ConvertToFamilyModel(FamilyItem familyItem)
     {
         return new FamilyModel(
                 familyItem.FamilyId,
