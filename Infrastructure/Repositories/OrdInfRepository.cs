@@ -341,7 +341,9 @@ namespace Infrastructure.Repositories
             var ipnCds = allOdrInfDetails?.Select(od => od.IpnCd ?? string.Empty);
             var sinKouiKbns = allOdrInfDetails?.Select(od => od.SinKouiKbn);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
-            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
+
+            // get kensaMsts not deleted
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId && t.IsDelete == 0).ToList();
             var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMax && t.EndDate >= sinDateMax) && (ipnCds != null && ipnCds.Contains(t.IpnNameCd))).ToList();
             var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();
             var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();

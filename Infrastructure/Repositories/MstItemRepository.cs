@@ -648,7 +648,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           select new { TenMst = ten, tenKN }).ToList();
 
         var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
-        var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
+
+        // only get kensaMsts not deleted
+        var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd) && k.IsDelete == 0).ToList();
 
         var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
         var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
@@ -1204,7 +1206,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                               LastEndDate = tenLastDate.EndDate
                           }).ToList();
 
-        var kensaMstQuery = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId);
+        // only get KensaMsts not deleted
+        var kensaMstQuery = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == 0);
 
         var queryJoinWithKensa = from q in queryFinal
                                  join k in kensaMstQuery
@@ -5367,7 +5370,8 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                           join kouiKbnItem in sinKouiCollection
                           on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                           from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                          join kensa in NoTrackingDataContext.KensaMsts
+                              // only get KensaMsts not deleted
+                          join kensa in NoTrackingDataContext.KensaMsts.Where(item => item.HpId == hpId && item.IsDelete == 0)
                           on ten.TenMst.KensaItemCd equals kensa.KensaItemCd into kensaMsts
                           from kensaMst in kensaMsts.DefaultIfEmpty()
                           join tenKN in queryKNTensu
@@ -6115,7 +6119,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.CenterItemCd2 ?? string.Empty)),
                         TenMsts = tempTenMsts
                     };
-        
+
         foreach (var entity in query)
         {
             var tenmst = entity.TenMsts.OrderByDescending(x => x.ItemCd).GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
