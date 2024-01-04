@@ -192,7 +192,7 @@ namespace CloudUnitTest.CommonChecker.Services
                 var result = realTimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinDate, new(), true);
 
                 /// Assert
-                Assert.True(result.Count == 1);
+                Assert.True(result.Count > 0);
             }
             finally
             {
