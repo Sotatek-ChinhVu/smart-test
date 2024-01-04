@@ -1,5 +1,7 @@
 ﻿using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using Amazon.RDS.Model;
+using Amazon.RDS;
 using Helper.Common;
 
 namespace AWSSDK.Common
@@ -309,37 +311,61 @@ namespace AWSSDK.Common
             }
         }
 
+        public static async Task<int> GetAllowStorageAsync(string rdsIdentifier)
+        {
+            try
+            {
+                AmazonRDSClient rdsClient = new AmazonRDSClient();
+                DescribeDBInstancesRequest describeRequest = new DescribeDBInstancesRequest
+                {
+                    DBInstanceIdentifier = rdsIdentifier
+                };
+
+                DescribeDBInstancesResponse describeResponse = await rdsClient.DescribeDBInstancesAsync(describeRequest);
+
+                if (describeResponse.DBInstances.Count > 0)
+                {
+                    DBInstance dbInstance = describeResponse.DBInstances[0];
+                    int allowStorage = dbInstance.AllocatedStorage;
+                    return allowStorage;
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return 0;
+            }
+        }
+
         public static async Task<Dictionary<string, Dictionary<string, string>>> GetSummaryCardAsync()
         {
             try
             {
                 Dictionary<string, Dictionary<string, string>> card = new Dictionary<string, Dictionary<string, string>>();
                 var rdsInformation = await RDSAction.GetRDSInformation();
+                var listRdsSkip = new List<string>() { "develop-smartkarte-logging", "develop-smartkarte-postgres" };
                 foreach (var entry in rdsInformation)
                 {
+                    if (listRdsSkip.Contains(entry.Key))
+                    {
+                        continue;
+                    }
                     string key = entry.Key;
+                    var allowStorage = await GetAllowStorageAsync(key);
                     var connectionNumber = await GetConnectionNumberAsync(key);
                     var freeStorageSpace = await GetFreeStorageSpaceAsync(key);
-                    var freeableMemory = await GetFreeableMemoryAsync(key);
-                    var cPUUtilization = await GetCPUUtilizationAsync(key);
-                    var readIOPS = await GetReadIOPSAsync(key);
-                    var writeIOPS = await GetWriteIOPSAsync(key);
 
                     double avgConn = connectionNumber / 1000 * 100;
-                    double avgFreeStorage = freeStorageSpace / (1024 * 1000) / 100000 * 100;
-                    double avgFreeMem = freeableMemory / (1024 * 1000) / 1024 * 100;
-                    double avgCPU = cPUUtilization;
-                    double avgReadIOPS = readIOPS / 300 * 100;
-                    double avgWriteIOPS = writeIOPS / 300 * 100;
+                    double freeStorageInGB = freeStorageSpace / (1024 * 1024 * 1024);
+                    double avgFreeStorage = freeStorageInGB / allowStorage * 100;
 
-                    string cAvailable = (avgConn > 80 || avgFreeStorage < 80
-                                         || avgFreeMem < 40 || avgCPU < 40
-                                         || avgReadIOPS < 80 || avgWriteIOPS < 80) ? "no" : "yes";
+                    string cAvailable = (avgConn > 80 || avgFreeStorage < 25) ? "no" : "yes";
 
                     Dictionary<string, string> rdsCard = new Dictionary<string, string>
-                {
-                    { "available", cAvailable }
-                };
+                    {
+                        { "available", cAvailable }
+                    };
 
                     card[key] = rdsCard;
                 }

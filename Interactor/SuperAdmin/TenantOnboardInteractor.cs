@@ -319,7 +319,6 @@ namespace Interactor.SuperAdmin
                         {
                             host = dbInstance.Endpoint.Address;
                         }
-                        // update status available: 1
                         var updateStatus = _tenant2Repository.UpdateInfTenant(tenantId, 2, tenantUrl, host, dbIdentifier);
                         running = false;
                         return host;
