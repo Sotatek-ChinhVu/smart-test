@@ -6950,7 +6950,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_089_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_Equal_LimitDay()
+        public void TC_088_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_Equal_LimitDay()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7010,7 +7010,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_090_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_GreaterThan_LimitDay()
+        public void TC_089_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_GreaterThan_LimitDay()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7071,7 +7071,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_091_CheckDayLimit_TEST_StartDate_And_EndDate_Is_Empty_And_UsingDay_LessThan_LitmitDay()
+        public void TC_090_CheckDayLimit_TEST_StartDate_And_EndDate_Is_Empty_And_UsingDay_LessThan_LitmitDay()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7127,7 +7127,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_092_CheckDayLimit_TEST_Sinday_LessThan_StartDate()
+        public void TC_091_CheckDayLimit_TEST_Sinday_LessThan_StartDate()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7183,7 +7183,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_093_CheckDayLimit_TEST_EndDate_LessThan_Sinday()
+        public void TC_092_CheckDayLimit_TEST_EndDate_LessThan_Sinday()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7239,7 +7239,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_094_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_And_EndDate_IsEmpty()
+        public void TC_093_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_And_EndDate_IsEmpty()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7301,7 +7301,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         /// Sinday = 20230102, StartDate = 20230101, Endate = 20230103
         /// </summary>
         [Test]
-        public void TC_095_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_LessThan_Sinday_LessThan_EndDate()
+        public void TC_094_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_LessThan_Sinday_LessThan_EndDate()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
