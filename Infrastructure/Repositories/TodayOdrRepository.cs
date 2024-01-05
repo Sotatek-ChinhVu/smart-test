@@ -785,7 +785,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         if (karte.IsDeleted == DeleteTypes.Deleted)
         {
-            var karteMst = TrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == 1);
+            var karteMst = TrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && o.KarteKbn == 1);
             if (karteMst != null)
             {
                 karteMst.IsDeleted = DeleteTypes.Deleted;
@@ -793,7 +793,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         }
         else
         {
-            var karteMst = TrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == 1 && karte.IsDeleted == DeleteTypes.None);
+            var karteMst = TrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && o.KarteKbn == 1 && o.IsDeleted == DeleteTypes.None);
 
             if (karteMst == null)
             {
