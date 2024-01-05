@@ -135,7 +135,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
                     return ItemName + TenUtils.GetBunkatu(BunkatuKoui, Bunkatu);
                 }
 
-                return ItemName;
+                return "" + ItemName;
             }
         }
 
