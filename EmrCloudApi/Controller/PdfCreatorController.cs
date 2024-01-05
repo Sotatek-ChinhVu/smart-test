@@ -829,6 +829,9 @@ public class PdfCreatorController : CookieController
             _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
         } ?? string.Empty;
 
+        // set timeout httpClient
+        _httpClient = new HttpClient();
+        _httpClient.Timeout = new TimeSpan(0, 5, 0);
         using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}{functionName}", jsonContent))
         {
             response.EnsureSuccessStatusCode();
