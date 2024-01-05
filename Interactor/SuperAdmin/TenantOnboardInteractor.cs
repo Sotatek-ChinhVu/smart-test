@@ -439,7 +439,8 @@ namespace Interactor.SuperAdmin
 
                     if (sqlFiles.Length > 0)
                     {
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        // Get list file name in order ASC
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).OrderBy(x => x).ToList();
                         var uniqueFileNames = fileNames.Except(listMigration).ToList();
 
                         // insert table

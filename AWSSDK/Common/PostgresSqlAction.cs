@@ -110,7 +110,7 @@ namespace AWSSDK.Common
         }
 
         /// <summary>
-        /// 
+        /// Excute file sql script
         /// </summary>
         /// <param name="pathFileScript"></param>
         /// <param name="host"></param>
@@ -129,7 +129,7 @@ namespace AWSSDK.Common
                 // Save script sql to file
                 string batchContent =
                       $"{Set} PGPASSWORD={password}\n" +
-                    $"psql -h {host} -p {port} -U {user} -d {database} -f {pathFileScript} 2> /app/update-data-tenant/log-excute-sql.txt";
+                    $"psql -h {host} -p {port} -U {user} -d {database} -f {pathFileScript} 2> D:\\log-excute-sql.txt";
                 await Execute(batchContent);
             }
             catch (Exception ex)
