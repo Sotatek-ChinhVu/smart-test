@@ -24,6 +24,13 @@ namespace Infrastructure.SuperAdminRepositories
             TrackingDataContext.MigrationTenantHistories.Add(migrationHistory);
             return TrackingDataContext.SaveChanges() > 0;
         }
+
+        public List<MigrationTenantHistoryModel> GetMigrationByTenants(List<int> tenantIds)
+        {
+            var data = NoTrackingDataContext.MigrationTenantHistories.Where(i => tenantIds.Contains(i.TenantId)).Select(x => new MigrationTenantHistoryModel(x.TenantId, x.MigrationId)).ToList();
+            return data;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
