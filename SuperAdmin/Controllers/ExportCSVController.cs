@@ -145,24 +145,7 @@ public class ExportCsvController : ControllerBase
                 switch (item.Key)
                 {
                     case AuditLogEnum.LogType:
-                        // update logic return logType
-                        string logTypeDisplay = auditLog.LogType;
-                        switch (auditLog.LogType)
-                        {
-                            case "START":
-                                logTypeDisplay = "開始";
-                                break;
-                            case "END":
-                                logTypeDisplay = "終わり";
-                                break;
-                            case "ERROR":
-                                logTypeDisplay = "エラー";
-                                break;
-                            case "INFO":
-                                logTypeDisplay = "情報";
-                                break;
-                        }
-                        workSheet.Cell(row, column).SetValue(logTypeDisplay);
+                        workSheet.Cell(row, column).SetValue(auditLog.LogType);
                         break;
                     case AuditLogEnum.UserId:
                         workSheet.Cell(row, column).SetValue(auditLog.UserId.ToString());
@@ -171,8 +154,7 @@ public class ExportCsvController : ControllerBase
                         workSheet.Cell(row, column).SetValue(auditLog.LoginKey);
                         break;
                     case AuditLogEnum.LogDate:
-                        // update logDate display
-                        workSheet.Cell(row, column).SetValue(auditLog.LogDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                        workSheet.Cell(row, column).SetValue(auditLog.LogDate.ToString("yyyy-MM-dd HH:mm:ss \"GMT\"zzz"));
                         break;
                     case AuditLogEnum.EventCd:
                         workSheet.Cell(row, column).SetValue(auditLog.EventCd);

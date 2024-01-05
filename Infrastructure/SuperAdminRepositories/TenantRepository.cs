@@ -462,6 +462,17 @@ namespace Infrastructure.SuperAdminRepositories
             return listTenant;
         }
 
+        public List<TenantModel> GetTenantByStatus(List<byte> status)
+        {
+            var listTenant = NoTrackingDataContext.Tenants.Where(item => status.Contains(item.Status) && item.IsDeleted == 0)
+                .Select(x => ConvertEntityToModel(x)).ToList();
+            if (listTenant == null)
+            {
+                return new();
+            }
+            return listTenant;
+        }
+
         #region private function
         private IQueryable<Tenant> FilterData(IQueryable<Tenant> query, SearchTenantModel searchModel)
         {
