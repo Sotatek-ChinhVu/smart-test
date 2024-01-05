@@ -36,7 +36,7 @@
 	  <None Update="Template\Function\FunctionInit.sql">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
-	  <None Update="Template\Table\TableInit.sql">
+	  <None Update="Template\Table\01TableInit.sql">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Template\Trigger\TriggerInit.sql">

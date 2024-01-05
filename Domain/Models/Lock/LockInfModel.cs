@@ -28,7 +28,7 @@ namespace Domain.Models.Lock
             PatientInfoModels = new();
             CalcStatusModels = new();
         }
-
+        
         public LockInfModel(LockPtInfModel patientInfoModels, LockCalcStatusModel calcStatusModels, LockDocInfModel docInfModels)
         {
             PatientInfoModels = patientInfoModels;
@@ -40,15 +40,16 @@ namespace Domain.Models.Lock
         {
             get
             {
-                if (DocInfModels != null)
+                if (DocInfModels.PtId!=0 && DocInfModels.SinDate!=0)
                 {
+                    
                     return DocInfModels.LockId;
                 }
-                if (CalcStatusModels != null)
+                if (CalcStatusModels.CalcId != 0 && CalcStatusModels.PtId != 0 && CalcStatusModels.SinDate != 0)
                 {
                     return CalcStatusModels.CreateId;
                 }
-                if (PatientInfoModels != null)
+                if (PatientInfoModels.UserId != 0 && PatientInfoModels.PtId != 0 && PatientInfoModels.SinDate != 0)
                 {
                     return PatientInfoModels.UserId;
                 }
@@ -66,15 +67,15 @@ namespace Domain.Models.Lock
         {
             get
             {
-                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.FunctionName))
+                if (DocInfModels.PtId != 0 && DocInfModels.SinDate != 0 && !string.IsNullOrEmpty(DocInfModels.FunctionName))
                 {
                     return DocInfModels.FunctionName;
                 }
-                if (CalcStatusModels != null)
+                if (CalcStatusModels.CalcId != 0 && CalcStatusModels.PtId != 0 && CalcStatusModels.SinDate != 0)
                 {
                     return "計算";
                 }
-                if (PatientInfoModels != null && !string.IsNullOrEmpty(PatientInfoModels.FunctionName))
+                if (PatientInfoModels.UserId != 0 && PatientInfoModels.PtId != 0 && PatientInfoModels.SinDate != 0 && !string.IsNullOrEmpty(PatientInfoModels.FunctionName))
                 {
                     return PatientInfoModels.FunctionName;
                 }
@@ -106,15 +107,15 @@ namespace Domain.Models.Lock
         {
             get
             {
-                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.LockMachine))
+                if (DocInfModels.PtId != 0 && DocInfModels.SinDate != 0 && !string.IsNullOrEmpty(DocInfModels.LockMachine))
                 {
                     return DocInfModels.LockMachine;
                 }
-                if (CalcStatusModels != null && !string.IsNullOrEmpty(CalcStatusModels.CreateMachine))
+                if (CalcStatusModels.CalcId != 0 && CalcStatusModels.PtId != 0 && CalcStatusModels.SinDate != 0 && !string.IsNullOrEmpty(CalcStatusModels.CreateMachine))
                 {
                     return CalcStatusModels.CreateMachine;
                 }
-                if (PatientInfoModels != null && !string.IsNullOrEmpty(PatientInfoModels.Machine))
+                if (PatientInfoModels.UserId != 0 && PatientInfoModels.PtId != 0 && PatientInfoModels.SinDate != 0 && !string.IsNullOrEmpty(PatientInfoModels.Machine))
                 {
                     return PatientInfoModels.Machine;
                 }
@@ -146,15 +147,15 @@ namespace Domain.Models.Lock
         {
             get
             {
-                if (DocInfModels != null)
+                if (DocInfModels.PtId != 0 && DocInfModels.SinDate != 0)
                 {
                     return DocInfModels.LockDate;
                 }
-                if (CalcStatusModels != null)
+                if (CalcStatusModels.CalcId != 0 && CalcStatusModels.PtId != 0 && CalcStatusModels.SinDate != 0)
                 {
                     return CalcStatusModels.LockDate;
                 }
-                if (PatientInfoModels != null)
+                if (PatientInfoModels.UserId != 0 && PatientInfoModels.PtId != 0 && PatientInfoModels.SinDate != 0)
                 {
                     return PatientInfoModels.LockDate;
                 }
