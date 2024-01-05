@@ -175,6 +175,69 @@ namespace TenantMigration.Migrations.SuperAdmin
                     b.ToTable("SCRIPTION");
                 });
 
+            modelBuilder.Entity("Entity.SuperAdmin.SystemChangeLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("ID")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<string>("ErrMessage")
+                        .HasColumnType("text")
+                        .HasColumnName("ERR_MESSAGE");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("text")
+                        .HasColumnName("FILE_NAME");
+
+                    b.Property<int>("IsDb")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DB");
+
+                    b.Property<int>("IsDrugPhoto")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DRUG_PHOTO");
+
+                    b.Property<int>("IsMaster")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_MASTER");
+
+                    b.Property<int>("IsNote")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_NOTE");
+
+                    b.Property<int>("IsPg")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_PG");
+
+                    b.Property<int>("IsRun")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_RUN");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("STATUS");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<string>("Version")
+                        .HasColumnType("text")
+                        .HasColumnName("VERSION");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SYSTEM_CHANGE_LOG");
+                });
+
             modelBuilder.Entity("Entity.SuperAdmin.Tenant", b =>
                 {
                     b.Property<int>("TenantId")

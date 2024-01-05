@@ -5,7 +5,7 @@ namespace Reporting.AccountingCard.Model
 {
     public class CoPtByomeiModel
     {
-        public PtByomei PtByomei { get; set; }
+        public PtByomei PtByomei { get; } = null;
 
         public CoPtByomeiModel(PtByomei ptByomei)
         {
@@ -38,7 +38,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string ByomeiCd
         {
-            get { return PtByomei.ByomeiCd ?? string.Empty; }
+            get { return PtByomei.ByomeiCd; }
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd1
         {
-            get { return PtByomei.SyusyokuCd1 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd1; }
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd2
         {
-            get { return PtByomei.SyusyokuCd2 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd2; }
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd3
         {
-            get { return PtByomei.SyusyokuCd3 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd3; }
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd4
         {
-            get { return PtByomei.SyusyokuCd4 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd4; }
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd5
         {
-            get { return PtByomei.SyusyokuCd5 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd5; }
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd6
         {
-            get { return PtByomei.SyusyokuCd6 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd6; }
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd7
         {
-            get { return PtByomei.SyusyokuCd7 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd7; }
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd8
         {
-            get { return PtByomei.SyusyokuCd8 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd8; }
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd9
         {
-            get { return PtByomei.SyusyokuCd9 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd9; }
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd10
         {
-            get { return PtByomei.SyusyokuCd10 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd10; }
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd11
         {
-            get { return PtByomei.SyusyokuCd11 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd11; }
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd12
         {
-            get { return PtByomei.SyusyokuCd12 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd12; }
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd13
         {
-            get { return PtByomei.SyusyokuCd13 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd13; }
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd14
         {
-            get { return PtByomei.SyusyokuCd14 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd14; }
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd15
         {
-            get { return PtByomei.SyusyokuCd15 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd15; }
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd16
         {
-            get { return PtByomei.SyusyokuCd16 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd16; }
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd17
         {
-            get { return PtByomei.SyusyokuCd17 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd17; }
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd18
         {
-            get { return PtByomei.SyusyokuCd18 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd18; }
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd19
         {
-            get { return PtByomei.SyusyokuCd19 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd19; }
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd20
         {
-            get { return PtByomei.SyusyokuCd20 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd20; }
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string SyusyokuCd21
         {
-            get { return PtByomei.SyusyokuCd21 ?? string.Empty; }
+            get { return PtByomei.SyusyokuCd21; }
         }
 
         /// <summary>
@@ -232,24 +232,24 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string Byomei
         {
-            get { return PtByomei.Byomei ?? string.Empty; }
+            get { return PtByomei.Byomei; }
         }
         public string ReceByomei
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
-                ret = PtByomei.Byomei ?? string.Empty;
+                ret = PtByomei.Byomei;
 
                 if (PtByomei.SyubyoKbn == 1)
                 {
                     ret = "（主）" + ret;
                 }
 
-                if ((PtByomei.HosokuCmt ?? string.Empty).Trim() != string.Empty)
+                if ((PtByomei.HosokuCmt ?? "").Trim() != "")
                 {
-                    ret += "（" + (PtByomei.HosokuCmt ?? string.Empty).Trim() + "）";
+                    ret += "（" + PtByomei.HosokuCmt.Trim() + "）";
                 }
 
                 return ret;
@@ -283,7 +283,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 switch (PtByomei.TenkiKbn)
                 {
@@ -354,7 +354,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string HosokuCmt
         {
-            get { return PtByomei.HosokuCmt ?? string.Empty; }
+            get { return PtByomei.HosokuCmt ?? ""; }
         }
 
         /// <summary>

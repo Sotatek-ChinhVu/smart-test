@@ -408,7 +408,7 @@ public class CoSyunoInfModel
             if (hokenSbt != "")
             {
                 //公費・後期..に本人家族は不要なので抜ける
-                if(!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
+                if (!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
                 {
                     switch (ReceSbt.Substring(3, 1))
                     {
@@ -593,6 +593,7 @@ public class CoSyunoInfModel
     /// </summary>
     public bool IsFirstRaiin
     {
+        //get => SyunoNyukin.SinDate == FirstRaiinDate && SyunoNyukin.SinDate == SyunoNyukin.NyukinDate;
         get => SinDate == FirstRaiinDate && SinDate == NyukinDate;
     }
 

@@ -22,10 +22,6 @@ public class CoKouseisinInf
         SinDate = sinDate;
         TenMst = tenMst;
         DrugCount = drugCount;
-        OdrInf = new();
-        OdrInfDetail = new();
-        YakkaSyusaiMst = new();
-        DrugUnitConv = new();
     }
 
     /// <summary>

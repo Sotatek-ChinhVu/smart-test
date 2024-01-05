@@ -16,7 +16,7 @@ namespace Reporting.Sokatu.Common.DB
             hokensyaNos = hokensyaNos.Distinct().ToList();
 
             var coHokensyaMsts = NoTrackingDataContext.HokensyaMsts.Where(
-                h => h.HpId == hpId && hokensyaNos.Contains(h.HokensyaNo ?? string.Empty)
+                h => h.HpId == hpId && hokensyaNos.Contains(h.HokensyaNo)
             ).ToList();
 
             return coHokensyaMsts.Select(h => new CoHokensyaMstModel(h)).ToList();

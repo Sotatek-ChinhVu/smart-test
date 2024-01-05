@@ -22,7 +22,7 @@ public interface ITenantRepository
 
     bool UpdateTenantIsRestoreS3(int tenantId, bool isRestoredS3);
 
-    TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status);
+    TenantModel UpdateTenant(int tenantId, string dbIdentifier, string endPoint, string subDomain, int size, int sizeType, string hospital, int adminId, string password, string endSubDomain, byte status, byte type);
 
     TenantModel TerminateTenant(int tenantId, byte TerminateStatus);
 

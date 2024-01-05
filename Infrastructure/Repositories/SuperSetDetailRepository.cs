@@ -287,7 +287,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     #region GetSetKarteInfModelList
     private SetKarteInfModel GetSetKarteInfModel(int hpId, int setCd)
     {
-        var setKarteInf = NoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.KarteKbn == 1 && odr.IsDeleted != 1) ?? new SetKarteInf();
+        var setKarteInf = NoTrackingDataContext.SetKarteInf.Where(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.KarteKbn == 1 && odr.IsDeleted != 1).OrderByDescending(o => o.SeqNo).FirstOrDefault() ?? new SetKarteInf();
         return new SetKarteInfModel(
                 setKarteInf.HpId,
                 setKarteInf.SetCd,
@@ -882,25 +882,31 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1 && mst.KarteKbn == 1);
         if (entity == null)
         {
-            entity = new();
-            entity.SetCd = model.SetCd;
-            entity.HpId = model.HpId;
-            entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
-            entity.IsDeleted = 0;
-            entity.KarteKbn = 1;
-            entity.CreateDate = CIUtil.GetJapanDateTimeNow();
-            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            entity.UpdateId = userId;
-            entity.CreateId = userId;
-            entity.Text = model.Text;
-            TrackingDataContext.SetKarteInf.Add(entity);
+            if (!string.IsNullOrEmpty(model.Text) && !string.IsNullOrEmpty(model.RichText))
+            {
+                entity = new();
+                entity.SetCd = model.SetCd;
+                entity.HpId = model.HpId;
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.IsDeleted = 0;
+                entity.KarteKbn = 1;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                entity.CreateId = userId;
+                entity.Text = model.Text;
+                TrackingDataContext.SetKarteInf.Add(entity);
+            }
         }
         else
         {
-            entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
-            entity.Text = model.Text;
-            entity.UpdateId = userId;
-            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            if (entity.IsDeleted == DeleteTypes.None && model.Text != entity.Text || (entity.RichText != null && model.RichText != Encoding.UTF8.GetString(entity.RichText)))
+            {
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.Text = model.Text;
+                entity.UpdateId = userId;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            }
         }
 
         // if set karte have image, update setKarteImage

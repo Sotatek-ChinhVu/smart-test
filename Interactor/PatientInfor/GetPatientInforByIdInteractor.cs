@@ -23,7 +23,7 @@ namespace Interactor.PatientInfor
             {
                 if (inputData.HpId < 0)
                 {
-                    return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
+                    return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidHpId);
                 }
 
                 if (inputData.PtId < 0)

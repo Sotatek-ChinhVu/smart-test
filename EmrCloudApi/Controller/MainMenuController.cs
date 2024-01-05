@@ -34,6 +34,7 @@ using UseCase.MainMenu.RsvInfToConfirm;
 using UseCase.MainMenu.SaveStaCsvMst;
 using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.Releasenote.LoadListVersion;
+using UseCase.Releasenote.UpdateListReleasenote;
 
 namespace EmrCloudApi.Controller;
 
@@ -276,6 +277,16 @@ public class MainMenuController : AuthorizeControllerBase
         var presenter = new GetLoadListVersionPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetLoadListVersionResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.UpdateListReleasenote)]
+    public ActionResult<Response<UpdateListReleasenoteResponse>> UpdateListReleasenote([FromBody] UpdateListReleasenoteRequest request)
+    {
+        var input = new UpdateListReleasenoteInputData(HpId, UserId, request.Versions);
+        var output = _bus.Handle(input);
+        var presenter = new UpdateListReleasenotePresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<UpdateListReleasenoteResponse>>(presenter.Result);
     }
 
     #region private function

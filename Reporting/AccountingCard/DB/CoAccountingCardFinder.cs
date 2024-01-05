@@ -31,11 +31,11 @@ namespace Reporting.AccountingCard.DB
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.IsDelete == DeleteStatus.None
-            ).FirstOrDefault() ?? new();
+            ).FirstOrDefault();
 
             if (ptInf == null)
             {
-                return new();
+                return null;
             }
             return new CoPtInfModel(ptInf, sinDate);
         }

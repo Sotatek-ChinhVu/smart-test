@@ -28,8 +28,8 @@ public class Sta1002CoReportService : ISta1002CoReportService
     private List<CoJihiSbtMstModel> _jihiSbtMsts;
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
-    private readonly List<PutColumn> putCurColumns = new();
-    private readonly List<PutColumn> csvTotalColumns = new List<PutColumn> { new PutColumn("RowType", "明細区分") };
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
+    private List<PutColumn> csvTotalColumns = new List<PutColumn> { new PutColumn("RowType", "明細区分") };
 
     public Sta1002CoReportService(ICoSta1002Finder finder, IReadRseReportFileService readRseReportFileService)
     {
@@ -40,7 +40,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
         _printDatas = new();
         _headerL1 = new();
         _headerL2 = new();
-        _syunoInfs = null;
+        _syunoInfs = new();
         _jihiSbtMsts = new();
         _jihiSbtFutans = new();
         _hpInf = new();
@@ -129,23 +129,23 @@ public class Sta1002CoReportService : ISta1002CoReportService
             bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(2);
             bool pbTantoId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(3);
 
-            var nyukinDays = _syunoInfs!.GroupBy(s => s.NyukinDate).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+            var nyukinDays = _syunoInfs.GroupBy(s => s.NyukinDate).OrderBy(s => s.Key).Select(s => s.Key).ToList();
             foreach (var nyukinDate in nyukinDays)
             {
-                var uketukeSbts = _syunoInfs!.GroupBy(s => s.UketukeSbt).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                var uketukeSbts = _syunoInfs.GroupBy(s => s.UketukeSbt).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                 for (int i = 0; (pbUketukeSbt && i <= uketukeSbts.Count - 1) || i == 0; i++)
                 {
-                    var kaIds = _syunoInfs!.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                    var kaIds = _syunoInfs.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                     for (int j = 0; (pbKaId && j <= kaIds.Count - 1) || j == 0; j++)
                     {
-                        var tantoIds = _syunoInfs!.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                        var tantoIds = _syunoInfs.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                         for (int k = 0; (pbTantoId && k <= tantoIds.Count - 1) || k == 0; k++)
                         {
-                            var curDatas = _syunoInfs!.Where(s =>
+                            var curDatas = _syunoInfs.Where(s =>
                                 s.NyukinDate == nyukinDate &&
-                                (!pbUketukeSbt || s.UketukeSbt == uketukeSbts[i]) &&
-                                (!pbKaId || s.KaId == kaIds[j]) &&
-                                (!pbTantoId || s.TantoId == tantoIds[k])
+                                (pbUketukeSbt ? s.UketukeSbt == uketukeSbts[i] : true) &&
+                                (pbKaId ? s.KaId == kaIds[j] : true) &&
+                                (pbTantoId ? s.TantoId == tantoIds[k] : true)
                             ).ToList();
 
                             if (curDatas.Count == 0) continue;
@@ -155,7 +155,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
                             {
                                 CoSta1002PrintData printData = new CoSta1002PrintData();
 
-                                List<CoSyunoInfModel>? wrkDatas = null;
+                                List<CoSyunoInfModel> wrkDatas = null;
                                 switch (rowNo)
                                 {
                                     //社保単独
@@ -364,12 +364,12 @@ public class Sta1002CoReportService : ISta1002CoReportService
                                 }
 
                                 printData.NyukinDate = nyukinDate;
-                                printData.UketukeSbt = pbUketukeSbt ? curDatas.FirstOrDefault()?.UketukeSbt.ToString() ?? string.Empty : string.Empty;
-                                printData.UketukeSbtName = pbUketukeSbt ? curDatas.FirstOrDefault()?.UketukeSbtName ?? string.Empty : string.Empty;
-                                printData.KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaId.ToString() ?? string.Empty : string.Empty;
-                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaSname ?? string.Empty : string.Empty;
-                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoId.ToString() ?? string.Empty : string.Empty;
-                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoSname ?? string.Empty : string.Empty;
+                                printData.UketukeSbt = pbUketukeSbt ? curDatas.FirstOrDefault().UketukeSbt.ToString() : null;
+                                printData.UketukeSbtName = pbUketukeSbt ? curDatas.FirstOrDefault().UketukeSbtName : null;
+                                printData.KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaId.ToString() : null;
+                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaSname : null;
+                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoId.ToString() : null;
+                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoSname : null;
                                 printData.SyosinCount = wrkDatas.Where(s => s.IsSinDate && s.Syosaisin == "初診")
                                     .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
                                 printData.SaisinCount = wrkDatas.Where(s => s.IsSinDate && s.Syosaisin == "再診")
@@ -410,8 +410,8 @@ public class Sta1002CoReportService : ISta1002CoReportService
                                 int wrkMisyuSeikyu = 0;
                                 foreach (var wrkNyukin in wrkNyukins)
                                 {
-                                    wrkSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.SeikyuGaku ?? 0;
-                                    wrkNewSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.NewSeikyuGaku ?? 0;
+                                    wrkSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo).SeikyuGaku;
+                                    wrkNewSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo).NewSeikyuGaku;
                                     wrkMisyuSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo && s.NyukinKbn != 0)?.SeikyuGaku ?? 0;
                                 }
                                 printData.SeikyuGaku = wrkSeikyu.ToString("#,0");
@@ -562,7 +562,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
                     {
                         continue;
                     }
-                    var value = typeof(CoSta1002PrintData).GetProperty(colName)?.GetValue(printData);
+                    var value = typeof(CoSta1002PrintData).GetProperty(colName).GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
 
                     if (!data.ContainsKey(colName))
@@ -679,6 +679,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
         }
 
         //データ
+        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {

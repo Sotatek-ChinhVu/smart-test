@@ -14,16 +14,22 @@ namespace Reporting.KensaHistory.Service
     {
         private IKensaSetRepository _kokhoFinder;
         private ICoKensaHistoryFinder _coKensaHistoryFinder;
-        private HpInfModel hpInf = new();
+        private HpInfModel hpInf;
         private int hpId;
         private int userId;
         private long ptId;
         private int setId;
+        private int iraiCd;
         private int startDate;
         private int endDate;
         private bool showAbnormalKbn;
+        private int itemQuantity;
+        private long iraiDate;
+        private long iraiStart;
+        private long iraiEnd;
         private int sinDate;
-        private PtInf ptInf = new();
+        private int row;
+        private PtInf ptInf;
         private (List<CoKensaResultMultiModel>, List<long>) data = new();
         private List<CoKensaResultMultiModel> kensaInfDetails = new();
         private List<CoKensaResultMultiModel> kensaInfDetailsItem = new();
@@ -51,7 +57,6 @@ namespace Reporting.KensaHistory.Service
             _listTextData = new();
             _visibleFieldData = new();
             _visibleAtPrint = new();
-            _reportConfigPerPage = new();
             _coKensaHistoryFinder = coKensaHistoryFinder;
         }
 
@@ -558,18 +563,17 @@ namespace Reporting.KensaHistory.Service
                     dateItem.Add(item);
                 }
             }
-              
+
             foreach (var item in dateItem)
             {
                 date.Remove(item);
             }
 
-            ///No use
-            ////if (kensaInfDetails.Count > 0 && date.Count > 0)
-            ////{
-            ////    var iraiStart = date.First();
-            ////    var iraiEnd = date.Last();
-            ////}
+            if (kensaInfDetails.Count > 0 && date.Count > 0)
+            {
+                iraiStart = date.First();
+                iraiEnd = date.Last();
+            }
 
             foreach (var item in kensaInfDetails)
             {

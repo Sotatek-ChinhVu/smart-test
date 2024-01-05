@@ -28,6 +28,8 @@ namespace AWSSDK.Constants
         public static string RdsSnapshotBackupRestore = "Bak-Restore";
         public static string ManagedCachingOptimized = "658327ea-f89d-4fab-a63d-7e88639e58f6";
         public static int PgPostDefault = 5432;
+        public static string PgUserDefault = "postgres";
+        public static string PgPasswordDefault = "Emr!23456789";
 
         public static string DestinationBucketName = "phuc-test-s3";
         public static string RestoreBucketName = "phuc-test-s3";
@@ -41,6 +43,7 @@ namespace AWSSDK.Constants
         public static byte StatusTenantFailded = 2;
         public static byte StatusTenantTeminated = 7;
         public static byte StatusTenantStopped = 5;
+        public static byte StatusSuttingDown = 6;
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>

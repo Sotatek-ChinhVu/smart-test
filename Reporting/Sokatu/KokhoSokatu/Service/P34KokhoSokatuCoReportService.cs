@@ -47,10 +47,6 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
         _listTextData = new();
         _extralData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        receInfs = new();
-        kaMsts = new();
-        curReceInfs = new();
     }
     #endregion
 
@@ -104,7 +100,7 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
 
     private bool UpdateDrawForm()
     {
-        hasNextPage = true;
+        bool _hasNextPage = true;
 
         #region SubMethod
 
@@ -125,7 +121,7 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
             SetFieldData("seikyuYear", wrkYmd.Year.ToString());
             SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
+            SetFieldData("kaName", kaMsts[0].KaName);
 
             return 1;
         }
@@ -173,13 +169,13 @@ public class P34KokhoSokatuCoReportService : IP34KokhoSokatuCoReportService
                 for (short rowNo = 0; rowNo <= 1; rowNo++)
                 {
                     //合計
-                    List<CoReceInfModel> wrkReces = new();
+                    List<CoReceInfModel> wrkReces = null;
                     switch (rowNo)
                     {
                         case 0: wrkReces = curReceInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                         case 1: wrkReces = curReceInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     }
-                    if (wrkReces.Count == 0) continue;
+                    if (wrkReces == null) continue;
 
                     countData wrkData = new countData();
                     //件数

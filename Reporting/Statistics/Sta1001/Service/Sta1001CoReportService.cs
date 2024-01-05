@@ -23,7 +23,7 @@ namespace Reporting.Statistics.Sta1001.Service
         private List<CoJihiSbtFutan> jihiSbtFutans;
         private CoHpInfModel hpInf;
         private CoSta1001PrintConf _printConf;
-        private readonly List<PutColumn> putCurColumns = new();
+        private List<PutColumn> putCurColumns = new List<PutColumn>();
         private CountData grandTotal = new CountData();
         private CountData total = new CountData();
         private CountData subTotal = new CountData();
@@ -35,16 +35,16 @@ namespace Reporting.Statistics.Sta1001.Service
         private string _rowCountFieldName = string.Empty;
         private bool _hasNextPage;
 
-        private readonly Dictionary<string, string> _extralData = new();
-        private readonly Dictionary<string, string> SingleData = new();
-        private readonly List<Dictionary<string, CellModel>> CellData = new();
+        Dictionary<string, string> _extralData = new Dictionary<string, string>();
+        Dictionary<string, string> SingleData = new Dictionary<string, string>();
+        List<Dictionary<string, CellModel>> CellData = new List<Dictionary<string, CellModel>>();
 
         private readonly ICoSta1001Finder _sta1001Finder;
         private readonly IReadRseReportFileService _readRseReportFileService;
         private readonly IDailyStatisticCommandFinder _dailyStatisticCommandFinder;
 
         #region Constant
-        private readonly List<PutColumn> csvTotalColumns = new List<PutColumn>
+        private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分"),
             new PutColumn("TotalCaption", "合計行"),
@@ -52,7 +52,7 @@ namespace Reporting.Statistics.Sta1001.Service
             new PutColumn("TotalPtCount", "合計実人数")
         };
 
-        private readonly List<PutColumn> putColumns = new List<PutColumn>
+        private List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("NyukinDateFmt", "入金日", false, "NyukinDate"),
             new PutColumn("UketukeSbt", "受付種別ID", false),
@@ -94,6 +94,12 @@ namespace Reporting.Statistics.Sta1001.Service
             new PutColumn("RaiinCmt", "来院コメント", false),
             new PutColumn("NyukinCmt", "入金コメント", false),
             new PutColumn("Seq", "No.", false)
+        };
+
+        private List<PutColumn> putOptColumns = new List<PutColumn>
+        {
+            new PutColumn("PtFutanJihiRece", "負担金額(自費レセ)"),
+            new PutColumn("PtFutanElse", "負担金額(その他)")
         };
         #endregion
         private struct CountData
@@ -164,7 +170,7 @@ namespace Reporting.Statistics.Sta1001.Service
             public void Clear()
             {
                 Count = 0;
-                PtCount = new();
+                PtCount = null;
                 Tensu = 0;
                 NewTensu = 0;
                 PtFutan = 0;
@@ -179,7 +185,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 NyukinGaku = 0;
                 PreNyukinGaku = 0;
                 MisyuGaku = 0;
-                JihiSbtFutans = new();
+                JihiSbtFutans = null;
             }
         }
 
@@ -189,14 +195,6 @@ namespace Reporting.Statistics.Sta1001.Service
             _readRseReportFileService = readRseReportFileService;
             _dailyStatisticCommandFinder = dailyStatisticCommandFinder;
             _objectRseList = new();
-            printDatas = new();
-            headerL1 = new();
-            headerL2 = new();
-            syunoInfs = new();
-            jihiSbtFutans = new();
-            jihiSbtMsts = new();
-            _printConf = new();
-            hpInf = new();
         }
 
         public CommonReportingRequestModel GetSta1001ReportingData(CoSta1001PrintConf printConf, int hpId)
@@ -265,7 +263,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
                 #region ソート順
                 syunoInfs =
-                    syunoInfs!
+                    syunoInfs
                         .OrderBy(s => s.NyukinDate)
                         .ThenBy(s => pbUketukeSbt ? s.UketukeSbt : 0)
                         .ThenBy(s => pbKaId ? s.KaId : 0)
@@ -375,8 +373,8 @@ namespace Reporting.Statistics.Sta1001.Service
                         printData.Seq = recNo.ToString();
                     }
 
-                    /// todo quan.to
-                    ///if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak || outputFileType == CoFileType.Csv)
+                    // todo quan.to
+                    //if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak || outputFileType == CoFileType.Csv)
                     if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak)
                     {
                         printData.PtNum = syunoInf.PtNum.ToString();
@@ -385,30 +383,28 @@ namespace Reporting.Statistics.Sta1001.Service
                         printData.Syosaisin = syunoInf.Syosaisin;
                         printData.HokenSbt = syunoInf.HokenSbt;
 
-                        /// todo quan.to
-                        ///bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo && outputFileType == CoFileType.Csv;
+                        // todo quan.to
+                        //bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo && outputFileType == CoFileType.Csv;
                         bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo;
                         printData.Tensu = csvOmit ? "0" : syunoInf.Tensu.ToString("#,0");
                         printData.NewTensu = csvOmit ? "0" : syunoInf.NewTensu.ToString("#,0");
                         printData.PtFutan = csvOmit ? "0" : syunoInf.PtFutan.ToString("#,0");
-                        var ptFutanJihiReceDisplay = syunoInf.IsJihiRece ? syunoInf.PtFutan : 0;
-                        var ptFutanElseDisplay = !syunoInf.IsJihiRece ? syunoInf.PtFutan : 0;
-                        printData.PtFutanJihiRece = csvOmit ? "0" : ptFutanJihiReceDisplay.ToString("#,0");
-                        printData.PtFutanElse = csvOmit ? "0" : ptFutanElseDisplay.ToString("#,0");
+                        printData.PtFutanJihiRece = csvOmit ? "0" : (syunoInf.IsJihiRece ? syunoInf.PtFutan : 0).ToString("#,0");
+                        printData.PtFutanElse = csvOmit ? "0" : (!syunoInf.IsJihiRece ? syunoInf.PtFutan : 0).ToString("#,0");
                         printData.JihiFutan = csvOmit ? "0" : syunoInf.JihiFutan.ToString("#,0");
                         printData.JihiTax = csvOmit ? "0" : syunoInf.JihiTax.ToString("#,0");
                         printData.AdjustFutan = csvOmit ? "0" : syunoInf.AdjustFutan.ToString("#,0");
                         printData.MenjyoGaku = csvOmit ? "0" : syunoInf.MenjyoGaku.ToString("#,0");
                         printData.SeikyuGaku = csvOmit ? "0" :
-                            syunoInfs.First(s =>
+                            syunoInfs.Where(s =>
                                 s.RaiinNo == syunoInf.RaiinNo &&
                                 s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
-                            ).SeikyuGaku.ToString("#,0");
+                            ).First().SeikyuGaku.ToString("#,0");
                         printData.NewSeikyuGaku = csvOmit ? "0" :
-                            syunoInfs.First(s =>
+                            syunoInfs.Where(s =>
                                 s.RaiinNo == syunoInf.RaiinNo &&
                                 s.NyukinSortNo == syunoInfs.Where(x => x.RaiinNo == syunoInf.RaiinNo).Max(x => x.NyukinSortNo)
-                            ).NewSeikyuGaku.ToString("#,0");
+                            ).First().NewSeikyuGaku.ToString("#,0");
                         if (!csvOmit)
                         {
                             List<string> wrkPrintFutans = new List<string>();
@@ -466,6 +462,11 @@ namespace Reporting.Statistics.Sta1001.Service
                     int decMisyuGaku = 0;
                     if (syunoInf.RaiinNo == prePrintData.RaiinNo)
                     {
+                        //decMisyuGaku =
+                        //    int.Parse(prePrintData.MisyuGaku ?? "0", NumberStyles.Any) -
+                        //    int.Parse(printData.MisyuGaku ?? "0", NumberStyles.Any);
+
+                        //prePrintData.MisyuGaku = printData.MisyuGaku;
                         decMisyuGaku =
                             int.Parse(prePrintData.MisyuGaku ?? "0", NumberStyles.Any);
 
@@ -561,7 +562,7 @@ namespace Reporting.Statistics.Sta1001.Service
                         NyukinGaku = totalData.NyukinGaku.ToString("#,0"),
                         PreNyukinGaku = totalData.PreNyukinGaku.ToString("#,0"),
                         MisyuGaku = totalData.MisyuGaku.ToString("#,0"),
-                        JihiSbtFutans = totalData.JihiSbtFutans?.Select(j => j.ToString("#,0")).ToList() ?? new()
+                        JihiSbtFutans = totalData.JihiSbtFutans?.Select(j => j.ToString("#,0")).ToList()
                     }
                 );
                 totalData.Clear();
@@ -578,7 +579,7 @@ namespace Reporting.Statistics.Sta1001.Service
             //来院コメントの取得
             if (_objectRseList.Contains("RaiinCmt"))
             {
-                foreach (var syunoInf in syunoInfs!)
+                foreach (var syunoInf in syunoInfs)
                 {
                     syunoInf.RaiinCmt = _sta1001Finder.GetRaiinCmtInf(HpId, syunoInf.RaiinNo);
                 }
@@ -659,7 +660,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta1001PrintData).GetProperty(colName)?.GetValue(printData);
+                    var value = typeof(CoSta1001PrintData).GetProperty(colName).GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
                     celldata.Add(colName, new CellModel(valueInput));
                     if (baseListName == "" && _objectRseList.Contains(colName))
@@ -679,6 +680,18 @@ namespace Reporting.Statistics.Sta1001.Service
                 celldata.Add("TotalCaption", new CellModel(printData.TotalCaption));
                 celldata.Add("TotalCount", new CellModel(printData.TotalCount));
                 celldata.Add("TotalPtCount", new CellModel(printData.TotalPtCount));
+
+                ////5行毎に区切り線を引く
+                //lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
+
+                //if (lineCount == 5)
+                //{
+                //    lineCount = 0;
+                //    (long startX1, long startY1, long endX1, long endY1) = CoRep.GetBounds("headerLine");
+                //    (long startX2, long startY2, long endX2, long endY2) = CoRep.GetListRowBounds(baseListName, rowNo);
+
+                //    CoRep.DrawLine(startX1, endY2, endX1, endY2, 10, Hos.CnDraw.Constants.ConLineStyle.Dash);
+                //}
 
                 //5行毎に区切り線を引く
                 lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
@@ -707,6 +720,7 @@ namespace Reporting.Statistics.Sta1001.Service
             }
 
             #endregion
+
             #endregion
         }
 
@@ -748,7 +762,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
                 foreach (var column in putCurColumns)
                 {
-                    var value = typeof(CoSta1001PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                    var value = typeof(CoSta1001PrintData).GetProperty(column.CsvColName).GetValue(csvData);
                     if (csvData.RowType == RowType.Total && !column.IsTotal)
                     {
                         value = string.Empty;
@@ -778,6 +792,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 return string.Join(",", colDatas);
             }
             //データ
+            int totalRow = csvDatas.Count;
             int rowOutputed = 0;
             foreach (var csvData in csvDatas)
             {

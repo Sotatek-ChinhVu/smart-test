@@ -28,9 +28,9 @@ public class Sta2001CoReportService : ISta2001CoReportService
     private List<CoJihiSbtMstModel> _jihiSbtMsts;
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
-    private readonly List<PutColumn> putCurColumns = new();
+    private List<PutColumn> putCurColumns = new List<PutColumn>();
 
-    private readonly List<PutColumn> csvTotalColumns = new()
+    private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分"),
             new PutColumn("TotalCaption", "合計行")
@@ -263,8 +263,8 @@ public class Sta2001CoReportService : ISta2001CoReportService
                     {
                         var curDatas = _syunoInfs?.Where(s =>
                             s.NyukinYm == nyukinYm &&
-                            (!pbKaId || s.KaId == kaIds?[j]) &&
-                            (!pbTantoId || s.TantoId == tantoIds?[k])
+                            (pbKaId ? s.KaId == kaIds?[j] : true) &&
+                            (pbTantoId ? s.TantoId == tantoIds?[k] : true)
                         ).ToList();
 
                         if (curDatas?.Count == 0) continue;
@@ -557,6 +557,7 @@ public class Sta2001CoReportService : ISta2001CoReportService
         }
 
         //データ
+        int totalRow = csvDatas.Count;
         int rowOutputed = 0;
         foreach (var csvData in csvDatas)
         {

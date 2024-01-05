@@ -3,6 +3,7 @@ using Helper.Common;
 using Helper.Extension;
 using Reporting.GrowthCurve.Model;
 using Reporting.Mappers.Common;
+using System.Drawing;
 using Point = Reporting.GrowthCurve.Model.Point;
 
 namespace Reporting.GrowthCurve.Service

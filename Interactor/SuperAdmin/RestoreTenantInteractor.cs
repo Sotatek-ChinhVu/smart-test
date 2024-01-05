@@ -91,7 +91,7 @@ namespace Interactor.SuperAdmin
 
                         if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
                         {
-                            throw new Exception("Snapshot is not Available");
+                            throw new Exception("Snapshot が無効です。");
                         }
 
                         // Create tmp RDS from snapshot
@@ -119,7 +119,7 @@ namespace Interactor.SuperAdmin
 
                             if (!updateEndPoint)
                             {
-                                throw new Exception("Update end sub domain failed");
+                                throw new Exception("サブドメインが無効です。");
                             }
 
                             // delete old RDS
@@ -134,7 +134,7 @@ namespace Interactor.SuperAdmin
                             if (!ct.IsCancellationRequested) // Check task run is not canceled
                             {
                                 _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                                var messenge = $"{tenant.EndSubDomain} is restore successfully.";
+                                var messenge = $"{tenant.EndSubDomain} のデータ復元が完了しました。";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
                                 // Add info tenant for notification
                                 notification.SetTenantId(tenant.TenantId);
@@ -153,17 +153,17 @@ namespace Interactor.SuperAdmin
                         {
                             // dump data,
                             var pathFileDump = @$"{pathFileDumpRestore}{tenant.Db}.sql"; // path save file sql dump
-                            PostgresSqlAction.PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, ConfigConstant.PgUserDefault, ConfigConstant.PgPasswordDefault).Wait();
 
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
                             {
-                                throw new Exception("File sql dump doesn't exist");
+                                throw new Exception("Sqldump 存在しません。");
                             }
 
                             if (!PostgresSqlAction.CheckingFinishedAccessedFile(pathFileDump))
                             {
-                                throw new Exception("Invalid file sql dump");
+                                throw new Exception("Sqldump が無効です。");
                             }
 
                             // restore db 
@@ -179,7 +179,7 @@ namespace Interactor.SuperAdmin
                             if (!ct.IsCancellationRequested) // Check task run is not canceled
                             {
                                 _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                                var messenge = $"{tenant.EndSubDomain} is restore successfully.";
+                                var messenge = $"{tenant.EndSubDomain} のデータ復元が完了しました。";
                                 var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
                                 // Add info tenant for notification
@@ -201,7 +201,7 @@ namespace Interactor.SuperAdmin
                         {
                             _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
                             // Notification  restore failed
-                            var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
+                            var messenge = $"{tenant.EndSubDomain} のデータ復元に失敗しました。エラー: {ex.Message}.";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
                             // Add info tenant for notification
                             notification.SetTenantId(tenant.TenantId);

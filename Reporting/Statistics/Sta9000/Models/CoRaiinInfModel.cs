@@ -24,19 +24,6 @@ public class CoRaiinInfModel
         _raiinCmt = raiinCmt;
         _raiinBiko = raiinBiko;
         _firstVisitDate = firstVisitDate;
-        RaiinKbns = new();
-    }
-
-    public CoRaiinInfModel()
-    {
-        RaiinInf = new();
-        UketukeSbtMst = new();
-        KaMst = new();
-        UserMst = new();
-        _raiinCmt = string.Empty;
-        _raiinBiko = string.Empty;
-        _firstVisitDate = new();
-        RaiinKbns = new();
     }
 
     /// <summary>
