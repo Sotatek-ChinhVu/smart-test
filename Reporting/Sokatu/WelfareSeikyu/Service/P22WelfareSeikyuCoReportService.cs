@@ -33,13 +33,13 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
     /// <summary>
     /// CoReport Model
     /// </summary>
-    private List<CoP22WelfareReceInfModel> receInfs = new();
+    private List<CoP22WelfareReceInfModel> receInfs = null;
     private CoHpInfModel hpInf;
 
-    private List<(int sinym, string code, string name)> cityNames = new();
+    private List<(int sinym, string code, string name)> cityNames;
     private int currentSinYm;
-    private string currentFutansyaNo = "";
-    private string currentCityName = "";
+    private string currentFutansyaNo;
+    private string currentCityName;
     private List<CoHokensyaMstModel> hokensyaNames;
     private List<CoKohiHoubetuMstModel> kohiHoubetuMsts;
 
@@ -64,11 +64,6 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
         _listTextData = new();
         _visibleFieldData = new();
         _visibleAtPrint = new();
-        hpInf = new();
-        receInfs = new();
-        hokensyaNames = new();
-        kohiHoubetuMsts = new();
-        kohiHoubetus = new();
     }
     #endregion
 
@@ -225,7 +220,7 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
                 totalData.RecordCount++;
 
                 //受給者証番号
-                listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareTokusyuNo ?? string.Empty));
+                listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareTokusyuNo));
                 //氏名
                 listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
                 //生年月日
@@ -311,17 +306,18 @@ public class P22WelfareSeikyuCoReportService : IP22WelfareSeikyuCoReportService
         receInfs = wrkReces.Select(x => new CoP22WelfareReceInfModel(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, kohiHoubetus)).ToList();
         //負担者番号の一覧を取得
         cityNames =
-            receInfs?.GroupBy(r => (r.SinYm, r.WelfareFutansyaNo, r.CityName ))
+            receInfs.GroupBy(r => (r.SinYm, r.WelfareFutansyaNo, r.CityName))
             .OrderBy(r => r.Key.WelfareFutansyaNo)
             .ThenBy(r => r.Key.SinYm)
             .Select(r => (r.Key.SinYm, r.Key.WelfareFutansyaNo, r.Key.CityName)).ToList();
 
         //保険者番号リストを取得
-        var hokensyaNos = receInfs?.Where(r => r.IsKokuhoKumiai).GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList();
+        var hokensyaNos = receInfs.Where(r => r.IsKokuhoKumiai).GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList();
         //保険者名を取得
-        hokensyaNames = _welfareFinder.GetHokensyaName(hpId, hokensyaNos ?? new());
+        hokensyaNames = _welfareFinder.GetHokensyaName(hpId, hokensyaNos);
         //公費法別番号リストを取得
         kohiHoubetuMsts = _welfareFinder.GetKohiHoubetuMst(hpId, seikyuYm);
+
 
         return (receInfs?.Count ?? 0) > 0;
     }

@@ -13,6 +13,8 @@
         public const string Revert = "Revert";
         public const string Delete = "Delete";
         public const string GetSettingValue = "GetSettingValue";
+        public const string RemoveCache = "RemoveCache";
+        public const string RemoveAllCache = "RemoveAllCache";
 
         // SuperSet
         public const string Validate = "Validate";
@@ -519,6 +521,7 @@
 
         //ByomeiSetMst
         public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
+        public const string IsHokenInfInUsed = "IsHokenInfInUsed";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";

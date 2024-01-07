@@ -1268,6 +1268,7 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         var kohiDataModelsAll = new List<KohiDataModel>();
 
         // 公費ID
+        //List<int> kohiIds = new List<int>();
         var kohiDatas = CoModelFinder.FindKohiData(HpId, ptId, receInf.SinYm * 100 + 1);
         if (kohiDatas.Any())
         {
@@ -1283,15 +1284,18 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                     kohiDataModelsAll.Last().Futan = receInf.KohiFutan(i);
                     kohiDataModelsAll.Last().Futan10en = receInf.KohiFutan10en(i);
 
-                    if (receInf.KohiReceKisai(i) == 1 && receInf.KohiId(i) > 0 && kohiDatas.Any(p => p.PtKohi.HokenId == receInf.KohiId(i)))
+                    if (receInf.KohiReceKisai(i) == 1 && receInf.KohiId(i) > 0)
                     {
-                        kohiDataModels.Add(kohiDatas.Find(p => p.PtKohi.HokenId == receInf.KohiId(i)));
-                        kohiDataModels.Last().JituNissu = receInf.KohiNissu(i);
-                        kohiDataModels.Last().ReceTen = receInf.KohiReceTensu(i);
-                        kohiDataModels.Last().ReceFutan = receInf.KohiReceFutan(i);
-                        kohiDataModels.Last().ReceKyufu = receInf.KohiReceKyufu(i);
-                        kohiDataModels.Last().Futan = receInf.KohiFutan(i);
-                        kohiDataModels.Last().Futan10en = receInf.KohiFutan10en(i);
+                        if (kohiDatas.Any(p => p.PtKohi.HokenId == receInf.KohiId(i)))
+                        {
+                            kohiDataModels.Add(kohiDatas.Find(p => p.PtKohi.HokenId == receInf.KohiId(i)));
+                            kohiDataModels.Last().JituNissu = receInf.KohiNissu(i);
+                            kohiDataModels.Last().ReceTen = receInf.KohiReceTensu(i);
+                            kohiDataModels.Last().ReceFutan = receInf.KohiReceFutan(i);
+                            kohiDataModels.Last().ReceKyufu = receInf.KohiReceKyufu(i);
+                            kohiDataModels.Last().Futan = receInf.KohiFutan(i);
+                            kohiDataModels.Last().Futan10en = receInf.KohiFutan10en(i);
+                        }
                     }
                 }
             }
@@ -1387,8 +1391,12 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
             PtKyuseiModel ptKyuseiModel = CoModelFinder.FindPtKyusei(HpId, ptId, sinMeiDataModels.LastSinDate);
 
             // 労災レセプト情報
-            var rousaiReceiptModel = GetRousaiReceiptData(ptId, sinYm, receInf, ptInfModel, ptKyuseiModel, hokenDataModel, sinMeiDataModels);
-            var syobyoKeikaModel = CoModelFinder.FindSyobyoKeikaForAfter(HpId, ptId, kaikeiDayInf.sinDate, receInf.HokenId);
+            RousaiReceiptModel rousaiReceiptModel = null;
+            SyobyoKeikaModel syobyoKeikaModel = null;
+
+            // 労災レセプト情報
+            rousaiReceiptModel = GetRousaiReceiptData(ptId, sinYm, receInf, ptInfModel, ptKyuseiModel, hokenDataModel, sinMeiDataModels);
+            syobyoKeikaModel = CoModelFinder.FindSyobyoKeikaForAfter(HpId, ptId, kaikeiDayInf.sinDate, receInf.HokenId);
 
             //レセプト電算モデルを作成する
             CoReceiptModel coReceiptModel =

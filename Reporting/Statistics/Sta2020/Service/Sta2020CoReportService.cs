@@ -16,13 +16,13 @@ namespace Reporting.Statistics.Sta2020.Service
         #region Constant
         private int _maxRow = 43;
 
-        private readonly List<PutColumn> csvTotalColumns = new List<PutColumn>
+        private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分"),
             new PutColumn("TotalCaption", "合計行")
         };
 
-        private readonly List<PutColumn> putColumns = new List<PutColumn>
+        private List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("SinYmFmt", "診療年月", false, "SinYm"),
             new PutColumn("KaId", "診療科ID"),
@@ -60,17 +60,17 @@ namespace Reporting.Statistics.Sta2020.Service
         /// </summary>
         private readonly ICoSta2020Finder _staFinder;
         private readonly IReadRseReportFileService _readRseReportFileService;
-        private CoSta2020PrintConf _printConf = new();
+        private CoSta2020PrintConf _printConf;
 
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoSta2020PrintData> printDatas = new();
-        private List<string> headerL1 = new();
-        private List<string> headerL2 = new();
-        private List<CoSinKouiModel> sinKouis = new();
-        private CoHpInfModel hpInf = new();
-        private readonly BackgroundWorker? _backgroundWorker = null;
+        private List<CoSta2020PrintData> printDatas;
+        private List<string> headerL1;
+        private List<string> headerL2;
+        private List<CoSinKouiModel> sinKouis;
+        private CoHpInfModel hpInf;
+        private BackgroundWorker _backgroundWorker = null;
         private int HpId;
         private int _currentPage;
         private List<string> _objectRseList = new();
@@ -137,19 +137,19 @@ namespace Reporting.Statistics.Sta2020.Service
                 bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(2);
                 bool pbTantoId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(3);
 
-                var sinYms = sinKouis!.GroupBy(s => s.SinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                var sinYms = sinKouis.GroupBy(s => s.SinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                 for (int ymCnt = 0; (pbSinYm && ymCnt <= sinYms.Count - 1) || ymCnt == 0; ymCnt++)
                 {
-                    var kaIds = sinKouis!.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                    var kaIds = sinKouis.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                     for (int kaCnt = 0; (pbKaId && kaCnt <= kaIds.Count - 1) || kaCnt == 0; kaCnt++)
                     {
-                        var tantoIds = sinKouis!.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                        var tantoIds = sinKouis.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                         for (int taCnt = 0; (pbTantoId && taCnt <= tantoIds.Count - 1) || taCnt == 0; taCnt++)
                         {
-                            var curDatas = sinKouis!.Where(s =>
-                                (!pbSinYm || s.SinYm == sinYms[ymCnt]) &&
-                                (!pbKaId || s.KaId == kaIds[kaCnt]) &&
-                                (!pbTantoId || s.TantoId == tantoIds[taCnt])
+                            var curDatas = sinKouis.Where(s =>
+                                (pbSinYm ? s.SinYm == sinYms[ymCnt] : true) &&
+                                (pbKaId ? s.KaId == kaIds[kaCnt] : true) &&
+                                (pbTantoId ? s.TantoId == tantoIds[taCnt] : true)
                             ).ToList();
 
                             if (curDatas.Count == 0) continue;
@@ -165,7 +165,7 @@ namespace Reporting.Statistics.Sta2020.Service
                                 _printConf.SortOrder3 >= 1 ? _printConf.SortOpt3 : 0;
 
                             //小計毎のリスト
-                            List<string>? grpIds = null;
+                            List<string> grpIds = null;
                             switch (sortOrder1)
                             {
                                 case 1:
@@ -190,12 +190,12 @@ namespace Reporting.Statistics.Sta2020.Service
                             for (int grpCnt = 0; (grpIds != null && grpCnt <= grpIds.Count - 1) || grpCnt == 0; grpCnt++)
                             {
                                 var grpDatas = curDatas.Where(s =>
-                                    (grpIds == null || (sortOrder1 == 1 ? s.SinKouiKbn == grpIds[grpCnt] : s.SinId == grpIds[grpCnt]))
+                                    (grpIds != null ? (sortOrder1 == 1 ? s.SinKouiKbn == grpIds[grpCnt] : s.SinId == grpIds[grpCnt]) : true)
                                 ).ToList();
 
                                 if (grpDatas.Count == 0) continue;
 
-                                bool groupSinId = sortOrder1 == 2;
+                                bool groupSinId = sortOrder1 == 2; //|| outputFileType == CoFileType.Csv;
 
                                 //項目単位のリスト
                                 var itemDatas =
@@ -237,15 +237,15 @@ namespace Reporting.Statistics.Sta2020.Service
 
                                 foreach (var itemData in itemDatas)
                                 {
-                                    var wrkDatas = grpDatas.Where(s => (!groupSinId || s.SinId == itemData.SinId) && s.ItemCdCmt == itemData.ItemCdCmt && s.ItemCd == itemData.ItemCd && s.Ten == itemData.Ten).ToList();
+                                    var wrkDatas = grpDatas.Where(s => (groupSinId ? s.SinId == itemData.SinId : true) && s.ItemCdCmt == itemData.ItemCdCmt && s.ItemCd == itemData.ItemCd && s.Ten == itemData.Ten).ToList();
 
-                                    CoSta2020PrintData printData = new();
+                                    CoSta2020PrintData printData = new CoSta2020PrintData();
 
                                     printData.SinYm = (pbSinYm || sinYms.Count == 1) ? wrkDatas.First().SinYm : 0;
-                                    printData.KaId = (pbKaId || kaIds.Count == 1) ? wrkDatas.First()?.KaId.ToString() ?? string.Empty : string.Empty;
-                                    printData.KaSname = (pbKaId || kaIds.Count == 1) ? wrkDatas.First()?.KaSname ?? string.Empty : string.Empty;
-                                    printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First()?.TantoId.ToString() ?? string.Empty : string.Empty;
-                                    printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First()?.TantoSname ?? string.Empty : string.Empty;
+                                    printData.KaId = (pbKaId || kaIds.Count == 1) ? wrkDatas.First().KaId.ToString() : null;
+                                    printData.KaSname = (pbKaId || kaIds.Count == 1) ? wrkDatas.First().KaSname : null;
+                                    printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First().TantoId.ToString() : null;
+                                    printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? wrkDatas.First().TantoSname : null;
                                     printData.SinId = wrkDatas.First().SinId;
                                     printData.SinKouiKbn = wrkDatas.First().SinKouiKbn;
                                     printData.ItemCd = itemData.ItemCd;
@@ -278,8 +278,8 @@ namespace Reporting.Statistics.Sta2020.Service
                                     printData.MadokuKbn = wrkDatas.First().MadokuKbn;
                                     printData.KouseisinKbn = wrkDatas.First().KouseisinKbn;
                                     printData.KazeiKbn = wrkDatas.First().KazeiKbn;
-                                    printData.RaiinCount = wrkDatas.GroupBy(s => s.RaiinNo).Count().ToString("#,0");
-                                    printData.PtCount = wrkDatas.GroupBy(s => s.PtId).Count().ToString("#,0");
+                                    printData.RaiinCount = wrkDatas.GroupBy(s => s.RaiinNo).ToList().Count().ToString("#,0");
+                                    printData.PtCount = wrkDatas.GroupBy(s => s.PtId).ToList().Count().ToString("#,0");
 
                                     printDatas.Add(printData);
                                 }
@@ -292,7 +292,7 @@ namespace Reporting.Statistics.Sta2020.Service
                                     printData.RowType = RowType.Total;
                                     printData.TotalCaption =
                                         sortOrder1 == 1 ? string.Format("◆{0} {1}計", grpDatas.First().SinKouiKbn, grpDatas.First().SinKouiKbnName) :
-                                        sortOrder1 == 2 ? string.Format("◆{0} {1}計", grpDatas.First().SinId ?? string.Empty, grpDatas.First().SinIdName ?? string.Empty) : string.Empty;
+                                        sortOrder1 == 2 ? string.Format("◆{0} {1}計", grpDatas.First().SinId, grpDatas.First().SinIdName) : "";
                                     printData.Ten = "-";
                                     printData.Suryo = grpDatas.Sum(s => s.Suryo).ToString("#,0.00");
                                     printData.Money = grpDatas.Sum(s => s.Money).ToString("#,0");
@@ -308,8 +308,8 @@ namespace Reporting.Statistics.Sta2020.Service
                                     //グループ比率
                                     printData.GrpRate = grpDatas.Sum(s => s.Money) == 0 ? "0.00" : "100.00";
 
-                                    printData.RaiinCount = grpDatas.GroupBy(s => s.RaiinNo).Count().ToString("#,0");
-                                    printData.PtCount = grpDatas.GroupBy(s => s.PtId).Count().ToString("#,0");
+                                    printData.RaiinCount = grpDatas.GroupBy(s => s.RaiinNo).ToList().Count().ToString("#,0");
+                                    printData.PtCount = grpDatas.GroupBy(s => s.PtId).ToList().Count().ToString("#,0");
 
                                     printDatas.Add(printData);
                                     if (printDatas.Count % _maxRow != 0)
@@ -334,8 +334,8 @@ namespace Reporting.Statistics.Sta2020.Service
                             //グループ比率
                             totalData.GrpRate = "-";
 
-                            totalData.RaiinCount = curDatas.GroupBy(s => s.RaiinNo).Count().ToString("#,0");
-                            totalData.PtCount = curDatas.GroupBy(s => s.PtId).Count().ToString("#,0");
+                            totalData.RaiinCount = curDatas.GroupBy(s => s.RaiinNo).ToList().Count().ToString("#,0");
+                            totalData.PtCount = curDatas.GroupBy(s => s.PtId).ToList().Count().ToString("#,0");
 
                             printDatas.Add(totalData);
 
@@ -375,7 +375,7 @@ namespace Reporting.Statistics.Sta2020.Service
             sinKouis = _staFinder.GetSinKouis(HpId, _printConf);
             if ((sinKouis?.Count ?? 0) == 0) return false;
 
-            hpInf = _staFinder.GetHpInf(HpId, sinKouis?.First().SinDate ?? 0);
+            hpInf = _staFinder.GetHpInf(HpId, sinKouis.First().SinDate);
 
             //印刷用データの作成
             MakePrintData();
@@ -383,15 +383,14 @@ namespace Reporting.Statistics.Sta2020.Service
             return printDatas.Count > 0;
         }
 
-        private void UpdateDrawForm()
+        private bool UpdateDrawForm()
         {
             _hasNextPage = true;
 
             #region SubMethod
 
             #region Header
-            //using void function because it not return data
-            void UpdateFormHeader()
+            int UpdateFormHeader()
             {
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
@@ -418,12 +417,12 @@ namespace Reporting.Statistics.Sta2020.Service
                        _printConf.EndSinYm >= 0 ? CIUtil.SDateToShowSWDate(_printConf.EndSinYm * 100 + 1, 0, 1).Substring(0, 12) : CIUtil.SDateToShowSWDate(_printConf.EndSinDate, 0, 1)
                     )
                 );
+                return 1;
             }
             #endregion
 
             #region Body
-            //using void function because it not return data
-            void UpdateFormBody()
+            int UpdateFormBody()
             {
                 int hokIndex = (_currentPage - 1) * _maxRow;
 
@@ -440,8 +439,8 @@ namespace Reporting.Statistics.Sta2020.Service
                     //明細データ出力
                     foreach (var colName in existsCols)
                     {
-                        var value = typeof(CoSta2020PrintData).GetProperty(colName)?.GetValue(printData);
-                        AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
+                        var value = typeof(CoSta2020PrintData).GetProperty(colName).GetValue(printData);
+                        AddListData(ref data, colName, value == null ? "" : value.ToString());
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
@@ -472,12 +471,27 @@ namespace Reporting.Statistics.Sta2020.Service
                         break;
                     }
                 }
+
+
+                return hokIndex;
             }
             #endregion
 
             #endregion
-            UpdateFormHeader();
-            UpdateFormBody();
+
+            try
+            {
+                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void SetFieldData(string field, string value)
@@ -563,11 +577,11 @@ namespace Reporting.Statistics.Sta2020.Service
 
             string RecordData(CoSta2020PrintData csvData)
             {
-                List<string> colDatas = new();
+                List<string> colDatas = new List<string>();
 
                 foreach (var column in putCurColumns)
                 {
-                    var value = typeof(CoSta2020PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                    var value = typeof(CoSta2020PrintData).GetProperty(column.CsvColName).GetValue(csvData);
                     if (csvData.RowType == RowType.Total && !column.IsTotal)
                     {
                         value = string.Empty;

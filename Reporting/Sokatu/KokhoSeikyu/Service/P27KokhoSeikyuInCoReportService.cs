@@ -49,12 +49,6 @@ public class P27KokhoSeikyuInCoReportService : IP27KokhoSeikyuInCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        hokensyaNos = new();
-        receInfs = new();
-        currentHokensyaNo = "";
-        printHokensyaNos = new();
-        hokensyaNames = new();
     }
     #endregion
 
@@ -159,7 +153,7 @@ public class P27KokhoSeikyuInCoReportService : IP27KokhoSeikyuInCoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
                     //退職
@@ -182,7 +176,7 @@ public class P27KokhoSeikyuInCoReportService : IP27KokhoSeikyuInCoReportService
                         listDataPerPage.Add(new("futan", 0, rowNo, totalData.Futan.ToString()));
                         break;
                 }
-                if (wrkReces.Count == 0) continue;
+                if (wrkReces == null) continue;
 
                 if (new int[] { 2, 9 }.Contains(rowNo) && wrkReces.Count >= 1)
                 {
@@ -234,7 +228,7 @@ public class P27KokhoSeikyuInCoReportService : IP27KokhoSeikyuInCoReportService
         hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
         receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kokho, PrefKbn.PrefIn, myPrefNo, HokensyaNoKbn.SumAll);
         //保険者番号の指定がある場合は絞り込み
-        var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
+        var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
             receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
         //保険者番号リストを取得
         hokensyaNos = wrkReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();

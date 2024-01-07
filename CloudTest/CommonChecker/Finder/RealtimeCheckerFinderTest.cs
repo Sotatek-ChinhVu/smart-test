@@ -107,7 +107,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimcheckerfinder.CheckFoodAllergy(hpId, ptId, sinDay, itemCodeModelList, level, new(), isDataOfDb);
 
                 // Assert
-                Assert.True(result.Any() && result.FirstOrDefault().Id == "TC002");
+                Assert.True(result.Any() && result.First().Id == "TC002");
             }
             catch (Exception)
             {
@@ -264,7 +264,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimcheckerfinder.CheckProDrug(hpId, ptId, sinDay, itemCodeModelList, listCompare);
 
                 // Assert
-                Assert.True(result.Any() && result.FirstOrDefault().Id == "Id001");
+                Assert.True(result.Any() && result.First().Id == "Id001");
             }
             finally
             {
@@ -2579,7 +2579,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             var result = realtimcheckerfinder.CheckDosage(1, 2, 3, new List<DrugInfo>(), true, 1.0, 70.0, 160.0, new List<KensaInfDetailModel>(), false);
 
             // Assert
-            Assert.AreEqual(0, result.Count);
+            Assert.That(result.Count, Is.EqualTo(0));
         }
 
         [Test]
@@ -2622,7 +2622,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -2682,7 +2682,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -2782,7 +2782,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -2882,7 +2882,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -2983,7 +2983,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(0, result.Count);
+                Assert.That(result.Count, Is.EqualTo(0));
             }
             finally
             {
@@ -3087,7 +3087,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(0, result.Count);
+                Assert.That(result.Count, Is.EqualTo(0));
             }
             finally
             {
@@ -3200,7 +3200,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -3313,7 +3313,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(0, result.Count);
+                Assert.That(result.Count, Is.EqualTo(0));
             }
             finally
             {
@@ -3426,7 +3426,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(0, result.Count);
+                Assert.That(result.Count, Is.EqualTo(0));
             }
             finally
             {
@@ -3544,7 +3544,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -3661,7 +3661,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -3778,7 +3778,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -3894,7 +3894,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4010,7 +4010,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4126,7 +4126,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4243,7 +4243,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4360,7 +4360,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4474,7 +4474,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4591,7 +4591,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4705,7 +4705,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4819,7 +4819,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -4932,7 +4932,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5045,7 +5045,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5158,7 +5158,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5271,7 +5271,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5384,7 +5384,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5498,7 +5498,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5612,7 +5612,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5726,7 +5726,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5840,7 +5840,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -5955,7 +5955,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6070,7 +6070,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6185,7 +6185,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6300,7 +6300,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6415,7 +6415,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6530,7 +6530,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6645,7 +6645,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6760,7 +6760,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6875,7 +6875,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimeCheckerFinder.CheckDosage(hpId, ptId, sinday, listItem, minCheck, ratioSetting, currentHeight, currenWeight, new(), true);
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
+                Assert.That(result.Count, Is.EqualTo(1));
             }
             finally
             {
@@ -6888,6 +6888,474 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
 
+
+        [Test]
+        public void TC_087_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_LessThan_LimitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var drugDayLimit = new List<DrugDayLimit>()
+            {
+                new DrugDayLimit()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    StartDate = 20230101,
+                    EndDate = 20231212,
+                    LimitDay = 2,
+                    IsDeleted= 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 1,
+                    UpdateId = 1
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimit);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 1.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(0));
+            }
+            finally
+            {
+                tenantTracking.DrugDayLimits.RemoveRange(drugDayLimit);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_088_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_Equal_LimitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var drugDayLimit = new List<DrugDayLimit>()
+            {
+                new DrugDayLimit()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    StartDate = 20230101,
+                    EndDate = 20231212,
+                    LimitDay = 9,
+                    IsDeleted= 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 1,
+                    UpdateId = 1
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimit);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(0));
+            }
+            finally
+            {
+                tenantTracking.DrugDayLimits.RemoveRange(drugDayLimit);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_089_CheckDayLimit_TEST_DayLimitInfoByUser_UsingDay_GreaterThan_LimitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var drugDayLimit = new List<DrugDayLimit>()
+            {
+                new DrugDayLimit()
+                {
+                    HpId = 1,
+                    ItemCd = "UT2720",
+                    StartDate = 20230101,
+                    EndDate = 20231212,
+                    LimitDay = 9,
+                    IsDeleted= 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId = 1,
+                    UpdateId = 1
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.DrugDayLimits.AddRange(drugDayLimit);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 10.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(1));
+                Assert.True(result.First().ItemCd == "UT2720" && result.First().LimitDay == 9 && result.First().UsingDay == 10 && result.First().YjCd == "UT271026");
+            }
+            finally
+            {
+                tenantTracking.DrugDayLimits.RemoveRange(drugDayLimit);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_090_CheckDayLimit_TEST_StartDate_And_EndDate_Is_Empty_And_UsingDay_LessThan_LitmitDay()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "",
+                    EdDate = "",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var usingDay = 1.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(0));
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_091_CheckDayLimit_TEST_Sinday_LessThan_StartDate()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "20240101",
+                    EdDate = "",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20231231;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(0));
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_092_CheckDayLimit_TEST_EndDate_LessThan_Sinday()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "20240101",
+                    EdDate = "20251231",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20260101;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(0));
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_093_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_And_EndDate_IsEmpty()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "",
+                    EdDate = "",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20260101;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(1));
+                Assert.True(result.First().YjCd == "UT271026" && result.First().ItemCd == "UT2720");
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Sinday > StartDate 
+        /// EndDate > Sindate
+        /// Sinday = 20230102, StartDate = 20230101, Endate = 20230103
+        /// </summary>
+        [Test]
+        public void TC_094_CheckDayLimit_TEST_UsingDay_GreaterThan_LitmitDay_StartDate_LessThan_Sinday_LessThan_EndDate()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m10DayLimits = new List<M10DayLimit>()
+            {
+                new M10DayLimit()
+                {
+                    YjCd = "UT271026",
+                    SeqNo = 1,
+                    LimitDay = 2,
+                    StDate = "20230101",
+                    EdDate = "20230103",
+                    Cmt  = ""
+                },
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M10DayLimit.AddRange(m10DayLimits);
+            tenantTracking.SaveChanges();
+
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2719" , "id1"),
+                new ItemCodeModel("UT2720" , "id2"),
+            };
+
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230102;
+            var usingDay = 9.0;
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Arrange
+                var mockTenMstCacheService = new Mock<RealtimeCheckerFinder>();
+
+                // Act
+                var result = realtimeCheckerFinder.CheckDayLimit(hpId, sinday, listItem, usingDay);
+
+                // Assert
+                Assert.That(result.Count, Is.EqualTo(1));
+                Assert.True(result.First().YjCd == "UT271026" && result.First().ItemCd == "UT2720");
+            }
+            finally
+            {
+                tenantTracking.M10DayLimit.RemoveRange(m10DayLimits);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
         [Test]
         public void TC_087_CheckDosage_TEST_MasterData_No_Fake_Data()
         {

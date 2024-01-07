@@ -7,6 +7,10 @@ namespace Reporting.Statistics.Sta2021.Models
         public CoSta2021PrintData(RowType rowType = RowType.Data)
         {
             RowType = rowType;
+            SinYm = new List<int>();
+            SinYmS = new List<string>();
+            Counts = new List<string>();
+            Moneys = new List<string>();
         }
 
         /// <summary>
@@ -17,47 +21,47 @@ namespace Reporting.Statistics.Sta2021.Models
         /// <summary>
         /// 合計行のキャプション
         /// </summary>
-        public string TotalCaption { get; set; } = string.Empty;
+        public string TotalCaption { get; set; }
 
         /// <summary>
         /// 診療年月
         /// </summary>
-        public List<int> SinYm { get; set; } = new();
+        public List<int> SinYm { get; set; }
 
         /// <summary>
         /// 診療年月 (yyyy/MM)
         /// </summary>
-        public List<string> SinYmS { get; set; } = new();
+        public List<string> SinYmS { get; set; }
 
         /// <summary>
         /// 診療科ID
         /// </summary>
-        public string KaId { get; set; } = string.Empty;
+        public string KaId { get; set; }
 
         /// <summary>
         /// 診療科略称
         /// </summary>
-        public string KaSname { get; set; } = string.Empty;
+        public string KaSname { get; set; }
 
         /// <summary>
         /// 担当医ID
         /// </summary>
-        public string TantoId { get; set; } = string.Empty;
+        public string TantoId { get; set; }
 
         /// <summary>
         /// 担当医略称
         /// </summary>
-        public string TantoSname { get; set; } = string.Empty;
+        public string TantoSname { get; set; }
 
         /// <summary>
         /// 診療識別
         /// </summary>
-        public string SinId { get; set; } = string.Empty;
+        public string SinId { get; set; }
 
         /// <summary>
         /// 診療行為区分
         /// </summary>
-        public string SinKouiKbn { get; set; } = string.Empty;
+        public string SinKouiKbn { get; set; }
 
         /// <summary>
         /// 診療行為区分名称
@@ -110,42 +114,42 @@ namespace Reporting.Statistics.Sta2021.Models
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        public string ItemCd { get; set; } = string.Empty;
+        public string ItemCd { get; set; }
 
         /// <summary>
         /// 診療行為名称
         /// </summary>
-        public string ItemName { get; set; } = string.Empty;
+        public string ItemName { get; set; }
 
         /// <summary>
         /// 単価
         /// </summary>
-        public string Ten { get; set; } = string.Empty;
+        public string Ten { get; set; }
 
         /// <summary>
         /// 単価(単位)
         /// </summary>
-        public string TenUnit { get; set; } = string.Empty;
+        public string TenUnit { get; set; }
 
         /// <summary>
         /// 数量
         /// </summary>
-        public string Suryo { get; set; } = string.Empty;
+        public string Suryo { get; set; }
 
         /// <summary>
         /// 単位名称
         /// </summary>
-        public string UnitName { get; set; } = string.Empty;
+        public string UnitName { get; set; }
 
         /// <summary>
         /// 回数
         /// </summary>
-        public List<string> Counts { get; set; } = new();
+        public List<string> Counts { get; set; }
 
         /// <summary>
         /// 金額
         /// </summary>
-        public List<string> Moneys { get; set; } = new();
+        public List<string> Moneys { get; set; }
 
         /// <summary>
         /// 院内院外区分
@@ -263,5 +267,29 @@ namespace Reporting.Statistics.Sta2021.Models
         /// 採用区分
         /// </summary>
         public int IsAdopted { get; set; }
+
+        /// <summary>
+        /// 課税区分
+        /// </summary>
+        //public int KazeiKbn { get; set; }
+
+        /// <summary>
+        /// 課税区分名称
+        /// </summary>
+        //public string KazeiKbnName
+        //{
+        //    get
+        //    {
+        //        switch (KazeiKbn)
+        //        {
+        //            case 0: return "";  //"非課税";
+        //            case 1: return "外税";
+        //            case 2: return "外税(減)";
+        //            case 3: return "内税";
+        //            case 4: return "内税(減)";
+        //        }
+        //        return "";
+        //    }
+        //}
     }
 }

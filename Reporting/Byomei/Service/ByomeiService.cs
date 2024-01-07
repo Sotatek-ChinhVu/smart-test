@@ -140,7 +140,6 @@ public class ByomeiService : IByomeiService
     private void UpdateDrawForm()
     {
         #region SubMethod
-        //using void function because it not return data
         void UpdateFormHeader()
         {
             string bufFrom = string.Empty;
@@ -213,10 +212,18 @@ public class ByomeiService : IByomeiService
                 {
                     SetFieldData("dfStartDate", bufFrom);
                 }
+                else
+                {
+                    //SetFieldData("dfStartDate", CON_UNSPECIFIED_TIME);
+                }
 
                 if (!string.IsNullOrEmpty(bufTo))
                 {
                     SetFieldData("dfEndDate", bufTo);
+                }
+                else
+                {
+                    //SetFieldData("dfEndDate", CON_UNSPECIFIED_TIME);
                 }
             }
 
@@ -229,7 +236,6 @@ public class ByomeiService : IByomeiService
             }
         }
 
-        //using void function because it not return data
         void UpdateFormBody()
         {
             int byomeiIndex = (currentPage - 1) * dataCharCount;

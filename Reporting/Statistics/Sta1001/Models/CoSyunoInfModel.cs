@@ -151,10 +151,11 @@ public class CoSyunoInfModel
     /// </summary>
     public string ReceSbt
     {
-        get => _receSbt ?? "0000";
+        // anh.vu3 refactor: check if _receSbt is null or empty, return "0000"
+        get => string.IsNullOrEmpty(_receSbt) ? "0000" : _receSbt;
         set => _receSbt = value;
     }
-    private string? _receSbt;
+    private string _receSbt;
 
     /// <summary>
     /// 初回来院日
@@ -184,12 +185,12 @@ public class CoSyunoInfModel
     /// <summary>
     /// 氏名
     /// </summary>
-    public string PtName { get; set; } = string.Empty;
+    public string PtName { get; set; }
 
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string PtKanaName { get; set; } = string.Empty;
+    public string PtKanaName { get; set; }
 
     /// <summary>
     /// 請求点数
@@ -289,6 +290,7 @@ public class CoSyunoInfModel
         get => IsNyukin ? _paySName ?? string.Empty : string.Empty;
         set => _paySName = value;
     }
+    // anh.vu3 refactor
     private string? _paySName;
 
     /// <summary>
@@ -365,6 +367,7 @@ public class CoSyunoInfModel
         get => IsNyukin ? _nyukinUserSname ?? string.Empty : string.Empty;
         set => _nyukinUserSname = value;
     }
+    // anh.vu3 refactor
     private string? _nyukinUserSname;
 
     /// <summary>
@@ -394,7 +397,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 受付種別名称
     /// </summary>
-    public string UketukeSbtName { get; set; } = string.Empty;
+    public string UketukeSbtName { get; set; }
 
     /// <summary>
     /// 診療科ID
@@ -404,7 +407,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname { get; set; } = string.Empty;
+    public string KaSname { get; set; }
 
     /// <summary>
     /// 担当医ID
@@ -414,17 +417,17 @@ public class CoSyunoInfModel
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname { get; set; } = string.Empty;
+    public string TantoSname { get; set; }
 
     /// <summary>
     /// 来院時間
     /// </summary>
-    public string UketukeTime { get; set; } = string.Empty;
+    public string UketukeTime { get; set; }
 
     /// <summary>
     /// 精算時間
     /// </summary>
-    public string KaikeiTime { get; set; } = string.Empty;
+    public string KaikeiTime { get; set; }
 
     /// <summary>
     /// 受付者ID
@@ -434,7 +437,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 受付者名
     /// </summary>
-    public string UketukeSname { get; set; } = string.Empty;
+    public string UketukeSname { get; set; }
 
     /// <summary>
     /// 保険種別
@@ -479,7 +482,11 @@ public class CoSyunoInfModel
             if (hokenSbt != "")
             {
                 //公費・後期..に本人家族は不要なので抜ける
-                if (!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
+                if (new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
+                {
+
+                }
+                else
                 {
                     switch (ReceSbt.Substring(3, 1))
                     {
@@ -664,6 +671,7 @@ public class CoSyunoInfModel
     /// </summary>
     public bool IsFirstRaiin
     {
+        //get => SyunoNyukin.SinDate == FirstRaiinDate && SyunoNyukin.SinDate == SyunoNyukin.NyukinDate;
         get => SinDate == FirstRaiinDate && SinDate == NyukinDate;
     }
 
@@ -688,15 +696,15 @@ public class CoSyunoInfModel
     /// <summary>
     /// 来院コメント
     /// </summary>
-    public string RaiinCmt { get; set; } = string.Empty;
+    public string RaiinCmt { get; set; }
 
     /// <summary>
     /// 入金コメント
     /// </summary>
     public string NyukinCmt
     {
-        get => IsNyukin ? _nyukinCmt ?? string.Empty : string.Empty;
+        get => IsNyukin ? _nyukinCmt : string.Empty;
         set => _nyukinCmt = value;
     }
-    private string? _nyukinCmt;
+    private string _nyukinCmt;
 }

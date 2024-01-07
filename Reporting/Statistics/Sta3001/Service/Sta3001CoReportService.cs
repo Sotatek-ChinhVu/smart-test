@@ -15,7 +15,7 @@ namespace Reporting.Statistics.Sta3001.Service
     {
         #region Constant
 
-        private readonly List<PutColumn> putColumns = new List<PutColumn>
+        private List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("ItemCd", "コード"),
             new PutColumn("Name", "名称"),
@@ -67,6 +67,7 @@ namespace Reporting.Statistics.Sta3001.Service
         private List<CoAdpDrugsModel> adpDrugs;
         private CoSta3001PrintConf _printConf;
         private CoFileType? coFileType;
+        //private BackgroundWorker _backgroundWorker = null;
 
         private int HpId;
         private int maxRow = 30;
@@ -84,12 +85,6 @@ namespace Reporting.Statistics.Sta3001.Service
         {
             _sta3001Finder = sta3001Finder;
             _readRseReportFileService = readRseReportFileService;
-            hpInf = new();
-            headerL = new();
-            printDatas = new();
-            adpDrugs = new();
-            _printConf = new();
-            _objectRseList = new();
         }
 
         public CommonReportingRequestModel GetSta3001ReportingData(CoSta3001PrintConf printConf, int hpId)
@@ -108,7 +103,7 @@ namespace Reporting.Statistics.Sta3001.Service
                 var getData = GetData();
                 if (getData)
                 {
-                    while (_hasNextPage)
+                    while (_hasNextPage && getData)
                     {
                         UpdateDrawForm();
                         _currentPage++;
@@ -141,7 +136,7 @@ namespace Reporting.Statistics.Sta3001.Service
                 bool pbDrugKbn = new int[] { _printConf.PageBreak1 }.Contains(1);
 
                 #region ソート順
-                adpDrugs = adpDrugs!
+                adpDrugs = adpDrugs
                     .OrderBy(s => pbDrugKbn ? s.DrugKbn : 0)
                     .ThenBy(s =>
                        _printConf.SortOpt1 == 1 ? "0" :
@@ -327,13 +322,13 @@ namespace Reporting.Statistics.Sta3001.Service
         #endregion
 
         #region Update Draw Form
-        private void UpdateDrawForm()
+        private bool UpdateDrawForm()
         {
             _hasNextPage = true;
 
             #region SubMethod
             #region Header
-            void UpdateFormHeader()
+            int UpdateFormHeader()
             {
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
@@ -369,11 +364,13 @@ namespace Reporting.Statistics.Sta3001.Service
                 }
 
                 SetFieldData("Range", range);
+
+                return 1;
             }
             #endregion
 
             #region Body
-            void UpdateFormBody()
+            int UpdateFormBody()
             {
                 int ptIndex = (_currentPage - 1) * maxRow;
                 int lineCount = 0;
@@ -396,8 +393,8 @@ namespace Reporting.Statistics.Sta3001.Service
                     //明細データ出力
                     foreach (var colName in existsCols)
                     {
-                        var value = typeof(CoSta3001PrintData).GetProperty(colName)?.GetValue(printData);
-                        AddListData(ref data, colName, value == null ? "" : value.ToString() ?? string.Empty);
+                        var value = typeof(CoSta3001PrintData).GetProperty(colName).GetValue(printData);
+                        AddListData(ref data, colName, value == null ? "" : value.ToString());
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
@@ -430,12 +427,25 @@ namespace Reporting.Statistics.Sta3001.Service
                         break;
                     }
                 }
+
+                return ptIndex;
             }
             #endregion
             #endregion
 
-            UpdateFormHeader();
-            UpdateFormBody();
+            try
+            {
+                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
         }
         #endregion
 
@@ -501,6 +511,7 @@ namespace Reporting.Statistics.Sta3001.Service
             }
 
             //データ
+            int totalRow = csvDatas.Count;
             int rowOutputed = 0;
             foreach (var csvData in csvDatas)
             {
@@ -514,7 +525,7 @@ namespace Reporting.Statistics.Sta3001.Service
 
                 foreach (var column in putColumns)
                 {
-                    var value = typeof(CoSta3001PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                    var value = typeof(CoSta3001PrintData).GetProperty(column.CsvColName).GetValue(csvData);
                     colDatas.Add("\"" + (value == null ? "" : value.ToString()) + "\"");
                 }
 
