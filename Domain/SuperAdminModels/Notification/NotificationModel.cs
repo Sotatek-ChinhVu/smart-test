@@ -20,7 +20,29 @@ public class NotificationModel
         Message = string.Empty;
     }
 
+    public NotificationModel(int tenantId, byte status, byte statusTenant, string message)
+    {
+        TenantId = tenantId;
+        Status = status;
+        StatusTenant = statusTenant;
+        Message = message;
+    }
+
+    public void SetTenantId(int newTenantId)
+    {
+        TenantId = newTenantId;
+    }
+
+    public void SetStatusTenant(byte newStatusTenant)
+    {
+        StatusTenant = newStatusTenant;
+    }
+
     public int Id { get; private set; }
+
+    public int TenantId { get; private set; }
+
+    public byte StatusTenant { get; private set; }
 
     public byte Status { get; private set; }
 

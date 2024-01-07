@@ -10,7 +10,7 @@ namespace Reporting.Statistics.Sta2010.DB
 {
     public class CoSta2010Finder : RepositoryBase, ICoSta2010Finder
     {
-        private readonly ICoHpInfFinder _hpInfFinder;
+        private ICoHpInfFinder _hpInfFinder;
 
         public CoSta2010Finder(ITenantProvider tenantProvider, ICoHpInfFinder hpInfFinder) : base(tenantProvider)
         {
@@ -62,12 +62,12 @@ namespace Reporting.Statistics.Sta2010.DB
                 if (printConf.HokenSbts.Contains(2) && !printConf.HokenSbts.Contains(3))
                 {
                     //後期を除く
-                    receInfs = receInfs.Where(r => !(r.HokenKbn == 2 && (r.ReceSbt ?? string.Empty).Substring(1, 1) == "3"));
+                    receInfs = receInfs.Where(r => !(r.HokenKbn == 2 && r.ReceSbt.Substring(1, 1) == "3"));
                 }
                 else if (!printConf.HokenSbts.Contains(2) && printConf.HokenSbts.Contains(3))
                 {
                     //国保一般・退職を除く
-                    receInfs = receInfs.Where(r => !(r.HokenKbn == 2 && (r.ReceSbt ?? string.Empty).Substring(1, 1) != "3"));
+                    receInfs = receInfs.Where(r => !(r.HokenKbn == 2 && r.ReceSbt.Substring(1, 1) != "3"));
                 }
             }
 
@@ -107,7 +107,7 @@ namespace Reporting.Statistics.Sta2010.DB
                 where
                     receInf.HpId == hpId &&
                     receInf.SeikyuYm == printConf.SeikyuYm &&
-                    (printConf.IsTester || receInf.IsTester == 0)
+                    (printConf.IsTester ? true : receInf.IsTester == 0)
                 select new
                 {
                     receInf,
@@ -138,10 +138,10 @@ namespace Reporting.Statistics.Sta2010.DB
                 data => new CoReceInfModel(
                     receInf: data.receInf,
                     ptHokenInf: data.ptHokenInf,
-                    ptKohi1: new(), //data.ptKohi1,
-                    ptKohi2: new(), //data.ptKohi2,
-                    ptKohi3: new(), //data.ptKohi3,
-                    ptKohi4: new(), //data.ptKohi4,
+                    ptKohi1: null, //data.ptKohi1,
+                    ptKohi2: null, //data.ptKohi2,
+                    ptKohi3: null, //data.ptKohi3,
+                    ptKohi4: null, //data.ptKohi4,
                     mainHokensyaNo: printConf.MainHokensyaNo,
                     prefNo: prefNo,
                     data.kaMstj,
@@ -158,7 +158,7 @@ namespace Reporting.Statistics.Sta2010.DB
                 where
                     receInf.HpId == hpId &&
                     receInf.SeikyuYm == printConf.SeikyuYm &&
-                    (printConf.IsTester || receInf.IsTester == 0)
+                    (printConf.IsTester ? true : receInf.IsTester == 0)
                 select new
                 {
                     ptKohi
@@ -174,7 +174,7 @@ namespace Reporting.Statistics.Sta2010.DB
                     where
                         receInf.HpId == hpId &&
                         receInf.SeikyuYm == printConf.SeikyuYm &&
-                        (printConf.IsTester || receInf.IsTester == 0)
+                        (printConf.IsTester ? true : receInf.IsTester == 0)
                     select new
                     {
                         ptKohi
@@ -191,7 +191,7 @@ namespace Reporting.Statistics.Sta2010.DB
                     where
                         receInf.HpId == hpId &&
                         receInf.SeikyuYm == printConf.SeikyuYm &&
-                        (printConf.IsTester || receInf.IsTester == 0)
+                        (printConf.IsTester ? true : receInf.IsTester == 0)
                     select new
                     {
                         ptKohi
@@ -208,7 +208,7 @@ namespace Reporting.Statistics.Sta2010.DB
                     where
                         receInf.HpId == hpId &&
                         receInf.SeikyuYm == printConf.SeikyuYm &&
-                        (printConf.IsTester || receInf.IsTester == 0)
+                        (printConf.IsTester ? true : receInf.IsTester == 0)
                     select new
                     {
                         ptKohi
@@ -219,16 +219,16 @@ namespace Reporting.Statistics.Sta2010.DB
             foreach (var retData in result)
             {
                 if (retData.Kohi1Id == 0) continue;
-                retData.PtKohi1 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi1Id) ?? new();
+                retData.PtKohi1 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi1Id);
 
                 if (retData.Kohi2Id == 0) continue;
-                retData.PtKohi2 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi2Id) ?? new();
+                retData.PtKohi2 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi2Id);
 
                 if (retData.Kohi3Id == 0) continue;
-                retData.PtKohi3 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi3Id) ?? new();
+                retData.PtKohi3 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi3Id);
 
                 if (retData.Kohi4Id == 0) continue;
-                retData.PtKohi4 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi4Id) ?? new();
+                retData.PtKohi4 = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.Kohi4Id);
             }
             #endregion
 
@@ -302,7 +302,7 @@ namespace Reporting.Statistics.Sta2010.DB
         {
             hokensyaNos = hokensyaNos.Distinct().ToList();
             var coHokensyaMsts = NoTrackingDataContext.HokensyaMsts.Where(
-                h => h.HpId == hpId && h.HokensyaNo != null && hokensyaNos.Contains(h.HokensyaNo)
+                h => h.HpId == hpId && hokensyaNos.Contains(h.HokensyaNo)
             ).ToList();
 
             return coHokensyaMsts.Select(h => new CoHokensyaMstModel(h)).ToList();

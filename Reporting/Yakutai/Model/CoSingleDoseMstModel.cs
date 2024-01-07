@@ -4,7 +4,7 @@ namespace Reporting.Yakutai.Model
 {
     public class CoSingleDoseMstModel
     {
-        public SingleDoseMst SingleDoseMst { get; set; }
+        public SingleDoseMst SingleDoseMst { get; } = null;
 
         public CoSingleDoseMstModel(SingleDoseMst singleDoseMst)
         {
@@ -26,7 +26,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public string UnitName
         {
-            get { return (SingleDoseMst.UnitName ?? string.Empty); }
+            get { return SingleDoseMst.UnitName; }
         }
 
         /// <summary>

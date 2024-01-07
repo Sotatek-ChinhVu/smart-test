@@ -78,6 +78,69 @@ namespace AWSSDK.Common
         }
 
         /// <summary>
+        /// Excute script sql use CLI
+        /// </summary>
+        /// <param name="contentScript"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task PostgreSqlExcuteScript(string contentScript, string host, int port, string database, string user, string password, string pathFolderUpdateDataTenant)
+        {
+            try
+            {
+                Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
+                string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+                string sqlFilePath = Path.Combine(pathFolderUpdateDataTenant, $"{Guid.NewGuid()}.sql");
+                // Save script sql to file
+                System.IO.File.WriteAllText(sqlFilePath, contentScript.ToString(), Encoding.ASCII);
+                string batchContent =
+                      $"{Set} PGPASSWORD={password}\n" +
+                    $"psql -h {host} -p {port} -U {user} -d {database} -f {sqlFilePath} 2> /app/update-data-tenant/log-excute-sql.txt";
+                await Execute(batchContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ExcuteScript Error: " + ex.Message);
+                throw new Exception("ExcuteScript Error: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Excute file sql script
+        /// </summary>
+        /// <param name="pathFileScript"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task PostgreSqlExcuteFileScript(string pathFileScript, string host, int port, string database, string user, string password)
+        {
+            try
+            {
+                Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
+                string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+                // Save script sql to file
+                string batchContent =
+                      $"{Set} PGPASSWORD={password}\n" +
+                    $"psql -h {host} -p {port} -U {user} -d {database} -f {pathFileScript} 2> /app/update-data-tenant/log-update-schema-sql.txt";
+                await Execute(batchContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ExcuteScript Error: " + ex.Message);
+                throw new Exception("ExcuteScript Error: " + ex.Message);
+            }
+        }
+
+
+        /// <summary>
         ///  Create file .sh / .bat to execute conent script sql
         /// </summary>
         /// <param name="dumpCommand"></param>
@@ -95,43 +158,14 @@ namespace AWSSDK.Common
 
                     System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
 
-                    // Create process Grant execute permissions to file .sh
-                    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    {
-                        // Grant execute permissions using chmod
-                        ProcessStartInfo chmodInfo = new ProcessStartInfo
-                        {
-                            FileName = "chmod",
-                            Arguments = $"+x {batFilePath}",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-
-                        using (System.Diagnostics.Process chmodProc = System.Diagnostics.Process.Start(chmodInfo))
-                        {
-                            chmodProc.WaitForExit();
-
-                            if (chmodProc.ExitCode != 0)
-                            {
-                                // Handle chmod error, if any
-                                string errorOutput = chmodProc.StandardError.ReadToEnd();
-                                Console.WriteLine($"chmod error: {errorOutput}");
-                                throw new Exception($"Failed to grant execute permissions to the script: {errorOutput}");
-                            }
-                        }
-                    }
-
                     ProcessStartInfo info = ProcessInfoByOS(batFilePath);
 
-                    using System.Diagnostics.Process proc = System.Diagnostics.Process.Start(info);
-
-                    proc.WaitForExit();
-                    var exit = proc.ExitCode;
-
-
-                    proc.Close();
+                    var proc = System.Diagnostics.Process.Start(info);
+                    Console.WriteLine("Start...");
+                    proc?.WaitForExit();
+                    var exit = proc?.ExitCode;
+                    Console.WriteLine("End...");
+                    proc?.Close();
                 }
                 catch (Exception ex)
                 {
@@ -173,6 +207,7 @@ namespace AWSSDK.Common
             info.UseShellExecute = false;
             info.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
             info.RedirectStandardError = true;
+            info.RedirectStandardOutput = true;
 
             return info;
         }
@@ -214,5 +249,68 @@ namespace AWSSDK.Common
             }
             return false;
         }
+
+        #region insert data master
+        public static async Task PostgreSqlExcuteFileSQLDataMaster(string pathFileDump, string host, int port, string database, string user, string password)
+        {
+            Console.WriteLine($"Start: run  PostgreSqlExcuteFileDataMaster");
+            string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+            pathFileDump = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? pathFileDump : pathFileDump.Replace("\\", "/");
+            string dumpCommand =
+                $"echo \"scipt chay\" >> /app/test.txtttt\n" +
+                 $"{Set} PGPASSWORD={password}\n";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // path file window
+                dumpCommand = dumpCommand + $"psql -h {host} -p {port} -U {user} -d {database} -c \"SET client_encoding = 'UTF8';\" -f {pathFileDump}";
+            }
+            else
+            {   // path file linux
+                dumpCommand = dumpCommand + $"psql" + " -h " + host + " -p " + port + " -U " + user + " -d " + database + " -c \"SET client_encoding = 'UTF8';\"" + " -f " + pathFileDump;
+            }
+            await ExecuteDataMaster(dumpCommand);
+        }
+
+        private static Task ExecuteDataMaster(string dumpCommand)
+        {
+            return Task.Run(() =>
+            {
+                string batFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}." + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh"));
+                try
+                {
+                    string batchContent = "";
+                    batchContent += $"{dumpCommand}";
+
+                    System.IO.File.WriteAllText(batFilePath, batchContent.ToString(), Encoding.ASCII);
+                    Console.WriteLine(batFilePath);
+                    Console.WriteLine(batchContent);
+                    Console.WriteLine("Check access file: " + CheckingFinishedAccessedFile(batFilePath).ToString());
+                    ProcessStartInfo info = ProcessInfoByOS(batFilePath);
+                    using (Process proc = new Process())
+                    {
+                        proc.StartInfo = info;
+                        proc.Start();
+                        Console.WriteLine("Process Start");
+                        proc.ErrorDataReceived += (sender, e) => Console.WriteLine($"Error: {e.Data}");
+                        proc.BeginOutputReadLine();
+                        proc.BeginErrorReadLine();
+                        proc.WaitForExit();
+                        Console.WriteLine("Process End");
+                        var exitCode = proc.ExitCode;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    throw new Exception($"Execute sql insert data master. {ex.Message}");
+
+                }
+                finally
+                {
+                }
+            });
+        }
+        #endregion insert data master
     }
 }

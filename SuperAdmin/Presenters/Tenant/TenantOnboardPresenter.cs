@@ -10,7 +10,7 @@ namespace SuperAdminAPI.Presenters.Tenant
         public Response<TenantOnboardResponse> Result { get; private set; } = new();
         public void Complete(TenantOnboardOutputData output)
         {
-            if (output.Status == TenantOnboardStatus.Successed)
+            if (output.Status == TenantOnboardStatus.TenantOnboardSuccessed)
             {
                 Result.Data = new TenantOnboardResponse(output.Data, output.Status);
             }
@@ -25,12 +25,15 @@ namespace SuperAdminAPI.Presenters.Tenant
 
         private string GetMessage(TenantOnboardStatus status) => status switch
         {
-            TenantOnboardStatus.Successed => ResponseMessage.Success,
-            TenantOnboardStatus.Failed => ResponseMessage.Fail,
+            TenantOnboardStatus.TenantOnboardSuccessed => ResponseMessage.TenantOnboardSuccess,
+            TenantOnboardStatus.TenantOnboardFailed => ResponseMessage.TenantOnboardFailed,
+            TenantOnboardStatus.InvalidRequest => ResponseMessage.InvalidRequest,
             TenantOnboardStatus.InvalidSize => ResponseMessage.InvalidSize,
             TenantOnboardStatus.InvalidClusterMode => ResponseMessage.InvalidClusterMode,
             TenantOnboardStatus.InvalidSizeType => ResponseMessage.InvalidSizeType,
             TenantOnboardStatus.SubDomainExists => ResponseMessage.SubDomainExists,
+            TenantOnboardStatus.InvalidSubDomain => ResponseMessage.InvalidSubDomain,
+            TenantOnboardStatus.HopitalExists => ResponseMessage.HopitalExists,
             _ => string.Empty
         };
     }

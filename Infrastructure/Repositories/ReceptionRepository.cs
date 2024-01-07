@@ -212,7 +212,7 @@ namespace Infrastructure.Repositories
                         }
 
                         var confirmedFlgRaiinInfs = raiinInfsInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
-                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
+                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Where(x => x.InfoConsFlg != null)?.Min(x => x.InfoConsFlg![flgIdx].AsInteger()) ?? 0;
                         infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
                     }
                     //Update PharmacistsInfoConsFlg
@@ -242,7 +242,7 @@ namespace Infrastructure.Repositories
                         }
 
                         var confirmedFlgRaiinInfs = onlineConfirmationHistoryInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
-                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
+                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Where(x => x.InfoConsFlg != null)?.Min(x => x.InfoConsFlg![flgIdx].AsInteger()) ?? 0;
                         infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
                     }
                     //Update PharmacistsInfoConsFlg
@@ -1143,11 +1143,11 @@ namespace Infrastructure.Repositories
         public long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate)
         {
             var isDoctor = NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
-            var doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
+            var doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1 && p.IsDeleted == DeleteTypes.None).OrderBy(p => p.SortNo).ToList();
             // if have only 1 doctor in user list
-            if (doctors.Count == 2)
+            if (doctors.Count == 1)
             {
-                return doctors[1].Id;
+                return doctors[0].UserId;
             }
 
             if (isDoctor)
@@ -1206,7 +1206,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return doctors.Count > 0 ? doctors[0].Id : 0;
+            return doctors.Count > 0 ? doctors[0].UserId : 0;
         }
 
         public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)

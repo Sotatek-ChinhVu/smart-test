@@ -124,6 +124,7 @@ using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KensaHistory;
 using Interactor.KohiHokenMst;
+using Interactor.LastDayInformation;
 using Interactor.ListSetMst;
 using Interactor.Lock;
 using Interactor.Logger;
@@ -355,7 +356,10 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
+using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
+using UseCase.DrugInfor.GetSinrekiFilterMstList;
+using UseCase.DrugInfor.SaveSinrekiFilterMstList;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
 using UseCase.Family.GetMaybeFamilyList;
@@ -393,6 +397,7 @@ using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.InsuranceMst.SaveOrdInsuranceMst;
 using UseCase.IsUsingKensa;
 using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.GetAll;
 using UseCase.JsonSetting.Upsert;
 using UseCase.Ka.GetKaCodeList;
 using UseCase.Ka.GetKacodeMstYossi;
@@ -411,6 +416,8 @@ using UseCase.KensaHistory.GetListKensaSetDetail;
 using UseCase.KensaHistory.UpdateKensaInfDetail;
 using UseCase.KensaHistory.UpdateKensaSet;
 using UseCase.KohiHokenMst.Get;
+using UseCase.LastDayInformation.GetLastDayInfoList;
+using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
 using UseCase.ListSetMst.UpdateListSetMst;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
@@ -809,6 +816,17 @@ using UseCase.DrugInfor.SaveSinrekiFilterMstList;
 using UseCase.DrugInfor.GetContentDrugUsageHistory;
 using Interactor.LastDayInformation;
 using UseCase.LastDayInformation.GetLastDayInfoList;
+using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
+using Infrastructure.Repositoriesp;
+using Domain.Models.ReleasenoteRead;
+using Interactor.ReleasenoteRead;
+using UseCase.Releasenote.LoadListVersion;
+using UseCase.Releasenote.UpdateListReleasenote;
+using Domain.Models.Cacche;
+using Interactor.Cache;
+using UseCase.Cache.RemoveAllCache;
+using UseCase.Cache.RemoveCache;
+using UseCase.Diseases.IsHokenInfInUsed;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -846,9 +864,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddTransient<IUserInfoService, UserInfoService>();
-            services.AddTransient<IKaService, KaService>();
-            services.AddTransient<ISystemConfigService, SystemConfigService>();
+            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<IKaService, KaService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
@@ -1225,6 +1242,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiSetGenerationMstRepository, ByomeiSetGenerationMstRepository>();
             services.AddTransient<ISmartKartePortRepository, SmartKartePortRepository>();
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
+            services.AddTransient<IReleasenoteReadRepository, ReleasenoteReadRepository>();
+            services.AddTransient<IRemoveCacheRepository, CacheRepository>();
             ///services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
@@ -1232,6 +1251,8 @@ namespace EmrCloudApi.Configs.Dependency
         {
             var registration = new ServiceRegistration(services);
             var busBuilder = new SyncUseCaseBusBuilder(registration);
+            busBuilder.RegisterUseCase<RemoveCacheInputData, RemoveCacheInteractor>();
+            busBuilder.RegisterUseCase<RemoveAllCacheInputData, RemoveAllCacheInteractor>();
 
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
@@ -1407,6 +1428,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveKensaIraiInputData, SaveKensaIraiInteractor>();
             busBuilder.RegisterUseCase<ContainerMasterUpdateInputData, ContainerMasterUpdateInteractor>();
             busBuilder.RegisterUseCase<GetLastDayInfoListInputData, GetLastDayInfoListInteractor>();
+            busBuilder.RegisterUseCase<SaveSettingLastDayInfoListInputData, SaveSettingLastDayInfoListInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -1466,6 +1488,7 @@ namespace EmrCloudApi.Configs.Dependency
             // JsonSetting
             busBuilder.RegisterUseCase<GetJsonSettingInputData, GetJsonSettingInteractor>();
             busBuilder.RegisterUseCase<UpsertJsonSettingInputData, UpsertJsonSettingInteractor>();
+            busBuilder.RegisterUseCase<GetAllJsonSettingInputData, GetAllJsonSettingInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
@@ -1537,6 +1560,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
             busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
             busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
+            busBuilder.RegisterUseCase<IsHokenInfInUsedInputData, IsHokenInfInUsedInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -1796,6 +1820,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ImportKensaIraiInputData, ImportKensaIraiInteractor>();
             busBuilder.RegisterUseCase<GetRsvInfToConfirmInputData, GetRsvInfToConfirmInteractor>();
             busBuilder.RegisterUseCase<GetListQualificationInfInputData, GetListQualificationInfInteractor>();
+            busBuilder.RegisterUseCase<GetLoadListVersionInputData, GetLoadListVersionInteractor>();
+            busBuilder.RegisterUseCase<UpdateListReleasenoteInputData, UpdateListReleasenoteInteractor>();
 
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();

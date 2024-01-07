@@ -13,6 +13,8 @@
         public const string Revert = "Revert";
         public const string Delete = "Delete";
         public const string GetSettingValue = "GetSettingValue";
+        public const string RemoveCache = "RemoveCache";
+        public const string RemoveAllCache = "RemoveAllCache";
 
         // SuperSet
         public const string Validate = "Validate";
@@ -293,6 +295,7 @@
         public const string GetHeaderVistitDate = "GetHeaderVistitDate";
         public const string SaveKensaIrai = "SaveKensaIrai";
         public const string GetLastDayInfoList = "GetLastDayInfoList";
+        public const string SaveSettingLastDayInfoList = "SaveSettingLastDayInfoList";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -470,6 +473,8 @@
         public const string ImportKensaIrai = "ImportKensaIrai";
         public const string GetRsvInfToConfirm = "GetRsvInfToConfirm";
         public const string GetListQualificationInf = "GetListQualificationInf";
+        public const string GetLoadListVersion = "GetLoadListVersion";
+        public const string UpdateListReleasenote = "UpdateListReleasenote";
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
@@ -516,6 +521,7 @@
 
         //ByomeiSetMst
         public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
+        public const string IsHokenInfInUsed = "IsHokenInfInUsed";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";

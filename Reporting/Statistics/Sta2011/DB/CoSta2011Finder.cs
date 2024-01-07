@@ -64,12 +64,12 @@ namespace Reporting.Statistics.Sta2011.DB
         /// <returns></returns>
         public List<CoZaitakuModel> GetZaitakuReces(int hpId, CoSta2011PrintConf printConf)
         {
-            if (printConf.ZaitakuItems == null) return new();
+            if (printConf.ZaitakuItems == null) return null;
 
             var receInfs = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
             var odrInfs = NoTrackingDataContext.OdrInfs.Where(o => o.HpId == hpId && o.IsDeleted == DeleteStatus.None);
-            var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.HpId == hpId && d.ItemCd != null && printConf.ZaitakuItems.Contains(d.ItemCd));
+            var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.HpId == hpId && printConf.ZaitakuItems.Contains(d.ItemCd));
 
             var receHokens = (
                 from r in receInfs

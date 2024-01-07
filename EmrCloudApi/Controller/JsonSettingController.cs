@@ -4,10 +4,10 @@ using EmrCloudApi.Requests.JsonSetting;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.JsonSetting;
 using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.GetAll;
 using UseCase.JsonSetting.Upsert;
 
 namespace EmrCloudApi.Controller;
@@ -28,6 +28,16 @@ public class JsonSettingController : AuthorizeControllerBase
         var input = new GetJsonSettingInputData(UserId, req.Key);
         var output = _bus.Handle(input);
         var presenter = new GetJsonSettingPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetList)]
+    public ActionResult<Response<GetAllJsonSettingResponse>> GetList()
+    {
+        var input = new GetAllJsonSettingInputData(UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetAllJsonSettingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }

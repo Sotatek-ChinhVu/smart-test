@@ -27,7 +27,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 入金コメント
     /// </summary>
-    public string NyukinCmt { get; set; } = string.Empty;
+    public string NyukinCmt { get; set; }
 
     /// <summary>
     /// 保険種別コード
@@ -194,7 +194,7 @@ public class CoSyunoInfModel
     /// </summary>
     public string Tel2
     {
-        get => PtInf.Tel2??string.Empty;
+        get => PtInf.Tel2 ?? string.Empty;
     }
 
     /// <summary>
@@ -304,7 +304,7 @@ public class CoSyunoInfModel
             if (hokenSbt != "")
             {
                 //公費・後期..に本人家族は不要なので抜ける
-                if(!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
+                if (!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
                 {
                     switch (ReceSbt.Substring(3, 1))
                     {

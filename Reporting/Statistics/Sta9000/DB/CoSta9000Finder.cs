@@ -366,8 +366,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// <returns></returns>
     public List<CoDrugOdrModel> GetDrugOrders(
         int hpId,
-        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
-        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf)
+        CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
+        CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
         var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
 
@@ -390,12 +390,12 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 if (sinConf.WordOpt == 0)
                 {
                     //or条件
-                    odrDetails = odrDetails.Where(p => searchWords.Any(key => (p.ItemName ?? string.Empty).Contains(key)));
+                    odrDetails = odrDetails.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    odrDetails = odrDetails.Where(p => searchWords.All(key => (p.ItemName ?? string.Empty).Contains(key)));
+                    odrDetails = odrDetails.Where(p => searchWords.All(key => p.ItemName.Contains(key)));
                 }
             }
             //検索項目
@@ -409,16 +409,16 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
                 if (sinConf.ItemCmts?.Count >= 1)
                 {
-                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd ?? string.Empty) || (p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName)));
+                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd) || (p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName)));
                 }
                 else
                 {
-                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd ?? string.Empty));
+                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd));
                 }
             }
             else if (sinConf.ItemCmts?.Count >= 1)
             {
-                odrDetails = odrDetails.Where(p => p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName ?? string.Empty));
+                odrDetails = odrDetails.Where(p => p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName));
             }
         }
 
@@ -471,8 +471,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// 患者病名の取得
     /// </summary>
     public List<CoPtByomeiModel> GetPtByomeis(
-        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
-        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf)
+        CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
+        CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
         var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         (var ptByomeis, bool isByomeiConf) = GetPtByomeis(byomeiConf);
@@ -481,17 +481,17 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         if (isByomeiConf)
         {
             const string freeByomeiCd = "0000999";
-            if (byomeiConf?.ByomeiCds?.Count >= 1 && byomeiConf.Byomeis?.Count >= 1)
+            if (byomeiConf.ByomeiCds?.Count >= 1 && byomeiConf.Byomeis?.Count >= 1)
             {
-                ptByomeis = ptByomeis.Where(p => byomeiConf.ByomeiCds.Contains(p.ByomeiCd ?? string.Empty) || (p.Byomei != null && p.ByomeiCd == freeByomeiCd && byomeiConf.Byomeis.Contains(p.Byomei)));
+                ptByomeis = ptByomeis.Where(p => byomeiConf.ByomeiCds.Contains(p.ByomeiCd) || (p.ByomeiCd == freeByomeiCd && byomeiConf.Byomeis.Contains(p.Byomei)));
             }
-            else if (byomeiConf?.ByomeiCds?.Count >= 1)
+            else if (byomeiConf.ByomeiCds?.Count >= 1)
             {
-                ptByomeis = ptByomeis.Where(p => byomeiConf.ByomeiCds.Contains(p.ByomeiCd ?? string.Empty));
+                ptByomeis = ptByomeis.Where(p => byomeiConf.ByomeiCds.Contains(p.ByomeiCd));
             }
-            else if (byomeiConf?.Byomeis?.Count >= 1)
+            else if (byomeiConf.Byomeis?.Count >= 1)
             {
-                ptByomeis = ptByomeis.Where(p => p.ByomeiCd == freeByomeiCd && byomeiConf.Byomeis.Contains(p.Byomei ?? string.Empty));
+                ptByomeis = ptByomeis.Where(p => p.ByomeiCd == freeByomeiCd && byomeiConf.Byomeis.Contains(p.Byomei));
             }
         }
 
@@ -577,8 +577,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     public List<CoRaiinInfModel> GetRaiinInfs(
         int hpId,
-        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
-        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf)
+        CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
+        CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
         var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
@@ -700,7 +700,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
             foreach (var raiinKbnMst in raiinKbnMsts)
             {
-                var curKbns = raiinKbns.FirstOrDefault(r => r.RaiinNo == raiinData.RaiinNo && r.GrpId == raiinKbnMst.GrpCd);
+                var curKbns = raiinKbns.Where(r => r.RaiinNo == raiinData.RaiinNo && r.GrpId == raiinKbnMst.GrpCd).FirstOrDefault();
 
                 raiinData.RaiinKbns.Add
                 (
@@ -771,12 +771,12 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 if (sinConf.WordOpt == 0)
                 {
                     //or条件
-                    odrDetails = odrDetails.Where(p => searchWords.Any(key => p.ItemName != null && p.ItemName.Contains(key)));
+                    odrDetails = odrDetails.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    odrDetails = odrDetails.Where(p => searchWords.All(key => p.ItemName != null && p.ItemName.Contains(key)));
+                    odrDetails = odrDetails.Where(p => searchWords.All(key => p.ItemName.Contains(key)));
                 }
             }
             //検索項目
@@ -790,16 +790,16 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
                 if (sinConf.ItemCmts?.Count >= 1)
                 {
-                    odrDetails = odrDetails.Where(p => p.ItemCd != null && wrkItems.Contains(p.ItemCd) || (p.ItemName != null && p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName)));
+                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd) || (p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName)));
                 }
                 else
                 {
-                    odrDetails = odrDetails.Where(p => p.ItemCd != null && wrkItems.Contains(p.ItemCd));
+                    odrDetails = odrDetails.Where(p => wrkItems.Contains(p.ItemCd));
                 }
             }
             else if (sinConf.ItemCmts?.Count >= 1)
             {
-                odrDetails = odrDetails.Where(p => p.ItemName != null && p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName));
+                odrDetails = odrDetails.Where(p => p.ItemCd == string.Empty && sinConf.ItemCmts.Contains(p.ItemName));
             }
         }
 
@@ -914,20 +914,20 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
         foreach (var retData in retDatas)
         {
-            retData.PtHokenPattern = hokenDatas?.Find(h => h.ptHokenPattern.PtId == retData.PtId && h.ptHokenPattern.HokenPid == retData.HokenPid)?.ptHokenPattern ?? new();
-            retData.HokenHoubetu = hokenDatas?.Find(h => h.ptHokenPattern.PtId == retData.PtId && h.ptHokenPattern.HokenPid == retData.HokenPid)?.ptHokenInf?.Houbetu ?? string.Empty;
+            retData.PtHokenPattern = hokenDatas.Find(h => h.ptHokenPattern.PtId == retData.PtId && h.ptHokenPattern.HokenPid == retData.HokenPid)?.ptHokenPattern;
+            retData.HokenHoubetu = hokenDatas.Find(h => h.ptHokenPattern.PtId == retData.PtId && h.ptHokenPattern.HokenPid == retData.HokenPid)?.ptHokenInf.Houbetu;
 
             if (retData.PtHokenPattern.Kohi1Id == 0) continue;
-            retData.Kohi1Houbetu = kohiDatas?.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi1Id)?.Houbetu ?? string.Empty;
+            retData.Kohi1Houbetu = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi1Id)?.Houbetu;
 
             if (retData.PtHokenPattern.Kohi2Id == 0) continue;
-            retData.Kohi2Houbetu = kohiDatas?.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi2Id)?.Houbetu ?? string.Empty;
+            retData.Kohi2Houbetu = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi2Id)?.Houbetu;
 
             if (retData.PtHokenPattern.Kohi3Id == 0) continue;
-            retData.Kohi3Houbetu = kohiDatas?.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi3Id)?.Houbetu ?? string.Empty;
+            retData.Kohi3Houbetu = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi3Id)?.Houbetu;
 
             if (retData.PtHokenPattern.Kohi4Id == 0) continue;
-            retData.Kohi4Houbetu = kohiDatas?.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi4Id)?.Houbetu ?? string.Empty;
+            retData.Kohi4Houbetu = kohiDatas.Find(k => k.PtId == retData.PtId && k.HokenId == retData.PtHokenPattern.Kohi4Id)?.Houbetu;
         }
         #endregion
 
@@ -984,12 +984,12 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 if (sinConf.WordOpt == 0)
                 {
                     //or条件
-                    sinKouiDetails = sinKouiDetails.Where(p => searchWords.Any(key => p.ItemName != null && p.ItemName.Contains(key)));
+                    sinKouiDetails = sinKouiDetails.Where(p => searchWords.Any(key => p.ItemName.Contains(key)));
                 }
                 else
                 {
                     //and条件
-                    sinKouiDetails = sinKouiDetails.Where(p => searchWords.All(key => p.ItemName != null && p.ItemName.Contains(key)));
+                    sinKouiDetails = sinKouiDetails.Where(p => searchWords.All(key => p.ItemName.Contains(key)));
                 }
             }
             //検索項目
@@ -1003,16 +1003,16 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
                 if (sinConf.ItemCmts?.Count >= 1)
                 {
-                    sinKouiDetails = sinKouiDetails.Where(p => p.ItemCd != null && wrkItems.Contains(p.ItemCd) || (p.ItemName != null && p.ItemCd == ItemCdConst.CommentFree && sinConf.ItemCmts.Contains(p.ItemName)));
+                    sinKouiDetails = sinKouiDetails.Where(p => wrkItems.Contains(p.ItemCd) || (p.ItemCd == ItemCdConst.CommentFree && sinConf.ItemCmts.Contains(p.ItemName)));
                 }
                 else
                 {
-                    sinKouiDetails = sinKouiDetails.Where(p => p.ItemCd != null && wrkItems.Contains(p.ItemCd));
+                    sinKouiDetails = sinKouiDetails.Where(p => wrkItems.Contains(p.ItemCd));
                 }
             }
             else if (sinConf.ItemCmts?.Count >= 1)
             {
-                sinKouiDetails = sinKouiDetails.Where(p => p.ItemCd == ItemCdConst.CommentFree && p.ItemName != null && sinConf.ItemCmts.Contains(p.ItemName));
+                sinKouiDetails = sinKouiDetails.Where(p => p.ItemCd == ItemCdConst.CommentFree && sinConf.ItemCmts.Contains(p.ItemName));
             }
         }
 
@@ -1105,7 +1105,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             //カルテ区分
             karteInfs = karteConf.KarteKbns?.Count >= 1 ? karteInfs.Where(k => karteConf.KarteKbns.Contains(k.KarteKbn)) : karteInfs;
             //文字列検索
-            karteInfs = karteConf.SearchWords?.Count >= 1 ? karteInfs.Where(r => karteConf.SearchWords.Any(key => r.Text != null && r.Text.Contains(key))) : karteInfs;
+            karteInfs = karteConf.SearchWords?.Count >= 1 ? karteInfs.Where(r => karteConf.SearchWords.Any(key => r.Text.Contains(key))) : karteInfs;
         }
 
         var sinDatas = (
@@ -1154,6 +1154,28 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         return retDatas;
     }
 
+    public List<CoKensaModel> GetKensaInfs(
+        int hpId,
+        CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
+        CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf, CoSta9000KensaConf kensaConf)
+    {
+        //対象患者
+        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf).ToList();
+        //検査
+        var kensaInfs = GetKensaInfs(hpId, kensaConf);
+
+        var retDatas = (
+            from ptInf in ptInfs
+            join kensaInf in kensaInfs on
+                ptInf.PtId equals kensaInf.PtId
+            select
+                kensaInf
+        ).ToList();
+
+        return retDatas;
+    }
+
+
     /// <summary>
     /// 対象患者の取得
     ///     （検査情報の抽出条件を除く）
@@ -1184,7 +1206,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             ptInfs = ptConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= ptConf.EndPtNum) : ptInfs;
             ptInfs = ptConf.PtNums?.Count > 0 ? ptInfs.Where(p => (ptConf.PtNums.Count == 0 || ptConf.PtNums.Contains(p.PtNum))) : ptInfs;
             //カナ氏名
-            ptInfs = ptConf.KanaName != string.Empty ? ptInfs.Where(p => p.KanaName != null && p.KanaName.Contains(ptConf.KanaName)) : ptInfs;
+            ptInfs = ptConf.KanaName != string.Empty ? ptInfs.Where(p => p.KanaName != null && p.KanaName.Contains(ptConf.KanaName) == true) : ptInfs;
             ptInfs = ptConf.Name != string.Empty ? ptInfs.Where(p => p.Name != null && p.Name.Contains(ptConf.Name)) : ptInfs;
             //生年月日
             ptInfs = ptConf.StartBirthday > 0 ? ptInfs.Where(p => p.Birthday >= ptConf.StartBirthday) : ptInfs;
@@ -1935,14 +1957,18 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 from ptKohi4j in ptKohi4Join.DefaultIfEmpty()
                 where
                     //法別番号
-                    (hokenConf.Houbetu1 == string.Empty || (ptKohi1j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu1 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu1 ||
-                         (ptKohi3j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu1 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu1) &&
-                    (hokenConf.Houbetu2 == string.Empty || ((ptKohi1j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu2 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu2 ||
-                         (ptKohi3j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu2 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu2)) &&
-                    (hokenConf.Houbetu3 == string.Empty || ((ptKohi1j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu3 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu3 ||
-                         (ptKohi3j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu3 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu3)) &&
-                    (hokenConf.Houbetu4 == string.Empty || ((ptKohi1j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu4 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu4 ||
-                         (ptKohi3j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu4 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu4))
+                    (hokenConf.Houbetu1 != string.Empty ?
+                        (ptKohi1j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu1 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu1 ||
+                         ptKohi3j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu1 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu1) : true) &&
+                    (hokenConf.Houbetu2 != string.Empty ?
+                        (ptKohi1j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu2 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu2 ||
+                         ptKohi3j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu2 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu2) : true) &&
+                    (hokenConf.Houbetu3 != string.Empty ?
+                        (ptKohi1j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu3 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu3 ||
+                         ptKohi3j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu3 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu3) : true) &&
+                    (hokenConf.Houbetu4 != string.Empty ?
+                        (ptKohi1j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu4 || (ptKohi2j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu4 ||
+                         ptKohi3j.FutansyaNo.Substring(0, 2) == hokenConf.Houbetu4 || (ptKohi4j.FutansyaNo ?? string.Empty).Substring(0, 2) == hokenConf.Houbetu4) : true)
                 select
                     ptHokenPattern
             );
@@ -1953,29 +1979,29 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         if (isHokenConf)
         {
             var initKohis = ptKohis;
-            string sEdaNo = hokenConf?.EdaNo ?? string.Empty.TrimStart('0');
+            string sEdaNo = hokenConf.EdaNo.TrimStart('0');
 
             //保険者番号
-            ptHokenInfs = hokenConf != null && hokenConf?.StartHokensyaNo != string.Empty ? ptHokenInfs.Where(p => (p.HokensyaNo ?? string.Empty).CompareTo(hokenConf!.StartHokensyaNo ?? string.Empty) >= 0) : ptHokenInfs;
-            ptHokenInfs = hokenConf != null && hokenConf?.EndHokensyaNo != string.Empty ? ptHokenInfs.Where(p => (p.HokensyaNo ?? string.Empty).CompareTo(hokenConf!.EndHokensyaNo ?? string.Empty) <= 0) : ptHokenInfs;
+            ptHokenInfs = hokenConf.StartHokensyaNo != string.Empty ? ptHokenInfs.Where(p => p.HokensyaNo.CompareTo(hokenConf.StartHokensyaNo) >= 0) : ptHokenInfs;
+            ptHokenInfs = hokenConf.EndHokensyaNo != string.Empty ? ptHokenInfs.Where(p => p.HokensyaNo.CompareTo(hokenConf.EndHokensyaNo) <= 0) : ptHokenInfs;
             //記号
-            ptHokenInfs = hokenConf != null && hokenConf?.Kigo != string.Empty ? ptHokenInfs.Where(p => p.Kigo != null && p.Kigo.Contains(hokenConf!.Kigo)) : ptHokenInfs;
+            ptHokenInfs = hokenConf.Kigo != string.Empty ? ptHokenInfs.Where(p => p.Kigo.Contains(hokenConf.Kigo)) : ptHokenInfs;
             //番号
-            ptHokenInfs = hokenConf != null && hokenConf?.Bango != string.Empty ? ptHokenInfs.Where(p => p.Bango != null && p.Bango.Contains(hokenConf!.Bango)) : ptHokenInfs;
-            ptHokenInfs = hokenConf != null && hokenConf?.EdaNo != string.Empty ? ptHokenInfs.Where(p => p.EdaNo == hokenConf!.EdaNo || p.EdaNo == sEdaNo) : ptHokenInfs;
+            ptHokenInfs = hokenConf.Bango != string.Empty ? ptHokenInfs.Where(p => p.Bango.Contains(hokenConf.Bango)) : ptHokenInfs;
+            ptHokenInfs = hokenConf.EdaNo != string.Empty ? ptHokenInfs.Where(p => p.EdaNo == hokenConf.EdaNo || p.EdaNo == sEdaNo) : ptHokenInfs;
             //本人・家族
-            ptHokenInfs = hokenConf?.HonkeKbn > 0 ? ptHokenInfs.Where(p => p.HonkeKbn == hokenConf.HonkeKbn) : ptHokenInfs;
+            ptHokenInfs = hokenConf.HonkeKbn > 0 ? ptHokenInfs.Where(p => p.HonkeKbn == hokenConf.HonkeKbn) : ptHokenInfs;
             //公費負担者番号
-            ptKohis = hokenConf != null && hokenConf?.StartFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo != null && p.FutansyaNo.CompareTo(hokenConf!.StartFutansyaNo) >= 0) : ptKohis;
-            ptKohis = hokenConf != null && hokenConf?.EndFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo != null && p.FutansyaNo.CompareTo(hokenConf!.EndFutansyaNo) <= 0) : ptKohis;
+            ptKohis = hokenConf.StartFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo.CompareTo(hokenConf.StartFutansyaNo) >= 0) : ptKohis;
+            ptKohis = hokenConf.EndFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo.CompareTo(hokenConf.EndFutansyaNo) <= 0) : ptKohis;
             //公費特殊番号
-            ptKohis = hokenConf != null && hokenConf?.StartTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo != null && p.TokusyuNo.CompareTo(hokenConf!.StartTokusyuNo) >= 0) : ptKohis;
-            ptKohis = hokenConf != null && hokenConf?.EndTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo != null && p.TokusyuNo.CompareTo(hokenConf!.EndTokusyuNo) <= 0) : ptKohis;
+            ptKohis = hokenConf.StartTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo.CompareTo(hokenConf.StartTokusyuNo) >= 0) : ptKohis;
+            ptKohis = hokenConf.EndTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo.CompareTo(hokenConf.EndTokusyuNo) <= 0) : ptKohis;
             //有効期限
-            ptHokenPatterns = hokenConf?.StartDate > 0 ? ptHokenPatterns.Where(p => p.EndDate >= hokenConf.StartDate) : ptHokenPatterns;
-            ptHokenPatterns = hokenConf?.EndDate > 0 ? ptHokenPatterns.Where(p => p.StartDate <= hokenConf.EndDate) : ptHokenPatterns;
+            ptHokenPatterns = hokenConf.StartDate > 0 ? ptHokenPatterns.Where(p => p.EndDate >= hokenConf.StartDate) : ptHokenPatterns;
+            ptHokenPatterns = hokenConf.EndDate > 0 ? ptHokenPatterns.Where(p => p.StartDate <= hokenConf.EndDate) : ptHokenPatterns;
             //保険種別
-            if (hokenConf?.HokenSbts?.Count >= 1)
+            if (hokenConf.HokenSbts?.Count >= 1)
             {
                 //保険種別
                 List<int> hokenKbns = new List<int>();
@@ -2012,14 +2038,14 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 }
             }
             //法別番号
-            ptHokenInfs = hokenConf != null && hokenConf.Houbetu0 != string.Empty ? ptHokenInfs.Where(p => p.Houbetu == hokenConf.Houbetu0) : ptHokenInfs;
+            ptHokenInfs = hokenConf.Houbetu0 != string.Empty ? ptHokenInfs.Where(p => p.Houbetu == hokenConf.Houbetu0) : ptHokenInfs;
             //高額区分
-            ptHokenInfs = hokenConf != null && hokenConf.KogakuKbns?.Count > 0 ? ptHokenInfs.Where(p => hokenConf.KogakuKbns.Contains(p.KogakuKbn)) : ptHokenInfs;
+            ptHokenInfs = hokenConf.KogakuKbns?.Count > 0 ? ptHokenInfs.Where(p => hokenConf.KogakuKbns.Contains(p.KogakuKbn)) : ptHokenInfs;
             //公費保険番号
-            int startNo = (hokenConf?.EndKohiHokenNo.HokenNo ?? 0) * 100000 + (hokenConf?.StartKohiHokenNo.HokenEdaNo ?? 0);
-            ptKohis = hokenConf != null && hokenConf.StartKohiHokenNo.HokenNo > 0 ? ptKohis.Where(p => p.HokenNo * 100000 + p.HokenEdaNo >= startNo) : ptKohis;
-            int endNo = (hokenConf?.EndKohiHokenNo.HokenNo ?? 0) * 100000 + (hokenConf?.EndKohiHokenNo.HokenEdaNo ?? 0);
-            ptKohis = hokenConf != null && hokenConf.EndKohiHokenNo.HokenNo > 0 ? ptKohis.Where(p => p.HokenNo * 100000 + p.HokenEdaNo <= endNo) : ptKohis;
+            int startNo = hokenConf.StartKohiHokenNo.HokenNo * 100000 + hokenConf.StartKohiHokenNo.HokenEdaNo;
+            ptKohis = hokenConf.StartKohiHokenNo.HokenNo > 0 ? ptKohis.Where(p => p.HokenNo * 100000 + p.HokenEdaNo >= startNo) : ptKohis;
+            int endNo = hokenConf.EndKohiHokenNo.HokenNo * 100000 + hokenConf.EndKohiHokenNo.HokenEdaNo;
+            ptKohis = hokenConf.EndKohiHokenNo.HokenNo > 0 ? ptKohis.Where(p => p.HokenNo * 100000 + p.HokenEdaNo <= endNo) : ptKohis;
 
             //条件有無
             isKohiConf = initKohis != ptKohis;
@@ -2054,7 +2080,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             ptByomeis = byomeiConf?.NanbyoCds?.Count > 0 ? ptByomeis.Where(p => byomeiConf.NanbyoCds.Contains(p.NanByoCd)) : ptByomeis;
             //疑い病名
             const string doubtCd = "8002";
-            if (byomeiConf?.IsDoubt == 1)
+            if (byomeiConf.IsDoubt == 1)
             {
                 ptByomeis = ptByomeis.Where(p =>
                     p.SyusyokuCd1 == doubtCd || p.SyusyokuCd2 == doubtCd || p.SyusyokuCd3 == doubtCd ||
@@ -2066,7 +2092,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     p.SyusyokuCd19 == doubtCd || p.SyusyokuCd20 == doubtCd || p.SyusyokuCd21 == doubtCd
                 );
             }
-            else if (byomeiConf?.IsDoubt == 2)
+            else if (byomeiConf.IsDoubt == 2)
             {
                 ptByomeis = ptByomeis.Where(p =>
                     p.SyusyokuCd1 != doubtCd && p.SyusyokuCd2 != doubtCd && p.SyusyokuCd3 != doubtCd &&
@@ -2082,7 +2108,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             if (byomeiConf.SearchWord != string.Empty)
             {
                 //スペース区切りでキーワードを分解
-                var values = byomeiConf.SearchWord?.Replace("　", " ").Split(' ');
+                string[] values = byomeiConf.SearchWord?.Replace("　", " ").Split(' ');
                 List<string> searchWords = new List<string>();
                 if (values != null)
                 {
@@ -2114,15 +2140,15 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 //or条件
                 if (byomeiConf.ByomeiCds?.Count >= 1 && byomeiConf.Byomeis?.Count >= 1)
                 {
-                    ptByomeis = ptByomeis.Where(p => p.ByomeiCd != null && byomeiConf.ByomeiCds.Contains(p.ByomeiCd) || (p.ByomeiCd == freeByomeiCd && p.Byomei != null && byomeiConf.Byomeis.Contains(p.Byomei)));
+                    ptByomeis = ptByomeis.Where(p => byomeiConf.ByomeiCds.Contains(p.ByomeiCd) || (p.ByomeiCd == freeByomeiCd && byomeiConf.Byomeis.Contains(p.Byomei)));
                 }
                 else if (byomeiConf.ByomeiCds?.Count >= 1)
                 {
-                    ptByomeis = ptByomeis.Where(p => p.ByomeiCd != null && byomeiConf.ByomeiCds.Contains(p.ByomeiCd));
+                    ptByomeis = ptByomeis.Where(p => byomeiConf.ByomeiCds.Contains(p.ByomeiCd));
                 }
                 else if (byomeiConf.Byomeis?.Count >= 1)
                 {
-                    ptByomeis = ptByomeis.Where(p => p.ByomeiCd == freeByomeiCd && p.Byomei != null && byomeiConf.Byomeis.Contains(p.Byomei));
+                    ptByomeis = ptByomeis.Where(p => p.ByomeiCd == freeByomeiCd && byomeiConf.Byomeis.Contains(p.Byomei));
                 }
             }
             else
@@ -2285,7 +2311,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         return (raiinInfs, isRaiinConf);
     }
 
-    public List<CoKensaModel> GetKensaInfs(int hpId, CoSta9000KensaConf? kensaConf)
+    public List<CoKensaModel> GetKensaInfs(int hpId, CoSta9000KensaConf kensaConf)
     {
         List<CoKensaModel> kensaDatas = new List<CoKensaModel>();
 
@@ -2314,7 +2340,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     if (kensaConf.ItemCds?.Count >= 4)
                     {
                         //or条件
-                        kensaDetails = kensaConf.ItemCds?.Count >= 1 ? kensaDetails.Where(p => kensaConf.ItemCds.Contains(p.KensaItemCd ?? string.Empty)) : kensaDetails;
+                        kensaDetails = kensaConf.ItemCds?.Count >= 1 ? kensaDetails.Where(p => kensaConf.ItemCds.Contains(p.KensaItemCd)) : kensaDetails;
                     }
                 }
 
@@ -2348,13 +2374,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                         {
                             PtId = d.kensaInf.PtId,
                             IraiDate = d.kensaInf.IraiDate,
-                            CenterCd = d.kensaMstj?.CenterCd ?? string.Empty,
-                            KensaItemCd = d.kensaDetail.KensaItemCd ?? string.Empty,
-                            KensaName = d.kensaMstj?.KensaName ?? string.Empty,
-                            ResultVal = d.kensaDetail.ResultVal ?? string.Empty,
-                            UnitName = d.kensaMstj?.Unit ?? string.Empty,
-                            ResultType = d.kensaDetail.ResultType ?? string.Empty,
-                            AbnormalKbn = d.kensaDetail.AbnormalKbn ?? string.Empty,
+                            CenterCd = d.kensaMstj?.CenterCd,
+                            KensaItemCd = d.kensaDetail.KensaItemCd,
+                            KensaName = d.kensaMstj?.KensaName,
+                            ResultVal = d.kensaDetail.ResultVal,
+                            UnitName = d.kensaMstj?.Unit,
+                            ResultType = d.kensaDetail.ResultType,
+                            AbnormalKbn = d.kensaDetail.AbnormalKbn,
                             StandardVal =
                                 d.ptInf.Sex == 1 ? d.kensaMstj?.MaleStd :
                                 d.ptInf.Sex == 2 ? d.kensaMstj?.FemaleStd :
@@ -2363,7 +2389,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                                 (
                                     "{0:D10}{1:D10}{2:D10}{3:D10}{4}{5}",
                                     d.kensaInf.IraiDate, d.kensaInf.RaiinNo, d.kensaInf.IraiCd, d.kensaMstj?.SortNo,
-                                    d.kensaMstj?.OyaItemCd?.AsString().PadRight(10, '0'), d.kensaDetail?.KensaItemCd?.AsString().PadRight(10, '0')
+                                    d.kensaMstj?.OyaItemCd.AsString().PadRight(10, '0'), d.kensaDetail.KensaItemCd.AsString().PadRight(10, '0')
                                 )
                         }
                 ).ToList();
@@ -2406,7 +2432,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     sql = kensaConf?.EndIraiDate > 0 ? sql + $" AND KZ.依頼日 <= '{kensaConf.EndIraiDate}'" : sql;
 
                     //項目の絞り込み
-                    if (kensaConf?.ItemCds?.Count >= 4)
+                    if (kensaConf.ItemCds?.Count >= 4)
                     {
                         sql += " AND (";
                         for (int i = 0; i < kensaConf.ItemCds.Count; i += 4)
@@ -2499,7 +2525,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                     sql = kensaConf?.EndIraiDate > 0 ? sql + $" AND Z.UKEDT <= '{CIUtil.SDateToShowSDate(kensaConf.EndIraiDate)}'" : sql;
 
                     //項目の絞り込み
-                    if (kensaConf?.ItemCds?.Count >= 4)
+                    if (kensaConf.ItemCds?.Count >= 4)
                     {
                         sql += " AND (";
                         for (int i = 0; i < kensaConf.ItemCds.Count; i += 4)
@@ -2674,34 +2700,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         return kensaDatas;
     }
 
-    public List<CoKensaModel> GetKensaInfs(
-        int hpId,
-        CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
-        CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf, CoSta9000KensaConf? kensaConf)
-    {
-        //対象患者
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf).ToList();
-        //検査
-        var kensaInfs = GetKensaInfs(hpId, kensaConf);
-
-        var retDatas = (
-            from ptInf in ptInfs
-            join kensaInf in kensaInfs on
-                ptInf.PtId equals kensaInf.PtId
-            select
-                kensaInf
-        ).ToList();
-
-        return retDatas;
-    }
-
     /// <summary>
     /// 患者一覧を検査条件で絞り込み
     /// </summary>
     /// <param name="kensaConf"></param>
     /// <param name="ptInfs"></param>
     /// <returns></returns>
-    private List<CoPtInfModel> GetPtInfKensaFilter(int hpId, CoSta9000KensaConf? kensaConf, List<CoPtInfModel> ptInfs)
+    private List<CoPtInfModel> GetPtInfKensaFilter(int hpId, CoSta9000KensaConf kensaConf, List<CoPtInfModel> ptInfs)
     {
         if (kensaConf == null) return ptInfs;
 

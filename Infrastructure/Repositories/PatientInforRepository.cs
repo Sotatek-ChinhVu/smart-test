@@ -524,7 +524,10 @@ namespace Infrastructure.Repositories
 
                     index++;
                 }
-                ptInfQuery = ptInfQuery.Where(pt => ptOdrDetailTemp.Any(x => x == pt.PtId));
+
+                // get ptId list from ptOdrDetailTemp
+                var ptIdList = ptOdrDetailTemp.Distinct().ToList();
+                ptInfQuery = ptInfQuery.Where(pt => ptIdList.Contains(pt.PtId));
             }
 
             // Department
@@ -2128,12 +2131,23 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
+        public HokenMstModel GetHokenMstByInfor(int hpId, int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo
+            // Get all hoken follow hpInf 
+            var hpInf = NoTrackingDataContext.HpInfs.Where(h => h.HpId == hpId && h.StartDate <= sinDate).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            var prefCd = hpInf?.PrefNo;
+            //Validate get all hokenMst
+            var hokenMst = TrackingDataContext.HokenMsts.Where(x => x.HokenNo == hokenNo
                                                                         && x.HokenEdaNo == hokenEdaNo
-                                                                        && x.StartDate <= sinDate
-                                                                        && sinDate <= x.EndDate);
+                                   && (x.PrefNo == prefCd
+                            || x.PrefNo == 0
+                            || x.IsOtherPrefValid == 1))
+                                .OrderBy(e => e.HpId)
+                    .ThenBy(e => e.HokenNo)
+                    .ThenByDescending(e => e.PrefNo)
+                    .ThenBy(e => e.SortNo)
+                    .ThenByDescending(e => e.StartDate)
+                    .FirstOrDefault();
             if (hokenMst is null)
                 return new HokenMstModel();
 

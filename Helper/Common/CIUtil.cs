@@ -3788,5 +3788,25 @@ namespace Helper.Common
 
             return ret;
         }
+
+        public static bool IsFileExisting(string fileName, int timeout = 5000)
+        {
+            bool isTimeOut = false;
+            return IsFileExistingWithReason(fileName, ref isTimeOut, timeout);
+        }
+
+        public static bool IsFileExistingWithReason(string fileName, ref bool isTimeOut, int timeout = 5000)
+        {
+            string className = "CIUtil";
+            string functionName = nameof(IsFileExistingWithReason);
+            try
+            {
+                return File.Exists(fileName);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

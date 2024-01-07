@@ -11,6 +11,7 @@ public class CoSta1001PrintConf
 
     public CoSta1001PrintConf()
     {
+        MenuId = 0;
         StartNyukinTime = -1;
         EndNyukinTime = -1;
     }
@@ -23,12 +24,12 @@ public class CoSta1001PrintConf
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; } = string.Empty;
+    public string FormFileName { get; set; }
 
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; } = string.Empty;
+    public string ReportName { get; set; }
 
     /// <summary>
     /// テスト患者の有無
@@ -120,20 +121,20 @@ public class CoSta1001PrintConf
     /// <summary>
     /// 受付種別ID
     /// </summary>
-    public List<int> UketukeSbtIds { get; set; } = new();
+    public List<int> UketukeSbtIds { get; set; }
 
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public List<int> KaIds { get; set; } = new();
+    public List<int> KaIds { get; set; }
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public List<int> TantoIds { get; set; } = new();
+    public List<int> TantoIds { get; set; }
 
     /// <summary>
     /// 支払区分コード
     /// </summary>
-    public List<int> PaymentMethodCds { get; set; } = new();
+    public List<int> PaymentMethodCds { get; set; }
 }

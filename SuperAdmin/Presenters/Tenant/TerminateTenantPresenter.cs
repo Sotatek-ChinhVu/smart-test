@@ -2,7 +2,6 @@
 using SuperAdmin.Responses;
 using SuperAdminAPI.Reponse.Tenant;
 using UseCase.SuperAdmin.TerminateTenant;
-using UseCase.SuperAdmin.UpgradePremium;
 
 namespace SuperAdminAPI.Presenters.Tenant
 {
@@ -27,10 +26,12 @@ namespace SuperAdminAPI.Presenters.Tenant
         private string GetMessage(TerminateTenantStatus status) => status switch
         {
             TerminateTenantStatus.Successed => ResponseMessage.Success,
-            TerminateTenantStatus.Failed => ResponseMessage.Fail,
+            TerminateTenantStatus.Failed => ResponseMessage.Failed,
             TerminateTenantStatus.InvalidTenantId => ResponseMessage.InvalidTenantId,
             TerminateTenantStatus.TenantDoesNotExist => ResponseMessage.TenantDoesNotExist,
             TerminateTenantStatus.TenantDbDoesNotExistInRDS => ResponseMessage.TenantDbDoesNotExistInRDS,
+            TerminateTenantStatus.TenantIsTerminating => ResponseMessage.TenantIsTerminating,
+            TerminateTenantStatus.TenantIsNotAvailableToSortTerminate => ResponseMessage.TenantIsNotAvailableToSortTerminate,
             _ => string.Empty
         };
     }

@@ -1,5 +1,4 @@
-﻿using CommonChecker.Caches;
-using CommonChecker.Caches.Interface;
+﻿using CommonChecker.Caches.Interface;
 using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Constant;
@@ -923,7 +922,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 return listLevel;
             }
 
-            PtInf patientInfo = _tenMstCacheService.GetPtInf();
+            // If patientInfo is null return
+            PtInf? patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
                 return new List<AgeResultModel>();
@@ -1870,7 +1870,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public (double weight, double height) GetPtBodyInfo(int hpId, long ptId, int sinday, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
-            PtInf patientInfo = _tenMstCacheService.GetPtInf();
+            //// If patientInfo is null return
+            PtInf? patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
                 return new(0, 0);
@@ -1914,7 +1915,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double height, double weight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
-            PtInf patientInfo = _tenMstCacheService.GetPtInf();
+            //// If patientInfo is null return
+            PtInf? patientInfo = _tenMstCacheService.GetPtInf();
             if (patientInfo == null)
             {
                 return new List<DosageResultModel>();
@@ -2757,7 +2759,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             if (isDataOfDb)
             {
                 //Get data in db
-                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, "V0002");
+                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, IraiCodeConstant.WEIGHT_CODE);
 
                 if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
                 {
@@ -2766,8 +2768,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             }
             else
             {
+                //Filter KensaInf with KensaItemCd Is V0002
                 var weightInfo = kensaInfDetailModels
-                          .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == "V002" && !string.IsNullOrEmpty(k.ResultVal))
+                          .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == IraiCodeConstant.WEIGHT_CODE && !string.IsNullOrEmpty(k.ResultVal))
                           .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
                 if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
@@ -2793,7 +2796,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return GetCommonHeight(birdthDay, sinday, sex);
         }
 
-        private double GetBodySize(double weight, double height, double age)
+        internal double GetBodySize(double weight, double height, double age)
         {
             double bodySize;
             if (age >= 6)

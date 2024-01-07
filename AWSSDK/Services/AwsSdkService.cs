@@ -5,6 +5,7 @@ using AWSSDK.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data.Common;
+using UseCase.SuperAdmin.RestoreObjectS3Tenant;
 
 namespace AWSSDK.Services
 {
@@ -63,16 +64,12 @@ namespace AWSSDK.Services
             return false;
         }
 
-        public bool DeleteTenantDb(string serverEndpoint, string tennantDB)
+        public bool DeleteTenantDb(string serverEndpoint, string tennantDB, string username, string password)
         {
             try
             {
-                // Replace these values with your actual RDS information
-                string username = "postgres";
-                string password = "Emr!23456789";
-                int port = 5432;
                 // Connection string format for SQL Server
-                string connectionString = $"Host={serverEndpoint};Port={port};Username={username};Password={password};";
+                string connectionString = $"Host={serverEndpoint};Port={ConfigConstant.PgPostDefault};Username={username};Password={password};";
 
                 // Create and open a connection
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -125,47 +122,74 @@ namespace AWSSDK.Services
 
         public async Task CreateFolderAsync(string bucketName, string folderName)
         {
-            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.CreateFolderAsync(sourceS3ClientDestination, bucketName, folderName);
+            using (var destinationS3Client = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey))
+            {
+                await S3Action.CreateFolderAsync(destinationS3Client, bucketName, folderName);
+            }
         }
 
         public async Task DeleteObjectsInFolderAsync(string bucketName, string folderKey)
         {
-            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.DeleteObjectsInFolderAsync(sourceS3ClientDestination, bucketName, folderKey);
+            using (var destinationS3Client = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey))
+            {
+                await S3Action.DeleteObjectsInFolderAsync(destinationS3Client, bucketName, folderKey);
+            }
         }
 
-        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string sourceFolderKey, string destinationBucketName, string destinationFolderKey)
+        public async Task CopyObjectsInFolderAsync(string sourceBucketName, string objectName, string destinationBucketName, List<RestoreObjectS3TenantTypeEnum> type, bool prefixDelete)
         {
-            var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey);
-            var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey);
-            await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, sourceFolderKey, sourceS3ClientDestination, destinationBucketName, destinationFolderKey);
-        }
-
-        private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
-        {
-            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
+            using (var sourceS3Client = GetAmazonS3Client(_sourceAccessKey, _sourceSecretKey))
+            using (var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey))
+            {
+                var folderKeyMap = new Dictionary<RestoreObjectS3TenantTypeEnum, string>
+                {
+                    { RestoreObjectS3TenantTypeEnum.All , $"{objectName}/" },
+                    { RestoreObjectS3TenantTypeEnum.Files, $"{objectName}/store/files/" },
+                    { RestoreObjectS3TenantTypeEnum.InsuranceCard, $"{objectName}/store/InsuranceCard/" },
+                    { RestoreObjectS3TenantTypeEnum.Karte, $"{objectName}/store/karte/" },
+                    { RestoreObjectS3TenantTypeEnum.NextPic, $"{objectName}/store/karte/nextPic/" },
+                    { RestoreObjectS3TenantTypeEnum.SetPic, $"{objectName}/store/karte/setPic/" }
+                };
+                foreach (var item in type)
+                {
+                    if (item == RestoreObjectS3TenantTypeEnum.All)
+                    {
+                        continue;
+                    }
+                    string folderKey = folderKeyMap.TryGetValue(item, out var value) ? value : string.Empty;
+                    if (!string.IsNullOrEmpty(folderKey))
+                    {
+                        await S3Action.CopyObjectsInFolderAsync(sourceS3Client, sourceBucketName, folderKey, sourceS3ClientDestination, destinationBucketName, prefixDelete);
+                    }
+                }
+            }
         }
 
         public async Task CreateFolderBackupAsync(string sourceBucket, string sourceFolder, string backupBucket, string backupFolder)
         {
-            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
-            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
-            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
-            await S3Action.BackupFolderAsync(sourceS3Client, sourceBucket, sourceFolder, backupBucket, backupFolder);
+            using (var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey))
+            {
+                await S3Action.BackupFolderAsync(sourceS3ClientDestination, sourceBucket, sourceFolder, backupBucket, backupFolder);
+            }
         }
 
         public async Task UploadFileAsync(string bucketName, string folderName, string filePath)
         {
-            string sourceAccessKey = _configuration.GetSection("AmazonS3")["AwsAccessKeyId"] ?? string.Empty;
-            string sourceSecretKey = _configuration.GetSection("AmazonS3")["AwsSecretAccessKey"] ?? string.Empty;
-            var sourceS3Client = GetAmazonS3Client(sourceAccessKey, sourceSecretKey);
-            await S3Action.UploadFileWithProgressAsync(sourceS3Client, bucketName, folderName, filePath);
+            using (var sourceS3ClientDestination = GetAmazonS3ClientDestination(_sourceAccessKey, _sourceSecretKey))
+            {
+                await S3Action.UploadFileWithProgressAsync(sourceS3ClientDestination, bucketName, folderName, filePath);
+            }
         }
-        
+
+        #region [get AmazonS3Client]
         private AmazonS3Client GetAmazonS3Client(string sourceAccessKey, string sourceSecretKey)
         {
             return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionSource);
         }
+        private AmazonS3Client GetAmazonS3ClientDestination(string sourceAccessKey, string sourceSecretKey)
+        {
+            return new AmazonS3Client(sourceAccessKey, sourceSecretKey, ConfigConstant.RegionDestination);
+        }
+        #endregion [get AmazonS3Client]
     }
 }
