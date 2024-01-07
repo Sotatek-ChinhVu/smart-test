@@ -7357,7 +7357,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             }
         }
         [Test]
-        public void TC_087_CheckDosage_TEST_MasterData_No_Fake_Data()
+        public void TC_095_CheckDosage_TEST_MasterData_No_Fake_Data()
         {
             //setup
             var listItem = new List<DrugInfo>()
@@ -7394,7 +7394,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_088_CheckDosage_TEST_MasterData_UnitName_Equal_YakkaUnit()
+        public void TC_096_CheckDosage_TEST_MasterData_UnitName_Equal_YakkaUnit()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7491,7 +7491,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_089_CheckDosage_TEST_MasterData_TermVal_More_Than_0()
+        public void TC_097_CheckDosage_TEST_MasterData_TermVal_More_Than_0()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7587,10 +7587,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             }
         }
 
-
-
         [Test]
-        public void TC_090_CheckDosage_TEST_MasterData_Dogase_More_Than_0()
+        public void TC_098_CheckDosage_TEST_MasterData_Dogase_More_Than_0()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7687,7 +7685,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_091_CheckDosage_TEST_MasterData_OnceUnit_Kg()
+        public void TC_099_CheckDosage_TEST_MasterData_OnceUnit_Kg()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7785,7 +7783,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_092_CheckDosage_TEST_MasterData_OnceUnit_m2()
+        public void TC_100_CheckDosage_TEST_MasterData_OnceUnit_m2()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7884,7 +7882,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
 
         [Test]
-        public void TC_093_CheckDosage_TEST_MasterData_OnceUnit_Other()
+        public void TC_101_CheckDosage_TEST_MasterData_OnceUnit_Other()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -7983,7 +7981,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
 
         [Test]
-        public void TC_094_CheckDosage_TEST_MasterData_OnceUnitLimit_kg()
+        public void TC_102_CheckDosage_TEST_MasterData_OnceUnitLimit_kg()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8082,7 +8080,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_095_CheckDosage_TEST_MasterData_OnceUnitLimit_m2()
+        public void TC_103_CheckDosage_TEST_MasterData_OnceUnitLimit_m2()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8181,7 +8179,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_096_CheckDosage_TEST_MasterData_OnceUnitLimit_Other()
+        public void TC_104_CheckDosage_TEST_MasterData_OnceUnitLimit_Other()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8281,7 +8279,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
 
         [Test]
-        public void TC_097_CheckDosage_TEST_MasterData_DayUnit()
+        public void TC_105_CheckDosage_TEST_MasterData_DayUnit()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8380,7 +8378,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_098_CheckDosage_TEST_MasterData_DayUnit_m2()
+        public void TC_106_CheckDosage_TEST_MasterData_DayUnit_m2()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8479,7 +8477,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_099_CheckDosage_TEST_MasterData_DayUnit_Other()
+        public void TC_107_CheckDosage_TEST_MasterData_DayUnit_Other()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8578,7 +8576,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_100_CheckDosage_TEST_MasterData_DayUnitLimit_m2()
+        public void TC_108_CheckDosage_TEST_MasterData_DayUnitLimit_m2()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8678,7 +8676,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_101_CheckDosage_TEST_MasterData_DayUnitLimit_kg()
+        public void TC_109_CheckDosage_TEST_MasterData_DayUnitLimit_kg()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8778,7 +8776,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_102_CheckDosage_TEST_MasterData_DayUnitLimit_Other()
+        public void TC_110_CheckDosage_TEST_MasterData_DayUnitLimit_Other()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8878,7 +8876,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_103_CheckDosage_TEST_MasterData_TermCheck()
+        public void TC_111_CheckDosage_TEST_MasterData_TermCheck()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -8980,9 +8978,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             }
         }
 
-
         [Test]
-        public void TC_104_CheckDosage_TEST_MasterData_TermCheck_DosageLimitUnit_w()
+        public void TC_112_CheckDosage_TEST_MasterData_TermCheck_DosageLimitUnit_w()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9085,7 +9082,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_105_CheckDosage_TEST_MasterData_TermCheck_DosageLimitUnit_m()
+        public void TC_113_CheckDosage_TEST_MasterData_TermCheck_DosageLimitUnit_m()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9188,7 +9185,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_106_CheckDosage_TEST_MasterData_TermCheck_DosageLimitUnit_y()
+        public void TC_114_CheckDosage_TEST_MasterData_TermCheck_DosageLimitUnit_y()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9291,7 +9288,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_107_CheckDosage_TEST_MasterData_TermCheck_UnittermUnit_kg()
+        public void TC_115_CheckDosage_TEST_MasterData_TermCheck_UnittermUnit_kg()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9395,7 +9392,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_108_CheckDosage_TEST_MasterData_TermCheck_UnittermUnit_m2()
+        public void TC_116_CheckDosage_TEST_MasterData_TermCheck_UnittermUnit_m2()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9499,7 +9496,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_109_CheckDosage_TEST_MasterData_TermCheck_UnittermUnit_Other()
+        public void TC_117_CheckDosage_TEST_MasterData_TermCheck_UnittermUnit_Other()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9603,7 +9600,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }   
 
         [Test]
-        public void TC_111_CheckDosage_TEST_MasterData_TermCheck_IsNotDayLimitFoundIntoAnyRecord()
+        public void TC_118_CheckDosage_TEST_MasterData_TermCheck_IsNotDayLimitFoundIntoAnyRecord()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9707,7 +9704,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_112_CheckDosage_TEST_MasterData_TermCheck_IsOnceLimitFoundIntoAllOfRecord()
+        public void TC_119_CheckDosage_TEST_MasterData_TermCheck_IsOnceLimitFoundIntoAllOfRecord()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9812,7 +9809,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_113_CheckDosage_TEST_MasterData_TermCheck_IsNotOnceLimitFoundIntoAnyRecord()
+        public void TC_120_CheckDosage_TEST_MasterData_TermCheck_IsNotOnceLimitFoundIntoAnyRecord()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -9919,7 +9916,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
 
         [Test]
-        public void TC_114_CheckDosage_TEST_MasterData_TermCheck_IsDayLimitFoundIntoAllOfRecord()
+        public void TC_121_CheckDosage_TEST_MasterData_TermCheck_IsDayLimitFoundIntoAllOfRecord()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10025,10 +10022,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             }
         }
 
-
-
         [Test]
-        public void TC_115_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_21()
+        public void TC_122_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_21()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10135,9 +10130,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             }
         }
 
-
         [Test]
-        public void TC_116_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_21_Dogase_Morethan_MaxByDayToCheck()
+        public void TC_123_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_21_Dogase_Morethan_MaxByDayToCheck()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10246,7 +10240,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
 
         [Test]
-        public void TC_117_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_21_DosageResultModelIsNotNull()
+        public void TC_124_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_21_DosageResultModelIsNotNull()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10354,7 +10348,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_118_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_22()
+        public void TC_125_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_22()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10464,7 +10458,7 @@ namespace CloudUnitTest.CommonChecker.Finder
 
 
         [Test]
-        public void TC_119_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_22_MinPerOnce_MoreThan_Dosage()
+        public void TC_126_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_22_MinPerOnce_MoreThan_Dosage()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10573,7 +10567,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_120_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other()
+        public void TC_127_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10682,7 +10676,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_121_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other_MaxByOnceToCheck_MoreThan_Dogase()
+        public void TC_128_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other_MaxByOnceToCheck_MoreThan_Dogase()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10791,7 +10785,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         }
 
         [Test]
-        public void TC_122_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other_MinPerDay_MoreThan_Dogase()
+        public void TC_129_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other_MinPerDay_MoreThan_Dogase()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -10900,7 +10894,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         } 
         
         [Test]
-        public void TC_123_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other_Other()
+        public void TC_130_CheckDosage_TEST_MasterData_TermCheck_SinKouiKbn_Other_Other()
         {
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
