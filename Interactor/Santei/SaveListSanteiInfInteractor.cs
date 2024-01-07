@@ -51,7 +51,10 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         }
         catch (Exception ex)
         {
-            _loggingHandler!.WriteLogExceptionAsync(ex);
+            if (_loggingHandler != null)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+            }
             throw;
         }
         finally
