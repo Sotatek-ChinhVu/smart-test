@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
 using Domain.Models.MstItem;
+using Domain.Models.Online;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
@@ -8,6 +9,7 @@ using Domain.Models.TodayOdr;
 using Helper.Constants;
 using Interactor.CalculateService;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using static Helper.Constants.OrderInfConst;
 
 namespace Interactor.MedicalExamination
 {
@@ -18,14 +20,16 @@ namespace Interactor.MedicalExamination
         private readonly ICalculateService _calculateRepository;
         private readonly ITodayOdrRepository _todayOdrRepository;
         private readonly IMstItemRepository _mstItemRepository;
+        private readonly IOnlineRepository _onlineRepository;
 
-        public GetCheckedOrderInteractor(IMedicalExaminationRepository medicalExaminationRepository, IReceptionRepository receptionRepository, ICalculateService calculateRepository, ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository)
+        public GetCheckedOrderInteractor(IMedicalExaminationRepository medicalExaminationRepository, IReceptionRepository receptionRepository, ICalculateService calculateRepository, ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository, IOnlineRepository onlineRepository)
         {
             _medicalExaminationRepository = medicalExaminationRepository;
             _receptionRepository = receptionRepository;
             _calculateRepository = calculateRepository;
             _todayOdrRepository = todayOdrRepository;
             _mstItemRepository = mstItemRepository;
+            _onlineRepository = onlineRepository;
         }
 
         public GetCheckedOrderOutputData Handle(GetCheckedOrderInputData inputData)
@@ -278,7 +282,7 @@ namespace Interactor.MedicalExamination
                     var itemCds = runTrialCalculate.SinMeiList.Select(x => x.ItemCd).Distinct().ToList();
 
                     checkedOrderModelList = checkedOrderModelList.Where(c => itemCds.Contains(c.ItemCd)).ToList();
-
+                    IryoJyohoKibanCalculation(ref checkedOrderModelList, allOdrInfDetail, itemCds, inputData.HpId, inputData.PtId, inputData.SinDate);
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.Zanyaku(inputData.HpId, inputData.SinDate, allOdrInfDetail, ordInfs));
                 }
 
@@ -287,6 +291,7 @@ namespace Interactor.MedicalExamination
                 {
                     checkedOrderModelList.RemoveAll(c => c.ItemCd == ItemCdConst.YakuzaiJohoTeiyo);
                 }
+                checkedOrderModelList.RemoveAll(p => !_mstItemRepository.ExistedTenMstItem(inputData.HpId, p.ItemCd, inputData.SinDate));
 
                 return new GetCheckedOrderOutputData(GetCheckedOrderStatus.Successed, checkedOrderModelList);
             }
@@ -297,6 +302,7 @@ namespace Interactor.MedicalExamination
                 _calculateRepository.ReleaseSource();
                 _todayOdrRepository.ReleaseResource();
                 _mstItemRepository.ReleaseResource();
+                _onlineRepository.ReleaseResource();
             }
         }
 
@@ -355,6 +361,103 @@ namespace Interactor.MedicalExamination
 
 
             return odrInf;
+        }
+
+        private void IryoJyohoKibanCalculation(ref List<CheckedOrderModel> checkingOrderModelList, List<OrdInfDetailModel> allOdrInfDetail, List<string> itemSantei, int hpId, long ptId, int sinDate)
+        {
+            //初診
+            bool existOnlineConsent = _onlineRepository.ExistOnlineConsent(ptId, sinDate);
+            bool isExistFirstVisit = allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 1);
+            bool isExistReturnVisit = allOdrInfDetail.Any(x => x.ItemCd == ItemCdConst.SyosaiKihon && x.Suryo == 3);
+            if (isExistFirstVisit)
+            {
+                bool isExistSyosinIryoJyohoKiban1 = itemSantei.Any(x => x == ItemCdConst.SyosinIryoJyohoKiban1)
+                                                    && checkingOrderModelList.Any(x => x.ItemCd == ItemCdConst.SyosinIryoJyohoKiban1);
+                if (isExistSyosinIryoJyohoKiban1)
+                {
+                    var checkingOrderModelSyosinIryoJyohoKiban1 = checkingOrderModelList.First(x => x.ItemCd == ItemCdConst.SyosinIryoJyohoKiban1);
+                    checkingOrderModelSyosinIryoJyohoKiban1.ChangeSantei(!existOnlineConsent);
+                    int index = checkingOrderModelList.IndexOf(checkingOrderModelSyosinIryoJyohoKiban1);
+
+                    var SyosinIryoJyohoKiban2TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.SyosinIryoJyohoKiban2, sinDate);
+                    if (SyosinIryoJyohoKiban2TenMstModel != null)
+                    {
+                        var checkingOrderModelSyosinIryoJyohoKiban2 = new CheckedOrderModel(
+                            CheckingType.MissingCalculate,
+                            existOnlineConsent,
+                            FormatSanteiMessage(SyosinIryoJyohoKiban2TenMstModel.Name),
+                            SyosinIryoJyohoKiban2TenMstModel.ItemCd,
+                            SyosinIryoJyohoKiban2TenMstModel.SinKouiKbn,
+                            SyosinIryoJyohoKiban2TenMstModel.Name,
+                            0
+                            );
+
+                        if (index + 1 == checkingOrderModelList.Count)
+                        {
+                            checkingOrderModelList.Add(checkingOrderModelSyosinIryoJyohoKiban2);
+                        }
+                        else
+                        {
+                            checkingOrderModelList.Insert(index + 1, checkingOrderModelSyosinIryoJyohoKiban2);
+                        }
+                    }
+                }
+
+                bool isExistMedicalDevelopmentSystemEnhanceAdd1 = itemSantei.Any(x => x == ItemCdConst.IgakuIryoJyohoKiban1)
+                                                                  && checkingOrderModelList.Any(x => x.ItemCd == ItemCdConst.IgakuIryoJyohoKiban1);
+                if (isExistMedicalDevelopmentSystemEnhanceAdd1)
+                {
+                    var checkingOrderModelMedicalDevelopmentSystemEnhanceAdd1 = checkingOrderModelList.First(x => x.ItemCd == ItemCdConst.IgakuIryoJyohoKiban1);
+                    checkingOrderModelMedicalDevelopmentSystemEnhanceAdd1.ChangeSantei(!existOnlineConsent);
+                    int index = checkingOrderModelList.IndexOf(checkingOrderModelMedicalDevelopmentSystemEnhanceAdd1);
+
+                    var MedicalDevelopmentSystemEnhanceAdd2TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.IgakuIryoJyohoKiban2, sinDate);
+                    if (MedicalDevelopmentSystemEnhanceAdd2TenMstModel != null)
+                    {
+                        var checkingOrderModelMedicalDevelopmentSystemEnhanceAdd2 = new CheckedOrderModel(
+                                                                                                        CheckingType.MissingCalculate,
+                                                                                                        existOnlineConsent,
+                                                                                                        FormatSanteiMessage(MedicalDevelopmentSystemEnhanceAdd2TenMstModel.Name),
+                                                                                                        MedicalDevelopmentSystemEnhanceAdd2TenMstModel.ItemCd,
+                                                                                                        MedicalDevelopmentSystemEnhanceAdd2TenMstModel.SinKouiKbn,
+                                                                                                        MedicalDevelopmentSystemEnhanceAdd2TenMstModel.Name,
+                                                                                                        0
+                                                                                                         );
+                        if (index + 1 == checkingOrderModelList.Count)
+                        {
+                            checkingOrderModelList.Add(checkingOrderModelMedicalDevelopmentSystemEnhanceAdd2);
+                        }
+                        else
+                        {
+                            checkingOrderModelList.Insert(index + 1, checkingOrderModelMedicalDevelopmentSystemEnhanceAdd2);
+                        }
+                    }
+                }
+            }
+            else if (isExistReturnVisit)
+            {
+                bool isExistSaisinIryoJyohoKiban3 = itemSantei.Any(x => x == ItemCdConst.SaisinIryoJyohoKiban3)
+                                                    && checkingOrderModelList.Any(x => x.ItemCd == ItemCdConst.SaisinIryoJyohoKiban3);
+                if (isExistSaisinIryoJyohoKiban3)
+                {
+                    var checkingOrderModelSaisinIryoJyohoKiban3 = checkingOrderModelList.First(x => x.ItemCd == ItemCdConst.SaisinIryoJyohoKiban3);
+                    checkingOrderModelSaisinIryoJyohoKiban3.ChangeSantei(!existOnlineConsent);
+                }
+
+                bool isExistReturnVisitDevelopmentSystemEnhanceAdd3 = itemSantei.Any(x => x == ItemCdConst.IgakuIryoJyohoKiban3)
+                                                                    && checkingOrderModelList.Any(x => x.ItemCd == ItemCdConst.IgakuIryoJyohoKiban3);
+                if (isExistReturnVisitDevelopmentSystemEnhanceAdd3)
+                {
+                    var checkingOrderModelReturnVisitDevelopmentSystemEnhanceAdd3 = checkingOrderModelList.First(x => x.ItemCd == ItemCdConst.IgakuIryoJyohoKiban3);
+                    checkingOrderModelReturnVisitDevelopmentSystemEnhanceAdd3.ChangeSantei(!existOnlineConsent);
+                }
+            }
+        }
+
+        private string FormatSanteiMessage(string santeiItemName)
+        {
+            return $"\"{santeiItemName}\"を算定できる可能性があります。";
+
         }
     }
 }

@@ -805,8 +805,8 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
             matchPtInf = new List<PtInfConfirmationModel>
             {
-                new PtInfConfirmationModel(PtInfOQConst.KANA_NAME, 
-                                           ptInfModel.KanaName, 
+                new PtInfConfirmationModel(PtInfOQConst.KANA_NAME,
+                                           ptInfModel.KanaName,
                                            resultOfQC.NameKana ,
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
@@ -815,9 +815,9 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                            addressBasicInfoCheck,
                                            postcodeBasicInfoCheck,
                                            seitaiNushiBasicInfoCheck),
-                new PtInfConfirmationModel(PtInfOQConst.KANJI_NAME, 
-                                           ptInfModel.Name, 
-                                           resultOfQC.Name, 
+                new PtInfConfirmationModel(PtInfOQConst.KANJI_NAME,
+                                           ptInfModel.Name,
+                                           resultOfQC.Name,
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
                                            genderBasicInfoCheck,
@@ -825,9 +825,9 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                            addressBasicInfoCheck,
                                            postcodeBasicInfoCheck,
                                            seitaiNushiBasicInfoCheck),
-                new PtInfConfirmationModel(PtInfOQConst.SEX, 
-                                           ptInfModel.Sex.AsString(), 
-                                           string.IsNullOrEmpty(resultOfQC.Sex2) ? resultOfQC.Sex1: resultOfQC.Sex2, 
+                new PtInfConfirmationModel(PtInfOQConst.SEX,
+                                           ptInfModel.Sex.AsString(),
+                                           string.IsNullOrEmpty(resultOfQC.Sex2) ? resultOfQC.Sex1: resultOfQC.Sex2,
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
                                            genderBasicInfoCheck,
@@ -835,8 +835,8 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                            addressBasicInfoCheck,
                                            postcodeBasicInfoCheck,
                                            seitaiNushiBasicInfoCheck),
-                new PtInfConfirmationModel(PtInfOQConst.BIRTHDAY, 
-                                           ptInfModel.Birthday.AsString(), 
+                new PtInfConfirmationModel(PtInfOQConst.BIRTHDAY,
+                                           ptInfModel.Birthday.AsString(),
                                            resultOfQC.Birthdate.AsString(),
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
@@ -877,6 +877,12 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     ptInf.HomeAddress1 ?? string.Empty,
                     ptInf.Setanusi ?? string.Empty
                 );
+    }
+
+    public bool ExistOnlineConsent(long ptId, int sinDate)
+    {
+        var onlConfirms = NoTrackingDataContext.OnlineConfirmationHistories.Where(x => x.PtId == ptId && x.InfoConsFlg != null && x.InfoConsFlg.Contains("1")).ToList();
+        return onlConfirms.Any(p => CIUtil.DateTimeToInt(p.OnlineConfirmationDate) == sinDate);
     }
 
     #region private function

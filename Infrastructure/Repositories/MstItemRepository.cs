@@ -5,12 +5,10 @@ using Domain.Models.AuditLog;
 using Domain.Models.ContainerMaster;
 using Domain.Models.FlowSheet;
 using Domain.Models.KensaIrai;
-using Domain.Models.KensaSet;
 using Domain.Models.MaterialMaster;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
-using Domain.Models.SetMst;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Entity.Tenant;
@@ -22,7 +20,6 @@ using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
@@ -1653,6 +1650,65 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                 entity?.DefaultVal ?? 0,
                 entity?.Kokuji1 ?? string.Empty,
                 entity?.Kokuji2 ?? string.Empty,
+                string.Empty,
+                0,
+                0,
+                true
+           );
+    }
+
+    public TenItemModel? GetTenMstInfo(int hpId, string itemCd, int sinDate)
+    {
+        var entity = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
+               p.HpId == hpId &&
+               p.StartDate <= sinDate &&
+               p.EndDate >= sinDate &&
+               p.ItemCd == itemCd);
+
+        if (entity == null) return null;
+
+        return new TenItemModel(
+                entity.HpId,
+                entity.ItemCd,
+                entity.RousaiKbn,
+                entity.KanaName1 ?? string.Empty,
+                entity.Name ?? string.Empty,
+                entity.KohatuKbn,
+                entity.MadokuKbn,
+                entity.KouseisinKbn,
+                entity.OdrUnitName ?? string.Empty,
+                entity.EndDate,
+                entity.DrugKbn,
+                entity.MasterSbt ?? string.Empty,
+                entity.BuiKbn,
+                entity.IsAdopted,
+                entity.Ten,
+                entity.TenId,
+                string.Empty,
+                string.Empty,
+                entity.CmtCol1,
+                entity.IpnNameCd ?? string.Empty,
+                entity.SinKouiKbn,
+                entity.YjCd ?? string.Empty,
+                entity.CnvUnitName ?? string.Empty,
+                entity.StartDate,
+                entity.YohoKbn,
+                entity.CmtColKeta1,
+                entity.CmtColKeta2,
+                entity.CmtColKeta3,
+                entity.CmtColKeta4,
+                entity.CmtCol2,
+                entity.CmtCol3,
+                entity.CmtCol4,
+                entity.IpnNameCd ?? string.Empty,
+                entity.MinAge ?? string.Empty,
+                entity.MaxAge ?? string.Empty,
+                entity.SanteiItemCd ?? string.Empty,
+                entity.OdrTermVal,
+                entity.CnvTermVal,
+                entity.DefaultVal,
+                entity.Kokuji1 ?? string.Empty,
+                entity.Kokuji2 ?? string.Empty,
                 string.Empty,
                 0,
                 0,
@@ -6115,7 +6171,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                                                                         x.CenterItemCd2 ?? string.Empty)),
                         TenMsts = tempTenMsts
                     };
-        
+
         foreach (var entity in query)
         {
             var tenmst = entity.TenMsts.OrderByDescending(x => x.ItemCd).GroupBy(p => p.ItemCd).Select(p => p.FirstOrDefault());
@@ -8358,5 +8414,10 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
             .FirstOrDefault();
 
         return tenMst != null;
+    }
+
+    public bool ExistedTenMstItem(int hpId, string itemCd, int sinDate)
+    {
+        return NoTrackingDataContext.TenMsts.Any(x => x.HpId == hpId && x.ItemCd == itemCd && x.StartDate <= sinDate && x.EndDate >= sinDate && x.IsDeleted == DeleteTypes.None);
     }
 }

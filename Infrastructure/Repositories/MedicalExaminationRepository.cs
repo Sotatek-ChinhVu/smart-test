@@ -4,10 +4,10 @@ using Domain.Models.Diseases;
 using Domain.Models.Ka;
 using Domain.Models.Medical;
 using Domain.Models.MedicalExamination;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemConf;
-using Domain.Models.TodayOdr;
 using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
@@ -22,10 +22,12 @@ namespace Infrastructure.Repositories
     public class MedicalExaminationRepository : RepositoryBase, IMedicalExaminationRepository
     {
         private readonly ISystemConfRepository _systemConf;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
+        public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf, IMstItemRepository mstItemRepository) : base(tenantProvider)
         {
             _systemConf = systemConf;
+            _mstItemRepository = mstItemRepository;
         }
 
         public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
@@ -1304,7 +1306,7 @@ namespace Infrastructure.Repositories
             bool isGairaiRiha = CheckGairaiRiha(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
             if (isExistFirstVisit)
             {
-                var FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
+                var FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
                 if (FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
@@ -1320,7 +1322,7 @@ namespace Infrastructure.Repositories
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
 
-                var MedicalDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
+                var MedicalDevelopmentSystemEnhanceAdd1TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
                 if (MedicalDevelopmentSystemEnhanceAdd1TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
@@ -1338,7 +1340,7 @@ namespace Infrastructure.Repositories
             }
             else if (isExistReturnVisit || isGairaiRiha)
             {
-                var VisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
+                var VisitDevelopmentSystemEnhanceAdd3TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
                 if (VisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
@@ -1354,7 +1356,7 @@ namespace Infrastructure.Repositories
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
 
-                var ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
+                var ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
                 if (ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
@@ -1636,6 +1638,8 @@ namespace Infrastructure.Repositories
 
         public void ReleaseResource()
         {
+            _mstItemRepository.ReleaseResource();
+            _systemConf.ReleaseResource();
             DisposeDataContext();
         }
 
