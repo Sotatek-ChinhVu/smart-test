@@ -475,7 +475,7 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                         IsSyobyoKeikaExist = syobyokeika != null ? 1 : 0,
                         SeikyuCmt = receSeikyu != null ? receSeikyu.Cmt : string.Empty,
                         LastVisitDate = ptLastVisitDate != null ? ptLastVisitDate.SinDate : 0,
-                        kaMst.KaName,
+                        KaName = kaMst?.KaName ?? string.Empty,
                         UserName = userMst?.Name ?? string.Empty,
                         IsPtKyuseiExist = ptKyusei != null ? 1 : 0,
                         FutansyaNoKohi1 = ptKohi1 != null ? ptKohi1.FutansyaNo : string.Empty,
