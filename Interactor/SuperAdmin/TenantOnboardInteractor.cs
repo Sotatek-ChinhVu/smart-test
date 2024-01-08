@@ -415,7 +415,7 @@ namespace Interactor.SuperAdmin
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
-                        _CreateTrigger(command, listMigration, tenantId);
+                        // _CreateTrigger(command, listMigration, tenantId);
                         _CreateAuditLog(tenantId);
                         _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
                     }
@@ -439,7 +439,8 @@ namespace Interactor.SuperAdmin
 
                     if (sqlFiles.Length > 0)
                     {
-                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).ToList();
+                        // Get list file name in order ASC
+                        var fileNames = sqlFiles.Select(Path.GetFileNameWithoutExtension).OrderBy(x => x).ToList();
                         var uniqueFileNames = fileNames.Except(listMigration).ToList();
 
                         // insert table

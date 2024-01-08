@@ -40,6 +40,8 @@ public interface ITenantRepository
 
     List<TenantModel> GetByRdsId(int tenantId, string rdsIdentifier);
 
+    List<TenantModel> GetTenantByStatus(List<byte> status);
+
     void ReleaseResource();
 
 }
