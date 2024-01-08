@@ -21,9 +21,6 @@ namespace EmrCloudApi.Presenters.Lock
                 case GetLockInfStatus.Successful:
                     Result.Message = ResponseMessage.Success;
                     break;
-                case GetLockInfStatus.NoData:
-                    Result.Message = ResponseMessage.NoData;
-                    break;
             }
         }
     }
