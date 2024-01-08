@@ -71,23 +71,33 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         //Child Patient
         int jikanKbn = 0;
         int timeKbnForChild = 0;
+        var timeZoneConfs = _timeZoneRepository.GetTimeZoneConfs(hpId);
+        TimeZoneConfModel? timeZoneConf = null;
+        if (timeZoneConfs != null && timeZoneConfs.Any())
+        {
+            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime);
+        }
         if (isPatientChildren)
         {
-            if (isHoliday && uketukeTime >= 600 && uketukeTime < 2200)
+            if (timeZoneConf != null)
             {
-                jikanKbn = JikanConst.KyujituKotoku;
-                return new DefaultSelectedTimeModel(
-                    timeKbnName,
-                    CIUtil.TimeToShowTime(uketukeTime),
-                    startTime,
-                    endTime,
-                    currentTimeKbn,
-                    beforeTimeKbn,
-                    isPatientChildren,
-                    isShowPopup,
-                    jikanKbn,
-                    timeKbnForChild);
+                if (isHoliday && dayOfWeek == 1 && uketukeTime >= 600 && uketukeTime < 2200)
+                {
+                    jikanKbn = JikanConst.KyujituKotoku;
+                    return new DefaultSelectedTimeModel(
+                        timeKbnName,
+                        CIUtil.TimeToShowTime(uketukeTime),
+                        startTime,
+                        endTime,
+                        currentTimeKbn,
+                        beforeTimeKbn,
+                        isPatientChildren,
+                        isShowPopup,
+                        jikanKbn,
+                        timeKbnForChild);
+                }
             }
+
             //夜間小特 : 6h-8h or 18h-22h
             if ((uketukeTime >= 600 && uketukeTime < 800) ||
                 ((dayOfWeek == 7 ? uketukeTime >= 1200 : uketukeTime >= 1800) && uketukeTime < 2200))
@@ -102,12 +112,7 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         }
 
         //Adult Patient
-        var timeZoneConfs = _timeZoneRepository.GetTimeZoneConfs(hpId);
-        TimeZoneConfModel? timeZoneConf = null;
-        if (timeZoneConfs != null && timeZoneConfs.Any())
-        {
-            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime);
-        }
+
         if (isHoliday)
         {
             if (timeZoneConf == null)
