@@ -379,16 +379,16 @@ namespace Interactor.MedicalExamination
                     checkingOrderModelSyosinIryoJyohoKiban1.ChangeSantei(!existOnlineConsent);
                     int index = checkingOrderModelList.IndexOf(checkingOrderModelSyosinIryoJyohoKiban1);
 
-                    var SyosinIryoJyohoKiban2TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.SyosinIryoJyohoKiban2, sinDate);
-                    if (SyosinIryoJyohoKiban2TenMstModel != null)
+                    var syosinIryoJyohoKiban2TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.SyosinIryoJyohoKiban2, sinDate);
+                    if (syosinIryoJyohoKiban2TenMstModel != null)
                     {
                         var checkingOrderModelSyosinIryoJyohoKiban2 = new CheckedOrderModel(
                             CheckingType.MissingCalculate,
                             existOnlineConsent,
-                            FormatSanteiMessage(SyosinIryoJyohoKiban2TenMstModel.Name),
-                            SyosinIryoJyohoKiban2TenMstModel.ItemCd,
-                            SyosinIryoJyohoKiban2TenMstModel.SinKouiKbn,
-                            SyosinIryoJyohoKiban2TenMstModel.Name,
+                            FormatSanteiMessage(syosinIryoJyohoKiban2TenMstModel.Name),
+                            syosinIryoJyohoKiban2TenMstModel.ItemCd,
+                            syosinIryoJyohoKiban2TenMstModel.SinKouiKbn,
+                            syosinIryoJyohoKiban2TenMstModel.Name,
                             0
                             );
 
@@ -411,16 +411,16 @@ namespace Interactor.MedicalExamination
                     checkingOrderModelMedicalDevelopmentSystemEnhanceAdd1.ChangeSantei(!existOnlineConsent);
                     int index = checkingOrderModelList.IndexOf(checkingOrderModelMedicalDevelopmentSystemEnhanceAdd1);
 
-                    var MedicalDevelopmentSystemEnhanceAdd2TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.IgakuIryoJyohoKiban2, sinDate);
-                    if (MedicalDevelopmentSystemEnhanceAdd2TenMstModel != null)
+                    var medicalDevelopmentSystemEnhanceAdd2TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.IgakuIryoJyohoKiban2, sinDate);
+                    if (medicalDevelopmentSystemEnhanceAdd2TenMstModel != null)
                     {
                         var checkingOrderModelMedicalDevelopmentSystemEnhanceAdd2 = new CheckedOrderModel(
                                                                                                         CheckingType.MissingCalculate,
                                                                                                         existOnlineConsent,
-                                                                                                        FormatSanteiMessage(MedicalDevelopmentSystemEnhanceAdd2TenMstModel.Name),
-                                                                                                        MedicalDevelopmentSystemEnhanceAdd2TenMstModel.ItemCd,
-                                                                                                        MedicalDevelopmentSystemEnhanceAdd2TenMstModel.SinKouiKbn,
-                                                                                                        MedicalDevelopmentSystemEnhanceAdd2TenMstModel.Name,
+                                                                                                        FormatSanteiMessage(medicalDevelopmentSystemEnhanceAdd2TenMstModel.Name),
+                                                                                                        medicalDevelopmentSystemEnhanceAdd2TenMstModel.ItemCd,
+                                                                                                        medicalDevelopmentSystemEnhanceAdd2TenMstModel.SinKouiKbn,
+                                                                                                        medicalDevelopmentSystemEnhanceAdd2TenMstModel.Name,
                                                                                                         0
                                                                                                          );
                         if (index + 1 == checkingOrderModelList.Count)
