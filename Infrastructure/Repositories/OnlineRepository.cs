@@ -879,6 +879,12 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 );
     }
 
+    /// <summary>
+    /// Check Exist Online Confirm of Patient by Sindate
+    /// </summary>
+    /// <param name="ptId"></param>
+    /// <param name="sinDate"></param>
+    /// <returns>true or false</returns>
     public bool ExistOnlineConsent(long ptId, int sinDate)
     {
         var onlConfirms = NoTrackingDataContext.OnlineConfirmationHistories.Where(x => x.PtId == ptId && x.InfoConsFlg != null && x.InfoConsFlg.Contains("1")).ToList();
