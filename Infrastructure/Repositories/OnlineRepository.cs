@@ -529,7 +529,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 try
                 {
                     foreach (var confirmation in from response in responseList
-                                                 where response.MessageBody.ResultList != null && response.MessageBody.ResultList.ResultOfQualificationConfirmation != null
+                                                 where response.MessageBody.ResultList != null && response.MessageBody.ResultList.ResultOfQualificationConfirmation?.Any() == true
                                                  from confirmation in response.MessageBody.ResultList.ResultOfQualificationConfirmation
                                                  select confirmation)
                     {

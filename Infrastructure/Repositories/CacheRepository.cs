@@ -21,7 +21,7 @@ public class CacheRepository : IRemoveCacheRepository
     public bool RemoveCache(string keyCache)
     {
         bool result = false;
-        if (string.IsNullOrEmpty(keyCache) && _cache.KeyExists(keyCache))
+        if (!string.IsNullOrEmpty(keyCache) && _cache.KeyExists(keyCache))
         {
             _cache.KeyDelete(keyCache);
             result = true;
