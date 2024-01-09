@@ -216,14 +216,14 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         bool isSyobyoKbn = mst.SyobyoKbn == 1;
         int sikkanKbn = mst.SikkanKbn;
         int nanByoCd = mst.NanbyoCd;
-        string fullByomei = mst.Byomei ?? string.Empty;
+        string displayByomei = mst.Byomei ?? string.Empty; // displayByomei is saved in the database
         bool isDspRece = mst.IsNodspRece == 0;
         bool isDspKarte = mst.IsNodspKarte == 0;
         string byomeiCmt = mst.HosokuCmt ?? string.Empty;
         string byomeiCd = mst.ByomeiCd ?? string.Empty;
 
-        // get main byomei by ByomeiCd
-        string mainByomei = byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(mst.ByomeiCd))?.Byomei ?? string.Empty;
+        // fullByomei is main byomei get by byomeiCd
+        string fullByomei = mst.ByomeiCd != FREE_WORD ? byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(mst.ByomeiCd))?.Byomei ?? string.Empty : displayByomei;
         var codeLists = GetCodeLists(mst);
 
         //prefix and suffix
@@ -241,7 +241,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 isSyobyoKbn,
                 sikkanKbn,
                 nanByoCd,
-                mainByomei,
+                displayByomei,
                 fullByomei,
                 isSuspected,
                 isDspRece,

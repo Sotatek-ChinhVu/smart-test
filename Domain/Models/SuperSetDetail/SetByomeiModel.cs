@@ -2,15 +2,14 @@
 
 public class SetByomeiModel
 {
-    private const string FREE_WORD = "0000999";
-    public SetByomeiModel(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string mainByomei, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, string icd10, string icd102013, string icd1012013, string icd1022013, List<PrefixSuffixModel> prefixSuffixList)
+    public SetByomeiModel(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string displayByomei, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, string icd10, string icd102013, string icd1012013, string icd1022013, List<PrefixSuffixModel> prefixSuffixList)
     {
         Id = id;
         IsSyobyoKbn = isSyobyoKbn;
         SikkanKbn = sikkanKbn;
         NanByoCd = nanByoCd;
-        MainByomei = byomeiCd != FREE_WORD ? mainByomei : fullByomei; // if byomeiCd is free word, main byomei is fullByomei
-        FullByomei = fullByomei;
+        DisplayByomei = displayByomei; // DisplayByomei is the byomei displayed in front end
+        FullByomei = fullByomei; // FullByomei is main byomei get by byomeiCd
         IsSuspected = isSuspected;
         IsDspRece = isDspRece;
         IsDspKarte = isDspKarte;
@@ -33,7 +32,7 @@ public class SetByomeiModel
 
     public string FullByomei { get; private set; }
 
-    public string MainByomei { get; private set; }
+    public string DisplayByomei { get; private set; }
 
     public bool IsSuspected { get; private set; }
 
