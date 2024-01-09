@@ -1193,6 +1193,7 @@ namespace Infrastructure.Repositories
                 {
                     var lastRaiinInf = NoTrackingDataContext.RaiinInfs
                             .Where(p => p.HpId == hpId &&
+                                        p.PtId == ptId &&
                                         p.IsDeleted == DeleteTypes.None &&
                                         p.SinDate <= sinDate)
                             .OrderByDescending(p => p.SinDate)
