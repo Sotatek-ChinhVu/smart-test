@@ -221,7 +221,11 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         bool isDspKarte = mst.IsNodspKarte == 0;
         string byomeiCmt = mst.HosokuCmt ?? string.Empty;
         string byomeiCd = mst.ByomeiCd ?? string.Empty;
+
+        // get main byomei by ByomeiCd
+        string mainByomei = byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(mst.ByomeiCd))?.Byomei ?? string.Empty;
         var codeLists = GetCodeLists(mst);
+
         //prefix and suffix
         var prefixSuffixList = codeLists?.Select(code => new PrefixSuffixModel(code, byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(code))?.Byomei ?? string.Empty)).ToList();
         bool isSuspected = false;
@@ -237,6 +241,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 isSyobyoKbn,
                 sikkanKbn,
                 nanByoCd,
+                mainByomei,
                 fullByomei,
                 isSuspected,
                 isDspRece,

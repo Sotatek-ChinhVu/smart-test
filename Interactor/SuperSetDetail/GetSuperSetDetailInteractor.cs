@@ -62,6 +62,7 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
                 s.IsSyobyoKbn,
                 s.SikkanKbn,
                 s.NanByoCd,
+                s.MainByomei,
                 s.FullByomei,
                 s.IsSuspected,
                 s.IsDspRece,
