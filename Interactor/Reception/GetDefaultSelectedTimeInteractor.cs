@@ -79,28 +79,13 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         }
         if (isPatientChildren)
         {
-            if (timeZoneConf != null)
+            if ((isHoliday || dayOfWeek == 1) && uketukeTime >= 600 && uketukeTime < 2200)
             {
-                    if ((isHoliday || dayOfWeek == 1) && uketukeTime >= 600 && uketukeTime < 2200)
-                {
-                    jikanKbn = JikanConst.KyujituKotoku;
-                    return new DefaultSelectedTimeModel(
-                        timeKbnName,
-                        CIUtil.TimeToShowTime(uketukeTime),
-                        startTime,
-                        endTime,
-                        currentTimeKbn,
-                        beforeTimeKbn,
-                        isPatientChildren,
-                        isShowPopup,
-                        jikanKbn,
-                        timeKbnForChild);
-                }
+                timeKbnForChild = JikanConst.KyujituKotoku;
             }
-
             //夜間小特 : 6h-8h or 18h-22h
-            if ((uketukeTime >= 600 && uketukeTime < 800) ||
-                ((dayOfWeek == 7 ? uketukeTime >= 1200 : uketukeTime >= 1800) && uketukeTime < 2200))
+            else if ((uketukeTime >= 600 && uketukeTime < 800) ||
+            ((dayOfWeek == 7 ? uketukeTime >= 1200 : uketukeTime >= 1800) && uketukeTime < 2200))
             {
                 timeKbnForChild = JikanConst.YakanKotoku;
             }
