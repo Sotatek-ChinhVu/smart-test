@@ -31,7 +31,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
             querySortList = (IOrderedQueryable<AuditLog>)querySortList.Skip(skip).Take(take);
         }
 
-        result = querySortList.AsEnumerable().Select(item => new AuditLogModel(
+        result = querySortList.Select(item => new AuditLogModel(
                                                   item.LogId,
                                                   item.TenantId,
                                                   item.Domain ?? string.Empty,
@@ -86,7 +86,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
         }
         if (!string.IsNullOrEmpty(requestModel.ClientIP))
         {
-            query = query.Where(p => p.ClientIP.Contains(p.ClientIP));
+            query = query.Where(p => p.ClientIP.Contains(requestModel.ClientIP));
         }
         if (!string.IsNullOrEmpty(requestModel.Desciption))
         {
