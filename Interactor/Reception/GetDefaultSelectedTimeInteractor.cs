@@ -81,7 +81,7 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         {
             if (timeZoneConf != null)
             {
-                if (isHoliday && dayOfWeek == 1 && uketukeTime >= 600 && uketukeTime < 2200)
+                    if ((isHoliday || dayOfWeek == 1) && uketukeTime >= 600 && uketukeTime < 2200)
                 {
                     jikanKbn = JikanConst.KyujituKotoku;
                     return new DefaultSelectedTimeModel(
