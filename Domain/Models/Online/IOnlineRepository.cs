@@ -44,4 +44,6 @@ public interface IOnlineRepository : IRepositoryBase
     bool InsertListOnlConfirmHistory(int userId, List<OnlineConfirmationHistoryModel> listOnlineConfirmationHistoryModel);
 
     (bool, List<ReceptionRowModel> receptions) UpdateRaiinInfByResResult(int hpId, int userId, List<ConfirmResultModel> listResResult);
+
+    bool ExistOnlineConsent(long ptId, int sinDate);
 }
