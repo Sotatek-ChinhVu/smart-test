@@ -195,6 +195,7 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         };
         if (timeKbnForChild > 0 &&
           (timeKbnForChild == JikanConst.YakanKotoku && currentTimeKbn == JikanConst.Yasou) ||
+          (timeKbnForChild == JikanConst.KyujituKotoku && currentTimeKbn == JikanConst.Yasou) ||
           (timeKbnForChild == JikanConst.SinyaKotoku && currentTimeKbn == JikanConst.Sinya))
         {
             jikanKbn = timeKbnForChild;
