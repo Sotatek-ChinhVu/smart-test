@@ -4,6 +4,7 @@ using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using NpgsqlTypes;
 
 namespace Infrastructure.SuperAdminRepositories;
 
@@ -30,7 +31,7 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
             querySortList = (IOrderedQueryable<AuditLog>)querySortList.Skip(skip).Take(take);
         }
 
-        result = querySortList.Select(item => new AuditLogModel(
+        result = querySortList.AsEnumerable().Select(item => new AuditLogModel(
                                                   item.LogId,
                                                   item.TenantId,
                                                   item.Domain ?? string.Empty,
@@ -57,48 +58,39 @@ public class AdminAuditLogRepository : AuditLogRepositoryBase, IAdminAuditLogRep
     {
         if (!string.IsNullOrEmpty(requestModel.Domain))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.Domain)
-                         .Matches(requestModel.Domain));
+            query = query.Where(p => p.Domain.Contains(requestModel.Domain));
         }
         if (!string.IsNullOrEmpty(requestModel.ThreadId))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.ThreadId)
-                         .Matches(requestModel.ThreadId));
+            query = query.Where(p => p.ThreadId.Contains(requestModel.ThreadId));
         }
         if (!string.IsNullOrEmpty(requestModel.LogType))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.LogType)
-                         .Matches(requestModel.LogType));
+            query = query.Where(p => p.LogType.Contains(requestModel.LogType));
         }
         if (!string.IsNullOrEmpty(requestModel.LoginKey))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.LoginKey)
-                         .Matches(requestModel.LoginKey));
+            query = query.Where(p => p.LoginKey.Contains(requestModel.LoginKey));
         }
         if (!string.IsNullOrEmpty(requestModel.EventCd))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.EventCd ?? string.Empty)
-                         .Matches(requestModel.EventCd));
+            query = query.Where(p => p.EventCd != null && p.EventCd.Contains(requestModel.EventCd));
         }
         if (!string.IsNullOrEmpty(requestModel.Path))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.Path ?? string.Empty)
-                         .Matches(requestModel.Path));
+            query = query.Where(p => p.Path != null && p.Path.Contains(requestModel.Path));
         }
         if (!string.IsNullOrEmpty(requestModel.RequestInfo))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.RequestInfo)
-                         .Matches(requestModel.RequestInfo));
+            query = query.Where(p => p.RequestInfo.Contains(requestModel.RequestInfo));
         }
         if (!string.IsNullOrEmpty(requestModel.ClientIP))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.ClientIP)
-                         .Matches(requestModel.ClientIP));
+            query = query.Where(p => p.ClientIP.Contains(p.ClientIP));
         }
         if (!string.IsNullOrEmpty(requestModel.Desciption))
         {
-            query = query.Where(p => EF.Functions.ToTsVector("english", p.Desciption)
-                         .Matches(requestModel.Desciption));
+            query = query.Where(p => p.Desciption.Contains(requestModel.Desciption));
         }
         if (requestModel.HpId > 0)
         {

@@ -1,5 +1,6 @@
 ﻿using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
+using System.Text.Json.Serialization;
 using UseCase.SetMst.GetList;
 using UseCase.Todo.GetTodoInfFinder;
 
@@ -7,6 +8,7 @@ namespace EmrCloudApi.Messages;
 
 public class SuperSetMessage
 {
+    [JsonPropertyName("reorderSetMstModels")]
     public List<GetSetMstListOutputItem> ReorderSetMstModels { get; set; } = new();
 }
 
@@ -17,6 +19,7 @@ public class ReceptionChangedMessage
         ReceptionInfos = receptionInfos;
         SameVisitList = sameVisitList;
     }
+
 
     public List<ReceptionRowModel> ReceptionInfos { get; set; }
 
