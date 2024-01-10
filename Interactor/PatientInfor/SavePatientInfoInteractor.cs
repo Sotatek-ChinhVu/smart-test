@@ -134,7 +134,7 @@ namespace Interactor.PatientInfor
             }
         }
 
-        private bool CloneByomei(SavePatientInfoInputData inputData)
+        public bool CloneByomei(SavePatientInfoInputData inputData)
         {
             if (!inputData.ReactSave.ConfirmCloneByomei)
             {
