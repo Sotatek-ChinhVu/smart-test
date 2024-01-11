@@ -405,7 +405,7 @@ namespace Infrastructure.Repositories
 
             foreach (var orderInf in rsvkrtOrderInfModels)
             {
-                var oldOrderInf = oldOrderInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == rsvkrtNo && o.RpNo == orderInf.RpNo && o.RpEdaNo == orderInf.RpEdaNo && o.IsDeleted == DeleteTypes.None);
+                var oldOrderInf = oldOrderInfs.Where(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == rsvkrtNo && o.RpNo == orderInf.RpNo && o.IsDeleted == DeleteTypes.None).OrderBy(x=> x.RpEdaNo).FirstOrDefault();
                 if (orderInf.IsDeleted == DeleteTypes.Deleted || orderInf.IsDeleted == DeleteTypes.Confirm)
                 {
                     if (oldOrderInf != null && oldOrderInf.IsDeleted == DeleteTypes.None)
