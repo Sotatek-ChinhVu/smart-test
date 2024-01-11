@@ -1263,7 +1263,7 @@ namespace Infrastructure.Repositories
 
             var zanyakuSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2012 && p.GrpEdaNo == 0)?.Val;
 
-            var zangigiTenMstModel = FindTenMst(hpId, ItemCdConst.ZanGigi, sinDate);
+            var zangigiTenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.ZanGigi, sinDate);
             if (zangigiTenMstModel != null)
             {
                 var santei = zanyakuSetting == 1;
@@ -1273,7 +1273,7 @@ namespace Infrastructure.Repositories
                 checkedOrderModelList.Add(checkedOrderModelZangigi);
             }
 
-            var zanteikyotenMstModel = FindTenMst(hpId, ItemCdConst.ZanTeiKyo, sinDate);
+            var zanteikyotenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.ZanTeiKyo, sinDate);
             if (zanteikyotenMstModel != null)
             {
                 var santei = zanyakuSetting == 2;
