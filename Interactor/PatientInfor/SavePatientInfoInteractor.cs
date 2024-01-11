@@ -33,7 +33,7 @@ namespace Interactor.PatientInfor
             _amazonS3Service = amazonS3Service;
             _ptDiseaseRepository = ptDiseaseRepository;
             _tenantProvider = tenantProvider;
-            _loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
+            //_loggingHandler = new LoggingHandler(_tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         [Obsolete]
@@ -159,7 +159,7 @@ namespace Interactor.PatientInfor
             return false;
         }
 
-        private IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
+        public IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
             bool isPatientTempotary = model.Patient.PtId == 0 && !model.Insurances.Any(x => x.IsDeleted == DeleteTypes.None);

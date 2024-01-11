@@ -937,5 +937,23 @@ namespace CloudUnitTest.Interactor.PatientInfo
             byte[] data = Encoding.UTF8.GetBytes("Sample file content.");
             return new MemoryStream(data);
         }
+
+        [Test]
+        public void TC_005_Validation()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+            var mockLoggingHandle = new Mock<ILoggingHandler>();
+            var mockTenantProvider = new Mock<ITenantProvider>();
+
+            // Arrange
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            //Act
+           var resutl =  savePatientInfo.Validation();
+        }
     }
 }
