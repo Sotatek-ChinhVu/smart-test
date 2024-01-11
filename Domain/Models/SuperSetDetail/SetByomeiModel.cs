@@ -8,7 +8,7 @@ public class SetByomeiModel
         IsSyobyoKbn = isSyobyoKbn;
         SikkanKbn = sikkanKbn;
         NanByoCd = nanByoCd;
-        DisplayByomei = displayByomei; // DisplayByomei is the byomei displayed in front end
+        DisplayByomei = displayByomei; // DisplayByomei is the byomei displayed in front end, get by SetByomei.Byomei in database
         FullByomei = fullByomei; // FullByomei is main byomei get by byomeiCd
         IsSuspected = isSuspected;
         IsDspRece = isDspRece;
