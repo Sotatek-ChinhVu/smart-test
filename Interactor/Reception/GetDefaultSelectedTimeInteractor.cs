@@ -79,6 +79,7 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         }
         if (isPatientChildren)
         {
+            //休日小特: 6h-22h (holiday or sunday)
             if ((isHoliday || dayOfWeek == 1) && uketukeTime >= 600 && uketukeTime < 2200)
             {
                 timeKbnForChild = JikanConst.KyujituKotoku;
@@ -196,7 +197,7 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         if (timeKbnForChild > 0 &&
           (timeKbnForChild == JikanConst.YakanKotoku && currentTimeKbn == JikanConst.Yasou) ||
           (timeKbnForChild == JikanConst.KyujituKotoku && currentTimeKbn == JikanConst.Yasou) ||
-          (timeKbnForChild == JikanConst.SinyaKotoku && currentTimeKbn == JikanConst.Sinya))
+          (timeKbnForChild == JikanConst.SinyaKotoku && currentTimeKbn == JikanConst.Yasou))
         {
             jikanKbn = timeKbnForChild;
 
