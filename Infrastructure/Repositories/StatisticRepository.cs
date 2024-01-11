@@ -526,6 +526,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.KohiHokenEdaNoFrom, patientManagementModel.KohiHokenEdaNoFrom.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.KohiHokenNoTo, patientManagementModel.KohiHokenNoTo.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.KohiHokenEdaNoTo, patientManagementModel.KohiHokenEdaNoTo.AsString()));
+        addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.ValidOrExpired, patientManagementModel.ValidOrExpired.AsString())); // 有効/期限切れ
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.StartDateFrom, patientManagementModel.StartDateFrom.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.StartDateTo, patientManagementModel.StartDateTo.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.TenkiDateFrom, patientManagementModel.TenkiDateFrom.AsString()));
@@ -683,6 +684,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         string kohiHokenEdaNoFrom = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.KohiHokenEdaNoFrom && x.MenuId == menuId)?.Val ?? string.Empty;
         string kohiHokenNoTo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.KohiHokenNoTo && x.MenuId == menuId)?.Val ?? string.Empty;
         string kohiHokenEdaNoTo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.KohiHokenEdaNoTo && x.MenuId == menuId)?.Val ?? string.Empty;
+        string validOrExpired = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.ValidOrExpired && x.MenuId == menuId)?.Val ?? string.Empty; // 有効/期限切れ
         string startDateFrom = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.StartDateFrom && x.MenuId == menuId)?.Val ?? string.Empty;
         string startDateTo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.StartDateTo && x.MenuId == menuId)?.Val ?? string.Empty;
         string tenkiDateFrom = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.TenkiDateFrom && x.MenuId == menuId)?.Val ?? string.Empty;
@@ -770,6 +772,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                               kohiHokenEdaNoFrom.AsInteger(),
                                               kohiHokenNoTo.AsInteger(),
                                               kohiHokenEdaNoTo.AsInteger(),
+                                              validOrExpired.AsInteger(), // 有効/期限切れ
                                               startDateFrom.AsInteger(),
                                               startDateTo.AsInteger(),
                                               tenkiDateFrom.AsInteger(),
