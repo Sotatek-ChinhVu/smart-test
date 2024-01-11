@@ -6,6 +6,7 @@ using Domain.Models.SystemConf;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
+using Interactor.CommonChecker.CommonMedicalCheck;
 using Interactor.PatientInfor;
 using Moq;
 using System.Text;
@@ -938,8 +939,12 @@ namespace CloudUnitTest.Interactor.PatientInfo
             return new MemoryStream(data);
         }
 
+        /// <summary>
+        /// model.ReactSave.ConfirmSamePatientInf = false
+        /// samePatientInf count = 2
+        /// </summary>
         [Test]
-        public void TC_005_Validation()
+        public void TC_005_Validation_ConfirmSamePatientInf_SamePatientInf_GreaterThan_0()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -949,11 +954,593 @@ namespace CloudUnitTest.Interactor.PatientInfo
             var mockLoggingHandle = new Mock<ILoggingHandler>();
             var mockTenantProvider = new Mock<ITenantProvider>();
 
+            //Setup Data
+            #region Data Test
+            var patientInfoSaveModel = new PatientInforSaveModel(
+                                            hpId: 1,
+                                            ptId: 123456,
+                                            ptNum: 789012,
+                                            kanaName: "Sample Kana Name",
+                                            name: "Sample Name",
+                                            sex: 1,
+                                            birthday: 19900101,
+                                            isDead: 0,
+                                            deathDate: 0,
+                                            mail: "sample@mail.com",
+                                            homePost: "123-45",
+                                            homeAddress1: "Sample Home Address 1",
+                                            homeAddress2: "Sample Home Address 2",
+                                            tel1: "123-456-7890",
+                                            tel2: "987-654-3210",
+                                            setanusi: "Sample Setanusi",
+                                            zokugara: "Sample Zokugara",
+                                            job: "Sample Job",
+                                            renrakuName: "Sample Renraku Name",
+                                            renrakuPost: "987-656",
+                                            renrakuAddress1: "Sample Renraku Address 1",
+                                            renrakuAddress2: "Sample Renraku Address 2",
+                                            renrakuTel: "555-1234",
+                                            renrakuMemo: "Sample Renraku Memo",
+                                            officeName: "Sample Office Name",
+                                            officePost: "543-212",
+                                            officeAddress1: "Sample Office Address 1",
+                                            officeAddress2: "Sample Office Address 2",
+                                            officeTel: "888-9999",
+                                            officeMemo: "Sample Office Memo",
+                                            isRyosyoDetail: 1,
+                                            primaryDoctor: 2,
+                                            isTester: 0,
+                                            mainHokenPid: 3,
+                                            referenceNo: 987654321,
+                                            limitConsFlg: 1,
+                                            memo: "Sample Memo"
+            );
+
+            var insuranceScanModel = new InsuranceScanModel(
+                                            hpId: 1,
+                                            ptId: 123456,
+                                            seqNo: 789012,
+                                            hokenGrp: 1,
+                                            hokenId: 2,
+                                            fileName: "SampleFile.pdf",
+                                            file: GetSampleFileStream(),
+                                            isDeleted: 0,
+                                            updateTime: "2024-01-10T12:34:56"
+            );
+
+            IEnumerable<InsuranceScanModel> insuranceScans = new List<InsuranceScanModel>
+                                                            {
+                                                                new InsuranceScanModel
+                                                                (
+                                                                    hpId: 1,
+                                                                    ptId: 123456,
+                                                                    seqNo: 789012,
+                                                                    hokenGrp: 1,
+                                                                    hokenId: 2,
+                                                                    fileName: "SampleFile.pdf",
+                                                                    file: GetSampleFileStream(),
+                                                                    isDeleted: 0,
+                                                                    updateTime: "2024-01-10T12:34:56"
+                                                                )
+                                                            };
+
+            var hokenInfs = new List<HokenInfModel>()
+            {
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "ABC123",
+                                  kigo: "K123",
+                                  bango: "B567",
+                                  edaNo: "E789",
+                                  honkeKbn: 4,
+                                  startDate: 20220101,
+                                  endDate: 20221231,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20220101,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>(),
+                                  listRousaiTenki: new List<RousaiTenkiModel>(),
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 1,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: true,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "ABC1234",
+                                  kigo: "K1234",
+                                  bango: "B5678",
+                                  edaNo: "E7890",
+                                  honkeKbn: 5,
+                                  startDate: 20220101,
+                                  endDate: 20221231,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20220101,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>(),
+                                  listRousaiTenki: new List<RousaiTenkiModel>(),
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 0,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: false,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
+            };
+            #endregion
+
             // Arrange
             var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
 
+            var inputData = new SavePatientInfoInputData(patientInfoSaveModel, new(), new(), new(), hokenInfs, new(), new(), new(), new(), insuranceScans, new List<int> { 1, 2 }, 9999, 9999);
+
+            var resultFindSamePatientTest = new List<PatientInforModel>()
+            {
+               new PatientInforModel(
+                        hpId: 123,
+                        ptId: 987654,
+                        referenceNo: 56789,
+                        seqNo: 1,
+                        ptNum: 1001,
+                        kanaName: "あなたのテスト名前",
+                        name: "Your Test Name",
+                        sex: 1,
+                        birthday: 19900101,
+                        limitConsFlg: 0,
+                        isDead: 0,
+                        deathDate: 0,
+                        homePost: "123-4567",
+                        homeAddress1: "123 Test Street",
+                        homeAddress2: "Apt. 45",
+                        tel1: "123-555-7890",
+                        tel2: "987-654-3210",
+                        mail: "test@example.com",
+                        setanusi: "Test Setanusi",
+                        zokugara: "Test Zokugara",
+                        job: "Software Engineer",
+                        renrakuName: "Emergency Contact",
+                        renrakuPost: "456 Emergency Street",
+                        renrakuAddress1: "Emergency City",
+                        renrakuAddress2: "Emergency State",
+                        renrakuTel: "555-123-7890",
+                        renrakuMemo: "Emergency Contact Memo",
+                        officeName: "Test Hospital",
+                        officePost: "789 Hospital Street",
+                        officeAddress1: "Hospital City",
+                        officeAddress2: "Hospital State",
+                        officeTel: "789-456-1230",
+                        officeMemo: "Hospital Memo",
+                        isRyosyoDetail: 1,
+                        primaryDoctor: 123,
+                        isTester: 0,
+                        mainHokenPid: 456,
+                        memo: "Test Memo",
+                        lastVisitDate: 20220101,
+                        firstVisitDate: 20190101,
+                        rainCount: 3,
+                        comment: "Test Comment",
+                        sinDate: 20220101,
+                        isShowKyuSeiName: false
+                    ),
+               new PatientInforModel(
+                        hpId: 123,
+                        ptId: 987655,
+                        referenceNo: 56789,
+                        seqNo: 1,
+                        ptNum: 1001,
+                        kanaName: "あなたのテスト名前",
+                        name: "Your Test Name",
+                        sex: 1,
+                        birthday: 19900101,
+                        limitConsFlg: 0,
+                        isDead: 0,
+                        deathDate: 0,
+                        homePost: "123-4567",
+                        homeAddress1: "123 Test Street",
+                        homeAddress2: "Apt. 45",
+                        tel1: "123-555-7890",
+                        tel2: "987-654-3210",
+                        mail: "test@example.com",
+                        setanusi: "Test Setanusi",
+                        zokugara: "Test Zokugara",
+                        job: "Software Engineer",
+                        renrakuName: "Emergency Contact",
+                        renrakuPost: "456 Emergency Street",
+                        renrakuAddress1: "Emergency City",
+                        renrakuAddress2: "Emergency State",
+                        renrakuTel: "555-123-7890",
+                        renrakuMemo: "Emergency Contact Memo",
+                        officeName: "Test Hospital",
+                        officePost: "789 Hospital Street",
+                        officeAddress1: "Hospital City",
+                        officeAddress2: "Hospital State",
+                        officeTel: "789-456-1230",
+                        officeMemo: "Hospital Memo",
+                        isRyosyoDetail: 1,
+                        primaryDoctor: 123,
+                        isTester: 0,
+                        mainHokenPid: 456,
+                        memo: "Test Memo",
+                        lastVisitDate: 20220101,
+                        firstVisitDate: 20190101,
+                        rainCount: 3,
+                        comment: "Test Comment",
+                        sinDate: 20220101,
+                        isShowKyuSeiName: false
+                    ),
+            };
+            mockPatientInfo.Setup(x => x.FindSamePatient(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Returns((int input1, string input2, int input3, int input4) => resultFindSamePatientTest);
             //Act
-           var resutl =  savePatientInfo.Validation();
+            var resutl =  savePatientInfo.Validation(inputData);
+
+            Assert.IsNotNull(resutl);
+            Assert.That(resutl.Count, Is.EqualTo(1));
+            Assert.That(resutl.First().Message, Is.EqualTo("同姓同名の患者が既に登録されています。\r\n登録しますか？\r\n患者番号：1001     \r\n患者番号：1001     "));
+            Assert.That(resutl.First().Type, Is.EqualTo(3));
+        }
+
+        /// <summary>
+        /// model.ReactSave.ConfirmSamePatientInf = false
+        /// samePatientInf count = 1
+        /// </summary>
+        [Test]
+        public void TC_006_Validation_ConfirmSamePatientInf_SamePatientInf_GreaterThan_0_Msg_NotIN_NewLine()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+            var mockLoggingHandle = new Mock<ILoggingHandler>();
+            var mockTenantProvider = new Mock<ITenantProvider>();
+
+            //Setup Data
+            #region Data Test
+            var patientInfoSaveModel = new PatientInforSaveModel(
+                                            hpId: 1,
+                                            ptId: 123456,
+                                            ptNum: 789012,
+                                            kanaName: "Sample Kana Name",
+                                            name: "Sample Name",
+                                            sex: 1,
+                                            birthday: 19900101,
+                                            isDead: 0,
+                                            deathDate: 0,
+                                            mail: "sample@mail.com",
+                                            homePost: "123-45",
+                                            homeAddress1: "Sample Home Address 1",
+                                            homeAddress2: "Sample Home Address 2",
+                                            tel1: "123-456-7890",
+                                            tel2: "987-654-3210",
+                                            setanusi: "Sample Setanusi",
+                                            zokugara: "Sample Zokugara",
+                                            job: "Sample Job",
+                                            renrakuName: "Sample Renraku Name",
+                                            renrakuPost: "987-656",
+                                            renrakuAddress1: "Sample Renraku Address 1",
+                                            renrakuAddress2: "Sample Renraku Address 2",
+                                            renrakuTel: "555-1234",
+                                            renrakuMemo: "Sample Renraku Memo",
+                                            officeName: "Sample Office Name",
+                                            officePost: "543-212",
+                                            officeAddress1: "Sample Office Address 1",
+                                            officeAddress2: "Sample Office Address 2",
+                                            officeTel: "888-9999",
+                                            officeMemo: "Sample Office Memo",
+                                            isRyosyoDetail: 1,
+                                            primaryDoctor: 2,
+                                            isTester: 0,
+                                            mainHokenPid: 3,
+                                            referenceNo: 987654321,
+                                            limitConsFlg: 1,
+                                            memo: "Sample Memo"
+            );
+
+            var insuranceScanModel = new InsuranceScanModel(
+                                            hpId: 1,
+                                            ptId: 123456,
+                                            seqNo: 789012,
+                                            hokenGrp: 1,
+                                            hokenId: 2,
+                                            fileName: "SampleFile.pdf",
+                                            file: GetSampleFileStream(),
+                                            isDeleted: 0,
+                                            updateTime: "2024-01-10T12:34:56"
+            );
+
+            IEnumerable<InsuranceScanModel> insuranceScans = new List<InsuranceScanModel>
+                                                            {
+                                                                new InsuranceScanModel
+                                                                (
+                                                                    hpId: 1,
+                                                                    ptId: 123456,
+                                                                    seqNo: 789012,
+                                                                    hokenGrp: 1,
+                                                                    hokenId: 2,
+                                                                    fileName: "SampleFile.pdf",
+                                                                    file: GetSampleFileStream(),
+                                                                    isDeleted: 0,
+                                                                    updateTime: "2024-01-10T12:34:56"
+                                                                )
+                                                            };
+
+            var hokenInfs = new List<HokenInfModel>()
+            {
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "ABC123",
+                                  kigo: "K123",
+                                  bango: "B567",
+                                  edaNo: "E789",
+                                  honkeKbn: 4,
+                                  startDate: 20220101,
+                                  endDate: 20221231,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20220101,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>(),
+                                  listRousaiTenki: new List<RousaiTenkiModel>(),
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 1,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: true,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
+                new HokenInfModel(
+                                  hpId: 1,
+                                  ptId: 123456,
+                                  hokenId: 789012,
+                                  seqNo: 1,
+                                  hokenNo: 456,
+                                  hokenEdaNo: 2,
+                                  hokenKbn: 3,
+                                  hokensyaNo: "ABC1234",
+                                  kigo: "K1234",
+                                  bango: "B5678",
+                                  edaNo: "E7890",
+                                  honkeKbn: 5,
+                                  startDate: 20220101,
+                                  endDate: 20221231,
+                                  sikakuDate: 20220115,
+                                  kofuDate: 20220201,
+                                  confirmDate: 20220215,
+                                  kogakuKbn: 1,
+                                  tasukaiYm: 202203,
+                                  tokureiYm1: 202204,
+                                  tokureiYm2: 202205,
+                                  genmenKbn: 1,
+                                  genmenRate: 80,
+                                  genmenGaku: 500000,
+                                  syokumuKbn: 2,
+                                  keizokuKbn: 1,
+                                  tokki1: "Tokki1",
+                                  tokki2: "Tokki2",
+                                  tokki3: "Tokki3",
+                                  tokki4: "Tokki4",
+                                  tokki5: "Tokki5",
+                                  rousaiKofuNo: "RousaiKofu123",
+                                  rousaiRoudouCd: "R123",
+                                  rousaiSaigaiKbn: 0,
+                                  rousaiKantokuCd: "K123",
+                                  rousaiSyobyoDate: 20221001,
+                                  ryoyoStartDate: 20221001,
+                                  ryoyoEndDate: 20221231,
+                                  rousaiSyobyoCd: "RSC123",
+                                  rousaiJigyosyoName: "RousaiJigyosyo",
+                                  rousaiPrefName: "Tokyo",
+                                  rousaiCityName: "Shinjuku",
+                                  rousaiReceCount: 3,
+                                  hokensyaName: "HokensyaName",
+                                  hokensyaAddress: "HokensyaAddress",
+                                  hokensyaTel: "123-456-7890",
+                                  sinDate: 20220101,
+                                  jibaiHokenName: "JibaiHokenName",
+                                  jibaiHokenTanto: "TantoName",
+                                  jibaiHokenTel: "987-654-3210",
+                                  jibaiJyusyouDate: 20220301,
+                                  houbetu: "Houbetu123",
+                                  confirmDateList: new List<ConfirmDateModel>(),
+                                  listRousaiTenki: new List<RousaiTenkiModel>(),
+                                  isReceKisaiOrNoHoken: true,
+                                  isDeleted: 0,
+                                  hokenMst: new HokenMstModel(),
+                                  isAddNew: false,
+                                  isAddHokenCheck: true,
+                                  hokensyaMst: new HokensyaMstModel()
+                                  ),
+            };
+            #endregion
+
+            // Arrange
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            var inputData = new SavePatientInfoInputData(patientInfoSaveModel, new(), new(), new(), hokenInfs, new(), new(), new(), new(), insuranceScans, new List<int> { 1, 2 }, 9999, 9999);
+
+            var resultFindSamePatientTest = new List<PatientInforModel>()
+            {
+               new PatientInforModel(
+                        hpId: 123,
+                        ptId: 987654,
+                        referenceNo: 56789,
+                        seqNo: 1,
+                        ptNum: 1001,
+                        kanaName: "あなたのテスト名前",
+                        name: "Your Test Name",
+                        sex: 1,
+                        birthday: 19900101,
+                        limitConsFlg: 0,
+                        isDead: 0,
+                        deathDate: 0,
+                        homePost: "123-4567",
+                        homeAddress1: "123 Test Street",
+                        homeAddress2: "Apt. 45",
+                        tel1: "123-555-7890",
+                        tel2: "987-654-3210",
+                        mail: "test@example.com",
+                        setanusi: "Test Setanusi",
+                        zokugara: "Test Zokugara",
+                        job: "Software Engineer",
+                        renrakuName: "Emergency Contact",
+                        renrakuPost: "456 Emergency Street",
+                        renrakuAddress1: "Emergency City",
+                        renrakuAddress2: "Emergency State",
+                        renrakuTel: "555-123-7890",
+                        renrakuMemo: "Emergency Contact Memo",
+                        officeName: "Test Hospital",
+                        officePost: "789 Hospital Street",
+                        officeAddress1: "Hospital City",
+                        officeAddress2: "Hospital State",
+                        officeTel: "789-456-1230",
+                        officeMemo: "Hospital Memo",
+                        isRyosyoDetail: 1,
+                        primaryDoctor: 123,
+                        isTester: 0,
+                        mainHokenPid: 456,
+                        memo: "Test Memo",
+                        lastVisitDate: 20220101,
+                        firstVisitDate: 20190101,
+                        rainCount: 3,
+                        comment: "Test Comment",
+                        sinDate: 20220101,
+                        isShowKyuSeiName: false
+                    ),
+            };
+            mockPatientInfo.Setup(x => x.FindSamePatient(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Returns((int input1, string input2, int input3, int input4) => resultFindSamePatientTest);
+            //Act
+            var resutl = savePatientInfo.Validation(inputData);
+
+            Assert.IsNotNull(resutl);
+            Assert.That(resutl.Count, Is.EqualTo(1));
+            Assert.That(resutl.First().Message, Is.EqualTo("同姓同名の患者が既に登録されています。\r\n登録しますか？\r\n患者番号：1001     "));
+            Assert.That(resutl.First().Type, Is.EqualTo(3));
         }
     }
 }
