@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SYSTEM_GENERATION_CONF")]
+    [Table(name: "system_generation_conf")]
     public class SystemGenerationConf : EmrCloneable<SystemGenerationConf>
     {
         /// <summary>
         /// Id
         /// </summary>
         
-        [Column(name: "ID", Order = 1)]
+        [Column(name: "id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 2)]
+        [Column("hp_id", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GRP_CD", Order = 3)]
+        [Column("grp_cd", Order = 3)]
         public int GrpCd { get; set; }
 
         /// <summary>
@@ -36,14 +36,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GRP_EDA_NO", Order = 4)]
+        [Column("grp_eda_no", Order = 4)]
         public int GrpEdaNo { get; set; }
 
         /// <summary>
         /// 開始日
         /// 
         /// </summary>
-        [Column("START_DATE")]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// 終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -59,7 +59,7 @@ namespace Entity.Tenant
         /// 設定値
         /// 
         /// </summary>
-        [Column("VAL")]
+        [Column("val")]
         [CustomAttribute.DefaultValue(0)]
         public int Val { get; set; }
 
@@ -67,7 +67,7 @@ namespace Entity.Tenant
         /// パラメーター
         /// 
         /// </summary>
-        [Column("PARAM")]
+        [Column("param")]
         [MaxLength(300)]
         public string? Param { get; set; } = string.Empty;
 
@@ -75,7 +75,7 @@ namespace Entity.Tenant
         /// 備考
         /// 
         /// </summary>
-        [Column("BIKO")]
+        [Column("biko")]
         [MaxLength(200)]
         public string? Biko { get; set; } = string.Empty;
 
@@ -83,14 +83,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -106,14 +106,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -121,7 +121,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

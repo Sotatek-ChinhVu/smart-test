@@ -1,49 +1,49 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "Z_PT_OTHER_DRUG")]
+    [Table(name: "z_pt_other_drug")]
     public class ZPtOtherDrug : EmrCloneable<ZPtOtherDrug>
     {
         
-        [Column("OP_ID", Order = 1)]
+        [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         ///		患者を識別するためのシステム固有の番号							
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        [Column("SEQ_NO")]
+        [Column("seq_no")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
 
@@ -51,14 +51,14 @@ namespace Entity.Tenant
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 項目コード
         /// 
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 医薬品名称
         /// 
         /// </summary>
-        [Column("DRUG_NAME")]
+        [Column("drug_name")]
         [MaxLength(100)]
         public string? DrugName { get; set; } = string.Empty;
 
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// 開始日
         /// yyyymmdd
         /// </summary>
-        [Column("START_DATE")]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 終了日
         /// yyyymmdd
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// コメント
         /// 
         /// </summary>
-        [Column("CMT")]
+        [Column("cmt")]
         [MaxLength(100)]
         public string? Cmt { get; set; } = string.Empty;
 
@@ -98,48 +98,48 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         //// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者		
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末			
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者			
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末			
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

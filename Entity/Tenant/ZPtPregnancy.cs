@@ -1,36 +1,36 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "Z_PT_PREGNANCY")]
+    [Table(name: "z_pt_pregnancy")]
     public class ZPtPregnancy : EmrCloneable<ZPtPregnancy>
     {
         
-        [Column("OP_ID", Order = 1)]
+        [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Column("ID")]
-        //[Index("PTPREGNANCY_IDX01", 1)]
+        [Column("id")]
+        //[Index("ptpregnancy_idx01", 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
@@ -39,21 +39,21 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        [Column("SEQ_NO")]
+        [Column("seq_no")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
 
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// 妊娠開始日
         /// 
         /// </summary>
-        [Column("START_DATE")]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// 妊娠終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// 月経日
         /// YYYYMMDD(最終月経日)
         /// </summary>
-        [Column("PERIOD_DATE")]
+        [Column("period_date")]
         [CustomAttribute.DefaultValue(0)]
         public int PeriodDate { get; set; }
 
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// 月経予定日
         /// 
         /// </summary>
-        [Column("PERIOD_DUE_DATE")]
+        [Column("period_due_date")]
         [CustomAttribute.DefaultValue(0)]
         public int PeriodDueDate { get; set; }
 
@@ -93,7 +93,7 @@ namespace Entity.Tenant
         /// 排卵日
         /// YYYYMMDD(最終排卵日)
         /// </summary>
-        [Column("OVULATION_DATE")]
+        [Column("ovulation_date")]
         [CustomAttribute.DefaultValue(0)]
         public int OvulationDate { get; set; }
 
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// 排卵予定日
         /// 
         /// </summary>
-        [Column("OVULATION_DUE_DATE")]
+        [Column("ovulation_due_date")]
         [CustomAttribute.DefaultValue(0)]
         public int OvulationDueDate { get; set; }
 
@@ -109,7 +109,7 @@ namespace Entity.Tenant
         /// 削除フラグ
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -117,14 +117,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -132,7 +132,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -140,14 +140,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -155,7 +155,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
 

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M34_PRECAUTIONS")]
+    [Table(name: "m34_precautions")]
     public class M34Precaution : EmrCloneable<M34Precaution>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("YJ_CD", Order = 1)]
+        [Column("yj_cd", Order = 1)]
         public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
@@ -20,14 +20,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 2)]
+        [Column("seq_no", Order = 2)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 注意事項コード
         /// 
         /// </summary>
-        [Column("PRECAUTION_CD")]
+        [Column("precaution_cd")]
         public string? PrecautionCd { get; set; } = string.Empty;
 
     }
