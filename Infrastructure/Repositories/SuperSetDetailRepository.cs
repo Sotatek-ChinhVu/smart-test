@@ -859,7 +859,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         mst.SyusyokuCd20 = listPrefixSuffix.Count > 19 ? listPrefixSuffix[19].Code : string.Empty;
         mst.SyusyokuCd21 = listPrefixSuffix.Count > 20 ? listPrefixSuffix[20].Code : string.Empty;
 
-        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD && itemSuspected == null)
+        // if item IsSuspected, alway set ByomeiCd = SUSPECTED_CD in SyusyokuCd21
+        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD)
         {
             mst.SyusyokuCd21 = SUSPECTED_CD;
         }
