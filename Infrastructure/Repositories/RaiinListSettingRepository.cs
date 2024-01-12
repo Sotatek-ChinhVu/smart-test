@@ -1753,58 +1753,58 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.SaveChanges();
 
                         // Delete by all detail
-                        string queryDelete = "DELETE FROM \"public\".\"RAIIN_LIST_INF\" WHERE FALSE";
+                        string queryDelete = "DELETE FROM \"public\".\"raiin_list_inf\" WHERE FALSE";
                         StringBuilder queryStringBuilder = new();
                         queryStringBuilder.Append(queryDelete);
                         detailDeletedList.AddRange(detailDeleteds);
                         foreach (var deleteDetailModel in detailDeletedList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(deleteDetailModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(deleteDetailModel.KbnCd);
                             queryStringBuilder.Append(")");
                         }
 
                         foreach (var kouiModel in kouiDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(kouiModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(kouiModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.KOUI_KBN + ")");
                         }
 
                         foreach (var itemModel in itemDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(itemModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(itemModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.ITEM_KBN);
                             queryStringBuilder.Append(")");
                         }
 
                         foreach (var docModel in docDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(docModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(docModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.DOCUMENT_KBN);
                             queryStringBuilder.Append(")");
                         }
 
                         foreach (var fileModel in fileDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(fileModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(fileModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.FILE_KBN);
                             queryStringBuilder.Append(")");
                         }

@@ -660,7 +660,7 @@ namespace Infrastructure.Repositories
             {
 
 
-                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", item.PtId, item.SinDateInt, item.RaiinNo, "", "LOCK_INF:" + item.FunctionName));
+                _auditLogRepository.SaveAuditLog(hpId, userId, new AuditTrailLogModel(0, CIUtil.GetJapanDateTimeNow(), hpId, userId, "99999000001", item.PtId, item.SinDateInt, item.RaiinNo, "", "lock_inf:" + item.FunctionName));
 
                 var lockInf = TrackingDataContext.LockInfs.Where(x =>
                                                                    x.HpId == hpId &&
