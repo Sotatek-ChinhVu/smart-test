@@ -83,7 +83,8 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
                 }
 
                 if (sinDate > item.EndDate) continue;
-                if (item.KisanDate > kisanDate)
+                //if 区分 is 「初回算定, do not display 起算日
+                if (item.KisanDate > kisanDate && item.KisanSbt != 1)
                 {
                     kisanDate = item.KisanDate;
                 }
