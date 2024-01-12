@@ -13,7 +13,7 @@ public class CookieController : ControllerBase
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public int HpId { get; private set; }
+    public int HpId { get; set; }
 
     public CookieController(IHttpContextAccessor httpContextAccessor)
     {

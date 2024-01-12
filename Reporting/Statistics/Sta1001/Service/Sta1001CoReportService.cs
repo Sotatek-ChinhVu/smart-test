@@ -653,7 +653,7 @@ namespace Reporting.Statistics.Sta1001.Service
             {
                 foreach (var syunoInf in syunoInfs!)
                 {
-                    syunoInf.RaiinCmt = _sta1001Finder.GetRaiinCmtInf(HpId, syunoInf.RaiinNo);
+                    //syunoInf.RaiinCmt = _sta1001Finder.GetRaiinCmtInf(HpId, syunoInf.RaiinNo);
                 }
             }
 
