@@ -267,7 +267,7 @@ public class SetController : AuthorizeControllerBase
                 request.IsSyobyoKbn,
                 request.SikkanKbn,
                 request.NanByoCd,
-                request.FullByomei,
+                request.DisplayByomei,  // displayByomei will set the data to SetByomei.Byomei in the database
                 request.IsSuspected,
                 request.IsDspRece,
                 request.IsDspKarte,
