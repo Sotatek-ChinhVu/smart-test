@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             string lockDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
 
             string rawSql =
-            "INSERT INTO \"LOCK_INF\" (\"FUNCTION_CD\", \"HP_ID\", \"OYA_RAIIN_NO\", \"PT_ID\", \"RAIIN_NO\", \"SIN_DATE\", \"LOCK_DATE\", \"MACHINE\", \"USER_ID\", \"LOGINKEY\")\r\n      " +
+            "INSERT INTO \"lock_inf\" (\"function_cd\", \"hp_id\", \"oya_raiin_no\", \"pt_id\", \"raiin_no\", \"sin_date\", \"lock_date\", \"machine\", \"user_id\", \"loginkey\")\r\n      " +
             $"VALUES ('{functionCd}', {hpId}, {oyaRaiinNo}, {ptId}, {raiinNo}, {sinDate}, '{lockDate}', '{tabKey}', {userId}, '{loginKey}') ON CONFLICT DO NOTHING;";
 
             return TrackingDataContext.Database.ExecuteSqlRaw(rawSql) > 0;
