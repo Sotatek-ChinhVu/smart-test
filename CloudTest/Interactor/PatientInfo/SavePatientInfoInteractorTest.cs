@@ -9993,12 +9993,12 @@ namespace CloudUnitTest.Interactor.PatientInfo
 
             Assert.IsNotNull(resutl);
             Assert.That(resutl.Count, Is.EqualTo(1));
-            Assert.That(resutl.First().Message, Is.EqualTo("`PtKyuseis[0].KanaName` property is invalid"));
-            Assert.That(resutl.First().Code, Is.EqualTo(SavePatientInforValidationCode.PtKyuseiInvalidSeqNo));
+            Assert.That(resutl.First().Message, Is.EqualTo("`PtKyuseis[0].KanaName` property is required"));
+            Assert.That(resutl.First().Code, Is.EqualTo(SavePatientInforValidationCode.PtKyuseiInvalidKanaName));
         }
 
         [Test]
-        public void TC_038_Validation_PtKyuseiInvalidKanaName()
+        public void TC_038_Validation_PtKyuseiInvalidName()
         {
             //Mock
             var mockPatientInfo = new Mock<IPatientInforRepository>();
@@ -10253,8 +10253,18 @@ namespace CloudUnitTest.Interactor.PatientInfo
                         hpId:  1,
                         ptId: 999,
                         seqNo: 0,
-                        kanaName: "",
+                        kanaName: "Sample KanaName",
                         name: "Sample KanaName Sample KanaName Sample KanaName Sample KanaName Sample KanaName Sample KanaName Sampl",
+                        endDate: 20241212
+                    ),
+
+                new PtKyuseiModel
+                    (
+                        hpId:  1,
+                        ptId: 999,
+                        seqNo: 0,
+                        kanaName: "Sample KanaName",
+                        name: "",
                         endDate: 20241212
                     ),
             };
@@ -10273,9 +10283,11 @@ namespace CloudUnitTest.Interactor.PatientInfo
             var resutl = savePatientInfo.Validation(inputData);
 
             Assert.IsNotNull(resutl);
-            Assert.That(resutl.Count, Is.EqualTo(1));
-            Assert.That(resutl.First().Message, Is.EqualTo("`PtKyuseis[0].KanaName` property is invalid"));
-            Assert.That(resutl.First().Code, Is.EqualTo(SavePatientInforValidationCode.PtKyuseiInvalidSeqNo));
+            Assert.That(resutl.Count, Is.EqualTo(2));
+            Assert.That(resutl.First().Message, Is.EqualTo("`PtKyuseis[0].Name` property is invalid"));
+            Assert.That(resutl.First().Code, Is.EqualTo(SavePatientInforValidationCode.PtKyuseiInvalidName));
+            Assert.That(resutl.Last().Message, Is.EqualTo("`PtKyuseis[1].Name` property is required"));
+            Assert.That(resutl.Last().Code, Is.EqualTo(SavePatientInforValidationCode.PtKyuseiInvalidName));
         }
     }
 }
