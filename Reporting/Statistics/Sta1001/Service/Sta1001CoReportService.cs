@@ -705,8 +705,8 @@ namespace Reporting.Statistics.Sta1001.Service
                     {
                         _extralData.Add("headerLine", "true");
                     }
-                    _extralData.Add("baseListName" + rowNoKey, baseListName);
-                    _extralData.Add("rowNo" + rowNoKey, rowNo.ToString());
+                    _extralData.Add("baseListName_" + rowNoKey, baseListName);
+                    _extralData.Add("rowNo_" + rowNoKey, rowNo.ToString());
                 }
 
                 CellData.Add(celldata);
