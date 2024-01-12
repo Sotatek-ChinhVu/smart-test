@@ -79,6 +79,7 @@ namespace EmrCloudApi.Requests.PatientManagement
         public int KohiHokenNoFrom { get; set; }
         public int KohiHokenEdaNoFrom { get; set; }
         public int KohiHokenNoTo { get; set; }
+        public int ValidOrExpired { get; set; }
         public int KohiHokenEdaNoTo { get; set; }
         public int StartDateFrom { get; set; }
         public int StartDateTo { get; set; }
