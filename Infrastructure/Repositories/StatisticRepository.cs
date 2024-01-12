@@ -368,6 +368,14 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                 else
                 {
                     staMenu = staMenuTempDb;
+
+                    // if item is saveTemp item, remove all staConfig temp
+                    var allStaConfigDeleted = TrackingDataContext.StaConfs.Where(item => item.MenuId == staMenu.MenuId).ToList();
+                    TrackingDataContext.StaConfs.RemoveRange(allStaConfigDeleted);
+                    TrackingDataContext.SaveChanges();
+                    staMenuConfigDBList = staMenuConfigDBList.Where(menu => !allStaConfigDeleted.Any(config => config.ConfId == menu.ConfId 
+                                                                                                               && config.MenuId == menu.MenuId))
+                                                             .ToList();
                 }
                 // if save temp, isDeleted = 2
                 staMenu.IsDeleted = 2;
