@@ -57,7 +57,6 @@ public class UserController : AuthorizeControllerBase
         return new ActionResult<Response<GetUserListResponse>>(presenter.Result);
     }
 
-    [AllowAnonymous]
     [HttpPost(ApiPath.UpsertList)]
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
