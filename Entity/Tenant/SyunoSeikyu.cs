@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SYUNO_SEIKYU")]
+    [Table(name: "syuno_seikyu")]
     public class SyunoSeikyu : EmrCloneable<SyunoSeikyu>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_DATE", Order = 3)]
+        [Column("sin_date", Order = 3)]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -36,14 +36,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 4)]
+        [Column("raiin_no", Order = 4)]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// 入金区分
         /// 0:未精算 1:一部精算 2:免除 3:精算済
         /// </summary>
-        [Column("NYUKIN_KBN")]
+        [Column("nyukin_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int NyukinKbn { get; set; }
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// 請求点数
         /// 診療点数（KAIKEI_INF.TENSU）
         /// </summary>
-        [Column("SEIKYU_TENSU")]
+        [Column("seikyu_tensu")]
         [CustomAttribute.DefaultValue(0)]
         public int SeikyuTensu { get; set; }
 
@@ -59,7 +59,7 @@ namespace Entity.Tenant
         /// 調整額
         ///     KAIKEI_INF.ADJUST_FUTAN
         /// </summary>
-        [Column("ADJUST_FUTAN")]
+        [Column("adjust_futan")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustFutan { get; set; }
 
@@ -67,7 +67,7 @@ namespace Entity.Tenant
         /// 請求額
         /// 請求額 （KAIKEI_INF.TOTAL_PT_FUTAN）
         /// </summary>
-        [Column("SEIKYU_GAKU")]
+        [Column("seikyu_gaku")]
         [CustomAttribute.DefaultValue(0)]
         public int SeikyuGaku { get; set; }
 
@@ -75,14 +75,14 @@ namespace Entity.Tenant
         /// 請求詳細
         /// 診療明細（SIN_KOUI.DETAIL_DATA）
         /// </summary>
-        [Column("SEIKYU_DETAIL")]
+        [Column("seikyu_detail")]
         public string? SeikyuDetail { get; set; } = string.Empty;
 
         /// <summary>
         /// 新請求点数
         ///     KAIKEI_INF.TENSU
         /// </summary>
-        [Column("NEW_SEIKYU_TENSU")]
+        [Column("new_seikyu_tensu")]
         [CustomAttribute.DefaultValue(0)]
         public int NewSeikyuTensu { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// 新調整額
         ///     KAIKEI_INF.ADJUST_FUTAN
         /// </summary>
-        [Column("NEW_ADJUST_FUTAN")]
+        [Column("new_adjust_futan")]
         [CustomAttribute.DefaultValue(0)]
         public int NewAdjustFutan { get; set; }
 
@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// 新請求額
         ///     KAIKEI_INF.TOTAL_PT_FUTAN
         /// </summary>
-        [Column("NEW_SEIKYU_GAKU")]
+        [Column("new_seikyu_gaku")]
         [CustomAttribute.DefaultValue(0)]
         public int NewSeikyuGaku { get; set; }
 
@@ -106,14 +106,14 @@ namespace Entity.Tenant
         /// 新請求詳細
         ///     SIN_KOUI.DETAIL_DATA
         /// </summary>
-        [Column("NEW_SEIKYU_DETAIL")]
+        [Column("new_seikyu_detail")]
         public string? NewSeikyuDetail { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -121,7 +121,7 @@ namespace Entity.Tenant
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -129,7 +129,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -137,7 +137,7 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime UpdateDate { get; set; }
 
@@ -145,7 +145,7 @@ namespace Entity.Tenant
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -153,7 +153,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

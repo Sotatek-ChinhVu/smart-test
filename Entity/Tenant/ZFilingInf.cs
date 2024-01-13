@@ -1,50 +1,50 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "Z_FILING_INF")]
+    [Table(name: "z_filing_inf")]
     public class ZFilingInf : EmrCloneable<ZFilingInf>
     {
         
-        [Column("OP_ID", Order = 1)]
+        [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者番号
         ///     患者を識別するためのシステム固有の番号
         /// </summary>
-        [Column("PT_ID")]
-        //[Index("FILING_INF_IDX01", 1)]
+        [Column("pt_id")]
+        //[Index("filing_inf_idx01", 1)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 取得日
         /// </summary>
-        [Column("GET_DATE")]
-        //[Index("FILING_INF_IDX01", 2)]
+        [Column("get_date")]
+        //[Index("filing_inf_idx01", 2)]
         [CustomAttribute.DefaultValue(0)]
         public int GetDate { get; set; }
 
@@ -52,16 +52,16 @@ namespace Entity.Tenant
         /// カテゴリコード
         ///     FILING_CATEGORY_MST.CATEGORY_CD
         /// </summary>
-        [Column("CATEGORY_CD")]
-        //[Index("FILING_INF_IDX01", 3)]
+        [Column("category_cd")]
+        //[Index("filing_inf_idx01", 3)]
         [CustomAttribute.DefaultValue(0)]
         public int CategoryCd { get; set; }
 
         /// <summary>
         /// ファイル番号
         /// </summary>
-        [Column("FILE_NO")]
-        //[Index("FILING_INF_IDX01", 4)]
+        [Column("file_no")]
+        //[Index("filing_inf_idx01", 4)]
         [CustomAttribute.DefaultValue(1)]
         public int FileNo { get; set; }
 
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// ファイル名
         ///     0 実ファイル名
         /// </summary>
-        [Column("FILE_NAME")]
+        [Column("file_name")]
         [MaxLength(300)]
         public string? FileName { get; set; } = string.Empty;
 
@@ -78,61 +78,61 @@ namespace Entity.Tenant
         /// 表示ファイル名
         ///     表示用ファイル名
         /// </summary>
-        [Column("DSP_FILE_NAME")]
+        [Column("dsp_file_name")]
         [MaxLength(1024)]
         public string? DspFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
 
         /// <summary>
         /// ファイルID
         /// </summary>
-        [Column("FILE_ID")]
+        [Column("file_id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FileId { get; set; }
     }

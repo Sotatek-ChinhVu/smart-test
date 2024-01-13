@@ -26,8 +26,8 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
         {
             try
             {
-                string sql = "DELETE FROM \"public\".\"BACKUP_REQ\" "
-                                    + " WHERE  \"TO_DATE\" < @toDate";
+                string sql = "DELETE FROM \"public\".\"backup_req\" "
+                                    + " WHERE  \"to_date\" < @toDate";
                 TrackingDataContext.Database.ExecuteSqlRaw(sql, new NpgsqlParameter("@toDate", dateDelete));
             }
             catch (Exception e)
@@ -41,8 +41,8 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
         {
             try
             {
-                string sql = "DELETE FROM \"public\".\"CALC_STATUS\" "
-                                    + " WHERE \"CREATE_DATE\" < @createDate";
+                string sql = "DELETE FROM \"public\".\"calc_status\" "
+                                    + " WHERE \"create_date\" < @createDate";
                 TrackingDataContext.Database.SetCommandTimeout(1800);
                 TrackingDataContext.Database.ExecuteSqlRaw(sql,
                         new NpgsqlParameter("@createDate", CIUtil.IntToDate(dateDelete)));
@@ -96,8 +96,8 @@ public class SystemStartDbRepository : RepositoryBase, ISystemStartDbRepository
         {
             try
             {
-                string sql = "DELETE FROM \"public\".\"RENKEI_REQ\" "
-                                    + " WHERE \"CREATE_DATE\" < @createDate";
+                string sql = "DELETE FROM \"public\".\"renkei_req\" "
+                                    + " WHERE \"create_date\" < @createDate";
 
                 TrackingDataContext.Database.ExecuteSqlRaw(sql,
                    new NpgsqlParameter("@createDate", CIUtil.IntToDate(dateDelete)));

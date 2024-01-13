@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "KENSA_STD_MST")]
+    [Table(name: "kensa_std_mst")]
     public class KensaStdMst : EmrCloneable<KensaStdMst>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("KENSA_ITEM_CD", Order = 2)]
+        [Column("kensa_item_cd", Order = 2)]
         [MaxLength(10)]
         public string KensaItemCd { get; set; } = string.Empty;
 
@@ -30,14 +30,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("START_DATE", Order = 3)]
+        [Column("start_date", Order = 3)]
         public int StartDate { get; set; }
 
         /// <summary>
         /// 男性基準値
         /// 
         /// </summary>
-        [Column("MALE_STD")]
+        [Column("male_std")]
         [MaxLength(60)]
         public string? MaleStd { get; set; } = string.Empty;
 
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 男性基準値下限
         /// 
         /// </summary>
-        [Column("MALE_STD_LOW")]
+        [Column("male_std_low")]
         [MaxLength(60)]
         public string? MaleStdLow { get; set; } = string.Empty;
 
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// 男性基準値上限
         /// 
         /// </summary>
-        [Column("MALE_STD_HIGH")]
+        [Column("male_std_high")]
         [MaxLength(60)]
         public string? MaleStdHigh { get; set; } = string.Empty;
 
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// 女性基準値
         /// 
         /// </summary>
-        [Column("FEMALE_STD")]
+        [Column("female_std")]
         [MaxLength(60)]
         public string? FemaleStd { get; set; } = string.Empty;
 
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// 女性基準値下限
         /// 
         /// </summary>
-        [Column("FEMALE_STD_LOW")]
+        [Column("female_std_low")]
         [MaxLength(60)]
         public string? FemaleStdLow { get; set; } = string.Empty;
 
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// 女性基準値上限
         /// 
         /// </summary>
-        [Column("FEMALE_STD_HIGH")]
+        [Column("female_std_high")]
         [MaxLength(60)]
         public string? FemaleStdHigh { get; set; } = string.Empty;
 
@@ -85,21 +85,21 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -107,21 +107,21 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

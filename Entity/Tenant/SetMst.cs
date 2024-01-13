@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,16 +7,16 @@ namespace Entity.Tenant
     /// <summary>
 	/// セットマスタ情報
 	/// </summary>
-    [Table(name: "SET_MST")]
+    [Table(name: "set_mst")]
     public class SetMst : EmrCloneable<SetMst>
     {
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Column("HP_ID", Order = 1)]
-        //[Index("SET_MST_UI001", 1)]
-        //[Index("SET_MST_IDX01", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("set_mst_ui001", 1)]
+        //[Index("set_mst_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SET_CD", Order = 2)]
+        [Column("set_cd", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetCd { get; set; }
 
@@ -32,9 +32,9 @@ namespace Entity.Tenant
         /// セット区分
         /// 
         /// </summary>
-        [Column("SET_KBN")]
-        //[Index("SET_MST_UI001", 2)]
-        //[Index("SET_MST_IDX01", 2)]
+        [Column("set_kbn")]
+        //[Index("set_mst_ui001", 2)]
+        //[Index("set_mst_idx01", 2)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbn { get; set; }
 
@@ -42,9 +42,9 @@ namespace Entity.Tenant
         /// セット区分枝番
         /// 
         /// </summary>
-        [Column("SET_KBN_EDA_NO")]
-        //[Index("SET_MST_UI001", 3)]
-        //[Index("SET_MST_IDX01", 3)]
+        [Column("set_kbn_eda_no")]
+        //[Index("set_mst_ui001", 3)]
+        //[Index("set_mst_idx01", 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbnEdaNo { get; set; }
 
@@ -52,8 +52,8 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        [Column("GENERATION_ID")]
-        //[Index("SET_MST_IDX01", 4)]
+        [Column("generation_id")]
+        //[Index("set_mst_idx01", 4)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }
 
@@ -61,8 +61,8 @@ namespace Entity.Tenant
         /// レベル１
         /// 
         /// </summary>
-        [Column("LEVEL1")]
-        //[Index("SET_MST_UI001", 4)]
+        [Column("level1")]
+        //[Index("set_mst_ui001", 4)]
         [CustomAttribute.DefaultValue(0)]
         public int Level1 { get; set; }
 
@@ -70,8 +70,8 @@ namespace Entity.Tenant
         /// レベル２
         /// 
         /// </summary>
-        [Column("LEVEL2")]
-        //[Index("SET_MST_UI001", 5)]
+        [Column("level2")]
+        //[Index("set_mst_ui001", 5)]
         [CustomAttribute.DefaultValue(0)]
         public int Level2 { get; set; }
 
@@ -79,8 +79,8 @@ namespace Entity.Tenant
         /// レベル３
         /// 
         /// </summary>
-        [Column("LEVEL3")]
-        //[Index("SET_MST_UI001", 6)]
+        [Column("level3")]
+        //[Index("set_mst_ui001", 6)]
         [CustomAttribute.DefaultValue(0)]
         public int Level3 { get; set; }
 
@@ -88,7 +88,7 @@ namespace Entity.Tenant
         /// セット名称
         /// 
         /// </summary>
-        [Column("SET_NAME")]
+        [Column("set_name")]
         [MaxLength(60)]
         public string? SetName { get; set; } = string.Empty;
 
@@ -96,7 +96,7 @@ namespace Entity.Tenant
         /// 体重別区分
         /// 
         /// </summary>
-        [Column("WEIGHT_KBN")]
+        [Column("weight_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int WeightKbn { get; set; }
 
@@ -104,11 +104,11 @@ namespace Entity.Tenant
         /// 色
         /// 
         /// </summary>
-        [Column("COLOR")]
+        [Column("color")]
         [CustomAttribute.DefaultValue(0)]
         public int Color { get; set; }
 
-        [Column("IS_GROUP")]
+        [Column("is_group")]
         [CustomAttribute.DefaultValue(0)]
         public int IsGroup { get; set; }
 
@@ -116,49 +116,49 @@ namespace Entity.Tenant
         /// 削除区分
         ///     1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
-        //[Index("SET_MST_IDX01", 5)]
+        [Column("is_deleted")]
+        //[Index("set_mst_idx01", 5)]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末	
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末	
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

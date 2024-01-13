@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -6,14 +6,14 @@ namespace Entity.Tenant
     /// <summary>
     /// セットオーダー情報詳細
     /// </summary>
-    [Table(name: "SET_ODR_INF_DETAIL")]
+    [Table(name: "set_odr_inf_detail")]
     public class SetOdrInfDetail : EmrCloneable<SetOdrInfDetail>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         ///     SET_MST.SET_CD
         /// </summary>
         
-        [Column("SET_CD", Order = 2)]
+        [Column("set_cd", Order = 2)]
         public int SetCd { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         ///     ODR_INF.RP_NO
         /// </summary>
         
-        [Column("RP_NO", Order = 3)]
+        [Column("rp_no", Order = 3)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
 
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         ///     ODR_INF.RP_EDA_NO
         /// </summary>
         
-        [Column("RP_EDA_NO", Order = 4)]
+        [Column("rp_eda_no", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long RpEdaNo { get; set; }
 
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 行番号
         /// </summary>
         
-        [Column("ROW_NO", Order = 5)]
+        [Column("row_no", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int RowNo { get; set; }
 
@@ -54,35 +54,35 @@ namespace Entity.Tenant
         /// 診療行為区分
         ///     TEN_MST.SIN_KOUI_KBN
         /// </summary>
-        [Column("SIN_KOUI_KBN")]
+        [Column("sin_koui_kbn")]
         public int SinKouiKbn { get; set; }
 
         /// <summary>
         /// 項目コード
         ///     TEN_MST.ITEM_CD
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目名称
         /// </summary>
-        [Column("ITEM_NAME")]
+        [Column("item_name")]
         [MaxLength(240)]
         public string? ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 数量
         /// </summary>
-        [Column("SURYO")]
+        [Column("suryo")]
         [CustomAttribute.DefaultValue(0)]
         public double Suryo { get; set; }
 
         /// <summary>
         /// 単位名称
         /// </summary>
-        [Column("UNIT_NAME")]
+        [Column("unit_name")]
         [MaxLength(24)]
         public string? UnitName { get; set; } = string.Empty;
 
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         ///     0: TEN_MST.単位
         ///     1: TEN_MST.数量換算単位
         /// </summary>
-        [Column("UNIT_SBT")]
+        [Column("unit_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int UnitSbt { get; set; }
 
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         ///     UNIT_SBT=0 -> TEN_MST.ODR_TERM_VAL
         ///     UNIT_SBT=1 -> TEN_MST.SURYO_TERM_VAL
         /// </summary>
-        [Column("ODR_TERM_VAL")]
+        [Column("odr_term_val")]
         [CustomAttribute.DefaultValue(0)]
         public double OdrTermVal { get; set; }
 
@@ -112,7 +112,7 @@ namespace Entity.Tenant
         ///     2: 後発医薬品がある先発医薬品である
         ///     7: 先発医薬品のない後発医薬品である
         /// </summary>
-        [Column("KOHATU_KBN")]
+        [Column("kohatu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KohatuKbn { get; set; }
 
@@ -123,7 +123,7 @@ namespace Entity.Tenant
         ///     2: 後発品（他銘柄）への変更可 
         ///     3: 一般名処方
         /// </summary>
-        [Column("SYOHO_KBN")]
+        [Column("syoho_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SyohoKbn { get; set; }
 
@@ -134,7 +134,7 @@ namespace Entity.Tenant
         ///     2: 含量規格不可
         ///     3: 含量規格・剤形不可
         /// </summary>
-        [Column("SYOHO_LIMIT_KBN")]
+        [Column("syoho_limit_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SyohoLimitKbn { get; set; }
 
@@ -148,7 +148,7 @@ namespace Entity.Tenant
         ///     6: 外用薬
         ///     8: 歯科用薬剤
         /// </summary>
-        [Column("DRUG_KBN")]
+        [Column("drug_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int DrugKbn { get; set; }
 
@@ -158,7 +158,7 @@ namespace Entity.Tenant
         ///     1: 基本用法
         ///     2: 補助用法
         /// </summary>
-        [Column("YOHO_KBN")]
+        [Column("yoho_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int YohoKbn { get; set; }
 
@@ -172,7 +172,7 @@ namespace Entity.Tenant
         ///     9: 通則加算項目　　　※加算項目
         ///      0: 診療行為以外（薬剤、特材等）
         /// </summary>
-        [Column("KOKUJI1")]
+        [Column("kokuji1")]
         [MaxLength(1)]
         public string? Kokuji1 { get; set; } = string.Empty;
 
@@ -186,7 +186,7 @@ namespace Entity.Tenant
         ///      （削）9: 通則加算項目
         ///            0: 診療行為以外（薬剤、特材等）
         /// </summary>
-        [Column("KOKUJI2")]
+        [Column("kokuji2")]
         [MaxLength(1)]
         public string? Kokuji2 { get; set; } = string.Empty;
 
@@ -195,21 +195,21 @@ namespace Entity.Tenant
         ///    0: 表示
         ///    1: 非表示
         /// </summary>
-        [Column("IS_NODSP_RECE")]
+        [Column("is_nodsp_rece")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspRece { get; set; }
 
         /// <summary>
         /// 一般名コード
         /// </summary>
-        [Column("IPN_CD")]
+        [Column("ipn_cd")]
         [MaxLength(12)]
         public string? IpnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名
         /// </summary>
-        [Column("IPN_NAME")]
+        [Column("ipn_name")]
         [MaxLength(120)]
         public string? IpnName { get; set; } = string.Empty;
 
@@ -217,7 +217,7 @@ namespace Entity.Tenant
         /// 分割調剤
         ///    7日単位の3分割の場合 "7+7+7"
         /// </summary>
-        [Column("BUNKATU")]
+        [Column("bunkatu")]
         [MaxLength(10)]
         public string? Bunkatu { get; set; } = string.Empty;
 
@@ -226,7 +226,7 @@ namespace Entity.Tenant
         ///    "コメントマスターの名称
         ///    ※当該項目がコメント項目の場合に使用"
         /// </summary>
-        [Column("CMT_NAME")]
+        [Column("cmt_name")]
         [MaxLength(240)]
         public string? CmtName { get; set; } = string.Empty;
 
@@ -235,14 +235,14 @@ namespace Entity.Tenant
         ///    コメントマスターの定型文に組み合わせる文字情報
         ///    ※当該項目がコメント項目の場合に使用
         /// </summary>
-        [Column("CMT_OPT")]
+        [Column("cmt_opt")]
         [MaxLength(38)]
         public string? CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字色
         /// </summary>
-        [Column("FONT_COLOR")]
+        [Column("font_color")]
         [MaxLength(8)]
         public string? FontColor { get; set; } = string.Empty;
 
@@ -251,7 +251,7 @@ namespace Entity.Tenant
         ///          0: 改行する
         ///          1: 改行しない
         /// </summary>
-        [Column("COMMENT_NEWLINE")]
+        [Column("comment_newline")]
         [CustomAttribute.DefaultValue(0)]
         public int CommentNewline { get; set; }
     }

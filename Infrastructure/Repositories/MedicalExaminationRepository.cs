@@ -4,10 +4,10 @@ using Domain.Models.Diseases;
 using Domain.Models.Ka;
 using Domain.Models.Medical;
 using Domain.Models.MedicalExamination;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemConf;
-using Domain.Models.TodayOdr;
 using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
@@ -22,10 +22,12 @@ namespace Infrastructure.Repositories
     public class MedicalExaminationRepository : RepositoryBase, IMedicalExaminationRepository
     {
         private readonly ISystemConfRepository _systemConf;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
+        public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf, IMstItemRepository mstItemRepository) : base(tenantProvider)
         {
             _systemConf = systemConf;
+            _mstItemRepository = mstItemRepository;
         }
 
         public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
@@ -141,7 +143,7 @@ namespace Infrastructure.Repositories
                 {
                     var tenMstModel = FindTenMst(hpId, detail.ItemCd, sinDate);
                     if (tenMstModel == null) continue;
-                    if (tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1" || tenMstModel.ItemCd.Contains("@Z"))
+                    if ((tenMstModel.CdKbn == "C" && tenMstModel.CdKbnno == 1 && tenMstModel.Kokuji2 == "1") || tenMstModel.ItemCd.Contains("@Z"))
                     {
                         var santeiKanren = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 0)?.Val ?? 0;
                         if (santeiKanren == 0)
@@ -1261,7 +1263,7 @@ namespace Infrastructure.Repositories
 
             var zanyakuSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2012 && p.GrpEdaNo == 0)?.Val;
 
-            var zangigiTenMstModel = FindTenMst(hpId, ItemCdConst.ZanGigi, sinDate);
+            var zangigiTenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.ZanGigi, sinDate);
             if (zangigiTenMstModel != null)
             {
                 var santei = zanyakuSetting == 1;
@@ -1271,7 +1273,7 @@ namespace Infrastructure.Repositories
                 checkedOrderModelList.Add(checkedOrderModelZangigi);
             }
 
-            var zanteikyotenMstModel = FindTenMst(hpId, ItemCdConst.ZanTeiKyo, sinDate);
+            var zanteikyotenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.ZanTeiKyo, sinDate);
             if (zanteikyotenMstModel != null)
             {
                 var santei = zanyakuSetting == 2;
@@ -1304,32 +1306,32 @@ namespace Infrastructure.Repositories
             bool isGairaiRiha = CheckGairaiRiha(hpId, ptId, sinDate, raiinNo, allOdrInfDetail);
             if (isExistFirstVisit)
             {
-                var FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
-                if (FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel != null)
+                var firstVisitDevelopmentSystemEnhanceAdd1TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.SyosinIryoJyohoKiban1, sinDate);
+                if (firstVisitDevelopmentSystemEnhanceAdd1TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
                         CheckingType.MissingCalculate,
                         santei: true,
-                        checkingContent: FormatSanteiMessage(FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
-                        itemCd: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
-                        sinKouiKbn: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
-                        itemName: FirstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
+                        checkingContent: FormatSanteiMessage(firstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
+                        itemCd: firstVisitDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
+                        sinKouiKbn: firstVisitDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
+                        itemName: firstVisitDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
                         inOutKbn: 0
                         );
 
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
 
-                var MedicalDevelopmentSystemEnhanceAdd1TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
-                if (MedicalDevelopmentSystemEnhanceAdd1TenMstModel != null)
+                var medicalDevelopmentSystemEnhanceAdd1TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.IgakuIryoJyohoKiban1, sinDate);
+                if (medicalDevelopmentSystemEnhanceAdd1TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
                         CheckingType.MissingCalculate,
                         santei: true,
-                        checkingContent: FormatSanteiMessage(MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
-                        itemCd: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
-                        sinKouiKbn: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
-                        itemName: MedicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
+                        checkingContent: FormatSanteiMessage(medicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty),
+                        itemCd: medicalDevelopmentSystemEnhanceAdd1TenMstModel.ItemCd,
+                        sinKouiKbn: medicalDevelopmentSystemEnhanceAdd1TenMstModel.SinKouiKbn,
+                        itemName: medicalDevelopmentSystemEnhanceAdd1TenMstModel.Name ?? string.Empty,
                         inOutKbn: 0
                         );
 
@@ -1338,32 +1340,32 @@ namespace Infrastructure.Repositories
             }
             else if (isExistReturnVisit || isGairaiRiha)
             {
-                var VisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
-                if (VisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
+                var visitDevelopmentSystemEnhanceAdd3TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.SaisinIryoJyohoKiban3, sinDate);
+                if (visitDevelopmentSystemEnhanceAdd3TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
                         CheckingType.MissingCalculate,
                         santei: true,
-                        checkingContent: FormatSanteiMessage(VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
-                        itemCd: VisitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
-                        sinKouiKbn: VisitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
-                        itemName: VisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
+                        checkingContent: FormatSanteiMessage(visitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
+                        itemCd: visitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
+                        sinKouiKbn: visitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
+                        itemName: visitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
                         inOutKbn: 0
                         );
 
                     checkingOrderModelList.Add(checkingOrderModel);
                 }
 
-                var ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel = FindTenMst(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
-                if (ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
+                var returnVisitDevelopmentSystemEnhanceAdd3TenMstModel = _mstItemRepository.GetTenMstInfo(hpId, ItemCdConst.IgakuIryoJyohoKiban3, sinDate);
+                if (returnVisitDevelopmentSystemEnhanceAdd3TenMstModel != null)
                 {
                     CheckedOrderModel checkingOrderModel = new CheckedOrderModel(
                         CheckingType.MissingCalculate,
                         santei: true,
-                        checkingContent: FormatSanteiMessage(ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
-                        itemCd: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
-                        sinKouiKbn: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
-                        itemName: ReturnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
+                        checkingContent: FormatSanteiMessage(returnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty),
+                        itemCd: returnVisitDevelopmentSystemEnhanceAdd3TenMstModel.ItemCd,
+                        sinKouiKbn: returnVisitDevelopmentSystemEnhanceAdd3TenMstModel.SinKouiKbn,
+                        itemName: returnVisitDevelopmentSystemEnhanceAdd3TenMstModel.Name ?? string.Empty,
                         inOutKbn: 0
                         );
 
@@ -1636,6 +1638,8 @@ namespace Infrastructure.Repositories
 
         public void ReleaseResource()
         {
+            _mstItemRepository.ReleaseResource();
+            _systemConf.ReleaseResource();
             DisposeDataContext();
         }
 
