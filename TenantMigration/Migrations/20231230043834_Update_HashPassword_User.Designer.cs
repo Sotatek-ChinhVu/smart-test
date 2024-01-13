@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231230043834_Update_HashPassword_User")]
+    partial class UpdateHashPasswordUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26205,6 +26208,7 @@ namespace TenantMigration.Migrations
                         .HasColumnName("END_DATE");
 
                     b.Property<byte[]>("HashPassword")
+                        .IsRequired()
                         .HasColumnType("bytea")
                         .HasColumnName("HASH_PASSWORD");
 
@@ -26272,6 +26276,7 @@ namespace TenantMigration.Migrations
                         .HasColumnName("RENKEI_CD1");
 
                     b.Property<byte[]>("Salt")
+                        .IsRequired()
                         .HasMaxLength(14)
                         .HasColumnType("bytea")
                         .HasColumnName("SALT");
