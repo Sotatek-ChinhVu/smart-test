@@ -1,23 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "USER_TOKEN")]
+    [Table(name: "user_token")]
     public class UserToken
     {
         [Required]
-        [Column(name: "USER_ID", Order = 1)]
+        [Column(name: "user_id", Order = 1)]
         public int UserId { get; set; }
 
         [Required]
-        [Column(name: "REFRESH_TOKEN", Order = 2)]
+        [Column(name: "refresh_token", Order = 2)]
         public string RefreshToken { get; set; } = string.Empty;
 
-        [Column(name: "TOKEN_EXPIRY_TIME", Order = 3)]
+        [Column(name: "token_expiry_time", Order = 3)]
         public DateTime RefreshTokenExpiryTime { get; set; }
 
-        [Column(name: "REFRESH_TOKEN_IS_USED", Order = 4)]
+        [Column(name: "refresh_token_is_used", Order = 4)]
         public bool RefreshTokenIsUsed { get; set; }
     }
 }

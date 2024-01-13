@@ -95,9 +95,9 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         string updateDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
 
-        string updateQuery = $"UPDATE \"ONLINE_CONFIRMATION_HISTORY\" SET \"UKETUKE_STATUS\" = {uketukeStatus}, \"UPDATE_DATE\" = '{updateDate}'"
-                             + $", \"UPDATE_ID\" = {userId}"
-                             + $" WHERE \"ID\" = {id} AND \"UKETUKE_STATUS\" = 0";
+        string updateQuery = $"UPDATE \"online_confirmation_history\r\n\" SET \"uketuke_status\" = {uketukeStatus}, \"update_date\" = '{updateDate}'"
+                             + $", \"update_id\" = {userId}"
+                             + $" WHERE \"id\" = {id} AND \"uketuke_status\" = 0";
 
         return TrackingDataContext.Database.ExecuteSqlRaw(updateQuery) > 0;
     }
@@ -106,7 +106,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         var allRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList();
         var nextRefNo = allRefNo?.FirstOrDefault() ?? 1;
-        string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = {nextRefNo} WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
+        string updateQuery = $"UPDATE \"pt_inf\" SET \"reference_no\" = {nextRefNo} WHERE \"hp_id\" = {hpId} AND \"pt_id\" = {ptId}";
         TrackingDataContext.Database.ExecuteSqlRaw(updateQuery);
         return nextRefNo;
     }

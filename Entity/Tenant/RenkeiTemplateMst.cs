@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RENKEI_TEMPLATE_MST")]
+    [Table(name: "renkei_template_mst")]
     public class RenkeiTemplateMst : EmrCloneable<RenkeiTemplateMst>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 1以上の値
         /// </summary>
         
-        [Column("TEMPLATE_ID", Order = 2)]
+        [Column("template_id", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int TemplateId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// テンプレート名称
         /// 
         /// </summary>
-        [Column("TEMPLATE_NAME")]
+        [Column("template_name")]
         [MaxLength(255)]
         public string? TemplateName { get; set; } = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// パラメーター
         /// パラメータのテンプレート
         /// </summary>
-        [Column("PARAM")]
+        [Column("param")]
         [MaxLength(1000)]
         public string? Param { get; set; } = string.Empty;
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// ファイル名
         /// ファイル名のテンプレート
         /// </summary>
-        [Column("FILE")]
+        [Column("file")]
         [MaxLength(300)]
         public string? File { get; set; } = string.Empty;
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 並び順
         /// メニュー表示順
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
@@ -60,14 +60,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
     }
 }

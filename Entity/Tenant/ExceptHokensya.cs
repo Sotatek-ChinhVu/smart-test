@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "EXCEPT_HOKENSYA")]
+    [Table(name: "except_hokensya")]
     public class ExceptHokensya : EmrCloneable<ExceptHokensya>
     {
         /// <summary>
         /// Id
         /// </summary>
         
-        [Column(name: "ID", Order = 1)]
+        [Column(name: "id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 2)]
+        [Column("hp_id", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PREF_NO", Order = 3)]
+        [Column("pref_no", Order = 3)]
         public int PrefNo { get; set; }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_NO", Order = 4)]
+        [Column("hoken_no", Order = 4)]
         public int HokenNo { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_EDA_NO", Order = 5)]
+        [Column("hoken_eda_no", Order = 5)]
         public int HokenEdaNo { get; set; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("START_DATE", Order = 6)]
+        [Column("start_date", Order = 6)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// 保険者番号
         /// 
         /// </summary>
-        [Column("HOKENSYA_NO")]
+        [Column("hokensya_no")]
         [MaxLength(8)]
         public string? HokensyaNo { get; set; } = string.Empty;
 
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -93,7 +93,7 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime UpdateDate { get; set; }
 
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -109,7 +109,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

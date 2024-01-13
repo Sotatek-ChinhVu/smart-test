@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,101 +8,101 @@ namespace Entity.Tenant
     /// サマリ情報
     ///     生活歴情報を管理する
     /// </summary>
-    [Table(name: "Z_SEIKATUREKI_INF")]
+    [Table(name: "z_seikatureki_inf")]
     public class ZSeikaturekiInf : EmrCloneable<ZSeikaturekiInf>
     {
         
-        [Column("OP_ID", Order = 1)]
+        [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Column("ID")]
-        //[Index("SEIKATUREKI_INF_IDX01", 1)]
+        [Column("id")]
+        //[Index("seikatureki_inf_idx01", 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Column("HP_ID")]
-        //[Index("SEIKATUREKI_INF_IDX01", 2)]
+        [Column("hp_id")]
+        //[Index("seikatureki_inf_idx01", 2)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// </summary>
-        [Column("PT_ID")]
-        //[Index("SEIKATUREKI_INF_IDX01", 3)]
+        [Column("pt_id")]
+        //[Index("seikatureki_inf_idx01", 3)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Column("SEQ_NO")]
-        //[Index("SEIKATUREKI_INF_IDX01", 4)]
+        [Column("seq_no")]
+        //[Index("seikatureki_inf_idx01", 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
 
         /// <summary>
         /// テキスト 
         /// </summary>
-        [Column("TEXT")]
+        [Column("text")]
         public string? Text { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "DENSI_SANTEI_KAISU")]
+    [Table(name: "densi_santei_kaisu")]
     public class DensiSanteiKaisu : EmrCloneable<DensiSanteiKaisu>
     {
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         public int Id { get; set; }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 2)]
+        [Column("hp_id", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ITEM_CD", Order = 3)]
+        [Column("item_cd", Order = 3)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -41,14 +41,14 @@ namespace Entity.Tenant
         /// 998:初診から1ヶ月算定不可
         /// 999:カスタム(TERM_COUNT, TERM_SBTを使用)"
         /// </summary>
-        [Column("UNIT_CD")]
+        [Column("unit_cd")]
         public int UnitCd { get; set; }
 
         /// <summary>
         /// 算定回数
         /// 算定単位ごとの上限回数を表す。
         /// </summary>
-        [Column("MAX_COUNT")]
+        [Column("max_count")]
         [CustomAttribute.DefaultValue(0)]
         public int MaxCount { get; set; }
 
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         /// 0: 条件なし 
         /// 1: 条件あり "
         /// </summary>
-        [Column("SP_JYOKEN")]
+        [Column("sp_jyoken")]
         [CustomAttribute.DefaultValue(0)]
         public int SpJyoken { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 新設年月日
         /// レコード情報を新設した日付を西暦年4桁、月2桁及び日2桁の8桁で表す。
         /// </summary>
-        [Column("START_DATE")]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -75,7 +75,7 @@ namespace Entity.Tenant
         /// "当該診療行為の使用が可能な最終日付を西暦年4桁、月2桁及び日2桁の8桁で表す。 
         /// なお、廃止診療行為でない場合は「99999999」とする。"
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long SeqNo { get; set; }
 
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// 1: ユーザー設定分"
         /// </summary>
         
-        [Column("USER_SETTING", Order = 5)]
+        [Column("user_setting", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public int UserSetting { get; set; }
 
@@ -104,7 +104,7 @@ namespace Entity.Tenant
         /// 1:健保のみ対象
         /// 2:労災のみ対象"
         /// </summary>
-        [Column("TARGET_KBN")]
+        [Column("target_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TargetKbn { get; set; }
 
@@ -114,7 +114,7 @@ namespace Entity.Tenant
         /// ※TERM_SBT in (1,4)のときのみ有効
         /// 例）2日の場合、TERM_COUNT=2, TERM_SBT=1と登録"
         /// </summary>
-        [Column("TERM_COUNT")]
+        [Column("term_count")]
         [CustomAttribute.DefaultValue(0)]
         public int TermCount { get; set; }
 
@@ -122,7 +122,7 @@ namespace Entity.Tenant
         /// チェック期間種別
         /// 0:未指定 2:日 3:暦週 4:暦月
         /// </summary>
-        [Column("TERM_SBT")]
+        [Column("term_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int TermSbt { get; set; }
 
@@ -131,7 +131,7 @@ namespace Entity.Tenant
         /// "0: 有効
         /// 1: 無効"
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(0)]
         public int IsInvalid { get; set; }
 
@@ -139,7 +139,7 @@ namespace Entity.Tenant
         /// 項目グループコード
         /// ITEM_GRP_MST.ITEM_GRP_CD
         /// </summary>
-        [Column("ITEM_GRP_CD")]
+        [Column("item_grp_cd")]
         [CustomAttribute.DefaultValue(0)]
         public int ItemGrpCd { get; set; }
 
@@ -147,7 +147,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -155,7 +155,7 @@ namespace Entity.Tenant
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -163,7 +163,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -171,7 +171,7 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime UpdateDate { get; set; }
 
@@ -179,7 +179,7 @@ namespace Entity.Tenant
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -187,7 +187,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

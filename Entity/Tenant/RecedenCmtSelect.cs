@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RECEDEN_CMT_SELECT")]
-    [Index(nameof(HpId), nameof(ItemCd), nameof(StartDate), nameof(CommentCd), nameof(IsInvalid), Name = "RECEDEN_CMT_SELECT_IDX01")]
+    [Table(name: "receden_cmt_select")]
+    [Index(nameof(HpId), nameof(ItemCd), nameof(StartDate), nameof(CommentCd), nameof(IsInvalid), Name = "receden_cmt_select_idx01")]
     public class RecedenCmtSelect : EmrCloneable<RecedenCmtSelect>
     {
         /// <summary>
@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ITEM_CD", Order = 4)]
+        [Column("item_cd", Order = 4)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -31,21 +31,21 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("START_DATE", Order = 5)]
+        [Column("start_date", Order = 5)]
         public int StartDate { get; set; }
 
         /// <summary>
         /// 適用終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         public int EndDate { get; set; }
 
         /// <summary>
         /// 順番
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// コメントマスターの請求コード
         /// </summary>
         
-        [Column("COMMENT_CD", Order = 6)]
+        [Column("comment_cd", Order = 6)]
         [MaxLength(10)]
         public string? CommentCd { get; set; } = string.Empty;
 
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// 有効区分
         /// 0:有効、1:無効
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(0)]
         public int IsInvalid { get; set; }
 
@@ -69,14 +69,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -92,14 +92,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -107,7 +107,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 
@@ -116,7 +116,7 @@ namespace Entity.Tenant
         /// 記載要領別表Ⅰの「項番」列の値
         /// </summary>
         
-        [Column("ITEM_NO", Order = 2)]
+        [Column("item_no", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int ItemNo { get; set; }
 
@@ -124,7 +124,7 @@ namespace Entity.Tenant
         /// 区分
         /// 記載要領別表Ⅰの「区分」列の値
         /// </summary>
-        [Column("KBN_NO")]
+        [Column("kbn_no")]
         [MaxLength(64)]
         public string? KbnNo { get; set; } = string.Empty;
 
@@ -133,7 +133,7 @@ namespace Entity.Tenant
         /// 項番内に複数の条件がある場合、条件ごとに連番
         /// </summary>
         
-        [Column("EDA_NO", Order = 3)]
+        [Column("eda_no", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }
 
@@ -141,7 +141,7 @@ namespace Entity.Tenant
         /// 患者の状態
         /// 記載要領別表Ⅰに収載されている患者の状態コード
         /// </summary>
-        [Column("PT_STATUS")]
+        [Column("pt_status")]
         [CustomAttribute.DefaultValue(0)]
         public int PtStatus { get; set; }
 
@@ -155,7 +155,7 @@ namespace Entity.Tenant
         /// 03:対象の診療行為の算定が条件であって、
         /// 　複数回算定した場合
         /// </summary>
-        [Column("COND_KBN")]
+        [Column("cond_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int CondKbn { get; set; }
 
@@ -165,7 +165,7 @@ namespace Entity.Tenant
         /// 1:対象の診療行為を算定しなかった場合であって、
         /// 条件に合致する場合に記録するコメント
         /// </summary>
-        [Column("NOT_SANTEI_KBN")]
+        [Column("not_santei_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int NotSanteiKbn { get; set; }
 
@@ -175,7 +175,7 @@ namespace Entity.Tenant
         /// 1:入院
         /// 2:入院外
         /// </summary>
-        [Column("NYUGAI_KBN")]
+        [Column("nyugai_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int NyugaiKbn { get; set; }
 
@@ -183,7 +183,7 @@ namespace Entity.Tenant
         /// 算定回数
         /// 条件区分が「03」の場合、コメントコードの記録が必要となる対象の診療行為の算定回数を表す
         /// </summary>
-        [Column("SANTEI_CNT")]
+        [Column("santei_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public int SanteiCnt { get; set; }
     }

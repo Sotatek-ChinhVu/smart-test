@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RAIIN_LIST_MST")]
-    [Index(nameof(HpId), nameof(GrpId), nameof(IsDeleted), Name = "RAIIN_LIST_MST_IDX01")]
+    [Table(name: "raiin_list_mst")]
+    [Index(nameof(HpId), nameof(GrpId), nameof(IsDeleted), Name = "raiin_list_mst_idx01")]
     public class RaiinListMst : EmrCloneable<RaiinListMst>
     {
         /// <summary>
@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GRP_ID", Order = 2)]
+        [Column("grp_id", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GrpId { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 分類名称
         /// 
         /// </summary>
-        [Column("GRP_NAME")]
+        [Column("grp_name")]
         [MaxLength(20)]
         public string? GrpName { get; set; } = string.Empty;
 
@@ -38,14 +38,14 @@ namespace Entity.Tenant
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 削除区分
         /// 
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -53,14 +53,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -76,14 +76,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }
