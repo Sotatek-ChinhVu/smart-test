@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "KARTE_KBN_MST")]
+    [Table(name: "karte_kbn_mst")]
     public class KarteKbnMst : EmrCloneable<KarteKbnMst>
     {
         /// <summary>
@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int HpId { get; set; }
 
@@ -20,14 +20,14 @@ namespace Entity.Tenant
         /// >100は、ユーザー任意設定
         /// </summary>
         
-        [Column("KARTE_KBN", Order = 2)]
+        [Column("karte_kbn", Order = 2)]
         public int KarteKbn { get; set; }
 
         /// <summary>
         /// 区分名称
         /// 
         /// </summary>
-        [Column("KBN_NAME")]
+        [Column("kbn_name")]
         [MaxLength(10)]
         public string? KbnName { get; set; } = string.Empty;
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 区分略称
         /// カルテ画面所見に表示する略称
         /// </summary>
-        [Column("KBN_SHORT_NAME")]
+        [Column("kbn_short_name")]
         [MaxLength(1)]
         public string? KbnShortName { get; set; } = string.Empty;
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 画像使用可否
         /// 1: 画像（シェーマ）使用可
         /// </summary>
-        [Column("CAN_IMG")]
+        [Column("can_img")]
         [CustomAttribute.DefaultValue(0)]
         public int CanImg { get; set; }
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// 並び順
         /// ※並び順は、カルテ区分>100の場合、101からの採番にする
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SortNo { get; set; }
 
@@ -59,7 +59,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -67,14 +67,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -90,14 +90,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -105,7 +105,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 

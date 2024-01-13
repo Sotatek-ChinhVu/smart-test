@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "DOC_COMMENT_DETAIL")]
+    [Table(name: "doc_comment_detail")]
     public class DocCommentDetail : EmrCloneable<DocCommentDetail>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("CATEGORY_ID", Order = 1)]
+        [Column("category_id", Order = 1)]
         public int CategoryId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("EDA_NO", Order = 2)]
+        [Column("eda_no", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// コメント
         /// 
         /// </summary>
-        [Column("COMMENT")]
+        [Column("comment")]
         [MaxLength(1000)]
         public string? Comment { get; set; } = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SortNo { get; set; }
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -52,14 +52,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -67,7 +67,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -75,14 +75,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

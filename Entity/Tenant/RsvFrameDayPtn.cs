@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RSV_FRAME_DAY_PTN")]
+    [Table(name: "rsv_frame_day_ptn")]
     public class RsvFrameDayPtn : EmrCloneable<RsvFrameDayPtn>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RSV_FRAME_ID", Order = 2)]
+        [Column("rsv_frame_id", Order = 2)]
         public int RsvFrameId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_DATE", Order = 3)]
+        [Column("sin_date", Order = 3)]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -37,28 +37,28 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 開始時間
         /// 
         /// </summary>
-        [Column("START_TIME")]
+        [Column("start_time")]
         public int StartTime { get; set; }
 
         /// <summary>
         /// 終了時間
         /// 
         /// </summary>
-        [Column("END_TIME")]
+        [Column("end_time")]
         public int EndTime { get; set; }
 
         /// <summary>
         /// 分単位
         /// 
         /// </summary>
-        [Column("MINUTES")]
+        [Column("minutes")]
         [CustomAttribute.DefaultValue(0)]
         public int Minutes { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 人数枠
         /// 
         /// </summary>
-        [Column("NUMBER")]
+        [Column("number")]
         [CustomAttribute.DefaultValue(0)]
         public int Number { get; set; }
 
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// 受付種別
         /// 
         /// </summary>
-        [Column("UKETUKE_SBT")]
+        [Column("uketuke_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int UketukeSbt { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 休診区分
         /// 1: 休診日
         /// </summary>
-        [Column("IS_HOLIDAY")]
+        [Column("is_holiday")]
         [CustomAttribute.DefaultValue(0)]
         public int IsHoliday { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// 削除フラグ
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -98,14 +98,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -121,14 +121,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -136,7 +136,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

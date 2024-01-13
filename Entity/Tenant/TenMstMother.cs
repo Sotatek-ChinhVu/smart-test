@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -6,21 +6,21 @@ namespace Entity.Tenant
     /// <summary>
     /// 点数マスタ
     /// </summary>
-    [Table("TEN_MST_MOTHER")]
+    [Table("ten_mst_mother")]
     public class TenMstMother : EmrCloneable<TenMstMother>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 診療行為コード
         /// </summary>
         
-        [Column("ITEM_CD", Order = 2)]
+        [Column("item_cd", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         ///     yyyymmdd
         /// </summary>
         
-        [Column("START_DATE", Order = 3)]
+        [Column("start_date", Order = 3)]
         public int StartDate { get; set; }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         ///     yyyymmdd
         /// </summary>
         [Required]
-        [Column("END_DATE")]
+        [Column("end_date")]
         public int EndDate { get; set; }
 
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         ///     U: 労災特定器材
         ///     D: 労災コメントマスタ
         /// </summary>
-        [Column("MASTER_SBT")]
+        [Column("master_sbt")]
         [MaxLength(1)]
         public string? MasterSbt { get; set; } = string.Empty;
 
@@ -59,62 +59,62 @@ namespace Entity.Tenant
         /// 診療行為区分
         /// </summary>
         [Required]
-        [Column("SIN_KOUI_KBN")]
+        [Column("sin_koui_kbn")]
         public int SinKouiKbn { get; set; }
 
         /// <summary>
         /// 漢字名称
         /// </summary>
-        [Column("NAME")]
+        [Column("name")]
         [MaxLength(240)]
         public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称１
         /// </summary>
-        [Column("KANA_NAME1")]
+        [Column("kana_name1")]
         [MaxLength(120)]
         public string? KanaName1 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称２
         /// </summary>
-        [Column("KANA_NAME2")]
+        [Column("kana_name2")]
         [MaxLength(120)]
         public string? KanaName2 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称３
         /// </summary>
-        [Column("KANA_NAME3")]
+        [Column("kana_name3")]
         [MaxLength(120)]
         public string? KanaName3 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称４
         /// </summary>
-        [Column("KANA_NAME4")]
+        [Column("kana_name4")]
         [MaxLength(120)]
         public string? KanaName4 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称５
         /// </summary>
-        [Column("KANA_NAME5")]
+        [Column("kana_name5")]
         [MaxLength(120)]
         public string? KanaName5 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称６
         /// </summary>
-        [Column("KANA_NAME6")]
+        [Column("kana_name6")]
         [MaxLength(120)]
         public string? KanaName6 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称７
         /// </summary>
-        [Column("KANA_NAME7")]
+        [Column("kana_name7")]
         [MaxLength(120)]
         public string? KanaName7 { get; set; } = string.Empty;
 
@@ -122,7 +122,7 @@ namespace Entity.Tenant
         /// 領収証用名称
         ///     漢字名称以外を領収証に印字する場合、設定する
         /// </summary>
-        [Column("RYOSYU_NAME")]
+        [Column("ryosyu_name")]
         [MaxLength(240)]
         public string? RyosyuName { get; set; } = string.Empty;
 
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// 請求用名称
         ///     計算後、請求用の名称
         /// </summary>
-        [Column("RECE_NAME")]
+        [Column("rece_name")]
         [MaxLength(240)]
         public string? ReceName { get; set; } = string.Empty;
 
@@ -150,27 +150,27 @@ namespace Entity.Tenant
         ///     99: 労災円項目
         /// </summary>
         [Required]
-        [Column("TEN_ID")]
+        [Column("ten_id")]
         public int TenId { get; set; }
 
         /// <summary>
         /// 点数
         /// </summary>
-        [Column("TEN")]
+        [Column("ten")]
         [CustomAttribute.DefaultValue(0)]
         public double Ten { get; set; }
 
         /// <summary>
         /// レセ単位コード
         /// </summary>
-        [Column("RECE_UNIT_CD")]
+        [Column("rece_unit_cd")]
         [MaxLength(3)]
         public string? ReceUnitCd { get; set; } = string.Empty;
 
         /// <summary>
         /// レセ単位名称
         /// </summary>
-        [Column("RECE_UNIT_NAME")]
+        [Column("rece_unit_name")]
         [MaxLength(24)]
         public string? ReceUnitName { get; set; } = string.Empty;
 
@@ -178,7 +178,7 @@ namespace Entity.Tenant
         /// オーダー単位名称
         ///     オーダー時に使用する単位
         /// </summary>
-        [Column("ODR_UNIT_NAME")]
+        [Column("odr_unit_name")]
         [MaxLength(24)]
         public string? OdrUnitName { get; set; } = string.Empty;
 
@@ -186,14 +186,14 @@ namespace Entity.Tenant
         /// 数量換算単位名称
         ///     薬剤情報提供書の全数量に換算した値を表示する場合の当該医薬品の換算単位名称を表す。
         /// </summary>
-        [Column("CNV_UNIT_NAME")]
+        [Column("cnv_unit_name")]
         [MaxLength(24)]
         public string? CnvUnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// オーダー単位換算値
         ///     薬剤情報提供書の全数量に換算した値を表示する場合、当該医薬品の保険請求上の単位からオーダー単位へ換算するための値を表す。
-        [Column("ODR_TERM_VAL")]
+        [Column("odr_term_val")]
         [CustomAttribute.DefaultValue(0)]
         public double OdrTermVal { get; set; }
 
@@ -201,7 +201,7 @@ namespace Entity.Tenant
         /// 数量換算単位換算値
         ///     薬剤情報提供書の全数量に換算した値を表示する場合、当該医薬品の保険請求上の単位から数量換算単位へ換算するための値を表す。
         /// </summary>
-        [Column("CNV_TERM_VAL")]
+        [Column("cnv_term_val")]
         [CustomAttribute.DefaultValue(0)]
         public double CnvTermVal { get; set; }
 
@@ -209,7 +209,7 @@ namespace Entity.Tenant
         /// 既定数量
         ///     0は未設定
         /// </summary>
-        [Column("DEFAULT_VAL")]
+        [Column("default_val")]
         [CustomAttribute.DefaultValue(0)]
         public double DefaultVal { get; set; }
 
@@ -218,7 +218,7 @@ namespace Entity.Tenant
         ///     0: 未採用
         ///     1: 採用
         /// </summary>
-        [Column("IS_ADOPTED")]
+        [Column("is_adopted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsAdopted { get; set; }
 
@@ -229,7 +229,7 @@ namespace Entity.Tenant
         ///     1: 社保のみに適用される診療行為
         ///     2: 後期高齢者のみに適用される診療行為
         /// </summary>
-        [Column("KOUKI_KBN")]
+        [Column("kouki_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KoukiKbn { get; set; }
 
@@ -248,7 +248,7 @@ namespace Entity.Tenant
         ///     11:血漿蛋白免疫学的検査のうち、特異的ＩｇＥ半定量・定量及びアレルゲン刺激性遊離ヒスタミン（ＨＲＴ） 
         ///     12: 悪性腫瘍遺伝子検査の包括項目
         /// </summary>
-        [Column("HOKATU_KENSA")]
+        [Column("hokatu_kensa")]
         [CustomAttribute.DefaultValue(0)]
         public int HokatuKensa { get; set; }
 
@@ -261,7 +261,7 @@ namespace Entity.Tenant
         ///     7: てんかん指導料 
         ///     9: 難病外来指導管理料
         /// </summary>
-        [Column("BYOMEI_KBN")]
+        [Column("byomei_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int ByomeiKbn { get; set; }
 
@@ -269,7 +269,7 @@ namespace Entity.Tenant
         /// 医学管理料
         ///     2以上の医学管理等を行った場合に、主たる医学管理等の所定点数を算定する背反関係がある診療行為に限り、コードを設定する。
         /// </summary>
-        [Column("IGAKUKANRI")]
+        [Column("igakukanri")]
         [CustomAttribute.DefaultValue(0)]
         public int Igakukanri { get; set; }
 
@@ -278,7 +278,7 @@ namespace Entity.Tenant
         ///     0: 実日数に含めない
         ///     1: 実日数に含める
         /// </summary>
-        [Column("JITUDAY_COUNT")]
+        [Column("jituday_count")]
         [CustomAttribute.DefaultValue(0)]
         public int JitudayCount { get; set; }
 
@@ -290,7 +290,7 @@ namespace Entity.Tenant
         ///     3: 入院基本料、特定入院料 
         ///     4: 外泊
         /// </summary>
-        [Column("JITUDAY")]
+        [Column("jituday")]
         [CustomAttribute.DefaultValue(0)]
         public int Jituday { get; set; }
 
@@ -303,7 +303,7 @@ namespace Entity.Tenant
         ///     実日数 = 3, 日数回数 = 3 - 入院基本料、特定入院料
         ///     実日数 = 4, 日数回数 = 0 - 外泊
         /// </summary>
-        [Column("DAY_COUNT")]
+        [Column("day_count")]
         [CustomAttribute.DefaultValue(0)]
         public int DayCount { get; set; }
 
@@ -315,7 +315,7 @@ namespace Entity.Tenant
         ///     3: 神経ブロック（神経破壊剤使用） 
         ///     4: 生物学的製剤加算
         /// </summary>
-        [Column("DRUG_KANREN_KBN")]
+        [Column("drug_kanren_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int DrugKanrenKbn { get; set; }
 
@@ -324,7 +324,7 @@ namespace Entity.Tenant
         ///     0: きざみ値により算定しない診療行為（項番１２「新又は現点数」により算定する。） 
         ///     1: きざみ値により算定する診療行為
         /// </summary>
-        [Column("KIZAMI_ID")]
+        [Column("kizami_id")]
         [CustomAttribute.DefaultValue(0)]
         public int KizamiId { get; set; }
 
@@ -333,7 +333,7 @@ namespace Entity.Tenant
         ///     きざみ値により算定する診療行為において「数量データ」の下限値を表す。
         ///     下限値の制限がない場合は「0」である。
         /// </summary>
-        [Column("KIZAMI_MIN")]
+        [Column("kizami_min")]
         [CustomAttribute.DefaultValue(0)]
         public int KizamiMin { get; set; }
 
@@ -342,7 +342,7 @@ namespace Entity.Tenant
         ///     きざみ値により算定する診療行為において「数量データ」の上限値を表す。
         ///     上限値の制限がない場合は「99999999」である。
         /// </summary>
-        [Column("KIZAMI_MAX")]
+        [Column("kizami_max")]
         [CustomAttribute.DefaultValue(0)]
         public int KizamiMax { get; set; }
 
@@ -350,7 +350,7 @@ namespace Entity.Tenant
         /// きざみ値
         ///     きざみ値により算定する診療行為において点数のきざみ単位を表す。
         /// </summary>
-        [Column("KIZAMI_VAL")]
+        [Column("kizami_val")]
         [CustomAttribute.DefaultValue(0)]
         public int KizamiVal { get; set; }
 
@@ -358,7 +358,7 @@ namespace Entity.Tenant
         /// きざみ点数
         ///     きざみ値により算定する診療行為においてきざみ点数を表す。
         /// </summary>
-        [Column("KIZAMI_TEN")]
+        [Column("kizami_ten")]
         [CustomAttribute.DefaultValue(0)]
         public double KizamiTen { get; set; }
 
@@ -368,7 +368,7 @@ namespace Entity.Tenant
         ///     上下限エラー処理は「0」～「3」の4つの値を持ち、「下限値－きざみ値」以下の場合の条件、
         ///     及び「上限値」を超えた場合の条件を両方共に満たす値を設定する。
         /// </summary>
-        [Column("KIZAMI_ERR")]
+        [Column("kizami_err")]
         [CustomAttribute.DefaultValue(0)]
         public int KizamiErr { get; set; }
 
@@ -376,7 +376,7 @@ namespace Entity.Tenant
         /// 上限回数
         ///     0: 上限未設定
         /// </summary>
-        [Column("MAX_COUNT")]
+        [Column("max_count")]
         [CustomAttribute.DefaultValue(0)]
         public int MaxCount { get; set; }
 
@@ -386,7 +386,7 @@ namespace Entity.Tenant
         ///     0: 上限回数を確認する。
         ///     1: 上限回数にて算定する。
         /// </summary>
-        [Column("MAX_COUNT_ERR")]
+        [Column("max_count_err")]
         [CustomAttribute.DefaultValue(0)]
         public int MaxCountErr { get; set; }
 
@@ -396,7 +396,7 @@ namespace Entity.Tenant
         ///    「告示等識別区分（１）」に「７：加算項目」を設定している診療行為のうち、
         ///     注加算コードを設定せずに専用の項目を設定して算定可否を判定する診療行為は「別紙７－８」のとおりである。 
         /// </summary>
-        [Column("TYU_CD")]
+        [Column("tyu_cd")]
         [MaxLength(4)]
         public string? TyuCd { get; set; } = string.Empty;
 
@@ -407,7 +407,7 @@ namespace Entity.Tenant
         ///     注加算である診療行為に「1」から「9」及び「A」から「Z」（昇順、アルファベット順）を設定する。 
         ///     注加算コードと注加算通番の関連は「別紙７－９」のとおりである。 
         /// </summary>
-        [Column("TYU_SEQ")]
+        [Column("tyu_seq")]
         [MaxLength(1)]
         public string? TyuSeq { get; set; } = string.Empty;
 
@@ -421,7 +421,7 @@ namespace Entity.Tenant
         ///     　0: １以外の診療行為
         ///     　1: 通則年齢加算自体
         /// </summary>
-        [Column("TUSOKU_AGE")]
+        [Column("tusoku_age")]
         [CustomAttribute.DefaultValue(0)]
         public int TusokuAge { get; set; }
 
@@ -438,7 +438,7 @@ namespace Entity.Tenant
         ///     BK：２０歳に達した日の翌月の１日
         ///     MG：未就学
         /// </summary>
-        [Column("MIN_AGE")]
+        [Column("min_age")]
         [MaxLength(2)]
         public string? MinAge { get; set; } = string.Empty;
 
@@ -455,7 +455,7 @@ namespace Entity.Tenant
         ///     BK：２０歳に達した日の翌月の１日
         ///     MG：未就学
         /// </summary>
-        [Column("MAX_AGE")]
+        [Column("max_age")]
         [MaxLength(2)]
         public string? MaxAge { get; set; } = string.Empty;
 
@@ -466,7 +466,7 @@ namespace Entity.Tenant
         ///     1: 年齢範囲外の時、警告扱いにする
         ///     2: チェックしない
         /// </summary>
-        [Column("AGE_CHECK")]
+        [Column("age_check")]
         [CustomAttribute.DefaultValue(0)]
         public int AgeCheck { get; set; }
 
@@ -489,7 +489,7 @@ namespace Entity.Tenant
         ///     　8: 時間外、深夜、時間外特例加算（手術又は、1000 点以上の処置）（注加算又は通則加算）自体
         ///     　9: 休日加算（手術又は、1000 点以上の処置）（注加算又は通則加算）自体
         /// </summary>
-        [Column("TIME_KASAN_KBN")]
+        [Column("time_kasan_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TimeKasanKbn { get; set; }
 
@@ -501,7 +501,7 @@ namespace Entity.Tenant
         ///     　2: 点数逓減して算定できる診療行為
         ///     （削）3: 年齢が１歳未満のとき、点数逓減して算定できる診療行為
         /// </summary>
-        [Column("FUTEKI_KBN")]
+        [Column("futeki_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int FutekiKbn { get; set; }
 
@@ -510,7 +510,7 @@ namespace Entity.Tenant
         ///     当該診療行為が施設基準不適合の場合点数を逓減して算定できる診療行為について設定した施設基準コードを表す。
         ///     基準不適合逓減対象施設区分（施設基準コード）については「別紙５」を参照。
         /// </summary>
-        [Column("FUTEKI_SISETU_KBN")]
+        [Column("futeki_sisetu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int FutekiSisetuKbn { get; set; }
 
@@ -532,7 +532,7 @@ namespace Entity.Tenant
         ///     　4: ６歳未満乳幼児加算（処置）（７５点）自体
         ///     　5: ６歳未満乳幼児加算（処置）（５０点）自体
         /// </summary>
-        [Column("SYOTI_NYUYOJI_KBN")]
+        [Column("syoti_nyuyoji_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SyotiNyuyojiKbn { get; set; }
 
@@ -546,7 +546,7 @@ namespace Entity.Tenant
         ///     　0: １以外の診療行為
         ///     　1: 極低出生体重児加算（手術）（４００％）、新生児加算（手術）（３００％）自体
         /// </summary>
-        [Column("LOW_WEIGHT_KBN")]
+        [Column("low_weight_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int LowWeightKbn { get; set; }
 
@@ -557,7 +557,7 @@ namespace Entity.Tenant
         ///     　1: 検体検査実施料、生体検査実施料、核医学撮影料、コンピューター断層撮影料、病理標本作製料に係る診療行為
         ///     　2: 検体検査判断料、生体検査判断料、核医学診断料、コンピューター断層診断料、病理診断料、病理判断料に係る診療行為
         /// </summary>
-        [Column("HANDAN_KBN")]
+        [Column("handan_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int HandanKbn { get; set; }
 
@@ -583,7 +583,7 @@ namespace Entity.Tenant
         ///     　　42: 病理診断（細胞診断）
         ///     　　※40: 病理診断は41: 病理診断（組織診断）、42: 病理診断（細胞診断）を含む。
         /// </summary>
-        [Column("HANDAN_GRP_KBN")]
+        [Column("handan_grp_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int HandanGrpKbn { get; set; }
 
@@ -597,7 +597,7 @@ namespace Entity.Tenant
         ///     　0: 1以外の診療行為
         ///     　1: 逓減コード自体
         /// </summary>
-        [Column("TEIGEN_KBN")]
+        [Column("teigen_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TeigenKbn { get; set; }
 
@@ -613,7 +613,7 @@ namespace Entity.Tenant
         ///     　1: 脊髄誘発電位測定等加算（１ 脳、脊椎、脊髄又は大動脈瘤の手術に用いた場合）自体
         ///     　2: 脊髄誘発電位測定等加算（２ 甲状腺又は副甲状腺の手術に用いた場合）自体
         /// </summary>
-        [Column("SEKITUI_KBN")]
+        [Column("sekitui_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SekituiKbn { get; set; }
 
@@ -627,7 +627,7 @@ namespace Entity.Tenant
         ///     　0: 頸部郭清術併施加算が算定できない診療行為
         ///     　1: 頸部郭清術併施加算自体
         /// </summary>
-        [Column("KEIBU_KBN")]
+        [Column("keibu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KeibuKbn { get; set; }
 
@@ -641,7 +641,7 @@ namespace Entity.Tenant
         ///     　0: １以外の診療行為
         ///     　1: 自動縫合器加算（2500点）自体
         /// </summary>
-        [Column("AUTO_HOUGOU_KBN")]
+        [Column("auto_hougou_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int AutoHougouKbn { get; set; }
 
@@ -652,7 +652,7 @@ namespace Entity.Tenant
         ///     　1: 算定した場合に外来管理加算が算定できない診療行為
         ///     　2: 外来管理加算自体
         /// </summary>
-        [Column("GAIRAI_KANRI_KBN")]
+        [Column("gairai_kanri_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int GairaiKanriKbn { get; set; }
 
@@ -662,7 +662,7 @@ namespace Entity.Tenant
         ///     　0: 所定点数として取扱う診療行為及び通則加算
         ///     　1: 所定点数として取扱わない基本診療行為
         /// </summary>
-        [Column("TUSOKU_TARGET_KBN")]
+        [Column("tusoku_target_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TusokuTargetKbn { get; set; }
 
@@ -670,7 +670,7 @@ namespace Entity.Tenant
         /// 包括逓減区分
         ///     逓減対象検査等のグループ区分を表す。
         /// </summary>
-        [Column("HOKATU_KBN")]
+        [Column("hokatu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int HokatuKbn { get; set; }
 
@@ -684,7 +684,7 @@ namespace Entity.Tenant
         ///     　0: １以外の診療行為
         ///     　1: 超音波内視鏡加算自体
         /// </summary>
-        [Column("TYOONPA_NAISI_KBN")]
+        [Column("tyoonpa_naisi_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TyoonpaNaisiKbn { get; set; }
 
@@ -694,7 +694,7 @@ namespace Entity.Tenant
         ///     　0: 所定点数として取扱う診療行為及び通則加算
         ///     　1: 所定点数として取扱わない基本診療行為
         /// </summary>
-        [Column("AUTO_FUNGO_KBN")]
+        [Column("auto_fungo_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int AutoFungoKbn { get; set; }
 
@@ -708,7 +708,7 @@ namespace Entity.Tenant
         ///     　0: 1以外の診療行為
         ///     　1: 超音波凝固切開装置等加算自体
         /// </summary>
-        [Column("TYOONPA_GYOKO_KBN")]
+        [Column("tyoonpa_gyoko_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TyoonpaGyokoKbn { get; set; }
 
@@ -728,7 +728,7 @@ namespace Entity.Tenant
         ///     　2: 実物大臓器立体モデルによる支援加算自体
         ///     　4: 患者適合型手術支援ガイドによる支援加算自体
         /// </summary>
-        [Column("GAZO_KASAN")]
+        [Column("gazo_kasan")]
         [CustomAttribute.DefaultValue(0)]
         public int GazoKasan { get; set; }
 
@@ -741,7 +741,7 @@ namespace Entity.Tenant
         ///     　3: 入院、外来（通院）共に出来高部分で算定可能な診療行為
         ///     　4: 医療観察法専用の診療行為
         /// </summary>
-        [Column("KANSATU_KBN")]
+        [Column("kansatu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KansatuKbn { get; set; }
 
@@ -757,7 +757,7 @@ namespace Entity.Tenant
         ///     　8: マスク又は気管内挿管による閉鎖循環式全身麻酔の加算（硬膜外麻酔併施加算以外）
         ///     　9: 硬膜外麻酔併施加算
         /// </summary>
-        [Column("MASUI_KBN")]
+        [Column("masui_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int MasuiKbn { get; set; }
 
@@ -771,7 +771,7 @@ namespace Entity.Tenant
         ///     　0: 1以外の診療行為
         ///     　1: 副鼻腔手術用内視鏡加算自体
         /// </summary>
-        [Column("FUKUBIKU_NAISI_KASAN")]
+        [Column("fukubiku_naisi_kasan")]
         [CustomAttribute.DefaultValue(0)]
         public int FukubikuNaisiKasan { get; set; }
 
@@ -785,7 +785,7 @@ namespace Entity.Tenant
         ///     　0: 1以外の診療行為
         ///     　1: 副鼻腔手術用骨軟部組織切除機器加算自体
         /// </summary>
-        [Column("FUKUBIKU_KOTUNAN_KASAN")]
+        [Column("fukubiku_kotunan_kasan")]
         [CustomAttribute.DefaultValue(0)]
         public int FukubikuKotunanKasan { get; set; }
 
@@ -801,7 +801,7 @@ namespace Entity.Tenant
         ///     　0: 1以外の診療行為
         ///     　1: 長時間麻酔管理加算自体
         /// </summary>
-        [Column("MASUI_KASAN")]
+        [Column("masui_kasan")]
         [CustomAttribute.DefaultValue(0)]
         public int MasuiKasan { get; set; }
 
@@ -816,7 +816,7 @@ namespace Entity.Tenant
         ///     　0: １以外の診療行為
         ///     　1: 非侵襲的血行動態モニタリング加算自体
         /// </summary>
-        [Column("MONITER_KASAN")]
+        [Column("moniter_kasan")]
         [CustomAttribute.DefaultValue(0)]
         public int MoniterKasan { get; set; }
 
@@ -830,7 +830,7 @@ namespace Entity.Tenant
         ///     　0: 1以外の診療行為
         ///     　1: 凍結保存同種組織加算自体
         /// </summary>
-        [Column("TOKETU_KASAN")]
+        [Column("toketu_kasan")]
         [CustomAttribute.DefaultValue(0)]
         public int ToketuKasan { get; set; }
 
@@ -838,7 +838,7 @@ namespace Entity.Tenant
         /// 点数表区分番号
         ///     医科点数表の「第２章 特掲診療料」「第１０部 手術」に規定する診療行為（通則及び注に掲げる加算等を除く。）の区分番号及び項番等を表す。
         /// </summary>
-        [Column("TEN_KBN_NO")]
+        [Column("ten_kbn_no")]
         [MaxLength(30)]
         public string? TenKbnNo { get; set; } = string.Empty;
 
@@ -851,7 +851,7 @@ namespace Entity.Tenant
         ///     　３：短期滞在手術等基本料１が算定可能な診療行為（手術）
         ///     　４：短期滞在手術等基本料２が算定可能な診療行為（手術）
         /// </summary>
-        [Column("SHORTSTAY_OPE")]
+        [Column("shortstay_ope")]
         [CustomAttribute.DefaultValue(0)]
         public int ShortstayOpe { get; set; }
 
@@ -869,7 +869,7 @@ namespace Entity.Tenant
         ///      10: 指
         ///      99: その他部位（撮影部位マスターでない場合も含む。）
         /// </summary>
-        [Column("BUI_KBN")]
+        [Column("bui_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int BuiKbn { get; set; }
 
@@ -883,7 +883,7 @@ namespace Entity.Tenant
         ///     　当該医薬品について薬価基準の規格単位数を表す。
         ///     　ただし、規格単位数が１の場合は省略し０を収容する。
         /// </summary>
-        [Column("SISETUCD1")]
+        [Column("sisetucd1")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd1 { get; set; }
 
@@ -894,63 +894,63 @@ namespace Entity.Tenant
         ///     ＜医薬品＞
         ///     　当該医薬品が湿布薬で単位が「ｇ」の場合は膏体量を収容する。
         ///             /// </summary>
-        [Column("SISETUCD2")]
+        [Column("sisetucd2")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd2 { get; set; }
 
         /// <summary>
         /// 施設基準コード３
         /// </summary>
-        [Column("SISETUCD3")]
+        [Column("sisetucd3")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd3 { get; set; }
 
         /// <summary>
         /// 施設基準コード４
         /// </summary>
-        [Column("SISETUCD4")]
+        [Column("sisetucd4")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd4 { get; set; }
 
         /// <summary>
         /// 施設基準コード５
         /// </summary>
-        [Column("SISETUCD5")]
+        [Column("sisetucd5")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd5 { get; set; }
 
         /// <summary>
         /// 施設基準コード６
         /// </summary>
-        [Column("SISETUCD6")]
+        [Column("sisetucd6")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd6 { get; set; }
 
         /// <summary>
         /// 施設基準コード７
         /// </summary>
-        [Column("SISETUCD7")]
+        [Column("sisetucd7")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd7 { get; set; }
 
         /// <summary>
         /// 施設基準コード８
         /// </summary>
-        [Column("SISETUCD8")]
+        [Column("sisetucd8")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd8 { get; set; }
 
         /// <summary>
         /// 施設基準コード９
         /// </summary>
-        [Column("SISETUCD9")]
+        [Column("sisetucd9")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd9 { get; set; }
 
         /// <summary>
         /// 施設基準コード１０
         /// </summary>
-        [Column("SISETUCD10")]
+        [Column("sisetucd10")]
         [CustomAttribute.DefaultValue(0)]
         public int Sisetucd10 { get; set; }
 
@@ -970,7 +970,7 @@ namespace Entity.Tenant
         ///     注加算診療行為コード：
         ///     　年齢注加算の診療行為コードを表す。
         /// </summary>
-        [Column("AGEKASAN_MIN1")]
+        [Column("agekasan_min1")]
         [MaxLength(2)]
         public string? AgekasanMin1 { get; set; } = string.Empty;
 
@@ -978,7 +978,7 @@ namespace Entity.Tenant
         /// 年齢加算上限年齢１
         ///     年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_MAX1")]
+        [Column("agekasan_max1")]
         [MaxLength(2)]
         public string? AgekasanMax1 { get; set; } = string.Empty;
 
@@ -986,7 +986,7 @@ namespace Entity.Tenant
         /// 年齢加算注加算診療行為コード１
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_CD1")]
+        [Column("agekasan_cd1")]
         [MaxLength(10)]
         public string? AgekasanCd1 { get; set; } = string.Empty;
 
@@ -994,7 +994,7 @@ namespace Entity.Tenant
         /// 年齢加算下限年齢２
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_MIN2")]
+        [Column("agekasan_min2")]
         [MaxLength(2)]
         public string? AgekasanMin2 { get; set; } = string.Empty;
 
@@ -1002,7 +1002,7 @@ namespace Entity.Tenant
         /// 年齢加算上限年齢２
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_MAX2")]
+        [Column("agekasan_max2")]
         [MaxLength(2)]
         public string? AgekasanMax2 { get; set; } = string.Empty;
 
@@ -1010,7 +1010,7 @@ namespace Entity.Tenant
         /// 年齢加算注加算診療行為コード２
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_CD2")]
+        [Column("agekasan_cd2")]
         [MaxLength(10)]
         public string? AgekasanCd2 { get; set; } = string.Empty;
 
@@ -1018,7 +1018,7 @@ namespace Entity.Tenant
         /// 年齢加算下限年齢３
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_MIN3")]
+        [Column("agekasan_min3")]
         [MaxLength(2)]
         public string? AgekasanMin3 { get; set; } = string.Empty;
 
@@ -1026,7 +1026,7 @@ namespace Entity.Tenant
         /// 年齢加算上限年齢３
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_MAX3")]
+        [Column("agekasan_max3")]
         [MaxLength(2)]
         public string? AgekasanMax3 { get; set; } = string.Empty;
 
@@ -1034,7 +1034,7 @@ namespace Entity.Tenant
         /// 年齢加算注加算診療行為コード３
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_CD3")]
+        [Column("agekasan_cd3")]
         [MaxLength(10)]
         public string? AgekasanCd3 { get; set; } = string.Empty;
 
@@ -1042,7 +1042,7 @@ namespace Entity.Tenant
         /// 年齢加算下限年齢４
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_MIN4")]
+        [Column("agekasan_min4")]
         [MaxLength(2)]
         public string? AgekasanMin4 { get; set; } = string.Empty;
 
@@ -1050,7 +1050,7 @@ namespace Entity.Tenant
         /// 年齢加算上限年齢４
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_MAX4")]
+        [Column("agekasan_max4")]
         [MaxLength(2)]
         public string? AgekasanMax4 { get; set; } = string.Empty;
 
@@ -1058,7 +1058,7 @@ namespace Entity.Tenant
         /// 年齢加算注加算診療行為コード４
         ///      年齢加算下限年齢１を参照。
         /// </summary>
-        [Column("AGEKASAN_CD4")]
+        [Column("agekasan_cd4")]
         [MaxLength(10)]
         public string? AgekasanCd4 { get; set; } = string.Empty;
 
@@ -1068,7 +1068,7 @@ namespace Entity.Tenant
         ///     　0: 検体コメント以外
         ///     　1: 検体コメント
         /// </summary>
-        [Column("KENSA_CMT")]
+        [Column("kensa_cmt")]
         [CustomAttribute.DefaultValue(0)]
         public int KensaCmt { get; set; }
 
@@ -1081,7 +1081,7 @@ namespace Entity.Tenant
         ///     　3: 覚せい剤原料
         ///     　5: 向精神薬
         /// </summary>
-        [Column("MADOKU_KBN")]
+        [Column("madoku_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int MadokuKbn { get; set; }
 
@@ -1091,7 +1091,7 @@ namespace Entity.Tenant
         ///     　0: 神経破壊剤以外
         ///     　1: 神経破壊剤
         /// </summary>
-        [Column("SINKEI_KBN")]
+        [Column("sinkei_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SinkeiKbn { get; set; }
 
@@ -1101,7 +1101,7 @@ namespace Entity.Tenant
         ///     　0: 生物学的製剤加算対象品目以外
         ///     　1: 生物学的製剤加算対象品目
         /// </summary>
-        [Column("SEIBUTU_KBN")]
+        [Column("seibutu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SeibutuKbn { get; set; }
 
@@ -1112,7 +1112,7 @@ namespace Entity.Tenant
         ///     　1: 造影剤
         ///     　2: 造影補助剤
         /// </summary>
-        [Column("ZOUEI_KBN")]
+        [Column("zouei_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int ZoueiKbn { get; set; }
 
@@ -1128,7 +1128,7 @@ namespace Entity.Tenant
         ///     （削）9: 歯科特定薬剤
         ///     ※レセプト電算マスターの項目「剤型」を収容する。
         /// </summary>
-        [Column("DRUG_KBN")]
+        [Column("drug_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int DrugKbn { get; set; }
 
@@ -1141,7 +1141,7 @@ namespace Entity.Tenant
         ///     　3: 液剤
         ///     ※レセプト電算マスターの項目「剤型」とは異なる。
         /// </summary>
-        [Column("ZAI_KBN")]
+        [Column("zai_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int ZaiKbn { get; set; }
 
@@ -1149,7 +1149,7 @@ namespace Entity.Tenant
         /// 注射容量
         ///     当該医薬品が注射薬の場合、その容量（単位はｍＬ）を表す。
         /// </summary>
-        [Column("CAPACITY")]
+        [Column("capacity")]
         [CustomAttribute.DefaultValue(0)]
         public int Capacity { get; set; }
 
@@ -1160,7 +1160,7 @@ namespace Entity.Tenant
         ///     　1: 先発医薬品がある後発医薬品である
         ///     ※基金マスタの設定、オーダー時はKOHATU_KBN_MSTを見るようにすること
         /// </summary>
-        [Column("KOHATU_KBN")]
+        [Column("kohatu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KohatuKbn { get; set; }
 
@@ -1171,7 +1171,7 @@ namespace Entity.Tenant
         ///     　1: 年齢加算又は年齢加算が算定可能な特定器材
         ///     　　　＊胸部又は腹部単純撮影の乳幼児加算、及びフィルム料
         /// </summary>
-        [Column("TOKUZAI_AGE_KBN")]
+        [Column("tokuzai_age_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TokuzaiAgeKbn { get; set; }
 
@@ -1186,7 +1186,7 @@ namespace Entity.Tenant
         ///     　5: 小型ボンベ
         ///     　9: 窒素
         /// </summary>
-        [Column("SANSO_KBN")]
+        [Column("sanso_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SansoKbn { get; set; }
 
@@ -1208,7 +1208,7 @@ namespace Entity.Tenant
         ///     　　　｜１０００円↓により算定する特定器材（コバルト）
         ///     　　　↑↓：四捨五入
         /// </summary>
-        [Column("TOKUZAI_SBT")]
+        [Column("tokuzai_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int TokuzaiSbt { get; set; }
 
@@ -1218,7 +1218,7 @@ namespace Entity.Tenant
         ///     　0: 下記以外
         ///     　1: 上限価格の設定がされている場合
         /// </summary>
-        [Column("MAX_PRICE")]
+        [Column("max_price")]
         [CustomAttribute.DefaultValue(0)]
         public int MaxPrice { get; set; }
 
@@ -1226,7 +1226,7 @@ namespace Entity.Tenant
         /// 上限点数
         ///     当該特定器材（眼底カメラ検査用インスタントフィルム）が算定可能な上限点数を表す。上限点数の設定されない場合は「０」である。
         /// </summary>
-        [Column("MAX_TEN")]
+        [Column("max_ten")]
         [CustomAttribute.DefaultValue(0)]
         public int MaxTen { get; set; }
 
@@ -1236,7 +1236,7 @@ namespace Entity.Tenant
         ///     点数欄集計先識別については「別紙９」を参照。
         ///     入院外レセプトで使用不可の診療行為は「０」である。
         /// </summary>
-        [Column("SYUKEI_SAKI")]
+        [Column("syukei_saki")]
         [MaxLength(3)]
         [CustomAttribute.DefaultValue(0)]
         public string? SyukeiSaki { get; set; } = string.Empty;
@@ -1254,7 +1254,7 @@ namespace Entity.Tenant
         ///     枝番：
         ///     項番：
         /// </summary>
-        [Column("CD_KBN")]
+        [Column("cd_kbn")]
         [MaxLength(1)]
         public string? CdKbn { get; set; } = string.Empty;
 
@@ -1262,7 +1262,7 @@ namespace Entity.Tenant
         /// コード表用区分－章
         ///     コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_SYO")]
+        [Column("cd_syo")]
         [CustomAttribute.DefaultValue(0)]
         public int CdSyo { get; set; }
 
@@ -1270,7 +1270,7 @@ namespace Entity.Tenant
         /// コード表用区分－部
         ///     コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_BU")]
+        [Column("cd_bu")]
         [CustomAttribute.DefaultValue(0)]
         public int CdBu { get; set; }
 
@@ -1278,7 +1278,7 @@ namespace Entity.Tenant
         /// コード表用区分－区分番号
         ///     コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_KBNNO")]
+        [Column("cd_kbnno")]
         [CustomAttribute.DefaultValue(0)]
         public int CdKbnno { get; set; }
 
@@ -1286,7 +1286,7 @@ namespace Entity.Tenant
         /// コード表用区分－区分番号－枝番
         ///     コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_EDANO")]
+        [Column("cd_edano")]
         [CustomAttribute.DefaultValue(0)]
         public int CdEdano { get; set; }
 
@@ -1294,7 +1294,7 @@ namespace Entity.Tenant
         /// コード表用区分－項番
         ///     コード表用区分－区分を参照。
         /// </summary>
-        [Column("CD_KOUNO")]
+        [Column("cd_kouno")]
         [CustomAttribute.DefaultValue(0)]
         public int CdKouno { get; set; }
 
@@ -1309,7 +1309,7 @@ namespace Entity.Tenant
         ///     枝番：
         ///     項番：
         /// </summary>
-        [Column("KOKUJI_KBN")]
+        [Column("kokuji_kbn")]
         [MaxLength(1)]
         public string? KokujiKbn { get; set; } = string.Empty;
 
@@ -1317,7 +1317,7 @@ namespace Entity.Tenant
         /// 告知・通知関連番号－章
         ///     告知・通知関連番号－区分を参照。
         /// </summary>
-        [Column("KOKUJI_SYO")]
+        [Column("kokuji_syo")]
         [CustomAttribute.DefaultValue(0)]
         public int KokujiSyo { get; set; }
 
@@ -1325,7 +1325,7 @@ namespace Entity.Tenant
         /// 告知・通知関連番号－部
         ///     告知・通知関連番号－区分を参照。
         /// </summary>
-        [Column("KOKUJI_BU")]
+        [Column("kokuji_bu")]
         [CustomAttribute.DefaultValue(0)]
         public int KokujiBu { get; set; }
 
@@ -1333,7 +1333,7 @@ namespace Entity.Tenant
         /// 告知・通知関連番号－区分番号
         ///     告知・通知関連番号－区分を参照。
         /// </summary>
-        [Column("KOKUJI_KBN_NO")]
+        [Column("kokuji_kbn_no")]
         [CustomAttribute.DefaultValue(0)]
         public int KokujiKbnNo { get; set; }
 
@@ -1341,7 +1341,7 @@ namespace Entity.Tenant
         /// 告知・通知関連番号－区分番号－枝番
         ///     告知・通知関連番号－区分を参照。
         /// </summary>
-        [Column("KOKUJI_EDA_NO")]
+        [Column("kokuji_eda_no")]
         [CustomAttribute.DefaultValue(0)]
         public int KokujiEdaNo { get; set; }
 
@@ -1349,7 +1349,7 @@ namespace Entity.Tenant
         /// 告知・通知関連番号－項番
         ///     告知・通知関連番号－区分を参照。
         /// </summary>
-        [Column("KOKUJI_KOU_NO")]
+        [Column("kokuji_kou_no")]
         [CustomAttribute.DefaultValue(0)]
         public int KokujiKouNo { get; set; }
 
@@ -1364,7 +1364,7 @@ namespace Entity.Tenant
         ///       0: 診療行為以外（薬剤、特材等）
         ///       A: 入院基本料労災乗数項目又は四肢加算（手術）項目
         /// </summary>
-        [Column("KOKUJI1")]
+        [Column("kokuji1")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(1)]
         public string? Kokuji1 { get; set; } = string.Empty;
@@ -1379,7 +1379,7 @@ namespace Entity.Tenant
         ///     （削）9: 通則加算項目
         ///       0: 診療行為以外（薬剤、特材等）
         /// </summary>
-        [Column("KOKUJI2")]
+        [Column("kokuji2")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(1)]
         public string? Kokuji2 { get; set; } = string.Empty;
@@ -1388,7 +1388,7 @@ namespace Entity.Tenant
         /// 公表順序番号
         ///     コード表用番号による順序番号を記録する。
         /// </summary>
-        [Column("KOHYO_JUN")]
+        [Column("kohyo_jun")]
         [CustomAttribute.DefaultValue(0)]
         public int KohyoJun { get; set; }
 
@@ -1397,7 +1397,7 @@ namespace Entity.Tenant
         ///     薬価基準収載医薬品コードと同様に英数12桁のコードですが、統一名収載品目の個々の商品に対して別々のコードが付与されます。
         ///     銘柄別収載品目（商品名で官報に収載されるもの）については、薬価基準収載医薬品コードと同じコードです。
         /// </summary>
-        [Column("YJ_CD")]
+        [Column("yj_cd")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(12)]
         public string? YjCd { get; set; } = string.Empty;
@@ -1406,7 +1406,7 @@ namespace Entity.Tenant
         /// 薬価基準収載医薬品コード
         ///     当該医薬品に係る薬価基準収載医薬品コードを表す。
         /// </summary>
-        [Column("YAKKA_CD")]
+        [Column("yakka_cd")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(12)]
         public string? YakkaCd { get; set; } = string.Empty;
@@ -1422,7 +1422,7 @@ namespace Entity.Tenant
         ///     　7: 生薬
         ///     　8: 1～7以外の統一名収載品
         /// </summary>
-        [Column("SYUSAI_SBT")]
+        [Column("syusai_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int SyusaiSbt { get; set; }
 
@@ -1431,7 +1431,7 @@ namespace Entity.Tenant
         ///     当該医薬品が商品名医薬品(非告示品)の場合、その統一名収載品(告示品)の医薬品コードを記録する。
         ///     なお、商品名医薬品でない場合は「0000000000」である。
         /// </summary>
-        [Column("SYOHIN_KANREN")]
+        [Column("syohin_kanren")]
         [MaxLength(9)]
         public string? SyohinKanren { get; set; } = string.Empty;
 
@@ -1439,7 +1439,7 @@ namespace Entity.Tenant
         /// 変更年月日
         ///     yyyymmdd
         /// </summary>
-        [Column("UPD_DATE")]
+        [Column("upd_date")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdDate { get; set; }
 
@@ -1447,7 +1447,7 @@ namespace Entity.Tenant
         /// 廃止年月日
         ///     yyyymmdd
         /// </summary>
-        [Column("DEL_DATE")]
+        [Column("del_date")]
         [CustomAttribute.DefaultValue(0)]
         public int DelDate { get; set; }
 
@@ -1455,7 +1455,7 @@ namespace Entity.Tenant
         /// 経過措置年月日
         ///     yyyymmdd
         /// </summary>
-        [Column("KEIKA_DATE")]
+        [Column("keika_date")]
         [CustomAttribute.DefaultValue(0)]
         public int KeikaDate { get; set; }
 
@@ -1466,7 +1466,7 @@ namespace Entity.Tenant
         ///     　1: 労災のみ算定可能
         ///     　2: 健保のみ算定可能
         /// </summary>
-        [Column("ROUSAI_KBN")]
+        [Column("rousai_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int RousaiKbn { get; set; }
 
@@ -1481,7 +1481,7 @@ namespace Entity.Tenant
         ///     　4: 1.5倍の加算自体
         ///     　5: 2.0倍の加算自体
         /// </summary>
-        [Column("SISI_KBN")]
+        [Column("sisi_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SisiKbn { get; set; }
 
@@ -1490,7 +1490,7 @@ namespace Entity.Tenant
         ///     フィルム1枚あたりの撮影回数
         ///     0: フィルム以外
         /// </summary>
-        [Column("SHOT_CNT")]
+        [Column("shot_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public int ShotCnt { get; set; }
 
@@ -1499,7 +1499,7 @@ namespace Entity.Tenant
         ///     0: 検索可
         ///     1: 検索不可
         /// </summary>
-        [Column("IS_NOSEARCH")]
+        [Column("is_nosearch")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNosearch { get; set; }
 
@@ -1508,7 +1508,7 @@ namespace Entity.Tenant
         ///     0: 表示
         ///     1: 非表示（摘要欄に表示しない、点数欄には表示する）
         /// </summary>
-        [Column("IS_NODSP_PAPER_RECE")]
+        [Column("is_nodsp_paper_rece")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspPaperRece { get; set; }
 
@@ -1517,7 +1517,7 @@ namespace Entity.Tenant
         ///     0: 表示
         ///     1: 非表示（レセプト自体に表示しない）
         /// </summary>
-        [Column("IS_NODSP_RECE")]
+        [Column("is_nodsp_rece")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspRece { get; set; }
 
@@ -1526,7 +1526,7 @@ namespace Entity.Tenant
         ///     0: 表示
         ///     1: 非表示
         /// </summary>
-        [Column("IS_NODSP_RYOSYU")]
+        [Column("is_nodsp_ryosyu")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspRyosyu { get; set; }
 
@@ -1535,7 +1535,7 @@ namespace Entity.Tenant
         ///     0: 表示
         ///     1: 非表示
         /// </summary>
-        [Column("IS_NODSP_KARTE")]
+        [Column("is_nodsp_karte")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNodspKarte { get; set; }
 
@@ -1545,7 +1545,7 @@ namespace Entity.Tenant
         ///     >0: 自費項目
         ///     JIHI_SBT_MST.自費種別
         /// </summary>
-        [Column("JIHI_SBT")]
+        [Column("jihi_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiSbt { get; set; }
 
@@ -1555,7 +1555,7 @@ namespace Entity.Tenant
         ///     1: 外税
         ///     2: 内税
         /// </summary>
-        [Column("KAZEI_KBN")]
+        [Column("kazei_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KazeiKbn { get; set; }
 
@@ -1565,7 +1565,7 @@ namespace Entity.Tenant
         ///     1: 基本用法
         ///     2: 補助用法
         /// </summary>
-        [Column("YOHO_KBN")]
+        [Column("yoho_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int YohoKbn { get; set; }
 
@@ -1573,7 +1573,7 @@ namespace Entity.Tenant
         /// 一般名コード
         ///     YJ_CDの頭9桁（例外あり）
         /// </summary>
-        [Column("IPN_NAME_CD")]
+        [Column("ipn_name_cd")]
         [MaxLength(12)]
         public string? IpnNameCd { get; set; } = string.Empty;
 
@@ -1582,7 +1582,7 @@ namespace Entity.Tenant
         ///     0: 服用しない
         ///     1: 服用する
         /// </summary>
-        [Column("FUKUYO_RISE")]
+        [Column("fukuyo_rise")]
         [CustomAttribute.DefaultValue(0)]
         public int FukuyoRise { get; set; }
 
@@ -1591,7 +1591,7 @@ namespace Entity.Tenant
         ///     0: 服用しない
         ///     1: 服用する
         /// </summary>
-        [Column("FUKUYO_MORNING")]
+        [Column("fukuyo_morning")]
         [CustomAttribute.DefaultValue(0)]
         public int FukuyoMorning { get; set; }
 
@@ -1600,7 +1600,7 @@ namespace Entity.Tenant
         ///     0: 服用しない
         ///     1: 服用する
         /// </summary>
-        [Column("FUKUYO_DAYTIME")]
+        [Column("fukuyo_daytime")]
         [CustomAttribute.DefaultValue(0)]
         public int FukuyoDaytime { get; set; }
 
@@ -1609,7 +1609,7 @@ namespace Entity.Tenant
         ///     0: 服用しない
         ///     1: 服用する
         /// </summary>
-        [Column("FUKUYO_NIGHT")]
+        [Column("fukuyo_night")]
         [CustomAttribute.DefaultValue(0)]
         public int FukuyoNight { get; set; }
 
@@ -1618,7 +1618,7 @@ namespace Entity.Tenant
         ///     0: 服用しない
         ///     1: 服用する
         /// </summary>
-        [Column("FUKUYO_SLEEP")]
+        [Column("fukuyo_sleep")]
         [CustomAttribute.DefaultValue(0)]
         public int FukuyoSleep { get; set; }
 
@@ -1626,7 +1626,7 @@ namespace Entity.Tenant
         /// 数量端数切り上げ区分
         ///     1: 端数切り上げ
         /// </summary>
-        [Column("SURYO_ROUNDUP_KBN")]
+        [Column("suryo_roundup_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SuryoRoundupKbn { get; set; }
 
@@ -1638,7 +1638,7 @@ namespace Entity.Tenant
         ///     3:抗うつ薬
         ///     4:抗精神病薬
         /// </summary>
-        [Column("KOUSEISIN_KBN")]
+        [Column("kouseisin_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KouseisinKbn { get; set; }
 
@@ -1652,7 +1652,7 @@ namespace Entity.Tenant
         ///     4:ダルベポエチン
         ///     5:生理食塩水
         /// </summary>
-        [Column("CHUSYA_DRUG_SBT")]
+        [Column("chusya_drug_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int ChusyaDrugSbt { get; set; }
 
@@ -1660,7 +1660,7 @@ namespace Entity.Tenant
         /// 検査1来院複数回算定
         ///     1: 複数回算定可
         /// </summary>
-        [Column("KENSA_FUKUSU_SANTEI")]
+        [Column("kensa_fukusu_santei")]
         [CustomAttribute.DefaultValue(0)]
         public int KensaFukusuSantei { get; set; }
 
@@ -1668,7 +1668,7 @@ namespace Entity.Tenant
         /// 算定診療行為コード
         ///     算定時の診療行為コード（自己結合でデータ取得）
         /// </summary>
-        [Column("SANTEI_ITEM_CD")]
+        [Column("santei_item_cd")]
         [MaxLength(10)]
         public string? SanteiItemCd { get; set; } = string.Empty;
 
@@ -1677,14 +1677,14 @@ namespace Entity.Tenant
         ///     0: 算定する
         ///     1: 算定外
         /// </summary>
-        [Column("SANTEIGAI_KBN")]
+        [Column("santeigai_kbn")]
         public int SanteigaiKbn { get; set; }
 
         /// <summary>
         /// 検査項目コード
         ///     KENSA_MST.KENSA_ITEM_CD
         /// </summary>
-        [Column("KENSA_ITEM_CD")]
+        [Column("kensa_item_cd")]
         [MaxLength(20)]
         public string? KensaItemCd { get; set; } = string.Empty;
 
@@ -1692,7 +1692,7 @@ namespace Entity.Tenant
         /// 検査項目コード連番
         ///     KENSA_MST.SEQ_NO
         /// </summary>
-        [Column("KENSA_ITEM_SEQ_NO")]
+        [Column("kensa_item_seq_no")]
         [CustomAttribute.DefaultValue(0)]
         public int KensaItemSeqNo { get; set; }
 
@@ -1700,7 +1700,7 @@ namespace Entity.Tenant
         /// 連携コード１
         ///     外部システムとの連携用コード
         /// </summary>
-        [Column("RENKEI_CD1")]
+        [Column("renkei_cd1")]
         [MaxLength(20)]
         public string? RenkeiCd1 { get; set; } = string.Empty;
 
@@ -1708,7 +1708,7 @@ namespace Entity.Tenant
         /// 連携コード２
         ///     外部システムとの連携用コード
         /// </summary>
-        [Column("RENKEI_CD2")]
+        [Column("renkei_cd2")]
         [MaxLength(20)]
         public string? RenkeiCd2 { get; set; } = string.Empty;
 
@@ -1720,7 +1720,7 @@ namespace Entity.Tenant
         ///     　2: 静脈採血料（12点）
         ///     　3: 動脈血採取料（40点）
         /// </summary>
-        [Column("SAIKETU_KBN")]
+        [Column("saiketu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SaiketuKbn { get; set; }
 
@@ -1738,7 +1738,7 @@ namespace Entity.Tenant
         ///     8: 実施日数（840000096 :実施日数 日）
         ///     9: 前回日 or 初回日（項目名あり）
         /// </summary>
-        [Column("CMT_KBN")]
+        [Column("cmt_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtKbn { get; set; }
 
@@ -1746,7 +1746,7 @@ namespace Entity.Tenant
         /// カラム位置１
         ///     記録した数字情報の編集位置を表す。
         /// </summary>
-        [Column("CMT_COL1")]
+        [Column("cmt_col1")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtCol1 { get; set; }
 
@@ -1754,7 +1754,7 @@ namespace Entity.Tenant
         /// 桁数１
         ///     カラム位置から編集する数字情報の文字数を表す。
         /// </summary>
-        [Column("CMT_COL_KETA1")]
+        [Column("cmt_col_keta1")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtColKeta1 { get; set; }
 
@@ -1762,7 +1762,7 @@ namespace Entity.Tenant
         /// カラム位置２
         ///     記録した数字情報の編集位置を表す。
         /// </summary>
-        [Column("CMT_COL2")]
+        [Column("cmt_col2")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtCol2 { get; set; }
 
@@ -1770,7 +1770,7 @@ namespace Entity.Tenant
         /// 桁数２
         ///     カラム位置から編集する数字情報の文字数を表す。
         /// </summary>
-        [Column("CMT_COL_KETA2")]
+        [Column("cmt_col_keta2")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtColKeta2 { get; set; }
 
@@ -1778,7 +1778,7 @@ namespace Entity.Tenant
         /// カラム位置３
         ///     記録した数字情報の編集位置を表す。
         /// </summary>
-        [Column("CMT_COL3")]
+        [Column("cmt_col3")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtCol3 { get; set; }
 
@@ -1786,7 +1786,7 @@ namespace Entity.Tenant
         /// 桁数３
         ///     カラム位置から編集する数字情報の文字数を表す。
         /// </summary>
-        [Column("CMT_COL_KETA3")]
+        [Column("cmt_col_keta3")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtColKeta3 { get; set; }
 
@@ -1794,7 +1794,7 @@ namespace Entity.Tenant
         /// カラム位置４
         ///     記録した数字情報の編集位置を表す。
         /// </summary>
-        [Column("CMT_COL4")]
+        [Column("cmt_col4")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtCol4 { get; set; }
 
@@ -1802,7 +1802,7 @@ namespace Entity.Tenant
         /// 桁数４
         ///     カラム位置から編集する数字情報の文字数を表す。
         /// </summary>
-        [Column("CMT_COL_KETA4")]
+        [Column("cmt_col_keta4")]
         [CustomAttribute.DefaultValue(0)]
         public int CmtColKeta4 { get; set; }
 
@@ -1812,48 +1812,48 @@ namespace Entity.Tenant
         ///     0: 選択式以外のコメント 
         ///     1: 選択式コメント
         /// </summary>
-        [Column("SELECT_CMT_ID")]
+        [Column("select_cmt_id")]
         [CustomAttribute.DefaultValue(0)]
         public int SelectCmtId { get; set; }
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末	
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末	
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }
