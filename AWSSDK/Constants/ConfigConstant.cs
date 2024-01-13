@@ -1,9 +1,4 @@
 ﻿using Amazon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AWSSDK.Constants
 {
@@ -65,7 +60,9 @@ namespace AWSSDK.Constants
             {"restoring", 15},
             {"restore-failed", 16},
             {"stopping", 17},
-            {"starting", 18}
+            {"starting", 18},
+            {"update-schema", 19},
+            {"update-schema-failed", 20}
         };
 
             return rdsStatusDictionary;

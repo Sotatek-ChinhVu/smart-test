@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M34_AR_DISCON")]
+    [Table(name: "m34_ar_discon")]
     public class M34ArDiscon : EmrCloneable<M34ArDiscon>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("YJ_CD", Order = 1)]
+        [Column("yj_cd", Order = 1)]
         public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
@@ -20,14 +20,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 2)]
+        [Column("seq_no", Order = 2)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 副作用コード
         /// 
         /// </summary>
-        [Column("FUKUSAYO_CD")]
+        [Column("fukusayo_cd")]
         public string? FukusayoCd { get; set; } = string.Empty;
 
     }

@@ -542,7 +542,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             TrackingDataContext.SaveChanges();
 
             // is level 1
-            List<SetMst> listUpdateLevel;
+            List<SetMst> listUpdateLevel = new();
             if (setMst.Level1 > 0 && setMst.Level2 == 0)
             {
                 listUpdateLevel = TrackingDataContext.SetMsts
@@ -555,6 +555,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listUpdateLevel)
                 {
                     item.Level1 = item.Level1 - 1;
+
+                    // delete temp item
+                    item.IsDeleted = 1;
                 }
             }
 
@@ -572,6 +575,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listUpdateLevel)
                 {
                     item.Level2 = item.Level2 - 1;
+
+                    // delete temp item
+                    item.IsDeleted = 1;
                 }
             }
 
@@ -590,8 +596,23 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listUpdateLevel)
                 {
                     item.Level3 = item.Level3 - 1;
+
+                    // delete temp item
+                    item.IsDeleted = 1;
                 }
             }
+
+            // update other item
+            TrackingDataContext.SaveChanges();
+
+            // reset isDeleted = 0
+            foreach (var item in listUpdateLevel)
+            {
+                item.IsDeleted = 0;
+            }
+
+            // update other item
+            TrackingDataContext.SaveChanges();
         }
         return setMst;
     }

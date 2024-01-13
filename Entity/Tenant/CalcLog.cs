@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "CALC_LOG")]
+    [Table(name: "calc_log")]
     public class CalcLog : EmrCloneable<CalcLog>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,14 +21,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// 
         /// </summary>
-        [Column("SIN_DATE")]
+        [Column("sin_date")]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 3)]
+        [Column("raiin_no", Order = 3)]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// ログ種別
         /// 0:通常 1:注意 2:警告
         /// </summary>
-        [Column("LOG_SBT")]
+        [Column("log_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int LogSbt { get; set; }
 
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// ログ
         /// 
         /// </summary>
-        [Column("TEXT")]
+        [Column("text")]
         [MaxLength(1000)]
         public string? Text { get; set; } = string.Empty;
 
@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// 主保険保険ID
         /// 
         /// </summary>
-        [Column("HOKEN_ID")]
+        [Column("hoken_id")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenId { get; set; }
 
@@ -76,7 +76,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// 削除項目コード
         /// 
         /// </summary>
-        [Column("DEL_ITEM_CD")]
+        [Column("del_item_cd")]
         [MaxLength(10)]
         public string? DelItemCd { get; set; } = string.Empty;
 
@@ -108,7 +108,7 @@ namespace Entity.Tenant
         /// 15:注射手技で薬剤がないため算定できない
         /// 100:算定回数上限
         /// </summary>
-        [Column("DEL_SBT")]
+        [Column("del_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int DelSbt { get; set; }
 
@@ -116,7 +116,7 @@ namespace Entity.Tenant
         /// 警告
         /// 0:削除 1:警告
         /// </summary>
-        [Column("IS_WARNING")]
+        [Column("is_warning")]
         [CustomAttribute.DefaultValue(0)]
         public int IsWarning { get; set; }
 
@@ -126,7 +126,7 @@ namespace Entity.Tenant
         /// ※TERM_SBT in (2,5,6)のときのみ有効
         /// 例）2日の場合、TERM_CNT=2, TERM_SBT=2と登録
         /// </summary>
-        [Column("TERM_CNT")]
+        [Column("term_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public int TermCnt { get; set; }
 
@@ -134,7 +134,7 @@ namespace Entity.Tenant
         /// チェック期間種別
         /// 0:未指定 1:来院 2:日 3:暦週 4:暦月 5:週 6:月 9:患者あたり
         /// </summary>
-        [Column("TERM_SBT")]
+        [Column("term_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int TermSbt { get; set; }
 
@@ -142,14 +142,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -157,7 +157,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -165,14 +165,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -180,7 +180,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
 

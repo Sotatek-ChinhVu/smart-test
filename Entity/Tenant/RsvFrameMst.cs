@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -6,20 +6,20 @@ namespace Entity.Tenant
     /// <summary>
 	/// 予約枠マスタ
 	/// </summary>
-	[Table("RSV_FRAME_MST")]
+	[Table("rsv_frame_mst")]
     public class RsvFrameMst : EmrCloneable<RsvFrameMst>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 予約分類ID
         /// </summary>
-        [Column("RSV_GRP_ID")]
+        [Column("rsv_grp_id")]
         public int RsvGrpId { get; set; }
 
         /// <summary>
@@ -27,33 +27,33 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("RSV_FRAME_ID", Order = 2)]
+        [Column("rsv_frame_id", Order = 2)]
         public int RsvFrameId { get; set; }
 
         /// <summary>
         /// 並び順
         /// </summary>
-        [Column("SORT_KEY")]
+        [Column("sort_key")]
         public int SortKey { get; set; }
 
         /// <summary>
         /// 名称
         /// </summary>
-        [Column("RSV_FRAME_NAME")]
+        [Column("rsv_frame_name")]
         [MaxLength(60)]
         public string? RsvFrameName { get; set; } = string.Empty;
 
         /// <summary>
         /// 担当医ID
         /// </summary>
-        [Column("TANTO_ID")]
+        [Column("tanto_id")]
         [CustomAttribute.DefaultValue(0)]
         public int TantoId { get; set; }
 
         /// <summary>
         /// 診療科ID
         /// </summary>
-        [Column("KA_ID")]
+        [Column("ka_id")]
         [CustomAttribute.DefaultValue(0)]
         public int KaId { get; set; }
 
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// 来院作成区分
         ///     1:作成
         /// </summary>
-        [Column("MAKE_RAIIN")]
+        [Column("make_raiin")]
         [CustomAttribute.DefaultValue(0)]
         public int MakeRaiin { get; set; }
 
@@ -69,48 +69,48 @@ namespace Entity.Tenant
         /// 削除区分
         ///     1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末	
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末	
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "DENSI_HOJYO")]
+    [Table(name: "densi_hojyo")]
     public class DensiHojyo : EmrCloneable<DensiHojyo>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ITEM_CD", Order = 2)]
+        [Column("item_cd", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 06: 1手術につき
         /// ※05,06はチェックしない"
         /// </summary>
-        [Column("HOUKATU_TERM1")]
+        [Column("houkatu_term1")]
         [CustomAttribute.DefaultValue(0)]
         public int HoukatuTerm1 { get; set; }
 
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 0 "包括・被包括グループ番号を表す。 
         /// 包括・被包括テーブルの参照先グループを表す。"
         /// </summary>
-        [Column("HOUKATU_GRP_NO1")]
+        [Column("houkatu_grp_no1")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(7)]
         public string? HoukatuGrpNo1 { get; set; } = string.Empty;
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// 包括単位２
         /// HOUKATU_TERM1と同じ
         /// </summary>
-        [Column("HOUKATU_TERM2")]
+        [Column("houkatu_term2")]
         [CustomAttribute.DefaultValue(0)]
         public int HoukatuTerm2 { get; set; }
 
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// 包括グループ番号２
         /// 0 HOUKATU_GRP_NO1と同じ
         /// </summary>
-        [Column("HOUKATU_GRP_NO2")]
+        [Column("houkatu_grp_no2")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(7)]
         public string? HoukatuGrpNo2 { get; set; } = string.Empty;
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// 包括単位３
         /// HOUKATU_TERM1と同じ
         /// </summary>
-        [Column("HOUKATU_TERM3")]
+        [Column("houkatu_term3")]
         [CustomAttribute.DefaultValue(0)]
         public int HoukatuTerm3 { get; set; }
 
@@ -79,7 +79,7 @@ namespace Entity.Tenant
         /// 包括グループ番号３
         /// 0 HOUKATU_GRP_NO1と同じ
         /// </summary>
-        [Column("HOUKATU_GRP_NO3")]
+        [Column("houkatu_grp_no3")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(7)]
         public string? HoukatuGrpNo3 { get; set; } = string.Empty;
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         /// 0: 関連なし 
         /// 1: 関連あり"
         /// </summary>
-        [Column("HAIHAN_DAY")]
+        [Column("haihan_day")]
         [CustomAttribute.DefaultValue(0)]
         public int HaihanDay { get; set; }
 
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// 0: 関連なし 
         /// 1: 関連あり"
         /// </summary>
-        [Column("HAIHAN_MONTH")]
+        [Column("haihan_month")]
         [CustomAttribute.DefaultValue(0)]
         public int HaihanMonth { get; set; }
 
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// 0: 関連なし 
         /// 1: 関連あり"
         /// </summary>
-        [Column("HAIHAN_KARTE")]
+        [Column("haihan_karte")]
         [CustomAttribute.DefaultValue(0)]
         public int HaihanKarte { get; set; }
 
@@ -124,7 +124,7 @@ namespace Entity.Tenant
         /// 0: 関連なし 
         /// 1: 関連あり"
         /// </summary>
-        [Column("HAIHAN_WEEK")]
+        [Column("haihan_week")]
         [CustomAttribute.DefaultValue(0)]
         public int HaihanWeek { get; set; }
 
@@ -133,7 +133,7 @@ namespace Entity.Tenant
         /// "当該診療行為と入院基本料加算との算定可否を表す。 
         /// 入院基本料テーブルの参照先グループを表す。 "
         /// </summary>
-        [Column("NYUIN_ID")]
+        [Column("nyuin_id")]
         [CustomAttribute.DefaultValue(0)]
         public int NyuinId { get; set; }
 
@@ -143,7 +143,7 @@ namespace Entity.Tenant
         /// 0: 関連なし 
         /// 1: 関連あり"
         /// </summary>
-        [Column("SANTEI_KAISU")]
+        [Column("santei_kaisu")]
         [CustomAttribute.DefaultValue(0)]
         public int SanteiKaisu { get; set; }
 
@@ -152,7 +152,7 @@ namespace Entity.Tenant
         /// レコード情報を新設した日付を西暦年4桁、月2桁及び日2桁の8桁で表す。
         /// </summary>
         
-        [Column("START_DATE", Order = 3)]
+        [Column("start_date", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -161,7 +161,7 @@ namespace Entity.Tenant
         /// "当該診療行為の使用が可能な最終日付を西暦年4桁、月2桁及び日2桁の8桁で表す。 
         /// なお、廃止診療行為でない場合は「99999999」とする。"
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -169,7 +169,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -177,7 +177,7 @@ namespace Entity.Tenant
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -185,7 +185,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -193,7 +193,7 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime UpdateDate { get; set; }
 
@@ -201,7 +201,7 @@ namespace Entity.Tenant
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -209,7 +209,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

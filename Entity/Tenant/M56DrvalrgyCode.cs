@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M56_DRVALRGY_CODE")]
+    [Table(name: "m56_drvalrgy_code")]
     public class M56DrvalrgyCode : EmrCloneable<M56DrvalrgyCode>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("DRVALRGY_CD", Order = 1)]
+        [Column("drvalrgy_cd", Order = 1)]
         [MaxLength(8)]
         public string DrvalrgyCd { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// アレルギー関連系統名
         /// 
         /// </summary>
-        [Column("DRVALRGY_NAME")]
+        [Column("drvalrgy_name")]
         [MaxLength(200)]
         public string? DrvalrgyName { get; set; } = string.Empty;
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// アレルギー関連系統グループ
         /// 
         /// </summary>
-        [Column("DRVALRGY_GRP")]
+        [Column("drvalrgy_grp")]
         [MaxLength(4)]
         public string? DrvalrgyGrp { get; set; } = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 優先順位
         /// 
         /// </summary>
-        [Column("RANK_NO")]
+        [Column("rank_no")]
         [CustomAttribute.DefaultValue(0)]
         public int RankNo { get; set; }
     }

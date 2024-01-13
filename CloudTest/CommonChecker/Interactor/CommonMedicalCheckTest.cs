@@ -2,8 +2,12 @@
 using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Models.Family;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using Moq;
+using UseCase.Family;
+using UseCase.MedicalExamination.SaveMedical;
+using UseCase.SpecialNote.Save;
 
 namespace CloudUnitTest.CommonChecker.Interactor
 {
@@ -1260,6 +1264,2485 @@ namespace CloudUnitTest.CommonChecker.Interactor
             Assert.That(errorInfo.ListLevelInfo.First().SecondItemName, Is.EqualTo(""));
             Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(0));
             Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("投与日数制限（101日）を超えています。"));
+        }
+
+        [Test]
+        public void TC_028_ProcessDataForDrugAllergy_Level_1()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 1,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 1,
+                  SeibunCd = "77777"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" } };
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(1));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※アレルギー登録薬「」と成分（Name Test 1）が同じです。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_029_ProcessDataForDrugAllergy_Level_2()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 2,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 2,
+                  SeibunCd = "77777"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" } };
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(2));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」の成分（Name Test 1）はアレルギー登録薬「」の成分（MockedComponentName）と活性体成分（Name Test 1）が同じです。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_030_ProcessDataForDrugAllergy_Level_3()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 3,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 3,
+                  SeibunCd = "77777",
+                  AllergySeibunCd = "888888",
+                  Tag = "Tag9999"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" }, { "888888", "Component_Mocked_Test_2" } };
+            commonMedicalCheck._analogueNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(3));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」の成分（Name Test 1）はアレルギー登録薬「」の成分（Component_Mocked_Test_2）の類似成分（Mocked_Tag_Name_1）です。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_031_ProcessDataForDrugAllergy_Level_4()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 4,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = 4,
+                  SeibunCd = "66667"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 4,
+                  SeibunCd = "77777",
+                  AllergySeibunCd = "888888",
+                  Tag = "Tag9999"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(3));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(4));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」はアレルギー登録薬「」と同じ系統（Mocked_Tag_Name_1）の成分を含みます。\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// Level < 0  and Level > 4
+        /// </summary>
+        [Test]
+        public void TC_032_ProcessDataForDrugAllergy_YjCd_Equal_AllergyYjCd()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "YJ1234",
+                  Level = 4,
+                  SeibunCd = "66666"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(4));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("※アレルギー登録薬です。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_033_ProcessDataForDrugAllergy_Level_OutOfRange_0_To_4()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "YJ1234",
+                  AllergyYjCd = "Al67890",
+                  Level = -1,
+                  SeibunCd = "66666"
+                },
+                new DrugAllergyResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT12345",
+                  YjCd = "YJ12345",
+                  AllergyYjCd = "Al67899",
+                  Level = 5,
+                  SeibunCd = "77777",
+                  AllergySeibunCd = "888888",
+                  Tag = "Tag9999"
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.First().ListLevelInfo.First().Comment, Is.EqualTo(string.Empty));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo(string.Empty));
+        }
+
+        /// <summary>
+        /// IsNoMasterData() Is True
+        /// </summary>
+        [Test]
+        public void TC_034_ProcessDataForDrugAllergy_IsNoMasterData_IsTrue()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<DrugAllergyResultModel>
+            {
+                new DrugAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  Level = 1
+                }
+            };
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(true);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DrugAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.ListLevelInfo.First().FirstItemName, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.ListLevelInfo.First().SecondItemName, Is.EqualTo("Item Name Test"));
+            Assert.That(errorInfo.ListLevelInfo.First().Level, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("※アレルギー登録薬です。"));
+        }
+
+        [Test]
+        public void TC_035_ProcessDataForFoodAllergy_Test_AllergyInfo_IsEmpty_List()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<FoodAllergyResultModel>();
+
+            mock.Setup(finder => finder.IsNoMasterData())
+                .Returns(false);
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            .Returns((string stringInput) => $"MockedComponentName");
+
+            commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForFoodAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+
+        /// <summary>
+        /// 1 <= level && level <= 3
+        /// </summary>
+        [Test]
+        public void TC_036_ProcessDataForFoodAllergy()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<FoodAllergyResultModel>
+            {
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 1 ",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "2"
+                },
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 2",
+                  WorkingMechanism = "WorkingMechanism Test 2",
+                  TenpuLevel = "2"
+                }
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Mocked_YjCd_Name_1" } };
+
+            commonMedicalCheck._foodNameDictionary = new Dictionary<string, string> { { "9988", "Mocked_AlrgyKbn_Name_1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForFoodAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.FoodAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Mocked_YjCd_Name_1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("Mocked_AlrgyKbn_Name_1"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Mocked_YjCd_Name_1 × Mocked_AlrgyKbn_Name_1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("Attention Comment Test 1 \r\nWorkingMechanism Test 1\r\n\r\nAttention Comment Test 2\r\nWorkingMechanism Test 2\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// Test level = 0 & level = 4
+        /// </summary>
+        [Test]
+        public void TC_037_ProcessDataForFoodAllergy()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var allergyInfo = new List<FoodAllergyResultModel>
+            {
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 1 ",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "0"
+                },
+                new FoodAllergyResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  AlrgyKbn = "9988",
+                  AttentionCmt = "Attention Comment Test 2",
+                  WorkingMechanism = "WorkingMechanism Test 2",
+                  TenpuLevel = "4"
+                }
+            };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForFoodAllergy(allergyInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.FoodAllergyChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("アレルギー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(2));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#FFFFFF"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#999999"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo(""));
+        }
+
+        [Test]
+        public void TC_038_ProcessDataForAge_()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var ages = new List<AgeResultModel>
+            {
+                new AgeResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "0"
+                },
+            };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForAge(ages);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(1));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.AgeChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("投与年齢"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#d8e4bc"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#c8c8c8"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("情報なし"));
+        }
+
+        [Test]
+        public void TC_039_ProcessDataForAge_LevelInfo_IsNotNull()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var ages = new List<AgeResultModel>
+            {
+                new AgeResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  WorkingMechanism = "WorkingMechanism Test 1",
+                  TenpuLevel = "4"
+                },
+                new AgeResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj888888",
+                  WorkingMechanism = "WorkingMechanism Test 2",
+                  TenpuLevel = "4"
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForAge(ages);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.AgeChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("投与年齢"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#ff9999"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#ff5454"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("原則禁忌が望ましい"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("\r\nWorkingMechanism Test 1\r\n\r\n\r\nWorkingMechanism Test 2\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_040_ProcessDataForDisease_LevelInfo_IsNotNull()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var diseaseInfo = new List<DiseaseResultModel>
+            {
+                new DiseaseResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  DiseaseType = 1,
+                  TenpuLevel = 2
+                },
+                new DiseaseResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj888888",
+                  ByotaiCd = "Byo999999",
+                  DiseaseType = 2,
+                  TenpuLevel = 2
+                },
+                new DiseaseResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1236",
+                  DiseaseType = 2,
+                  YjCd = "Yj888888",
+                  ByotaiCd = "Byo999999",
+                  TenpuLevel = 2
+                },
+                new DiseaseResultModel()
+                {
+                  Id = "4",
+                  ItemCd = "UT1236",
+                  DiseaseType = 3,
+                  YjCd = "Yj9999",
+                  ByotaiCd = "Byo999999",
+                  TenpuLevel = 3
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDisease(diseaseInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(4));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DiseaseChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("既往歴"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.Count, Is.EqualTo(1));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Item Name Test 1"));
+            Assert.That(errorInfo.ListLevelInfo.First().BackgroundCode, Is.EqualTo("#ff9999"));
+            Assert.That(errorInfo.ListLevelInfo.First().BorderBrushCode, Is.EqualTo("#ff5454"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("原則禁忌"));
+            Assert.That(result[1].FirstCellContent, Is.EqualTo("家族歴"));
+            Assert.That(result[2].FirstCellContent, Is.EqualTo("家族歴"));
+            Assert.That(result[3].FirstCellContent, Is.EqualTo("現疾患"));
+        }
+
+        [Test]
+        public void TC_041_ProcessDataForDosage_LabelChecking_OneMin()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.OneMin,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.OneMin,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一回量／最小値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#0000ff"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo(""));
+        }
+
+        [Test]
+        public void TC_042_ProcessDataForDosage_LabelChecking_OneMax()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.OneMax,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.OneMax,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一回量／最大値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#f12c47"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
+
+        [Test]
+        public void TC_043_ProcessDataForDosage_LabelChecking_OneLimit()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.OneLimit,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.OneLimit,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一回量／上限値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#f12c47"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
+
+        [Test]
+        public void TC_044_ProcessDataForDosage_LabelChecking_DayMin()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.DayMin,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.DayMin,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一日量／最小値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#0000ff"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
+
+        [Test]
+        public void TC_045_ProcessDataForDosage_LabelChecking_DayMax()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.DayMax,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.DayMax,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一日量／最大値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#f12c47"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
+
+        [Test]
+        public void TC_046_ProcessDataForDosage_LabelChecking_DayMax()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.DayMax,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.DayMax,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一日量／最大値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#f12c47"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
+
+        [Test]
+        public void TC_047_ProcessDataForDosage_LabelChecking_DayLimit()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.DayLimit,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.DayLimit,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("一日量／上限値"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#f12c47"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
+
+        [Test]
+        public void TC_048_ProcessDataForDosage_LabelChecking_TermLimit()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDosageError = new List<DosageResultModel>
+            {
+                new DosageResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  YjCd = "Yj888888",
+                  LabelChecking = DosageLabelChecking.TermLimit,
+                  IsFromUserDefined = true
+                },
+                new DosageResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  YjCd = "Yj7777777",
+                  LabelChecking = DosageLabelChecking.TermLimit,
+                  IsFromUserDefined = false
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
+            commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
+            commonMedicalCheck._usageDosageDictionary = new Dictionary<string, string> { { "Yj7777777", "Usage Name Test" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDosage(listDosageError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DosageChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("ユーザー設定"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("期間上限"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#f12c47"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("Usage Name Test"));
+        }
+
+        [Test]
+        public void TC_049_ProcessDataForDuplication_IsIppanCdDuplicated_IsFalse_IsComponentDuplicated_IsFalse()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDuplicationError = new List<DuplicationResultModel>
+            {
+                new DuplicationResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  IsComponentDuplicated = false,
+                  IsIppanCdDuplicated = false,
+                },
+                new DuplicationResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  DuplicatedItemCd = "UT1234",
+                  IsComponentDuplicated = false,
+                  IsIppanCdDuplicated = false,
+                },
+            };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DuplicationChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("同一薬剤"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name_By_Code Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("同一薬剤"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("同一薬剤（）が処方されています。"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("同一薬剤（Item Name_By_Code Test 1）が処方されています。"));
+        }
+
+        [Test]
+        public void TC_050_ProcessDataForDuplication_IsComponentDuplicated_IsFalse_IsIppanCdDuplicated_IsTrue()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDuplicationError = new List<DuplicationResultModel>
+            {
+                new DuplicationResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  IsComponentDuplicated = false,
+                  IsIppanCdDuplicated = true,
+                },
+                new DuplicationResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  DuplicatedItemCd = "UT1234",
+                  IsComponentDuplicated = false,
+                  IsIppanCdDuplicated = true,
+                },
+            };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DuplicationChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("同一薬剤"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name_By_Code Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("同一薬剤"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("「」と「Item Name_By_Code Test 1」は一般名（）が同じです。"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("「Item Name_By_Code Test 1」と「」は一般名（）が同じです。"));
+        }
+
+        /// <summary>
+        /// duplicationError Level = 0
+        /// </summary>
+        [Test]
+        public void TC_051_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_0()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDuplicationError = new List<DuplicationResultModel>
+            {
+                new DuplicationResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 0,
+                },
+                new DuplicationResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  DuplicatedItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 0,
+                },
+            };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DuplicationChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("成分重複"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name_By_Code Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("同一薬剤"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo(string.Empty));
+        }
+
+        /// <summary>
+        /// duplicationError Level = 1
+        /// </summary>
+        [Test]
+        public void TC_052_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_1()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDuplicationError = new List<DuplicationResultModel>
+            {
+                new DuplicationResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 1,
+                },
+                new DuplicationResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  DuplicatedItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 1,
+                },
+            };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
+
+            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+           .Returns((string stringInput) => "ComponentName1_Mocked_Test");
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DuplicationChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("成分重複"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name_By_Code Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("同一成分"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」 と「Item Name_By_Code Test 1」 は成分（ComponentName1_Mocked_Test）が重複しています。\r\n\r\n"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("※「Item Name_By_Code Test 1」 と「」 は成分（ComponentName1_Mocked_Test）が重複しています。\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// duplicationError Level = 2
+        /// </summary>
+        [Test]
+        public void TC_053_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_2()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDuplicationError = new List<DuplicationResultModel>
+            {
+                new DuplicationResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 2,
+                  SeibunCd = "S1234",
+                  AllergySeibunCd = "A1234",
+                },
+                new DuplicationResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  DuplicatedItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 2,
+                  SeibunCd = "S1234",
+                  AllergySeibunCd = "A1234",
+                },
+            };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
+
+            mock.Setup(finder => finder.FindComponentName("S1234"))
+           .Returns((string stringInput) => "ComponentName2_Mocked_Test");
+
+            mock.Setup(finder => finder.FindComponentName("A1234"))
+           .Returns((string stringInput) => "AllergyComponentName2_Mocked_Test");
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DuplicationChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("成分重複"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name_By_Code Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("同一成分"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment, Is.EqualTo("※「」 の成分（ComponentName2_Mocked_Test）と「Item Name_By_Code Test 1」 の成分（AllergyComponentName2_Mocked_Test）は活性対成分（ComponentName2_Mocked_Test）が同じです。\r\n\r\n"));
+            Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("※「Item Name_By_Code Test 1」 の成分（ComponentName2_Mocked_Test）と「」 の成分（AllergyComponentName2_Mocked_Test）は活性対成分（ComponentName2_Mocked_Test）が同じです。\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// duplicationError Level = 3
+        /// </summary>
+        [Test]
+        public void TC_054_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_3()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDuplicationError = new List<DuplicationResultModel>
+            {
+                new DuplicationResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 3,
+                  SeibunCd = "S1234",
+                  AllergySeibunCd = "A1234",
+                },
+                new DuplicationResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  DuplicatedItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 3,
+                  SeibunCd = "S1234",
+                  AllergySeibunCd = "A1234",
+                  Tag = "T1234",
+                },
+            };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
+
+            mock.Setup(finder => finder.FindComponentName("S1234"))
+           .Returns((string stringInput) => "ComponentName2_Mocked_Test");
+
+            mock.Setup(finder => finder.FindComponentName("A1234"))
+           .Returns((string stringInput) => "AllergyComponentName2_Mocked_Test");
+
+            mock.Setup(finder => finder.FindAnalogueName("T1234"))
+           .Returns((string stringInput) => "AnalogueName_Mocked_Test");
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DuplicationChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("成分重複"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name_By_Code Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("類似成分"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("※「」の成分（ComponentName2_Mocked_Test）と「Item Name_By_Code Test 1」 の成分（AllergyComponentName2_Mocked_Test）は類似成分（AnalogueName_Mocked_Test）です。\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("※「Item Name_By_Code Test 1」の成分（ComponentName2_Mocked_Test）と「」 の成分（AllergyComponentName2_Mocked_Test）は類似成分（）です。\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// duplicationError Level = 4
+        /// </summary>
+        [Test]
+        public void TC_055_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_3()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var listDuplicationError = new List<DuplicationResultModel>
+            {
+                new DuplicationResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 4,
+                  SeibunCd = "S1234",
+                  AllergySeibunCd = "A1234",
+                },
+                new DuplicationResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  DuplicatedItemCd = "UT1234",
+                  IsComponentDuplicated = true,
+                  IsIppanCdDuplicated = false,
+                  Level = 4,
+                  SeibunCd = "S1234",
+                  AllergySeibunCd = "A1234",
+                  Tag = "T1234",
+                },
+            };
+
+            commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
+
+            mock.Setup(finder => finder.FindComponentName("S1234"))
+           .Returns((string stringInput) => "ComponentName2_Mocked_Test");
+
+            mock.Setup(finder => finder.FindComponentName("A1234"))
+           .Returns((string stringInput) => "AllergyComponentName2_Mocked_Test");
+
+            mock.Setup(finder => finder.FindAnalogueName("T1234"))
+           .Returns((string stringInput) => "AnalogueName_Mocked_Test");
+
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            // Act
+            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.DuplicationChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("成分重複"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo("ー"));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("Item Name_By_Code Test 1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("同一系統"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("※「」 と「Item Name_By_Code Test 1」 は同じ系統（ClassName_Mocked_Test）の成分を含みます。\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("※「Item Name_By_Code Test 1」 と「」 は同じ系統（）の成分を含みます。\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_056_RemoveDuplicatedErrorInfo()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var originList = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = true,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = true,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1235",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = true,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1235",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = true,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1235",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = true,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1235",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = true,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1235",
+                  IsNeedToReplace = true,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = false,
+                  IndexWord = "A"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "3",
+                  ItemCd = "UT1235",
+                  AYjCd = "AYj1234",
+                  BYjCd = "BYj1234",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  Kyodo = "Ky1234",
+                  IsNeedToReplace = true,
+                  IndexWord = "B"
+                },
+            };
+
+            // Act
+            var result = commonMedicalCheck.RemoveDuplicatedErrorInfo(originList);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(8));
+        }
+
+        /// <summary>
+        /// CheckingType = KinkiSupplement
+        /// </summary>
+        [Test]
+        public void TC_057_ProcessDataForKinki_KinkiSupplement()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1"
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiSupplement;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(サプリ)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("（SeibunName_Mocked_Test_1）"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. （SeibunName_Mocked_Test_1）"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("\r\n※\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("\r\n※\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// CheckingType = KinkiOTC
+        /// </summary>
+        [Test]
+        public void TC_058_ProcessDataForKinki_KinkiOTC()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1"
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_1"},
+            };
+
+            commonMedicalCheck._oTCItemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_2" }
+            };
+
+            var checkingType = RealtimeCheckerType.KinkiOTC;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(OTC)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. "));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("\r\n※\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("\r\n※\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// CheckingType = KinkiOTC
+        /// </summary>
+        [Test]
+        public void TC_059_ProcessDataForKinki_KinkiOTC()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1",
+                  CommentCode = "C1235",
+                  SayokijyoCode = "Sa1235"
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_1"},
+            };
+
+            commonMedicalCheck._oTCItemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_2" }
+            };
+
+            commonMedicalCheck._kinkiCommentDictionary = new Dictionary<string, string>
+            {
+                {"C1234", "CommentContent_Mocked_Test_1" },
+                {"C1235", "CommentContent_Mocked_Test_2" },
+            };
+
+            commonMedicalCheck._kijyoCommentDictionary = new Dictionary<string, string>
+            {
+                {"Sa1234", "SayokijyoContent_Test_1" },
+                {"Sa1235", "SayokijyoContent_Test_2" },
+            };
+
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiTain;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(他院)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. "));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_2\r\n※SayokijyoContent_Test_2\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\n※SayokijyoContent_Test_1\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// CheckingType = Default
+        /// </summary>
+        [Test]
+        public void TC_060_ProcessDataForKinki_CheckingType_Default()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234"
+                },
+                new KinkiResultModel()
+                {
+                  Id = "2",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1",
+                  CommentCode = "C1235",
+                  SayokijyoCode = "Sa1235"
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_1"},
+            };
+
+            commonMedicalCheck._oTCItemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_2" }
+            };
+
+            commonMedicalCheck._kinkiCommentDictionary = new Dictionary<string, string>
+            {
+                {"C1234", "CommentContent_Mocked_Test_1" },
+                {"C1235", "CommentContent_Mocked_Test_2" },
+            };
+
+            commonMedicalCheck._kijyoCommentDictionary = new Dictionary<string, string>
+            {
+                {"Sa1234", "SayokijyoContent_Test_1" },
+                {"Sa1235", "SayokijyoContent_Test_2" },
+            };
+
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiUser;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. "));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_2\r\n※SayokijyoContent_Test_2\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\n※SayokijyoContent_Test_1\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_061_ProcessDataForKinki_CheckingType_IndexWord_Equal_SeibunName()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  IndexWord = "SeibunName_Mocked_Test_1",
+                },
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1",
+                  CommentCode = "C1235",
+                  SayokijyoCode = "Sa1235",
+                  IndexWord = "SeibunName_Mocked_Test_2",
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_1"},
+            };
+
+            commonMedicalCheck._oTCItemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_2" }
+            };
+
+            commonMedicalCheck._kinkiCommentDictionary = new Dictionary<string, string>
+            {
+                {"C1234", "CommentContent_Mocked_Test_1" },
+                {"C1235", "CommentContent_Mocked_Test_2" },
+            };
+
+            commonMedicalCheck._kijyoCommentDictionary = new Dictionary<string, string>
+            {
+                {"Sa1234", "SayokijyoContent_Test_1" },
+                {"Sa1235", "SayokijyoContent_Test_2" },
+            };
+
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiUser;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. "));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_2\r\n※SayokijyoContent_Test_2\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\n※SayokijyoContent_Test_1\r\n\r\n"));
+        }
+
+        /// <summary>
+        /// CheckingType = KinkiOTC
+        /// </summary>
+        [Test]
+        public void TC_062_ProcessDataForKinki_CheckingType_IsNeedToReplace_True()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  IndexWord = "SeibunName_Mocked_Test_1",
+                  IsNeedToReplace = true
+                },
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1235",
+                  BYjCd = "B1235",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1",
+                  CommentCode = "C1235",
+                  SayokijyoCode = "Sa1235",
+                  IndexWord = "SeibunName_Mocked_Test_2",
+                  IsNeedToReplace = true
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_1"},
+            };
+
+            commonMedicalCheck._oTCItemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_2" }
+            };
+
+            commonMedicalCheck._kinkiCommentDictionary = new Dictionary<string, string>
+            {
+                {"C1234", "CommentContent_Mocked_Test_1" },
+                {"C1235", "CommentContent_Mocked_Test_2" },
+            };
+
+            commonMedicalCheck._kijyoCommentDictionary = new Dictionary<string, string>
+            {
+                {"Sa1234", "SayokijyoContent_Test_1" },
+                {"Sa1235", "SayokijyoContent_Test_2" },
+            };
+
+            commonMedicalCheck._oTCComponentInfoDictionary = new Dictionary<string, string>
+            {
+                {"S1234",  "OtcComponentInfo_Mocked_Test_1"},
+                {"S1235",  "OtcComponentInfo_Mocked_Test_2"},
+            };
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiOTC;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(OTC)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. "));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_2\r\n※SayokijyoContent_Test_2\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\n※SayokijyoContent_Test_1\r\n\r\n"));
+        }
+
+        [Test]
+        public void TC_063_ProcessDataForKinki_CheckingType_IsNeedToReplace_Test_CommentContent()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  IndexWord = "SeibunName_Mocked_Test_1",
+                  IsNeedToReplace = true,
+                },
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  IndexWord = "SeibunName_Mocked_Test_2",
+                  IsNeedToReplace = true
+                },
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1236",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1236",
+                  BYjCd = "B1236",
+                  KinkiItemCd = "K1236",
+                  Kyodo = "3",
+                  CommentCode = "C1236",
+                  SayokijyoCode = "Sa1236",
+                  IndexWord = "SeibunName_Mocked_Test_3",
+                  IsNeedToReplace = true
+                },
+            };
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                            { "S1236", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_1"},
+                {"B1236", "BName_Mocked_Test_2"},
+            };
+
+            commonMedicalCheck._oTCItemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_2" },
+                {"B1236", "BName_Mocked_Test_2" }
+            };
+
+            commonMedicalCheck._kinkiCommentDictionary = new Dictionary<string, string>
+            {
+                {"C1234", "CommentContent_Mocked_Test_1" },
+                {"C1235", "CommentContent_Mocked_Test_2" },
+                {"C1236", "CommentContent_Mocked_Test_2" },
+            };
+
+            commonMedicalCheck._kijyoCommentDictionary = new Dictionary<string, string>
+            {
+                {"Sa1234", "SayokijyoContent_Test_1" },
+                {"Sa1235", "SayokijyoContent_Test_2" },
+            };
+
+            commonMedicalCheck._supplementComponentInfoDictionary = new Dictionary<string, string>
+            {
+                {"S1234",  "OtcComponentInfo_Mocked_Test_1"},
+                {"S1235",  "OtcComponentInfo_Mocked_Test_2"},
+                {"S1236",  "OtcComponentInfo_Mocked_Test_2"},
+            };
+            mock.Setup(finder => finder.FindClassName("T1234"))
+           .Returns((string stringInput) => "ClassName_Mocked_Test");
+
+            var checkingType = RealtimeCheckerType.KinkiSupplement;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(3));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(サプリ)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo(string.Empty));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("SeibunName_Mocked_Test_1"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ.  × Ｂ. SeibunName_Mocked_Test_1"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_2\r\n※\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\n※SayokijyoContent_Test_1\r\n※SayokijyoContent_Test_1\r\n\r\n"));
+            Assert.That(result[1].ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\n※SayokijyoContent_Test_1\r\n※SayokijyoContent_Test_1\r\n\r\n")
+                );
+        }
+
+        [Test]
+        public void TC_064_ProcessDataForKinki_CheckingType_Test_SayokijyoContent()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var kinkiErrorInfo = new List<KinkiResultModel>
+            {
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1234",
+                  SeibunCd = "S1234",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1234",
+                  Kyodo = "1",
+                  CommentCode = "C1234",
+                  SayokijyoCode = "Sa1234",
+                  IndexWord = "SeibunName_Mocked_Test_1",
+                  IsNeedToReplace = true,
+                },
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1235",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1234",
+                  BYjCd = "B1234",
+                  KinkiItemCd = "K1235",
+                  Kyodo = "1",
+                  CommentCode = "C1235",
+                  SayokijyoCode = "Sa1234",
+                  IndexWord = "SeibunName_Mocked_Test_2",
+                  IsNeedToReplace = true
+                },
+                new KinkiResultModel()
+                {
+                  Id = "1",
+                  ItemCd = "UT1236",
+                  SeibunCd = "S1235",
+                  AYjCd = "A1236",
+                  BYjCd = "B1236",
+                  KinkiItemCd = "K1236",
+                  Kyodo = "3",
+                  CommentCode = "C1236",
+                  SayokijyoCode = "Sa1236",
+                  IndexWord = "SeibunName_Mocked_Test_3",
+                  IsNeedToReplace = true
+                },
+            };
+
+            commonMedicalCheck._itemNameDictionary = new Dictionary<string, string>
+            {
+                {"A1234", "ItemAName_Mocked_Test_1"},
+                {"A1235", "ItemAName_Mocked_Test_2"},
+            };
+
+            commonMedicalCheck._oTCItemNameDictionary = new Dictionary<string, string>
+            {
+                {"B1235", "BName_Mocked_Test_2" },
+                {"B1236", "BName_Mocked_Test_2" }
+            };
+
+            commonMedicalCheck._kinkiCommentDictionary = new Dictionary<string, string>
+            {
+                {"C1234", "CommentContent_Mocked_Test_1" },
+                {"C1235", "CommentContent_Mocked_Test_2" },
+                {"C1236", "CommentContent_Mocked_Test_2" },
+            };
+
+            commonMedicalCheck._kijyoCommentDictionary = new Dictionary<string, string>
+            {
+                {"Sa1234", "SayokijyoContent_Test_1" },
+                {"Sa1235", "SayokijyoContent_Test_2" },
+            };
+
+            commonMedicalCheck._supplementComponentInfoDictionary = new Dictionary<string, string>
+            {
+                {"S1234",  "OtcComponentInfo_Mocked_Test_1"},
+                {"S1235",  "OtcComponentInfo_Mocked_Test_2"},
+                {"S1236",  "OtcComponentInfo_Mocked_Test_2"},
+            };
+
+            var checkingType = RealtimeCheckerType.KinkiSupplement;
+            // Act
+            var result = commonMedicalCheck.ProcessDataForKinki(checkingType, kinkiErrorInfo);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.That(result.Count, Is.EqualTo(3));
+
+            var errorInfo = result.First();
+            Assert.That(errorInfo.ErrorType, Is.EqualTo(CommonCheckerType.KinkiChecker));
+            Assert.That(errorInfo.Id, Is.EqualTo("1"));
+            Assert.That(errorInfo.FirstCellContent, Is.EqualTo("相互作用(サプリ)"));
+            Assert.That(errorInfo.SecondCellContent, Is.EqualTo(""));
+            Assert.That(errorInfo.ThridCellContent, Is.EqualTo("ItemAName_Mocked_Test_1"));
+            Assert.That(errorInfo.FourthCellContent, Is.EqualTo("SeibunName_Mocked_Test_1（）"));
+            Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("禁忌"));
+            Assert.That(errorInfo.HighlightColorCode, Is.EqualTo("#000000"));
+            Assert.That(errorInfo.ListLevelInfo.First().Caption, Is.EqualTo("Ａ. ItemAName_Mocked_Test_1 × Ｂ. SeibunName_Mocked_Test_1（）"));
+            Assert.That(result.Last().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_2\r\n※\r\n\r\n"));
+            Assert.That(result.First().ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\nCommentContent_Mocked_Test_2\r\n※SayokijyoContent_Test_1\r\n\r\n"));
+            Assert.That(result[1].ListLevelInfo.First().Comment,
+                Is.EqualTo("CommentContent_Mocked_Test_1\r\nCommentContent_Mocked_Test_2\r\n※SayokijyoContent_Test_1\r\n\r\n")
+                );
+        }
+
+        [Test]
+        public void TC_065_ConvertToFamilyModel()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            //Setup
+            var familyRekis = new List<FamilyRekiItem>()
+            {
+                new FamilyRekiItem(1, "BYOMEICD", "Sick", "So Sleepy", 2, true),
+            };
+
+
+            var familyItem = new FamilyItem(
+                                        familyId: 111,
+                                        ptId: 1234,
+                                        zokugaraCd: "zokugara",
+                                        familyPtId: 1231,
+                                        name: "smartkarte",
+                                        kanaName: "A",
+                                        sex: 1,
+                                        birthday: 19900101,
+                                        isDead: 1,
+                                        isSeparated: 1,
+                                        biko: "B",
+                                        sortNo: 2,
+                                        isDeleted: true,
+                                        familyRekis,
+                                        isRevertItem: true
+                );
+
+            //Act
+            var result = commonMedicalCheck.ConvertToFamilyModel(familyItem);
+
+            var expectedFamilyRekis = new List<PtFamilyRekiModel>()
+            {
+                new PtFamilyRekiModel (1, "BYOMEICD", "Sick", "So Sleepy", 2, true),
+            };
+
+            var expectedResult = new FamilyModel(111, 1234, 0, "zokugara", 1231, 0, "smartkarte", "A", 1, 19900101, 0, 1, 1, "B", 2, expectedFamilyRekis, string.Empty);
+            //Assert
+            Assert.That(expectedResult.FamilyId, Is.EqualTo(result.FamilyId));
+            Assert.That(expectedResult.PtId, Is.EqualTo(result.PtId));
+            Assert.That(expectedResult.ZokugaraCd, Is.EqualTo(result.ZokugaraCd));
+            Assert.That(expectedResult.FamilyPtId, Is.EqualTo(result.FamilyPtId));
+            Assert.That(expectedResult.SeqNo, Is.EqualTo(result.SeqNo));
+            Assert.That(expectedResult.FamilyPtNum, Is.EqualTo(result.FamilyPtNum));
+            Assert.That(expectedResult.Name, Is.EqualTo(result.Name));
+            Assert.That(expectedResult.KanaName, Is.EqualTo(result.KanaName));
+            Assert.That(expectedResult.Sex, Is.EqualTo(result.Sex));
+            Assert.That(expectedResult.Birthday, Is.EqualTo(result.Birthday));
+            Assert.That(expectedResult.Age, Is.EqualTo(result.Age));
+            Assert.That(expectedResult.IsDead, Is.EqualTo(result.IsDead));
+            Assert.That(expectedResult.IsSeparated, Is.EqualTo(result.IsSeparated));
+            Assert.That(expectedResult.Biko, Is.EqualTo(result.Biko));
+            Assert.That(expectedResult.SortNo, Is.EqualTo(result.SortNo));
+            Assert.That(expectedResult.DiseaseName, Is.EqualTo(result.DiseaseName));
+            Assert.That(expectedResult.IsDeleted, Is.EqualTo(result.IsDeleted));
+            Assert.That(expectedResult.ListPtFamilyRekis.First().Id, Is.EqualTo(result.ListPtFamilyRekis.First().Id));
+            Assert.That(expectedResult.ListPtFamilyRekis.First().ByomeiCd, Is.EqualTo(result.ListPtFamilyRekis.First().ByomeiCd));
+            Assert.That(expectedResult.ListPtFamilyRekis.First().Byomei, Is.EqualTo(result.ListPtFamilyRekis.First().Byomei));
+            Assert.That(expectedResult.ListPtFamilyRekis.First().Cmt, Is.EqualTo(result.ListPtFamilyRekis.First().Cmt));
+            Assert.That(expectedResult.ListPtFamilyRekis.First().SortNo, Is.EqualTo(result.ListPtFamilyRekis.First().SortNo));
+            Assert.That(expectedResult.ListPtFamilyRekis.First().IsDeleted, Is.EqualTo(result.ListPtFamilyRekis.First().IsDeleted));
+        }
+
+        [Test]
+        public void TC_066_ConvertToSpecialNoteModel()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+
+            // Arrange
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            var specialNoteItem = new SpecialNoteItem(
+                new SummaryInfItem(id: 2, 99, 1234, 5, "Summary Text", "R Summary Text"),
+                new(),
+                new PatientInfoItem(
+                    new List<PtPregnancyItem>()
+                    {
+                        new PtPregnancyItem(id: 77, hpId:777, ptId:2345, seqNo:7, startDate: 20230101, endDate:20230102, periodDate:20230103, periodDueDate:20230104, ovulationDate:20230105, ovulationDueDate:20230106, isDeleted:1, sinDate:20230107)
+                    },
+                    new(),
+                    new(),
+                    new List<KensaInfDetailItem>()
+                    {
+                        new KensaInfDetailItem(hpId: 666, ptId:3456, iraiCd: 8, seqNo: 9, iraiDate:20230201,raiinNo:5555555, kensaItemCd:"V0001", resultVal: "VAL TEST 1", resultType:"TYPE TEST 1", abnormalKbn:"KBN TEST", isDeleted:3, cmtCd1:"COMMENT 1", cmtCd2: "COMMENT 2")
+                    }
+                    )
+                );
+
+            var result = commonMedicalCheck.ConvertToSpecialNoteModel(specialNoteItem);
+
+            Assert.That(result.ImportantNoteModel.AlrgyFoodItems.Count, Is.EqualTo(0));
+            Assert.That(result.ImportantNoteModel.AlrgyElseItems.Count, Is.EqualTo(0));
+            Assert.That(result.ImportantNoteModel.AlrgyDrugItems.Count, Is.EqualTo(0));
+            Assert.That(result.ImportantNoteModel.KioRekiItems.Count, Is.EqualTo(0));
+            Assert.That(result.ImportantNoteModel.InfectionsItems.Count, Is.EqualTo(0));
+            Assert.That(result.ImportantNoteModel.OtherDrugItems.Count, Is.EqualTo(0));
+            Assert.That(result.ImportantNoteModel.OtcDrugItems.Count, Is.EqualTo(0));
+            Assert.That(result.ImportantNoteModel.SuppleItems.Count, Is.EqualTo(0));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().Id, Is.EqualTo(77));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().HpId, Is.EqualTo(777));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().PtId, Is.EqualTo(2345));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().SeqNo, Is.EqualTo(7));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().StartDate, Is.EqualTo(20230101));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().EndDate, Is.EqualTo(20230102));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().PeriodDate, Is.EqualTo(20230103));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().PeriodDueDate, Is.EqualTo(20230104));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().OvulationDate, Is.EqualTo(20230105));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().OvulationDueDate, Is.EqualTo(20230106));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().IsDeleted, Is.EqualTo(1));
+            Assert.That(result.PatientInfoModel.PregnancyItems.First().SinDate, Is.EqualTo(20230107));
         }
     }
 }

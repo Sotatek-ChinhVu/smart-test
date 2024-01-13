@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -6,14 +6,14 @@ namespace Entity.Tenant
     /// <summary>
     /// セットオーダー情報
     /// </summary>
-    [Table(name: "SET_ODR_INF")]
+    [Table(name: "set_odr_inf")]
     public class SetOdrInf : EmrCloneable<SetOdrInf>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,14 +21,14 @@ namespace Entity.Tenant
         ///    SET_MST.SET_CD
         /// </summary>
         
-        [Column("SET_CD", Order = 2)]
+        [Column("set_cd", Order = 2)]
         public int SetCd { get; set; }
 
         /// <summary>
         /// 剤番号
         /// </summary>
         
-        [Column("RP_NO", Order = 3)]
+        [Column("rp_no", Order = 3)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
 
@@ -36,27 +36,27 @@ namespace Entity.Tenant
         /// 剤枝番
         /// </summary>
         
-        [Column("RP_EDA_NO", Order = 4)]
+        [Column("rp_eda_no", Order = 4)]
         public long RpEdaNo { get; set; }
 
         /// <summary>
         /// ID
         /// </summary>
         
-        [Column("ID", Order = 5)]
+        [Column("id", Order = 5)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         /// <summary>
         /// オーダー行為区分
         /// </summary>
-        [Column("ODR_KOUI_KBN")]
+        [Column("odr_koui_kbn")]
         public int OdrKouiKbn { get; set; }
 
         /// <summary>
         /// 剤名称
         /// </summary>
-        [Column("RP_NAME")]
+        [Column("rp_name")]
         [MaxLength(240)]
         public string? RpName { get; set; } = string.Empty;
 
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         ///     0: 院内
         ///     1: 院外
         /// </summary>
-        [Column("INOUT_KBN")]
+        [Column("inout_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int InoutKbn { get; set; }
 
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         ///     0:通常 
         ///     1:至急
         /// </summary>
-        [Column("SIKYU_KBN")]
+        [Column("sikyu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SikyuKbn { get; set; }
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         ///     1: 臨時
         ///     2: 常態
         /// </summary>
-        [Column("SYOHO_SBT")]
+        [Column("syoho_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int SyohoSbt { get; set; }
 
@@ -93,7 +93,7 @@ namespace Entity.Tenant
         ///     1: 算定外
         ///     2: 自費算定
         /// </summary>
-        [Column("SANTEI_KBN")]
+        [Column("santei_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SanteiKbn { get; set; }
 
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         ///     1: 透析前
         ///     2: 透析後
         /// </summary>
-        [Column("TOSEKI_KBN")]
+        [Column("toseki_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TosekiKbn { get; set; }
 
@@ -111,7 +111,7 @@ namespace Entity.Tenant
         /// 日数回数
         ///     処方日数
         /// </summary>
-        [Column("DAYS_CNT")]
+        [Column("days_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public int DaysCnt { get; set; }
 
@@ -119,55 +119,55 @@ namespace Entity.Tenant
         /// 削除区分
         ///     1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 並び順
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 作成日時
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

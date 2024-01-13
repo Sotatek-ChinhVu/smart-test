@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RENKEI_MST")]
+    [Table(name: "renkei_mst")]
     public class RenkeiMst : EmrCloneable<RenkeiMst>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,14 +20,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RENKEI_ID", Order = 2)]
+        [Column("renkei_id", Order = 2)]
         public int RenkeiId { get; set; }
 
         /// <summary>
         /// 連携名称
         /// 
         /// </summary>
-        [Column("RENKEI_NAME")]
+        [Column("renkei_name")]
         [MaxLength(255)]
         public string? RenkeiName { get; set; } = string.Empty;
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 連携種別
         /// 0:タイミング連携 1:常駐連携
         /// </summary>
-        [Column("RENKEI_SBT")]
+        [Column("renkei_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int RenkeiSbt { get; set; }
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 処理タイプ
         /// 0:個別　1:ファイル連携　2:PG起動連携
         /// </summary>
-        [Column("FUNCTION_TYPE")]
+        [Column("function_type")]
         [CustomAttribute.DefaultValue(0)]
         public int FunctionType { get; set; }
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// 無効区分
         /// 0:有効 1:無効
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(1)]
         public int IsInvalid { get; set; }
 
@@ -59,7 +59,7 @@ namespace Entity.Tenant
         /// 処理順
         /// 常駐連携の処理順
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
@@ -67,14 +67,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
     }
 }

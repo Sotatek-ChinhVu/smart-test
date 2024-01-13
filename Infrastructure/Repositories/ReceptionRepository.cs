@@ -212,7 +212,7 @@ namespace Infrastructure.Repositories
                         }
 
                         var confirmedFlgRaiinInfs = raiinInfsInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
-                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
+                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Where(x => x.InfoConsFlg != null)?.Min(x => x.InfoConsFlg![flgIdx].AsInteger()) ?? 0;
                         infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
                     }
                     //Update PharmacistsInfoConsFlg
@@ -242,7 +242,7 @@ namespace Infrastructure.Repositories
                         }
 
                         var confirmedFlgRaiinInfs = onlineConfirmationHistoryInSameday.Where(x => !string.IsNullOrEmpty(x.InfoConsFlg) && x.InfoConsFlg.Length > flgIdx && x.InfoConsFlg[flgIdx] != ' ');
-                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Min(x => x.InfoConsFlg![flgIdx].AsInteger());
+                        int infConsFlg = !confirmedFlgRaiinInfs.Any() ? 0 : confirmedFlgRaiinInfs.Where(x => x.InfoConsFlg != null)?.Min(x => x.InfoConsFlg![flgIdx].AsInteger()) ?? 0;
                         infoConsFlg = ReplaceAt(infoConsFlg, flgIdx, flgToChar(infConsFlg));
                     }
                     //Update PharmacistsInfoConsFlg
@@ -1193,6 +1193,7 @@ namespace Infrastructure.Repositories
                 {
                     var lastRaiinInf = NoTrackingDataContext.RaiinInfs
                             .Where(p => p.HpId == hpId &&
+                                        p.PtId == ptId &&
                                         p.IsDeleted == DeleteTypes.None &&
                                         p.SinDate <= sinDate)
                             .OrderByDescending(p => p.SinDate)

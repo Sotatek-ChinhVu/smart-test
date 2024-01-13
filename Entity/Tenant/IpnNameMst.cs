@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "IPN_NAME_MST")]
-    [Index(nameof(IpnNameCd), Name = "IPN_NAME_MST_IDX01")]
+    [Table(name: "ipn_name_mst")]
+    [Index(nameof(IpnNameCd), Name = "ipn_name_mst_idx01")]
 
     public class IpnNameMst : EmrCloneable<IpnNameMst>
     {
@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// </summary>
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("IPN_NAME_CD", Order = 2)]
+        [Column("ipn_name_cd", Order = 2)]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
 
@@ -32,7 +32,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("START_DATE", Order = 3)]
+        [Column("start_date", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -40,7 +40,7 @@ namespace Entity.Tenant
         /// 終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// 一般名
         /// 
         /// </summary>
-        [Column("IPN_NAME")]
+        [Column("ipn_name")]
         [MaxLength(100)]
         public string? IpnName { get; set; } = string.Empty;
 
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 同一一般名コード、開始日内の連番
         /// </summary>
 
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -73,14 +73,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -88,7 +88,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -96,14 +96,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -111,7 +111,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 

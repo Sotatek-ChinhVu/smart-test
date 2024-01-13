@@ -5,6 +5,7 @@ using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.User;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
@@ -16,6 +17,7 @@ using UseCase.User.GetListJobMst;
 using UseCase.User.GetListUserByCurrentUser;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.SaveListUserMst;
+using UseCase.User.UpdateHashPassword;
 using UseCase.User.UpsertList;
 using UseCase.User.UserInfo;
 
@@ -55,6 +57,7 @@ public class UserController : AuthorizeControllerBase
         return new ActionResult<Response<GetUserListResponse>>(presenter.Result);
     }
 
+    [AllowAnonymous]
     [HttpPost(ApiPath.UpsertList)]
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
@@ -201,6 +204,18 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetUserInfoResponse>>(presenter.Result);
+    }
+
+    [HttpGet("UpdateHashPassword")]
+    public ActionResult<Response<UpdateHashPasswordResponse>> UpdateHashPassword()
+    {
+        var input = new UpdateHashPasswordInputData();
+        var output = _bus.Handle(input);
+        var presenter = new UpdateHashPasswordPresenter();
+
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateHashPasswordResponse>>(presenter.Result);
     }
 
 }
