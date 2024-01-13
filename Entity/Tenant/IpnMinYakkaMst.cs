@@ -1,18 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "IPN_MIN_YAKKA_MST")]
-    [Index(nameof(HpId), nameof(IpnNameCd), nameof(StartDate), Name = "IPN_MIN_YAKKA_MST_IDX01")]
-    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "IPN_MIN_YAKKA_MST_IDX02")]
+    [Table(name: "ipn_min_yakka_mst")]
+    [Index(nameof(HpId), nameof(IpnNameCd), nameof(StartDate), Name = "ipn_min_yakka_mst_idx01")]
+    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "ipn_min_yakka_mst_idx02")]
     [Serializable]
     public class IpnMinYakkaMst : EmrCloneable<IpnMinYakkaMst>
     {
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         public int Id { get; set; }
         /// <summary>
         /// 医療機関識別ID
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// </summary>
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 2)]
+        [Column("hp_id", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("IPN_NAME_CD", Order = 3)]
+        [Column("ipn_name_cd", Order = 3)]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        [Column("START_DATE")]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 最低薬価
         /// 
         /// </summary>
-        [Column("YAKKA")]
+        [Column("yakka")]
         public double Yakka { get; set; }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 同一一般名コード、開始日内の連番
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -76,14 +76,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -99,14 +99,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -114,7 +114,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 

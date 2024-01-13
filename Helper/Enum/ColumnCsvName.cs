@@ -28,22 +28,22 @@ public static class ColumnCsvName
         {
             Dictionary<AuditLogEnum, string> result = new()
             {
-                { AuditLogEnum.LogType, "状態" },
-                { AuditLogEnum.UserId , "ログ日" },
-                { AuditLogEnum.LoginKey , "ユーザー ID" },
-                { AuditLogEnum.LogDate , "ログインキー" },
-                { AuditLogEnum.EventCd , "イベントコード" },
+                { AuditLogEnum.LogType, "Status" },
+                { AuditLogEnum.LogDate , "LogDate" },
+                { AuditLogEnum.UserId , "UserId" },
+                { AuditLogEnum.LoginKey , "LoginKey" },
+                { AuditLogEnum.EventCd , "EventCd" },
                 { AuditLogEnum.PtId , "PtID" },
                 { AuditLogEnum.SinDay , "SinDay" },
-                { AuditLogEnum.RequestInfo , "リクエスト情報" },
-                { AuditLogEnum.Desciption , "説明" },
+                { AuditLogEnum.RequestInfo , "RequestInfo" },
+                { AuditLogEnum.Desciption , "Desciption" },
                 { AuditLogEnum.HpId , "HpId" },
                 { AuditLogEnum.RaiinNo , "RaiinNo" },
                 { AuditLogEnum.ClientIP , "ClientIP" },
                 { AuditLogEnum.ThreadId , "ThreadId" },
                 { AuditLogEnum.DepartmentId , "DepartmentId" },
                 { AuditLogEnum.Path , "Path" },
-                { AuditLogEnum.LogId , "LogId" },
+                { AuditLogEnum.LogId , "LogID" },
             };
             return result;
         }

@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "TEKIOU_BYOMEI_MST")]
+    [Table(name: "tekiou_byomei_mst")]
     public class TekiouByomeiMst : EmrCloneable<TekiouByomeiMst>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ITEM_CD", Order = 2)]
+        [Column("item_cd", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("BYOMEI_CD", Order = 3)]
+        [Column("byomei_cd", Order = 3)]
         [MaxLength(7)]
         public string ByomeiCd { get; set; } = string.Empty;
 
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// 1:配信したマスタ
         /// </summary>
         
-        [Column("SYSTEM_DATA", Order = 4)]
+        [Column("system_data", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int SystemData { get; set; }
 
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        [Column("START_YM")]
+        [Column("start_ym")]
         [CustomAttribute.DefaultValue(0)]
         public int StartYM { get; set; }
 
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// 終了日
         /// 
         /// </summary>
-        [Column("END_YM")]
+        [Column("end_ym")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndYM { get; set; }
 
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// 無効区分
         /// 0:有効 1:無効
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(0)]
         public int IsInvalid { get; set; }
 
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// 特処無効区分
         /// 0:有効 1:無効
         /// </summary>
-        [Column("IS_INVALID_TOKUSYO")]
+        [Column("is_invalid_tokusyo")]
         [CustomAttribute.DefaultValue(0)]
         public int IsInvalidTokusyo { get; set; }
 
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// 編集区分
         /// 1:ユーザーが編集したデータ
         /// </summary>
-        [Column("EDIT_KBN")]
+        [Column("edit_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int EditKbn { get; set; }
 
@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -110,7 +110,7 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime UpdateDate { get; set; }
 
@@ -118,7 +118,7 @@ namespace Entity.Tenant
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -126,7 +126,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

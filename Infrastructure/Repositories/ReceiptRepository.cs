@@ -14,9 +14,13 @@ using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Helper.Mapping;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
@@ -24,10 +28,24 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 {
     private readonly IMstItemRepository _mstItemRepository;
     private readonly ICalculationInfRepository _calculationInfRepository;
-    public ReceiptRepository(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository, ICalculationInfRepository calculationInfRepository) : base(tenantProvider)
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
+    public ReceiptRepository(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository, ICalculationInfRepository calculationInfRepository, IConfiguration configuration) : base(tenantProvider)
     {
         _mstItemRepository = mstItemRepository;
         _calculationInfRepository = calculationInfRepository;
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+    }
+
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
     }
 
     #region Rece check list
@@ -1385,13 +1403,42 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm)
     {
-        var syoukiKbnMstList = NoTrackingDataContext.SyoukiKbnMsts.Where(item => item.StartYm <= sinYm && item.EndYm >= sinYm)
-                                                                  .OrderBy(p => p.SyoukiKbn)
-                                                                  .ToList();
-
-        var result = syoukiKbnMstList.Select(item => ConvertToSyoukiKbnMstModel(item)).ToList();
+        var finalKey = GetCacheKey() + CacheKeyConstant.SyoukiKbnMst;
+        IEnumerable<SyoukiKbnMst> syoukiKbnMstList;
+        if (!_cache.KeyExists(finalKey))
+        {
+            syoukiKbnMstList = ReloadCache(finalKey);
+        }
+        else
+        {
+            syoukiKbnMstList = ReadCache(finalKey);
+        }
+        var result = syoukiKbnMstList.Where(item => item.StartYm <= sinYm && item.EndYm >= sinYm)
+                                     .OrderBy(p => p.SyoukiKbn)
+                                     .Select(item => ConvertToSyoukiKbnMstModel(item))
+                                     .ToList();
         return result;
     }
+
+    #region [cache SyoukiKbnMst]
+    private IEnumerable<SyoukiKbnMst> ReloadCache(string key)
+    {
+        var syoukiKbnMstList = NoTrackingDataContext.SyoukiKbnMsts.ToList();
+        var json = JsonSerializer.Serialize(syoukiKbnMstList);
+        _cache.StringSet(key, json);
+
+        return syoukiKbnMstList;
+    }
+
+    private IEnumerable<SyoukiKbnMst> ReadCache(string key)
+    {
+        var results = _cache.StringGet(key);
+        var json = results.AsString();
+        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SyoukiKbnMst>>(json) : new();
+        return datas ?? new();
+    }
+
+    #endregion [cache SyoukiKbnMst]
 
     /// <summary>
     /// Get info Keika follow hokenKbn from frontend, no hoken new in db

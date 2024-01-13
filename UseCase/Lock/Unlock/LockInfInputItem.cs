@@ -42,15 +42,15 @@ namespace UseCase.Lock.Unlock
         {
             get
             {
-                if (DocInfModels != null && !string.IsNullOrEmpty(DocInfModels.LockMachine))
+                if (DocInfModels != null && DocInfModels.PtId != 0 && DocInfModels.SinDate != 0 && !string.IsNullOrEmpty(DocInfModels.LockMachine))
                 {
                     return DocInfModels.LockMachine;
                 }
-                if (CalcStatusModels != null && !string.IsNullOrEmpty(CalcStatusModels.CreateMachine))
+                if (CalcStatusModels != null && CalcStatusModels.PtId != 0 && CalcStatusModels.SinDate != 0 && !string.IsNullOrEmpty(CalcStatusModels.CreateMachine))
                 {
                     return CalcStatusModels.CreateMachine;
                 }
-                if (PatientInfoModels != null && !string.IsNullOrEmpty(PatientInfoModels.Machine))
+                if (PatientInfoModels != null && PatientInfoModels.PtId != 0 && PatientInfoModels.SinDate != 0 && !string.IsNullOrEmpty(PatientInfoModels.Machine))
                 {
                     return PatientInfoModels.Machine;
                 }

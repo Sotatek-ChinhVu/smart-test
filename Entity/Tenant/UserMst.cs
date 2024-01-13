@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -7,29 +7,29 @@ namespace Entity.Tenant
     /// ユーザーマスタ
     ///		ユーザー権限は別テーブルで管理予定						
     /// </summary>
-    [Table(name: "USER_MST")]
+    [Table(name: "user_mst")]
     public class UserMst : EmrCloneable<UserMst>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
 
-        [Column("HP_ID", Order = 1)]
-        //[Index("USER_MST_IDX01", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("user_mst_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// ユーザーID
         /// </summary>
-        [Column("USER_ID")]
-        //[Index("USER_MST_IDX01", 2)]
+        [Column("user_id")]
+        //[Index("user_mst_idx01", 2)]
         public int UserId { get; set; }
 
         /// <summary>
         /// 医師区分
         ///		JOB_MST.JOB_CD	
         /// </summary>
-        [Column("JOB_CD")]
+        [Column("job_cd")]
         public int JobCd { get; set; }
 
         /// <summary>
@@ -38,27 +38,27 @@ namespace Entity.Tenant
         ///		1:管理者 
         ///		9:システム管理者
         /// </summary>
-        [Column("MANAGER_KBN")]
+        [Column("manager_kbn")]
         public int ManagerKbn { get; set; }
 
         /// <summary>
         /// 診療科ID
         ///		KA_MST.KA_ID		
         /// </summary>
-        [Column("KA_ID")]
+        [Column("ka_id")]
         public int KaId { get; set; }
 
         /// <summary>
         /// カナ氏名
         /// </summary>
-        [Column(name: "KANA_NAME")]
+        [Column(name: "kana_name")]
         [MaxLength(40)]
         public string? KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
         /// </summary>
-        [Column(name: "NAME")]
+        [Column(name: "name")]
         [MaxLength(40)]
         [Required]
         public string? Name { get; set; } = string.Empty;
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 略氏名
         /// </summary>
-        [Column(name: "SNAME")]
+        [Column(name: "sname")]
         [MaxLength(20)]
         [Required]
         public string? Sname { get; set; } = string.Empty;
@@ -74,14 +74,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 保険医氏名
         /// </summary>
-        [Column(name: "DR_NAME")]
+        [Column(name: "dr_name")]
         [MaxLength(40)]
         public string? DrName { get; set; } = string.Empty;
 
         /// <summary>
         /// ログインID
         /// </summary>
-        [Column(name: "LOGIN_ID")]
+        [Column(name: "login_id")]
         [MaxLength(20)]
         [Required]
         public string? LoginId { get; set; } = string.Empty;
@@ -89,7 +89,7 @@ namespace Entity.Tenant
         /// <summary>
         /// パスワード
         /// </summary>
-        [Column(name: "LOGIN_PASS")]
+        [Column(name: "login_pass")]
         [MaxLength(20)]
         [Required]
         public string? LoginPass { get; set; } = string.Empty;
@@ -97,23 +97,23 @@ namespace Entity.Tenant
         /// <summary>
         /// 麻薬使用者免許No.
         /// </summary>
-        [Column(name: "MAYAKU_LICENSE_NO")]
+        [Column(name: "mayaku_license_no")]
         [MaxLength(20)]
         public string? MayakuLicenseNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 在籍開始日
         /// </summary>
-        [Column(name: "START_DATE")]
-        //[Index("USER_MST_IDX01", 3)]
+        [Column(name: "start_date")]
+        //[Index("user_mst_idx01", 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
         /// <summary>
         /// 在籍終了日
         /// </summary>
-        [Column(name: "END_DATE")]
-        //[Index("USER_MST_IDX01", 4)]
+        [Column(name: "end_date")]
+        //[Index("user_mst_idx01", 4)]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -121,13 +121,13 @@ namespace Entity.Tenant
         /// 並び順
         ///		担当医メニューの表示順などに使用					
         /// </summary>
-        [Column(name: "SORT_NO")]
+        [Column(name: "sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 連携コード１
         /// </summary>
-        [Column(name: "RENKEI_CD1")]
+        [Column(name: "renkei_cd1")]
         [MaxLength(14)]
         public string? RenkeiCd1 { get; set; } = string.Empty;
 
@@ -135,49 +135,49 @@ namespace Entity.Tenant
         /// 削除区分
         ///		1:削除
         /// </summary>
-        [Column("IS_DELETED")]
-        //[Index("USER_MST_IDX01", 5)]
+        [Column("is_deleted")]
+        //[Index("user_mst_idx01", 5)]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者		
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末			
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者			
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末			
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 
@@ -185,19 +185,19 @@ namespace Entity.Tenant
         /// 連番
         /// </summary>
 
-        [Column("ID", Order = 2)]
+        [Column("id", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
-        [Column("LOGIN_TYPE")]
+        [Column("login_type")]
         [CustomAttribute.DefaultValue(0)]
         public int LoginType { get; set; }
 
-        [Column("HPKI_SN")]
+        [Column("hpki_sn")]
         [MaxLength(100)]
         public string? HpkiSn { get; set; } = string.Empty;
 
-        [Column("HPKI_ISSUER_DN")]
+        [Column("hpki_issuer_dn")]
         [MaxLength(100)]
         public string? HpkiIssuerDn { get; set; } = string.Empty;
 

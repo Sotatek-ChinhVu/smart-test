@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RENKEI_CONF")]
+    [Table(name: "renkei_conf")]
     public class RenkeiConf : EmrCloneable<RenkeiConf>
     {
         /// <summary>
@@ -12,34 +12,34 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 連携ID
         /// 
         /// </summary>
-        [Column("RENKEI_ID", Order = 2)]
+        [Column("renkei_id", Order = 2)]
         public int RenkeiId { get; set; }
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        [Column("SEQ_NO", Order = 3)]
+        [Column("seq_no", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SeqNo { get; set; }
 
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("ID", Order = 4)]
+        [Column("id", Order = 4)]
         public long Id { get; set; }
 
         /// <summary>
         /// パラメーター
         /// 
         /// </summary>
-        [Column("PARAM")]
+        [Column("param")]
         [MaxLength(1000)]
         public string? Param { get; set; } = string.Empty;
 
@@ -47,7 +47,7 @@ namespace Entity.Tenant
         /// 患者番号桁数
         /// 0:未指定　10まで設定可能
         /// </summary>
-        [Column("PT_NUM_LENGTH")]
+        [Column("pt_num_length")]
         [CustomAttribute.DefaultValue(0)]
         public int PtNumLength { get; set; }
 
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// テンプレートID
         /// RENKEI_PARAM_TMPL_ID.TEMPLATE_ID
         /// </summary>
-        [Column("TEMPLATE_ID")]
+        [Column("template_id")]
         [CustomAttribute.DefaultValue(0)]
         public int TemplateId { get; set; }
 
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// 無効区分
         /// 0:有効 1:無効
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(0)]
         public int IsInvalid { get; set; }
 
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// 備考
         /// 
         /// </summary>
-        [Column("BIKO")]
+        [Column("biko")]
         [MaxLength(300)]
         public string? Biko { get; set; } = string.Empty;
 
@@ -79,7 +79,7 @@ namespace Entity.Tenant
         /// 並び順
         /// 処理順序
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
@@ -87,14 +87,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -110,14 +110,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -125,7 +125,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }
