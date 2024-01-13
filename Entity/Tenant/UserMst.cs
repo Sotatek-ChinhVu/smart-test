@@ -201,13 +201,13 @@ namespace Entity.Tenant
         [MaxLength(100)]
         public string? HpkiIssuerDn { get; set; } = string.Empty;
 
-        [Column(name: "HASH_PASSWORD")]
+        [Column(name: "hash_password")]
         public byte[]? HashPassword { get; set; } = new byte[0];
 
         /// <summary>
         /// 連携コード１
         /// </summary>
-        [Column(name: "SALT")]
+        [Column(name: "salt")]
         [MaxLength(14)]
         public byte[]? Salt { get; set; } = new byte[0];
     }
