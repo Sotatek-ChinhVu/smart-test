@@ -10289,5 +10289,96 @@ namespace CloudUnitTest.Interactor.PatientInfo
             Assert.That(resutl.Last().Message, Is.EqualTo("`PtKyuseis[1].Name` property is required"));
             Assert.That(resutl.Last().Code, Is.EqualTo(SavePatientInforValidationCode.PtKyuseiInvalidName));
         }
+
+        [Test]
+        public void TC_039_SplitName_WithEmptyName_ShouldSetFirstAndLastNameToEmptyString()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            // Arrange
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            string name = "";
+            string firstName, lastName;
+
+            // Act
+            savePatientInfo.SplitName(name, out firstName, out lastName);
+
+            // Assert
+            Assert.That(firstName, Is.EqualTo(""));
+            Assert.That(lastName, Is.EqualTo(""));
+        }
+
+        [Test]
+        public void TC_040_SplitName_WithSingleName_ShouldSetFirstNameToName()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            // Arrange
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+            string name = "John";
+            string firstName, lastName;
+
+            // Act
+            savePatientInfo.SplitName(name, out firstName, out lastName);
+
+            // Assert
+            Assert.That(firstName, Is.EqualTo("John"));
+            Assert.That(lastName, Is.EqualTo(""));
+        }
+
+        [Test]
+        public void TC_041_SplitName_WithEmptyName_ShouldSplitCorrectly()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            // Arrange
+            string name = "John Doe";
+            string firstName, lastName;
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Act
+            savePatientInfo.SplitName(name, out firstName, out lastName);
+
+            // Assert
+            Assert.That(firstName, Is.EqualTo("Doe"));
+            Assert.That(lastName, Is.EqualTo("John"));
+        }
+
+        [Test]
+        public void TC_041_SplitName_WithJapaneseEmptyName_ShouldSplitCorrectly()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+            // Arrange
+            string name = "山田 太郎";
+            string firstName, lastName;
+
+            // Act
+            savePatientInfo.SplitName(name, out firstName, out lastName);
+
+            // Assert
+            Assert.That(firstName, Is.EqualTo("太郎"));
+            Assert.That(lastName, Is.EqualTo("山田"));
+        }
     }
 }

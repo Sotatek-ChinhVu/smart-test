@@ -502,7 +502,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private void SplitName(string name, out string firstName, out string lastName)
+        public void SplitName(string name, out string firstName, out string lastName)
         {
             firstName = "";
             lastName = "";
