@@ -10380,5 +10380,77 @@ namespace CloudUnitTest.Interactor.PatientInfo
             Assert.That(firstName, Is.EqualTo("太郎"));
             Assert.That(lastName, Is.EqualTo("山田"));
         }
+
+        [Test]
+        public void TC_042_IsValidAgeCheckConfirm_ValidAgeCheck()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            int ageCheck = 18;
+            int confirmDate = 20240114;
+            int birthDay = 20000102;
+            int sinDay = 20240114;
+
+            // Act
+            var result = savePatientInfo.IsValidAgeCheckConfirm(ageCheck, confirmDate, birthDay, sinDay);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void TC_043_IsValidAgeCheckConfirm_InvalidAgeCheck()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            int ageCheck = 21;
+            int confirmDate = 0;
+            int birthDay = 20000102;
+            int sinDay = 20220114;
+
+            // Act
+            var result = savePatientInfo.IsValidAgeCheckConfirm(ageCheck, confirmDate, birthDay, sinDay);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void TC_044_IsValidAgeCheckConfirm_BirthdayAfterSecondDay()
+        {
+            //Mock
+            var mockPatientInfo = new Mock<IPatientInforRepository>();
+            var mockSystemConf = new Mock<ISystemConfRepository>();
+            var mockPtDisease = new Mock<IPtDiseaseRepository>();
+            var mockAmazonS3 = new Mock<IAmazonS3Service>();
+
+            var savePatientInfo = new SavePatientInfoInteractor(TenantProvider, mockPatientInfo.Object, mockSystemConf.Object, mockAmazonS3.Object, mockPtDisease.Object);
+
+            // Arrange
+            int ageCheck = 18;
+            int confirmDate = 20240114; // YYYYMMDD format
+            int birthDay = 20000202;    // YYYYMMDD format (2nd day of February)
+            int sinDay = 20240114;      // YYYYMMDD format
+
+            // Act
+            var result = savePatientInfo.IsValidAgeCheckConfirm(ageCheck, confirmDate, birthDay, sinDay);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
     }
 }
