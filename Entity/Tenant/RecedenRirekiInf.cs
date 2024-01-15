@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RECEDEN_RIREKI_INF")]
+    [Table(name: "receden_rireki_inf")]
     public class RecedenRirekiInf : EmrCloneable<RecedenRirekiInf>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_ID", Order = 3)]
+        [Column("hoken_id", Order = 3)]
         public int HokenId { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_YM", Order = 4)]
+        [Column("sin_ym", Order = 4)]
         public int SinYm { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 同一HP_ID, PT_ID, HOKEN_ID, SIN_YM内での連番
         /// </summary>
         
-        [Column("SEQ_NO", Order = 5)]
+        [Column("seq_no", Order = 5)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 検索番号
         /// 
         /// </summary>
-        [Column("SEARCH_NO")]
+        [Column("search_no")]
         [MaxLength(30)]
         public string? SearchNo { get; set; } = string.Empty;
 
@@ -60,14 +60,14 @@ namespace Entity.Tenant
         /// 履歴管理情報
         /// 
         /// </summary>
-        [Column("RIREKI")]
+        [Column("rireki")]
         public string? Rireki { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -75,14 +75,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -98,14 +98,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

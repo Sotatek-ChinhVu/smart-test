@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Serializable()]
-    [Table(name: "TEMPLATE_DETAIL")]
+    [Table(name: "template_detail")]
     public class TemplateDetail : EmrCloneable<TemplateDetail>
     {
         /// <summary>
@@ -13,8 +13,8 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        //[Index("TEMPLATE_DETAIL_PKEY", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("template_detail_pkey", 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -22,8 +22,8 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("TEMPLATE_CD", Order = 2)]
-        //[Index("TEMPLATE_DETAIL_PKEY", 2)]
+        [Column("template_cd", Order = 2)]
+        //[Index("template_detail_pkey", 2)]
         public int TemplateCd { get; set; }
 
         /// <summary>
@@ -31,15 +31,15 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 3)]
+        [Column("seq_no", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        //[Index("TEMPLATE_DETAIL_PKEY", 3)]
+        //[Index("template_detail_pkey", 3)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 並び順
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
@@ -47,22 +47,22 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("CONTROL_ID", Order = 4)]
-        //[Index("TEMPLATE_DETAIL_PKEY", 4)]
+        [Column("control_id", Order = 4)]
+        //[Index("template_detail_pkey", 4)]
         public int ControlId { get; set; }
 
         /// <summary>
         /// 親ＩＤ
         /// 
         /// </summary>
-        [Column("OYA_CONTROL_ID")]
+        [Column("oya_control_id")]
         public int? OyaControlId { get; set; }
 
         /// <summary>
         /// タイトル
         /// 
         /// </summary>
-        [Column("TITLE")]
+        [Column("title")]
         [MaxLength(200)]
         public string? Title { get; set; } = string.Empty;
 
@@ -75,14 +75,14 @@ namespace Entity.Tenant
         /// 4:Check
         /// 5:Group"
         /// </summary>
-        [Column("CONTROL_TYPE")]
+        [Column("control_type")]
         public int ControlType { get; set; }
 
         /// <summary>
         /// 選択肢区分
         /// 
         /// </summary>
-        [Column("MENU_KBN")]
+        [Column("menu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int MenuKbn { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// 初期値
         /// 
         /// </summary>
-        [Column("DEFAULT_VAL")]
+        [Column("default_val")]
         [MaxLength(200)]
         public string? DefaultVal { get; set; } = string.Empty;
 
@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// 単位名称
         /// 
         /// </summary>
-        [Column("UNIT")]
+        [Column("unit")]
         [MaxLength(20)]
         public string? Unit { get; set; } = string.Empty;
 
@@ -106,7 +106,7 @@ namespace Entity.Tenant
         /// 改行フラグ
         /// 1:改行
         /// </summary>
-        [Column("NEW_LINE")]
+        [Column("new_line")]
         [CustomAttribute.DefaultValue(0)]
         public int NewLine { get; set; }
 
@@ -115,7 +115,7 @@ namespace Entity.Tenant
         /// "0:未指定
         /// >0: KARTE_KBN_MST.KARTE_KBN"
         /// </summary>
-        [Column("KARTE_KBN")]
+        [Column("karte_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KarteKbn { get; set; }
 
@@ -123,7 +123,7 @@ namespace Entity.Tenant
         /// 幅
         /// 
         /// </summary>
-        [Column("CONTROL_WIDTH")]
+        [Column("control_width")]
         [CustomAttribute.DefaultValue(0)]
         public int ControlWidth { get; set; }
 
@@ -131,7 +131,7 @@ namespace Entity.Tenant
         /// タイトル幅
         /// 
         /// </summary>
-        [Column("TITLE_WIDTH")]
+        [Column("title_width")]
         [CustomAttribute.DefaultValue(0)]
         public int TitleWidth { get; set; }
 
@@ -139,7 +139,7 @@ namespace Entity.Tenant
         /// 単位幅
         /// 
         /// </summary>
-        [Column("UNIT_WIDTH")]
+        [Column("unit_width")]
         [CustomAttribute.DefaultValue(0)]
         public int UnitWidth { get; set; }
 
@@ -147,7 +147,7 @@ namespace Entity.Tenant
         /// 左余白
         /// 
         /// </summary>
-        [Column("LEFT_MARGIN")]
+        [Column("left_margin")]
         [CustomAttribute.DefaultValue(0)]
         public int LeftMargin { get; set; }
 
@@ -155,14 +155,14 @@ namespace Entity.Tenant
         /// 折り返し
         /// 1:折り返し
         /// </summary>
-        [Column("WORDWRAP")]
+        [Column("wordwrap")]
         [CustomAttribute.DefaultValue(0)]
         public int Wordwrap { get; set; }
 
         /// <summary>
         /// 値
         /// </summary>
-        [Column("VAL")]
+        [Column("val")]
         [CustomAttribute.DefaultValue(0)]
         public double? Val { get; set; }
 
@@ -170,7 +170,7 @@ namespace Entity.Tenant
         /// 式
         /// 
         /// </summary>
-        [Column("FORMULA")]
+        [Column("formula")]
         [MaxLength(200)]
         public string? Formula { get; set; } = string.Empty;
 
@@ -178,7 +178,7 @@ namespace Entity.Tenant
         /// 小数桁
         /// 
         /// </summary>
-        [Column("DECIMAL")]
+        [Column("decimal")]
         [CustomAttribute.DefaultValue(0)]
         public int Decimal { get; set; }
 
@@ -189,7 +189,7 @@ namespace Entity.Tenant
         /// 3:全角ひらがな
         /// その他:Default"
         /// </summary>
-        [Column("IME")]
+        [Column("ime")]
         [CustomAttribute.DefaultValue(0)]
         public int Ime { get; set; }
 
@@ -197,7 +197,7 @@ namespace Entity.Tenant
         /// 列数
         /// 
         /// </summary>
-        [Column("COL_COUNT")]
+        [Column("col_count")]
         [CustomAttribute.DefaultValue(0)]
         public int ColCount { get; set; }
 
@@ -205,7 +205,7 @@ namespace Entity.Tenant
         /// 連携コード
         /// 
         /// </summary>
-        [Column("RENKEI_CD")]
+        [Column("renkei_cd")]
         [MaxLength(20)]
         public string? RenkeiCd { get; set; } = string.Empty;
 
@@ -213,7 +213,7 @@ namespace Entity.Tenant
         /// 背景色
         /// ? カラーコード 初期値は白
         /// </summary>
-        [Column("BACKGROUND_COLOR")]
+        [Column("background_color")]
         [MaxLength(8)]
         public string? BackgroundColor { get; set; } = string.Empty;
 
@@ -221,7 +221,7 @@ namespace Entity.Tenant
         /// 文字色
         /// ? カラーコード 初期値は黒
         /// </summary>
-        [Column("FONT_COLOR")]
+        [Column("font_color")]
         [MaxLength(8)]
         public string? FontColor { get; set; } = string.Empty;
 
@@ -229,7 +229,7 @@ namespace Entity.Tenant
         /// 太字
         /// 1:太字
         /// </summary>
-        [Column("FONT_BOLD")]
+        [Column("font_bold")]
         [CustomAttribute.DefaultValue(0)]
         public int FontBold { get; set; }
 
@@ -237,7 +237,7 @@ namespace Entity.Tenant
         /// 斜字
         /// 1:斜字
         /// </summary>
-        [Column("FONT_ITALIC")]
+        [Column("font_italic")]
         [CustomAttribute.DefaultValue(0)]
         public int FontItalic { get; set; }
 
@@ -245,7 +245,7 @@ namespace Entity.Tenant
         /// 下線
         /// 1:下線
         /// </summary>
-        [Column("FONT_UNDER_LINE")]
+        [Column("font_under_line")]
         [CustomAttribute.DefaultValue(0)]
         public int FontUnderLine { get; set; }
 
@@ -253,14 +253,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -268,7 +268,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -276,14 +276,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -291,7 +291,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

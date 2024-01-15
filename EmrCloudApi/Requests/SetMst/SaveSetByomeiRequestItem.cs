@@ -10,7 +10,8 @@ public class SaveSetByomeiRequestItem
 
     public int NanByoCd { get; set; } = 0;
 
-    public string FullByomei { get; set; } = string.Empty;
+    // displayByomei will set the data to SetByomei.Byomei in the database
+    public string DisplayByomei { get; set; } = string.Empty;
 
     public bool IsSuspected { get; set; } = false;
 

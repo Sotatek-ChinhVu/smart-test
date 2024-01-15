@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "PHYSICAL_AVERAGE")]
+    [Table(name: "physical_average")]
     public class PhysicalAverage : EmrCloneable<PhysicalAverage>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("JISSI_YEAR", Order = 1)]
+        [Column("jissi_year", Order = 1)]
         public int JissiYear { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("AGE_YEAR", Order = 2)]
+        [Column("age_year", Order = 2)]
         public int AgeYear { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("AGE_MONTH", Order = 3)]
+        [Column("age_month", Order = 3)]
         public int AgeMonth { get; set; }
 
         /// <summary>
@@ -36,77 +36,77 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("AGE_DAY", Order = 4)]
+        [Column("age_day", Order = 4)]
         public int AgeDay { get; set; }
 
         /// <summary>
         /// 男性平均身長
         /// cm
         /// </summary>
-        [Column("MALE_HEIGHT")]
+        [Column("male_height")]
         public double MaleHeight { get; set; }
 
         /// <summary>
         /// 男性平均体重
         /// kg
         /// </summary>
-        [Column("MALE_WEIGHT")]
+        [Column("male_weight")]
         public double MaleWeight { get; set; }
 
         /// <summary>
         /// 男性平均胸囲
         /// cm
         /// </summary>
-        [Column("MALE_CHEST")]
+        [Column("male_chest")]
         public double MaleChest { get; set; }
 
         /// <summary>
         /// 男性平均頭囲
         /// cm
         /// </summary>
-        [Column("MALE_HEAD")]
+        [Column("male_head")]
         public double MaleHead { get; set; }
 
         /// <summary>
         /// 女性平均身長
         /// cm
         /// </summary>
-        [Column("FEMALE_HEIGHT")]
+        [Column("female_height")]
         public double FemaleHeight { get; set; }
 
         /// <summary>
         /// 女性平均体重
         /// kg
         /// </summary>
-        [Column("FEMALE_WEIGHT")]
+        [Column("female_weight")]
         public double FemaleWeight { get; set; }
 
         /// <summary>
         /// 女性平均胸囲
         /// cm
         /// </summary>
-        [Column("FEMALE_CHEST")]
+        [Column("female_chest")]
         public double FemaleChest { get; set; }
 
         /// <summary>
         /// 女性平均頭囲
         /// cm
         /// </summary>
-        [Column("FEMALE_HEAD")]
+        [Column("female_head")]
         public double FemaleHead { get; set; }
 
         /// <summary>
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
     }
 }

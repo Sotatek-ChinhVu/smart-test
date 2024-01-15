@@ -216,12 +216,16 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         bool isSyobyoKbn = mst.SyobyoKbn == 1;
         int sikkanKbn = mst.SikkanKbn;
         int nanByoCd = mst.NanbyoCd;
-        string fullByomei = mst.Byomei ?? string.Empty;
+        string displayByomei = mst.Byomei ?? string.Empty; // displayByomei is saved in the database
         bool isDspRece = mst.IsNodspRece == 0;
         bool isDspKarte = mst.IsNodspKarte == 0;
         string byomeiCmt = mst.HosokuCmt ?? string.Empty;
         string byomeiCd = mst.ByomeiCd ?? string.Empty;
+
+        // fullByomei is main byomei get by byomeiCd
+        string fullByomei = mst.ByomeiCd != FREE_WORD ? byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(mst.ByomeiCd))?.Byomei ?? string.Empty : displayByomei;
         var codeLists = GetCodeLists(mst);
+
         //prefix and suffix
         var prefixSuffixList = codeLists?.Select(code => new PrefixSuffixModel(code, byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(code))?.Byomei ?? string.Empty)).ToList();
         bool isSuspected = false;
@@ -237,6 +241,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 isSyobyoKbn,
                 sikkanKbn,
                 nanByoCd,
+                displayByomei,
                 fullByomei,
                 isSuspected,
                 isDspRece,
@@ -854,7 +859,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         mst.SyusyokuCd20 = listPrefixSuffix.Count > 19 ? listPrefixSuffix[19].Code : string.Empty;
         mst.SyusyokuCd21 = listPrefixSuffix.Count > 20 ? listPrefixSuffix[20].Code : string.Empty;
 
-        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD && itemSuspected == null)
+        // if item IsSuspected, alway set ByomeiCd = SUSPECTED_CD in SyusyokuCd21
+        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD)
         {
             mst.SyusyokuCd21 = SUSPECTED_CD;
         }

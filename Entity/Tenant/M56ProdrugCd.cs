@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M56_PRODRUG_CD")]
+    [Table(name: "m56_prodrug_cd")]
     public class M56ProdrugCd : EmrCloneable<M56ProdrugCd>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEIBUN_CD", Order = 1)]
+        [Column("seibun_cd", Order = 1)]
         [MaxLength(9)]
         public string SeibunCd { get; set; } = string.Empty;
 
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 2)]
+        [Column("seq_no", Order = 2)]
         [MaxLength(2)]
         public string SeqNo { get; set; } = string.Empty;
 
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 活性体成分コード
         /// 
         /// </summary>
-        [Column("KASSEITAI_CD")]
+        [Column("kasseitai_cd")]
         [MaxLength(9)]
         public string? KasseitaiCd { get; set; } = string.Empty;
 
