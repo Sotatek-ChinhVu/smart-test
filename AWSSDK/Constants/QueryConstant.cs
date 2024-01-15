@@ -93,5 +93,49 @@ CREATE INDEX ""idx_AuditLogs_PtId"" ON ONLY public.""AuditLogs"" USING btree (""
 
         public static string SaveSystemChangeLog = "INSERT INTO public.\"SYSTEM_CHANGE_LOG\" (\"FILE_NAME\",\"IS_PG\",\"IS_DB\",\"IS_MASTER\",\"IS_NOTE\",\"STATUS\",\"ERR_MESSAGE\",\"CREATE_DATE\",\"UPDATE_DATE\",\"IS_RUN\",\"IS_DRUG_PHOTO\")\r\n\tVALUES (@FileName, @IsPG, @IsDB, @IsMaster, @IsNote, @Status, @ErrMessage, @CreateDate, @UpdateDate, @IsRun, @IsDrugPhoto);\r\n";
 
+        public static string RenameTableNames = @"
+            CREATE OR REPLACE FUNCTION public.rename_table_names()
+             RETURNS void
+             LANGUAGE plpgsql
+            AS $function$
+            DECLARE 
+                table_name_var text;  
+                exec_query text; 
+            BEGIN
+                FOR table_name_var IN (SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_name not like '%partition%') 
+                LOOP
+                    exec_query := 'ALTER TABLE ""' || table_name_var || '"" RENAME TO ""' || lower(table_name_var) || '"";';
+                    EXECUTE exec_query;
+                END LOOP;
+            END $function$
+            ;
+
+            SELECT rename_table_names();
+        ";
+
+        public static string RenameFieldNames =
+            "CREATE OR REPLACE FUNCTION public.rename_field_names()" +
+            " RETURNS void" +
+            " LANGUAGE plpgsql" +
+            " AS $function$" +
+            " DECLARE " +
+            "     table_name_var text;  " +
+            "     column_name_var text;" +
+            "     exec_query text;   " +
+            " BEGIN" +
+            "     FOR table_name_var IN (SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_name not like '%partition%')" +
+            "     LOOP" +
+            "         FOR column_name_var IN (SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = table_name_var)" +
+            "         LOOP " +
+            "             exec_query := " +
+            "                 'ALTER TABLE \"' || lower(table_name_var) || " +
+            "                 '\" RENAME COLUMN \"' || column_name_var || " +
+            "                 '\" TO \"' || lower(column_name_var) || '\";';" +
+            "             EXECUTE exec_query;" +
+            "         END LOOP;" +
+            "     END LOOP;" +
+            " END $function$" +
+            " ;" +
+            " SELECT rename_field_names();";
     }
 }

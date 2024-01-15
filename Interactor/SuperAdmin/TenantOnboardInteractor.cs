@@ -400,7 +400,7 @@ namespace Interactor.SuperAdmin
         {
             try
             {
-                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23456789;Port=5432";
+                var connectionString = $"Host={host};Database={dbName};Username=postgres;Password=Emr!23;Port=5432";
 
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
@@ -418,6 +418,20 @@ namespace Interactor.SuperAdmin
                         // _CreateTrigger(command, listMigration, tenantId);
                         _CreateAuditLog(tenantId);
                         _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
+                    }
+                }
+
+                //Rename table_name and field_name of database
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        var sqlRenameTableName = QueryConstant.RenameTableNames;
+                        var sqlRenameFieldName = QueryConstant.RenameFieldNames;
+                        command.CommandText = sqlRenameTableName + sqlRenameFieldName;
+                        command.ExecuteNonQuery();
                     }
                 }
             }
