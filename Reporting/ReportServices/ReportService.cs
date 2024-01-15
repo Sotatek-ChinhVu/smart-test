@@ -61,6 +61,7 @@ using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.DB;
+using Reporting.OutDrug.Model;
 using Reporting.OutDrug.Service;
 using Reporting.PatientManagement.DB;
 using Reporting.PatientManagement.Models;
@@ -903,9 +904,9 @@ public class ReportService : IReportService
     /// <param name="sinDate"></param>
     /// <param name="raiinNo"></param>
     /// <returns></returns>
-    public CommonReportingRequestModel GetOutDrugReportingData(int hpId, long ptId, int sinDate, long raiinNo)
+    public CommonReportingRequestModel GetOutDrugReportingData(int hpId, List<ReceptionDtoReq> receptions)
     {
-        return _outDrugCoReportService.GetOutDrugReportingData(hpId, ptId, sinDate, raiinNo);
+        return _outDrugCoReportService.GetOutDrugReportingData(hpId, receptions);
     }
 
     /// <summary>

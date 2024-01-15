@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.Reception;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.AccountingCardList.Model;
@@ -9,6 +10,7 @@ using Reporting.GrowthCurve.Model;
 using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
+using Reporting.OutDrug.Model;
 using Reporting.OutDrug.Model.Output;
 using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
@@ -37,7 +39,7 @@ public interface IReportService
 
     CommonReportingRequestModel GetReceiptListReportingData(int hpId, int seikyuYm, List<ReceiptInputModel> receiptListModels);
 
-    CommonReportingRequestModel GetOutDrugReportingData(int hpId, long ptId, int sinDate, long raiinNo);
+    CommonReportingRequestModel GetOutDrugReportingData(int hpId, List<ReceptionDtoReq> receptions);
 
     AccountingResponse GetAccountingReportingData(
                int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId = 0,

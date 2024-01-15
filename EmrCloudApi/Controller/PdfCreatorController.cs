@@ -8,6 +8,7 @@ using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.PatientManagement;
 using Helper.Enum;
 using Helper.Extension;
+using Helper.Redis;
 using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
@@ -18,18 +19,17 @@ using Reporting.DrugInfo.Model;
 using Reporting.GrowthCurve.Model;
 using Reporting.KensaLabel.Model;
 using Reporting.Mappers.Common;
+using Reporting.OutDrug.Model;
 using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
+using StackExchange.Redis;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Web;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
-using StackExchange.Redis;
-using Helper.Redis;
-using Reporting.OutDrug.Model.Output;
 
 namespace EmrCloudApi.Controller;
 
@@ -180,16 +180,18 @@ public class PdfCreatorController : CookieController
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
 
-    [HttpGet(ApiPath.OutDrug)]
-    public async Task<IActionResult> GetOutDrugReportingData([FromQuery] OutDrugRequest request)
+    [HttpPost(ApiPath.OutDrug)]
+    public async Task<IActionResult> GetOutDrugReportingData([FromForm] OutDrugRequest requestStringJson)
     {
         _reportService.Instance(10);
         // if HpId = -1, return 401 page
-        if (HpId == -1)
-        {
-            return Content(NotAuhorize, "text/html");
-        }
-        var data = _reportService.GetOutDrugReportingData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+        //if (HpId == -1)
+        //{
+        //    return Content(NotAuhorize, "text/html");
+        //}
+        var receptionDto = JsonSerializer.Deserialize<ReceptionDtoReq>(requestStringJson.JsonOutDrug);
+
+        var data = _reportService.GetOutDrugReportingData(requestStringJson.HpId, receptionDto ?? new());
         _reportService.ReleaseResource();
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }
@@ -816,7 +818,6 @@ public class PdfCreatorController : CookieController
         {
             return Content(NoDataMessage, "text/html");
         }
-
         StringContent jsonContent = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;

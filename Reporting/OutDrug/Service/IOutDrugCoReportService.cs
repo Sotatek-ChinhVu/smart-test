@@ -1,8 +1,9 @@
 ﻿using Reporting.Mappers.Common;
+using Reporting.OutDrug.Model;
 
 namespace Reporting.OutDrug.Service;
 
 public interface IOutDrugCoReportService
 {
-    CommonReportingRequestModel GetOutDrugReportingData(int hpId, long ptId, int sinDate, long raiinNo);
+    CommonReportingRequestModel GetOutDrugReportingData(int hpId, List<ReceptionDtoReq> receptionDtos);
 }

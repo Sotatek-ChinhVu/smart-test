@@ -1,10 +1,9 @@
-﻿namespace EmrCloudApi.Requests.ExportPDF;
+﻿using Reporting.OutDrug.Model;
+
+namespace EmrCloudApi.Requests.ExportPDF;
 
 public class OutDrugRequest
 {
-    public long PtId { get; set; }
-
-    public int SinDate { get; set; }
-
-    public long RaiinNo { get; set; }
+    public int HpId { get; set; }
+    public string JsonOutDrug { get; set; } = string.Empty;
 }
