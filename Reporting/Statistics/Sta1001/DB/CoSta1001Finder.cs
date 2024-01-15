@@ -44,28 +44,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
         var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.NyukinKbn != 0);  //0:未精算を除く
-        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs
-            .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
-            .Select(k =>
-                new
-                {
-                    k.Key.HpId,
-                    k.Key.PtId,
-                    k.Key.RaiinNo,
-                    PtFutan = k.Sum(x => x.PtFutan + x.AdjustRound),
-                    JihiFutan = k.Sum(x => x.JihiFutan + x.JihiOuttax),
-                    JihiTax = k.Sum(x => x.JihiTax + x.JihiOuttax),
-                    JihiFutanTaxFree = k.Sum(x => x.JihiFutanTaxfree),
-                    JihiFutanTaxNr = k.Sum(x => x.JihiFutanTaxNr),
-                    JihiFutanTaxGen = k.Sum(x => x.JihiFutanTaxGen),
-                    JihiTaxNr = k.Sum(x => x.JihiTaxNr),
-                    JihiTaxGen = k.Sum(x => x.JihiTaxGen),
-                    JihiFutanOuttaxNr = k.Sum(x => x.JihiFutanOuttaxNr + x.JihiOuttaxNr),
-                    JihiFutanOuttaxGen = k.Sum(x => x.JihiFutanOuttaxGen + x.JihiOuttaxGen),
-                    JihiOuttaxNr = k.Sum(x => x.JihiOuttaxNr),
-                    JihiOuttaxGen = k.Sum(x => x.JihiOuttaxGen),
-                    AdjustFutan = k.Sum(x => x.AdjustFutan),
-                });
 
         //来院情報
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId);
@@ -143,20 +121,46 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             }
         ).ToList();
 
-        var syunoNyukinList = NoTrackingDataContext.SyunoNyukin
+        var allSyunoNyukin = NoTrackingDataContext.SyunoNyukin
             .Where(s => s.IsDeleted == DeleteStatus.None && s.HpId == hpId && (
                 printConf.StartNyukinDate == printConf.EndNyukinDate ?
                     (s.NyukinDate == printConf.StartNyukinDate) :
                     (s.NyukinDate >= printConf.StartNyukinDate && s.NyukinDate <= printConf.EndNyukinDate)
-            ) && (printConf.UketukeSbtIds != null && printConf.UketukeSbtIds.Contains(s.UketukeSbt) == true) && (printConf.PaymentMethodCds != null && printConf.PaymentMethodCds.Contains(s.PaymentMethodCd))).ToList();
+            ) && (printConf.UketukeSbtIds == null || !printConf.UketukeSbtIds.Any() || printConf.UketukeSbtIds.Contains(s.UketukeSbt) == true) && (printConf.PaymentMethodCds == null || !printConf.PaymentMethodCds.Any() || printConf.PaymentMethodCds.Contains(s.PaymentMethodCd)));
+        bool flag = false;
+        var syunoNyukinList = new List<SyunoNyukin>();
+        int skip = 0;
+        while (flag == false)
+        {
+            var syunoNyukinListPart = allSyunoNyukin.Skip(skip).Take(1000).ToList();
+            skip = skip + 1000;
+            if (syunoNyukinListPart.Count < 1000)
+            {
+                flag = true;
+            }
+            syunoNyukinList.AddRange(syunoNyukinListPart);
+        }
 
         var raiinNos = syunoNyukinList.Select(s => s.RaiinNo).Distinct().ToList();
         var ptIds = syunoNyukinList.Select(s => s.PtId).Distinct().ToList();
         var payMethods = syunoNyukinList.Select(s => s.PaymentMethodCd).Distinct().ToList();
         var userIds = syunoNyukinList.Select(s => s.UpdateId).Distinct().ToList();
         var uketukeSbts = syunoNyukinList.Select(s => s.UketukeSbt).Distinct().ToList();
-        var syunoSeikyuList = syunoSeikyus.Where(s => raiinNos.Contains(s.RaiinNo)).ToList();
-        var raiinInfList = raiinInfs.Where(r => raiinNos.Contains(r.RaiinNo)).ToList();
+        var syunoSeikyuList = new List<SyunoSeikyu>();
+        flag = false;
+        skip = 0;
+        while (flag == false)
+        {
+            var raiinNosPart = raiinNos.Skip(skip).Take(1000).ToList();
+            var syunoSeikyuListPart = syunoSeikyus.Where(s => raiinNosPart.Contains(s.RaiinNo)).ToList();
+            skip = skip + 1000;
+            if (raiinNosPart.Count < 1000)
+            {
+                flag = true;
+            }
+            syunoSeikyuList.AddRange(syunoSeikyuListPart);
+        }
+        var raiinInfList = raiinInfs.Where(r => raiinNos.Any(r1 => r1 == r.RaiinNo)).ToList();
         var kaIds = raiinInfList.Select(r => r.KaId).Distinct().ToList();
         var tantoIds = raiinInfList.Select(r => r.TantoId).Distinct().ToList();
         var uketukeIds = raiinInfList.Select(r => r.UketukeId).Distinct().ToList();
@@ -168,6 +172,29 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var kaMstList = kaMsts.Where(k => kaIds.Contains(k.KaId)).ToList();
         var doctorList = userMsts.Where(u => tantoIds.Contains(u.UserId)).ToList();
         var uketukeList = userMsts.Where(u => uketukeIds.Contains(u.UserId)).ToList();
+        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs
+    .Where(k => raiinNos.Contains(k.RaiinNo)).AsEnumerable()
+    .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
+    .Select(k =>
+        new
+        {
+            k.Key.HpId,
+            k.Key.PtId,
+            k.Key.RaiinNo,
+            PtFutan = k.Sum(x => x.PtFutan + x.AdjustRound),
+            JihiFutan = k.Sum(x => x.JihiFutan + x.JihiOuttax),
+            JihiTax = k.Sum(x => x.JihiTax + x.JihiOuttax),
+            JihiFutanTaxFree = k.Sum(x => x.JihiFutanTaxfree),
+            JihiFutanTaxNr = k.Sum(x => x.JihiFutanTaxNr),
+            JihiFutanTaxGen = k.Sum(x => x.JihiFutanTaxGen),
+            JihiTaxNr = k.Sum(x => x.JihiTaxNr),
+            JihiTaxGen = k.Sum(x => x.JihiTaxGen),
+            JihiFutanOuttaxNr = k.Sum(x => x.JihiFutanOuttaxNr + x.JihiOuttaxNr),
+            JihiFutanOuttaxGen = k.Sum(x => x.JihiFutanOuttaxGen + x.JihiOuttaxGen),
+            JihiOuttaxNr = k.Sum(x => x.JihiOuttaxNr),
+            JihiOuttaxGen = k.Sum(x => x.JihiOuttaxGen),
+            AdjustFutan = k.Sum(x => x.AdjustFutan),
+        }).ToList();
 
         var joinList = from syunoNyukin in syunoNyukinList
                        join payMst in payMstList on
@@ -183,6 +210,10 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                        join firstRaiin in firstRaiinList on
                            new { syunoNyukin.HpId, syunoNyukin.PtId } equals
                            new { firstRaiin.HpId, firstRaiin.PtId }
+                       join kaikeiFutan in kaikeiFutans on
+                           new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
+                           new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } into kaikeiFutanJoin
+                       from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
                        join ptInf in ptIdList on
                            new { syunoNyukin.HpId, syunoNyukin.PtId } equals
                            new { ptInf.HpId, ptInf.PtId }
@@ -244,7 +275,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                            firstRaiin.FirstRaiinDate
                        };
         joinList = joinList.ToList();
-        
+
         //var joinQuery = (
         //    from syunoNyukin in syunoNyukins
         //        //join preNyukin in preNyukins on
@@ -702,24 +733,11 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             .GroupBy(n => new { n.HpId, n.PtId, n.RaiinNo })
             .Select(n => new { n.Key.HpId, n.Key.PtId, n.Key.RaiinNo });
 
-        var syunoJoins = syunoNyukins.Union(syunoSeikyus).ToList();
-        var sinKouiCounts = new List<SinKouiCount>();
-        Parallel.ForEach(syunoJoins, syuno =>
-        {
-            sinKouiCounts.AddRange(NoTrackingDataContext.SinKouiCounts.Where(s => s.PtId == syuno.PtId && s.RaiinNo == syuno.RaiinNo).ToList());
-        });
+        var syunoJoins = syunoNyukins.Union(syunoSeikyus);
 
-        var sinKouis = new List<SinKoui>();
-        foreach (var item in sinKouiCounts)
-        {
-            sinKouis.AddRange(NoTrackingDataContext.SinKouis.Where(s => s.CdKbn == "JS" && s.IsDeleted == DeleteStatus.None && s.PtId == item.PtId && s.SinYm == item.SinYm && s.RpNo == item.RpNo && s.SeqNo == item.SeqNo).ToList());
-        }
-
-        var sinRpInfs = new List<SinRpInf>();
-        foreach (var item in sinKouiCounts)
-        {
-            sinRpInfs.AddRange(NoTrackingDataContext.SinRpInfs.Where(s => s.IsDeleted == DeleteStatus.None && item.PtId == s.PtId && s.SinYm == item.SinYm && s.RpNo == item.RpNo && s.SanteiKbn == 2).ToList());
-        }
+        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.IsDeleted == DeleteStatus.None);
+        var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.IsDeleted == DeleteStatus.None);
 
         var jihiQuery = (
             from syunoNyukin in syunoJoins
@@ -732,6 +750,8 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             join sinRpInf in sinRpInfs on
                 new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo } equals
                 new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+            where
+                sinKoui.CdKbn == "JS" || sinRpInf.SanteiKbn == 2
             group new
             {
                 sinKouiCount.PtId,
