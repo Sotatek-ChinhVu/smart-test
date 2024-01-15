@@ -840,7 +840,7 @@ namespace Infrastructure.Repositories
             return argon2.GetBytes(32);
         }
 
-        public static byte[] GenerateSalt()
+        public byte[] GenerateSalt()
         {
             var buffer = new byte[32];
             using var rng = new RNGCryptoServiceProvider();
