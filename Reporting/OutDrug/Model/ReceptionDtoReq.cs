@@ -1,19 +1,14 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Reporting.OutDrug.Model
+﻿namespace Reporting.OutDrug.Model
 {
+    public class OutDrugRequest
+    {
+        public List<ReceptionDtoReq> Receptions { get; set; } = new();
+    }
+
     public class ReceptionDtoReq
     {
-        [JsonConstructor]
-        public ReceptionDtoReq(long ptId, int sinDate, long raiinNo)
-        {
-            PtId = ptId;
-            SinDate = sinDate;
-            RaiinNo = raiinNo;
-        }
-
-        public long PtId { get; private set; }
-        public int SinDate { get; private set; }
-        public long RaiinNo { get; private set; }
+        public long PtId { get; set; }
+        public int SinDate { get; set; }
+        public long RaiinNo { get; set; }
     }
 }

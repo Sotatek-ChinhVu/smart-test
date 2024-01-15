@@ -181,17 +181,17 @@ public class PdfCreatorController : CookieController
     }
 
     [HttpPost(ApiPath.OutDrug)]
-    public async Task<IActionResult> GetOutDrugReportingData([FromForm] OutDrugRequest requestStringJson)
+    public async Task<IActionResult> GetOutDrugReportingData([FromForm] OutDrugObjectRequest requestStringJson)
     {
         _reportService.Instance(10);
-        // if HpId = -1, return 401 page
-        //if (HpId == -1)
-        //{
-        //    return Content(NotAuhorize, "text/html");
-        //}
-        var receptionDto = JsonSerializer.Deserialize<ReceptionDtoReq>(requestStringJson.JsonOutDrug);
+        //if HpId = -1, return 401 page
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
+        var request = JsonSerializer.Deserialize<OutDrugRequest>(requestStringJson.JsonOutDrug);
 
-        var data = _reportService.GetOutDrugReportingData(requestStringJson.HpId, receptionDto ?? new());
+        var data = _reportService.GetOutDrugReportingData(HpId, request?.Receptions ?? new());
         _reportService.ReleaseResource();
         return await RenderPdf(data, ReportType.Common, data.JobName);
     }

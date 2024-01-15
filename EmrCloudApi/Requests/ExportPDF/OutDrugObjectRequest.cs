@@ -2,8 +2,7 @@
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class OutDrugRequest
+public class OutDrugObjectRequest
 {
-    public int HpId { get; set; }
     public string JsonOutDrug { get; set; } = string.Empty;
 }
