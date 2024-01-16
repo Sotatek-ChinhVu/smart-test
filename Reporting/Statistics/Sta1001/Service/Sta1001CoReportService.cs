@@ -642,10 +642,10 @@ namespace Reporting.Statistics.Sta1001.Service
 
             hpInf = _sta1001Finder.GetHpInf(HpId, _printConf.StartNyukinDate);
 
-            syunoInfs = _sta1001Finder.GetSyunoInfs(HpId, _printConf, 0);
-            if ((syunoInfs?.Count ?? 0) == 0) return false;
+            //syunoInfs = _sta1001Finder.GetSyunoInfs(HpId, _printConf, 0);
+            //if ((syunoInfs?.Count ?? 0) == 0) return false;
 
-            jihiSbtMsts = _sta1001Finder.GetJihiSbtMst(HpId);
+            //jihiSbtMsts = _sta1001Finder.GetJihiSbtMst(HpId);
             jihiSbtFutans = _sta1001Finder.GetJihiSbtFutan(HpId, _printConf);
 
             //来院コメントの取得
