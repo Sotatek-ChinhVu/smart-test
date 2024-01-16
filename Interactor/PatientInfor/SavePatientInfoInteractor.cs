@@ -390,7 +390,7 @@ namespace Interactor.PatientInfor
         /// <param name="kanjiName">Name</param>
         /// <param name="hpId"></param>
         /// <returns></returns>
-        private IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName
+        public IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName
             , string kanjiName
             , int hpId
             , ReactSavePatientInfo react)
