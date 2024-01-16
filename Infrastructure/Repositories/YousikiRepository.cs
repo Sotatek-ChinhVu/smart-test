@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Yousiki;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -23,6 +24,36 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                     x.SeqNo,
                     x.IsDeleted,
                     x.Status)).ToList();
+    }
+
+    public List<Yousiki1InfModel> GetYousiki1InfModel(int hpId, int sinYm, long ptNumber, int dataTypes)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId &&
+                                x.IsDelete == 0 &&
+                                (ptNumber == 0 ? true : x.PtNum == ptNumber));
+        var yousiki1Infs = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
+                            (dataTypes == 0 ? true : x.DataType == dataTypes) &&
+                            x.IsDeleted == 0 &&
+                            x.SinYm == sinYm);
+        var query = from yousikiInf in yousiki1Infs
+                    join ptInf in ptInfs on
+                    yousikiInf.PtId equals ptInf.PtId
+                    select new
+                    {
+                        yousikiInf,
+                        ptInf
+                    };
+        return query.AsEnumerable()
+                    .Select(x => new Yousiki1InfModel(
+                            x.yousikiInf.PtId,
+                            x.yousikiInf.SinYm,
+                            x.yousikiInf.DataType,
+                            x.yousikiInf.SeqNo,
+                            x.yousikiInf.IsDeleted,
+                            x.yousikiInf.Status, 
+                            x.ptInf.PtNum,
+                            x.ptInf.Name ?? string.Empty))
+                    .ToList();
     }
 
     /// <summary>

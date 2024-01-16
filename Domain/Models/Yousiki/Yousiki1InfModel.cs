@@ -28,6 +28,20 @@ public class Yousiki1InfModel
         Yousiki1InfDetailList = new();
     }
 
+    public Yousiki1InfModel(long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status, long ptNum, string name)
+    {
+        PtId = ptId;
+        SinYm = sinYm;
+        DataType = dataType;
+        SeqNo = seqNo;
+        IsDeleted = isDeleted;
+        Status = status;
+        PtNum = ptNum;
+        Name = name;
+        StatusDic = new();
+        Yousiki1InfDetailList = new();
+    }
+
     public Yousiki1InfModel ChangeStatusDic(Dictionary<int, int> statusDic)
     {
         StatusDic = statusDic;

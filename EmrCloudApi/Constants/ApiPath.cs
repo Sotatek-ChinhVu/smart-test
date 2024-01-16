@@ -559,5 +559,6 @@
         //Yousiki
         public const string GetYousiki1InfModelWithCommonInf = "GetYousiki1InfModelWithCommonInf";
         public const string GetHistoryYousiki = "GetHistoryYousiki";
+        public const string GetYousiki1InfModel = "GetYousiki1InfModel";
     }
 }
