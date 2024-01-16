@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RENKEI_TIMING_MST")]
+    [Table(name: "renkei_timing_mst")]
     public class RenkeiTimingMst : EmrCloneable<RenkeiTimingMst>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RENKEI_ID", Order = 2)]
+        [Column("renkei_id", Order = 2)]
         public int RenkeiId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// EVENT_MST.EVENT_CD
         /// </summary>
         
-        [Column("EVENT_CD", Order = 3)]
+        [Column("event_cd", Order = 3)]
         [MaxLength(11)]
         public string EventCd { get; set; } = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 無効区分
         /// 0:有効 1:無効
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(1)]
         public int IsInvalid { get; set; }
 
@@ -44,14 +44,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
     }
 }

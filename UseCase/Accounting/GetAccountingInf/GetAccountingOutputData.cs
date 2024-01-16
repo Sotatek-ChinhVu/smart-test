@@ -1,13 +1,15 @@
 ﻿using Domain.Models.AccountDue;
 using Domain.Models.Insurance;
+using Domain.Models.Reception;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.Accounting.GetAccountingInf
 {
     public class GetAccountingOutputData : IOutputData
     {
-        public GetAccountingOutputData(List<SyunoSeikyuModel> syunoSeikyuModels, GetAccountingStatus getAccountingStatus, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> allSyunoSeikyuModels, bool isSettled)
+        public GetAccountingOutputData(List<RaiinInfItem> listRaiinInf, List<SyunoSeikyuModel> syunoSeikyuModels, GetAccountingStatus getAccountingStatus, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> allSyunoSeikyuModels, bool isSettled)
         {
+            ListRaiinInf = listRaiinInf;
             SyunoSeikyuModels = syunoSeikyuModels;
             GetAccountingStatus = getAccountingStatus;
             TotalPoint = totalPoint;
@@ -27,6 +29,7 @@ namespace UseCase.Accounting.GetAccountingInf
             IsSettled = isSettled;
         }
 
+        public List<RaiinInfItem> ListRaiinInf { get; private set; }
         public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
         public GetAccountingStatus GetAccountingStatus { get; private set; }
         public int TotalPoint { get; private set; }

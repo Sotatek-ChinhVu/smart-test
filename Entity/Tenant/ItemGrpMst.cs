@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "ITEM_GRP_MST")]
+    [Table(name: "item_grp_mst")]
     public class ItemGrpMst : EmrCloneable<ItemGrpMst>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 1: DENSI_SANTEI_KAISU
         /// </summary>
         
-        [Column("GRP_SBT", Order = 2)]
+        [Column("grp_sbt", Order = 2)]
         public long GrpSbt { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ITEM_GRP_CD", Order = 3)]
+        [Column("item_grp_cd", Order = 3)]
         public long ItemGrpCd { get; set; }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("START_DATE", Order = 4)]
+        [Column("start_date", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// 診療行為コード
         /// 
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// 同一グループ種別、項目グループコード、開始日内の連番
         /// </summary>
         
-        [Column("SEQ_NO", Order = 5)]
+        [Column("seq_no", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -70,14 +70,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -93,14 +93,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -108,7 +108,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
 

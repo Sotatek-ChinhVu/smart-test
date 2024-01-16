@@ -61,6 +61,11 @@ public class CoSta9000HokenConf
     public int EndDate { get; set; }
 
     /// <summary>
+    /// 有効期限切れ
+    /// </summary>
+    public int YukoKbn { get; set; }
+
+    /// <summary>
     /// 保険種別
     ///     1:社保 2:公費 3:国保 4:退職 5:後期 6:労災 7:自賠 8:自費 9:自レ
     /// </summary>

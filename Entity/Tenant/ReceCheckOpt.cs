@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RECE_CHECK_OPT")]
+    [Table(name: "rece_check_opt")]
     public class ReceCheckOpt : EmrCloneable<ReceCheckOpt>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ERR_CD", Order = 2)]
+        [Column("err_cd", Order = 2)]
         [MaxLength(5)]
         public string ErrCd { get; set; } = string.Empty;
 
@@ -28,14 +28,14 @@ namespace Entity.Tenant
         /// チェックオプション
         /// 
         /// </summary>
-        [Column("CHECK_OPT")]
+        [Column("check_opt")]
         public int CheckOpt { get; set; }
 
         /// <summary>
         /// チェック内容
         /// 
         /// </summary>
-        [Column("BIKO")]
+        [Column("biko")]
         [MaxLength(100)]
         public string? Biko { get; set; } = string.Empty;
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 無効区分
         /// 1:無効
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(0)]
         public int IsInvalid { get; set; }
 
@@ -51,14 +51,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -74,14 +74,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -89,7 +89,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

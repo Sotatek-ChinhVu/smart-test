@@ -36,20 +36,21 @@ public class AuthController : ControllerBase
     [HttpPost("ExchangeToken"), Produces("application/json")]
     public ActionResult<Response<ExchangeTokenResponse>> ExchangeToken([FromBody] ExchangeTokenRequest req)
     {
-        var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
+        var getUserInput = new GetUserByLoginIdInputData(req.LoginId, req.Password);
         var getUserOutput = _bus.Handle(getUserInput);
         var user = getUserOutput.User;
         if (user is null)
         {
-            var errorResult = GetErrorResult("The loginId is invalid.");
+            var errorResult = GetErrorResult("The loginId or password is invalid.");
             return BadRequest(errorResult);
         }
 
-        if (req.Password != user.LoginPass)
-        {
-            var errorResult = GetErrorResult("The password is invalid.");
-            return BadRequest(errorResult);
-        }
+        ///Check user and pasword in repository
+        ///if (req.Password != user.LoginPass)
+        ///{
+        ///    var errorResult = GetErrorResult("The password is invalid.");
+        ///    return BadRequest(errorResult);
+        ///}
 
         // The claims that will be persisted in the tokens.
         var claims = new Claim[]
@@ -153,7 +154,7 @@ public class AuthController : ControllerBase
     [HttpPost("AppToken"), Produces("application/json")]
     public ActionResult<Response<AppTokenResponse>> AppToken([FromBody] AppTokenRequest req)
     {
-        var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
+        var getUserInput = new GetUserByLoginIdInputData(req.LoginId, req.Password);
         var getUserOutput = _bus.Handle(getUserInput);
         var user = getUserOutput.User;
         if (user is null)
