@@ -315,13 +315,12 @@ public class PdfCreatorController : CookieController
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
-        HpId = 1;
         _reportService.Instance(12);
         // if HpId = -1, return 401 page
-        //if (HpId == -1)
-        //{
-        //    return Content(NotAuhorize, "text/html");
-        //}
+        if (HpId == -1)
+        {
+            return Content(NotAuhorize, "text/html");
+        }
         var data = _reportService.GetStatisticReportingData(HpId, request.FormName, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType, request.IsPutTotalRow, request.TenkiDateFrom, request.TenkiDateTo, request.EnableRangeFrom, request.EnableRangeTo, request.PtNumFrom, request.PtNumTo);
         _reportService.ReleaseResource();
         return await RenderPdf(data, ReportType.Common, data.JobName);
