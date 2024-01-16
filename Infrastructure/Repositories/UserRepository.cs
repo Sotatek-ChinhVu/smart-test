@@ -167,8 +167,8 @@ namespace Infrastructure.Repositories
         {
             var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
 
-            // get data from UserMstList
-            var entity = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow);
+            var entity = NoTrackingDataContext.UserMsts
+                .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
             if (entity is null)
             {
                 return null;
