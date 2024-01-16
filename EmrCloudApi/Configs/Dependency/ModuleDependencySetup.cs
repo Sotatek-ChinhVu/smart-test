@@ -828,6 +828,9 @@ using UseCase.Cache.RemoveAllCache;
 using UseCase.Cache.RemoveCache;
 using UseCase.User.UpdateHashPassword;
 using UseCase.Diseases.IsHokenInfInUsed;
+using Domain.Models.Yousiki;
+using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using Interactor.Yousiki.GetYousiki1InfModelWithCommonInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1245,6 +1248,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
             services.AddTransient<IReleasenoteReadRepository, ReleasenoteReadRepository>();
             services.AddTransient<IRemoveCacheRepository, CacheRepository>();
+            services.AddTransient<IYousikiRepository, YousikiRepository>();
             ///services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
@@ -1924,6 +1928,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSinrekiFilterMstListInputData, GetSinrekiFilterMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSinrekiFilterMstListInputData, SaveSinrekiFilterMstListInteractor>();
             busBuilder.RegisterUseCase<GetContentDrugUsageHistoryInputData, GetContentDrugUsageHistoryInteractor>();
+
+            //Yousiki
+            busBuilder.RegisterUseCase<GetYousiki1InfModelWithCommonInfInputData, GetYousiki1InfModelWithCommonInfInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

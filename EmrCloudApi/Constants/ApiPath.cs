@@ -441,8 +441,8 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
-        public const string GetLockInf = "GetLockInf"; 
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string GetLockInf = "GetLockInf";
         public const string Unlock = "Unlock";
         public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
@@ -555,5 +555,8 @@
         public const string GetSinrekiFilterMstList = "GetSinrekiFilterMstList";
         public const string SaveSinrekiFilterMstList = "SaveSinrekiFilterMstList";
         public const string GetContentDrugUsageHistory = "GetContentDrugUsageHistory";
+
+        //Yousiki
+        public const string GetYousiki1InfModelWithCommonInf = "GetYousiki1InfModelWithCommonInf";
     }
 }
