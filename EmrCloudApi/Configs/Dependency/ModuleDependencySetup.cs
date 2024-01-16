@@ -830,7 +830,8 @@ using UseCase.User.UpdateHashPassword;
 using UseCase.Diseases.IsHokenInfInUsed;
 using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
-using Interactor.Yousiki.GetYousiki1InfModelWithCommonInf;
+using Interactor.Yousiki;
+using UseCase.Yousiki.GetYousiki1InfDetails;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1931,6 +1932,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Yousiki
             busBuilder.RegisterUseCase<GetYousiki1InfModelWithCommonInfInputData, GetYousiki1InfModelWithCommonInfInteractor>();
+            busBuilder.RegisterUseCase<GetYousiki1InfDetailsInputData, GetYousiki1InfDetailsInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

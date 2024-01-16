@@ -61,6 +61,34 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return compoundedResultList;
     }
 
+    /// <summary>
+    /// Get Yousiki1InfDetail list
+    /// </summary>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="dataType"></param>
+    /// <param name="seqNo"></param>
+    /// <returns></returns>
+    public List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, long ptId, int dataType, int seqNo)
+    {
+        var result = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
+                                                                            && item.PtId == ptId
+                                                                            && item.DataType == dataType
+                                                                            && item.SeqNo == seqNo
+                                                                            && item.HpId == hpId)
+                                                             .Select(item => new Yousiki1InfDetailModel(
+                                                                                 item.PtId,
+                                                                                 item.SinYm,
+                                                                                 item.DataType,
+                                                                                 item.SeqNo,
+                                                                                 item.CodeNo ?? string.Empty,
+                                                                                 item.RowNo,
+                                                                                 item.Payload,
+                                                                                 item.Value ?? string.Empty))
+                                                             .ToList();
+        return result;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
