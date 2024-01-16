@@ -15,6 +15,19 @@ public class Yousiki1InfModel
         Yousiki1InfDetailList = yousiki1InfDetailList;
     }
 
+    public Yousiki1InfModel(long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status)
+    {
+        PtId = ptId;
+        SinYm = sinYm;
+        DataType = dataType;
+        SeqNo = seqNo;
+        IsDeleted = isDeleted;
+        Status = status;
+        Name = string.Empty;
+        StatusDic = new();
+        Yousiki1InfDetailList = new();
+    }
+
     public Yousiki1InfModel ChangeStatusDic(Dictionary<int, int> statusDic)
     {
         StatusDic = statusDic;

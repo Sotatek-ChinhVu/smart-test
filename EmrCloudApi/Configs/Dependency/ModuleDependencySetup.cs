@@ -831,6 +831,8 @@ using UseCase.Diseases.IsHokenInfInUsed;
 using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using Interactor.Yousiki.GetYousiki1InfModelWithCommonInf;
+using UseCase.Yousiki.GetHistoryYousiki;
+using Interactor.Yousiki.GetHistoryYousiki;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1763,6 +1765,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckExistsReceInfInputData, CheckExistsReceInfInteractor>();
             busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
+            busBuilder.RegisterUseCase<GetHistoryYousikiInputData, GetHistoryYousikiInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
