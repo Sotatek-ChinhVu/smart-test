@@ -89,10 +89,10 @@ namespace Entity.Tenant
         /// <summary>
         /// パスワード
         /// </summary>
-        [Column(name: "login_pass")]
-        [MaxLength(20)]
-        [Required]
-        public string? LoginPass { get; set; } = string.Empty;
+        //[Column(name: "login_pass")]
+        //[MaxLength(20)]
+        //[Required]
+        //public string? LoginPass { get; set; } = string.Empty;
 
         /// <summary>
         /// 麻薬使用者免許No.
