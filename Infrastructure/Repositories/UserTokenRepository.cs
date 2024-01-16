@@ -23,7 +23,7 @@ namespace Infrastructure.Repositories
                 return info;
             else
             {
-                ///instance.RefreshTokenIsUsed = true;
+                //instance.RefreshTokenIsUsed = true;
                 TrackingDataContext.UserTokens.Add(new UserToken()
                 {
                     RefreshToken = refreshTokenNew,

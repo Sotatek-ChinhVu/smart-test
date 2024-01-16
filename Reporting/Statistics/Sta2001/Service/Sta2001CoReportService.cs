@@ -204,7 +204,8 @@ public class Sta2001CoReportService : ISta2001CoReportService
                 //自費種別毎の金額
                 for (int i = 0; i <= _jihiSbtMsts.Count - 1; i++)
                 {
-                    if (printData.JihiSbtFutans == null) break;
+                    // check null JihiSbtFutans
+                    if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any()) break;
 
                     var jihiSbtMst = _jihiSbtMsts[i];
                     AddListData(ref data, string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), printData.JihiSbtFutans[i]);
@@ -317,7 +318,6 @@ public class Sta2001CoReportService : ISta2001CoReportService
                                 _printDatas.Add(new CoSta2001PrintData(RowType.Brank));
                                 continue;
                             }
-
                             printData.NyukinDate = nyukinDate;
                             printData.NyukinDateFmt2 = nyukinDateFmt2;
                             printData.KaId = (pbKaId || kaIds?.Count == 1) ? curDatas?.FirstOrDefault()?.KaId.ToString() ?? string.Empty : string.Empty;
