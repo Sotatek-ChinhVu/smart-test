@@ -604,7 +604,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         TrackingDataContext.SaveChanges();
     }
 
-    private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId, int status)
+    public void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId, int status)
     {
         var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
         rpNoMax = rpNoMax < 2 ? 1 : rpNoMax;
