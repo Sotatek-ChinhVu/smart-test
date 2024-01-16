@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -6,7 +6,7 @@ namespace Entity.Tenant
     /// <summary>
     /// セットカルテ画像情報
     /// </summary>
-    [Table(name: "SET_KARTE_IMG_INF")]
+    [Table(name: "set_karte_img_inf")]
     public class SetKarteImgInf : EmrCloneable<SetKarteImgInf>
     {
         /// <summary>
@@ -14,48 +14,48 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// セットコード
         /// </summary>
-        [Column("SET_CD")]
+        [Column("set_cd")]
         public int SetCd { get; set; }
 
         /// <summary>
         /// カルテ区分
         ///    KARTE_KBN_MST.KARTE_KBN
         /// </summary>
-        [Column("KARTE_KBN")]
+        [Column("karte_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int KarteKbn { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Column("SEQ_NO")]
+        [Column("seq_no")]
         [CustomAttribute.DefaultValue(1)]
         public long SeqNo { get; set; }
 
         /// <summary>
         /// 表示位置
         /// </summary>
-        [Column("POSITION")]
+        [Column("position")]
         [CustomAttribute.DefaultValue(0)]
         public long Position { get; set; }
 
         /// <summary>
         /// ファイル名
         /// </summary>
-        [Column("FILE_NAME")]
+        [Column("file_name")]
         [MaxLength(100)]
         public string? FileName { get; set; } = string.Empty;
     }

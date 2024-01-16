@@ -1159,14 +1159,14 @@ namespace Infrastructure.Repositories
                         if (kouiList == null || !kouiList.Any()) continue;
 
                         string kouiInCondition = string.Join(",", kouiList);
-                        string addByKouiQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                        string addByKouiQuery = "INSERT INTO \"public\".\"raiin_list_inf\""
                                            + " ("
-                                           + " SELECT \"HP_ID\", \"PT_ID\", \"SIN_DATE\", \"RAIIN_NO\""
+                                           + " SELECT \"hp_id\", \"pt_id\", \"sin_date\", \"raiin_no\""
                                            + $" , {koui.GrpId}, {koui.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.KOUI_KBN}"
-                                           + " FROM \"public\".\"ODR_INF\""
-                                           + " WHERE \"HP_ID\" = 1 AND \"IS_DELETED\" = 0"
-                                           + $" AND \"ODR_KOUI_KBN\" IN ({kouiInCondition})"
-                                           + " GROUP BY \"HP_ID\", \"SIN_DATE\", \"RAIIN_NO\", \"PT_ID\" "
+                                           + " FROM \"public\".\"odr_inf\""
+                                           + " WHERE \"hp_id\" = 1 AND \"is_deleted\" = 0"
+                                           + $" AND \"odr_koui_kbn\" IN ({kouiInCondition})"
+                                           + " GROUP BY \"hp_id\", \"sin_date\", \"raiin_no\", \"pt_id\" "
                                            + " )  ON CONFLICT DO NOTHING;";
                         TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByKouiQuery);
@@ -1184,17 +1184,17 @@ namespace Infrastructure.Repositories
                     foreach (var item in groupItem)
                     {
                         string itemInCondition = string.Join(",", item.ListItem);
-                        string addByItemQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                        string addByItemQuery = "INSERT INTO \"public\".\"raiin_list_inf\""
                                            + " ("
-                                           + " SELECT ODR.\"HP_ID\", ODR.\"PT_ID\", ODR.\"SIN_DATE\", ODR.\"RAIIN_NO\""
+                                           + " SELECT ODR.\"hp_id\", ODR.\"pt_id\", ODR.\"sin_date\", ODR.\"raiin_no\""
                                            + $" , {item.GrpId}, {item.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.ITEM_KBN}"
-                                           + " FROM \"public\".\"ODR_INF\" ODR"
-                                           + " JOIN \"public\".\"ODR_INF_DETAIL\" DETAIL"
-                                           + " ON ODR.\"RAIIN_NO\"  = DETAIL.\"RAIIN_NO\"  "
-                                           + " AND ODR.\"RP_NO\" = DETAIL.\"RP_NO\" and ODR.\"RP_EDA_NO\" = DETAIL.\"RP_EDA_NO\" "
-                                           + " WHERE ODR.\"HP_ID\" = 1 AND ODR.\"IS_DELETED\" = 0"
-                                           + $" AND DETAIL.\"ITEM_CD\" IN ({itemInCondition})"
-                                           + " GROUP BY ODR.\"HP_ID\", ODR.\"SIN_DATE\", ODR.\"RAIIN_NO\", ODR.\"PT_ID\" "
+                                           + " FROM \"public\".\"odr_inf\" ODR"
+                                           + " JOIN \"public\".\"odr_inf_detail\" DETAIL"
+                                           + " ON ODR.\"raiin_no\"  = DETAIL.\"raiin_no\"  "
+                                           + " AND ODR.\"rp_no\" = DETAIL.\"rp_no\" and ODR.\"rp_eda_no\" = DETAIL.\"rp_eda_no\" "
+                                           + " WHERE ODR.\"hp_id\" = 1 AND ODR.\"is_deleted\" = 0"
+                                           + $" AND DETAIL.\"item_cd\" IN ({itemInCondition})"
+                                           + " GROUP BY ODR.\"hp_id\", ODR.\"sin_date\", ODR.\"raiin_no\", ODR.\"pt_id\" "
                                            + " )  ON CONFLICT DO NOTHING;";
                         TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByItemQuery);
@@ -1212,14 +1212,14 @@ namespace Infrastructure.Repositories
                     foreach (var doc in groupDoc)
                     {
                         string docInCondition = string.Join(",", doc.ListCategory);
-                        string addByDocQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                        string addByDocQuery = "INSERT INTO \"public\".\"raiin_list_inf\""
                                             + " ("
-                                            + " SELECT DOC.\"HP_ID\", DOC.\"PT_ID\", DOC.\"SIN_DATE\", DOC.\"RAIIN_NO\""
+                                            + " SELECT DOC.\"hp_id\", DOC.\"pt_id\", DOC.\"sin_date\", DOC.\"raiin_no\""
                                             + $" , {doc.GrpId}, {doc.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.DOCUMENT_KBN}"
-                                            + " FROM \"public\".\"DOC_INF\" DOC"
-                                            + " WHERE DOC.\"HP_ID\" = 1 AND DOC.\"IS_DELETED\" = 0"
-                                            + $" AND DOC.\"CATEGORY_CD\" IN ({docInCondition})"
-                                            + " GROUP BY DOC.\"HP_ID\", DOC.\"SIN_DATE\", DOC.\"RAIIN_NO\", DOC.\"PT_ID\" "
+                                            + " FROM \"public\".\"doc_inf\" DOC"
+                                            + " WHERE DOC.\"hp_id\" = 1 AND DOC.\"is_deleted\" = 0"
+                                            + $" AND DOC.\"category_cd\" IN ({docInCondition})"
+                                            + " GROUP BY DOC.\"hp_id\", DOC.\"sin_date\", DOC.\"raiin_no\", DOC.\"pt_id\" "
                                             + " )  ON CONFLICT DO NOTHING;";
                         TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByDocQuery);
@@ -1237,14 +1237,14 @@ namespace Infrastructure.Repositories
                     foreach (var file in groupFile)
                     {
                         string fileInCondition = string.Join(",", file.ListCategory);
-                        string addByFileQuery = "INSERT INTO \"public\".\"RAIIN_LIST_INF\""
+                        string addByFileQuery = "INSERT INTO \"public\".\"raiin_list_inf\""
                                             + " ("
-                                            + " SELECT FILE.\"HP_ID\", FILE.\"PT_ID\", FILE.\"GET_DATE\""
+                                            + " SELECT FILE.\"hp_id\", FILE.\"pt_id\", FILE.\"get_date\""
                                             + $", 0, {file.GrpId}, {file.KbnCd}, current_timestamp, {userId}, '',{RaiinListKbnConstants.FILE_KBN}"
-                                            + " FROM \"public\".\"FILING_INF\" FILE"
-                                            + " WHERE FILE.\"HP_ID\" = 1 AND FILE.\"IS_DELETED\" = 0"
-                                            + $" AND FILE.\"CATEGORY_CD\" IN ({fileInCondition})"
-                                            + " GROUP BY FILE.\"HP_ID\", FILE.\"GET_DATE\", FILE.\"PT_ID\" "
+                                            + " FROM \"public\".\"filing_inf\" FILE"
+                                            + " WHERE FILE.\"hp_id\" = 1 AND FILE.\"is_deleted\" = 0"
+                                            + $" AND FILE.\"category_cd\" IN ({fileInCondition})"
+                                            + " GROUP BY FILE.\"hp_id\", FILE.\"get_date\", FILE.\"pt_id\" "
                                             + " )  ON CONFLICT DO NOTHING;";
                         TrackingDataContext.Database.SetCommandTimeout(1200);
                         TrackingDataContext.Database.ExecuteSqlRaw(addByFileQuery);
@@ -1753,58 +1753,58 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.SaveChanges();
 
                         // Delete by all detail
-                        string queryDelete = "DELETE FROM \"public\".\"RAIIN_LIST_INF\" WHERE FALSE";
+                        string queryDelete = "DELETE FROM \"public\".\"raiin_list_inf\" WHERE FALSE";
                         StringBuilder queryStringBuilder = new();
                         queryStringBuilder.Append(queryDelete);
                         detailDeletedList.AddRange(detailDeleteds);
                         foreach (var deleteDetailModel in detailDeletedList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(deleteDetailModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(deleteDetailModel.KbnCd);
                             queryStringBuilder.Append(")");
                         }
 
                         foreach (var kouiModel in kouiDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(kouiModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(kouiModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.KOUI_KBN + ")");
                         }
 
                         foreach (var itemModel in itemDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(itemModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(itemModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.ITEM_KBN);
                             queryStringBuilder.Append(")");
                         }
 
                         foreach (var docModel in docDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(docModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(docModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.DOCUMENT_KBN);
                             queryStringBuilder.Append(")");
                         }
 
                         foreach (var fileModel in fileDeleteList)
                         {
-                            queryStringBuilder.Append(" OR (\"GRP_ID\" = ");
+                            queryStringBuilder.Append(" OR (\"grp_id\" = ");
                             queryStringBuilder.Append(fileModel.GrpId);
-                            queryStringBuilder.Append(" AND \"KBN_CD\" = ");
+                            queryStringBuilder.Append(" AND \"kbn_cd\" = ");
                             queryStringBuilder.Append(fileModel.KbnCd);
-                            queryStringBuilder.Append(" AND  \"RAIIN_LIST_KBN\" = ");
+                            queryStringBuilder.Append(" AND  \"raiin_list_kbn\" = ");
                             queryStringBuilder.Append(RaiinListKbnConstants.FILE_KBN);
                             queryStringBuilder.Append(")");
                         }

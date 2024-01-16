@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RENKEI_PATH_CONF")]
+    [Table(name: "renkei_path_conf")]
     public class RenkeiPathConf : EmrCloneable<RenkeiPathConf>
     {
         /// <summary>
@@ -12,21 +12,21 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 連携ID
         /// 
         /// </summary>
-        [Column("RENKEI_ID", Order = 2)]
+        [Column("renkei_id", Order = 2)]
         public int RenkeiId { get; set; }
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        [Column("SEQ_NO", Order = 3)]
+        [Column("seq_no", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SeqNo { get; set; }
 
@@ -35,13 +35,13 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("EDA_NO", Order = 4)]
+        [Column("eda_no", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }
 
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("ID", Order = 5)]
+        [Column("id", Order = 5)]
         public long Id { get; set; }
 
 
@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// パス
         /// 
         /// </summary>
-        [Column("PATH")]
+        [Column("path")]
         [MaxLength(300)]
         public string? Path { get; set; } = string.Empty;
 
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         /// "空の場合、端末に関係なく処理する
         /// 特定の端末だけ処理する場合に設定"
         /// </summary>
-        [Column("MACHINE")]
+        [Column("machine")]
         [MaxLength(60)]
         public string? Machine { get; set; } = string.Empty;
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 文字コード
         /// 0:UTF-8 1:S-JIS
         /// </summary>
-        [Column("CHAR_CD")]
+        [Column("char_cd")]
         [CustomAttribute.DefaultValue(0)]
         public int CharCd { get; set; }
 
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// 作業フォルダ
         /// 
         /// </summary>
-        [Column("WORK_PATH")]
+        [Column("work_path")]
         [MaxLength(300)]
         public string? WorkPath { get; set; } = string.Empty;
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 監視間隔（sec）
         /// 
         /// </summary>
-        [Column("INTERVAL")]
+        [Column("interval")]
         [CustomAttribute.DefaultValue(0)]
         public int Interval { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// パラメータ
         /// 
         /// </summary>
-        [Column("PARAM")]
+        [Column("param")]
         [MaxLength(1000)]
         public string? Param { get; set; } = string.Empty;
 
@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// ユーザー名
         /// 
         /// </summary>
-        [Column("USER")]
+        [Column("user")]
         [MaxLength(100)]
         public string? User { get; set; } = string.Empty;
 
@@ -106,7 +106,7 @@ namespace Entity.Tenant
         /// パスワード
         /// 
         /// </summary>
-        [Column("PASSWORD")]
+        [Column("password")]
         [MaxLength(100)]
         public string? PassWord { get; set; } = string.Empty;
 
@@ -114,7 +114,7 @@ namespace Entity.Tenant
         /// 無効区分
         /// 0:有効 1:無効
         /// </summary>
-        [Column("IS_INVALID")]
+        [Column("is_invalid")]
         [CustomAttribute.DefaultValue(0)]
         public int IsInvalid { get; set; }
 
@@ -122,7 +122,7 @@ namespace Entity.Tenant
         /// 備考
         /// 
         /// </summary>
-        [Column("BIKO")]
+        [Column("biko")]
         [MaxLength(300)]
         public string? Biko { get; set; } = string.Empty;
 
@@ -130,14 +130,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -145,7 +145,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -153,14 +153,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -168,7 +168,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

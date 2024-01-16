@@ -2,7 +2,6 @@
 {
     public enum GetLockInfStatus
     {
-        Successful,
-        NoData,
+        Successful
     }
 }

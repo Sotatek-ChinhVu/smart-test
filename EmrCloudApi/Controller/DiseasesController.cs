@@ -14,6 +14,7 @@ using UseCase.Core.Sync;
 using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
+using UseCase.Diseases.IsHokenInfInUsed;
 using UseCase.Diseases.Upsert;
 using UseCase.Diseases.Validation;
 using UseCase.ListSetMst.UpdateListSetMst;
@@ -147,6 +148,17 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
-        
+
+
+        [HttpGet(ApiPath.IsHokenInfInUsed)]
+        public ActionResult<Response<UpdateByomeiSetMstResponse>> IsHokenInfInUsed([FromQuery] IsHokenInfInUsedRequest request)
+        {
+            var input = new IsHokenInfInUsedInputData(HpId, request.PtId, request.HokenPId);
+            var output = _bus.Handle(input);
+            var presenter = new IsHokenInfInUsedPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
     }
 }

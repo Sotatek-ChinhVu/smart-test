@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M41_SUPPLE_INGRE")]
+    [Table(name: "m41_supple_ingre")]
     public class M41SuppleIngre : EmrCloneable<M41SuppleIngre>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 9Sで始まり、5桁の数字が続く
         /// </summary>
         
-        [Column("SEIBUN_CD", Order = 1)]
+        [Column("seibun_cd", Order = 1)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// サプリメント成分代表名
         /// 
         /// </summary>
-        [Column("SEIBUN")]
+        [Column("seibun")]
         [MaxLength(200)]
         public string? Seibun { get; set; } = string.Empty;
     }

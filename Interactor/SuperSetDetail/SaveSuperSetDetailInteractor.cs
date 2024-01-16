@@ -189,6 +189,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                             item.IsSyobyoKbn,
                             item.SikkanKbn,
                             item.NanByoCd,
+                            string.Empty,
                             item.FullByomei,
                             item.IsSuspected,
                             item.IsDspRece,

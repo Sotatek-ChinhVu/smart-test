@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RSVKRT_ODR_INF_CMT")]
+    [Table(name: "rsvkrt_odr_inf_cmt")]
     public class RsvkrtOdrInfCmt : EmrCloneable<RsvkrtOdrInfCmt>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,14 +20,14 @@ namespace Entity.Tenant
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 予約日
         /// yyyymmdd
         /// </summary>
-        [Column("RSV_DATE")]
+        [Column("rsv_date")]
         public int RsvDate { get; set; }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RSVKRT_NO", Order = 3)]
+        [Column("rsvkrt_no", Order = 3)]
         public long RsvkrtNo { get; set; }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// ODR_INF_DETAIL.RP_NO
         /// </summary>
         
-        [Column("RP_NO", Order = 4)]
+        [Column("rp_no", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RP_EDA_NO", Order = 5)]
+        [Column("rp_eda_no", Order = 5)]
         public long RpEdaNo { get; set; }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// ODR_INF_DETAIL.ROW_NO
         /// </summary>
         
-        [Column("ROW_NO", Order = 6)]
+        [Column("row_no", Order = 6)]
         [CustomAttribute.DefaultValue(1)]
         public int RowNo { get; set; }
 
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// ※2018/11/29現在、1項目につき、最大3つまで
         /// </summary>
         
-        [Column("EDA_NO", Order = 7)]
+        [Column("eda_no", Order = 7)]
         [CustomAttribute.DefaultValue(1)]
         public int EdaNo { get; set; }
 
@@ -77,14 +77,14 @@ namespace Entity.Tenant
         /// 文字色
         /// 
         /// </summary>
-        [Column("FONT_COLOR")]
+        [Column("font_color")]
         public int FontColor { get; set; }
 
         /// <summary>
         /// コメントコード
         /// 当該診療行為に対するコメントコード
         /// </summary>
-        [Column("CMT_CD")]
+        [Column("cmt_cd")]
         [MaxLength(10)]
         public string? CmtCd { get; set; } = string.Empty;
 
@@ -92,7 +92,7 @@ namespace Entity.Tenant
         /// コメント名称
         /// コメントコードの名称
         /// </summary>
-        [Column("CMT_NAME")]
+        [Column("cmt_name")]
         [MaxLength(32)]
         public string? CmtName { get; set; } = string.Empty;
 
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// コメント文
         /// コメントコードの定型文に組み合わせる文字情報
         /// </summary>
-        [Column("CMT_OPT")]
+        [Column("cmt_opt")]
         [MaxLength(38)]
         public string? CmtOpt { get; set; } = string.Empty;
     }

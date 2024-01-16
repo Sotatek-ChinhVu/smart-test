@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "ROUSAI_GOSEI_MST")]
+    [Table(name: "rousai_gosei_mst")]
     public class RousaiGoseiMst : EmrCloneable<RousaiGoseiMst>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GOSEI_GRP", Order = 2)]
+        [Column("gosei_grp", Order = 2)]
         public int GoseiGrp { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GOSEI_ITEM_CD", Order = 3)]
+        [Column("gosei_item_cd", Order = 3)]
         [MaxLength(10)]
         public string GoseiItemCd { get; set; } = string.Empty;
 
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("ITEM_CD", Order = 4)]
+        [Column("item_cd", Order = 4)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SISI_KBN", Order = 5)]
+        [Column("sisi_kbn", Order = 5)]
         public int SisiKbn { get; set; }
 
         /// <summary>
@@ -54,35 +54,35 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("START_DATE", Order = 6)]
+        [Column("start_date", Order = 6)]
         public int StartDate { get; set; }
 
         /// <summary>
         /// 使用終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         public int EndDate { get; set; }
 
         /// <summary>
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -90,21 +90,21 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

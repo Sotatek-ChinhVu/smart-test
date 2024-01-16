@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M56_EX_INGRDT_MAIN")]
+    [Table(name: "m56_ex_ingrdt_main")]
     public class M56ExIngrdtMain : EmrCloneable<M56ExIngrdtMain>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("YJ_CD", Order = 1)]
+        [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 薬剤区分コード
         /// 01:内用薬 04:注射薬 06:外用薬
         /// </summary>
-        [Column("DRUG_KBN")]
+        [Column("drug_kbn")]
         [MaxLength(2)]
         public string? DrugKbn { get; set; } = string.Empty;
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 用法コード
         /// 
         /// </summary>
-        [Column("YOHO_CD")]
+        [Column("yoho_cd")]
         [MaxLength(6)]
         public string? YohoCd { get; set; } = string.Empty;
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 配合剤フラグ
         /// 1:該当
         /// </summary>
-        [Column("HAIGOU_FLG")]
+        [Column("haigou_flg")]
         [MaxLength(1)]
         public string? HaigouFlg { get; set; } = string.Empty;
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 輸液フラグ
         /// 1:該当
         /// </summary>
-        [Column("YUEKI_FLG")]
+        [Column("yueki_flg")]
         [MaxLength(1)]
         public string? YuekiFlg { get; set; } = string.Empty;
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 漢方フラグ
         /// 1:該当
         /// </summary>
-        [Column("KANPO_FLG")]
+        [Column("kanpo_flg")]
         [MaxLength(1)]
         public string? KanpoFlg { get; set; } = string.Empty;
 
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// 全身作用フラグ
         /// 1:該当
         /// </summary>
-        [Column("ZENSINSAYO_FLG")]
+        [Column("zensinsayo_flg")]
         [MaxLength(1)]
         public string? ZensinsayoFlg { get; set; } = string.Empty;
     }

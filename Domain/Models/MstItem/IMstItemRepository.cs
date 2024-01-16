@@ -237,5 +237,9 @@ namespace Domain.Models.MstItem
 
         List<RenkeiTimingModel> GetRenkeiTimingModel(int hpId, int renkeiId);
         bool CheckJihiSbtExistsInTenMst(int jihiSbt);
+
+        bool ExistedTenMstItem(int hpId, string itemCd, int sinDate);
+
+        TenItemModel? GetTenMstInfo(int hpId, string itemCd, int sinDate);
     }
 }

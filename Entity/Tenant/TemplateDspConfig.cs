@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Serializable()]
-    [Table(name: "TEMPLATE_DSP_CONF")]
+    [Table(name: "template_dsp_conf")]
     public class TemplateDspConf : EmrCloneable<TemplateDspConf>
     {
         /// <summary>
@@ -13,8 +13,8 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        //[Index("TEMPLATE_DSP_CONF_PKEY", 1)]
+        [Column("hp_id", Order = 1)]
+        //[Index("template_dsp_conf_pkey", 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -22,8 +22,8 @@ namespace Entity.Tenant
         /// TEMPLATE_CATEGORY.TEMPLATE_CD
         /// </summary>
         
-        [Column("TEMPLATE_CD", Order = 2)]
-        //[Index("TEMPLATE_DSP_CONF_PKEY", 2)]
+        [Column("template_cd", Order = 2)]
+        //[Index("template_dsp_conf_pkey", 2)]
         public int TemplateCd { get; set; }
 
         /// <summary>
@@ -31,8 +31,8 @@ namespace Entity.Tenant
         /// TEMPLATE_CATEGORY.SEQ_NO
         /// </summary>
         
-        [Column("SEQ_NO", Order = 3)]
-        //[Index("TEMPLATE_DSP_CONF_PKEY", 3)]
+        [Column("seq_no", Order = 3)]
+        //[Index("template_dsp_conf_pkey", 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
 
@@ -45,15 +45,15 @@ namespace Entity.Tenant
         /// 1002     生活歴
         /// </summary>
         
-        [Column("DSP_KBN", Order = 4)]
-        //[Index("TEMPLATE_DSP_CONF_PKEY", 4)]
+        [Column("dsp_kbn", Order = 4)]
+        //[Index("template_dsp_conf_pkey", 4)]
         public int DspKbn { get; set; }
 
         /// <summary>
         /// 表示設定
         /// 0: 非表示　1: 表示
         /// </summary>
-        [Column("IS_DSP")]
+        [Column("is_dsp")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDsp { get; set; }
     }

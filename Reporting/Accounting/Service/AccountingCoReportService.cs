@@ -3206,20 +3206,10 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
 
                 int sinmeiRowCount = sinmeiListPropertys[listIndex].rowCount;
-                string field = sinmeiListPropertys[listIndex].field;
 
+                // don't set ListText data to this logic, because there is a same logic in javaReport
                 for (short i = 0; i < sinmeiRowCount; i++)
                 {
-                    ListText("lsSinKoui_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KouiNm);
-                    ListText("lsSinMei_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].MeiData);
-                    ListText("lsSinSuuryo_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Suuryo);
-                    ListText("lsSinTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tani);
-                    ListText("lsSinTensu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tensu);
-                    ListText("lsSinTotalTen_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TotalTensu);
-                    ListText("lsSinKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Kaisu);
-                    ListText("lsSinKaisuTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KaisuTani);
-                    ListText("lsSinTensuKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TenKai);
-
                     sinmeiListIndex++;
                     if (sinmeiListIndex >= sinmeiPrintDataModels.Count)
                     {

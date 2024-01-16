@@ -433,7 +433,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             else
             {
                 //and条件
-                var ptIdList = joinQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                var ptIdList = joinQuery.AsEnumerable().Select(r => new { r.PtId, r.SrcItemCd })
                                         .GroupBy(r => r.PtId)
                                         .Select(r => new
                                         {
@@ -466,7 +466,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             else
             {
                 //and条件
-                var ptIdList = joinQuery.Select(r => new { r.PtId, r.SrcItemCd })
+                var ptIdList = joinQuery.AsEnumerable().Select(r => new { r.PtId, r.SrcItemCd })
                                             .GroupBy(r => r.PtId)
                                             .Select(r => new
                                             {

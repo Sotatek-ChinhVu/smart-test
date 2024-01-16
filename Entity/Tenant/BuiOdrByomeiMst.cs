@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "BUI_ODR_BYOMEI_MST")]
+    [Table(name: "bui_odr_byomei_mst")]
     public class BuiOdrByomeiMst : EmrCloneable<BuiOdrByomeiMst>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// BUI_ODR_MST.BUI_ID
         /// </summary>
         
-        [Column("BUI_ID", Order = 2)]
+        [Column("bui_id", Order = 2)]
         public int BuiId { get; set; }
 
         /// <summary>
@@ -29,27 +29,27 @@ namespace Entity.Tenant
         /// 病名に登録された部位
         /// </summary>
         
-        [Column("BYOMEI_BUI", Order = 3)]
+        [Column("byomei_bui", Order = 3)]
         [MaxLength(100)]
         public string ByomeiBui { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

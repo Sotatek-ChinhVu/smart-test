@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "SESSION_INF")]
+    [Table(name: "session_inf")]
     public class SessionInf : EmrCloneable<SessionInf>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,14 +20,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("MACHINE", Order = 2)]
+        [Column("machine", Order = 2)]
         public string Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// ユーザーID
         /// 
         /// </summary>
-        [Column("USER_ID")]
+        [Column("user_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UserId { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// ログイン日時
         /// 
         /// </summary>
-        [Column("LOGIN_DATE")]
+        [Column("login_date")]
         public DateTime LoginDate { get; set; }
     }
 }

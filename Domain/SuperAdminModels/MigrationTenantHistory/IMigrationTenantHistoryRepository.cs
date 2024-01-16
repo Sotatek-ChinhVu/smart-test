@@ -9,6 +9,7 @@ namespace Domain.SuperAdminModels.MigrationTenantHistory
     public interface IMigrationTenantHistoryRepository
     {
         List<string> GetMigration(int tenantId);
+        List<MigrationTenantHistoryModel> GetMigrationByTenants(List<int> tenantIds);
         bool AddMigrationHistory(int tenantId, string migrationId);
         void ReleaseResource();
     }

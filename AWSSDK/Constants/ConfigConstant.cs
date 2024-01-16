@@ -1,9 +1,4 @@
 ﻿using Amazon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AWSSDK.Constants
 {
@@ -43,6 +38,7 @@ namespace AWSSDK.Constants
         public static byte StatusTenantFailded = 2;
         public static byte StatusTenantTeminated = 7;
         public static byte StatusTenantStopped = 5;
+        public static byte StatusSuttingDown = 6;
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>
@@ -64,7 +60,9 @@ namespace AWSSDK.Constants
             {"restoring", 15},
             {"restore-failed", 16},
             {"stopping", 17},
-            {"starting", 18}
+            {"starting", 18},
+            {"update-schema", 19},
+            {"update-schema-failed", 20}
         };
 
             return rdsStatusDictionary;
