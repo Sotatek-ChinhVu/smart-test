@@ -438,6 +438,10 @@ namespace PostgreDataContext
             modelBuilder.Entity<YohoHosoku>().HasKey(s => new { s.HpId, s.ItemCd, s.StartDate, s.SeqNo });
             modelBuilder.Entity<EpsChk>().HasKey(s => new { s.HpId, s.PtId, s.RaiinNo, s.SeqNo });
             modelBuilder.Entity<EpsChkDetail>().HasKey(s => new { s.HpId, s.PtId, s.RaiinNo, s.SeqNo, s.MessageId });
+            modelBuilder.Entity<Yousiki1Inf>().HasKey(s => new { s.HpId, s.PtId, s.SinYm, s.DataType, s.SeqNo });
+            modelBuilder.Entity<Yousiki1InfDetail>().HasKey(s => new { s.HpId, s.PtId, s.SinYm, s.DataType, s.SeqNo, s.CodeNo, s.RowNo, s.Payload });
+            modelBuilder.Entity<ZYousiki1Inf>().HasKey(s => new { s.OpId });
+            modelBuilder.Entity<ZYousiki1InfDetail>().HasKey(s => new { s.OpId });
 
             modelBuilder.Entity<SetMst>()
            .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
@@ -1211,5 +1215,13 @@ namespace PostgreDataContext
         public DbSet<EpsChk> EpsChks { get; set; } = default!;
 
         public DbSet<EpsChkDetail> EpsChkDetails { get; set; } = default!;
+
+        public DbSet<Yousiki1Inf> Yousiki1Infs { get; set; } = default!;
+
+        public DbSet<Yousiki1InfDetail> Yousiki1InfDetails { get; set; } = default!;
+
+        public DbSet<ZYousiki1Inf> ZYousiki1Infs { get; set; } = default!;
+
+        public DbSet<ZYousiki1InfDetail> ZYousiki1InfDetails { get; set; } = default!;
     }
 }
