@@ -27,7 +27,7 @@ public class YousikiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetYousiki1InfModelWithCommonInf)]
     public ActionResult<Response<GetYousiki1InfModelWithCommonInfResponse>> GetYousiki1InfModelWithCommonInf([FromQuery] GetYousiki1InfModelWithCommonInfRequest request)
     {
-        var input = new GetYousiki1InfModelWithCommonInfInputData(HpId, request.SinYm, request.PtNum, request.DataTypes, request.Status);
+        var input = new GetYousiki1InfModelWithCommonInfInputData(HpId, request.SinYm, request.PtNum, request.DataType, request.Status);
         var output = _bus.Handle(input);
         var presenter = new GetYousiki1InfModelWithCommonInfPresenter();
         presenter.Complete(output);
@@ -67,7 +67,7 @@ public class YousikiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetYousiki1InfModel)]
     public ActionResult<Response<GetYousiki1InfModelResponse>> GetYousiki1InfModel([FromQuery] GetYousiki1InfModelRequest request)
     {
-        var input = new GetYousiki1InfModelInputData(HpId, request.SinYm, request.PtNum, request.DataTypes);
+        var input = new GetYousiki1InfModelInputData(HpId, request.SinYm, request.PtNum, request.DataType);
         var output = _bus.Handle(input);
         var presenter = new GetYousiki1InfModelPresenter();
         presenter.Complete(output);
