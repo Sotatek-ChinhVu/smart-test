@@ -24,4 +24,5 @@ public static class CacheKeyConstant
     public const string StaGrpModel = "StaGrpModel";
     public const string JsonSettings = "JsonSettings";
     public const string SyoukiKbnMst = "SyoukiKbnMst";
+    public const string KohiPriority = "KohiPriority";
 }
