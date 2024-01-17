@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RAIIN_LIST_INF")]
-    [Index(nameof(GrpId), nameof(KbnCd), nameof(RaiinListKbn), Name = "RAIIN_LIST_INF_IDX01")]
-    [Index(nameof(HpId), nameof(PtId), Name = "RAIIN_LIST_INF_IDX02")]
+    [Table(name: "raiin_list_inf")]
+    [Index(nameof(GrpId), nameof(KbnCd), nameof(RaiinListKbn), Name = "raiin_list_inf_idx01")]
+    [Index(nameof(HpId), nameof(PtId), Name = "raiin_list_inf_idx02")]
 
 
     public class RaiinListInf : EmrCloneable<RaiinListInf>
@@ -17,7 +17,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_DATE")]
+        [Column("sin_date")]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO")]
+        [Column("raiin_no")]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -49,28 +49,28 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("GRP_ID")]
+        [Column("grp_id")]
         public int GrpId { get; set; }
 
         /// <summary>
         /// 区分コード
         /// 
         /// </summary>
-        [Column("KBN_CD")]
+        [Column("kbn_cd")]
         public int KbnCd { get; set; }
 
         /// <summary>
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 
@@ -90,8 +90,15 @@ namespace Entity.Tenant
         ///		4: ファイル
         /// </summary>
         
-        [Column("RAIIN_LIST_KBN", Order = 6)]
+        [Column("raiin_list_kbn", Order = 6)]
         [CustomAttribute.DefaultValue(0)]
         public int RaiinListKbn { get; set; }
+
+        /// <summary>
+        /// ID
+        /// </summary>
+        [Column("id", Order = 7)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
     }
 }

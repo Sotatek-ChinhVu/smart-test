@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF;
 
-public class ReceiptCheckRequest : ReportRequestBase
+public class ReceiptCheckRequest
 {
     public List<long> PtIds { get; set; } = new();
 

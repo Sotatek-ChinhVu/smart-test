@@ -524,7 +524,10 @@ namespace Infrastructure.Repositories
 
                     index++;
                 }
-                ptInfQuery = ptInfQuery.Where(pt => ptOdrDetailTemp.Any(x => x == pt.PtId));
+
+                // get ptId list from ptOdrDetailTemp
+                var ptIdList = ptOdrDetailTemp.Distinct().ToList();
+                ptInfQuery = ptInfQuery.Where(pt => ptIdList.Contains(pt.PtId));
             }
 
             // Department
@@ -1168,7 +1171,7 @@ namespace Infrastructure.Repositories
             patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.HpId = hpId;
 
-            string querySql = $"INSERT INTO public.\"PT_INF\"\r\n(\"HP_ID\", \"PT_NUM\", \"KANA_NAME\", \"NAME\", \"SEX\", \"BIRTHDAY\", \"IS_DEAD\", \"DEATH_DATE\", \"HOME_POST\", \"HOME_ADDRESS1\", \"HOME_ADDRESS2\", \"TEL1\", \"TEL2\", \"MAIL\", \"SETAINUSI\", \"ZOKUGARA\", \"JOB\", \"RENRAKU_NAME\", \"RENRAKU_POST\", \"RENRAKU_ADDRESS1\", \"RENRAKU_ADDRESS2\", \"RENRAKU_TEL\", \"RENRAKU_MEMO\", \"OFFICE_NAME\", \"OFFICE_POST\", \"OFFICE_ADDRESS1\", \"OFFICE_ADDRESS2\", \"OFFICE_TEL\", \"OFFICE_MEMO\", \"IS_RYOSYO_DETAIL\", \"PRIMARY_DOCTOR\", \"IS_TESTER\", \"IS_DELETE\", \"CREATE_DATE\", \"CREATE_ID\", \"CREATE_MACHINE\", \"UPDATE_DATE\", \"UPDATE_ID\", \"UPDATE_MACHINE\", \"MAIN_HOKEN_PID\", \"LIMIT_CONS_FLG\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
+            string querySql = $"INSERT INTO public.\"pt_inf\"\r\n(\"hp_id\", \"pt_num\", \"kana_name\", \"name\", \"sex\", \"birthday\", \"is_dead\", \"death_date\", \"home_post\", \"home_address1\", \"home_address2\", \"tel1\", \"tel2\", \"mail\", \"setainusi\", \"zokugara\", \"job\", \"renraku_name\", \"renraku_post\", \"renraku_address1\", \"renraku_address2\", \"renraku_tel\", \"renraku_memo\", \"office_name\", \"office_post\", \"office_address1\", \"office_address2\", \"office_tel\", \"office_memo\", \"is_ryosyo_detail\", \"primary_doctor\", \"is_tester\", \"is_delete\", \"create_date\", \"create_id\", \"create_machine\", \"update_date\", \"update_id\", \"update_machine\", \"main_hoken_pid\", \"limit_cons_flg\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
             TrackingDataContext.Database.SetCommandTimeout(1200);
             bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
 
@@ -2128,12 +2131,23 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
+        public HokenMstModel GetHokenMstByInfor(int hpId, int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo
+            // Get all hoken follow hpInf 
+            var hpInf = NoTrackingDataContext.HpInfs.Where(h => h.HpId == hpId && h.StartDate <= sinDate).OrderByDescending(x => x.StartDate).FirstOrDefault();
+            var prefCd = hpInf?.PrefNo;
+            //Validate get all hokenMst
+            var hokenMst = TrackingDataContext.HokenMsts.Where(x => x.HokenNo == hokenNo
                                                                         && x.HokenEdaNo == hokenEdaNo
-                                                                        && x.StartDate <= sinDate
-                                                                        && sinDate <= x.EndDate);
+                                   && (x.PrefNo == prefCd
+                            || x.PrefNo == 0
+                            || x.IsOtherPrefValid == 1))
+                                .OrderBy(e => e.HpId)
+                    .ThenBy(e => e.HokenNo)
+                    .ThenByDescending(e => e.PrefNo)
+                    .ThenBy(e => e.SortNo)
+                    .ThenByDescending(e => e.StartDate)
+                    .FirstOrDefault();
             if (hokenMst is null)
                 return new HokenMstModel();
 

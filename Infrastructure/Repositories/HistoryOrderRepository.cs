@@ -549,12 +549,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public void DisposeSource()
-        {
-            _userInfoService.DisposeSource();
-            _kaService.DisposeSource();
-        }
-
         #region private method
         private long SearchKarte(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)
         {
@@ -778,6 +772,8 @@ namespace Infrastructure.Repositories
             _insuranceRepository.ReleaseResource();
             _raiinListTagRepository.ReleaseResource();
             _karteInfRepository.ReleaseResource();
+            _kaService.DisposeSource();
+            _userInfoService.DisposeSource();
         }
 
         private List<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)

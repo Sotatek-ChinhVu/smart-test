@@ -2,15 +2,17 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
-using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Helper.Mapping;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System.Collections.ObjectModel;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Data;
 using System.Linq.Expressions;
 using System.Text.Json;
 
@@ -18,10 +20,22 @@ namespace Infrastructure.Repositories
 {
     public class InsuranceRepository : RepositoryBase, IInsuranceRepository
     {
-        public InsuranceRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        public InsuranceRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
-
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
+        }
         public InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate, bool flag = true, bool isDeletedPtHokenInf = false)
         {
             int prefCd = 0;
@@ -40,6 +54,7 @@ namespace Infrastructure.Repositories
             #region PtHokenInf
             IQueryable<PtHokenInf> hokenInfQuery = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId && (isDeletedPtHokenInf || (h.IsDeleted == DeleteTypes.None || h.HokenId == maxIdHokenInf))).OrderByDescending(x => x.HokenId);
 
+            // if flag is true, get hokenMst between startDate and endDate
             var hokenMasterInfQuery = NoTrackingDataContext.HokenMsts.Where(h => h.HpId == hpId && (!flag || (h.StartDate <= sinDate && sinDate <= h.EndDate)) &&
                                                                             (h.PrefNo == prefCd || h.PrefNo == 0 || h.IsOtherPrefValid == 1))
                                      .GroupBy(x => new
@@ -1410,8 +1425,35 @@ namespace Infrastructure.Repositories
 
         public List<KohiPriorityModel> GetKohiPriorityList()
         {
-            return NoTrackingDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
+            var key = GetCacheKey() + CacheKeyConstant.KohiPriority;
+            IEnumerable<KohiPriorityModel> kohiPriorityList;
+            if (!_cache.KeyExists(key))
+            {
+                kohiPriorityList = ReloadCache_KohiPriority(key);
+            }
+            else
+            {
+                kohiPriorityList = ReadCache_KohiPriority(key);
+            }
+            return kohiPriorityList.ToList();
         }
+        #region [set cache kohiPriority]
+        private IEnumerable<KohiPriorityModel> ReloadCache_KohiPriority(string key)
+        {
+            var data = NoTrackingDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
+
+            var json = JsonSerializer.Serialize(data);
+            _cache.StringSet(key, json);
+            return data;
+        }
+        private List<KohiPriorityModel> ReadCache_KohiPriority(string key)
+        {
+            var results = _cache.StringGet(key);
+            var json = results.AsString();
+            var datas = JsonSerializer.Deserialize<List<KohiPriorityModel>>(json);
+            return datas ?? new();
+        }
+        #endregion [set cache kohiPriority]
 
         public void ReleaseResource()
         {

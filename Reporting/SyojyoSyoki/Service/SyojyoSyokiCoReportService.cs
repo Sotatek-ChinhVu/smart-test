@@ -39,6 +39,9 @@ namespace Reporting.SyojyoSyoki.Service
         private List<string> _syojyoSyokiList;
         private readonly Dictionary<string, string> _singleFieldData = new();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new();
+        private readonly Dictionary<int, Dictionary<string, string>> _setFieldData = new();
+        private readonly Dictionary<string, string> _extralData = new();
+        private readonly Dictionary<int, List<ListTextObject>> _listTextData = new();
 
         public SyojyoSyokiCoReportService(IReadRseReportFileService readRseReportFileService, ICoSyojyoSyokiFinder finder)
         {
@@ -77,7 +80,8 @@ namespace Reporting.SyojyoSyoki.Service
 
                             while (_hasNextPage)
                             {
-                                _hasNextPage = UpdateDrawForm();
+                                // fix exception in line 334
+                                UpdateDrawForm();
                                 _currentPage++;
                             }
 
@@ -85,7 +89,11 @@ namespace Reporting.SyojyoSyoki.Service
                     }
                 }
 
-                return new SyojyoSyokiMapper(_singleFieldData, _tableFieldData, _rowCountFieldName).GetData();
+                // total page
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count();
+                _extralData.Add("totalPage", pageIndex.ToString());
+
+                return new SyojyoSyokiMapper(_singleFieldData, _tableFieldData, _rowCountFieldName, _setFieldData, _listTextData, _extralData).GetData();
             }
             finally
             {
@@ -157,6 +165,7 @@ namespace Reporting.SyojyoSyoki.Service
             // ヘッダー印刷
             int UpdateFormHeader()
             {
+                Dictionary<string, string> fieldDataPerPage = new();
                 #region sub func
                 string _getSinYm()
                 {
@@ -247,44 +256,44 @@ namespace Reporting.SyojyoSyoki.Service
                     return ret;
                 }
                 #endregion
-
+                //Fix Get data and print Header each page
                 // ページ
-                SetFieldData("dfPage", _currentPage.ToString());
+                fieldDataPerPage.Add("dfPage", _currentPage.ToString());
                 // 患者番号
-                SetFieldData("dfPtNo", coModel.PtNum.ToString());
+                fieldDataPerPage.Add("dfPtNo", coModel.PtNum.ToString());
                 // 診療年月
-                SetFieldData("dfSinYM", _getSinYm());
+                fieldDataPerPage.Add("dfSinYM", _getSinYm());
                 // 県番号
-                SetFieldData("dfPrefNo", coModel.PrefNo.ToString());
+                fieldDataPerPage.Add("dfPrefNo", coModel.PrefNo.ToString());
                 // 医療機関コード
-                SetFieldData("dfHpNo", CIUtil.FormatHpCd(coModel.HpCd, coModel.PrefNo));
+                fieldDataPerPage.Add("dfHpNo", CIUtil.FormatHpCd(coModel.HpCd, coModel.PrefNo));
                 // レセ種別１
-                SetFieldData("dfReceSbt1", _getReceSbt1());
+                fieldDataPerPage.Add("dfReceSbt1", _getReceSbt1());
 
                 // レセ種別２
-                SetFieldData("dfReceSbt2", _getReceSbt2());
+                fieldDataPerPage.Add("dfReceSbt2", _getReceSbt2());
 
                 // レセ種別３
-                SetFieldData("dfReceSbt3", _getReceSbt3());
+                fieldDataPerPage.Add("dfReceSbt3", _getReceSbt3());
 
                 // 医療機関名
-                SetFieldData("dfHpName", coModel.HpName);
+                fieldDataPerPage.Add("dfHpName", coModel.HpName);
                 // 患者名
-                SetFieldData("dfPtKanjiName", coModel.PtName);
+                fieldDataPerPage.Add("dfPtKanjiName", coModel.PtName);
                 // 生年月日
-                SetFieldData("dfBirthDay", CIUtil.SDateToShowWDate3(coModel.Birthday).Ymd);
+                fieldDataPerPage.Add("dfBirthDay", CIUtil.SDateToShowWDate3(coModel.Birthday).Ymd);
 
                 // 保険者番号
-                SetFieldData("dfHokensyaNo", string.Format("{0, 8}", coModel.HokensyaNo));
+                fieldDataPerPage.Add("dfHokensyaNo", string.Format("{0, 8}", coModel.HokensyaNo));
 
                 // 記号
-                SetFieldData("dfKigo", coModel.Kigo);
+                fieldDataPerPage.Add("dfKigo", coModel.Kigo);
 
                 // 番号
-                SetFieldData("dfBango", coModel.Bango);
+                fieldDataPerPage.Add("dfBango", coModel.Bango);
 
                 // 枝番
-                SetFieldData("dfEdano", coModel.EdaNo);
+                fieldDataPerPage.Add("dfEdano", coModel.EdaNo);
 
                 int fieldIndex = 1;
                 for (int i = 1; i <= 4; i++)
@@ -292,13 +301,16 @@ namespace Reporting.SyojyoSyoki.Service
                     if (coModel.KohiReceKisai(i) == 1)
                     {
                         //公費負担者番号
-                        SetFieldData($"dfFutanNoK{fieldIndex}", string.Format("{0, 8}", coModel.KohiFutansyaNo(i)));
+                        fieldDataPerPage.Add($"dfFutanNoK{fieldIndex}", string.Format("{0, 8}", coModel.KohiFutansyaNo(i)));
                         //公費受給者番号
-                        SetFieldData($"dfJyukyuNoK{fieldIndex}", string.Format("{0, 7}", coModel.KohiJyukyusyaNo(i)));
+                        fieldDataPerPage.Add($"dfJyukyuNoK{fieldIndex}", string.Format("{0, 7}", coModel.KohiJyukyusyaNo(i)));
 
                         fieldIndex++;
                     }
                 }
+
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                _setFieldData.Add(pageIndex, fieldDataPerPage);
 
                 return 1;
             }
@@ -306,6 +318,8 @@ namespace Reporting.SyojyoSyoki.Service
             // 本体部印刷
             int UpdateFormBody()
             {
+                var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+                List<ListTextObject> listDataPerPage = new();
                 int dataIndex = (_currentPage - 1) * _syojyoSyokiRowCount;
 
                 if (_syojyoSyokiList == null || _syojyoSyokiList.Count == 0 || _syojyoSyokiRowCount <= 0)
@@ -316,11 +330,8 @@ namespace Reporting.SyojyoSyoki.Service
 
                 for (short i = 0; i < _syojyoSyokiRowCount; i++)
                 {
-                    Dictionary<string, CellModel> data = new();
-
-                    AddListData(ref data, "lsSyojyoSyoki", _syojyoSyokiList[dataIndex]);
-
-                    _tableFieldData.Add(data);
+                    // Get data in
+                    listDataPerPage.Add(new("lsSyojyoSyoki", 0, i, _syojyoSyokiList[dataIndex]));
 
                     dataIndex++;
                     if (dataIndex >= _syojyoSyokiList.Count)
@@ -329,6 +340,8 @@ namespace Reporting.SyojyoSyoki.Service
                         break;
                     }
                 }
+
+                _listTextData.Add(pageIndex, listDataPerPage); // print Body each page.
                 return dataIndex;
             }
 

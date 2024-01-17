@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class PatientManagementRequest : ReportRequestBase
+public class PatientManagementRequest
 {
     public PatientManagementItem PatientManagement { get; set; } = new();
 }

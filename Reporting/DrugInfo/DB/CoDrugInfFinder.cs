@@ -6,6 +6,7 @@ using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
+using PostgreDataContext;
 using Reporting.DrugInfo.Model;
 
 namespace Reporting.DrugInfo.DB;
@@ -13,17 +14,20 @@ namespace Reporting.DrugInfo.DB;
 public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 {
     private readonly ISystemConfRepository _systemConfRepository;
+    private readonly TenantDataContext _tenantOdrInfDetail;
     private readonly IConfiguration _configuration;
 
-    public CoDrugInfFinder(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository, IConfiguration configuration) : base(tenantProvider)
+    public CoDrugInfFinder(ITenantProvider tenantProvider, ITenantProvider tenantOdrInfDetail, ISystemConfRepository systemConfRepository, IConfiguration configuration) : base(tenantProvider)
     {
         _systemConfRepository = systemConfRepository;
+        _tenantOdrInfDetail = tenantOdrInfDetail.GetNoTrackingDataContext();
         _configuration = configuration;
     }
 
     public void ReleaseResource()
     {
         _systemConfRepository.ReleaseResource();
+        _tenantOdrInfDetail.Dispose();
         DisposeDataContext();
     }
 
@@ -37,24 +41,24 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     {
         DrugInfoModel info = new DrugInfoModel();
         var intOrderDate = orderDate == 0 ? CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow()) : orderDate;
-        info.orderDate = CIUtil.SDateToShowWDate2(intOrderDate);
+        info.OrderDate = CIUtil.SDateToShowWDate2(intOrderDate);
 
         var hpInfo = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= intOrderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
         if (hpInfo != null)
         {
-            info.hpName = hpInfo.HpName ?? string.Empty;
-            info.address1 = hpInfo.Address1 ?? string.Empty;
-            info.address2 = hpInfo.Address2 ?? string.Empty;
-            info.phone = hpInfo.Tel ?? string.Empty;
+            info.HpName = hpInfo.HpName ?? string.Empty;
+            info.Address1 = hpInfo.Address1 ?? string.Empty;
+            info.Address2 = hpInfo.Address2 ?? string.Empty;
+            info.Phone = hpInfo.Tel ?? string.Empty;
         }
 
         var ptInfo = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId);
         if (ptInfo != null)
         {
-            info.ptNo = ptInfo.PtNum;
-            info.ptName = ptInfo.Name ?? string.Empty;
-            info.sex = ptInfo.Sex == 1 ? "M" : "F";
-            info.intAge = (intOrderDate - ptInfo.Birthday) / 10000;
+            info.PtNo = ptInfo.PtNum;
+            info.PtName = ptInfo.Name ?? string.Empty;
+            info.Sex = ptInfo.Sex == 1 ? "M" : "F";
+            info.IntAge = (intOrderDate - ptInfo.Birthday) / 10000;
         }
 
         return info;
@@ -62,10 +66,16 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 
     public List<OrderInfoModel> GetOrderByRaiinNo(long raiinNo)
     {
-        var listOrderInfo = new List<OrderInfoModel>();
-        var odrInfs = NoTrackingDataContext.OdrInfs.Where(o => o.RaiinNo == raiinNo && o.IsDeleted == 0 && new[] { 21, 22, 23, 28 }.Contains(o.OdrKouiKbn) && o.InoutKbn == 0).ToList();
+        // multiple threads to speed up performance
+        List<OrderInfoModel> listOrderInfo = new();
+        var odrKouiKbnFilter = new[] { 21, 22, 23, 28 };
+        List<OdrInfDetail> infDetails = new();
+        List<OdrInf> odrInfs = new();
 
-        var infDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.RaiinNo == raiinNo && !(d.ItemCd != null && d.ItemCd.StartsWith("8") && d.ItemCd.Length == 9)).ToList();
+        Task taskListOdrInf = Task.Factory.StartNew(() => odrInfs = NoTrackingDataContext.OdrInfs.Where(item => odrKouiKbnFilter.Contains(item.OdrKouiKbn) && item.InoutKbn == 0 && item.RaiinNo == raiinNo && item.IsDeleted == 0).ToList());
+        Task taskListOdrInfDetail = Task.Factory.StartNew(() => infDetails = _tenantOdrInfDetail.OdrInfDetails.Where(item => !(item.ItemCd != null && item.ItemCd.StartsWith("8") && item.ItemCd.Length == 9) && item.RaiinNo == raiinNo).ToList());
+        Task.WaitAll(taskListOdrInf, taskListOdrInfDetail);
+
         if (odrInfs != null && odrInfs.Count > 0)
         {
             foreach (var odrInf in odrInfs)
@@ -76,7 +86,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
                 orderInfoModel.OdrKouiKbn = odrInf.OdrKouiKbn;
 
                 var details = infDetails.Where(d => d.RaiinNo == odrInf.RaiinNo && d.RpNo == odrInf.RpNo && d.RpEdaNo == odrInf.RpEdaNo).OrderBy(d => d.RowNo);
-                List<OrderInfDetailModel> orderInfDetailModels = new List<OrderInfDetailModel>();
+                List<OrderInfDetailModel> orderInfDetailModels = new();
                 if (details != null)
                 {
                     foreach (var detail in details)
@@ -144,16 +154,51 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         return images;
     }
 
-    public List<DrugInf> GetDrugInfo(int hpId, string itemCd, int age, int gender)
+    /// <summary>
+    /// Get common data for function GetDrugInfo to speed up performance
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="itemCdList"></param>
+    /// <param name="age"></param>
+    /// <param name="gender"></param>
+    public (List<DrugInf> drugInfList, List<TenMst> tenMstList, List<M34DrugInfoMain> m34DrugInfoMainList, List<M34IndicationCode> m34IndicationCodeList, List<M34Precaution> m34PrecautionList, List<M34PrecautionCode> m34PrecautionCodeList) GetQueryDrugList(int hpId, List<string> itemCdList, int age, int gender)
+    {
+        itemCdList = itemCdList.Distinct().ToList();
+        string strSex = gender.AsString();
+        List<DrugInf> drugInfList = NoTrackingDataContext.DrugInfs.Where(item => item.HpId == hpId
+                                                                                 && itemCdList.Contains(item.ItemCd)
+                                                                                 && item.IsDeleted == 0)
+                                                                 .ToList();
+        List<TenMst> tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd))
+                                                               .Distinct()
+                                                               .ToList();
+
+        var yjCdList = tenMstList.Select(item => item.YjCd).Distinct().ToList();
+        List<M34DrugInfoMain> m34DrugInfoMainList = NoTrackingDataContext.M34DrugInfoMains.Where(item => yjCdList.Contains(item.YjCd)).Distinct().ToList();
+
+        var konoCodes = m34DrugInfoMainList.Select(item => item.KonoCd).Distinct().ToList();
+        List<M34IndicationCode> m34IndicationCodeList = NoTrackingDataContext.M34IndicationCodes.Where(item => konoCodes.Contains(item.KonoCd)).ToList();
+        List<M34Precaution> m34PrecautionList = NoTrackingDataContext.M34Precautions.Where(item => yjCdList.Contains(item.YjCd)).ToList();
+        List<M34PrecautionCode> m34PrecautionCodeList = NoTrackingDataContext.M34PrecautionCodes.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
+                                                                                                               || (pr.AgeMax >= age && pr.AgeMin <= age)
+                                                                                                               || (pr.AgeMax <= 0 && pr.AgeMin <= age))
+                                                                                                             && (pr.SexCd == null
+                                                                                                                 || pr.SexCd == string.Empty
+                                                                                                                 || pr.SexCd == strSex))
+                                                                                                .ToList();
+        return (drugInfList, tenMstList, m34DrugInfoMainList, m34IndicationCodeList, m34PrecautionList, m34PrecautionCodeList);
+    }
+
+    public List<DrugInf> GetDrugInfo(int hpId, string itemCd, int age, int gender, List<DrugInf> drugInfList, List<TenMst> tenMstList, List<M34DrugInfoMain> m34DrugInfoMainList, List<M34IndicationCode> m34IndicationCodeList, List<M34Precaution> m34PrecautionList, List<M34PrecautionCode> m34PrecautionCodeList, List<SystemConfModel> allSystemConfigList)
     {
         List<DrugInf> result = new();
         string strSex = gender.AsString();
-        var drugInf = NoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 1).ToList();
+        var drugInf = drugInfList.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 1).ToList();
         if (!drugInf.Any())
         {
             drugInf = new List<DrugInf>();
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.ItemCd == itemCd);
-            var drugInfoMains = NoTrackingDataContext.M34DrugInfoMains;
+            var tenMsts = tenMstList.Where(t => t.ItemCd == itemCd);
+            var drugInfoMains = m34DrugInfoMainList;
             var joinQuery = (from t in tenMsts
                              join dm in drugInfoMains
                              on t.YjCd equals dm.YjCd
@@ -161,7 +206,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 
             var konoCodes = joinQuery.GroupBy(g => g).Select(g => g.Key).ToList();
 
-            var indicationCodes = NoTrackingDataContext.M34IndicationCodes;
+            var indicationCodes = m34IndicationCodeList;
             var joinWithCodes = (from konoCd in konoCodes
                                  join indicationCode in indicationCodes
                                  on konoCd equals indicationCode.KonoCd
@@ -180,13 +225,13 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         }
         result.AddRange(drugInf);
 
-        var drugInf1 = NoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 2).AsEnumerable().ToList();
+        var drugInf1 = drugInfList.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 2).ToList();
         if (drugInf1 == null || drugInf1.Count == 0)
         {
             drugInf1 = new List<DrugInf>();
 
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.ItemCd == itemCd);
-            var precaution = NoTrackingDataContext.M34Precautions;
+            var tenMsts = tenMstList.Where(t => t.ItemCd == itemCd);
+            var precaution = m34PrecautionList;
             var joinQuery = (from t in tenMsts
                              join pr in precaution
                              on t.YjCd equals pr.YjCd
@@ -194,12 +239,12 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 
             var precautionCds = joinQuery.GroupBy(g => new { g.PrecautionCd }).Select(g => new { g.Key.PrecautionCd, g.FirstOrDefault()!.SeqNo }).ToList();
 
-            var precautionCodes = NoTrackingDataContext.M34PrecautionCodes.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
-                                                                                                        || (pr.AgeMax >= age && pr.AgeMin <= age)
-                                                                                                        || (pr.AgeMax <= 0 && pr.AgeMin <= age))
-                                                                                                    && (pr.SexCd == null || pr.SexCd == string.Empty || pr.SexCd == strSex));
-            IQueryable<M34PrecautionCode> precautionCodeQuery = precautionCodes;
-            if ((int)_systemConfRepository.GetSettingValue(92004, 3, hpId) == 1) //IsPrecautionQueryAgeSex
+            var precautionCodes = m34PrecautionCodeList.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
+                                                                      || (pr.AgeMax >= age && pr.AgeMin <= age)
+                                                                      || (pr.AgeMax <= 0 && pr.AgeMin <= age))
+                                                                  && (pr.SexCd == null || pr.SexCd == string.Empty || pr.SexCd == strSex));
+            var precautionCodeQuery = precautionCodes;
+            if (GetSettingValue(allSystemConfigList, 92004, 3) == 1) //IsPrecautionQueryAgeSex
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => !((pr.AgeMin > 0 || pr.AgeMax > 0)
                                                                         && (pr.AgeMax >= age || pr.AgeMax <= 0)
@@ -207,57 +252,57 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
                                                                         && !string.IsNullOrEmpty(pr.SexCd)
                                                                         && pr.SexCd == strSex));
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 4, hpId) == 1) //IsPrecautionQueryAgeNoSex
+            if (GetSettingValue(allSystemConfigList, 92004, 4) == 1) //IsPrecautionQueryAgeNoSex
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => !((pr.AgeMin > 0 || pr.AgeMax > 0)
                                                                         && (pr.AgeMax >= age || pr.AgeMax <= 0)
                                                                         && pr.AgeMin <= age
                                                                         && string.IsNullOrEmpty(pr.SexCd)));
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 5, hpId) == 1) //IsPrecautionQuerySexNoAge
+            if (GetSettingValue(allSystemConfigList, 92004, 5) == 1) //IsPrecautionQuerySexNoAge
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => !((pr.AgeMax <= 0 && pr.AgeMin <= 0)
                                                                         && !string.IsNullOrEmpty(pr.SexCd)
                                                                         && pr.SexCd == strSex));
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 6, hpId) == 1) //IsPrecautionQueryNoAgeNoSex
+            if (GetSettingValue(allSystemConfigList, 92004, 6) == 1) //IsPrecautionQueryNoAgeNoSex
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => !((pr.AgeMax <= 0 && pr.AgeMin <= 0)
                                                                          && string.IsNullOrEmpty(pr.SexCd)));
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 7, hpId) == 1) //IsPrecautionQueryPropertyCd1
+            if (GetSettingValue(allSystemConfigList, 92004, 7) == 1) //IsPrecautionQueryPropertyCd1
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 1);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 8, hpId) == 1) //IsPrecautionQueryPropertyCd2
+            if (GetSettingValue(allSystemConfigList, 92004, 8) == 1) //IsPrecautionQueryPropertyCd2
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 2);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 9, hpId) == 1) //IsPrecautionQueryPropertyCd3
+            if (GetSettingValue(allSystemConfigList, 92004, 9) == 1) //IsPrecautionQueryPropertyCd3
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 3);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 10, hpId) == 1) //IsPrecautionQueryPropertyCd4
+            if (GetSettingValue(allSystemConfigList, 92004, 10) == 1) //IsPrecautionQueryPropertyCd4
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 4);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 11, hpId) == 1) //IsPrecautionQueryPropertyCd5
+            if (GetSettingValue(allSystemConfigList, 92004, 11) == 1) //IsPrecautionQueryPropertyCd5
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 5);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 12, hpId) == 1) //IsPrecautionQueryPropertyCd6
+            if (GetSettingValue(allSystemConfigList, 92004, 12) == 1) //IsPrecautionQueryPropertyCd6
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 6);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 13, hpId) == 1) //IsPrecautionQueryPropertyCd7
+            if (GetSettingValue(allSystemConfigList, 92004, 13) == 1) //IsPrecautionQueryPropertyCd7
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 7);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 14, hpId) == 1) //IsPrecautionQueryPropertyCd8
+            if (GetSettingValue(allSystemConfigList, 92004, 14) == 1) //IsPrecautionQueryPropertyCd8
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 8);
             }
-            if ((int)_systemConfRepository.GetSettingValue(92004, 15, hpId) == 1) //IsPrecautionQueryPropertyCd9
+            if (GetSettingValue(allSystemConfigList, 92004, 15) == 1) //IsPrecautionQueryPropertyCd9
             {
                 precautionCodeQuery = precautionCodeQuery.Where(pr => pr.PropertyCd != 9);
             }
@@ -282,8 +327,20 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
             }
         }
         result.AddRange(drugInf1);
-
         return result;
+    }
+
+    /// <summary>
+    /// Get setting value from allSystemConfigList by groupCd and grpEdaNo
+    /// </summary>
+    /// <param name="allSystemConfigList"></param>
+    /// <param name="groupCd"></param>
+    /// <param name="grpEdaNo"></param>
+    /// <returns></returns>
+    private int GetSettingValue(List<SystemConfModel> allSystemConfigList, int groupCd, int grpEdaNo)
+    {
+        var systemConf = allSystemConfigList.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+        return systemConf != null ? (int)systemConf.Val : 0;
     }
 
     public PathPicture GetDefaultPathPicture()

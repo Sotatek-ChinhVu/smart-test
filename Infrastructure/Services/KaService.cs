@@ -1,44 +1,79 @@
 ﻿using Entity.Tenant;
+using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Text.Json;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services;
+
+public class KaService : RepositoryBase, IKaService
 {
-    public class KaService : IKaService
+    private List<KaMst> _kaInfoList = new();
+    private readonly ITenantProvider _tenantProvider;
+    private readonly string key;
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
+
+    public KaService(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
-        private List<KaMst> _kaInfoList = new();
-        ///private readonly string _cacheKey;
-        private readonly ITenantProvider _tenantProvider;
-        ///private readonly IMemoryCache _memoryCache;
-        public KaService(ITenantProvider tenantProvider)
-        {
-            _tenantProvider = tenantProvider;
-            ///_memoryCache = memoryCache;
-            ///_cacheKey = "UserInfo-" + tenantProvider.GetClinicID();
-            ///if (!memoryCache.TryGetValue(_cacheKey, out _userInfoList))
-            ///{
-            Reload();
-            ///}
-        }
+        _tenantProvider = tenantProvider;
+        key = GetDomainKey();
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
+        Reload();
+    }
 
-        public string GetNameById(int id)
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
         {
-            var kaInfo = _kaInfoList.FirstOrDefault(u => u.KaId == id);
-            if (kaInfo == null)
+            RedisConnectorHelper.RedisHost = connection;
+        }
+    }
+
+    public string GetNameById(int id)
+    {
+        var kaInfo = _kaInfoList.FirstOrDefault(u => u.KaId == id);
+        if (kaInfo == null)
+        {
+            return string.Empty;
+        }
+        return kaInfo.KaSname ?? string.Empty;
+    }
+
+    public void Reload()
+    {
+        // check if cache exists, load data from cache
+        string finalKey = key + CacheKeyConstant.KaCacheService;
+        if (_cache.KeyExists(finalKey))
+        {
+            var stringJson = _cache.StringGet(finalKey).AsString();
+            if (!string.IsNullOrEmpty(stringJson))
             {
-                return string.Empty;
+                _kaInfoList = JsonSerializer.Deserialize<List<KaMst>>(stringJson) ?? new();
+                return;
             }
-            return kaInfo.KaSname ?? string.Empty;
         }
 
-        public void Reload()
-        {
-            _kaInfoList = _tenantProvider.GetNoTrackingDataContext().KaMsts.ToList();
-            ///_memoryCache.Set(_cacheKey, _userInfoList);
-        }
+        // if cache does not exists, get data from database then set to cache
+        _kaInfoList = _tenantProvider.GetNoTrackingDataContext().KaMsts.ToList();
+        var jsonKaList = JsonSerializer.Serialize(_kaInfoList);
+        _cache.StringSet(finalKey, jsonKaList);
+    }
 
-        public void DisposeSource()
-        {
-            _tenantProvider.DisposeDataContext();
-        }
+    public List<KaMst> AllKaMstList()
+    {
+        return _kaInfoList;
+    }
+
+    public void DisposeSource()
+    {
+        _tenantProvider.DisposeDataContext();
     }
 }

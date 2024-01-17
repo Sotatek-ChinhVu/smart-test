@@ -1,32 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RAIIN_LIST_TAG")]
-    [Index(nameof(HpId), nameof(RaiinNo), nameof(IsDeleted), Name = "RAIIN_LIST_TAG_UKEY01")]
+    [Table(name: "raiin_list_tag")]
+    [Index(nameof(HpId), nameof(RaiinNo), nameof(IsDeleted), Name = "raiin_list_tag_ukey01")]
     public class RaiinListTag : EmrCloneable<RaiinListTag>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
         
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// yyyymmdd
         /// </summary>
-        [Column("SIN_DATE")]
+        [Column("sin_date")]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 2)]
+        [Column("raiin_no", Order = 2)]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 3)]
+        [Column("seq_no", Order = 3)]
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
 
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// タグNo
         /// 
         /// </summary>
-        [Column("TAG_NO")]
+        [Column("tag_no")]
         [CustomAttribute.DefaultValue(0)]
         public int TagNo { get; set; }
 
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -66,14 +66,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -81,7 +81,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -89,14 +89,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -104,7 +104,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 

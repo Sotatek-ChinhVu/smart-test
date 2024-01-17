@@ -16,7 +16,7 @@ public class GetUserByLoginIdInteractor : IGetUserByLoginIdInputPort
     {
         try
         {
-            var user = _userRepository.GetByLoginId(input.LoginId);
+            var user = _userRepository.GetByLoginId(input.LoginId, input.Password);
             var status = user is null ? GetUserByLoginIdStatus.NotFound : GetUserByLoginIdStatus.Success;
             return new GetUserByLoginIdOutputData(status, user);
         }

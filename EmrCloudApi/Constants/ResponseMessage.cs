@@ -159,7 +159,7 @@
 
         //Insurance
         // Validate Main Insurance
-        public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
+        public static readonly string InvalidPtBirthday = "生年月日を入力してください。";
         public static readonly string InvalidSelectedHokenInfHokenNo = "Invalid SelectedHokenInf HokenNo";
         public static readonly string InvalidSelectedHokenInfStartDate = "Invalid SelectedHokenInf StartDate";
         public static readonly string InvalidSelectedHokenInfEndDate = "Invalid SelectedHokenInf EndDate";

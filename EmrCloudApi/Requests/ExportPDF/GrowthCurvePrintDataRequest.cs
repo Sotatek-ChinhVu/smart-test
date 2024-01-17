@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.ExportPDF
 {
-    public class GrowthCurvePrintDataRequest : ReportRequestBase
+    public class GrowthCurvePrintDataRequest
     {
         public int Type { get; set; }
         public long PtNum { get; set; }

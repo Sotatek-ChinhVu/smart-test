@@ -1,17 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "YOHO_SET_MST")]
+    [Table(name: "yoho_set_mst")]
     public class YohoSetMst : EmrCloneable<YohoSetMst>
     {
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Column("HP_ID")]
-        //[Index("YOHO_SET_MST_IDX01", 1)]
+        [Column("hp_id")]
+        //[Index("yoho_set_mst_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SET_ID", Order = 1)]
+        [Column("set_id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetId { get; set; }
 
@@ -27,15 +27,15 @@ namespace Entity.Tenant
         /// ユーザーID
         /// USER_MST.USER_ID
         /// </summary>
-        [Column("USER_ID")]
-        //[Index("YOHO_SET_MST_IDX01", 2)]
+        [Column("user_id")]
+        //[Index("yoho_set_mst_idx01", 2)]
         public int UserId { get; set; }
 
         /// <summary>
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(0)]
         public int SortNo { get; set; }
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// TEN_MST.ITEM_CD
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -51,49 +51,49 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
-        //[Index("YOHO_SET_MST_IDX01", 3)]
+        [Column("is_deleted")]
+        //[Index("yoho_set_mst_idx01", 3)]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
 		/// 作成日時	
 		/// </summary>
-		[Column("CREATE_DATE")]
+		[Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者		
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末			
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者			
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末			
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

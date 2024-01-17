@@ -44,6 +44,7 @@ public class DiseaseCheckerTest : BaseUT
         cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
         diseaseChecker.InitFinder(tenantNoTracking, cache);
 
+        //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
@@ -87,7 +88,9 @@ public class DiseaseCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 999 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+
+        //DiseaseLevelSetting
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 3;
         if (systemConf != null)
@@ -98,7 +101,7 @@ public class DiseaseCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 999,
+                HpId = 1,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -162,6 +165,8 @@ public class DiseaseCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+        //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 3;
@@ -268,6 +273,8 @@ public class DiseaseCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+        //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = -1;
@@ -353,6 +360,8 @@ public class DiseaseCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+        //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 5;
@@ -438,6 +447,8 @@ public class DiseaseCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+        //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 3;
@@ -526,6 +537,8 @@ public class DiseaseCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+        //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 3;

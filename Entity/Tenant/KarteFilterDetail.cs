@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "KARTE_FILTER_DETAIL")]
+    [Table(name: "karte_filter_detail")]
     public class KarteFilterDetail : EmrCloneable<KarteFilterDetail>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// KARTE_FILTER_MST.USER_ID
         /// </summary>
         
-        [Column("USER_ID", Order = 2)]
+        [Column("user_id", Order = 2)]
         public int UserId { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// KARTE_FILTER_MST.FILTER_ID
         /// </summary>
         
-        [Column("FILTER_ID", Order = 3)]
+        [Column("filter_id", Order = 3)]
         public long FilterId { get; set; }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("FILTER_ITEM_CD", Order = 4)]
+        [Column("filter_item_cd", Order = 4)]
         public int FilterItemCd { get; set; }
 
         /// <summary>
@@ -45,21 +45,21 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("FILTER_EDA_NO", Order = 5)]
+        [Column("filter_eda_no", Order = 5)]
         public int FilterEdaNo { get; set; }
 
         /// <summary>
         /// 設定値
         /// 
         /// </summary>
-        [Column("VAL")]
+        [Column("val")]
         public int Val { get; set; }
 
         /// <summary>
         /// パラメータ
         /// 
         /// </summary>
-        [Column("PARAM")]
+        [Column("param")]
         [MaxLength(300)]
         public string? Param { get; set; } = string.Empty;
     }

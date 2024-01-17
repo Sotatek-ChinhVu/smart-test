@@ -2,16 +2,13 @@
 using Amazon.RDS.Model;
 using AWSSDK.Common;
 using AWSSDK.Constants;
+using AWSSDK.Dto;
 using AWSSDK.Interfaces;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
-using Entity.SuperAdmin;
-using Entity.Tenant;
 using Interactor.Realtime;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
 using UseCase.SuperAdmin.RestoreTenant;
 
 namespace Interactor.SuperAdmin
@@ -21,13 +18,27 @@ namespace Interactor.SuperAdmin
         private readonly IAwsSdkService _awsSdkService;
         private readonly ITenantRepository _tenantRepository;
         private readonly INotificationRepository _notificationRepository;
+        private readonly ITenantRepository _tenantRepositoryRunTask;
+        private readonly INotificationRepository _notificationRepositoryRunTask;
         private readonly IConfiguration _configuration;
-        public RestoreTenantInteractor(ITenantRepository tenantRepository, IAwsSdkService awsSdkService, INotificationRepository notificationRepository, IConfiguration configuration)
+        private readonly IMemoryCache _memoryCache;
+        public RestoreTenantInteractor(
+            ITenantRepository tenantRepository,
+            IAwsSdkService awsSdkService,
+            INotificationRepository notificationRepository,
+            ITenantRepository tenantRepositoryRunTask,
+            INotificationRepository notificationRepositoryRunTask,
+            IConfiguration configuration,
+            IMemoryCache memoryCache
+            )
         {
             _awsSdkService = awsSdkService;
             _tenantRepository = tenantRepository;
             _notificationRepository = notificationRepository;
+            _tenantRepositoryRunTask = tenantRepositoryRunTask;
+            _notificationRepositoryRunTask = notificationRepositoryRunTask;
             _configuration = configuration;
+            _memoryCache = memoryCache;
 
         }
 
@@ -61,12 +72,18 @@ namespace Interactor.SuperAdmin
                     return new RestoreTenantOutputData(false, RestoreTenantStatus.SnapshotNotAvailable);
                 }
 
-                CancellationTokenSource cts = new CancellationTokenSource();
+                var cts = new CancellationTokenSource();
+                CancellationToken ct = cts.Token;
                 _ = Task.Run(() =>
                 {
                     try
                     {
+                        ct.ThrowIfCancellationRequested();
                         _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restoring"]);
+
+                        // Set tenant info to cache memory
+                        _memoryCache.Set(tenant.SubDomain, new TenantCacheMemory(cts, string.Empty));
+
                         Console.WriteLine($"Start  restore  tenant. RdsIdentifier: {tenant.RdsIdentifier}");
 
                         // Create snapshot backup
@@ -74,33 +91,59 @@ namespace Interactor.SuperAdmin
 
                         if (string.IsNullOrEmpty(snapshotIdentifier) || !RDSAction.CheckSnapshotAvailableAsync(snapshotIdentifier).Result)
                         {
-                            throw new Exception("Snapshot is not Available");
+                            throw new Exception("Snapshot が無効です。");
                         }
 
                         // Create tmp RDS from snapshot
                         string rString = CommonConstants.GenerateRandomString(6);
                         var dbInstanceIdentifier = $"{tenant.SubDomain}-{rString}";
-                        var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier).Result;
+
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+                            var isSuccessRestoreInstance = _awsSdkService.RestoreDBInstanceFromSnapshot(dbInstanceIdentifier, lastSnapshotIdentifier).Result;
+                            // Set tenant info to cache memory
+                            _memoryCache.Set(tenant.SubDomain, new TenantCacheMemory(cts, dbInstanceIdentifier));
+                        }
+
                         var endpoint = CheckRestoredInstanceAvailableAsync(dbInstanceIdentifier, inputData.TenantId).Result;
 
                         // Restore tenant dedicate
                         if (tenant.Type == ConfigConstant.TypeDedicate)
                         {
                             // Update data enpoint
-                            var updateEndPoint = _tenantRepository.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
+                            bool updateEndPoint = false;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                updateEndPoint = _tenantRepositoryRunTask.UpdateInfTenant(tenant.TenantId, ConfigConstant.StatusTenantDictionary()["available"], tenant.EndSubDomain, endpoint.Address, dbInstanceIdentifier);
+                            }
+
                             if (!updateEndPoint)
                             {
-                                throw new Exception("Update end sub domain failed");
+                                throw new Exception("サブドメインが無効です。");
                             }
 
                             // delete old RDS
-                            var actionDeleteOldRDS = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
-                            var checkDeleteActionOldRDS = RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+
+                                var actionDeleteOldRDS = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier).Result;
+                                var checkDeleteActionOldRDS = RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result;
+                            }
+
                             // Finished restore
-                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                            var messenge = $"{tenant.EndSubDomain} is restore successfully.";
-                            var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
+                                var messenge = $"{tenant.EndSubDomain} のデータ復元が完了しました。";
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(tenant.SubDomain);
+                            }
                             cts.Cancel();
                             return;
                         }
@@ -110,47 +153,73 @@ namespace Interactor.SuperAdmin
                         {
                             // dump data,
                             var pathFileDump = @$"{pathFileDumpRestore}{tenant.Db}.sql"; // path save file sql dump
-                            PostgresSqlAction.PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
+                            PostgresSqlAction.PostgreSqlDump(pathFileDump, endpoint.Address, ConfigConstant.PgPostDefault, tenant.Db, ConfigConstant.PgUserDefault, ConfigConstant.PgPasswordDefault).Wait();
 
                             // check valid file sql dump
                             if (!System.IO.File.Exists(pathFileDump))
                             {
-                                throw new Exception("File sql dump doesn't exist");
+                                throw new Exception("Sqldump 存在しません。");
                             }
 
                             if (!PostgresSqlAction.CheckingFinishedAccessedFile(pathFileDump))
                             {
-                                throw new Exception("Invalid file sql dump");
+                                throw new Exception("Sqldump が無効です。");
                             }
 
                             // restore db 
-                            PostgresSqlAction.PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, "postgres", "Emr!23456789").Wait();
+                            PostgresSqlAction.PostgreSqlExcuteFileDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, tenant.UserConnect, tenant.PasswordConnect).Wait();
 
-                            // delete Tmp RDS
-                            var actionDeleteTmpRDS = RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier, true).Result;
-                            var checkDeleteActionTmpRDS = RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier).Result;
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                // delete Tmp RDS
+                                var actionDeleteTmpRDS = RDSAction.DeleteRDSInstanceAsync(dbInstanceIdentifier, true).Result;
+                                var checkDeleteActionTmpRDS = RDSAction.CheckRDSInstanceDeleted(dbInstanceIdentifier).Result;
+                            }
                             // Finished restore
-                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
-                            var messenge = $"{tenant.EndSubDomain} is restore successfully.";
-                            var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
-                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                            if (!ct.IsCancellationRequested) // Check task run is not canceled
+                            {
+                                _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["available"]);
+                                var messenge = $"{tenant.EndSubDomain} のデータ復元が完了しました。";
+                                var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
+
+                                // Add info tenant for notification
+                                notification.SetTenantId(tenant.TenantId);
+                                notification.SetStatusTenant(ConfigConstant.StatusTenantRunning);
+                                _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                                // Delete cache memory
+                                _memoryCache.Remove(tenant.SubDomain);
+                            }
                             cts.Cancel();
                             return;
                         }
-
-                        // Check Restore success 
                     }
+
                     catch (Exception ex)
                     {
-                        _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
-                        // Notification  restore failed
-                        var messenge = $"{tenant.EndSubDomain} is restore failed. Error: {ex.Message}.";
-                        var notification = _notificationRepository.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
-                        _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+                        if (!ct.IsCancellationRequested) // Check task run is not canceled
+                        {
+                            _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["restore-failed"]);
+                            // Notification  restore failed
+                            var messenge = $"{tenant.EndSubDomain} のデータ復元に失敗しました。エラー: {ex.Message}.";
+                            var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
+                            // Add info tenant for notification
+                            notification.SetTenantId(tenant.TenantId);
+                            notification.SetStatusTenant(ConfigConstant.StatusTenantFailded);
+                            _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, notification);
+
+                            // Delete cache memory
+                            _memoryCache.Remove(tenant.SubDomain);
+                        }
                         cts.Cancel();
                         return;
                     }
-                });
+                    finally
+                    {
+                        _tenantRepositoryRunTask.ReleaseResource();
+                        _notificationRepositoryRunTask.ReleaseResource();
+                    }
+                }, cts.Token);
                 return new RestoreTenantOutputData(true, RestoreTenantStatus.Successed);
             }
             finally

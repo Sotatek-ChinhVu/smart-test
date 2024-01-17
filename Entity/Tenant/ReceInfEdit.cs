@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RECE_INF_EDIT")]
+    [Table(name: "rece_inf_edit")]
     public class ReceInfEdit : EmrCloneable<ReceInfEdit>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEIKYU_YM", Order = 2)]
+        [Column("seikyu_ym", Order = 2)]
         public int SeikyuYm { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
         
-        [Column("PT_ID", Order = 3)]
+        [Column("pt_id", Order = 3)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_YM", Order = 4)]
+        [Column("sin_ym", Order = 4)]
         public int SinYm { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_ID", Order = 5)]
+        [Column("hoken_id", Order = 5)]
         public int HokenId { get; set; }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 6)]
+        [Column("seq_no", Order = 6)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
 
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         ///                     14x4: 退職未就学者          
         ///                     14x6: 退職家族          
         /// </summary>
-        [Column("RECE_SBT")]
+        [Column("rece_sbt")]
         [MaxLength(4)]
         public string? ReceSbt { get; set; } = string.Empty;
 
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// 法別番号
         /// 
         /// </summary>
-        [Column("HOUBETU")]
+        [Column("houbetu")]
         [MaxLength(3)]
         public string? Houbetu { get; set; } = string.Empty;
 
@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// 公１法別
         /// 
         /// </summary>
-        [Column("KOHI1_HOUBETU")]
+        [Column("kohi1_houbetu")]
         [MaxLength(3)]
         public string? Kohi1Houbetu { get; set; } = string.Empty;
 
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// 公２法別
         /// 
         /// </summary>
-        [Column("KOHI2_HOUBETU")]
+        [Column("kohi2_houbetu")]
         [MaxLength(3)]
         public string? Kohi2Houbetu { get; set; } = string.Empty;
 
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// 公３法別
         /// 
         /// </summary>
-        [Column("KOHI3_HOUBETU")]
+        [Column("kohi3_houbetu")]
         [MaxLength(3)]
         public string? Kohi3Houbetu { get; set; } = string.Empty;
 
@@ -110,7 +110,7 @@ namespace Entity.Tenant
         /// 公４法別
         /// 
         /// </summary>
-        [Column("KOHI4_HOUBETU")]
+        [Column("kohi4_houbetu")]
         [MaxLength(3)]
         public string? Kohi4Houbetu { get; set; } = string.Empty;
 
@@ -118,140 +118,140 @@ namespace Entity.Tenant
         /// 保険レセ点数
         /// 
         /// </summary>
-        [Column("HOKEN_RECE_TENSU")]
+        [Column("hoken_rece_tensu")]
         public int? HokenReceTensu { get; set; }
 
         /// <summary>
         /// 保険レセ負担額
         /// 
         /// </summary>
-        [Column("HOKEN_RECE_FUTAN")]
+        [Column("hoken_rece_futan")]
         public int? HokenReceFutan { get; set; }
 
         /// <summary>
         /// 公１レセ点数
         /// 
         /// </summary>
-        [Column("KOHI1_RECE_TENSU")]
+        [Column("kohi1_rece_tensu")]
         public int? Kohi1ReceTensu { get; set; }
 
         /// <summary>
         /// 公１レセ負担額
         /// 
         /// </summary>
-        [Column("KOHI1_RECE_FUTAN")]
+        [Column("kohi1_rece_futan")]
         public int? Kohi1ReceFutan { get; set; }
 
         /// <summary>
         /// 公１レセ給付対象額
         /// 
         /// </summary>
-        [Column("KOHI1_RECE_KYUFU")]
+        [Column("kohi1_rece_kyufu")]
         public int? Kohi1ReceKyufu { get; set; }
 
         /// <summary>
         /// 公２レセ点数
         /// 
         /// </summary>
-        [Column("KOHI2_RECE_TENSU")]
+        [Column("kohi2_rece_tensu")]
         public int? Kohi2ReceTensu { get; set; }
 
         /// <summary>
         /// 公２レセ負担額
         /// 
         /// </summary>
-        [Column("KOHI2_RECE_FUTAN")]
+        [Column("kohi2_rece_futan")]
         public int? Kohi2ReceFutan { get; set; }
 
         /// <summary>
         /// 公２レセ給付対象額
         /// 
         /// </summary>
-        [Column("KOHI2_RECE_KYUFU")]
+        [Column("kohi2_rece_kyufu")]
         public int? Kohi2ReceKyufu { get; set; }
 
         /// <summary>
         /// 公３レセ点数
         /// 
         /// </summary>
-        [Column("KOHI3_RECE_TENSU")]
+        [Column("kohi3_rece_tensu")]
         public int? Kohi3ReceTensu { get; set; }
 
         /// <summary>
         /// 公３レセ負担額
         /// 
         /// </summary>
-        [Column("KOHI3_RECE_FUTAN")]
+        [Column("kohi3_rece_futan")]
         public int? Kohi3ReceFutan { get; set; }
 
         /// <summary>
         /// 公３レセ給付対象額
         /// 
         /// </summary>
-        [Column("KOHI3_RECE_KYUFU")]
+        [Column("kohi3_rece_kyufu")]
         public int? Kohi3ReceKyufu { get; set; }
 
         /// <summary>
         /// 公４レセ点数
         /// 
         /// </summary>
-        [Column("KOHI4_RECE_TENSU")]
+        [Column("kohi4_rece_tensu")]
         public int? Kohi4ReceTensu { get; set; }
 
         /// <summary>
         /// 公４レセ負担額
         /// 
         /// </summary>
-        [Column("KOHI4_RECE_FUTAN")]
+        [Column("kohi4_rece_futan")]
         public int? Kohi4ReceFutan { get; set; }
 
         /// <summary>
         /// 公４レセ給付対象額
         /// 
         /// </summary>
-        [Column("KOHI4_RECE_KYUFU")]
+        [Column("kohi4_rece_kyufu")]
         public int? Kohi4ReceKyufu { get; set; }
 
         /// <summary>
         /// 保険実日数
         /// 
         /// </summary>
-        [Column("HOKEN_NISSU")]
+        [Column("hoken_nissu")]
         public int? HokenNissu { get; set; }
 
         /// <summary>
         /// 公１実日数
         /// 
         /// </summary>
-        [Column("KOHI1_NISSU")]
+        [Column("kohi1_nissu")]
         public int? Kohi1Nissu { get; set; }
 
         /// <summary>
         /// 公２実日数
         /// 
         /// </summary>
-        [Column("KOHI2_NISSU")]
+        [Column("kohi2_nissu")]
         public int? Kohi2Nissu { get; set; }
 
         /// <summary>
         /// 公３実日数
         /// 
         /// </summary>
-        [Column("KOHI3_NISSU")]
+        [Column("kohi3_nissu")]
         public int? Kohi3Nissu { get; set; }
 
         /// <summary>
         /// 公４実日数
         /// 
         /// </summary>
-        [Column("KOHI4_NISSU")]
+        [Column("kohi4_nissu")]
         public int? Kohi4Nissu { get; set; }
 
         /// <summary>
         /// 特記事項
         /// 
         /// </summary>
-        [Column("TOKKI")]
+        [Column("tokki")]
         [MaxLength(10)]
         public string? Tokki { get; set; } = string.Empty;
 
@@ -259,7 +259,7 @@ namespace Entity.Tenant
         /// 特記事項１
         /// 
         /// </summary>
-        [Column("TOKKI1")]
+        [Column("tokki1")]
         [MaxLength(10)]
         public string? Tokki1 { get; set; } = string.Empty;
 
@@ -267,7 +267,7 @@ namespace Entity.Tenant
         /// 特記事項２
         /// 
         /// </summary>
-        [Column("TOKKI2")]
+        [Column("tokki2")]
         [MaxLength(10)]
         public string? Tokki2 { get; set; } = string.Empty;
 
@@ -275,7 +275,7 @@ namespace Entity.Tenant
         /// 特記事項３
         /// 
         /// </summary>
-        [Column("TOKKI3")]
+        [Column("tokki3")]
         [MaxLength(10)]
         public string? Tokki3 { get; set; } = string.Empty;
 
@@ -283,7 +283,7 @@ namespace Entity.Tenant
         /// 特記事項４
         /// 
         /// </summary>
-        [Column("TOKKI4")]
+        [Column("tokki4")]
         [MaxLength(10)]
         public string? Tokki4 { get; set; } = string.Empty;
 
@@ -291,7 +291,7 @@ namespace Entity.Tenant
         /// 特記事項５
         /// 
         /// </summary>
-        [Column("TOKKI5")]
+        [Column("tokki5")]
         [MaxLength(10)]
         public string? Tokki5 { get; set; } = string.Empty;
 
@@ -299,7 +299,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -307,7 +307,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -315,7 +315,7 @@ namespace Entity.Tenant
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -323,7 +323,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -331,7 +331,7 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime UpdateDate { get; set; }
 
@@ -339,7 +339,7 @@ namespace Entity.Tenant
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -347,7 +347,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

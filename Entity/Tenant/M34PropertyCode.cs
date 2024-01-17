@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M34_PROPERTY_CODE")]
+    [Table(name: "m34_property_code")]
     public class M34PropertyCode : EmrCloneable<M34PropertyCode>
     {
         /// <summary>
@@ -12,14 +12,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PROPERTY_CD", Order = 1)]
+        [Column("property_cd", Order = 1)]
         public int PropertyCd { get; set; }
 
         /// <summary>
         /// 属性
         /// 
         /// </summary>
-        [Column("PROPERTY")]
+        [Column("property")]
         [MaxLength(100)]
         public string? Property { get; set; } = string.Empty;
 

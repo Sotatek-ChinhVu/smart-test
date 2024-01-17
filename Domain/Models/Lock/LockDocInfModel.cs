@@ -56,7 +56,7 @@
         {
             get
             {
-                return DspFileName != null ? "[文書]" + DspFileName : string.Empty;
+                return !string.IsNullOrEmpty(DspFileName) ? "[文書]" + DspFileName : string.Empty;
             }
         }
     }

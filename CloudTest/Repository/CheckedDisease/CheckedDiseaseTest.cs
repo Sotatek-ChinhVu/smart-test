@@ -7,6 +7,7 @@ using Infrastructure.Repositories;
 using Moq;
 using CommonChecker.Caches;
 using CommonCheckers.OrderRealtimeChecker.Services;
+using Infrastructure.Interfaces;
 
 namespace CloudUnitTest.Repository.CheckedDisease;
 
@@ -51,7 +52,8 @@ public class CheckedDiseaseTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
 
-        UserRepository userRepository = new UserRepository(TenantProvider);
+        var mockUserService = new Mock<IUserInfoService>();
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, mockUserService.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
 
@@ -98,7 +100,8 @@ public class CheckedDiseaseTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        UserRepository userRepository = new UserRepository(TenantProvider);
+        var mockUserService = new Mock<IUserInfoService>();
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, mockUserService.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
@@ -160,7 +163,8 @@ public class CheckedDiseaseTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        UserRepository userRepository = new UserRepository(TenantProvider);
+        var mockUserService = new Mock<IUserInfoService>();
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, mockUserService.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();

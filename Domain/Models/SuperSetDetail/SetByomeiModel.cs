@@ -2,13 +2,14 @@
 
 public class SetByomeiModel
 {
-    public SetByomeiModel(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, string icd10, string icd102013, string icd1012013, string icd1022013, List<PrefixSuffixModel> prefixSuffixList)
+    public SetByomeiModel(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string displayByomei, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, string icd10, string icd102013, string icd1012013, string icd1022013, List<PrefixSuffixModel> prefixSuffixList)
     {
         Id = id;
         IsSyobyoKbn = isSyobyoKbn;
         SikkanKbn = sikkanKbn;
         NanByoCd = nanByoCd;
-        FullByomei = fullByomei;
+        DisplayByomei = displayByomei; // DisplayByomei is the byomei displayed in front end, get by SetByomei.Byomei in database
+        FullByomei = fullByomei; // FullByomei is main byomei get by byomeiCd
         IsSuspected = isSuspected;
         IsDspRece = isDspRece;
         IsDspKarte = isDspKarte;
@@ -30,6 +31,8 @@ public class SetByomeiModel
     public int NanByoCd { get; private set; }
 
     public string FullByomei { get; private set; }
+
+    public string DisplayByomei { get; private set; }
 
     public bool IsSuspected { get; private set; }
 

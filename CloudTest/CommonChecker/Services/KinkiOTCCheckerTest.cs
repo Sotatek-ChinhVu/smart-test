@@ -78,6 +78,7 @@ public class KinkiOTCCheckerTest : BaseUT
     public void KinkiOTCChecker_002_KinkiOTC()
     {
         //Setup
+        //KinkiLevelSetting
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
@@ -180,6 +181,7 @@ public class KinkiOTCCheckerTest : BaseUT
     {
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        //KinkiLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 0;

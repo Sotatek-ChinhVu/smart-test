@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.ExportPDF;
 
-public class StatisticExportRequest : ReportRequestBase
+public class StatisticExportRequest
 {
     public int MenuId { get; set; }
 

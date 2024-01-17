@@ -1,4 +1,5 @@
 ﻿using CloudUnitTest.SampleData;
+using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
@@ -52,8 +53,9 @@ public class CheckedSpecialItemTest : BaseUT
         var mockConfiguration = new Mock<IConfiguration>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
+        var mockUserService = new Mock<IUserInfoService>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        UserRepository userRepository = new UserRepository(TenantProvider);
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, mockUserService.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
 
@@ -148,7 +150,8 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.PtRousaiTenkis.AddRange(ptRouSaiTenkis);
         tenant.PtHokenPatterns.AddRange(ptHokenPatterns);
         tenant.SaveChanges();
-        InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider);
+        var mockConfiguration = new Mock<IConfiguration>();
+        InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider, mockConfiguration.Object);
 
         try
         {
@@ -190,7 +193,8 @@ public class CheckedSpecialItemTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConf = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        UserRepository userRepository = new UserRepository(TenantProvider);
+        var mockUserService = new Mock<IUserInfoService>();
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object, mockUserService.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository); TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider, systemConf, approvalinfRepository);
         try
         {

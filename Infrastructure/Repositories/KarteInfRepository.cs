@@ -83,7 +83,7 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-            karteInfEntity = karteInfEntity.Where(item => isDeleted || item.IsDeleted == 0).ToList();
+            karteInfEntity = karteInfEntity.Where(item => isDeleted || item.IsDeleted == 0).OrderByDescending(i => i.SeqNo).ToList();
             return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 

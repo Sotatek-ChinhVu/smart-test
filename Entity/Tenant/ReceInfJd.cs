@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RECE_INF_JD")]
+    [Table(name: "rece_inf_jd")]
     public class ReceInfJd : EmrCloneable<ReceInfJd>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEIKYU_YM", Order = 2)]
+        [Column("seikyu_ym", Order = 2)]
         public int SeikyuYm { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 3)]
+        [Column("pt_id", Order = 3)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_YM", Order = 4)]
+        [Column("sin_ym", Order = 4)]
         public int SinYm { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_ID", Order = 5)]
+        [Column("hoken_id", Order = 5)]
         public int HokenId { get; set; }
 
         /// <summary>
@@ -52,21 +52,21 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("KOHI_ID", Order = 6)]
+        [Column("kohi_id", Order = 6)]
         public int KohiId { get; set; }
 
         /// <summary>
         /// 負担者種別コード
         ///     1:保険 2:公1 3:公2 4:公3 5:公4
         /// </summary>
-        [Column("FUTAN_SBT_CD")]
+        [Column("futan_sbt_cd")]
         public int FutanSbtCd { get; set; }
 
         /// <summary>
         /// 受診等区分コード(1日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU1")]
+        [Column("nissu1")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu1 { get; set; }
 
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(2日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU2")]
+        [Column("nissu2")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu2 { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(3日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU3")]
+        [Column("nissu3")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu3 { get; set; }
 
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(4日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU4")]
+        [Column("nissu4")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu4 { get; set; }
 
@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(5日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU5")]
+        [Column("nissu5")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu5 { get; set; }
 
@@ -106,7 +106,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(6日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU6")]
+        [Column("nissu6")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu6 { get; set; }
 
@@ -114,7 +114,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(7日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU7")]
+        [Column("nissu7")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu7 { get; set; }
 
@@ -122,7 +122,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(8日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU8")]
+        [Column("nissu8")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu8 { get; set; }
 
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(9日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU9")]
+        [Column("nissu9")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu9 { get; set; }
 
@@ -138,7 +138,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(10日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU10")]
+        [Column("nissu10")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu10 { get; set; }
 
@@ -146,7 +146,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(11日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU11")]
+        [Column("nissu11")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu11 { get; set; }
 
@@ -154,7 +154,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(12日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU12")]
+        [Column("nissu12")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu12 { get; set; }
 
@@ -162,7 +162,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(13日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU13")]
+        [Column("nissu13")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu13 { get; set; }
 
@@ -170,7 +170,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(14日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU14")]
+        [Column("nissu14")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu14 { get; set; }
 
@@ -178,7 +178,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(15日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU15")]
+        [Column("nissu15")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu15 { get; set; }
 
@@ -186,7 +186,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(16日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU16")]
+        [Column("nissu16")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu16 { get; set; }
 
@@ -194,7 +194,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(17日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU17")]
+        [Column("nissu17")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu17 { get; set; }
 
@@ -202,7 +202,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(18日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU18")]
+        [Column("nissu18")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu18 { get; set; }
 
@@ -210,7 +210,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(19日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU19")]
+        [Column("nissu19")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu19 { get; set; }
 
@@ -218,7 +218,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(20日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU20")]
+        [Column("nissu20")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu20 { get; set; }
 
@@ -226,7 +226,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(21日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU21")]
+        [Column("nissu21")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu21 { get; set; }
 
@@ -234,7 +234,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(22日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU22")]
+        [Column("nissu22")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu22 { get; set; }
 
@@ -242,7 +242,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(23日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU23")]
+        [Column("nissu23")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu23 { get; set; }
 
@@ -250,7 +250,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(24日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU24")]
+        [Column("nissu24")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu24 { get; set; }
 
@@ -258,7 +258,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(25日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU25")]
+        [Column("nissu25")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu25 { get; set; }
 
@@ -266,7 +266,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(26日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU26")]
+        [Column("nissu26")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu26 { get; set; }
 
@@ -274,7 +274,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(27日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU27")]
+        [Column("nissu27")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu27 { get; set; }
 
@@ -282,7 +282,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(28日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU28")]
+        [Column("nissu28")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu28 { get; set; }
 
@@ -290,7 +290,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(29日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU29")]
+        [Column("nissu29")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu29 { get; set; }
 
@@ -298,7 +298,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(30日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU30")]
+        [Column("nissu30")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu30 { get; set; }
 
@@ -306,7 +306,7 @@ namespace Entity.Tenant
         /// 　受診等区分コード(31日の情報)
         ///     1:実日数に計上する受診 2:実日数に計上しない受診
         /// </summary>
-        [Column("NISSU31")]
+        [Column("nissu31")]
         [CustomAttribute.DefaultValue(2)]
         public int Nissu31 { get; set; }
 
@@ -314,7 +314,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -322,7 +322,7 @@ namespace Entity.Tenant
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -330,7 +330,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
     }

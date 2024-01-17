@@ -1,78 +1,80 @@
-﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "KAIKEI_INF")]
+    [Table(name: "kaikei_inf")]
+    [Index(nameof(HpId), nameof(RaiinNo), Name = "kaikei_inf_idx01")]
     public class KaikeiInf : EmrCloneable<KaikeiInf>
     {
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        
-        [Column("PT_ID", Order = 2)]
+
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// 
         /// </summary>
-        
-        [Column("SIN_DATE", Order = 3)]
+
+        [Column("sin_date", Order = 3)]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 来院番号
         /// 
         /// </summary>
-        
-        [Column("RAIIN_NO", Order = 4)]
+
+        [Column("raiin_no", Order = 4)]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// 保険ID
         /// PT_HOKEN_INF.HOKEN_ID
         /// </summary>
-        
-        [Column("HOKEN_ID", Order = 5)]
+
+        [Column("hoken_id", Order = 5)]
         public int HokenId { get; set; }
 
         /// <summary>
         /// 公費１ID
         /// 
         /// </summary>
-        [Column("KOHI1_ID")]
+        [Column("kohi1_id")]
         public int Kohi1Id { get; set; }
 
         /// <summary>
         /// 公費２ID
         /// 
         /// </summary>
-        [Column("KOHI2_ID")]
+        [Column("kohi2_id")]
         public int Kohi2Id { get; set; }
 
         /// <summary>
         /// 公費３ID
         /// 
         /// </summary>
-        [Column("KOHI3_ID")]
+        [Column("kohi3_id")]
         public int Kohi3Id { get; set; }
 
         /// <summary>
         /// 公費４ID
         /// 
         /// </summary>
-        [Column("KOHI4_ID")]
+        [Column("kohi4_id")]
         public int Kohi4Id { get; set; }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace Entity.Tenant
         ///     13:アフターケア          
         ///     14:自賠責          
         /// </summary>
-        [Column("HOKEN_KBN")]
+        [Column("hoken_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenKbn { get; set; }
 
@@ -105,7 +107,7 @@ namespace Entity.Tenant
         ///         公費単独(12)         = 511    
         ///         公費２併(21+12)      = 522    
         /// </summary>
-        [Column("HOKEN_SBT_CD")]
+        [Column("hoken_sbt_cd")]
         public int HokenSbtCd { get; set; }
 
         /// <summary>
@@ -122,7 +124,7 @@ namespace Entity.Tenant
         ///     14x4: 退職未就学者          
         ///     14x6: 退職家族          
         /// </summary>
-        [Column("RECE_SBT")]
+        [Column("rece_sbt")]
         [MaxLength(4)]
         public string? ReceSbt { get; set; } = string.Empty;
 
@@ -130,7 +132,7 @@ namespace Entity.Tenant
         /// 法別番号
         /// PT_HOKEN_INF.HOUBETU
         /// </summary>
-        [Column("HOUBETU")]
+        [Column("houbetu")]
         [MaxLength(3)]
         public string? Houbetu { get; set; } = string.Empty;
 
@@ -138,7 +140,7 @@ namespace Entity.Tenant
         /// 公１法別
         /// 
         /// </summary>
-        [Column("KOHI1_HOUBETU")]
+        [Column("kohi1_houbetu")]
         [MaxLength(3)]
         public string? Kohi1Houbetu { get; set; } = string.Empty;
 
@@ -146,7 +148,7 @@ namespace Entity.Tenant
         /// 公２法別
         /// 
         /// </summary>
-        [Column("KOHI2_HOUBETU")]
+        [Column("kohi2_houbetu")]
         [MaxLength(3)]
         public string? Kohi2Houbetu { get; set; } = string.Empty;
 
@@ -154,7 +156,7 @@ namespace Entity.Tenant
         /// 公３法別
         /// 
         /// </summary>
-        [Column("KOHI3_HOUBETU")]
+        [Column("kohi3_houbetu")]
         [MaxLength(3)]
         public string? Kohi3Houbetu { get; set; } = string.Empty;
 
@@ -162,7 +164,7 @@ namespace Entity.Tenant
         /// 公４法別
         /// 
         /// </summary>
-        [Column("KOHI4_HOUBETU")]
+        [Column("kohi4_houbetu")]
         [MaxLength(3)]
         public string? Kohi4Houbetu { get; set; } = string.Empty;
 
@@ -170,7 +172,7 @@ namespace Entity.Tenant
         /// 本人家族区分
         /// PT_HOKEN_INF.HONKE_KBN
         /// </summary>
-        [Column("HONKE_KBN")]
+        [Column("honke_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int HonkeKbn { get; set; }
 
@@ -178,7 +180,7 @@ namespace Entity.Tenant
         /// 保険負担率
         /// 
         /// </summary>
-        [Column("HOKEN_RATE")]
+        [Column("hoken_rate")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenRate { get; set; }
 
@@ -186,7 +188,7 @@ namespace Entity.Tenant
         /// 患者負担率
         /// 
         /// </summary>
-        [Column("PT_RATE")]
+        [Column("pt_rate")]
         [CustomAttribute.DefaultValue(0)]
         public int PtRate { get; set; }
 
@@ -194,7 +196,7 @@ namespace Entity.Tenant
         /// 表示用負担率
         /// 
         /// </summary>
-        [Column("DISP_RATE")]
+        [Column("disp_rate")]
         [CustomAttribute.DefaultValue(0)]
         public int DispRate { get; set; }
 
@@ -202,7 +204,7 @@ namespace Entity.Tenant
         /// 診療点数
         /// 
         /// </summary>
-        [Column("TENSU")]
+        [Column("tensu")]
         [CustomAttribute.DefaultValue(0)]
         public int Tensu { get; set; }
 
@@ -210,7 +212,7 @@ namespace Entity.Tenant
         /// 総医療費
         /// 
         /// </summary>
-        [Column("TOTAL_IRYOHI")]
+        [Column("total_iryohi")]
         [CustomAttribute.DefaultValue(0)]
         public int TotalIryohi { get; set; }
 
@@ -218,7 +220,7 @@ namespace Entity.Tenant
         /// 患者負担額
         /// 
         /// </summary>
-        [Column("PT_FUTAN")]
+        [Column("pt_futan")]
         [CustomAttribute.DefaultValue(0)]
         public int PtFutan { get; set; }
 
@@ -226,7 +228,7 @@ namespace Entity.Tenant
         /// 自費負担額
         /// 
         /// </summary>
-        [Column("JIHI_FUTAN")]
+        [Column("jihi_futan")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiFutan { get; set; }
 
@@ -234,7 +236,7 @@ namespace Entity.Tenant
         /// 自費内税
         /// 
         /// </summary>
-        [Column("JIHI_TAX")]
+        [Column("jihi_tax")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiTax { get; set; }
 
@@ -242,7 +244,7 @@ namespace Entity.Tenant
         /// 自費外税
         /// 
         /// </summary>
-        [Column("JIHI_OUTTAX")]
+        [Column("jihi_outtax")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiOuttax { get; set; }
 
@@ -250,7 +252,7 @@ namespace Entity.Tenant
         /// 自費負担額(非課税)
         /// 
         /// </summary>
-        [Column("JIHI_FUTAN_TAXFREE")]
+        [Column("jihi_futan_taxfree")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiFutanTaxfree { get; set; }
 
@@ -258,7 +260,7 @@ namespace Entity.Tenant
         /// 自費負担額(内税・通常税率)
         /// 
         /// </summary>
-        [Column("JIHI_FUTAN_TAX_NR")]
+        [Column("jihi_futan_tax_nr")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiFutanTaxNr { get; set; }
 
@@ -266,7 +268,7 @@ namespace Entity.Tenant
         /// 自費負担額(内税・軽減税率)
         /// 
         /// </summary>
-        [Column("JIHI_FUTAN_TAX_GEN")]
+        [Column("jihi_futan_tax_gen")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiFutanTaxGen { get; set; }
 
@@ -274,7 +276,7 @@ namespace Entity.Tenant
         /// 自費負担額(外税・通常税率)
         /// 
         /// </summary>
-        [Column("JIHI_FUTAN_OUTTAX_NR")]
+        [Column("jihi_futan_outtax_nr")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiFutanOuttaxNr { get; set; }
 
@@ -282,7 +284,7 @@ namespace Entity.Tenant
         /// 自費負担額(内税・軽減税率)
         /// 
         /// </summary>
-        [Column("JIHI_FUTAN_OUTTAX_GEN")]
+        [Column("jihi_futan_outtax_gen")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiFutanOuttaxGen { get; set; }
 
@@ -290,7 +292,7 @@ namespace Entity.Tenant
         /// 自費内税(通常税率)
         /// 
         /// </summary>
-        [Column("JIHI_TAX_NR")]
+        [Column("jihi_tax_nr")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiTaxNr { get; set; }
 
@@ -298,7 +300,7 @@ namespace Entity.Tenant
         /// 自費内税(軽減税率)
         /// 
         /// </summary>
-        [Column("JIHI_TAX_GEN")]
+        [Column("jihi_tax_gen")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiTaxGen { get; set; }
 
@@ -306,7 +308,7 @@ namespace Entity.Tenant
         /// 自費外税(通常税率)
         /// 
         /// </summary>
-        [Column("JIHI_OUTTAX_NR")]
+        [Column("jihi_outtax_nr")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiOuttaxNr { get; set; }
 
@@ -314,7 +316,7 @@ namespace Entity.Tenant
         /// 自費外税(軽減税率)
         /// 
         /// </summary>
-        [Column("JIHI_OUTTAX_GEN")]
+        [Column("jihi_outtax_gen")]
         [CustomAttribute.DefaultValue(0)]
         public int JihiOuttaxGen { get; set; }
 
@@ -322,7 +324,7 @@ namespace Entity.Tenant
         /// 調整額
         /// 
         /// </summary>
-        [Column("ADJUST_FUTAN")]
+        [Column("adjust_futan")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustFutan { get; set; }
 
@@ -330,7 +332,7 @@ namespace Entity.Tenant
         /// 同一来院調整額
         /// 同一来院のまるめ調整額
         /// </summary>
-        [Column("ADJUST_ROUND")]
+        [Column("adjust_round")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustRound { get; set; }
 
@@ -338,7 +340,7 @@ namespace Entity.Tenant
         /// 患者負担合計額
         /// 
         /// </summary>
-        [Column("TOTAL_PT_FUTAN")]
+        [Column("total_pt_futan")]
         [CustomAttribute.DefaultValue(0)]
         public int TotalPtFutan { get; set; }
 
@@ -346,7 +348,7 @@ namespace Entity.Tenant
         /// 調整額設定値
         /// 
         /// </summary>
-        [Column("ADJUST_FUTAN_VAL")]
+        [Column("adjust_futan_val")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustFutanVal { get; set; }
 
@@ -354,7 +356,7 @@ namespace Entity.Tenant
         /// 調整額設定範囲
         /// 
         /// </summary>
-        [Column("ADJUST_FUTAN_RANGE")]
+        [Column("adjust_futan_range")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustFutanRange { get; set; }
 
@@ -362,7 +364,7 @@ namespace Entity.Tenant
         /// 調整率設定値
         /// 
         /// </summary>
-        [Column("ADJUST_RATE_VAL")]
+        [Column("adjust_rate_val")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustRateVal { get; set; }
 
@@ -370,7 +372,7 @@ namespace Entity.Tenant
         /// 調整率設定範囲
         /// 
         /// </summary>
-        [Column("ADJUST_RATE_RANGE")]
+        [Column("adjust_rate_range")]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustRateRange { get; set; }
 
@@ -378,7 +380,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
@@ -386,7 +388,7 @@ namespace Entity.Tenant
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -394,7 +396,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 

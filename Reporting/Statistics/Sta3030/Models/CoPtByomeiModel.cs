@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Extension;
-using System.Text;
 
 namespace Reporting.Statistics.Sta3030.Models;
 
@@ -223,7 +222,7 @@ public class CoPtByomeiModel
     {
         get
         {
-            StringBuilder retStringBuilder = new();
+            string ret = "";
             int syushokuCd;
 
             for (int i = 1; i <= syushokuCdCnt; i++)
@@ -231,10 +230,10 @@ public class CoPtByomeiModel
                 syushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
                 if (settogoFrom <= syushokuCd && syushokuCd <= settogoTo)
                 {
-                    retStringBuilder.Append(string.Format("{0}/", syushokuCd));
+                    ret += string.Format("{0}/", syushokuCd);
                 }
             }
-            string ret = retStringBuilder.ToString();
+
             ret = ret != "" ? ret.Substring(0, ret.Length - 1) : ret;
             return ret;
         }
@@ -247,7 +246,7 @@ public class CoPtByomeiModel
     {
         get
         {
-            StringBuilder retStringBuilder = new();
+            string ret = "";
             int syushokuCd;
 
             for (int i = 1; i <= syushokuCdCnt; i++)
@@ -255,10 +254,10 @@ public class CoPtByomeiModel
                 syushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
                 if (setubigoFrom <= syushokuCd && syushokuCd <= setubigoTo)
                 {
-                    retStringBuilder.Append(string.Format("{0}/", syushokuCd));
+                    ret += string.Format("{0}/", syushokuCd);
                 }
             }
-            string ret = retStringBuilder.ToString();
+
             ret = ret != "" ? ret.Substring(0, ret.Length - 1) : ret;
             return ret;
         }

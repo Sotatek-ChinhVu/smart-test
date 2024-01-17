@@ -9,6 +9,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.SetMst;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using UseCase.Core.Sync;
 using UseCase.MainMenu.GetOdrSetName;
 using UseCase.MainMenu.SaveOdrSet;
@@ -72,8 +73,9 @@ public class SetController : AuthorizeControllerBase
 
         if (output.Status == SaveSetMstStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetSaveChanged,
-                new SuperSetMessage { ReorderSetMstModels = output.SetMstList });
+            // send string data to socket
+            var socketData = JsonSerializer.Serialize(new SuperSetMessage { ReorderSetMstModels = output.SetMstList });
+            await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetSaveChanged, socketData);
         }
 
         var presenter = new SaveSetMstPresenter();
@@ -90,8 +92,9 @@ public class SetController : AuthorizeControllerBase
 
         if (output.Status == ReorderSetMstStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetReorderChanged,
-                new SuperSetMessage { ReorderSetMstModels = output.setMstModels ?? new() });
+            // send string data to socket
+            var socketData = JsonSerializer.Serialize(new SuperSetMessage { ReorderSetMstModels = output.setMstModels ?? new() });
+            await _webSocketService.SendMessageAsync(FunctionCodes.SupserSetReorderChanged, socketData);
         }
 
         var presenter = new ReorderSetMstPresenter();
@@ -108,8 +111,9 @@ public class SetController : AuthorizeControllerBase
 
         if (output.Status == CopyPasteSetMstStatus.Successed)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
-                new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
+            // send string data to socket
+            var socketData = JsonSerializer.Serialize(new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged, socketData);
         }
 
         var presenter = new CopyPasteSetMstPresenter();
@@ -234,8 +238,9 @@ public class SetController : AuthorizeControllerBase
 
         if (output.Status == SaveOdrSetStatus.Successed && output.SetMstModels.Any())
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged,
-                new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
+            // send string data to socket
+            var socketData = JsonSerializer.Serialize(new SuperSetMessage { ReorderSetMstModels = output.SetMstModels ?? new() });
+            await _webSocketService.SendMessageAsync(FunctionCodes.SuperCopyPasteChanged, socketData);
         }
         var presenter = new SaveOdrSetPresenter();
         presenter.Complete(output);
@@ -262,7 +267,7 @@ public class SetController : AuthorizeControllerBase
                 request.IsSyobyoKbn,
                 request.SikkanKbn,
                 request.NanByoCd,
-                request.FullByomei,
+                request.DisplayByomei,  // displayByomei will set the data to SetByomei.Byomei in the database
                 request.IsSuspected,
                 request.IsDspRece,
                 request.IsDspKarte,

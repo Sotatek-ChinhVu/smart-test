@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M10_DAY_LIMIT")]
+    [Table(name: "m10_day_limit")]
     public class M10DayLimit : EmrCloneable<M10DayLimit>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// YJコード
         /// </summary>
         
-        [Column("YJ_CD", Order = 1)]
+        [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
 
@@ -21,21 +21,21 @@ namespace Entity.Tenant
         /// 1..99
         /// </summary>
         
-        [Column("SEQ_NO", Order = 2)]
+        [Column("seq_no", Order = 2)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 制限日数
         /// 1..999: 制限日数 (Null or 999 は制限日数なし)
         /// </summary>
-        [Column("LIMIT_DAY")]
+        [Column("limit_day")]
         public int LimitDay { get; set; }
 
         /// <summary>
         /// 適用開始日
         /// Null: 制限日数なし
         /// </summary>
-        [Column("ST_DATE")]
+        [Column("st_date")]
         [MaxLength(8)]
         public string? StDate { get; set; } = string.Empty;
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 適用終了日
         /// Null: 連番が最大レコードの場合
         /// </summary>
-        [Column("ED_DATE")]
+        [Column("ed_date")]
         [MaxLength(8)]
         public string? EdDate { get; set; } = string.Empty;
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// コメント
         /// 特記事項があるときのみ記載
         /// </summary>
-        [Column("CMT")]
+        [Column("cmt")]
         [MaxLength(400)]
         public string? Cmt { get; set; } = string.Empty;
 

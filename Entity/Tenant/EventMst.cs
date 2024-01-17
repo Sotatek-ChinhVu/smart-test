@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "EVENT_MST")]
+    [Table(name: "event_mst")]
     public class EventMst : EmrCloneable<EventMst>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("EVENT_CD", Order = 1)]
+        [Column("event_cd", Order = 1)]
         [MaxLength(11)]
         public string EventCd { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// イベント名
         /// 
         /// </summary>
-        [Column("EVENT_NAME")]
+        [Column("event_name")]
         [MaxLength(100)]
         public string? EventName { get; set; } = string.Empty;
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 監査証跡
         /// 1: AUDIT_TRAILING_LOG出力対象イベント
         /// </summary>
-        [Column("AUDIT_TRAILING")]
+        [Column("audit_trailing")]
         [CustomAttribute.DefaultValue(0)]
         public int AuditTrailing { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
     }
 }

@@ -31,7 +31,7 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
                         notification.Status,
                         notification.Message ?? string.Empty,
                         notification.IsDeleted == 1,
-                        notification.IsRead == 0,
+                        notification.IsRead != 0,
                         notification.CreateDate);
         }
         catch
@@ -46,24 +46,26 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
         }
     }
 
-    public (List<NotificationModel> NotificationList, int TotalItem) GetNotificationList(int skip, int take)
+    public (List<NotificationModel> NotificationList, int TotalItem) GetNotificationList(int skip, int take, bool onlyUnreadNotifications)
     {
-        // get total notification to FE paging
-        var totalItem = NoTrackingDataContext.Notifications.Where(item => item.IsDeleted == 0).Count();
+        var query = NoTrackingDataContext.Notifications.Where(item => item.IsDeleted == 0
+                                                                      && (!onlyUnreadNotifications || item.IsRead == 0)); // get only items unread
 
-        var result = NoTrackingDataContext.Notifications.Where(item => item.IsDeleted == 0)
-                                                        .OrderBy(item => item.IsRead)
-                                                        .ThenByDescending(item => item.Id)
-                                                        .Skip(skip)
-                                                        .Take(take)
-                                                        .Select(item => new NotificationModel(
-                                                                            item.Id,
-                                                                            item.Status,
-                                                                            item.Message ?? string.Empty,
-                                                                            item.IsDeleted == 1,
-                                                                            item.IsRead == 1,
-                                                                            item.CreateDate))
-                                                        .ToList();
+        // get total notification to FE paging
+        var totalItem = query.Count();
+
+        var result = query.OrderBy(item => item.IsRead)
+                          .ThenByDescending(item => item.Id)
+                          .Skip(skip)
+                          .Take(take)
+                          .Select(item => new NotificationModel(
+                                              item.Id,
+                                              item.Status,
+                                              item.Message ?? string.Empty,
+                                              item.IsDeleted == 1,
+                                              item.IsRead == 1,
+                                              item.CreateDate))
+                          .ToList();
         return (result, totalItem);
     }
 
@@ -93,6 +95,29 @@ public class NotificationRepository : SuperAdminRepositoryBase, INotificationRep
                                                                    notification.IsRead == 1,
                                                                    notification.CreateDate))
                                         .ToList();
+        return result;
+    }
+
+    /// <summary>
+    /// Read all notifications
+    /// </summary>
+    public List<NotificationModel> ReadAllNotification()
+    {
+        var notificationList = TrackingDataContext.Notifications.Where(item => item.IsDeleted == 0 && item.IsRead == 0).ToList();
+        foreach (var entity in notificationList)
+        {
+            entity.IsRead = 1;
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        }
+        TrackingDataContext.SaveChanges();
+        var result = notificationList.Select(notification => new NotificationModel(
+                                                                 notification.Id,
+                                                                 notification.Status,
+                                                                 notification.Message ?? string.Empty,
+                                                                 notification.IsDeleted == 1,
+                                                                 notification.IsRead == 1,
+                                                                 notification.CreateDate))
+                                     .ToList();
         return result;
     }
 

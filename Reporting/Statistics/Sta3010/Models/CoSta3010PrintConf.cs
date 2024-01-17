@@ -30,12 +30,12 @@ public class CoSta3010PrintConf
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; } = string.Empty;
+    public string ReportName { get; set; }
 
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; } = string.Empty;
+    public string FormFileName { get; set; }
 
     /// <summary>
     /// 基準日
@@ -68,7 +68,7 @@ public class CoSta3010PrintConf
     ///     4: セット1-5
     ///     5: セット1-6
     /// </summary>
-    public List<int> Set1 { get; set; } = new();
+    public List<int> Set1 { get; set; }
 
     /// <summary>
     /// セット区分２
@@ -79,7 +79,7 @@ public class CoSta3010PrintConf
     ///     4: セット2-5
     ///     5: セット2-6
     /// </summary>
-    public List<int> Set2 { get; set; } = new();
+    public List<int> Set2 { get; set; }
 
     /// <summary>
     /// セット区分３
@@ -90,7 +90,7 @@ public class CoSta3010PrintConf
     ///     4: セット3-5
     ///     5: セット3-6
     /// </summary>
-    public List<int> Set3 { get; set; } = new();
+    public List<int> Set3 { get; set; }
 
     /// <summary>
     /// セット区分４
@@ -101,7 +101,7 @@ public class CoSta3010PrintConf
     ///     4: セット4-5
     ///     5: セット4-6
     /// </summary>
-    public List<int> Set4 { get; set; } = new();
+    public List<int> Set4 { get; set; }
 
     /// <summary>
     /// セット区分５
@@ -112,7 +112,7 @@ public class CoSta3010PrintConf
     ///     4: セット5-5
     ///     5: セット5-6
     /// </summary>
-    public List<int> Set5 { get; set; } = new();
+    public List<int> Set5 { get; set; }
 
     /// <summary>
     /// セット区分６
@@ -123,7 +123,7 @@ public class CoSta3010PrintConf
     ///     4: セット6-5
     ///     5: セット6-6
     /// </summary>
-    public List<int> Set6 { get; set; } = new();
+    public List<int> Set6 { get; set; }
 
     /// <summary>
     /// セット区分７
@@ -134,7 +134,7 @@ public class CoSta3010PrintConf
     ///     4: セット7-5
     ///     5: セット7-6
     /// </summary>
-    public List<int> Set7 { get; set; } = new();
+    public List<int> Set7 { get; set; }
 
     /// <summary>
     /// セット区分８
@@ -145,7 +145,7 @@ public class CoSta3010PrintConf
     ///     4: セット8-5
     ///     5: セット8-6
     /// </summary>
-    public List<int> Set8 { get; set; } = new();
+    public List<int> Set8 { get; set; }
 
     /// <summary>
     /// セット区分９
@@ -156,7 +156,7 @@ public class CoSta3010PrintConf
     ///     4: セット9-5
     ///     5: セット9-6
     /// </summary>
-    public List<int> Set9 { get; set; } = new();
+    public List<int> Set9 { get; set; }
 
     /// <summary>
     /// セット区分１０
@@ -167,7 +167,7 @@ public class CoSta3010PrintConf
     ///     4: セット10-5
     ///     5: セット10-6
     /// </summary>
-    public List<int> Set10 { get; set; } = new();
+    public List<int> Set10 { get; set; }
 
     /// <summary>
     /// 対象データ
@@ -189,7 +189,7 @@ public class CoSta3010PrintConf
     /// <summary>
     /// 検索項目
     /// </summary>
-    public List<string> ItemCds { get; set; } = new();
+    public List<string> ItemCds { get; set; }
 
     /// <summary>
     /// 検索項目の検索オプション
@@ -200,7 +200,7 @@ public class CoSta3010PrintConf
     /// <summary>
     /// 検索ワード
     /// </summary>
-    public string SearchWord { get; set; } = string.Empty;
+    public string SearchWord { get; set; }
 
     /// <summary>
     /// 検索ワードリスト

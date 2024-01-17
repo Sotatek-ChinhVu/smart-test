@@ -6,8 +6,6 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Model;
-using System.Drawing;
-using System.Reflection.Emit;
 using System.Text;
 
 namespace Reporting.DrugInfo.Service;
@@ -29,6 +27,8 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         _coDrugInfFinder = coDrugInfFinder;
         orderInfoModels = new();
         _amazonS3Service = amazonS3Service;
+        _defaultPicHou = string.Empty;
+        _defaultPicZai = string.Empty;
     }
 
     private string _defaultPicHou;
@@ -48,9 +48,24 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 
             orderInfoModels = _coDrugInfFinder.GetOrderByRaiinNo(raiinNo);
 
+            // get common data to setup print data
+            List<string> itemCdList = new();
+            foreach (var odrInf in orderInfoModels)
+            {
+                itemCdList.AddRange(odrInf.OrderInfDetailCollection.Select(item => item.ItemCd).Distinct().ToList());
+            }
+            int age = basicInfo.IntAge;
+            int gender = basicInfo.Sex == "M" ? 1 : 2;
+            (List<DrugInf> drugInfList,
+             List<TenMst> tenMstList,
+             List<M34DrugInfoMain> m34DrugInfoMainList,
+             List<M34IndicationCode> m34IndicationCodeList,
+             List<M34Precaution> m34PrecautionList,
+             List<M34PrecautionCode> m34PrecautionCodeList) commonDrugData = _coDrugInfFinder.GetQueryDrugList(hpId, itemCdList, age, gender);
+            var allSystemConfig = _systemConfRepository.GetAllSystemConfig(hpId);
             foreach (var orderInfoModel in orderInfoModels)
             {
-                SetupPrintData(hpId, orderInfoModel);
+                SetupPrintData(hpId, orderInfoModel, commonDrugData.drugInfList, commonDrugData.tenMstList, commonDrugData.m34DrugInfoMainList, commonDrugData.m34IndicationCodeList, commonDrugData.m34PrecautionList, commonDrugData.m34PrecautionCodeList, allSystemConfig);
             }
             return new DrugInfoData(
                        selectedFormType,
@@ -65,7 +80,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         }
     }
 
-    private void SetupPrintData(int hpId, OrderInfoModel orderInfoModel)
+    private void SetupPrintData(int hpId, OrderInfoModel orderInfoModel, List<DrugInf> drugInfList, List<TenMst> tenMstList, List<M34DrugInfoMain> m34DrugInfoMainList, List<M34IndicationCode> m34IndicationCodeList, List<M34Precaution> m34PrecautionList, List<M34PrecautionCode> m34PrecautionCodeList, List<SystemConfModel> allSystemConfigList)
     {
         var usage = orderInfoModel.OrderInfDetailCollection.FirstOrDefault(o => o.YohoKbn == 1);
         var jikochu = orderInfoModel.OrderInfDetailCollection.FirstOrDefault(o => o.SinKouiKbn == 28);
@@ -74,33 +89,34 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         foreach (var drug in drugs)
         {
             DrugInfoModel drugInfoModel = new DrugInfoModel();
-            drugInfoModel.drgName = drug.ItemName;
+            drugInfoModel.DrgName = drug.ItemName;
 
             //Main usage
-            drugInfoModel.usage = jikochu != null ? "自己注射" : usage?.ItemName ?? string.Empty;
+            drugInfoModel.Usage = jikochu != null ? "自己注射" : usage?.ItemName ?? string.Empty;
             //2st usage
             var subUsage = orderInfoModel.OrderInfDetailCollection.FirstOrDefault(o => o.YohoKbn == 2);
             if (subUsage != null)
             {
-                drugInfoModel.usage2 = subUsage.ItemName;
+                drugInfoModel.Usage2 = subUsage.ItemName;
             }
 
             //TODO
-            drugInfoModel.drgKbn = orderInfoModel.OdrKouiKbn;
+            drugInfoModel.DrgKbn = orderInfoModel.OdrKouiKbn;
 
-            string yjCd = _coDrugInfFinder.GetYJCode(drug.ItemCd);
+            int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+            string yjCd = tenMstList.FirstOrDefault(t => t.ItemCd == drug.ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate)?.YjCd ?? string.Empty;
 
             var singleDosageMstCollection = _coDrugInfFinder.GetSingleDosageMstCollection(hpId, drug.UnitName);
 
-            drugInfoModel.unitName = drug.UnitName;
+            drugInfoModel.UnitName = drug.UnitName;
             if (drug.Suryo > 0 && !string.IsNullOrEmpty(drug.UnitName))
             {
-                drugInfoModel.amount = drug.Suryo.AsString() + drug.UnitName;
+                drugInfoModel.Amount = drug.Suryo.AsString() + drug.UnitName;
             }
 
             if (usage != null)
             {
-                drugInfoModel.usageSpan = usage.Suryo + usage.UnitName;
+                drugInfoModel.UsageSpan = usage.Suryo + usage.UnitName;
                 string itemCd = usage.ItemCd;
 
                 var tenMst = _coDrugInfFinder.GetTenMstModel(itemCd);
@@ -120,81 +136,81 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
                 //Rise
                 if (tenMst.Rise == 0)//0は空白
                 {
-                    drugInfoModel.usageSign1 = "";
+                    drugInfoModel.UsageSign1 = "";
                 }
                 else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                 {
-                    drugInfoModel.usageSign1 = "●";// 剤形マスタ未登録は●
+                    drugInfoModel.UsageSign1 = "●";// 剤形マスタ未登録は●
                 }
                 else
                 {
                     string usageSignVal = (wkFloat * tenMst.Rise * 100 / 100).AsString();
-                    drugInfoModel.usageSign1 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                    drugInfoModel.UsageSign1 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                 }
 
                 //Morning
                 if (tenMst.Morning == 0)
                 {
-                    drugInfoModel.usageSign2 = "";
+                    drugInfoModel.UsageSign2 = "";
                 }
                 else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                 {
-                    drugInfoModel.usageSign2 = "●";// 剤形マスタ未登録は●
+                    drugInfoModel.UsageSign2 = "●";// 剤形マスタ未登録は●
                 }
                 else
                 {
                     string usageSignVal = (wkFloat * tenMst.Morning * 100 / 100).AsString();
-                    drugInfoModel.usageSign2 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                    drugInfoModel.UsageSign2 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                 }
 
                 //DayTime
                 if (tenMst.DayTime == 0)
                 {
-                    drugInfoModel.usageSign3 = "";
+                    drugInfoModel.UsageSign3 = "";
                 }
                 else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                 {
-                    drugInfoModel.usageSign3 = "●";// 剤形マスタ未登録は●
+                    drugInfoModel.UsageSign3 = "●";// 剤形マスタ未登録は●
                 }
                 else
                 {
                     string usageSignVal = (wkFloat * tenMst.DayTime * 100 / 100).AsString();
-                    drugInfoModel.usageSign3 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                    drugInfoModel.UsageSign3 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                 }
 
                 //Evening
                 if (tenMst.Evening == 0)
                 {
-                    drugInfoModel.usageSign4 = "";
+                    drugInfoModel.UsageSign4 = "";
                 }
                 else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                 {
-                    drugInfoModel.usageSign4 = "●";// 剤形マスタ未登録は●
+                    drugInfoModel.UsageSign4 = "●";// 剤形マスタ未登録は●
                 }
                 else
                 {
                     string usageSignVal = (wkFloat * tenMst.Evening * 100 / 100).AsString();
-                    drugInfoModel.usageSign4 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                    drugInfoModel.UsageSign4 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                 }
 
                 //Sleep
                 if (tenMst.Sleep == 0)
                 {
-                    drugInfoModel.usageSign5 = "";
+                    drugInfoModel.UsageSign5 = "";
                 }
                 else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                 {
-                    drugInfoModel.usageSign5 = "●";// 剤形マスタ未登録は●
+                    drugInfoModel.UsageSign5 = "●";// 剤形マスタ未登録は●
                 }
                 else
                 {
                     string usageSignVal = (wkFloat * tenMst.Sleep * 100 / 100).AsString();
-                    drugInfoModel.usageSign5 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                    drugInfoModel.UsageSign5 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                 }
             }
 
-            drugInfoModel.intAge = basicInfo.intAge;
-            drugInfoModel.sex = basicInfo.sex;
+            drugInfoModel.IntAge = basicInfo.IntAge;
+            drugInfoModel.Sex = basicInfo.Sex;
 
             //ConfigType=3: No image
             if (configType != 3)
@@ -204,11 +220,11 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 
             if (selectedFormType == 1)
             {
-                SetupDrugDocumentType2(configType, hpId, drug, drugInfoModel);
+                SetupDrugDocumentType2(configType, hpId, drug, drugInfoModel, drugInfList, tenMstList, m34DrugInfoMainList, m34IndicationCodeList, m34PrecautionList, m34PrecautionCodeList, allSystemConfigList);
             }
             else
             {
-                SetupDrugDocument(configType, hpId, drug, drugInfoModel);
+                SetupDrugDocument(configType, hpId, drug, drugInfoModel, drugInfList, tenMstList, m34DrugInfoMainList, m34IndicationCodeList, m34PrecautionList, m34PrecautionCodeList, allSystemConfigList);
             }
             if ((int)_systemConfRepository.GetSettingValue(92004, 18, hpId) == 0) //PrintDrugCommentSetting
             {
@@ -216,7 +232,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             }
             else
             {
-                drugInfoModel.drgComment = string.Empty;
+                drugInfoModel.DrgComment = string.Empty;
             }
             if (jikochu != null)
             {
@@ -227,15 +243,15 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
                 SetupUsageComment(orderInfoModel, usage ?? new(), drugInfoModel);
             }
 
-            drugInfoModel.orderDate = basicInfo.orderDate;
-            drugInfoModel.hpName = basicInfo.hpName;
-            drugInfoModel.address1 = basicInfo.address1;
-            drugInfoModel.address2 = basicInfo.address2;
-            drugInfoModel.phone = basicInfo.phone;
-            drugInfoModel.ptNo = basicInfo.ptNo;
-            drugInfoModel.ptName = basicInfo.ptName;
-            drugInfoModel.sex = basicInfo.sex;
-            drugInfoModel.intAge = basicInfo.intAge;
+            drugInfoModel.OrderDate = basicInfo.OrderDate;
+            drugInfoModel.HpName = basicInfo.HpName;
+            drugInfoModel.Address1 = basicInfo.Address1;
+            drugInfoModel.Address2 = basicInfo.Address2;
+            drugInfoModel.Phone = basicInfo.Phone;
+            drugInfoModel.PtNo = basicInfo.PtNo;
+            drugInfoModel.PtName = basicInfo.PtName;
+            drugInfoModel.Sex = basicInfo.Sex;
+            drugInfoModel.IntAge = basicInfo.IntAge;
 
             drugInfoList.Add(drugInfoModel);
         }
@@ -244,7 +260,6 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 
     private void SetupPrintImage(int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel, string yjCd)
     {
-
         var images = _coDrugInfFinder.GetProductImages(hpId, orderInfDetailModel.ItemCd);
         string YJCode = yjCd;
         if (images == null || images.Count == 0)
@@ -259,7 +274,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         var picHou = images.FirstOrDefault(i => i.ImageType == 1);
         if (picHou != null)
         {
-            drugInfoModel.picHou = picHou.FileName ?? string.Empty;
+            drugInfoModel.PicHou = picHou.FileName ?? string.Empty;
         }
         else
         {
@@ -269,7 +284,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         var picZai = images.FirstOrDefault(i => i.ImageType == 0);
         if (picZai != null)
         {
-            drugInfoModel.picZai = picZai.FileName ?? string.Empty;
+            drugInfoModel.PicZai = picZai.FileName ?? string.Empty;
         }
         else
         {
@@ -311,22 +326,36 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         listPic.AddRange(rs.Where(x => x.vavlid).Select(x => _amazonS3Service.GetAccessBaseS3() + x.key));
         if (imageType == 0)
         {
-            drugInfoModel.picZai = listPic.FirstOrDefault() ?? string.Empty;
+            drugInfoModel.PicZai = listPic.FirstOrDefault() ?? string.Empty;
         }
         else
         {
-            drugInfoModel.picHou = listPic.FirstOrDefault() ?? string.Empty;
+            drugInfoModel.PicHou = listPic.FirstOrDefault() ?? string.Empty;
         }
     }
 
-    private void SetupDrugDocumentType2(int reportType, int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel)
+    /// <summary>
+    /// SetupDrugDocument to view data
+    /// </summary>
+    /// <param name="reportType"></param>
+    /// <param name="hpId"></param>
+    /// <param name="orderInfDetailModel"></param>
+    /// <param name="drugInfoModel"></param>
+    /// <param name="drugInfList"></param>
+    /// <param name="tenMstList"></param>
+    /// <param name="m34DrugInfoMainList"></param>
+    /// <param name="m34IndicationCodeList"></param>
+    /// <param name="m34PrecautionList"></param>
+    /// <param name="m34PrecautionCodeList"></param>
+    /// <param name="allSystemConfigList"></param>
+    private void SetupDrugDocumentType2(int reportType, int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel, List<DrugInf> drugInfList, List<TenMst> tenMstList, List<M34DrugInfoMain> m34DrugInfoMainList, List<M34IndicationCode> m34IndicationCodeList, List<M34Precaution> m34PrecautionList, List<M34PrecautionCode> m34PrecautionCodeList, List<SystemConfModel> allSystemConfigList)
     {
+        int age = drugInfoModel.IntAge;
+        int gender = drugInfoModel.Sex == "M" ? 1 : 2;
+        var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender, drugInfList, tenMstList, m34DrugInfoMainList, m34IndicationCodeList, m34PrecautionList, m34PrecautionCodeList, allSystemConfigList);
 
-        int age = drugInfoModel.intAge;
-        int gender = drugInfoModel.sex == "M" ? 1 : 2;
-        var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender);
-
-        if (drugInfs == null) return;
+        // check null drugInfs
+        if (drugInfs == null || !drugInfs.Any()) return;
 
         int nLen = 60;
 
@@ -335,18 +364,18 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             nLen = 80;
         }
 
-        List<DocumentLine> tText = new List<DocumentLine>();
+        List<DocumentLine> tText = new();
 
         tText.AddRange(GetListDocumentLine(drugInfs.Where(item => item.InfKbn == 1).ToList(), 1, nLen));
         tText.AddRange(GetListDocumentLine(drugInfs.Where(item => item.InfKbn != 1).ToList(), 0, nLen));
 
-        drugInfoModel.tyui = tText;
+        drugInfoModel.Tyui = tText;
 
     }
 
     private List<DocumentLine> GetListDocumentLine(List<DrugInf> drugInfs, int infKbn, int nLen)
     {
-        List<DocumentLine> tText = new List<DocumentLine>();
+        List<DocumentLine> tText = new();
 
         StringBuilder wsBuf = new();
         string sSymbol = "";
@@ -382,15 +411,15 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             string sBuf1 = CIUtil.CiCopyStrWidth(wsBuf.ToString(), tPos + 1, nLen, 0);
             if (!string.IsNullOrEmpty(sBuf1))
             {
-                DocumentLine documentLine = new DocumentLine();
-                documentLine.text = sBuf1;
+                DocumentLine documentLine = new();
+                documentLine.Text = sBuf1;
                 if (infKbn == 1)
                 {
-                    documentLine.color = Color.Blue;
+                    documentLine.Color = ColorConstant.Blue;
                 }
                 else
                 {
-                    documentLine.color = Color.Black;
+                    documentLine.Color = ColorConstant.Black;
                 }
 
                 tText.Add(documentLine);
@@ -402,13 +431,28 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         return tText;
     }
 
-    private void SetupDrugDocument(int reportType, int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel)
+    /// <summary>
+    /// SetupDrugDocument to view data
+    /// </summary>
+    /// <param name="reportType"></param>
+    /// <param name="hpId"></param>
+    /// <param name="orderInfDetailModel"></param>
+    /// <param name="drugInfoModel"></param>
+    /// <param name="drugInfList"></param>
+    /// <param name="tenMstList"></param>
+    /// <param name="m34DrugInfoMainList"></param>
+    /// <param name="m34IndicationCodeList"></param>
+    /// <param name="m34PrecautionList"></param>
+    /// <param name="m34PrecautionCodeList"></param>
+    /// <param name="allSystemConfigList"></param>
+    private void SetupDrugDocument(int reportType, int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel, List<DrugInf> drugInfList, List<TenMst> tenMstList, List<M34DrugInfoMain> m34DrugInfoMainList, List<M34IndicationCode> m34IndicationCodeList, List<M34Precaution> m34PrecautionList, List<M34PrecautionCode> m34PrecautionCodeList, List<SystemConfModel> allSystemConfigList)
     {
-        int age = drugInfoModel.intAge;
-        int gender = drugInfoModel.sex == "M" ? 1 : 2;
-        var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender);
+        int age = drugInfoModel.IntAge;
+        int gender = drugInfoModel.Sex == "M" ? 1 : 2;
+        var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender, drugInfList, tenMstList, m34DrugInfoMainList, m34IndicationCodeList, m34PrecautionList, m34PrecautionCodeList, allSystemConfigList);
 
-        if (drugInfs == null) return;
+        // check null drugInfs
+        if (drugInfs == null || !drugInfs.Any()) return;
 
         int nLen = 72;
 
@@ -417,7 +461,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             nLen = 86;
         }
 
-        List<DocumentLine> tText = new List<DocumentLine>();
+        List<DocumentLine> tText = new();
 
         foreach (var drugInf in drugInfs)
         {
@@ -449,14 +493,14 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
                         if (!string.IsNullOrEmpty(sBuf1))
                         {
                             DocumentLine documentLine = new DocumentLine();
-                            documentLine.text = sBuf1;
+                            documentLine.Text = sBuf1;
                             if (drugInf.InfKbn == 1)
                             {
-                                documentLine.color = Color.Blue;
+                                documentLine.Color = ColorConstant.Blue;
                             }
                             else
                             {
-                                documentLine.color = Color.Black;
+                                documentLine.Color = ColorConstant.Black;
                             }
 
                             tText.Add(documentLine);
@@ -469,15 +513,15 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
                 {
                     if (!string.IsNullOrEmpty(item))
                     {
-                        DocumentLine documentLine = new DocumentLine();
-                        documentLine.text = sSymbol + item;
+                        DocumentLine documentLine = new();
+                        documentLine.Text = sSymbol + item;
                         if (drugInf.InfKbn == 1)
                         {
-                            documentLine.color = Color.Blue;
+                            documentLine.Color = ColorConstant.Blue;
                         }
                         else
                         {
-                            documentLine.color = Color.Black;
+                            documentLine.Color = ColorConstant.Black;
                         }
 
                         tText.Add(documentLine);
@@ -486,7 +530,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             }
         }
 
-        drugInfoModel.tyui = tText;
+        drugInfoModel.Tyui = tText;
     }
 
     private void SetupDrugComment(OrderInfoModel orderInfoModel, OrderInfDetailModel drug, DrugInfoModel drugInfoModel)
@@ -501,7 +545,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         {
             drgComment = "※" + drgComment;
         }
-        drugInfoModel.drgComment = drgComment;
+        drugInfoModel.DrgComment = drgComment;
     }
 
     private void SetupUsageComment(OrderInfoModel orderInfoModel, OrderInfDetailModel usage, DrugInfoModel drugInfoModel)
@@ -513,6 +557,6 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             .Where(d => string.IsNullOrEmpty(d.ItemCd) || d.SinKouiKbn == 99)
             .Select(d => d.ItemName);
         string usageComment = string.Join(Environment.NewLine, usageComments);
-        drugInfoModel.usageComment = usageComment;
+        drugInfoModel.UsageComment = usageComment;
     }
 }

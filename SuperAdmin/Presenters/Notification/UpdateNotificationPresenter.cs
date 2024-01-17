@@ -19,7 +19,7 @@ public class UpdateNotificationPresenter : IUpdateNotificationOutputPort
     private string GetMessage(UpdateNotificationStatus status) => status switch
     {
         UpdateNotificationStatus.Successed => ResponseMessage.Success,
-        UpdateNotificationStatus.Failed => ResponseMessage.Fail,
+        UpdateNotificationStatus.Failed => ResponseMessage.Failed,
         UpdateNotificationStatus.InvalidIdNotification => ResponseMessage.InvalidIdNotification,
         _ => string.Empty
     };

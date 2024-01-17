@@ -95,9 +95,9 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         string updateDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
 
-        string updateQuery = $"UPDATE \"ONLINE_CONFIRMATION_HISTORY\" SET \"UKETUKE_STATUS\" = {uketukeStatus}, \"UPDATE_DATE\" = '{updateDate}'"
-                             + $", \"UPDATE_ID\" = {userId}"
-                             + $" WHERE \"ID\" = {id} AND \"UKETUKE_STATUS\" = 0";
+        string updateQuery = $"UPDATE \"online_confirmation_history\r\n\" SET \"uketuke_status\" = {uketukeStatus}, \"update_date\" = '{updateDate}'"
+                             + $", \"update_id\" = {userId}"
+                             + $" WHERE \"id\" = {id} AND \"uketuke_status\" = 0";
 
         return TrackingDataContext.Database.ExecuteSqlRaw(updateQuery) > 0;
     }
@@ -106,7 +106,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         var allRefNo = TrackingDataContext.Database.SqlQueryRaw<long>("SELECT NEXTVAL(' \"PT_INF_REFERENCE_NO_seq\"')").ToList();
         var nextRefNo = allRefNo?.FirstOrDefault() ?? 1;
-        string updateQuery = $"UPDATE \"PT_INF\" SET \"REFERENCE_NO\" = {nextRefNo} WHERE \"HP_ID\" = {hpId} AND \"PT_ID\" = {ptId}";
+        string updateQuery = $"UPDATE \"pt_inf\" SET \"reference_no\" = {nextRefNo} WHERE \"hp_id\" = {hpId} AND \"pt_id\" = {ptId}";
         TrackingDataContext.Database.ExecuteSqlRaw(updateQuery);
         return nextRefNo;
     }
@@ -529,7 +529,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 try
                 {
                     foreach (var confirmation in from response in responseList
-                                                 where response.MessageBody.ResultList != null && response.MessageBody.ResultList.ResultOfQualificationConfirmation != null
+                                                 where response.MessageBody.ResultList != null && response.MessageBody.ResultList.ResultOfQualificationConfirmation?.Any() == true
                                                  from confirmation in response.MessageBody.ResultList.ResultOfQualificationConfirmation
                                                  select confirmation)
                     {
@@ -805,8 +805,8 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
 
             matchPtInf = new List<PtInfConfirmationModel>
             {
-                new PtInfConfirmationModel(PtInfOQConst.KANA_NAME, 
-                                           ptInfModel.KanaName, 
+                new PtInfConfirmationModel(PtInfOQConst.KANA_NAME,
+                                           ptInfModel.KanaName,
                                            resultOfQC.NameKana ,
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
@@ -815,9 +815,9 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                            addressBasicInfoCheck,
                                            postcodeBasicInfoCheck,
                                            seitaiNushiBasicInfoCheck),
-                new PtInfConfirmationModel(PtInfOQConst.KANJI_NAME, 
-                                           ptInfModel.Name, 
-                                           resultOfQC.Name, 
+                new PtInfConfirmationModel(PtInfOQConst.KANJI_NAME,
+                                           ptInfModel.Name,
+                                           resultOfQC.Name,
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
                                            genderBasicInfoCheck,
@@ -825,9 +825,9 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                            addressBasicInfoCheck,
                                            postcodeBasicInfoCheck,
                                            seitaiNushiBasicInfoCheck),
-                new PtInfConfirmationModel(PtInfOQConst.SEX, 
-                                           ptInfModel.Sex.AsString(), 
-                                           string.IsNullOrEmpty(resultOfQC.Sex2) ? resultOfQC.Sex1: resultOfQC.Sex2, 
+                new PtInfConfirmationModel(PtInfOQConst.SEX,
+                                           ptInfModel.Sex.AsString(),
+                                           string.IsNullOrEmpty(resultOfQC.Sex2) ? resultOfQC.Sex1: resultOfQC.Sex2,
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
                                            genderBasicInfoCheck,
@@ -835,8 +835,8 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                                            addressBasicInfoCheck,
                                            postcodeBasicInfoCheck,
                                            seitaiNushiBasicInfoCheck),
-                new PtInfConfirmationModel(PtInfOQConst.BIRTHDAY, 
-                                           ptInfModel.Birthday.AsString(), 
+                new PtInfConfirmationModel(PtInfOQConst.BIRTHDAY,
+                                           ptInfModel.Birthday.AsString(),
                                            resultOfQC.Birthdate.AsString(),
                                            nameBasicInfoCheck,
                                            kanaNameBasicInfoCheck,
@@ -877,6 +877,18 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     ptInf.HomeAddress1 ?? string.Empty,
                     ptInf.Setanusi ?? string.Empty
                 );
+    }
+
+    /// <summary>
+    /// Check Exist Online Confirm of Patient by Sindate
+    /// </summary>
+    /// <param name="ptId"></param>
+    /// <param name="sinDate"></param>
+    /// <returns>true or false</returns>
+    public bool ExistOnlineConsent(long ptId, int sinDate)
+    {
+        var onlConfirms = NoTrackingDataContext.OnlineConfirmationHistories.Where(x => x.PtId == ptId && x.InfoConsFlg != null && x.InfoConsFlg.Contains("1")).ToList();
+        return onlConfirms.Any(p => CIUtil.DateTimeToInt(p.OnlineConfirmationDate) == sinDate);
     }
 
     #region private function
