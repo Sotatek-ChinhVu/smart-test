@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 
@@ -50,5 +51,15 @@ public class YousikiController : AuthorizeControllerBase
         var presenter = new GetYousiki1InfModelPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetYousiki1InfModelResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKacodeYousikiMstDict)]
+    public ActionResult<Response<GetKacodeYousikiMstDictResponse>> GetKacodeYousikiMstDict()
+    {
+        var input = new GetKacodeYousikiMstDictInputData();
+        var output = _bus.Handle(input);
+        var presenter = new GetKacodeYousikiMstDictPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKacodeYousikiMstDictResponse>>(presenter.Result);
     }
 }

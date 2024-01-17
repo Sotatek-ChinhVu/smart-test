@@ -1,7 +1,6 @@
 ﻿using Domain.Models.Yousiki;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -50,7 +49,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                             x.yousikiInf.DataType,
                             x.yousikiInf.SeqNo,
                             x.yousikiInf.IsDeleted,
-                            x.yousikiInf.Status, 
+                            x.yousikiInf.Status,
                             x.ptInf.PtNum,
                             x.ptInf.Name ?? string.Empty))
                     .ToList();
@@ -105,6 +104,19 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         }
 
         return compoundedResultList;
+    }
+
+    public Dictionary<string, string> GetKacodeYousikiMstDict()
+    {
+        var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.ToList();
+        if (listKacodeMst.Count == 0) 
+        {
+            return new Dictionary<string, string>();
+        }
+        
+        return listKacodeMst.OrderBy(u => u.SortNo)
+                            .ThenBy(u => u.YousikiKaCd)
+                            .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
     }
 
     public void ReleaseResource()
