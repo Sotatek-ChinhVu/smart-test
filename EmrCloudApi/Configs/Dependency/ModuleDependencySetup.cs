@@ -826,6 +826,7 @@ using Domain.Models.Cacche;
 using Interactor.Cache;
 using UseCase.Cache.RemoveAllCache;
 using UseCase.Cache.RemoveCache;
+using UseCase.User.UpdateHashPassword;
 using UseCase.Diseases.IsHokenInfInUsed;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -864,8 +865,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddScoped<IUserInfoService, UserInfoService>();
-            services.AddScoped<IKaService, KaService>();
+            services.AddTransient<IUserInfoService, UserInfoService>();
+            services.AddTransient<IKaService, KaService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
@@ -1269,6 +1270,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<GetUserInfoInputData, GetUserInfoInteractor>();
+            busBuilder.RegisterUseCase<UpdateHashPasswordInputData, UpdateHashPasswordInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();

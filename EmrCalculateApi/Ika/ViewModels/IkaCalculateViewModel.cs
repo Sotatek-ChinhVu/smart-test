@@ -950,10 +950,10 @@ namespace EmrCalculateApi.Ika.ViewModels
                 {
                     try
                     {
-                        string sql = "UPDATE \"public\".\"CALC_STATUS\"  SET  \"STATUS\" = 8"
-                                                              + " WHERE  \"HP_ID\" = @hpId"
-                                                              + "        AND  \"STATUS\" in (0, 1)"
-                                                              + "        AND \"CREATE_MACHINE\" = @createMachine";
+                        string sql = "UPDATE \"public\".\"calc_status\"  SET  \"status\" = 8"
+                                                              + " WHERE  \"hp_id\" = @hpId"
+                                                              + "        AND  \"status\" in (0, 1)"
+                                                              + "        AND \"create_machine\" = @createMachine";
                         TenantDataContext.Database.SetCommandTimeout(1800);
                         TenantDataContext.Database.ExecuteSqlRaw(sql,
                                 new NpgsqlParameter("@hpId", _hpId),

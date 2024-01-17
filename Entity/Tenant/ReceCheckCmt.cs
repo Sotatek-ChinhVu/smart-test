@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RECE_CHECK_CMT")]
+    [Table(name: "rece_check_cmt")]
     public class ReceCheckCmt : EmrCloneable<ReceCheckCmt>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("HOKEN_ID", Order = 3)]
+        [Column("hoken_id", Order = 3)]
         public int HokenId { get; set; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SIN_YM", Order = 4)]
+        [Column("sin_ym", Order = 4)]
         public int SinYm { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 5)]
+        [Column("seq_no", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 保留区分
         /// 0:通常　1:保留１ 2:保留２ 3:保留３
         /// </summary>
-        [Column("IS_PENDING")]
+        [Column("is_pending")]
         [CustomAttribute.DefaultValue(0)]
         public int IsPending { get; set; }
 
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// コメント
         /// 
         /// </summary>
-        [Column("CMT")]
+        [Column("cmt")]
         [MaxLength(300)]
         public string? Cmt { get; set; } = string.Empty;
 
@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// チェック区分
         /// 1:確認済み
         /// </summary>
-        [Column("IS_CHECKED")]
+        [Column("is_checked")]
         [CustomAttribute.DefaultValue(0)]
         public int IsChecked { get; set; }
 
@@ -76,7 +76,7 @@ namespace Entity.Tenant
         /// 順番
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SortNo { get; set; }
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -92,14 +92,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者ID
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -107,7 +107,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -115,14 +115,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者ID
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

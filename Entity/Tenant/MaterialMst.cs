@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "MATERIAL_MST")]
+    [Table(name: "material_mst")]
     public class MaterialMst : EmrCloneable<MaterialMst>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,14 +21,14 @@ namespace Entity.Tenant
         /// KENSA_MST.MATERIAL_CD
         /// </summary>
         
-        [Column("MATERIAL_CD", Order = 2)]
+        [Column("material_cd", Order = 2)]
         public long MaterialCd { get; set; }
 
         /// <summary>
         /// 材料名称
         /// 
         /// </summary>
-        [Column("MATERIAL_NAME")]
+        [Column("material_name")]
         [MaxLength(120)]
         public string? MaterialName { get; set; } = string.Empty;
 
@@ -36,21 +36,21 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -58,21 +58,21 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;   
     }

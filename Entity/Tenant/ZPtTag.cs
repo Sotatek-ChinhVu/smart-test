@@ -1,28 +1,28 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "Z_PT_TAG")]
+    [Table(name: "z_pt_tag")]
     public class ZPtTag : EmrCloneable<ZPtTag>
     {
         
-        [Column("OP_ID", Order = 1)]
+        [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
@@ -30,23 +30,23 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Column("HP_ID")]
-        //[Index("PT_TAG_IDX01", 1)]
+        [Column("hp_id")]
+        //[Index("pt_tag_idx01", 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column(name: "PT_ID")]
-        //[Index("PT_TAG_IDX01", 2)]
+        [Column(name: "pt_id")]
+        //[Index("pt_tag_idx01", 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        [Column(name: "SEQ_NO")]
+        [Column(name: "seq_no")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
 
@@ -54,22 +54,22 @@ namespace Entity.Tenant
         /// メモ
         /// 
         /// </summary>
-        [Column(name: "MEMO")]
+        [Column(name: "memo")]
         public string? Memo { get; set; } = string.Empty;
 
         /// <summary>
         /// メモデータ
         /// 
         /// </summary>
-        [Column(name: "MEMO_DATA")]
+        [Column(name: "memo_data")]
         public byte[]? MemoData { get; set; } = default!;
 
         /// <summary>
         /// 適用開始日
         /// 
         /// </summary>
-        [Column(name: "START_DATE")]
-        //[Index("PT_TAG_IDX01", 3)]
+        [Column(name: "start_date")]
+        //[Index("pt_tag_idx01", 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -77,8 +77,8 @@ namespace Entity.Tenant
         /// 適用終了日
         /// 
         /// </summary>
-        [Column(name: "END_DATE")]
-        //[Index("PT_TAG_IDX01", 4)]
+        [Column(name: "end_date")]
+        //[Index("pt_tag_idx01", 4)]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -86,8 +86,8 @@ namespace Entity.Tenant
         /// 受付表示区分
         /// 1: 表示
         /// </summary>
-        [Column(name: "IS_DSP_UKETUKE")]
-        //[Index("PT_TAG_IDX01", 5)]
+        [Column(name: "is_dsp_uketuke")]
+        //[Index("pt_tag_idx01", 5)]
         [CustomAttribute.DefaultValue(1)]
         public int IsDspUketuke { get; set; }
 
@@ -95,8 +95,8 @@ namespace Entity.Tenant
         /// 診察表示区分
         /// 1: 表示
         /// </summary>
-        [Column(name: "IS_DSP_KARTE")]
-        //[Index("PT_TAG_IDX01", 6)]
+        [Column(name: "is_dsp_karte")]
+        //[Index("pt_tag_idx01", 6)]
         [CustomAttribute.DefaultValue(1)]
         public int IsDspKarte { get; set; }
 
@@ -104,8 +104,8 @@ namespace Entity.Tenant
         /// 会計表示区分
         /// 1: 表示
         /// </summary>
-        [Column(name: "IS_DSP_KAIKEI")]
-        //[Index("PT_TAG_IDX01", 7)]
+        [Column(name: "is_dsp_kaikei")]
+        //[Index("pt_tag_idx01", 7)]
         [CustomAttribute.DefaultValue(1)]
         public int IsDspKaikei { get; set; }
 
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// レセ表示区分
         /// 1: 表示
         /// </summary>
-        [Column(name: "IS_DSP_RECE")]
+        [Column(name: "is_dsp_rece")]
         [CustomAttribute.DefaultValue(1)]
         public int IsDspRece { get; set; }
 
@@ -121,11 +121,11 @@ namespace Entity.Tenant
         /// 背景色
         /// 
         /// </summary>
-        [Column(name: "BACKGROUND_COLOR")]
+        [Column(name: "background_color")]
         [MaxLength(8)]
         public string? BackgroundColor { get; set; } = string.Empty;
 
-        [Column(name: "TAG_GRP_CD")]
+        [Column(name: "tag_grp_cd")]
         [CustomAttribute.DefaultValue(0)]
         public int TagGrpCd { get; set; }
 
@@ -133,7 +133,7 @@ namespace Entity.Tenant
         /// 透明度
         /// 
         /// </summary>
-        [Column(name: "ALPHABLEND_VAL")]
+        [Column(name: "alphablend_val")]
         [CustomAttribute.DefaultValue(200)]
         public int AlphablendVal { get; set; }
 
@@ -141,84 +141,84 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column(name: "IS_DELETED")]
-        //[Index("PT_TAG_IDX01", 8)]
+        [Column(name: "is_deleted")]
+        //[Index("pt_tag_idx01", 8)]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時
         /// </summary>
-        [Column(name: "CREATE_DATE")]
+        [Column(name: "create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column(name: "UPDATE_DATE")]
+        [Column(name: "update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
 
         /// <summary>
         /// フォントサイズ
         /// </summary>
-        [Column(name: "FONTSIZE")]
+        [Column(name: "fontsize")]
         [CustomAttribute.DefaultValue(0)]
         public int FontSize { get; set; }
 
         /// <summary>
         /// 幅
         /// </summary>
-        [Column(name: "WIDTH")]
+        [Column(name: "width")]
         [CustomAttribute.DefaultValue(0)]
         public int Width { get; set; }
 
         /// <summary>
         /// 高さ
         /// </summary>
-        [Column(name: "HEIGHT")]
+        [Column(name: "height")]
         [CustomAttribute.DefaultValue(0)]
         public int Height { get; set; }
 
         /// <summary>
         /// 左位置
         /// </summary>
-        [Column(name: "LEFT")]
+        [Column(name: "left")]
         [CustomAttribute.DefaultValue(0)]
         public int Left { get; set; }
 
         /// <summary>
         /// 右位置
         /// </summary>
-        [Column(name: "TOP")]
+        [Column(name: "top")]
         [CustomAttribute.DefaultValue(0)]
         public int Top { get; set; }
     }

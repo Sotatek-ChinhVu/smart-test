@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M42_CONTRAINDI_DIS_BC")]
+    [Table(name: "m42_contraindi_dis_bc")]
     public class M42ContraindiDisBc : EmrCloneable<M42ContraindiDisBc>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// BY で始まり5桁の数字が続く
         /// </summary>
         
-        [Column("BYOTAI_CD", Order = 1)]
+        [Column("byotai_cd", Order = 1)]
         [MaxLength(7)]
         public string ByotaiCd { get; set; } = string.Empty;
 
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// BC で始まり2桁の数字が続く
         /// </summary>
         
-        [Column("BYOTAI_CLASS_CD", Order = 2)]
+        [Column("byotai_class_cd", Order = 2)]
         [MaxLength(4)]
         public string ByotaiClassCd { get; set; } = string.Empty;
     }

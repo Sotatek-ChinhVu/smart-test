@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "PT_ALRGY_DRUG")]
+    [Table(name: "pt_alrgy_drug")]
     public class PtAlrgyDrug : EmrCloneable<PtAlrgyDrug>
     {
         /// <summary>
@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("PT_ID", Order = 2)]
+        [Column("pt_id", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 3)]
+        [Column("seq_no", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
 
@@ -37,14 +37,14 @@ namespace Entity.Tenant
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 項目コード
         /// 
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 医薬品名称
         /// 
         /// </summary>
-        [Column("DRUG_NAME")]
+        [Column("drug_name")]
         [MaxLength(100)]
         public string? DrugName { get; set; } = string.Empty;
 
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// 発症日
         /// yyyymmdd or yyyymm
         /// </summary>
-        [Column("START_DATE")]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// 消失日
         /// yyyymmdd or yyyymm
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -76,7 +76,7 @@ namespace Entity.Tenant
         /// コメント
         /// 
         /// </summary>
-        [Column("CMT")]
+        [Column("cmt")]
         [MaxLength(100)]
         public string? Cmt { get; set; } = string.Empty;
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -92,14 +92,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -107,7 +107,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -115,14 +115,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

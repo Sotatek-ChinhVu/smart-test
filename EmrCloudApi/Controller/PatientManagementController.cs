@@ -123,6 +123,7 @@ namespace EmrCloudApi.Controller
                                               ptManagement.KohiHokenEdaNoFrom,
                                               ptManagement.KohiHokenNoTo,
                                               ptManagement.KohiHokenEdaNoTo,
+                                              ptManagement.ValidOrExpired, // 有効/期限切れ
                                               ptManagement.StartDateFrom,
                                               ptManagement.StartDateTo,
                                               ptManagement.TenkiDateFrom,

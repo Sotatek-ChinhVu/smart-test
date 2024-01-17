@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "KINKI_MST")]
+    [Table(name: "kinki_mst")]
     public class KinkiMst : EmrCloneable<KinkiMst>
     {
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("ID", Order = 1)]
+        [Column("id", Order = 1)]
         public int Id { get; set; }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 2)]
+        [Column("hp_id", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// TEN_MST.ITEM_CD
         /// </summary>
         
-        [Column("A_CD", Order = 3)]
+        [Column("a_cd", Order = 3)]
         [MaxLength(10)]
         public string ACd { get; set; } = string.Empty;
 
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// Bコード
         /// TEN_MST.ITEM_CD
         /// </summary>
-        [Column("B_CD")]
+        [Column("b_cd")]
         [MaxLength(10)]
         public string? BCd { get; set; } = string.Empty;
 
@@ -43,14 +43,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("SEQ_NO", Order = 4)]
+        [Column("seq_no", Order = 4)]
         public int SeqNo { get; set; }
 
         /// <summary>
         /// 削除区分
         /// 1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -58,14 +58,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -73,7 +73,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -81,14 +81,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -96,7 +96,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
     }

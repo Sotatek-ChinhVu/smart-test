@@ -8,9 +8,13 @@ using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using Konscious.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
+using System.Security.Cryptography;
+using System.Text;
+using static Amazon.S3.Util.S3EventNotification;
 using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
@@ -20,13 +24,15 @@ namespace Infrastructure.Repositories
         private readonly string key;
         private readonly IDatabase _cache;
         private readonly IConfiguration _configuration;
+        private readonly IUserInfoService _userInfoService;
 
-        public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+        public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration, IUserInfoService userInfoService) : base(tenantProvider)
         {
             key = GetDomainKey();
             _configuration = configuration;
             GetRedis();
             _cache = RedisConnectorHelper.Connection.GetDatabase();
+            _userInfoService = userInfoService;
         }
 
         public void GetRedis()
@@ -40,36 +46,42 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedId(List<long> ids)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Count(u => ids.Contains(u.Id));
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Count(u => ids.Contains(u.Id));
             return ids.Count == anyUsertMsts;
         }
 
         public bool CheckExistedUserId(int userId)
         {
-            return NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+            // get data from UserMstList
+            return _userInfoService.AllUserMstList().Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
 
         public bool CheckExistedUserIdCreate(List<int> userIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => userIds.Contains(u.UserId) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedUserIdUpdate(List<long> ids, List<int> userIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => userIds.Contains(u.UserId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdCreate(List<string> loginIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds)
         {
-            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
+            // get data from UserMstList
+            var anyUsertMsts = _userInfoService.AllUserMstList().Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
@@ -84,26 +96,18 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public void Delete(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<UserMstModel> GetAll()
-        {
-            return NoTrackingDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
-        }
-
         public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll)
         {
             if (isAll)
             {
-                var query = NoTrackingDataContext.UserMsts;
+                // get data from UserMstList
+                var query = _userInfoService.AllUserMstList();
                 return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, new())).ToList();
             }
             else
             {
-                var query = NoTrackingDataContext.UserMsts.Where(u =>
+                // get data from UserMstList
+                var query = _userInfoService.AllUserMstList().Where(u =>
                     u.StartDate <= sinDate
                     && u.EndDate >= sinDate
                     && u.IsDeleted == DeleteTypes.None);
@@ -123,59 +127,65 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
-            var result = NoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
+            // get data from UserMstList
+            var result = _userInfoService.AllUserMstList().Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId);
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds)
         {
-            var result = NoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId)).AsEnumerable();
+            // get data from UserMstList
+            var result = _userInfoService.AllUserMstList().Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId));
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds)
         {
-            var result = NoTrackingDataContext.UserMsts.Where(d => userIds.Contains(d.UserId)).AsEnumerable();
+            // get data from UserMstList
+            var result = _userInfoService.AllUserMstList().Where(d => userIds.Contains(d.UserId));
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public UserMstModel GetByUserId(int userId)
         {
-            var entity = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None);
+            // get data from UserMstList
+            var entity = _userInfoService.AllUserMstList().FirstOrDefault(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None);
             return entity is null ? new UserMstModel() : ToModel(entity);
         }
 
         public UserMstModel GetByUserId(int userId, int sinDate)
         {
-            var entity = NoTrackingDataContext.UserMsts
+            // get data from UserMstList
+            var entity = _userInfoService.AllUserMstList()
                 .FirstOrDefault(u => u.UserId == userId
                                     && u.IsDeleted == DeleteTypes.None
                                     && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
             return entity is null ? new UserMstModel() : ToModel(entity);
         }
 
-        public UserMstModel? GetByLoginId(string loginId)
+        public UserMstModel? GetByLoginId(string loginId, string password)
         {
             var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
+
             var entity = NoTrackingDataContext.UserMsts
                 .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
-            return entity is null ? null : ToModel(entity);
+            if (entity is null)
+            {
+                return null;
+            }
+            if (!VerifyHash(Encoding.UTF8.GetBytes(password), entity.Salt, entity.HashPassword))
+            {
+                return null;
+            }
+            return ToModel(entity);
         }
 
         public int MaxUserId()
         {
-            return NoTrackingDataContext.UserMsts.Max(u => u.UserId);
+            // get data from UserMstList
+            return _userInfoService.AllUserMstList().Max(u => u.UserId);
         }
 
-        public UserMstModel Read(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(UserMstModel user)
-        {
-            throw new NotImplementedException();
-        }
         public bool Upsert(List<UserMstModel> upsertUserList, int userId)
         {
             try
@@ -192,6 +202,8 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
+                        byte[] salt = GenerateSalt();
+                        byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(inputData.LoginPass ?? string.Empty), salt);
                         var userMst = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                         if (userMst != null)
                         {
@@ -202,7 +214,7 @@ namespace Infrastructure.Repositories
                             userMst.Name = inputData.Name ?? string.Empty;
                             userMst.Sname = inputData.Sname ?? string.Empty;
                             userMst.DrName = inputData.DrName ?? string.Empty;
-                            userMst.LoginPass = inputData.LoginPass ?? string.Empty;
+                            //userMst.LoginPass = inputData.LoginPass ?? string.Empty;
                             userMst.MayakuLicenseNo = inputData.MayakuLicenseNo ?? string.Empty;
                             userMst.StartDate = inputData.StartDate;
                             userMst.EndDate = inputData.EndDate;
@@ -211,10 +223,15 @@ namespace Infrastructure.Repositories
                             userMst.IsDeleted = inputData.IsDeleted;
                             userMst.UpdateId = userId;
                             userMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            userMst.HashPassword = hashPassword;
+                            userMst.Salt = salt;
                         }
                         else
                         {
-                            TrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
+                            var user = ConvertUserList(inputData);
+                            user.HashPassword = hashPassword;
+                            user.Salt = salt;
+                            TrackingDataContext.UserMsts.Add(user);
                         }
                     }
                 }
@@ -255,7 +272,7 @@ namespace Infrastructure.Repositories
                 u.Sname ?? string.Empty,
                 u.DrName ?? string.Empty,
                 u.LoginId ?? string.Empty,
-                u.LoginPass ?? string.Empty,
+                string.Empty,
                 u.MayakuLicenseNo ?? string.Empty,
                 u.StartDate,
                 u.EndDate,
@@ -279,7 +296,7 @@ namespace Infrastructure.Repositories
                 u.Sname ?? string.Empty,
                 u.DrName ?? string.Empty,
                 u.LoginId ?? string.Empty,
-                u.LoginPass ?? string.Empty,
+                string.Empty,
                 u.MayakuLicenseNo ?? string.Empty,
                 u.StartDate,
                 u.EndDate,
@@ -301,7 +318,7 @@ namespace Infrastructure.Repositories
                 Sname = u.Sname ?? string.Empty,
                 DrName = u.DrName ?? string.Empty,
                 LoginId = u.LoginId ?? string.Empty,
-                LoginPass = u.LoginPass ?? string.Empty,
+                //LoginPass = u.LoginPass ?? string.Empty,
                 MayakuLicenseNo = u.MayakuLicenseNo ?? string.Empty,
                 StartDate = u.StartDate,
                 EndDate = u.EndDate,
@@ -314,7 +331,19 @@ namespace Infrastructure.Repositories
 
         public bool CheckLoginInfo(string userName, string password)
         {
-            return NoTrackingDataContext.UserMsts.Any(u => u.LoginId == userName && u.LoginPass == password);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.LoginId == userName).ToList();
+            bool result = false;
+            foreach (UserMst userMst in userMsts)
+            {
+                var bytePassword = Encoding.UTF8.GetBytes(password);
+                var hashPassword = CreateHash(bytePassword, userMst.Salt ?? new byte[0]);
+                if (hashPassword == userMst.HashPassword)
+                {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
         }
 
         public bool MigrateDatabase()
@@ -326,6 +355,7 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+            _userInfoService.DisposeSource();
         }
 
         public bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, int userId)
@@ -416,7 +446,9 @@ namespace Infrastructure.Repositories
         {
             var listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
             var listUserPermissionOfUserDefault = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).ToList();
-            var isDoctor = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
+
+            // get data from UserMstList
+            var isDoctor = _userInfoService.AllUserMstList().FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
             if (string.IsNullOrEmpty(permisionCode))
             {
                 return PermissionType.NotAvailable;
@@ -440,7 +472,8 @@ namespace Infrastructure.Repositories
 
         public List<UserMstModel> GetUsersByCurrentUser(int hpId, int currentUser)
         {
-            var infoCurrent = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == currentUser);
+            // get data from UserMstList
+            var infoCurrent = _userInfoService.AllUserMstList().FirstOrDefault(u => u.UserId == currentUser);
             if (infoCurrent is null) return new List<UserMstModel>();
 
             IQueryable<UserMst> listUsers = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId &&
@@ -468,7 +501,7 @@ namespace Infrastructure.Repositories
                                                           x.User.Name ?? string.Empty,
                                                           x.User.Sname ?? string.Empty,
                                                           x.User.LoginId ?? string.Empty,
-                                                          x.User.LoginPass ?? string.Empty,
+                                                          string.Empty,
                                                           x.User.MayakuLicenseNo ?? string.Empty,
                                                           x.User.StartDate,
                                                           x.User.EndDate,
@@ -527,7 +560,7 @@ namespace Infrastructure.Repositories
                                                           entity.User.Name ?? string.Empty,
                                                           entity.User.Sname ?? string.Empty,
                                                           entity.User.LoginId ?? string.Empty,
-                                                          entity.User.LoginPass ?? string.Empty,
+                                                          string.Empty,
                                                           entity.User.MayakuLicenseNo ?? string.Empty,
                                                           entity.User.StartDate,
                                                           entity.User.EndDate,
@@ -560,6 +593,8 @@ namespace Infrastructure.Repositories
             foreach (var item in users)
             {
                 var update = usersUpdate.FirstOrDefault(x => x.Id == item.Id);
+                byte[] salt = GenerateSalt();
+                byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(item.LoginPass ?? string.Empty), salt);
                 if (update is null)
                 {
                     if (item.Id == 0)
@@ -577,7 +612,7 @@ namespace Infrastructure.Repositories
                             KaId = item.KaId,
                             KanaName = item.KanaName,
                             LoginId = item.LoginId,
-                            LoginPass = item.LoginPass,
+                            //LoginPass = item.LoginPass,
                             ManagerKbn = item.ManagerKbn,
                             Name = item.Name,
                             RenkeiCd1 = item.RenkeiCd1,
@@ -587,7 +622,9 @@ namespace Infrastructure.Repositories
                             StartDate = item.StartDate,
                             UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UserId = item.UserId,
-                            UpdateId = currentUser
+                            UpdateId = currentUser,
+                            HashPassword = hashPassword,
+                            Salt = salt
                         });
 
                         TrackingDataContext.UserPermissions.AddRange(item.Permissions.Select(x => new UserPermission()
@@ -614,7 +651,7 @@ namespace Infrastructure.Repositories
                         update.KaId = item.KaId;
                         update.KanaName = item.KanaName;
                         update.LoginId = item.LoginId;
-                        update.LoginPass = item.LoginPass;
+                        //update.LoginPass = item.LoginPass;
                         update.ManagerKbn = item.ManagerKbn;
                         update.Name = item.Name;
                         update.RenkeiCd1 = item.RenkeiCd1;
@@ -624,6 +661,8 @@ namespace Infrastructure.Repositories
                         update.StartDate = item.StartDate;
                         update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = currentUser;
+                        update.HashPassword = hashPassword;
+                        update.Salt = salt;
 
                         var permissionByUsers = TrackingDataContext.UserPermissions.Where(x => x.HpId == hpId && x.UserId == update.UserId);
                         foreach (var permission in item.Permissions)
@@ -673,7 +712,8 @@ namespace Infrastructure.Repositories
 
         public bool UserIdIsExistInDb(int userId)
         {
-            return NoTrackingDataContext.UserMsts.Any(x => x.UserId == userId);
+            // get data from UserMstList
+            return _userInfoService.AllUserMstList().Any(x => x.UserId == userId);
         }
 
         public List<int> ListJobCdValid(int hpId)
@@ -779,13 +819,55 @@ namespace Infrastructure.Repositories
             }
         }
 
+
+
         public UserMstModel GetUserInfo(int hpId, int userId)
         {
-            var user = NoTrackingDataContext.UserMsts
+            // get data from UserMstList
+            var user = _userInfoService.AllUserMstList()
                 .FirstOrDefault(x => x.HpId == hpId &&
                                      x.UserId == userId);
 
             return ToModel(user ?? new());
+        }
+
+        public void UpdateHashPassword()
+        {
+            //var users = TrackingDataContext.UserMsts.ToList();
+            //foreach (var user in users)
+            //{
+            //    byte[] salt = GenerateSalt();
+            //    byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(user.LoginPass ?? string.Empty), salt);
+            //    user.HashPassword = hashPassword;
+            //    user.Salt = salt;
+            //}
+            //TrackingDataContext.SaveChanges();
+        }
+
+        private byte[] CreateHash(byte[] password, byte[] salt)
+        {
+            using var argon2 = new Argon2id(password);
+            var preper = _configuration["Pepper"] ?? string.Empty;
+            salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
+            argon2.Salt = salt;
+            argon2.DegreeOfParallelism = 8;
+            argon2.Iterations = 4;
+            argon2.MemorySize = 1024 * 128;
+            return argon2.GetBytes(32);
+        }
+
+        private static byte[] GenerateSalt()
+        {
+            var buffer = new byte[32];
+            using var rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer);
+            return buffer;
+        }
+
+        public bool VerifyHash(byte[] password, byte[] salt, byte[] hash)
+        {
+            var inputHash = CreateHash(password, salt);
+            return Encoding.UTF8.GetString(inputHash) == Encoding.UTF8.GetString(hash);
         }
     }
 }

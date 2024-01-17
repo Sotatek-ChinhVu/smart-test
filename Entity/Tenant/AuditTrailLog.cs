@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "AUDIT_TRAIL_LOG")]
+    [Table(name: "audit_trail_log")]
     public class AuditTrailLog : EmrCloneable<AuditTrailLog>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("LOG_ID", Order = 1)]
+        [Column("log_id", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long LogId { get; set; }
 
@@ -20,28 +20,28 @@ namespace Entity.Tenant
         /// ログ日時
         /// 
         /// </summary>
-        [Column("LOG_DATE")]
+        [Column("log_date")]
         public DateTime LogDate { get; set; }
 
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// ユーザーID
         /// 
         /// </summary>
-        [Column("USER_ID")]
+        [Column("user_id")]
         public int UserId { get; set; }
 
         /// <summary>
         /// イベントコード
         /// EVENT_MST.EVENT_CD
         /// </summary>
-        [Column("EVENT_CD")]
+        [Column("event_cd")]
         [MaxLength(11)]
         public string? EventCd { get; set; } = string.Empty;
 
@@ -49,28 +49,28 @@ namespace Entity.Tenant
         /// 患者番号
         /// 
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// 
         /// </summary>
-        [Column("SIN_DAY")]
+        [Column("sin_day")]
         public int SinDay { get; set; }
 
         /// <summary>
         /// 来院番号
         /// 
         /// </summary>
-        [Column("RAIIN_NO")]
+        [Column("raiin_no")]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// 端末名
         /// 
         /// </summary>
-        [Column("MACHINE")]
+        [Column("machine")]
         [MaxLength(60)]
         public string? Machine { get; set; } = string.Empty;
     }
