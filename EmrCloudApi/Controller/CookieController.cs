@@ -2,9 +2,7 @@
 using System.Text.Json;
 using Infrastructure.Common;
 using Helper.Constants;
-using System.IdentityModel.Tokens.Jwt;
-using Helper.Extension;
-using Helper.Common;
+using Domain.Models.UserToken;
 
 namespace EmrCloudApi.Controller;
 
@@ -12,12 +10,14 @@ namespace EmrCloudApi.Controller;
 public class CookieController : ControllerBase
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IUserTokenRepository _userTokenRepository;
 
     public int HpId { get; private set; }
 
-    public CookieController(IHttpContextAccessor httpContextAccessor)
+    public CookieController(IHttpContextAccessor httpContextAccessor, IUserTokenRepository userTokenRepository)
     {
         _httpContextAccessor = httpContextAccessor;
+        _userTokenRepository = userTokenRepository;
         HpId = GetHpId();
     }
 
@@ -35,14 +35,10 @@ public class CookieController : ControllerBase
             {
                 return -1;
             }
-            var jwtToken = new JwtSecurityToken(cookie.Token);
-            if (jwtToken.ValidFrom < DateTime.UtcNow && jwtToken.ValidTo > DateTime.UtcNow)
+            // check RefreshToken is valid
+            if (_userTokenRepository.RefreshTokenIsValid(cookie.UserId, cookie.RefreshToken))
             {
-                int result = jwtToken.Payload[ParamConstant.HpId].AsInteger();
-                if (result > 0)
-                {
-                    return result;
-                }
+                return cookie.HpId;
             }
         }
         return -1;

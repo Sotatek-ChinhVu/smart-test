@@ -29,7 +29,7 @@ using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using StackExchange.Redis;
 using Helper.Redis;
-using Reporting.OutDrug.Model.Output;
+using Domain.Models.UserToken;
 
 namespace EmrCloudApi.Controller;
 
@@ -53,7 +53,7 @@ public class PdfCreatorController : CookieController
                                                                                                              SmartKarteにログインしてから、再度読み込みしてください。</p>
                                               ";
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon, IGetCommonDrugInf commonDrugInf, IHttpContextAccessor httpContextAccessor, IUserTokenRepository userTokenRepository) : base(httpContextAccessor, userTokenRepository)
     {
         _reportService = reportService;
         _configuration = configuration;
