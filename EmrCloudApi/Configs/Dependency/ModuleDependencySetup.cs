@@ -833,6 +833,7 @@ using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using Interactor.Yousiki;
 using Interactor.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfDetails;
+using UseCase.Yousiki.GetVisitingInfs;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1934,6 +1935,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Yousiki
             busBuilder.RegisterUseCase<GetYousiki1InfModelWithCommonInfInputData, GetYousiki1InfModelWithCommonInfInteractor>();
             busBuilder.RegisterUseCase<GetYousiki1InfDetailsInputData, GetYousiki1InfDetailsInteractor>();
+            busBuilder.RegisterUseCase<GetVisitingInfsInputData, GetVisitingInfsInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
