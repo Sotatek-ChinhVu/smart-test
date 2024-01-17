@@ -334,7 +334,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         }
 
         //前回入金額の設定
-        Parallel.ForEach(result, r =>
+        result.ForEach(r =>
         {
             var preNyukin = preNyukins.Find(p =>
                 p.HpId == hpId &&
@@ -464,7 +464,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 seikyus = seikyus.Where(n => printConf.UketukeSbtIds.Contains(n.UketukeSbt)).ToList();
             }
 
-            Parallel.ForEach(seikyus, seikyu =>
+            seikyus?.ForEach(seikyu =>
             {
                 result.Add
                 (
@@ -542,7 +542,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                            .ToList();
         var kaikeiFutanList = kaikeiFutans.Where(item => item.HpId == hpId && raiinNoList.Contains(item.RaiinNo)).ToList();
 
-       Parallel.ForEach(result, syunoInf =>
+       foreach(var syunoInf in  result)
         {
             var kaikeiHokenj = kaikeiHokens.FirstOrDefault(item => item.RaiinNo == syunoInf.RaiinNo);
             var kaikeiFutanj = kaikeiFutanList.FirstOrDefault(item => item.RaiinNo == syunoInf.RaiinNo);
@@ -562,7 +562,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             syunoInf.JihiOuttaxNr = kaikeiFutanj?.JihiOuttaxNr ?? 0;
             syunoInf.JihiOuttaxGen = kaikeiFutanj?.JihiOuttaxGen ?? 0;
             syunoInf.KaikeiAdjustFutan = kaikeiFutanj != null ? -kaikeiFutanj.AdjustFutan : 0;
-        });
+        }
         return result;
     }
 
