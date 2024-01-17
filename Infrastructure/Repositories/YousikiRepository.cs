@@ -12,6 +12,21 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     {
     }
 
+    public List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType)
+    {
+        return NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId && x.PtId == ptId && x.DataType == dataType && x.IsDeleted == 0 && (x.Status == 1 || x.Status == 2) &&
+                                x.SinYm < sinYm)
+            .OrderByDescending(x => x.SinYm)
+            .AsEnumerable()
+            .Select(x => new Yousiki1InfModel(
+                    x.PtId,
+                    x.SinYm,
+                    x.DataType,
+                    x.SeqNo,
+                    x.IsDeleted,
+                    x.Status)).ToList();
+    }
+
     /// <summary>
     /// Get Yousiki1Inf List, default param when query all is status = -1
     /// </summary>
