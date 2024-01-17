@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
         if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(resultRefreshToken.refreshToken))
         {
             // set cookie
-            SetCookie(token);
+            SetCookie(user.HpId, user.UserId, resultRefreshToken.refreshToken);
 
             var successResult = GetSuccessResult(token, user.UserId, user.LoginId, user.Name, user.KanaName, user.KaId, user.JobCd == 1, user.ManagerKbn, user.Sname, user.HpId, resultRefreshToken.refreshToken, resultRefreshToken.refreshTokenExpiryTime);
             return Ok(successResult);
@@ -125,7 +125,7 @@ public class AuthController : ControllerBase
             });
 
             // set cookie with new token
-            SetCookie(newToken);
+            SetCookie(principal.FindFirstValue(ParamConstant.HpId).AsInteger(), userId, output.UserToken.RefreshToken);
 
             return new Response<RefreshTokenResponse>
             {
@@ -231,8 +231,8 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Set Cookie to report author
     /// </summary>
-    /// <param name="token"></param>
-    private void SetCookie(string token)
+    /// <param name="refreshToken"></param>
+    private void SetCookie(int hpId, int userId, string refreshToken)
     {
         // get domain from headers
         var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
@@ -245,7 +245,7 @@ public class AuthController : ControllerBase
         options.Secure = true;
         options.SameSite = SameSiteMode.None;
 
-        var cookieObject = new CookieModel(clientDomain, token);
+        var cookieObject = new CookieModel(hpId, userId, clientDomain, refreshToken);
         string dataCookie = JsonSerializer.Serialize(cookieObject);
         HttpContext.Response.Cookies.Append(DomainCookie.CookieReportKey, dataCookie, options);
     }

@@ -12,7 +12,7 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    [Migration("20240115021844_InitialCreate")]
+    [Migration("20240117085554_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26243,12 +26243,6 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("login_id");
-
-                    b.Property<string>("LoginPass")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("login_pass");
 
                     b.Property<int>("LoginType")
                         .HasColumnType("integer")

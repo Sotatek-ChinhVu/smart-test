@@ -26241,12 +26241,6 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("login_id");
 
-                    b.Property<string>("LoginPass")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("login_pass");
-
                     b.Property<int>("LoginType")
                         .HasColumnType("integer")
                         .HasColumnName("login_type");

@@ -578,7 +578,8 @@ public class Sta1002CoReportService : ISta1002CoReportService
                 //自費種別毎の金額
                 for (int i = 0; i <= _jihiSbtMsts.Count - 1; i++)
                 {
-                    if (printData.JihiSbtFutans == null)
+                    // check null JihiSbtFutans
+                    if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any())
                     {
                         break;
                     }

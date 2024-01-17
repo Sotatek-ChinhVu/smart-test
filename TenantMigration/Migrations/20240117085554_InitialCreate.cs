@@ -8615,7 +8615,6 @@ namespace TenantMigration.Migrations
                     sname = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     drname = table.Column<string>(name: "dr_name", type: "character varying(40)", maxLength: 40, nullable: true),
                     loginid = table.Column<string>(name: "login_id", type: "character varying(20)", maxLength: 20, nullable: false),
-                    loginpass = table.Column<string>(name: "login_pass", type: "character varying(20)", maxLength: 20, nullable: false),
                     mayakulicenseno = table.Column<string>(name: "mayaku_license_no", type: "character varying(20)", maxLength: 20, nullable: true),
                     startdate = table.Column<int>(name: "start_date", type: "integer", nullable: false),
                     enddate = table.Column<int>(name: "end_date", type: "integer", nullable: false),
