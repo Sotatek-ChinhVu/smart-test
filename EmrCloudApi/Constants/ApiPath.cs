@@ -558,6 +558,8 @@
 
         //Yousiki
         public const string GetYousiki1InfModelWithCommonInf = "GetYousiki1InfModelWithCommonInf";
+        public const string GetYousiki1InfDetails = "GetYousiki1InfDetails";
+        public const string GetVisitingInfs = "GetVisitingInfs";
         public const string GetHistoryYousiki = "GetHistoryYousiki";
     }
 }

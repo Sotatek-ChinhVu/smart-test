@@ -830,6 +830,9 @@ using UseCase.User.UpdateHashPassword;
 using UseCase.Diseases.IsHokenInfInUsed;
 using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using Interactor.Yousiki;
+using UseCase.Yousiki.GetYousiki1InfDetails;
+using UseCase.Yousiki.GetVisitingInfs;
 using Interactor.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.GetHistoryYousiki;
 using Interactor.Yousiki.GetHistoryYousiki;
@@ -870,8 +873,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddScoped<IUserInfoService, UserInfoService>();
-            services.AddScoped<IKaService, KaService>();
+            services.AddTransient<IUserInfoService, UserInfoService>();
+            services.AddTransient<IKaService, KaService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
@@ -1934,6 +1937,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Yousiki
             busBuilder.RegisterUseCase<GetYousiki1InfModelWithCommonInfInputData, GetYousiki1InfModelWithCommonInfInteractor>();
+            busBuilder.RegisterUseCase<GetYousiki1InfDetailsInputData, GetYousiki1InfDetailsInteractor>();
+            busBuilder.RegisterUseCase<GetVisitingInfsInputData, GetVisitingInfsInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

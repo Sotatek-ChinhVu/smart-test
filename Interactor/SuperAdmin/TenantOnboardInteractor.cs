@@ -4,12 +4,15 @@ using AWSSDK.Common;
 using AWSSDK.Constants;
 using AWSSDK.Dto;
 using AWSSDK.Interfaces;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Domain.Models.User;
 using Domain.SuperAdminModels.MigrationTenantHistory;
 using Domain.SuperAdminModels.Notification;
 using Domain.SuperAdminModels.Tenant;
 using Interactor.Realtime;
 using Microsoft.Extensions.Caching.Memory;
 using Npgsql;
+using System.Text;
 using UseCase.SuperAdmin.TenantOnboard;
 
 namespace Interactor.SuperAdmin
@@ -23,6 +26,7 @@ namespace Interactor.SuperAdmin
         private readonly INotificationRepository _notificationRepository;
         private IWebSocketService _webSocketService;
         private readonly IMemoryCache _memoryCache;
+        private readonly IUserRepository _userRepository;
         public TenantOnboardInteractor(
             IAwsSdkService awsSdkService,
             ITenantRepository tenantRepository,
@@ -30,7 +34,8 @@ namespace Interactor.SuperAdmin
             IMigrationTenantHistoryRepository migrationTenantHistoryRepository,
             INotificationRepository notificationRepository,
             IWebSocketService webSocketService,
-            IMemoryCache memoryCache
+            IMemoryCache memoryCache,
+            IUserRepository userRepository
             )
         {
             _awsSdkService = awsSdkService;
@@ -40,6 +45,7 @@ namespace Interactor.SuperAdmin
             _tenant2Repository = tenant2Repository;
             _webSocketService = webSocketService;
             _memoryCache = memoryCache;
+            _userRepository = userRepository;
         }
         public TenantOnboardOutputData Handle(TenantOnboardInputData inputData)
         {
@@ -410,7 +416,9 @@ namespace Interactor.SuperAdmin
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
                         var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
-                        var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId, model.Password);
+                        byte[] salt = _userRepository.GenerateSalt();
+                        byte[] hashPassword = _userRepository.CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
+                        var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId, "", hashPassword, salt);
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
@@ -418,6 +426,20 @@ namespace Interactor.SuperAdmin
                         // _CreateTrigger(command, listMigration, tenantId);
                         _CreateAuditLog(tenantId);
                         _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
+                    }
+                }
+
+                //Rename table_name and field_name of database
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        var sqlRenameTableName = QueryConstant.RenameTableNames;
+                        var sqlRenameFieldName = QueryConstant.RenameFieldNames;
+                        command.CommandText = sqlRenameTableName + sqlRenameFieldName;
+                        command.ExecuteNonQuery();
                     }
                 }
             }

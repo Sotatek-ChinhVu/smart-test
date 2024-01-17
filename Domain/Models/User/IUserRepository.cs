@@ -8,19 +8,11 @@ namespace Domain.Models.User
     {
         void Create(UserMstModel user);
 
-        UserMstModel Read(int userId);
-
-        void Update(UserMstModel user);
-
-        void Delete(int userId);
-
         IEnumerable<UserMstModel> GetDoctorsList(int userId);
 
         IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds);
 
         IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds);
-
-        IEnumerable<UserMstModel> GetAll();
 
         List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll);
 
@@ -81,5 +73,9 @@ namespace Domain.Models.User
         List<UserMstModel> GetUsersByPermission(int hpId, int managerKbn);
 
         void UpdateHashPassword();
+
+        byte[] GenerateSalt();
+
+        byte[] CreateHash(byte[] password, byte[] salt);
     }
 }
