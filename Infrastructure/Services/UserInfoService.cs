@@ -57,6 +57,11 @@ namespace Infrastructure.Services
             return userInfo.Name ?? string.Empty;
         }
 
+        public List<UserMst> AllUserMstList()
+        {
+            return _userInfoList;
+        }
+
         public void Reload()
         {
             // check if cache exists, load data from cache
