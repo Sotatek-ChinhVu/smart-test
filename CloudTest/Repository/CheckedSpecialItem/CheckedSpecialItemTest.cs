@@ -150,7 +150,8 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.PtRousaiTenkis.AddRange(ptRouSaiTenkis);
         tenant.PtHokenPatterns.AddRange(ptHokenPatterns);
         tenant.SaveChanges();
-        InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider);
+        var mockConfiguration = new Mock<IConfiguration>();
+        InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider, mockConfiguration.Object);
 
         try
         {
