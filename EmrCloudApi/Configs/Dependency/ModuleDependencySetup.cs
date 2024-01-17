@@ -831,6 +831,7 @@ using UseCase.Diseases.IsHokenInfInUsed;
 using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using Interactor.Yousiki;
+using Interactor.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfDetails;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -869,8 +870,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddScoped<IUserInfoService, UserInfoService>();
-            services.AddScoped<IKaService, KaService>();
+            services.AddTransient<IUserInfoService, UserInfoService>();
+            services.AddTransient<IKaService, KaService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
