@@ -228,6 +228,17 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return result;
     }
 
+    public bool IsYousikiExist(int hpId, int sinYm, long ptId)
+    {
+        var yousiki1Infs = dbService.Yousiki1InfRepository.FindListQueryableNoTrack(x => x.HpId == Session.HospitalID &&
+                            x.IsDeleted == 0 &&
+                            x.SinYm == sinYm &&
+                            x.PtId == ptId);
+        return yousiki1Infs.AsEnumerable()
+                   .Select(x => new Yousiki1InfModel(x, new PtInf()))
+                   .FirstOrDefault() != null;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

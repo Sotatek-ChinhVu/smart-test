@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.Yousiki;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Yousiki.AddYousiki;
 using UseCase.Yousiki.GetVisitingInfs;
 using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
@@ -50,5 +51,15 @@ public class YousikiController : AuthorizeControllerBase
         var presenter = new GetVisitingInfsPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetVisitingInfsResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.AddYousiki)]
+    public ActionResult<Response<AddYousikiResponse>> AddYousiki([FromBody] AddYousikiRequest request)
+    {
+        var input = new AddYousikiInputData(HpId, request.SinYm, request.PtNum, request.SelectDataType);
+        var output = _bus.Handle(input);
+        var presenter = new AddYousikiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<AddYousikiResponse>>(presenter.Result);
     }
 }

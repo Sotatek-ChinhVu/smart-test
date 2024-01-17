@@ -1075,5 +1075,13 @@
         public static readonly string InvalidSinrekiFilterMstKouiSeqNo = "Invalid SinrekiFilterMstKoui SeqNo.";
         public static readonly string InvalidSinrekiFilterMstDetaiDuplicateItemCd = "Invalid SinrekiFilterMstDetai Duplicate ItemCd.";
 
+        //Yousiki
+        public static readonly string InvalidYousikiSinYm = "登録する受診年月日を指定してください。";
+        public static readonly string InvalidYousikiSelectDataType0 = "種別を入力してください。";
+        public static readonly string InvalidYousikiSelectDataType1 = "生活習慣病管理料をオーダーしている患者を一括で追加します。よろしいですか？";
+        public static readonly string InvalidYousikiSelectDataType2 = "訪問診療料、在医総、施医総および在がん医総をオーダーしている患者を一括で追加します。よろしいですか？";
+        public static readonly string InvalidYousikiSelectDataType3 = "疾患別リハビリテーション料をオーダーしている患者を一括で追加します。よろしいですか？";
+        public static readonly string IsYousikiExist = "既に登録があるため、追加できません。";
+        public static readonly string InvalidHealthInsuranceAccepted = "指定した受診年月に来院がないため、追加できません。";
     }
 }
