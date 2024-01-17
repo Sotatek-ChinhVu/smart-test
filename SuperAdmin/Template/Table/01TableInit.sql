@@ -6250,6 +6250,8 @@ CREATE TABLE "USER_MST" (
     "UPDATE_DATE" timestamp with time zone NOT NULL,
     "UPDATE_ID" integer NOT NULL,
     "UPDATE_MACHINE" character varying(60) NULL,
+	"HASH_PASSWORD" bytea NULL,
+	"SALT" bytea NULL,
     CONSTRAINT "PK_USER_MST" PRIMARY KEY ("ID", "HP_ID")
 );
 
