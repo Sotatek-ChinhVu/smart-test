@@ -6117,6 +6117,8 @@ namespace TenantMigration.Migrations
 
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "HokenId");
 
+                    b.HasIndex(new[] { "HpId", "RaiinNo" }, "KAIKEI_INF_IDX01");
+
                     b.ToTable("KAIKEI_INF");
                 });
 
@@ -26202,6 +26204,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("END_DATE");
 
+                    b.Property<byte[]>("HashPassword")
+                        .HasColumnType("bytea")
+                        .HasColumnName("HASH_PASSWORD");
+
                     b.Property<string>("HpkiIssuerDn")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -26264,6 +26270,11 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(14)
                         .HasColumnType("character varying(14)")
                         .HasColumnName("RENKEI_CD1");
+
+                    b.Property<byte[]>("Salt")
+                        .HasMaxLength(14)
+                        .HasColumnType("bytea")
+                        .HasColumnName("SALT");
 
                     b.Property<string>("Sname")
                         .IsRequired()

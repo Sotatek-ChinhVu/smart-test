@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "YAKKA_SYUSAI_MST")]
-    [Index(nameof(StartDate), nameof(EndDate), Name = "YAKKA_SYUSAI_MST_IDX01")]
+    [Table(name: "yakka_syusai_mst")]
+    [Index(nameof(StartDate), nameof(EndDate), Name = "yakka_syusai_mst_idx01")]
     public class YakkaSyusaiMst : EmrCloneable<YakkaSyusaiMst>
     {
         /// <summary>
@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// </summary>
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("YAKKA_CD", Order = 2)]
+        [Column("yakka_cd", Order = 2)]
         [MaxLength(12)]
         public string YakkaCd { get; set; } = string.Empty;
 
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("ITEM_CD", Order = 3)]
+        [Column("item_cd", Order = 3)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -40,7 +40,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("START_DATE", Order = 4)]
+        [Column("start_date", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// 終了日
         /// 
         /// </summary>
-        [Column("END_DATE")]
+        [Column("end_date")]
         [CustomAttribute.DefaultValue(99999999)]
         public int EndDate { get; set; }
 
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         /// 成分名
         /// 
         /// </summary>
-        [Column("SEIBUN")]
+        [Column("seibun")]
         [MaxLength(255)]
         public string? Seibun { get; set; } = string.Empty;
 
@@ -64,7 +64,7 @@ namespace Entity.Tenant
         /// 品目名
         /// 
         /// </summary>
-        [Column("HINMOKU")]
+        [Column("hinmoku")]
         [MaxLength(255)]
         public string? Hinmoku { get; set; } = string.Empty;
 
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// ☆:後発品のうち、加算対象外の薬剤
         /// NULL:その他"
         /// </summary>
-        [Column("KBN")]
+        [Column("kbn")]
         [MaxLength(2)]
         public string? Kbn { get; set; } = string.Empty;
 
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// 収載日
         /// 
         /// </summary>
-        [Column("SYUSAI_DATE")]
+        [Column("syusai_date")]
         [CustomAttribute.DefaultValue(0)]
         public int SyusaiDate { get; set; }
 
@@ -93,7 +93,7 @@ namespace Entity.Tenant
         /// 経過情報
         /// 
         /// </summary>
-        [Column("KEIKA")]
+        [Column("keika")]
         [MaxLength(255)]
         public string? Keika { get; set; } = string.Empty;
 
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// 備考
         /// 
         /// </summary>
-        [Column("BIKO")]
+        [Column("biko")]
         [MaxLength(255)]
         public string? Biko { get; set; } = string.Empty;
 
@@ -109,7 +109,7 @@ namespace Entity.Tenant
         /// 準先発
         /// 1: 準先発で後発品のある薬剤（加算対象）
         /// </summary>
-        [Column("JUN_SENPATU")]
+        [Column("jun_senpatu")]
         [CustomAttribute.DefaultValue(0)]
         public int JunSenpatu { get; set; }
 
@@ -117,7 +117,7 @@ namespace Entity.Tenant
         /// 単位
         /// 
         /// </summary>
-        [Column("UNIT_NAME")]
+        [Column("unit_name")]
         [MaxLength(100)]
         public string? UnitName { get; set; } = string.Empty;
 
@@ -125,7 +125,7 @@ namespace Entity.Tenant
         /// 薬価
         /// 
         /// </summary>
-        [Column("YAKKA")]
+        [Column("yakka")]
         [CustomAttribute.DefaultValue(0)]
         public double Yakka { get; set; }
 
@@ -133,7 +133,7 @@ namespace Entity.Tenant
         /// 対象外フラグ
         /// 1:後発医薬品の規格単位数量の割合を算出する際に除外する医薬品
         /// </summary>
-        [Column("IS_NOTARGET")]
+        [Column("is_notarget")]
         [CustomAttribute.DefaultValue(0)]
         public int IsNotarget { get; set; }
 
@@ -141,14 +141,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
@@ -156,7 +156,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -164,14 +164,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
@@ -179,7 +179,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

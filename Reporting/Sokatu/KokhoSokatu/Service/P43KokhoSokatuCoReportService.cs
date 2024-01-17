@@ -50,11 +50,6 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        receInfs = new();
-        hokensyaNames = new();
-        kaMsts = new();
-        hokensyaNos = new();
     }
     #endregion
 
@@ -127,7 +122,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                 SetFieldData(string.Format("seikyuMonth{0}", i), wrkYmd.Month.ToString());
             }
             //診療科
-            SetFieldData("kaName", kaMsts[0].KaName ?? string.Empty);
+            SetFieldData("kaName", kaMsts[0].KaName);
 
             return 1;
         }
@@ -147,7 +142,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                 //1枚目のみ記載する
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = new();
+                    List<CoReceInfModel> wrkReces = null;
                     switch (rowNo)
                     {
                         case 0: wrkReces = receInfs.Where(r => r.IsNrElderIppan).ToList(); break;
@@ -161,7 +156,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                         case 8: wrkReces = receInfs.Where(r => r.IsRetAll).ToList(); break;
                         case 9: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                     }
-                    if (wrkReces.Count == 0) continue;
+                    if (wrkReces == null) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -203,7 +198,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
 
                     for (short colNo = 0; colNo < maxHokensyaCol; colNo++)
                     {
-                        List<CoReceInfModel> wrkReces = new();
+                        List<CoReceInfModel> wrkReces = null;
                         switch (colNo)
                         {
                             //国保
@@ -216,7 +211,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                             case 5: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                             case 6: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                         }
-                        if (wrkReces.Count == 0) continue;
+                        if (wrkReces == null) continue;
 
                         countData wrkData = new countData();
                         //件数
@@ -231,6 +226,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
                 hokensyaIndex++;
                 if (hokensyaIndex >= hokensyaNos.Count)
                 {
+                    //_listTextData.Add(pageIndex, listDataPerPage);
                     flgNextPage = false;
                     break;
                 }
@@ -243,7 +239,7 @@ public class P43KokhoSokatuCoReportService : IP43KokhoSokatuCoReportService
             int kohiIndex = (currentPage - 1) * maxKohiRow * maxKohiCol;
 
             var curHeiyoReceInfs = receInfs;
-            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curHeiyoReceInfs.ToList(), new());
+            var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curHeiyoReceInfs.ToList(), null);
 
             if (kohiHoubetus.Count != 0)
             {

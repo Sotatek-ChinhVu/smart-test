@@ -136,7 +136,7 @@ namespace Infrastructure.CommonDB
         {
             // get domain then get tenantId from Tenant table
             string domain = GetDomainName();
-            string key = "cache_tenantId_" + domain;
+            string key = CacheKeyConstant.CacheKeyTenantId + domain;
             int tenantId = 0;
             if (_cache.KeyExists(key))
             {

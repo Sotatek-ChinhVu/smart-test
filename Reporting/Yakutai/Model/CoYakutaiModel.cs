@@ -1,24 +1,26 @@
-﻿namespace Reporting.Yakutai.Model
+﻿using Reporting.CommonMasters.Config;
+
+namespace Reporting.Yakutai.Model
 {
     public class CoYakutaiModel
     {
         // 医療機関情報
-        public CoHpInfModel HpInfModel { get; set; }
+        public CoHpInfModel HpInfModel;
 
         // 患者情報
-        public CoPtInfModel PtInfModel { get; set; }
+        public CoPtInfModel PtInfModel;
 
         // 来院情報
-        public CoRaiinInfModel RaiinInfModel { get; set; }
+        public CoRaiinInfModel RaiinInfModel;
 
         // オーダー情報
-        public List<CoOdrInfModel> OdrInfModels { get; set; }
+        public List<CoOdrInfModel> OdrInfModels;
 
         // オーダー情報詳細
-        public List<CoOdrInfDetailModel> OdrInfDetailModels { get; set; }
+        public List<CoOdrInfDetailModel> OdrInfDetailModels;
 
         // 1回量表示単位マスタ
-        public List<CoSingleDoseMstModel> SingleDoseMstModels { get; set; }
+        public List<CoSingleDoseMstModel> SingleDoseMstModels;
         public CoYakutaiModel(CoHpInfModel hpInf, CoPtInfModel ptInf, CoRaiinInfModel raiinInf,
             List<CoOdrInfModel> odrInfs, List<CoOdrInfDetailModel> odrDtls, List<CoSingleDoseMstModel> singleDoses)
         {
@@ -28,22 +30,8 @@
             OdrInfModels = odrInfs;
             OdrInfDetailModels = odrDtls;
             SingleDoseMstModels = singleDoses;
-            YohoComments = new();
-            Yoho = string.Empty;
-            YohoTani = string.Empty;
-        }
 
-        public CoYakutaiModel()
-        {
-            HpInfModel = new();
-            PtInfModel = new();
-            RaiinInfModel = new();
-            OdrInfModels = new();
-            OdrInfDetailModels = new();
-            SingleDoseMstModels = new();
-            YohoComments = new();
-            Yoho = string.Empty;
-            YohoTani = string.Empty;
+            YohoComments = new List<string>();
         }
 
         /// <summary>
@@ -65,28 +53,28 @@
         /// </summary>
         public string PtName
         {
-            get => PtInfModel.Name ?? string.Empty;
+            get => PtInfModel.Name ?? "";
         }
         /// <summary>
         /// 患者カナ氏名
         /// </summary>
         public string PtKanaName
         {
-            get => PtInfModel.KanaName ?? string.Empty;
+            get => PtInfModel.KanaName ?? "";
         }
         /// <summary>
         /// 診療科名
         /// </summary>
         public string KaName
         {
-            get => RaiinInfModel != null ? RaiinInfModel.KaName : string.Empty;
+            get => RaiinInfModel != null ? RaiinInfModel.KaName : "";
         }
         /// <summary>
         /// 担当医氏名
         /// </summary>
         public string TantoName
         {
-            get => RaiinInfModel != null ? RaiinInfModel.TantoName : string.Empty;
+            get => RaiinInfModel != null ? RaiinInfModel.TantoName : "";
         }
         /// <summary>
         /// 受付番号
@@ -100,41 +88,41 @@
         /// </summary>
         public string HpName
         {
-            get => HpInfModel != null ? HpInfModel.HpName : string.Empty;
+            get => HpInfModel != null ? HpInfModel.HpName : "";
         }
         /// <summary>
         /// 医療機関電話番号
         /// </summary>
         public string HpTel
         {
-            get => HpInfModel != null ? HpInfModel.Tel : string.Empty;
+            get => HpInfModel != null ? HpInfModel.Tel : "";
         }
 
         public string HpAddress
         {
-            get => HpInfModel != null ? HpInfModel.Address : string.Empty;
+            get => HpInfModel != null ? HpInfModel.Address : "";
         }
         public string HpPostCd
         {
-            get => HpInfModel != null ? HpInfModel.PostCd : string.Empty;
+            get => HpInfModel != null ? HpInfModel.PostCd : "";
         }
         public string HpPostCdDsp
         {
-            get => HpInfModel != null ? HpInfModel.PostCdDsp : string.Empty;
+            get => HpInfModel != null ? HpInfModel.PostCdDsp : "";
         }
         public string HpFaxNo
         {
-            get => HpInfModel != null ? HpInfModel.FaxNo : string.Empty;
+            get => HpInfModel != null ? HpInfModel.FaxNo : "";
         }
         public string HpOtherContacts
         {
-            get => HpInfModel != null ? HpInfModel.OtherContacts : string.Empty;
+            get => HpInfModel != null ? HpInfModel.OtherContacts : "";
         }
         public string DrugKbn
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 switch (DrugKbnCd)
                 {
@@ -196,15 +184,18 @@
 
                     void _checkSetFukuyoryo(double fukuyoryo)
                     {
-                        if (!ret && fukuyoryo > 0)
+                        if (ret == false)
                         {
-                            if (tmp == 0)
+                            if (fukuyoryo > 0)
                             {
-                                tmp = fukuyoryo;
-                            }
-                            else if (tmp != fukuyoryo)
-                            {
-                                ret = true;
+                                if (tmp == 0)
+                                {
+                                    tmp = fukuyoryo;
+                                }
+                                else if (tmp != fukuyoryo)
+                                {
+                                    ret = true;
+                                }
                             }
                         }
                     }
@@ -234,7 +225,7 @@
             {
                 double ret = 0;
 
-                var odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
+                CoOdrInfDetailModel odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
 
                 if (odrDtl != null)
                 {
@@ -259,9 +250,9 @@
             {
                 double ret = 0;
 
-                if (!IsFukinto)
+                if (IsFukinto == false)
                 {
-                    var odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
+                    CoOdrInfDetailModel odrDtl = OdrInfDetailModels.Find(p => p.YohoKbn == 1);
 
                     if (odrDtl != null)
                     {
@@ -303,11 +294,11 @@
                 if (CnvToOnceValue > 0 &&
                     SingleDoseMstModels != null &&
                     SingleDoseMstModels.Any() &&
-                    !IsFukinto)
+                    IsFukinto == false)
                 {
                     foreach (CoOdrInfDetailModel odrDtl in OdrInfDetailModels.FindAll(p => p.DrugKbn > 0))
                     {
-                        if (!SingleDoseMstModels.Any(p => p.UnitName == odrDtl.UnitNameDsp))
+                        if (SingleDoseMstModels.Any(p => p.UnitName == odrDtl.UnitNameDsp) == false)
                         {
                             ret = false;
                             break;
@@ -335,13 +326,11 @@
 
                 if (OdrInfDetailModels.Any(p => p.YohoKbn == 1))
                 {
-                    yohoSuryo = OdrInfDetailModels.Find(p => p.YohoKbn == 1)?.Suryo ?? 0;
+                    yohoSuryo = OdrInfDetailModels.Find(p => p.YohoKbn == 1).Suryo;
                 }
 
-                List<CoOdrInfDetailModel> list = OdrInfDetailModels.FindAll(p => p.DrugKbn > 0);
-                for (int i = 0; i < list.Count; i++)
+                foreach (CoOdrInfDetailModel odrDtl in OdrInfDetailModels.FindAll(p => p.DrugKbn > 0))
                 {
-                    CoOdrInfDetailModel odrDtl = list[i];
                     if (new List<int> { 21, 22 }.Contains(DrugKbnCd))
                     {
                         // 内服薬・頓服

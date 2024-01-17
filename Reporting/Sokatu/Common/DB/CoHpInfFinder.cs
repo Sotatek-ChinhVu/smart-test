@@ -15,8 +15,12 @@ namespace Reporting.Sokatu.Common.DB
             HpInf hpInf = NoTrackingDataContext.HpInfs.Where(h =>
                 h.HpId == hpId &&
                 h.StartDate <= seikyuYm * 100 + 31
-            ).OrderByDescending(h => h.StartDate).FirstOrDefault() ?? new();
+            ).OrderByDescending(h => h.StartDate).FirstOrDefault();
 
+            if (hpInf == null)
+            {
+                return null;
+            }
             return new CoHpInfModel(hpInf);
         }
 

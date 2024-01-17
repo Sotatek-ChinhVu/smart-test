@@ -5,9 +5,9 @@ namespace Reporting.AccountingCard.Model
 {
     public class CoPtKohiModel
     {
-        public PtKohi PtKohi { get; } = new();
-        public HokenMst HokenMst { get; } = new();
-        public KohiPriority KohiPriority { get; } = new();
+        public PtKohi PtKohi { get; } = null;
+        public HokenMst HokenMst { get; } = null;
+        public KohiPriority KohiPriority { get; } = null;
 
         public CoPtKohiModel(PtKohi ptKohi, HokenMst hokenMst, KohiPriority kohiPriority)
         {
@@ -85,7 +85,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string FutansyaNo
         {
-            get { return PtKohi.FutansyaNo ?? string.Empty; }
+            get { return PtKohi.FutansyaNo; }
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string JyukyusyaNo
         {
-            get { return PtKohi.JyukyusyaNo ?? string.Empty; }
+            get { return PtKohi.JyukyusyaNo; }
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string TokusyuNo
         {
-            get { return PtKohi.TokusyuNo ?? string.Empty; }
+            get { return PtKohi.TokusyuNo; }
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Reporting.AccountingCard.Model
             get
             {
                 return
-                    ((KohiPriority == new KohiPriority() || KohiPriority == null) ? 99999 : CIUtil.StrToIntDef(KohiPriority.PriorityNo, 99999)) * 1000 + CIUtil.StrToIntDef(HokenMst.Houbetu ?? string.Empty, 999);
+                    (KohiPriority == null ? 99999 : CIUtil.StrToIntDef(KohiPriority.PriorityNo, 99999)) * 1000 + CIUtil.StrToIntDef(HokenMst.Houbetu, 999);
             }
         }
 

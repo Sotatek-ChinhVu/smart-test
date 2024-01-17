@@ -36,8 +36,8 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP43WelfareReceInfModel2> receInfs = new();
-        private CoHpInfModel hpInf = new();
+        private List<CoP43WelfareReceInfModel2> receInfs;
+        private CoHpInfModel hpInf;
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -164,7 +164,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var curReceInf = receInfs[ptIndex];
 
                     //受給者番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.JyukyusyaNo ?? string.Empty));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.JyukyusyaNo));
 
                     //氏名
                     listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
@@ -254,7 +254,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
             //熊本県用のモデルにコピー
             receInfs = wrkReces.Select(x => new CoP43WelfareReceInfModel2(x.ReceInf, x.PtInf, x.PtKohi1, x.PtKohi2, x.PtKohi3, x.PtKohi4, kohiHokens)).ToList();
             //苓北町 子育て支援医療費の対象に絞る
-            receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo?.PadLeft(7, '0')).ToList();
+            receInfs = receInfs.Where(x => x.IsWelfare).OrderBy(x => x.JyukyusyaNo.PadLeft(7, '0')).ToList();
 
             return (receInfs?.Count ?? 0) > 0;
         }

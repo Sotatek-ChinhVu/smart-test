@@ -7,26 +7,41 @@ using Domain.Models.InsuranceMst;
 using Domain.Models.MstItem;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
+using Helper.Extension;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System.Linq.Expressions;
-using System.Net.WebSockets;
-using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
     public class AccountingRepository : RepositoryBase, IAccountingRepository
     {
-        public AccountingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
+        public AccountingRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
-
+            key = GetCacheKey() + CacheKeyConstant.PaymentMethodMsts;
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
-
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
+        }
         public List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false, bool getAll = true)
         {
             List<RaiinInf> listRaiinInf;
@@ -576,7 +591,7 @@ namespace Infrastructure.Repositories
             if (listPtByoMei == null || listPtByoMei.Count == 0)
                 return new List<PtDiseaseModel>();
 
-            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>(), data.TenkiKbn))
+            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, data.HokenId, new List<PrefixSuffixModel>(), data.TenkiKbn))
                 .OrderBy(data => data.TenkiKbn)
                 .ThenBy(data => data.SortNo)
                 .ThenByDescending(data => data.StartDate)
@@ -607,6 +622,7 @@ namespace Infrastructure.Repositories
                                                         p.TogetuByomei,
                                                         p.IsNodspRece,
                                                         p.TenkiKbn,
+                                                        p.HokenPid,
                                                         SyusyokuCdToList(p)
                                                         ))
                                             .ToList();
@@ -717,16 +733,51 @@ namespace Infrastructure.Repositories
 
         public List<PaymentMethodMstModel> GetListPaymentMethodMst(int hpId)
         {
-            return NoTrackingDataContext.PaymentMethodMsts
-                .Where(item => item.HpId == hpId && item.IsDeleted == 0)
+            var finalKey = key;
+            IEnumerable<PaymentMethodMst> paymentMethodList;
+            if (!_cache.KeyExists(finalKey))
+            {
+                paymentMethodList = ReloadCache();
+            }
+            else
+            {
+                paymentMethodList = ReadCache();
+            }
+            return paymentMethodList
+                .Where(item => item.HpId == hpId)
                 .OrderBy(item => item.SortNo)
                 .Select(item => new PaymentMethodMstModel(
                     item.PaymentMethodCd,
                     item.PayName ?? string.Empty,
                     item.PaySname ?? string.Empty,
                     item.SortNo,
-                    item.IsDeleted)).ToList();
+                item.IsDeleted)).ToList();
         }
+
+        #region [cache GetListPaymentMethodMst]
+        private IEnumerable<PaymentMethodMst> ReloadCache()
+        {
+            var finalKey = key;
+            var paymentMethodList =
+                    NoTrackingDataContext.PaymentMethodMsts
+                    .Where(s => s.IsDeleted == 0)
+                    .ToList();
+            var json = JsonSerializer.Serialize(paymentMethodList);
+            _cache.StringSet(finalKey, json);
+
+            return paymentMethodList;
+        }
+
+        private IEnumerable<PaymentMethodMst> ReadCache()
+        {
+            var finalKey = key;
+            var results = _cache.StringGet(finalKey);
+            var json = results.AsString();
+            var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<PaymentMethodMst>>(json) : new();
+            return datas ?? new();
+        }
+
+        #endregion [cache GetListPaymentMethodMst]
 
         public List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> kohiIds)
         {

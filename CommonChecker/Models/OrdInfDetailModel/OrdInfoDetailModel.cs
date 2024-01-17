@@ -134,47 +134,8 @@ namespace CommonChecker.Models.OrdInfDetailModel
                 {
                     return ItemName + TenUtils.GetBunkatu(BunkatuKoui, Bunkatu);
                 }
-                else if (Is840Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is842Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is830Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is831Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is850Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is851Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is852Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is853Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (Is880Cmt)
-                {
-                    return "" + ItemName;
-                }
-                else if (string.IsNullOrEmpty(ItemCd) && !IsShohoComment && !IsShohoBiko)
-                {
-                    return "" + ItemName;
-                }
-                return ItemName;
+
+                return "" + ItemName;
             }
         }
 

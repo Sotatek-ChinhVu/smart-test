@@ -4,20 +4,44 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using Konscious.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Security.Cryptography;
+using System.Text;
+using static Amazon.S3.Util.S3EventNotification;
 using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
 {
     public class UserRepository : RepositoryBase, IUserRepository
     {
-        public UserRepository(ITenantProvider tenantProvider) : base(tenantProvider)
-        {
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
 
+        public UserRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
+        {
+            key = GetDomainKey();
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
         }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
+        }
+
         public bool CheckExistedId(List<long> ids)
         {
             var anyUsertMsts = NoTrackingDataContext.UserMsts.Count(u => ids.Contains(u.Id));
@@ -134,12 +158,20 @@ namespace Infrastructure.Repositories
             return entity is null ? new UserMstModel() : ToModel(entity);
         }
 
-        public UserMstModel? GetByLoginId(string loginId)
+        public UserMstModel? GetByLoginId(string loginId, string password)
         {
             var timeNow = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
             var entity = NoTrackingDataContext.UserMsts
                 .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None && u.StartDate <= timeNow && u.EndDate >= timeNow).FirstOrDefault();
-            return entity is null ? null : ToModel(entity);
+            if (entity is null)
+            {
+                return null;
+            }
+            if (!VerifyHash(Encoding.UTF8.GetBytes(password), entity.Salt, entity.HashPassword))
+            {
+                return null;
+            }
+            return ToModel(entity);
         }
 
         public int MaxUserId()
@@ -172,6 +204,8 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
+                        byte[] salt = GenerateSalt();
+                        byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(inputData.LoginPass ?? string.Empty), salt);
                         var userMst = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                         if (userMst != null)
                         {
@@ -182,7 +216,7 @@ namespace Infrastructure.Repositories
                             userMst.Name = inputData.Name ?? string.Empty;
                             userMst.Sname = inputData.Sname ?? string.Empty;
                             userMst.DrName = inputData.DrName ?? string.Empty;
-                            userMst.LoginPass = inputData.LoginPass ?? string.Empty;
+                            //userMst.LoginPass = inputData.LoginPass ?? string.Empty;
                             userMst.MayakuLicenseNo = inputData.MayakuLicenseNo ?? string.Empty;
                             userMst.StartDate = inputData.StartDate;
                             userMst.EndDate = inputData.EndDate;
@@ -191,14 +225,27 @@ namespace Infrastructure.Repositories
                             userMst.IsDeleted = inputData.IsDeleted;
                             userMst.UpdateId = userId;
                             userMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            userMst.HashPassword = hashPassword;
+                            userMst.Salt = salt;
                         }
                         else
                         {
-                            TrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
+                            var user = ConvertUserList(inputData);
+                            user.HashPassword = hashPassword;
+                            user.Salt = salt;
+                            TrackingDataContext.UserMsts.Add(user);
                         }
                     }
                 }
                 TrackingDataContext.SaveChanges();
+
+                // delete cache when save userMstList
+                string finalKey = key + CacheKeyConstant.UserInfoCacheService;
+                if (_cache.KeyExists(finalKey))
+                {
+                    _cache.KeyDelete(finalKey);
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -209,9 +256,7 @@ namespace Infrastructure.Repositories
                     return false;
                 }
                 throw;
-
             }
-
         }
 
         private static UserMstModel ToModel(UserMst u, List<KaMst> listKaMsts)
@@ -229,7 +274,7 @@ namespace Infrastructure.Repositories
                 u.Sname ?? string.Empty,
                 u.DrName ?? string.Empty,
                 u.LoginId ?? string.Empty,
-                u.LoginPass ?? string.Empty,
+                string.Empty,
                 u.MayakuLicenseNo ?? string.Empty,
                 u.StartDate,
                 u.EndDate,
@@ -253,7 +298,7 @@ namespace Infrastructure.Repositories
                 u.Sname ?? string.Empty,
                 u.DrName ?? string.Empty,
                 u.LoginId ?? string.Empty,
-                u.LoginPass ?? string.Empty,
+                string.Empty,
                 u.MayakuLicenseNo ?? string.Empty,
                 u.StartDate,
                 u.EndDate,
@@ -275,7 +320,7 @@ namespace Infrastructure.Repositories
                 Sname = u.Sname ?? string.Empty,
                 DrName = u.DrName ?? string.Empty,
                 LoginId = u.LoginId ?? string.Empty,
-                LoginPass = u.LoginPass ?? string.Empty,
+                //LoginPass = u.LoginPass ?? string.Empty,
                 MayakuLicenseNo = u.MayakuLicenseNo ?? string.Empty,
                 StartDate = u.StartDate,
                 EndDate = u.EndDate,
@@ -288,7 +333,20 @@ namespace Infrastructure.Repositories
 
         public bool CheckLoginInfo(string userName, string password)
         {
-            return NoTrackingDataContext.UserMsts.Any(u => u.LoginId == userName && u.LoginPass == password);
+            var userMsts =  NoTrackingDataContext.UserMsts.Where(u => u.LoginId == userName).ToList();
+            bool result = false;
+            foreach (UserMst userMst in userMsts)
+            {
+                var bytePassword = Encoding.UTF8.GetBytes(password);
+                var hashPassword = CreateHash(bytePassword, userMst.Salt ?? new byte[0]);
+                if (hashPassword == userMst.HashPassword)
+                {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         public bool MigrateDatabase()
@@ -442,7 +500,7 @@ namespace Infrastructure.Repositories
                                                           x.User.Name ?? string.Empty,
                                                           x.User.Sname ?? string.Empty,
                                                           x.User.LoginId ?? string.Empty,
-                                                          x.User.LoginPass ?? string.Empty,
+                                                          string.Empty,
                                                           x.User.MayakuLicenseNo ?? string.Empty,
                                                           x.User.StartDate,
                                                           x.User.EndDate,
@@ -501,7 +559,7 @@ namespace Infrastructure.Repositories
                                                           entity.User.Name ?? string.Empty,
                                                           entity.User.Sname ?? string.Empty,
                                                           entity.User.LoginId ?? string.Empty,
-                                                          entity.User.LoginPass ?? string.Empty,
+                                                          string.Empty,
                                                           entity.User.MayakuLicenseNo ?? string.Empty,
                                                           entity.User.StartDate,
                                                           entity.User.EndDate,
@@ -534,6 +592,8 @@ namespace Infrastructure.Repositories
             foreach (var item in users)
             {
                 var update = usersUpdate.FirstOrDefault(x => x.Id == item.Id);
+                byte[] salt = GenerateSalt();
+                byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(item.LoginPass ?? string.Empty), salt);
                 if (update is null)
                 {
                     if (item.Id == 0)
@@ -551,7 +611,7 @@ namespace Infrastructure.Repositories
                             KaId = item.KaId,
                             KanaName = item.KanaName,
                             LoginId = item.LoginId,
-                            LoginPass = item.LoginPass,
+                            //LoginPass = item.LoginPass,
                             ManagerKbn = item.ManagerKbn,
                             Name = item.Name,
                             RenkeiCd1 = item.RenkeiCd1,
@@ -561,7 +621,9 @@ namespace Infrastructure.Repositories
                             StartDate = item.StartDate,
                             UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UserId = item.UserId,
-                            UpdateId = currentUser
+                            UpdateId = currentUser,
+                            HashPassword = hashPassword,
+                            Salt = salt
                         });
 
                         TrackingDataContext.UserPermissions.AddRange(item.Permissions.Select(x => new UserPermission()
@@ -588,7 +650,7 @@ namespace Infrastructure.Repositories
                         update.KaId = item.KaId;
                         update.KanaName = item.KanaName;
                         update.LoginId = item.LoginId;
-                        update.LoginPass = item.LoginPass;
+                        //update.LoginPass = item.LoginPass;
                         update.ManagerKbn = item.ManagerKbn;
                         update.Name = item.Name;
                         update.RenkeiCd1 = item.RenkeiCd1;
@@ -598,6 +660,8 @@ namespace Infrastructure.Repositories
                         update.StartDate = item.StartDate;
                         update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = currentUser;
+                        update.HashPassword = hashPassword;
+                        update.Salt = salt;
 
                         var permissionByUsers = TrackingDataContext.UserPermissions.Where(x => x.HpId == hpId && x.UserId == update.UserId);
                         foreach (var permission in item.Permissions)
@@ -634,6 +698,14 @@ namespace Infrastructure.Repositories
 
                 }
             }
+
+            // delete cache when save userMstList
+            string finalKey = key + CacheKeyConstant.UserInfoCacheService;
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
+            }
+
             return TrackingDataContext.SaveChanges() > 0;
         }
 
@@ -745,6 +817,8 @@ namespace Infrastructure.Repositories
             }
         }
 
+
+
         public UserMstModel GetUserInfo(int hpId, int userId)
         {
             var user = NoTrackingDataContext.UserMsts
@@ -752,6 +826,45 @@ namespace Infrastructure.Repositories
                                      x.UserId == userId);
 
             return ToModel(user ?? new());
+        }
+
+        public void UpdateHashPassword()
+        {
+            //var users = TrackingDataContext.UserMsts.ToList();
+            //foreach (var user in users)
+            //{
+            //    byte[] salt = GenerateSalt();
+            //    byte[] hashPassword = CreateHash(Encoding.UTF8.GetBytes(user.LoginPass ?? string.Empty), salt);
+            //    user.HashPassword = hashPassword;
+            //    user.Salt = salt;
+            //}
+            //TrackingDataContext.SaveChanges();
+        }
+
+        private byte[] CreateHash(byte[] password, byte[] salt)
+        {
+            using var argon2 = new Argon2id(password);
+            var preper = _configuration["Pepper"] ?? string.Empty;
+            salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
+            argon2.Salt = salt;
+            argon2.DegreeOfParallelism = 8;
+            argon2.Iterations = 4;
+            argon2.MemorySize = 1024 * 128;
+            return argon2.GetBytes(32);
+        }
+
+        private static byte[] GenerateSalt()
+        {
+            var buffer = new byte[32];
+            using var rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer);
+            return buffer;
+        }
+
+        public bool VerifyHash(byte[] password, byte[] salt, byte[] hash)
+        {
+            var inputHash = CreateHash(password, salt);
+            return Encoding.UTF8.GetString(inputHash) == Encoding.UTF8.GetString(hash);
         }
     }
 }

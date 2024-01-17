@@ -45,8 +45,6 @@ public class P12KokhoSokatuCoReportService : IP12KokhoSokatuCoReportService
         _extralData = new();
         _listTextData = new();
         _visibleFieldData = new();
-        hpInf = new();
-        receInfs = new();
     }
     #endregion
 
@@ -121,20 +119,20 @@ public class P12KokhoSokatuCoReportService : IP12KokhoSokatuCoReportService
         int UpdateFormBody()
         {
             List<ListTextObject> listDataPerPage = new();
-            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1;
+            var pageIndex = _listTextData.Select(item => item.Key).Distinct().Count() + 1; 
 
             const int maxRow = 3;
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 switch (rowNo)
                 {
                     case 0: wrkReces = receInfs.Where(r => r.IsNrAll || r.IsRetAll).ToList(); break;
                     case 1: wrkReces = receInfs.Where(r => r.IsKoukiAll).ToList(); break;
                     case 2: wrkReces = receInfs.ToList(); break;
                 }
-                if (wrkReces.Count == 0) continue;
+                if (wrkReces == null) continue;
 
                 countData wrkData = new countData();
                 //件数

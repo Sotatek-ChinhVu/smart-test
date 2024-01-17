@@ -8,15 +8,15 @@ public static class ColumnCsvName
         {
             Dictionary<TenantEnum, string> result = new()
             {
-                { TenantEnum.CreateDate, "Created date" },
-                { TenantEnum.TenantId, "TenantID" },
-                { TenantEnum.Domain, "Domain" },
-                { TenantEnum.AdminId, "AdminID" },
-                { TenantEnum.HospitalName, "Hospital name" },
-                { TenantEnum.Type, "RDS Cluster Mode" },
-                { TenantEnum.Size, "Data size" },
-                { TenantEnum.StorageFull, "Storage full" },
-                { TenantEnum.StatusTenant, "Status" }
+                { TenantEnum.CreateDate, "作成日" },
+                { TenantEnum.TenantId, "医療機関ID" },
+                { TenantEnum.Domain, "ドメイン" },
+                { TenantEnum.AdminId, "管理者ID" },
+                { TenantEnum.HospitalName, "医療機関名" },
+                { TenantEnum.Type, "RDSクラスターモード" },
+                { TenantEnum.Size, "利用量" },
+                { TenantEnum.StorageFull, "利用量（％）" },
+                { TenantEnum.StatusTenant, "ステータス" }
             };
             return result;
         }
@@ -29,14 +29,21 @@ public static class ColumnCsvName
             Dictionary<AuditLogEnum, string> result = new()
             {
                 { AuditLogEnum.LogType, "Status" },
-                { AuditLogEnum.UserId , "User ID" },
+                { AuditLogEnum.LogDate , "LogDate" },
+                { AuditLogEnum.UserId , "UserId" },
                 { AuditLogEnum.LoginKey , "LoginKey" },
-                { AuditLogEnum.LogDate , "Log Date" },
-                { AuditLogEnum.EventCd , "EventCode" },
+                { AuditLogEnum.EventCd , "EventCd" },
                 { AuditLogEnum.PtId , "PtID" },
                 { AuditLogEnum.SinDay , "SinDay" },
-                { AuditLogEnum.RequestInfo , "Request Info" },
+                { AuditLogEnum.RequestInfo , "RequestInfo" },
                 { AuditLogEnum.Desciption , "Desciption" },
+                { AuditLogEnum.HpId , "HpId" },
+                { AuditLogEnum.RaiinNo , "RaiinNo" },
+                { AuditLogEnum.ClientIP , "ClientIP" },
+                { AuditLogEnum.ThreadId , "ThreadId" },
+                { AuditLogEnum.DepartmentId , "DepartmentId" },
+                { AuditLogEnum.Path , "Path" },
+                { AuditLogEnum.LogId , "LogID" },
             };
             return result;
         }

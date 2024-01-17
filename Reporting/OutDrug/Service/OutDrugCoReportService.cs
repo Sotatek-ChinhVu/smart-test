@@ -677,7 +677,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             {
                 visibleFieldListPerPage.Add("lblHikae", _repeatKai == 1);
             }
-            
+
             // QR
             if (setFieldDataPerPage.ContainsKey("qr_OutDrg"))
             {
@@ -687,7 +687,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             {
                 setFieldDataPerPage.Add("qr_OutDrg", _coModel.QRData());
             }
-            
+
             // ページ
             if (setFieldDataPerPage.ContainsKey("dfPage"))
             {
@@ -707,7 +707,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             {
                 setFieldDataPerPage.Add("dfPtNum", _coModel.PrintData?.PtNum.AsString() ?? string.Empty);
             }
-            
+
             // 患者氏名
             if (setFieldDataPerPage.ContainsKey("dfPtKanjiName"))
             {

@@ -1,16 +1,36 @@
 ﻿using Domain.Models.ColumnSetting;
 using Entity.Tenant;
+using Helper.Constants;
+using Helper.Extension;
+using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
 public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
 {
-    public ColumnSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly string key;
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
+    public ColumnSettingRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
+        key = GetCacheKey() + CacheKeyConstant.ColumnSetting;
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
-
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
+    }
     public List<ColumnSettingModel> GetList(int userId, string tableName)
     {
         return NoTrackingDataContext.ColumnSettings
@@ -20,21 +40,41 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
 
     public Dictionary<string, List<ColumnSettingModel>> GetList(int userId, List<string> tableNameList)
     {
-        Dictionary<string, List<ColumnSettingModel>> result = new();
+        var finalKey = key + "_" + userId;
         tableNameList = tableNameList.Distinct().ToList();
-
-        var columnSettingList = NoTrackingDataContext.ColumnSettings.Where(item => item.UserId == userId && tableNameList.Contains(item.TableName))
-                                                                    .ToList();
-
-        foreach (var tableName in tableNameList)
+        IEnumerable<ColumnSetting> columnSettingList;
+        if (!_cache.KeyExists(finalKey))
         {
-            var settingList = columnSettingList.Where(item => item.TableName == tableName)
-                                               .Select(item => ToModel(item))
-                                               .ToList();
-            result.Add(tableName, settingList);
+            columnSettingList = ReloadCache(userId);
         }
-
+        else
+        {
+            columnSettingList = ReadCache(userId);
+        }
+        columnSettingList = columnSettingList!.Where(item => tableNameList.Contains(item.TableName))
+                                                                    .ToList();
+        var result = tableNameList.ToDictionary(tableName => tableName, tableName => columnSettingList
+                                                                    .Where(item => item.TableName == tableName)
+                                                                    .Select(item => ToModel(item))
+                                                                    .ToList());
         return result;
+    }
+    private IEnumerable<ColumnSetting> ReloadCache(int userId)
+    {
+        var finalKey = key + "_" + userId;
+        var columnSettingList = NoTrackingDataContext.ColumnSettings.Where(item => item.UserId == userId).ToList();
+        var json = JsonSerializer.Serialize(columnSettingList);
+        _cache.StringSet(finalKey, json);
+
+        return columnSettingList;
+    }
+    private IEnumerable<ColumnSetting> ReadCache(int userId)
+    {
+        var finalKey = key + "_" + userId;
+        var results = _cache.StringGet(finalKey);
+        var json = results.AsString();
+        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<ColumnSetting>>(json) : new();
+        return datas ?? new();
     }
 
     public bool SaveList(List<ColumnSettingModel> settingModels)
@@ -61,6 +101,7 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
         TrackingDataContext.ColumnSettings.AddRange(newSettings);
 
         TrackingDataContext.SaveChanges();
+        ReloadCache(userId);
         return true;
     }
 

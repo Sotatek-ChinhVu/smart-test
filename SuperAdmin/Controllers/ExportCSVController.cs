@@ -40,28 +40,28 @@ public class ExportCsvController : ControllerBase
         return RenderCsv(output.Data, "TenantList.csv");
     }
 
-    [HttpPost("ExportAuditLogList")]
-    public IActionResult ExportAuditLogList([FromBody] ExportAuditLogListRequest request)
+    [HttpGet("ExportAuditLogList")]
+    public IActionResult ExportAuditLogList([FromQuery] ExportAuditLogListRequest request)
     {
         var searchModel = new AuditLogSearchModel(
-                              request.RequestModel.LogId,
-                              request.RequestModel.StartDate,
-                              request.RequestModel.EndDate,
-                              request.RequestModel.Domain,
-                              request.RequestModel.ThreadId,
-                              request.RequestModel.LogType,
-                              request.RequestModel.HpId,
-                              request.RequestModel.UserId,
-                              request.RequestModel.LoginKey,
-                              request.RequestModel.DepartmentId,
-                              request.RequestModel.SinDay,
-                              request.RequestModel.EventCd,
-                              request.RequestModel.PtId,
-                              request.RequestModel.RaiinNo,
-                              request.RequestModel.Path,
-                              request.RequestModel.RequestInfo,
-                              request.RequestModel.ClientIP,
-                              request.RequestModel.Desciption);
+                              request.LogId,
+                              request.StartDate,
+                              request.EndDate,
+                              request.Domain,
+                              request.ThreadId,
+                              request.LogType,
+                              request.HpId,
+                              request.UserId,
+                              request.LoginKey,
+                              request.DepartmentId,
+                              request.SinDay,
+                              request.EventCd,
+                              request.PtId,
+                              request.RaiinNo,
+                              request.Path,
+                              request.RequestInfo,
+                              request.ClientIP,
+                              request.Desciption);
         var input = new ExportCsvLogListInputData(request.ColumnView, request.TenantId, searchModel, request.SortDictionary);
         var output = _bus.Handle(input);
         if (output.Status == ExportCsvLogListStatus.NoData)
@@ -163,7 +163,13 @@ public class ExportCsvController : ControllerBase
                         workSheet.Cell(row, column).SetValue(auditLog.PtId.ToString());
                         break;
                     case AuditLogEnum.SinDay:
-                        workSheet.Cell(row, column).SetValue(auditLog.SinDay.ToString());
+                        // change logic display sinday
+                        var sindayDisplay = auditLog.SinDay.ToString();
+                        if (sindayDisplay.Length == 8)
+                        {
+                            sindayDisplay = $"{auditLog.SinDay / 10000}-{(auditLog.SinDay % 10000) / 100}-{auditLog.SinDay % 100}";
+                        }
+                        workSheet.Cell(row, column).SetValue(sindayDisplay);
                         break;
                     case AuditLogEnum.RequestInfo:
                         // the maximum charaters of each cell in excel is 32767
@@ -176,6 +182,27 @@ public class ExportCsvController : ControllerBase
                         break;
                     case AuditLogEnum.Desciption:
                         workSheet.Cell(row, column).SetValue(auditLog.Desciption);
+                        break;
+                    case AuditLogEnum.HpId:
+                        workSheet.Cell(row, column).SetValue(auditLog.HpId);
+                        break;
+                    case AuditLogEnum.RaiinNo:
+                        workSheet.Cell(row, column).SetValue(auditLog.RaiinNo);
+                        break;
+                    case AuditLogEnum.ClientIP:
+                        workSheet.Cell(row, column).SetValue(auditLog.ClientIP);
+                        break;
+                    case AuditLogEnum.ThreadId:
+                        workSheet.Cell(row, column).SetValue(auditLog.ThreadId);
+                        break;
+                    case AuditLogEnum.DepartmentId:
+                        workSheet.Cell(row, column).SetValue(auditLog.DepartmentId);
+                        break;
+                    case AuditLogEnum.Path:
+                        workSheet.Cell(row, column).SetValue(auditLog.Path);
+                        break;
+                    case AuditLogEnum.LogId:
+                        workSheet.Cell(row, column).SetValue(auditLog.LogId);
                         break;
                 }
                 column++;

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "FILING_CATEGORY_MST")]
+    [Table(name: "filing_category_mst")]
     public class FilingCategoryMst : EmrCloneable<FilingCategoryMst>
     {
         /// <summary>
@@ -12,35 +12,35 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// カテゴリコード
         /// </summary>
         
-        [Column("CATEGORY_CD", Order = 2)]
+        [Column("category_cd", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryCd { get; set; }
 
         /// <summary>
         /// カテゴリ名称
         /// </summary>
-        [Column("CATEGORY_NAME")]
+        [Column("category_name")]
         [MaxLength(120)]
         public string? CategoryName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         public int SortNo { get; set; }
 
         /// <summary>
         /// 患者属性表示
         ///        1:表示
         /// </summary>
-        [Column("DSP_KANZOK")]
+        [Column("dsp_kanzok")]
         [CustomAttribute.DefaultValue(0)]
         public int DspKanzok { get; set; }
 
@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// ファイル削除
         ///     1:削除
         /// </summary>
-        [Column("IS_FILE_DELETED")]
+        [Column("is_file_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsFileDeleted { get; set; }
 
@@ -56,48 +56,48 @@ namespace Entity.Tenant
         /// 削除フラグ
         ///     1:削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

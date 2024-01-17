@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "AUDIT_TRAIL_LOG_DETAIL")]
+    [Table(name: "audit_trail_log_detail")]
     public class AuditTrailLogDetail : EmrCloneable<AuditTrailLogDetail>
     {
         /// <summary>
@@ -13,14 +13,14 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("LOG_ID", Order = 1)]
+        [Column("log_id", Order = 1)]
         public long LogId { get; set; }
 
         /// <summary>
         /// 補足
         /// 
         /// </summary>
-        [Column("HOSOKU")]
+        [Column("hosoku")]
         public string? Hosoku { get; set; } = string.Empty;
 
     }

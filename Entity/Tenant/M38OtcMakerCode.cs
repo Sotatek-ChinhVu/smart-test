@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M38_OTC_MAKER_CODE")]
+    [Table(name: "m38_otc_maker_code")]
     public class M38OtcMakerCode : EmrCloneable<M38OtcMakerCode>
     {
         /// <summary>
@@ -12,14 +12,14 @@ namespace Entity.Tenant
         /// 数字4桁
         /// </summary>
         
-        [Column("MAKER_CD", Order = 1)]
+        [Column("maker_cd", Order = 1)]
         public string MakerCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 会社名
         /// 
         /// </summary>
-        [Column("MAKER_NAME")]
+        [Column("maker_name")]
         [MaxLength(200)]
         public string? MakerName { get; set; } = string.Empty;
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 会社名読み
         /// ※半角に変換してDBに登録する
         /// </summary>
-        [Column("MAKER_KANA")]
+        [Column("maker_kana")]
         [MaxLength(400)]
         public string? MakerKana { get; set; } = string.Empty;
 

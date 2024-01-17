@@ -22,6 +22,7 @@ namespace Reporting.Statistics.Sta2002.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
+        private int hpId;
         private int _maxRow = 45;
         private List<CoSta2002PrintData> printDatas = new();
         private List<string> headerL1 = new();
@@ -33,7 +34,7 @@ namespace Reporting.Statistics.Sta2002.Service
 
         private CoSta2002PrintConf _printConf = new(0);
 
-        private readonly List<PutColumn> putCurColumns = new();
+        private List<PutColumn> putCurColumns = new List<PutColumn>();
 
         private int _currentPage;
         private string _rowCountFieldName = string.Empty;
@@ -45,12 +46,12 @@ namespace Reporting.Statistics.Sta2002.Service
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
         #endregion
 
-        private readonly List<PutColumn> csvTotalColumns = new()
+        private List<PutColumn> csvTotalColumns = new List<PutColumn>
         {
             new PutColumn("RowType", "明細区分")
         };
 
-        private readonly List<PutColumn> putColumns = new List<PutColumn>
+        private List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("NyukinYmFmt", "診療年月", false, "NyukinYm"),
             new PutColumn("KaId", "診療科ID"),
@@ -88,6 +89,7 @@ namespace Reporting.Statistics.Sta2002.Service
         {
             try
             {
+                this.hpId = hpId;
                 _printConf = printConf;
                 // get data to print
                 GetFieldNameList();
@@ -117,15 +119,14 @@ namespace Reporting.Statistics.Sta2002.Service
 
         #region UpdateDrawForm
 
-        private void UpdateDrawForm()
+        private bool UpdateDrawForm()
         {
             _hasNextPage = true;
 
             #region SubMethod
 
             #region Header
-            //using void function because it not return data
-            void UpdateFormHeader()
+            int UpdateFormHeader()
             {
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
@@ -151,12 +152,13 @@ namespace Reporting.Statistics.Sta2002.Service
                         CIUtil.SDateToShowSWDate(_printConf.EndNyukinYm * 100 + 1, 0, 1).Substring(0, 12)
                     )
                 );
+
+                return 1;
             }
             #endregion
 
             #region Body
-            //using void function because it not return data
-            void UpdateFormBody()
+            int UpdateFormBody()
             {
                 int hokIndex = (_currentPage - 1) * _maxRow;
 
@@ -179,8 +181,8 @@ namespace Reporting.Statistics.Sta2002.Service
                     //明細データ出力
                     foreach (var colName in existsCols)
                     {
-                        var value = typeof(CoSta2002PrintData).GetProperty(colName)?.GetValue(printData);
-                        AddListData(ref data, colName, value == null ? string.Empty : value.ToString() ?? string.Empty);
+                        var value = typeof(CoSta2002PrintData).GetProperty(colName).GetValue(printData);
+                        AddListData(ref data, colName, value == null ? "" : value.ToString());
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
@@ -217,12 +219,26 @@ namespace Reporting.Statistics.Sta2002.Service
                         break;
                     }
                 }
+
+                return hokIndex;
             }
             #endregion
 
             #endregion
-            UpdateFormHeader();
-            UpdateFormBody();
+
+            try
+            {
+                if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void SetFieldData(string field, string value)
@@ -254,19 +270,19 @@ namespace Reporting.Statistics.Sta2002.Service
                 bool pbKaId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2 }.Contains(1);
                 bool pbTantoId = new int[] { _printConf.PageBreak1, _printConf.PageBreak2 }.Contains(2);
 
-                var nyukinYms = syunoInfs!.GroupBy(s => s.NyukinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                var nyukinYms = syunoInfs.GroupBy(s => s.NyukinYm).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                 foreach (var nyukinYm in nyukinYms)
                 {
-                    var kaIds = syunoInfs!.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                    var kaIds = syunoInfs.GroupBy(s => s.KaId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                     for (int j = 0; (pbKaId && j <= kaIds.Count - 1) || j == 0; j++)
                     {
-                        var tantoIds = syunoInfs!.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
+                        var tantoIds = syunoInfs.GroupBy(s => s.TantoId).OrderBy(s => s.Key).Select(s => s.Key).ToList();
                         for (int k = 0; (pbTantoId && k <= tantoIds.Count - 1) || k == 0; k++)
                         {
-                            var curDatas = syunoInfs!.Where(s =>
+                            var curDatas = syunoInfs.Where(s =>
                                 s.NyukinYm == nyukinYm &&
-                                (!pbKaId || s.KaId == kaIds[j]) &&
-                                (!pbTantoId || s.TantoId == tantoIds[k])
+                                (pbKaId ? s.KaId == kaIds[j] : true) &&
+                                (pbTantoId ? s.TantoId == tantoIds[k] : true)
                             ).ToList();
 
                             if (curDatas.Count == 0) continue;
@@ -276,7 +292,7 @@ namespace Reporting.Statistics.Sta2002.Service
                             {
                                 CoSta2002PrintData printData = new CoSta2002PrintData();
 
-                                List<CoSyunoInfModel>? wrkDatas = null;
+                                List<CoSyunoInfModel> wrkDatas = null;
                                 switch (rowNo)
                                 {
                                     //社保単独
@@ -478,10 +494,10 @@ namespace Reporting.Statistics.Sta2002.Service
                                 }
 
                                 printData.NyukinYm = nyukinYm;
-                                printData.KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaId.ToString() ?? string.Empty : string.Empty;
-                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault()?.KaSname ?? string.Empty : string.Empty;
-                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoId.ToString() ?? string.Empty : string.Empty;
-                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault()?.TantoSname ?? string.Empty : string.Empty;
+                                printData.KaId = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaId.ToString() : null;
+                                printData.KaSname = (pbKaId || kaIds.Count == 1) ? curDatas.FirstOrDefault().KaSname : null;
+                                printData.TantoId = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoId.ToString() : null;
+                                printData.TantoSname = (pbTantoId || tantoIds.Count == 1) ? curDatas.FirstOrDefault().TantoSname : null;
                                 printData.SyosinCount = wrkDatas.Where(s => s.IsSinMonth && s.Syosaisin == "初診")
                                     .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
                                 printData.SaisinCount = wrkDatas.Where(s => s.IsSinMonth && s.Syosaisin == "再診")
@@ -525,11 +541,18 @@ namespace Reporting.Statistics.Sta2002.Service
                                 int wrkNewSeikyu = 0;
                                 foreach (var wrkNyukin in wrkNyukins)
                                 {
-                                    wrkSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.SeikyuGaku ?? 0;
-                                    wrkNewSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo)?.NewSeikyuGaku ?? 0;
+                                    wrkSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo).SeikyuGaku;
+                                    wrkNewSeikyu += wrkDatas.Find(s => s.RaiinNo == wrkNyukin.RaiinNo && s.NyukinSortNo == wrkNyukin.NyukinSortNo).NewSeikyuGaku;
                                 }
                                 printData.SeikyuGaku = wrkSeikyu.ToString("#,0");
                                 printData.NewSeikyuGaku = wrkNewSeikyu.ToString("#,0");
+
+                                //printData.SeikyuGaku = wrkDatas.GroupBy(s => s.RaiinNo)
+                                //    .Select(s => new { RaiinNo = s.Key, SeikyuGaku = s.Min(x => x.SeikyuGaku) })
+                                //    .Sum(s => s.SeikyuGaku).ToString("#,0");
+                                //printData.NewSeikyuGaku = wrkDatas.GroupBy(s => s.RaiinNo)
+                                //    .Select(s => new { RaiinNo = s.Key, NewSeikyuGaku = s.Min(x => x.NewSeikyuGaku) })
+                                //    .Sum(s => s.NewSeikyuGaku).ToString("#,0");
                                 printData.MenjyoGaku = wrkDatas.Where(s => s.IsSinMonth)
                                     .GroupBy(s => s.RaiinNo)
                                     .Select(s => new { RaiinNo = s.Key, MenjyoGaku = s.Max(x => x.MenjyoGaku) })
@@ -653,6 +676,7 @@ namespace Reporting.Statistics.Sta2002.Service
             }
 
             //データ
+            int totalRow = csvDatas.Count;
             int rowOutputed = 0;
             foreach (var csvData in csvDatas)
             {
@@ -666,7 +690,7 @@ namespace Reporting.Statistics.Sta2002.Service
 
                 foreach (var column in putCurColumns)
                 {
-                    var value = typeof(CoSta2002PrintData).GetProperty(column.CsvColName)?.GetValue(csvData);
+                    var value = typeof(CoSta2002PrintData).GetProperty(column.CsvColName).GetValue(csvData);
                     if (csvData.RowType == RowType.Total && !column.IsTotal)
                     {
                         value = string.Empty;

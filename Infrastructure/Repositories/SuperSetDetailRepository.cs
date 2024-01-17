@@ -216,12 +216,16 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         bool isSyobyoKbn = mst.SyobyoKbn == 1;
         int sikkanKbn = mst.SikkanKbn;
         int nanByoCd = mst.NanbyoCd;
-        string fullByomei = mst.Byomei ?? string.Empty;
+        string displayByomei = mst.Byomei ?? string.Empty; // displayByomei is saved in the database
         bool isDspRece = mst.IsNodspRece == 0;
         bool isDspKarte = mst.IsNodspKarte == 0;
         string byomeiCmt = mst.HosokuCmt ?? string.Empty;
         string byomeiCd = mst.ByomeiCd ?? string.Empty;
+
+        // fullByomei is main byomei get by byomeiCd
+        string fullByomei = mst.ByomeiCd != FREE_WORD ? byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(mst.ByomeiCd))?.Byomei ?? string.Empty : displayByomei;
         var codeLists = GetCodeLists(mst);
+
         //prefix and suffix
         var prefixSuffixList = codeLists?.Select(code => new PrefixSuffixModel(code, byomeiMstList.FirstOrDefault(item => item.ByomeiCd.Equals(code))?.Byomei ?? string.Empty)).ToList();
         bool isSuspected = false;
@@ -237,6 +241,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 isSyobyoKbn,
                 sikkanKbn,
                 nanByoCd,
+                displayByomei,
                 fullByomei,
                 isSuspected,
                 isDspRece,
@@ -287,7 +292,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     #region GetSetKarteInfModelList
     private SetKarteInfModel GetSetKarteInfModel(int hpId, int setCd)
     {
-        var setKarteInf = NoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.KarteKbn == 1 && odr.IsDeleted != 1) ?? new SetKarteInf();
+        var setKarteInf = NoTrackingDataContext.SetKarteInf.Where(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.KarteKbn == 1 && odr.IsDeleted != 1).OrderByDescending(o => o.SeqNo).FirstOrDefault() ?? new SetKarteInf();
         return new SetKarteInfModel(
                 setKarteInf.HpId,
                 setKarteInf.SetCd,
@@ -854,7 +859,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         mst.SyusyokuCd20 = listPrefixSuffix.Count > 19 ? listPrefixSuffix[19].Code : string.Empty;
         mst.SyusyokuCd21 = listPrefixSuffix.Count > 20 ? listPrefixSuffix[20].Code : string.Empty;
 
-        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD && itemSuspected == null)
+        // if item IsSuspected, alway set ByomeiCd = SUSPECTED_CD in SyusyokuCd21
+        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD)
         {
             mst.SyusyokuCd21 = SUSPECTED_CD;
         }
@@ -882,25 +888,31 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1 && mst.KarteKbn == 1);
         if (entity == null)
         {
-            entity = new();
-            entity.SetCd = model.SetCd;
-            entity.HpId = model.HpId;
-            entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
-            entity.IsDeleted = 0;
-            entity.KarteKbn = 1;
-            entity.CreateDate = CIUtil.GetJapanDateTimeNow();
-            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            entity.UpdateId = userId;
-            entity.CreateId = userId;
-            entity.Text = model.Text;
-            TrackingDataContext.SetKarteInf.Add(entity);
+            if (!string.IsNullOrEmpty(model.Text) && !string.IsNullOrEmpty(model.RichText))
+            {
+                entity = new();
+                entity.SetCd = model.SetCd;
+                entity.HpId = model.HpId;
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.IsDeleted = 0;
+                entity.KarteKbn = 1;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                entity.CreateId = userId;
+                entity.Text = model.Text;
+                TrackingDataContext.SetKarteInf.Add(entity);
+            }
         }
         else
         {
-            entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
-            entity.Text = model.Text;
-            entity.UpdateId = userId;
-            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            if (entity.IsDeleted == DeleteTypes.None && model.Text != entity.Text || (entity.RichText != null && model.RichText != Encoding.UTF8.GetString(entity.RichText)))
+            {
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.Text = model.Text;
+                entity.UpdateId = userId;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            }
         }
 
         // if set karte have image, update setKarteImage

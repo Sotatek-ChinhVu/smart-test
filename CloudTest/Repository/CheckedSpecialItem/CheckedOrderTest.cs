@@ -1,8 +1,11 @@
 ﻿using CloudUnitTest.SampleData;
+using CommonChecker.DB;
 using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Repositories;
@@ -46,8 +49,9 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         // Assert
@@ -85,8 +89,9 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate1, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate2, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
@@ -126,8 +131,9 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate1, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate2, hokenId, syosaisinKbn2, byomeiModelList, ordInfDetailModels, isJouhou1);
@@ -173,8 +179,9 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou2);
@@ -217,8 +224,9 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou2);
@@ -283,8 +291,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(iagkutokusitu1.Count == 0);
@@ -333,8 +342,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(iagkutokusitu1.Count == 0);
@@ -393,8 +403,9 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(iagkutokusitu1.Count == 0);
@@ -439,8 +450,9 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate1, hokenId, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate2, hokenId, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
@@ -523,10 +535,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         try
         {
             // Act
@@ -620,10 +633,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         try
         {
@@ -722,10 +736,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         try
         {
@@ -795,8 +810,9 @@ public class CheckedOrderTest : BaseUT
         };
         var odrInfs = new List<int> { 1, 2, 3 };
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var sihifu = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfs, isJouhou);
         Assert.True(sihifu.Count == 0);
@@ -842,8 +858,9 @@ public class CheckedOrderTest : BaseUT
         var odrInfs = new List<int> { 1, 2, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate1, hokenId, iBirthDay, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfs, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate2, hokenId, iBirthDay, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfs, isJouhou1);
@@ -927,10 +944,11 @@ public class CheckedOrderTest : BaseUT
         var odrInfInputs = new List<int> { 1, 2, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInputs, isJouhou);
         Assert.True(iagkutokusitu1.Count == 0);
@@ -1021,10 +1039,11 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput2s = new List<int> { 1, 23, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay1, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
         var iagkutokusitu2 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay2, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput2s, isJouhou);
@@ -1116,10 +1135,11 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput2s = new List<int> { 1, 23, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay1, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
         var iagkutokusitu2 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay2, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput2s, isJouhou);
@@ -1208,10 +1228,11 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput1s = new List<int> { 1, 2, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
         var iagkutokusitu2 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn2, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
@@ -1303,10 +1324,11 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput1s = new List<int> { 1, 2, 3 };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
         Assert.True(iagkutokusitu1.Count > 0);
@@ -1353,8 +1375,9 @@ public class CheckedOrderTest : BaseUT
             )
         };
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var igakuTenka = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(igakuTenka.Count == 0);
@@ -1434,10 +1457,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         try
         {
             // Act
@@ -1533,10 +1557,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         try
         {
             // Act
@@ -1630,10 +1655,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         try
         {
             // Act
@@ -1692,8 +1718,9 @@ public class CheckedOrderTest : BaseUT
             )
         };
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         // Act
         var igakuTenka = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(igakuTenka.Count == 0);
@@ -1773,10 +1800,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         try
         {
@@ -1873,10 +1901,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         try
         {
             // Act
@@ -1972,10 +2001,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         try
         {
             // Act
@@ -2070,10 +2100,11 @@ public class CheckedOrderTest : BaseUT
         };
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         try
         {
             // Act
@@ -2099,8 +2130,9 @@ public class CheckedOrderTest : BaseUT
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
                     CheckingType.Order,
@@ -2164,8 +2196,9 @@ public class CheckedOrderTest : BaseUT
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
                     CheckingType.Order,
@@ -2219,8 +2252,9 @@ public class CheckedOrderTest : BaseUT
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
                     CheckingType.Order,
@@ -2265,8 +2299,9 @@ public class CheckedOrderTest : BaseUT
     {
         // Arrange
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
                     CheckingType.Order,
@@ -2304,8 +2339,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
         long ptId = 1;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2343,8 +2379,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
         long ptId = 1;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2384,8 +2421,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2430,8 +2468,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 0, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2478,8 +2517,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, userId = 99999, sinDate = 20110101, primaryDoctor = 2, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2515,8 +2555,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, userId = 99999, sinDate1 = 20110101, sinDate2 = 20180402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2555,8 +2596,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue - randomKey;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2585,8 +2627,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, birthDay = 20, sinDate = 20220402;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2609,8 +2652,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, birthDay = 20, sinDate = 20220402;
         long ptId = long.MaxValue;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2695,8 +2739,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2785,8 +2830,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2874,8 +2920,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2962,8 +3009,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -2999,8 +3047,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3030,8 +3079,9 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, birthDay = 19900101, sinDate1 = 20220330, sinDate2 = 999999999;
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3089,8 +3139,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3170,8 +3221,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3238,10 +3290,11 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3308,8 +3361,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3376,8 +3430,9 @@ public class CheckedOrderTest : BaseUT
         tenantTracking.SaveChanges();
 
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3411,8 +3466,9 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3448,8 +3504,9 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101;
         var mockConfiguration = new Mock<IConfiguration>();
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        var mockMstItem = new Mock<IMstItemRepository>();
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3469,6 +3526,11 @@ public class CheckedOrderTest : BaseUT
                 )
         };
 
+        var tenItem = new TenItemModel();
+
+        mockMstItem.Setup(finder => finder.GetTenMstInfo(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            .Returns((int hpId, string itemCd, int sinDate) => tenItem);
+
         // Act
         var checkModel1s = medicalExaminationRepository.Zanyaku(hpId, sinDate, ordInfDetailModels, ordInfs);
 
@@ -3485,8 +3547,9 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3541,8 +3604,9 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3598,8 +3662,9 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         var ordInfDetailModel1s = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
@@ -3775,10 +3840,11 @@ public class CheckedOrderTest : BaseUT
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var byomeiModelList = new List<PtDiseaseModel>()
         {
@@ -3861,10 +3927,11 @@ public class CheckedOrderTest : BaseUT
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var byomeiModelList = new List<PtDiseaseModel>()
         {
@@ -3948,10 +4015,11 @@ public class CheckedOrderTest : BaseUT
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var byomeiModelList = new List<PtDiseaseModel>()
         {
@@ -4002,10 +4070,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4093,10 +4162,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4192,10 +4262,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4291,10 +4362,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4383,10 +4455,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4475,10 +4548,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4567,10 +4641,11 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         string byomeiCd = "0670670", itemCd = "0670670670";
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4674,10 +4749,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4769,10 +4845,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4872,10 +4949,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -4976,10 +5054,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5072,10 +5151,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5167,10 +5247,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5263,10 +5344,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         string byomeiCd = "0740740", itemCd = "0740740740";
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
@@ -5374,10 +5456,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5465,10 +5548,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5564,10 +5648,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5656,10 +5741,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5748,10 +5834,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5840,10 +5927,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -5932,10 +6020,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         string byomeiCd = "0810810", itemCd = "0810810810";
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
@@ -6036,10 +6125,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -6133,10 +6223,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -6236,10 +6327,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -6340,10 +6432,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -6436,10 +6529,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -6534,10 +6628,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 20000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -6629,10 +6724,11 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository, mockMstItem.Object);
         string byomeiCd = "0880880", itemCd = "0880880880";
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
@@ -6728,4 +6824,48 @@ public class CheckedOrderTest : BaseUT
     }
 
     #endregion
+
+    /// <summary>
+    /// Check Zanyaku is drug
+    /// </summary>
+    [Test]
+    public void Zanyaku_076_Drug()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101;
+        var mockConfiguration = new Mock<IConfiguration>();
+        var mockMstItem = new Mock<IMstItemRepository>();
+        var mockSystemConf = new Mock<ISystemConfRepository>();
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, mockSystemConf.Object, mockMstItem.Object);
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123421341",
+                1
+            ),
+            new OrdInfDetailModel(
+                "123421342",
+                1
+            )
+        };
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                new()
+                )
+        };
+
+        var tenItem = new TenItemModel();
+
+        var mock = new Mock<IMstItemRepository>();
+        mock.Setup(finder => finder.GetTenMstInfo(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            .Returns((int hpId, string itemCd, int sinDate) => null);
+
+        // Act
+        var checkModel1s = medicalExaminationRepository.Zanyaku(hpId, sinDate, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModel1s.Count == 0);
+    }
 }

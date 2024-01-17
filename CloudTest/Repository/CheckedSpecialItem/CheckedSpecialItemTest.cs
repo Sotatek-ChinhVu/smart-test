@@ -53,7 +53,7 @@ public class CheckedSpecialItemTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        UserRepository userRepository = new UserRepository(TenantProvider);
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository);
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository, approvalinfRepository);
 
@@ -190,7 +190,7 @@ public class CheckedSpecialItemTest : BaseUT
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisHost")]).Returns("10.2.15.78");
         mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "Redis:RedisPort")]).Returns("6379");
         SystemConfRepository systemConf = new SystemConfRepository(TenantProvider, mockConfiguration.Object);
-        UserRepository userRepository = new UserRepository(TenantProvider);
+        UserRepository userRepository = new UserRepository(TenantProvider, mockConfiguration.Object);
         ApprovalinfRepository approvalinfRepository = new ApprovalinfRepository(TenantProvider, userRepository); TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider, systemConf, approvalinfRepository);
         try
         {

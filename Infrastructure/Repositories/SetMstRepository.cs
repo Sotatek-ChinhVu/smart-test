@@ -210,6 +210,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var setItemOrderDetailList = setMstModelList!.Where(item => setCdOrderInfList.Contains(item.SetCd)).ToList();
             searchItemList.AddRange(setItemOrderDetailList);
 
+            // SearchBy Byomei
+            var setItemByomeiList = GetSetMstByByomei(hpId, textSearch, sBigKeyword, setMstModelList);
+            searchItemList.AddRange(setItemByomeiList);
+
             // SearchBy Karte
             var setCdKarte = NoTrackingDataContext.SetKarteInf.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == 0
@@ -281,6 +285,39 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
          .ThenBy(s => s.Level2)
          .ThenBy(s => s.Level3)
          .ToList();
+    }
+
+    /// <summary>
+    /// GetSetMst ByByomei key word
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="textSearch"></param>
+    /// <param name="sBigKeyword"></param>
+    /// <param name="setMstModelList"></param>
+    /// <returns></returns>
+    private List<SetMstModel> GetSetMstByByomei(int hpId, string textSearch, string sBigKeyword, IEnumerable<SetMstModel> setMstModelList)
+    {
+        // get setCd by byomei
+        var setCdByomei = NoTrackingDataContext.SetByomei.Where(item => item.HpId == hpId
+                                                                        && item.IsDeleted == 0
+                                                                        && ((item.Byomei != null && item.Byomei.Contains(textSearch))
+                                                                             || (item.Byomei != null && item.Byomei.ToUpper()
+                                                                                                                   .Replace("ｧ", "ｱ")
+                                                                                                                   .Replace("ｨ", "ｲ")
+                                                                                                                   .Replace("ｩ", "ｳ")
+                                                                                                                   .Replace("ｪ", "ｴ")
+                                                                                                                   .Replace("ｫ", "ｵ")
+                                                                                                                   .Replace("ｬ", "ﾔ")
+                                                                                                                   .Replace("ｭ", "ﾕ")
+                                                                                                                   .Replace("ｮ", "ﾖ")
+                                                                                                                   .Replace("ｯ", "ﾂ")
+                                                                                                                   .Contains(sBigKeyword))))
+                                                          .Select(item => item.SetCd)
+                                                          .Distinct()
+                                                          .ToList();
+
+        var setItemByomeiList = setMstModelList!.Where(item => setCdByomei.Contains(item.SetCd)).ToList();
+        return setItemByomeiList;
     }
 
     public SetMstTooltipModel GetToolTip(int hpId, int setCd)
@@ -542,7 +579,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             TrackingDataContext.SaveChanges();
 
             // is level 1
-            List<SetMst> listUpdateLevel;
+            List<SetMst> listUpdateLevel = new();
             if (setMst.Level1 > 0 && setMst.Level2 == 0)
             {
                 listUpdateLevel = TrackingDataContext.SetMsts
@@ -555,6 +592,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listUpdateLevel)
                 {
                     item.Level1 = item.Level1 - 1;
+
+                    // delete temp item
+                    item.IsDeleted = 1;
                 }
             }
 
@@ -572,6 +612,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listUpdateLevel)
                 {
                     item.Level2 = item.Level2 - 1;
+
+                    // delete temp item
+                    item.IsDeleted = 1;
                 }
             }
 
@@ -590,8 +633,23 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listUpdateLevel)
                 {
                     item.Level3 = item.Level3 - 1;
+
+                    // delete temp item
+                    item.IsDeleted = 1;
                 }
             }
+
+            // update other item
+            TrackingDataContext.SaveChanges();
+
+            // reset isDeleted = 0
+            foreach (var item in listUpdateLevel)
+            {
+                item.IsDeleted = 0;
+            }
+
+            // update other item
+            TrackingDataContext.SaveChanges();
         }
         return setMst;
     }

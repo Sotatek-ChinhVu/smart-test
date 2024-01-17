@@ -8,5 +8,5 @@ public interface ISpecialNoteFinder : IRepositoryBase
 {
     List<GcStdInfModel> GetStdPoint(int hpId);
 
-    List<KensaInfDetail?> GetKensaInf(long ptId, int fromDate, int toDate, string itemCD);
+    List<KensaInfDetail> GetKensaInf(long ptId, int fromDate, int toDate, string itemCD);
 }

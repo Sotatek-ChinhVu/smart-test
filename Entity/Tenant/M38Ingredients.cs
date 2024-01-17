@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M38_INGREDIENTS")]
+    [Table(name: "m38_ingredients")]
     public class M38Ingredients : EmrCloneable<M38Ingredients>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 管理用通し番号　1~9999999
         /// </summary>
         
-        [Column("SERIAL_NUM", Order = 1)]
+        [Column("serial_num", Order = 1)]
         public int SerialNum { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 英数字7桁
         /// </summary>
         
-        [Column("SEIBUN_CD", Order = 2)]
+        [Column("seibun_cd", Order = 2)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;
 
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 1:成分　2:添加物
         /// </summary>
         
-        [Column("SBT", Order = 3)]
+        [Column("sbt", Order = 3)]
         public int Sbt { get; set; }
     }
 }

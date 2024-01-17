@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "WRK_SIN_KOUI_DETAIL_DEL")]
+    [Table(name: "wrk_sin_koui_detail_del")]
     public class WrkSinKouiDetailDel : EmrCloneable<WrkSinKouiDetailDel>
     {
         /// <summary>
@@ -12,21 +12,21 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// 
         /// </summary>
-        [Column("SIN_DATE")]
+        [Column("sin_date")]
         public int SinDate { get; set; }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("RAIIN_NO", Order = 2)]
+        [Column("raiin_no", Order = 2)]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 0:健保 1:労災 2:アフターケア 3:自賠 4:自費
         /// </summary>
         
-        [Column("HOKEN_KBN", Order = 3)]
+        [Column("hoken_kbn", Order = 3)]
         public int HokenKbn { get; set; }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// WRK_SIN_KOUI_DETAIL.RP_NO
         /// </summary>
         
-        [Column("RP_NO", Order = 4)]
+        [Column("rp_no", Order = 4)]
         public int RpNo { get; set; }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         /// WRK_SIN_KOUI_DETAIL.SEQ_NO
         /// </summary>
         
-        [Column("SEQ_NO", Order = 5)]
+        [Column("seq_no", Order = 5)]
         public int SeqNo { get; set; }
 
         /// <summary>
@@ -66,14 +66,14 @@ namespace Entity.Tenant
         /// WRK_SIN_KOUI_DETAIL.ROW_NO
         /// </summary>
         
-        [Column("ROW_NO", Order = 6)]
+        [Column("row_no", Order = 6)]
         public int RowNo { get; set; }
 
         /// <summary>
         /// 項目コード
         /// 
         /// </summary>
-        [Column("ITEM_CD")]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string? ItemCd { get; set; } = string.Empty;
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 同一WRK_CALC_NO,RP_NO,ROW_NO内の連番
         /// </summary>
         
-        [Column("ITEM_SEQ_NO", Order = 7)]
+        [Column("item_seq_no", Order = 7)]
         [CustomAttribute.DefaultValue(1)]
         public int ItemSeqNo { get; set; }
 
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         /// 当該項目が削除される理由となった項目のITEM_CD
         /// 9999999999の場合、付随して削除になった項目
         /// </summary>
-        [Column("DEL_ITEM_CD")]
+        [Column("del_item_cd")]
         [MaxLength(10)]
         public string? DelItemCd { get; set; } = string.Empty;
 
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// 削除項目の算定日
         /// 0の場合、当来院
         /// </summary>
-        [Column("SANTEI_DATE")]
+        [Column("santei_date")]
         [CustomAttribute.DefaultValue(0)]
         public int SanteiDate { get; set; }
 
@@ -108,7 +108,7 @@ namespace Entity.Tenant
         /// 削除種別
         /// 0:包括 1:背反
         /// </summary>
-        [Column("DEL_SBT")]
+        [Column("del_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int DelSbt { get; set; }
 
@@ -116,7 +116,7 @@ namespace Entity.Tenant
         /// 警告
         /// 0:削除 1:警告
         /// </summary>
-        [Column("IS_WARNING")]
+        [Column("is_warning")]
         [CustomAttribute.DefaultValue(0)]
         public int IsWarning { get; set; }
 
@@ -126,7 +126,7 @@ namespace Entity.Tenant
         /// ※TERM_SBT in (1,4)のときのみ有効
         /// 例）2日の場合、TERM_CNT=2, TERM_SBT=1と登録
         /// </summary>
-        [Column("TERM_CNT")]
+        [Column("term_cnt")]
         [CustomAttribute.DefaultValue(0)]
         public int TermCnt { get; set; }
 
@@ -134,7 +134,7 @@ namespace Entity.Tenant
         /// チェック期間種別
         /// 0:未指定 1:来院 2:日 3:暦週 4:暦月 5:週 6:月 9:患者あたり
         /// </summary>
-        [Column("TERM_SBT")]
+        [Column("term_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int TermSbt { get; set; }
     }

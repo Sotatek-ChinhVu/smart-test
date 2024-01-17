@@ -4,19 +4,36 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Redis;
 using Helper.Util;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
 public class StatisticRepository : RepositoryBase, IStatisticRepository
 {
-    public StatisticRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly IDatabase _cache;
+    private readonly IConfiguration _configuration;
+    public StatisticRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
+        _configuration = configuration;
+        GetRedis();
+        _cache = RedisConnectorHelper.Connection.GetDatabase();
     }
-
+    public void GetRedis()
+    {
+        string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+        if (RedisConnectorHelper.RedisHost != connection)
+        {
+            RedisConnectorHelper.RedisHost = connection;
+        }
+    }
     public List<StatisticMenuModel> GetStatisticMenu(int hpId, int grpId)
     {
         var staMenuList = NoTrackingDataContext.StaMenus.Where(item => item.HpId == hpId
@@ -63,15 +80,17 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
     public List<StaGrpModel> GetStaGrp(int hpId, int grpId)
     {
-        var staGrpList = NoTrackingDataContext.StaGrps.Where(item => item.HpId == hpId && item.GrpId == grpId).ToList();
-        var staGrpMstList = staGrpList.Select(item => item.ReportId).Distinct().ToList();
-        var starMstList = NoTrackingDataContext.StaMsts.Where(item => item.HpId == hpId && staGrpMstList.Contains(item.ReportId)).ToList();
-        var result = staGrpList.Select(grp => new StaGrpModel(
-                                                  grp.GrpId,
-                                                  grp.ReportId,
-                                                  starMstList.FirstOrDefault(mst => mst.ReportId == grp.ReportId)?.ReportName ?? string.Empty,
-                                                  grp.SortNo
-                               )).ToList();
+        var finalKey = GetCacheKey() + CacheKeyConstant.StaGrpModel + "_" + hpId;
+        IEnumerable<StaGrpModel> staGrpModel;
+        if (!_cache.KeyExists(finalKey))
+        {
+            staGrpModel = ReloadCacheStaGrpModel(hpId);
+        }
+        else
+        {
+            staGrpModel = ReadCacheStaGrpModel(hpId);
+        }
+        var result = staGrpModel.Where(i => i.GrpId == grpId).ToList();
         return result;
     }
 
@@ -246,6 +265,32 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
     }
 
     #region private function
+
+    private IEnumerable<StaGrpModel> ReloadCacheStaGrpModel(int hpId)
+    {
+        var finalKey = GetCacheKey() + CacheKeyConstant.StaGrpModel + "_" + hpId;
+        var staGrpList = NoTrackingDataContext.StaGrps.Where(item => item.HpId == hpId).ToList();
+        var staGrpMstList = staGrpList.Select(item => item.ReportId).Distinct().ToList();
+        var starMstList = NoTrackingDataContext.StaMsts.Where(item => item.HpId == hpId && staGrpMstList.Contains(item.ReportId)).ToList();
+        var result = staGrpList.Select(grp => new StaGrpModel(
+                                                  grp.GrpId,
+                                                  grp.ReportId,
+                                                  starMstList.FirstOrDefault(mst => mst.ReportId == grp.ReportId)?.ReportName ?? string.Empty,
+                                                  grp.SortNo
+                               )).ToList();
+        var json = JsonSerializer.Serialize(result);
+        _cache.StringSet(finalKey, json);
+        return result;
+    }
+    private IEnumerable<StaGrpModel> ReadCacheStaGrpModel(int hpId)
+    {
+        var finalKey = GetCacheKey() + CacheKeyConstant.StaGrpModel + "_" + hpId;
+        var results = _cache.StringGet(finalKey);
+        var json = results.AsString();
+        var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<StaGrpModel>>(json) : new();
+        return datas ?? new();
+    }
+
     private List<StatisticMenuModel> ConvertToStatisticList(List<StaMenu> staMenuList, List<StaConf> staConfigList)
     {
         List<StatisticMenuModel> result = new();
@@ -323,6 +368,14 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                 else
                 {
                     staMenu = staMenuTempDb;
+
+                    // if item is saveTemp item, remove all staConfig temp
+                    var allStaConfigDeleted = TrackingDataContext.StaConfs.Where(item => item.MenuId == staMenu.MenuId).ToList();
+                    TrackingDataContext.StaConfs.RemoveRange(allStaConfigDeleted);
+                    TrackingDataContext.SaveChanges();
+                    staMenuConfigDBList = staMenuConfigDBList.Where(menu => !allStaConfigDeleted.Any(config => config.ConfId == menu.ConfId 
+                                                                                                               && config.MenuId == menu.MenuId))
+                                                             .ToList();
                 }
                 // if save temp, isDeleted = 2
                 staMenu.IsDeleted = 2;
@@ -481,6 +534,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.KohiHokenEdaNoFrom, patientManagementModel.KohiHokenEdaNoFrom.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.KohiHokenNoTo, patientManagementModel.KohiHokenNoTo.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.KohiHokenEdaNoTo, patientManagementModel.KohiHokenEdaNoTo.AsString()));
+        addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.ValidOrExpired, patientManagementModel.ValidOrExpired.AsString())); // 有効/期限切れ
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.StartDateFrom, patientManagementModel.StartDateFrom.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.StartDateTo, patientManagementModel.StartDateTo.AsString()));
         addStaConfs.Add(CreateStaConf(hpId, userId, menuId, StaConfId.TenkiDateFrom, patientManagementModel.TenkiDateFrom.AsString()));
@@ -638,6 +692,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
         string kohiHokenEdaNoFrom = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.KohiHokenEdaNoFrom && x.MenuId == menuId)?.Val ?? string.Empty;
         string kohiHokenNoTo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.KohiHokenNoTo && x.MenuId == menuId)?.Val ?? string.Empty;
         string kohiHokenEdaNoTo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.KohiHokenEdaNoTo && x.MenuId == menuId)?.Val ?? string.Empty;
+        string validOrExpired = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.ValidOrExpired && x.MenuId == menuId)?.Val ?? string.Empty; // 有効/期限切れ
         string startDateFrom = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.StartDateFrom && x.MenuId == menuId)?.Val ?? string.Empty;
         string startDateTo = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.StartDateTo && x.MenuId == menuId)?.Val ?? string.Empty;
         string tenkiDateFrom = staconfs.FirstOrDefault(x => x.ConfId == StaConfId.TenkiDateFrom && x.MenuId == menuId)?.Val ?? string.Empty;
@@ -725,6 +780,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                                               kohiHokenEdaNoFrom.AsInteger(),
                                               kohiHokenNoTo.AsInteger(),
                                               kohiHokenEdaNoTo.AsInteger(),
+                                              validOrExpired.AsInteger(), // 有効/期限切れ
                                               startDateFrom.AsInteger(),
                                               startDateTo.AsInteger(),
                                               tenkiDateFrom.AsInteger(),

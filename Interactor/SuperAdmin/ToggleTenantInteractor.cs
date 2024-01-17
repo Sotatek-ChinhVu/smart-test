@@ -42,7 +42,7 @@ namespace Interactor.SuperAdmin
                     return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantDoesNotExist);
                 }
 
-                if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && inputData.Type==0)
+                if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && inputData.Type == 0)
                 {
                     return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantNotAvailable);
                 }
@@ -55,16 +55,22 @@ namespace Interactor.SuperAdmin
                 if (inputData.Type == 0)
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["stopping"]);
+                    var messenge = tenant.EndSubDomain + $"が停止中です。";
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusNotiSuccess, ConfigConstant.StatusTenantStopping, messenge));
                 }
                 else
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["starting"]);
+                    var messenge = tenant.EndSubDomain + $"が開始中です。";
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusNotiSuccess, ConfigConstant.StatusTenantStopping, messenge));
                 }
+
+
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>
                 {
-                    string typeName = inputData.Type == 0 ? "stoped" : "start";
+                    string typeName = inputData.Type == 0 ? "停止" : "開始";
                     try
                     {
                         bool result;
@@ -78,7 +84,7 @@ namespace Interactor.SuperAdmin
                         }
                         if (result)
                         {
-                            var messenge = $"{tenant.EndSubDomain} is {typeName} successfully.";
+                            var messenge = $"{tenant.EndSubDomain} の {typeName} が完了しました。";
                             var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotiSuccess, messenge);
 
                             // Add info tenant for notification
@@ -93,7 +99,7 @@ namespace Interactor.SuperAdmin
                     }
                     catch (Exception ex)
                     {
-                        var messenge = $"{tenant.EndSubDomain} is {typeName} failed. Error: {ex.Message}.";
+                        var messenge = $"{tenant.EndSubDomain} の {typeName} に失敗しました。エラー: {ex.Message}.";
                         var notification = _notificationRepositoryRunTask.CreateNotification(ConfigConstant.StatusNotifailure, messenge);
 
                         // Add info tenant for notification

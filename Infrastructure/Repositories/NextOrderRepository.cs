@@ -5,12 +5,17 @@ using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Redis;
 using Infrastructure.Base;
+using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
@@ -18,15 +23,33 @@ namespace Infrastructure.Repositories
     {
         private readonly IAmazonS3Service? _amazonS3Service;
         private readonly AmazonS3Options? _options;
+        private readonly string key;
+        private readonly IDatabase _cache;
+        private readonly IConfiguration _configuration;
 
-        public NextOrderRepository(ITenantProvider tenantProvider, IAmazonS3Service amazonS3Service, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
+        public NextOrderRepository(ITenantProvider tenantProvider, IAmazonS3Service amazonS3Service, IConfiguration configuration, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
         {
+            key = GetDomainKey() + CacheKeyConstant.GetNextOrderList;
+            _configuration = configuration;
+            GetRedis();
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
             _amazonS3Service = amazonS3Service;
             _options = optionsAccessor.Value;
         }
 
         public NextOrderRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
+            key = string.Empty;
+            _cache = RedisConnectorHelper.Connection.GetDatabase();
+        }
+
+        public void GetRedis()
+        {
+            string connection = string.Concat(_configuration["Redis:RedisHost"], ":", _configuration["Redis:RedisPort"]);
+            if (RedisConnectorHelper.RedisHost != connection)
+            {
+                RedisConnectorHelper.RedisHost = connection;
+            }
         }
 
         public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn)
@@ -50,7 +73,7 @@ namespace Infrastructure.Repositories
         public RsvkrtKarteInfModel GetKarteInf(int hpId, long ptId, long rsvkrtNo)
         {
 
-            var karteInf = NoTrackingDataContext.RsvkrtKarteInfs.FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo && k.IsDeleted == DeleteTypes.None);
+            var karteInf = NoTrackingDataContext.RsvkrtKarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo && k.IsDeleted == DeleteTypes.None).OrderByDescending(o => o.SeqNo).FirstOrDefault();
 
             var karteModel = ConvertKarteInfToModel(karteInf ?? new());
 
@@ -96,21 +119,55 @@ namespace Infrastructure.Repositories
 
         public long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
+            #region get common data by hpId and ptId
+            // get all data RsvkrtMst
+            var rsvkrtMstList = TrackingDataContext.RsvkrtMsts.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
+            var rsvkrtByomeiList = TrackingDataContext.RsvkrtByomeis.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
+            var rsvkrtKarteInfList = TrackingDataContext.RsvkrtKarteInfs.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
+            var rsvkrtOdrInfList = TrackingDataContext.RsvkrtOdrInfs.Where(item => item.HpId == hpId && item.PtId == ptId).ToList();
+            var kouiKbnMstList = NoTrackingDataContext.KouiKbnMsts.ToList();
+
+            // Get Raiin List Koui
+            var raiinListMstQuery = NoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0);
+            var raiinListDetailQuery = NoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0);
+            var raiinListKouiQuery = NoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0);
+            var raiinListKouiList = from raiinListKoui in raiinListKouiQuery
+                                    join raiinListDetail in raiinListDetailQuery on new { raiinListKoui.GrpId, raiinListKoui.KbnCd }
+                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
+                                    join raiinListMst in raiinListMstQuery on new { raiinListKoui.GrpId }
+                                                                           equals new { raiinListMst.GrpId }
+                                    select new { raiinListKoui };
+
+            List<RaiinListKoui> raiinListKouis = raiinListKouiList.Select(item => item.raiinListKoui).ToList();
+
+            // Get Raiin List Item
+            var raiinListItemQuery = NoTrackingDataContext.RaiinListItems.Where(item => item.IsExclude == 0
+                                                                                        && item.IsDeleted == 0);
+            var raiinListItemList = from raiinListItem in raiinListItemQuery
+                                    join raiinListDetail in raiinListDetailQuery on new { raiinListItem.GrpId, raiinListItem.KbnCd }
+                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
+                                    join raiinListMst in raiinListMstQuery on new { raiinListItem.GrpId }
+                                                                           equals new { raiinListMst.GrpId }
+                                    select new { raiinListItem };
+
+            List<RaiinListItem> raiinListItems = raiinListItemList.Select(item => item.raiinListItem).ToList();
+            #endregion get common data by hpId and ptId
+
             long rsvkrtNo = 0;
             long ptNum = GetPtNum(hpId, ptId);
             var odrInfs = new List<RsvkrtOrderInfModel>();
             var isDeletedRsvKrtDate = nextOrderModels.Where(n => n.IsDeleted == DeleteTypes.Deleted).Select(n => n.RsvDate).ToList();
             foreach (var nextOrderModel in nextOrderModels)
             {
+                var oldNextOrder = rsvkrtMstList.FirstOrDefault(m => m.RsvkrtNo == nextOrderModel.RsvkrtNo);
                 odrInfs.AddRange(nextOrderModel.RsvkrtOrderInfs);
                 var maxRpNo = GetMaxRpNo(hpId, ptId);
                 var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
                 if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
                 {
-                    var rsvkrtMst = TrackingDataContext.RsvkrtMsts.FirstOrDefault(r => r.HpId == nextOrderModel.HpId && r.PtId == nextOrderModel.PtId && r.RsvDate == nextOrderModel.RsvDate && r.RsvkrtNo == nextOrderModel.RsvkrtNo);
-                    if (rsvkrtMst != null)
+                    if (oldNextOrder != null && oldNextOrder.IsDeleted == DeleteTypes.None)
                     {
-                        rsvkrtMst.IsDeleted = nextOrderModel.IsDeleted;
+                        oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
                         foreach (var item in nextOrderModel.RsvkrtOrderInfs.Where(o => o.IsDeleted == DeleteTypes.Deleted || o.IsDeleted == DeleteTypes.Confirm))
                         {
                             var orderInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && item.IsDeleted == DeleteTypes.None && o.RsvkrtNo == item.RsvkrtNo);
@@ -125,80 +182,65 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var oldNextOrder = TrackingDataContext.RsvkrtMsts.FirstOrDefault(m => m.HpId == nextOrderModel.HpId && m.PtId == nextOrderModel.PtId && m.RsvkrtNo == nextOrderModel.RsvkrtNo && m.IsDeleted == DeleteTypes.None);
 
                     if (oldNextOrder != null)
                     {
-                        oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
-                        oldNextOrder.RsvDate = nextOrderModel.RsvDate;
-                        oldNextOrder.RsvName = nextOrderModel.RsvName;
-                        oldNextOrder.SortNo = nextOrderModel.SortNo;
-                        oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
-                        oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        oldNextOrder.UpdateId = userId;
-                        rsvkrtNo = oldNextOrder.RsvkrtNo;
-                        UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
-                        UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
+                        if (oldNextOrder.IsDeleted == DeleteTypes.None)
+                        {
+                            oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
+                            oldNextOrder.RsvDate = nextOrderModel.RsvDate;
+                            oldNextOrder.RsvName = nextOrderModel.RsvName;
+                            oldNextOrder.SortNo = nextOrderModel.SortNo;
+                            oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
+                            oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            oldNextOrder.UpdateId = userId;
+                            rsvkrtNo = oldNextOrder.RsvkrtNo;
+                            UpsertByomei(ref rsvkrtByomeiList, userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
+                            UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                            UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
+                        }
+
                     }
                     else
                     {
-                        var checkExistRsvkrtOrder = NoTrackingDataContext.RsvkrtMsts.Any(x =>
-                                                                                    x.HpId == nextOrderModel.HpId &&
-                                                                                    x.PtId == nextOrderModel.PtId &&
-                                                                                    x.RsvkrtKbn == 0 &&
-                                                                                    x.RsvDate == nextOrderModel.RsvDate &&
-                                                                                    x.IsDeleted == DeleteTypes.None);
+                        var checkExistRsvkrtOrder = rsvkrtMstList.Any(x => x.RsvkrtKbn == 0 &&
+                                                                         x.RsvDate == nextOrderModel.RsvDate && x.IsDeleted == DeleteTypes.None);
 
                         if (checkExistRsvkrtOrder && !isDeletedRsvKrtDate.Contains(nextOrderModel.RsvDate)) continue;
 
                         var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
                         TrackingDataContext.RsvkrtMsts.Add(nextOrderEntity);
                         TrackingDataContext.SaveChanges();
+
+                        // add new rsvkMst to rsvkMstList
+                        rsvkrtMstList.Add(nextOrderEntity);
+
                         rsvkrtNo = nextOrderEntity.RsvkrtNo;
-                        UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
-                        UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
+                        UpsertByomei(ref rsvkrtByomeiList, userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
+                        UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                        UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
-                    SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
-                    SaveNextOrderRaiinListInf(userId, odrInfs);
+                    // if add new nextOrder or oldNextOrder is deleted, save file nextOrder and OrderRaiinListInf
+                    if (oldNextOrder == null || oldNextOrder?.IsDeleted == DeleteTypes.None)
+                    {
+                        SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
+                        SaveNextOrderRaiinListInf(userId, odrInfs, kouiKbnMstList, raiinListKouis, raiinListItems);
+                    }
                 }
             }
             TrackingDataContext.SaveChanges();
 
+            // delete cache key
+            string finalKey = key + ptId;
+            if (_cache.KeyExists(finalKey))
+            {
+                _cache.KeyDelete(finalKey);
+            }
             return rsvkrtNo;
         }
 
-        public void SaveNextOrderRaiinListInf(int userId, List<RsvkrtOrderInfModel> nextOrderModels)
+        public void SaveNextOrderRaiinListInf(int userId, List<RsvkrtOrderInfModel> nextOrderModels, List<KouiKbnMst> kouiKbnMst, List<RaiinListKoui> raiinListKouis, List<RaiinListItem> raiinListItems)
         {
-            // Get Raiin List Koui
-            var raiinListMstQuery = TrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0);
-            var raiinListDetailQuery = TrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0);
-            var raiinListKouiQuery = TrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0);
-            var raiinListKouiList = from raiinListKoui in raiinListKouiQuery
-                                    join raiinListDetail in raiinListDetailQuery on new { raiinListKoui.GrpId, raiinListKoui.KbnCd }
-                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
-                                    join raiinListMst in raiinListMstQuery on new { raiinListKoui.GrpId }
-                                                                           equals new { raiinListMst.GrpId }
-                                    select new { raiinListKoui };
-
-            List<RaiinListKoui> raiinListKouis = raiinListKouiList.Select(item => item.raiinListKoui).ToList();
-
-            // Get Raiin List Item
-            var raiinListItemQuery = TrackingDataContext.RaiinListItems.Where(item => item.IsExclude == 0
-                                                                        && item.IsDeleted == 0);
-            var raiinListItemList = from raiinListItem in raiinListItemQuery
-                                    join raiinListDetail in raiinListDetailQuery on new { raiinListItem.GrpId, raiinListItem.KbnCd }
-                                                                                 equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
-                                    join raiinListMst in raiinListMstQuery on new { raiinListItem.GrpId }
-                                                                           equals new { raiinListMst.GrpId }
-                                    select new { raiinListItem };
-
-            List<RaiinListItem> raiinListItems = raiinListItemList.Select(item => item.raiinListItem).ToList();
-
-            // Get KouiKbnMst
-            List<KouiKbnMst> kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
-
             // Define Added RaiinListInf
             List<RaiinListInf> raiinListInfList = new();
 
@@ -357,16 +399,16 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
         }
 
-        private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0, int rsvDate = 0)
+        private void UpsertOrderInf(ref List<RsvkrtOdrInf> rsvkrtOrderInfEntityList, int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0, int rsvDate = 0)
         {
-            var oldOrderInfs = TrackingDataContext.RsvkrtOdrInfs.Where(o => o.HpId == rsvkrtOrderInfModels.Select(o => o.HpId).Distinct().FirstOrDefault() && o.PtId == rsvkrtOrderInfModels.Select(o => o.PtId).Distinct().FirstOrDefault() && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
+            var oldOrderInfs = rsvkrtOrderInfEntityList.Where(o => o.RsvkrtNo == rsvkrtNo).ToList();
 
             foreach (var orderInf in rsvkrtOrderInfModels)
             {
                 var oldOrderInf = oldOrderInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == rsvkrtNo && o.RpNo == orderInf.RpNo && o.RpEdaNo == orderInf.RpEdaNo && o.IsDeleted == DeleteTypes.None);
                 if (orderInf.IsDeleted == DeleteTypes.Deleted || orderInf.IsDeleted == DeleteTypes.Confirm)
                 {
-                    if (oldOrderInf != null)
+                    if (oldOrderInf != null && oldOrderInf.IsDeleted == DeleteTypes.None)
                     {
                         oldOrderInf.IsDeleted = orderInf.IsDeleted;
                         oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -375,36 +417,54 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
+                    RsvkrtOdrInf? orderInfEntity = null;
                     if (oldOrderInf != null)
                     {
-                        oldOrderInf.IsDeleted = DeleteTypes.Deleted;
-                        oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        oldOrderInf.CreateId = userId;
-                        orderInf.ChangeDate(rsvDate);
-                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, oldOrderInf.RpNo, orderInf, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1);
-                        TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
-                        var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(oldOrderInf.RpNo, od, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1));
-                        TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
+                        if (oldOrderInf.IsDeleted == DeleteTypes.None)
+                        {
+                            oldOrderInf.IsDeleted = DeleteTypes.Deleted;
+                            oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            oldOrderInf.CreateId = userId;
+                            orderInf.ChangeDate(rsvDate);
+                            orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, oldOrderInf.RpNo, orderInf, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1);
+                            TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
+                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(oldOrderInf.RpNo, od, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1));
+                            TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
+                        }
                     }
                     else
                     {
                         maxRpNo++;
                         orderInf.ChangeDate(rsvDate);
-                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, maxRpNo, orderInf, rsvkrtNo);
+                        orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, maxRpNo, orderInf, rsvkrtNo);
                         TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
                         var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));
                         TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
+                    }
+
+                    // add orderInfEntity to rsvkrtOrderInfEntityList
+                    if (orderInfEntity != null)
+                    {
+                        rsvkrtOrderInfEntityList.Add(orderInfEntity);
                     }
                 }
             }
         }
 
-        private void UpsertKarteInf(int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
+        /// <summary>
+        /// UpsertKarteInf item
+        /// </summary>
+        /// <param name="rsvkrtKarteInfEntityList"></param>
+        /// <param name="userId"></param>
+        /// <param name="seqNo"></param>
+        /// <param name="karteInf"></param>
+        /// <param name="rsvkrtNo"></param>
+        private void UpsertKarteInf(ref List<RsvkrtKarteInf> rsvkrtKarteInfEntityList, int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
         {
-            var oldKarteInf = TrackingDataContext.RsvkrtKarteInfs.FirstOrDefault(o => o.HpId == karteInf.HpId && o.PtId == karteInf.PtId && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
+            var oldKarteInf = rsvkrtKarteInfEntityList.FirstOrDefault(o => o.RsvkrtNo == rsvkrtNo);
             if (karteInf.IsDeleted == DeleteTypes.Deleted || karteInf.IsDeleted == DeleteTypes.Confirm)
             {
-                if (oldKarteInf != null)
+                if (oldKarteInf != null && oldKarteInf.IsDeleted == DeleteTypes.None)
                 {
                     oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
                     oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -413,26 +473,33 @@ namespace Infrastructure.Repositories
             }
             else
             {
+                RsvkrtKarteInf? karteInfEntity = null;
                 if (oldKarteInf != null)
                 {
-                    seqNo++;
-                    oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
-                    oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    oldKarteInf.CreateId = userId;
-                    var karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, karteInf.RsvkrtNo, seqNo);
-                    TrackingDataContext.Add(karteInfEntity);
+                    if (oldKarteInf.IsDeleted == DeleteTypes.None && karteInf.Text != oldKarteInf.Text || (oldKarteInf.RichText != null && karteInf.RichText != Encoding.UTF8.GetString(oldKarteInf.RichText)))
+                    {
+                            seqNo++;
+                        oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
+                        oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        oldKarteInf.CreateId = userId;
+                        karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, karteInf.RsvkrtNo, seqNo);
+                        TrackingDataContext.Add(karteInfEntity);
+                    }
                 }
                 else
                 {
-                    var karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, rsvkrtNo);
-                    TrackingDataContext.Add(karteInfEntity);
+                    if (!string.IsNullOrEmpty(karteInf.Text) && !string.IsNullOrEmpty(karteInf.RichText))
+                    {
+                        karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, rsvkrtNo);
+                        TrackingDataContext.Add(karteInfEntity);
+                    }
                 }
-            }
 
-            var karteImgs = TrackingDataContext.RsvkrtKarteImgInfs.Where(k => k.HpId == karteInf.HpId && k.PtId == karteInf.PtId && karteInf.RichText.Contains(k.FileName ?? string.Empty) && k.RsvkrtNo == 0);
-            foreach (var img in karteImgs)
-            {
-                img.RsvkrtNo = karteInf.RsvkrtNo;
+                // add karteInfEntity to rsvkrtKarteInfEntityList
+                if (karteInfEntity != null)
+                {
+                    rsvkrtKarteInfEntityList.Add(karteInfEntity);
+                }
             }
         }
 
@@ -443,21 +510,26 @@ namespace Infrastructure.Repositories
             return karteInf != null ? karteInf.SeqNo : 0;
         }
 
-        private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
+        /// <summary>
+        /// UpsertByomei item
+        /// </summary>
+        /// <param name="rsvkrtByomeiEntityList"></param>
+        /// <param name="userId"></param>
+        /// <param name="byomeis"></param>
+        /// <param name="rsvkrtNo"></param>
+        private void UpsertByomei(ref List<RsvkrtByomei> rsvkrtByomeiEntityList, int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
-            var allOldByomeis = TrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
-            var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
+            var allOldByomeis = rsvkrtByomeiEntityList.Where(o => o.RsvkrtNo == rsvkrtNo).ToList();
             foreach (var byomei in byomeis)
             {
-                var oldByomei = oldByomeis.FirstOrDefault(item => item.HpId == byomei.HpId
+                var oldByomei = allOldByomeis.FirstOrDefault(item => item.HpId == byomei.HpId
                                                                   && item.PtId == byomei.PtId
                                                                   && item.RsvkrtNo == rsvkrtNo
-                                                                  && item.IsDeleted == DeleteTypes.None
                                                                   && item.SeqNo == byomei.SeqNo);
 
                 if (byomei.IsDeleted == DeleteTypes.Deleted)
                 {
-                    if (oldByomei != null)
+                    if (oldByomei != null && oldByomei.IsDeleted == DeleteTypes.None)
                     {
                         oldByomei.IsDeleted = DeleteTypes.Deleted;
                         oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -468,43 +540,49 @@ namespace Infrastructure.Repositories
                 {
                     if (oldByomei != null)
                     {
-                        oldByomei.ByomeiCd = byomei.ByomeiCd;
-                        oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault()?.Code ?? string.Empty;
-                        oldByomei.Byomei = byomei.Byomei;
-                        oldByomei.SyobyoKbn = byomei.SyobyoKbn;
-                        oldByomei.SikkanKbn = byomei.SikkanKbn;
-                        oldByomei.NanbyoCd = byomei.NanbyoCd;
-                        oldByomei.HosokuCmt = byomei.HosokuCmt;
-                        oldByomei.IsNodspKarte = byomei.IsNodspKarte;
-                        oldByomei.IsNodspRece = byomei.IsNodspRece;
-                        oldByomei.IsDeleted = byomei.IsDeleted;
-                        oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        oldByomei.UpdateId = userId;
+                        if (oldByomei.IsDeleted == DeleteTypes.None)
+                        {
+                            oldByomei.ByomeiCd = byomei.ByomeiCd;
+                            oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault()?.Code ?? string.Empty;
+                            oldByomei.Byomei = byomei.Byomei;
+                            oldByomei.SyobyoKbn = byomei.SyobyoKbn;
+                            oldByomei.SikkanKbn = byomei.SikkanKbn;
+                            oldByomei.NanbyoCd = byomei.NanbyoCd;
+                            oldByomei.HosokuCmt = byomei.HosokuCmt;
+                            oldByomei.IsNodspKarte = byomei.IsNodspKarte;
+                            oldByomei.IsNodspRece = byomei.IsNodspRece;
+                            oldByomei.IsDeleted = byomei.IsDeleted;
+                            oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            oldByomei.UpdateId = userId;
+                        }
                     }
                     else
                     {
                         var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, rsvkrtNo);
                         TrackingDataContext.Add(orderInfEntity);
+
+                        // add new orderInfEntity to rsvkrtByomeiEntityList
+                        rsvkrtByomeiEntityList.Add(orderInfEntity);
                     }
                 }
             }
@@ -829,9 +907,25 @@ namespace Infrastructure.Repositories
 
         public List<NextOrderModel> GetList(int hpId, long ptId, bool isDeleted)
         {
-            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            List<NextOrderModel> result;
 
-            return allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new List<NextOrderModel>();
+            // check if exit cache, get data from cache
+            string finalKey = key + ptId;
+            if (_cache.KeyExists(finalKey))
+            {
+                var cacheString = _cache.StringGet(finalKey).ToString();
+                result = !string.IsNullOrEmpty(cacheString) ? JsonSerializer.Deserialize<List<NextOrderModel>>(cacheString) ?? new() : new();
+                return result;
+            }
+
+            // if not exist cache, get data from database
+            var allRsvkrtMst = TrackingDataContext.RsvkrtMsts.Where(rsv => rsv.HpId == hpId && rsv.PtId == ptId && (isDeleted || rsv.IsDeleted == 0))?.AsEnumerable();
+            result = allRsvkrtMst?.Select(rsv => ConvertToModel(rsv)).ToList() ?? new();
+
+            // set cache data
+            var json = JsonSerializer.Serialize(result);
+            _cache.StringSet(finalKey, json);
+            return result;
         }
 
         private static NextOrderModel ConvertToModel(RsvkrtMst rsvkrtMst)

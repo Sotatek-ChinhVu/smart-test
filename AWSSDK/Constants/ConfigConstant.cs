@@ -1,9 +1,4 @@
 ﻿using Amazon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AWSSDK.Constants
 {
@@ -28,6 +23,8 @@ namespace AWSSDK.Constants
         public static string RdsSnapshotBackupRestore = "Bak-Restore";
         public static string ManagedCachingOptimized = "658327ea-f89d-4fab-a63d-7e88639e58f6";
         public static int PgPostDefault = 5432;
+        public static string PgUserDefault = "postgres";
+        public static string PgPasswordDefault = "Emr!23456789";
 
         public static string DestinationBucketName = "phuc-test-s3";
         public static string RestoreBucketName = "phuc-test-s3";
@@ -41,6 +38,7 @@ namespace AWSSDK.Constants
         public static byte StatusTenantFailded = 2;
         public static byte StatusTenantTeminated = 7;
         public static byte StatusTenantStopped = 5;
+        public static byte StatusSuttingDown = 6;
         public static Dictionary<string, byte> StatusTenantDictionary()
         {
             Dictionary<string, byte> rdsStatusDictionary = new Dictionary<string, byte>
@@ -62,7 +60,9 @@ namespace AWSSDK.Constants
             {"restoring", 15},
             {"restore-failed", 16},
             {"stopping", 17},
-            {"starting", 18}
+            {"starting", 18},
+            {"update-schema", 19},
+            {"update-schema-failed", 20}
         };
 
             return rdsStatusDictionary;
