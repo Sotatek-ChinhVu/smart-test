@@ -830,7 +830,7 @@ using UseCase.User.UpdateHashPassword;
 using UseCase.Diseases.IsHokenInfInUsed;
 using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
-using Interactor.Yousiki.GetYousiki1InfModelWithCommonInf;
+using Interactor.Yousiki;
 
 namespace EmrCloudApi.Configs.Dependency
 {

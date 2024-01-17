@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 
-namespace Interactor.Yousiki.GetYousiki1InfModelWithCommonInf;
+namespace Interactor.Yousiki;
 
 public class GetYousiki1InfModelWithCommonInfInteractor : IGetYousiki1InfModelWithCommonInfInputPort
 {
