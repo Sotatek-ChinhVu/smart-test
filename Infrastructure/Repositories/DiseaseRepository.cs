@@ -700,7 +700,7 @@ namespace Infrastructure.Repositories
 
                     for (int i = 1; i <= 21; i++)
                     {
-                        string byoCd = ptByomeiModel.GetMemberValue("SyusyokuCd" + i).AsString();
+                        string byoCd = /*ptByomeis.Where(x => x.ByomeiCd == ptByomeiModel.ByomeiCd).ToList()*/ptByomeis.ToList()[3].GetMemberValue("SyusyokuCd" + i).AsString();
                         if (string.IsNullOrEmpty(byoCd))
                         {
                             break;
