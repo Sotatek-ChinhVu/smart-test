@@ -21,5 +21,13 @@ namespace Domain.Models.UserToken
         /// <param name="refreshTokenNew"> new refresh token</param>
         /// <returns></returns>
         UserTokenModel RefreshTokenByUser(int userId, string refreshToken, string refreshTokenNew);
+
+        /// <summary>
+        /// Check RefreshToken is valid for report
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        bool RefreshTokenIsValid(int userId, string refreshToken);
     }
 }

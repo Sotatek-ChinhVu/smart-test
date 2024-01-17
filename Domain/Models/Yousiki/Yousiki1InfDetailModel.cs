@@ -2,7 +2,7 @@
 
 public class Yousiki1InfDetailModel
 {
-    public Yousiki1InfDetailModel(long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int newRowNo, int payload, string value)
+    public Yousiki1InfDetailModel(long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int payload, string value)
     {
         PtId = ptId;
         SinYm = sinYm;
@@ -10,7 +10,6 @@ public class Yousiki1InfDetailModel
         SeqNo = seqNo;
         CodeNo = codeNo;
         RowNo = rowNo;
-        NewRowNo = newRowNo;
         Payload = payload;
         Value = value;
     }
@@ -26,8 +25,6 @@ public class Yousiki1InfDetailModel
     public string CodeNo { get; private set; }
 
     public int RowNo { get; private set; }
-
-    public int NewRowNo { get; private set; }
 
     public int Payload { get; private set; }
 
