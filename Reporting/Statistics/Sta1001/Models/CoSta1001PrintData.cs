@@ -3,6 +3,7 @@ using Reporting.Statistics.Enums;
 
 namespace Reporting.Statistics.Sta1001.Models;
 
+
 public class CoSta1001PrintData
 {
     public CoSta1001PrintData(RowType rowType = RowType.Data)
@@ -114,7 +115,7 @@ public class CoSta1001PrintData
     public string JihiFutan { get; set; }
 
     /// <summary>
-    /// 消費税
+    /// 内消費税
     /// </summary>
     public string JihiTax { get; set; }
 
@@ -255,6 +256,77 @@ public class CoSta1001PrintData
     /// 入金コメント
     /// </summary>
     public string NyukinCmt { get; set; }
+
+    /// <summary>
+    /// 保険外金額（非課税分）
+    /// </summary>
+    public string JihiFutanTaxFree { get; set; }
+
+    #region '課税分'
+    /// <summary>
+    /// 保険外金額（課税分/通常税率）
+    /// </summary>
+    public string JihiFutanTaxNrSum { get; set; }
+
+    /// <summary>
+    /// 保険外金額（課税分/軽減税率）
+    /// </summary>
+    public string JihiFutanTaxGenSum { get; set; }
+
+    /// <summary>
+    /// 内消費税額（通常税率）
+    /// </summary>
+    public string JihiTaxNrSum { get; set; }
+
+    /// <summary>
+    /// 内消費税額（軽減税率）
+    /// </summary>
+    public string JihiTaxGenSum { get; set; }
+    #endregion
+
+    #region '内税分'
+    /// <summary>
+    /// 保険外金額（内税/通常税率）
+    /// </summary>
+    public string JihiFutanTaxNr { get; set; }
+
+    /// <summary>
+    /// 保険外金額（内税/軽減税率）
+    /// </summary>
+    public string JihiFutanTaxGen { get; set; }
+
+    /// <summary>
+    /// 内消費税額（内税/通常税率）
+    /// </summary>
+    public string JihiTaxNr { get; set; }
+
+    /// <summary>
+    /// 内消費税額（内税/軽減税率）
+    /// </summary>
+    public string JihiTaxGen { get; set; }
+    #endregion
+
+    #region '外税分'
+    /// <summary>
+    /// 保険外金額（外税/通常税率）
+    /// </summary>
+    public string JihiFutanOuttaxNr { get; set; }
+
+    /// <summary>
+    /// 保険外金額（外税/軽減税率）
+    /// </summary>
+    public string JihiFutanOuttaxGen { get; set; }
+
+    /// <summary>
+    /// 内消費税額（外税/通常税率）
+    /// </summary>
+    public string JihiOuttaxNr { get; set; }
+
+    /// <summary>
+    /// 内消費税額（外税/軽減税率）
+    /// </summary>
+    public string JihiOuttaxGen { get; set; }
+    #endregion
 
     /// <summary>
     /// 保険種別ごとの金額

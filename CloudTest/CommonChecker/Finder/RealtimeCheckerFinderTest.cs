@@ -8,7 +8,10 @@ using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
+using Helper.Common;
 using Moq;
+using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
+using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
 using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
@@ -7355,6 +7358,1370 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.TenMsts.RemoveRange(tenMsts);
                 tenantTracking.SaveChanges();
             }
+        }
+
+        [Test]
+        public void TC_096_TEST_GetYjCdListByItemCdList()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.SaveChanges();
+
+            var hpId = 1;
+            var sinday = 20231212;
+            var ptId = 1231;
+            var listItem = new List<ItemCodeModel>()
+            {
+                new ItemCodeModel("UT2720", "id1"),
+                new ItemCodeModel("UT2719", "id2"),
+                new ItemCodeModel("UT2718", "id3"),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2720" }, sinday, ptId);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetYjCdListByItemCdList(hpId, listItem, sinday);
+
+                // Assert
+                Assert.AreEqual(3, result.Count);
+            }
+            finally
+            {
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_097_TEST_GetFoodAllergyByPtId_Test_IsDataOfDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230101;
+            var ptId = 1231;
+            var isDataOfDb = true;
+
+            var ptAlrgyFoods = new List<PtAlrgyFood>()
+            {
+                new PtAlrgyFood()
+                {
+                    HpId = 99999,
+                    PtId = 1231,
+                    SortNo = 1,
+                    IsDeleted = 0,
+                    StartDate = 20230101,
+                    EndDate = 20230101
+                },
+                new PtAlrgyFood()
+                {
+                    HpId = 99999,
+                    PtId = 1231,
+                    SortNo = 2,
+                    IsDeleted = 0,
+                    AlrgyKbn = "1",
+                    Cmt = "CMT TEST",
+                    StartDate = 20221231,
+                    EndDate = 20230102
+                }
+            };
+
+            tenantTracking.PtAlrgyFoods.AddRange(ptAlrgyFoods);
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyFoods.RemoveRange(ptAlrgyFoods);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_098_TEST_GetFoodAllergyByPtId_Test_IsDataOfDb_False()
+        {
+            //setup
+            var hpId = 99999;
+            var sinday = 20230101;
+            var ptId = 1231;
+            var isDataOfDb = false;
+
+            var ptAlrgyFoodModels = new List<PtAlrgyFoodModelStandard>()
+            {
+              new PtAlrgyFoodModelStandard(hpId, ptId, 111 , 0, "", 20230101, 20230101, "", 0, string.Empty),
+              new PtAlrgyFoodModelStandard(hpId, ptId, 111 , 0, "", 20221231, 20230102, "", 0, string.Empty),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            var result = realtimeCheckerFinder.GetFoodAllergyByPtId(hpId, ptId, sinday, ptAlrgyFoodModels, isDataOfDb);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+
+        }
+
+        [Test]
+        public void TC_099_TEST_GetDrugAllergyByPtId_Test_IsDataOfDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230102;
+            var ptId = 1231;
+            var isDataOfDb = true;
+
+            var ptAlgryDrugs = new List<PtAlrgyDrug>()
+            {
+                new PtAlrgyDrug()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SortNo = 1,
+                    ItemCd = "UNIT-TEST",
+                    DrugName = "DrugName Test",
+                    StartDate = 20230101,
+                    EndDate = 20230103,
+                    Cmt = "",
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow ,
+                    CreateId = 2,
+                    UpdateId = 2
+                },
+
+                new PtAlrgyDrug()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SortNo = 2,
+                    ItemCd = "UNIT-TEST2",
+                    DrugName = "DrugName Test",
+                    StartDate = 20230102,
+                    EndDate = 20230102,
+                    Cmt = "",
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow ,
+                    CreateId = 2,
+                    UpdateId = 2
+                },
+            };
+
+            tenantTracking.PtAlrgyDrugs.AddRange(ptAlgryDrugs);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, new(), isDataOfDb);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlgryDrugs);
+                tenantTracking.SaveChanges();
+            }
+
+        }
+
+        [Test]
+        public void TC_100_TEST_GetDrugAllergyByPtId_Test_IsDataOfDb_False()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230102;
+            var ptId = 1231;
+            var isDataOfDb = false;
+
+            var ptAlrgyDrugModels = new List<PtAlrgyDrugModelStandard>()
+            {
+                new PtAlrgyDrugModelStandard (hpId, ptId, 111, 1, "11001100", "drug name", 20230101, 20230103, "", 0),
+                new PtAlrgyDrugModelStandard (hpId, ptId, 112, 2, "11001101", "drug name", 20230102, 20230102, "", 0),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetDrugAllergyByPtId(hpId, ptId, sinday, ptAlrgyDrugModels, isDataOfDb);
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+        }
+
+        [Test]
+        public void TC_101_TEST_GetBodyInfo()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230105;
+            var ptId = 1231;
+            var kensaItemCd = "ItemCd9999";
+
+            var kensaInfs = new List<KensaInfDetail>()
+            {
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230101,
+                    RaiinNo = 99999999,
+                    IraiCd = 01234,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230202,
+                    RaiinNo = 99999998,
+                    IraiCd = 01233,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+            };
+
+            tenantTracking.KensaInfDetails.AddRange(kensaInfs);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetBodyInfo(hpId, ptId, sinday, kensaItemCd);
+
+                // Assert
+                Assert.True(result.IraiCd == 01234);
+            }
+            finally
+            {
+                tenantTracking.KensaInfDetails.RemoveRange(kensaInfs);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_102_TEST_GetCommonBodyInfo()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetCommonBodyInfo(birthDay, sinday);
+
+                // Assert
+                Assert.True(result.JissiYear == 2199 && result.AgeYear == 200);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+                tenantTracking.SaveChanges(true);
+            }
+        }
+
+        [Test]
+        public void TC_103_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_0()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271023",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271024",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271025",
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 0;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(3, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_104_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_1_And_HaigouFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271023",
+                     HaigouFlg = "",
+                     YuekiFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271024",
+                     HaigouFlg = "1",
+                     YuekiFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271025",
+                     YuekiFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 1;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_105_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_1_And_YuekiFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271023",
+                     YuekiFlg = "1",
+                     HaigouFlg = "1",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271024",
+                     YuekiFlg = "",
+                     HaigouFlg = "1",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271025",
+                     HaigouFlg = "1",
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 1;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_106_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_2_And_HaigouFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271023",
+                     HaigouFlg = "1",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271024",
+                     HaigouFlg = "",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271025",
+                     HaigouFlg = "2",
+                     KanpoFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 2;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_107_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_2_And_KanpoFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271023",
+                     KanpoFlg = "1",
+                     HaigouFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271024",
+                     KanpoFlg = "",
+                     HaigouFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     KanpoFlg = "3",
+                     YjCd = "UT271025",
+                     HaigouFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 2;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_108_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_3_And_HaigouFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271023",
+                     HaigouFlg = "1",
+                     YuekiFlg = "1",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271024",
+                     HaigouFlg = "",
+                     YuekiFlg = "1",
+                     KanpoFlg = "1"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     HaigouFlg = "3",
+                     YjCd = "UT271025",
+                     YuekiFlg = "1",
+                     KanpoFlg = "1"
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 3;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(2, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_109_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_3_And_YuekiFlg_And_KanpoFlg_NotEqual_1()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+
+            var m56 = new List<M56ExIngrdtMain>()
+            {
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271023",
+                     KanpoFlg = "1",
+                     YuekiFlg = "2",
+                     HaigouFlg = "1",
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271024",
+                     HaigouFlg = "1",
+                     YuekiFlg = "2",
+                     KanpoFlg = "3"
+                 },
+                 new M56ExIngrdtMain()
+                 {
+                     YjCd = "UT271025",
+                     KanpoFlg = "2",
+                     YuekiFlg = "1",
+                     HaigouFlg = "1",
+                 }
+            };
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M56ExIngrdtMain.AddRange(m56);
+
+            tenantTracking.SaveChanges();
+
+            var haigouSetting = 3;
+
+            /// YJCD = UT271023 , UT271024, UT271025
+            var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(haigouSetting, itemCodes);
+
+                // Assert
+                Assert.AreEqual(1, result.Count);
+            }
+            finally
+            {
+                tenantTracking.M56ExIngrdtMain.RemoveRange(m56);
+                tenantTracking.TenMsts.RemoveRange(tenMsts);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_110_TEST_GetRatio_Test_YYYY_Is_0_MM_Is_0()
+        {
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now);
+            // YYYY = 0 , MM = 0
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 8, result);
+        }
+
+        [Test]
+        public void TC_111_TEST_GetRatio_Test_YYYY_Is_0_MM_LessThan_4()
+        {
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(3));
+            // YYYY = 0 , MM = 3
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 6, result);
+        }
+
+        [Test]
+        public void TC_112_TEST_GetRatio_Test_YYYY_Is_0_MM_LessThan_4()
+        {
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(3));
+            // YYYY = 0 , MM = 3
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 6, result);
+        }
+
+        [Test]
+        public void TC_113_TEST_GetRatio_Test_YYYY_Is_0_MM_Is_4()
+        {
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now);
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
+            // YYYY = 0 , MM = 4
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1.0 / 5, result);
+        }
+
+        [Test]
+        public void TC_114_TEST_GetRatio_Test_YYYY_GreaterThan0_And_LessThan_15_MM_Is_4()
+        {
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now.AddYears(-14));
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
+            // YYYY = 14 , MM = 4
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(((double)(14 * 4 + 20)) / 100, result);
+        }
+
+        [Test]
+        public void TC_115_TEST_GetRatio_Test_YYYY_Is_15_MM_Is_4()
+        {
+            //setup
+            var fromDay = CIUtil.DateTimeToInt(DateTime.Now.AddYears(-15));
+            var today = CIUtil.DateTimeToInt(DateTime.Now.AddMonths(4));
+            // YYYY = 14 , MM = 4
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            // Act
+            var result = realtimeCheckerFinder.GetRatio(fromDay, today);
+
+            // Assert
+            Assert.AreEqual(1, result);
+        }
+
+        [Test]
+        public void TC_116_TEST_GetCommonWeight_Test_Sex_Is_Male()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+            var sex = 1;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 60,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetCommonWeight(birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(60, result);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_117_TEST_GetCommonWeight_Test_Sex_Is_Female()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 180,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var sex = 2;
+                var result1 = realtimeCheckerFinder.GetCommonWeight(birthDay, sinday, sex);
+                sex = 0;
+                var result2 = realtimeCheckerFinder.GetCommonWeight(birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(99, result1);
+                Assert.AreEqual(99, result2);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_118_TEST_GetCommonHeight_Test_Sex_Is_Female()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var sex = 2;
+                var result1 = realtimeCheckerFinder.GetCommonHeight(birthDay, sinday, sex);
+                sex = 0;
+                var result2 = realtimeCheckerFinder.GetCommonHeight(birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(140, result1);
+                Assert.AreEqual(140, result2);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_119_TEST_GetCommonHeight_Test_Sex_Is_Male()
+        {
+
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var birthDay = 19981212;
+            var sinday = 21990105;
+
+            var physicalAverages = new List<PhysicalAverage>()
+            {
+                new PhysicalAverage()
+                {
+                    JissiYear = 2199,
+                    AgeYear = 200,
+                    AgeMonth = 0,
+                    AgeDay = 24,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+                new PhysicalAverage()
+                {
+                    JissiYear = 2198,
+                    AgeYear = 199,
+                    AgeMonth = -1,
+                    AgeDay = 23,
+                    MaleHeight = 180,
+                    MaleWeight = 60,
+                    MaleChest = 90,
+                    MaleHead = 50,
+                    FemaleHeight = 140,
+                    FemaleWeight = 99,
+                    FemaleChest = 90,
+                    FemaleHead = 50,
+                    CreateDate = DateTime.UtcNow
+                },
+
+            };
+
+            tenantTracking.PhysicalAverage.AddRange(physicalAverages);
+
+            tenantTracking.SaveChanges();
+
+            try
+            {
+
+                var cache = new MasterDataCacheService(TenantProvider);
+                var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+                // Act
+                var sex = 1;
+                var result = realtimeCheckerFinder.GetCommonHeight(birthDay, sinday, sex);
+
+                // Assert
+                Assert.AreEqual(180, result);
+            }
+            finally
+            {
+                tenantTracking.PhysicalAverage.RemoveRange(physicalAverages);
+
+                tenantTracking.SaveChanges();
+            }
+
+        }
+
+        [Test]
+        public void TC_120_TEST_GetPatientWeight_IsDataDb_True()
+        {
+            //setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var hpId = 99999;
+            var sinday = 20230105;
+            long ptId = 1231;
+            var kensaItemCd = "V0002";
+
+            var kensaInfs = new List<KensaInfDetail>()
+            {
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230101,
+                    RaiinNo = 99999999,
+                    IraiCd = 01234,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+
+                new KensaInfDetail()
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    IraiDate = 20230202,
+                    RaiinNo = 99999998,
+                    IraiCd = 01233,
+                    KensaItemCd = kensaItemCd,
+                    IsDeleted = 0,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    CreateId  = 2,
+                    UpdateId = 2,
+                    ResultVal = "9"
+                },
+            };
+
+            tenantTracking.KensaInfDetails.AddRange(kensaInfs);
+
+            tenantTracking.SaveChanges();
+
+            var isDataDb = true;
+            var sex = 1;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetPatientWeight(hpId, ptId, 20000101, sinday, sex, new(), isDataDb);
+
+                // Assert
+                Assert.AreEqual(9, result);
+            }
+            finally
+            {
+                tenantTracking.KensaInfDetails.RemoveRange(kensaInfs);
+                tenantTracking.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TC_121_TEST_GetPatientWeight_IsDataDb_False()
+        {
+            //setup
+            var hpId = 99999;
+            var sinday = 20230105;
+            long ptId = 1231;
+            var kensaItemCd = "V0002";
+
+            var kensaInfDetailModels = new List<KensaInfDetailModel>()
+            {
+                new KensaInfDetailModel(hpId, ptId, 1234, 0, 20230101, 99999, kensaItemCd, "4", "","", 0 , "","", DateTime.UtcNow, "","",1),
+            };
+
+            var isDataDb = false;
+            var sex = 1;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            try
+            {
+                // Act
+                var result = realtimeCheckerFinder.GetPatientWeight(hpId, ptId, 20000101, sinday, sex, kensaInfDetailModels, isDataDb);
+
+                // Assert
+                Assert.AreEqual(4, result);
+            }
+            finally
+            {
+            }
+        }
+
+        [Test]
+        public void TC_122_TEST_GetBodySize_Test_Age_GreaterThan_5()
+        {
+            //setup
+
+            double weight = 69.7; double height = 176.5;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+            double age = 6;
+            // Act
+            var result1 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+            age = 7;
+            var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+
+            // Assert
+            Assert.AreEqual(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, result1);
+            Assert.AreEqual(Math.Pow(weight, 0.444) * Math.Pow(height, 0.663) * 0.008883, result2);
+
+        }
+
+        [Test]
+        public void TC_122_TEST_GetBodySize_Test_Age_GreaterThan_0_And_LessThan_6()
+        {
+            //setup
+
+            double weight = 69.7; double height = 176.5;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            double age = 5;
+            var result1 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+            age = 1;
+            var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+
+            // Assert
+            Assert.AreEqual(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, result1);
+            Assert.AreEqual(Math.Pow(weight, 0.423) * Math.Pow(height, 0.362) * 0.038189, result2);
+
+        }
+
+        [Test]
+        public void TC_123_TEST_GetBodySize_Test_Age_LessThan_1()
+        {
+            //setup
+
+            double weight = 69.7; double height = 176.5;
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            double age = 0;
+            var result1 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+            age = -1;
+            var result2 = realtimeCheckerFinder.GetBodySize(weight, height, age);
+
+            // Assert
+            Assert.AreEqual(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, result1);
+            Assert.AreEqual(Math.Pow(weight, 0.473) * Math.Pow(height, 0.655) * 0.009568, result2);
+
+        }
+
+        [Test]
+        public void TC_124_TEST_GetPatientHeight()
+        {
+            //setup
+
+            var hpId = 9999;
+            var ptId = 19999;
+            var birthDay = 19981212;
+            var sinDay = CIUtil.DateTimeToInt(DateTime.Now);
+
+            var kensaInfDetailModels = new List<KensaInfDetailModel>
+            {
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230101, 0, "V0001", "50", "","",0,"cmtCd1","cmtCd2", DateTime.UtcNow, "", "UT KensaName", 0),
+                new KensaInfDetailModel(hpId, ptId, 0, 0, 20230103, 0, "V0002", "60", "","",0,"cmtCd2","cmtCd3", DateTime.UtcNow, "", "UT KensaName2", 1),
+            };
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
+            // Act
+            var sex = 1;
+            var result = realtimeCheckerFinder.GetPatientHeight(hpId, ptId, birthDay, sinDay, sex, kensaInfDetailModels);
+
+            // Assert
+            Assert.AreEqual(50, result);
+
         }
         [Test]
         public void TC_095_CheckDosage_TEST_MasterData_No_Fake_Data()
