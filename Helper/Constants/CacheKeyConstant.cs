@@ -25,5 +25,4 @@ public static class CacheKeyConstant
     public const string SystemGenerationConf = "SystemGenerationConf";
     public const string JsonSettings = "JsonSettings";
     public const string SyoukiKbnMst = "SyoukiKbnMst";
-    public const string KohiPriority = "KohiPriority";
 }
