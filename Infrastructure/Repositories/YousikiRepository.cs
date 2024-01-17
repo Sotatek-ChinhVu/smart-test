@@ -1,12 +1,7 @@
 ﻿using Domain.Models.Yousiki;
-using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 
 namespace Infrastructure.Repositories;
 
@@ -104,8 +99,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <returns></returns>
     public List<VisitingInfModel> GetVisitingInfs(int hpId, long ptId, int sinYm)
     {
-        Stopwatch stopWatch = new Stopwatch();
-        stopWatch.Start();
         int startDate = sinYm * 100 + 01;
         int endDate = sinYm * 100 + 31;
         var raiinInfsInMonth = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
@@ -119,18 +112,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         var kaMstRespo = NoTrackingDataContext.KaMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0);
         var uketukesbtMstRespo = NoTrackingDataContext.UketukeSbtMsts.Where(uketuke => uketuke.HpId == hpId && uketuke.IsDeleted == 0);
         var ptCmtInfRespo = NoTrackingDataContext.PtCmtInfs.Where(item => item.Id == hpId && item.IsDeleted == DeleteTypes.None);
-        //var raiinListInfQuery = NoTrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId && item.PtId == ptId);
-        //var raiinListDetailQuery = NoTrackingDataContext.RaiinListDetails.Where(item => item.HpId == hpId && item.IsDeleted == 0);
-
-        //var raiinListInfs = (from raiinListInf in raiinListInfQuery
-        //                     join raiinListDetail in raiinListDetailQuery on
-        //                     new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListDetail.GrpId, raiinListDetail.KbnCd }
-        //                     select new
-        //                     {
-        //                         RaiinListInf = raiinListInf,
-        //                         RaiinListDetail = raiinListDetail,
-        //                     })
-        //                     .ToList();
         var result = (from raiinInf in raiinInfsInMonth
                       join ptInf in ptInfRespo on
                            new { raiinInf.HpId, raiinInf.PtId } equals
@@ -215,16 +196,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
             model.UpdateRaiinListInfList(raiinList);
         }
-
-        stopWatch.Stop();
-        // Get the elapsed time as a TimeSpan value.
-        TimeSpan ts = stopWatch.Elapsed;
-
-        // Format and display the TimeSpan value.
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds);
-        Console.WriteLine("RunTime " + elapsedTime);
         return result;
     }
 
