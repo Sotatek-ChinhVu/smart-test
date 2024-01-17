@@ -9,4 +9,8 @@ public interface IYousikiRepository : IRepositoryBase
     List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, long ptId, int dataType, int seqNo);
 
     List<VisitingInfModel> GetVisitingInfs(int hpId, long ptId, int sinYm);
+
+    bool IsYousikiExist(int hpId, int sinYm, long ptId);
+
+    List<long> GetListPtIdHealthInsuranceAccepted(int hpId, int sinYm, long ptId, int dataType);
 }

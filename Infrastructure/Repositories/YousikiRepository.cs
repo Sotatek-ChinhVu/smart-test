@@ -2,6 +2,7 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -199,15 +200,134 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return result;
     }
 
+    /// <summary>
+    /// check exist Yousiki
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <returns></returns>
     public bool IsYousikiExist(int hpId, int sinYm, long ptId)
     {
-        var yousiki1Infs = dbService.Yousiki1InfRepository.FindListQueryableNoTrack(x => x.HpId == Session.HospitalID &&
-                            x.IsDeleted == 0 &&
-                            x.SinYm == sinYm &&
-                            x.PtId == ptId);
-        return yousiki1Infs.AsEnumerable()
-                   .Select(x => new Yousiki1InfModel(x, new PtInf()))
-                   .FirstOrDefault() != null;
+        var yousiki1InfExist = NoTrackingDataContext.Yousiki1Infs.Any(item => item.HpId == hpId
+                                                                              && item.IsDeleted == 0
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId);
+        return yousiki1InfExist;
+    }
+
+    /// <summary>
+    /// Get List PtIdHealthInsuranceAccepted
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    public List<long> GetListPtIdHealthInsuranceAccepted(int hpId, int sinYm, long ptId, int dataType)
+    {
+        if (sinYm <= 0 || dataType < 1 || dataType > 3)
+        {
+            return new();
+        }
+        int startDate = sinYm * 100 + 01;
+        int endDate = sinYm * 100 + 31;
+
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                      && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                      && item.SinDate >= startDate
+                                                                      && item.SinDate <= endDate
+                                                                      && item.IsDeleted == DeleteTypes.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                && item.IsDelete == DeleteTypes.None
+                                                                && item.IsTester == 0);
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
+                                                                          && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                          && (item.HokenKbn == 1 || item.HokenKbn == 2)
+                                                                          && item.IsDeleted == 0);
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                                  && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                                  && item.IsDeleted == 0);
+        var hokenInfs = from ptHokenPattern in ptHokenPatterns
+                        join pthoken in ptHokenInfs on new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals new { pthoken.HpId, pthoken.PtId, pthoken.HokenId }
+                        join ptinf in ptInfs on ptHokenPattern.PtId equals ptinf.PtId
+                        select new
+                        {
+                            PtHokenPattern = ptHokenPattern
+                        };
+
+        var hokenQuery = from raiinInf in raiinInfs
+                         join hokenInf in hokenInfs on new { raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid } equals new { hokenInf.PtHokenPattern.HpId, hokenInf.PtHokenPattern.PtId, hokenInf.PtHokenPattern.HokenPid }
+                         select new
+                         {
+                             raiinInf
+                         };
+        var odrInfs = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                  && item.IsDeleted == 0
+                                                                  && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                  && item.SinDate >= startDate
+                                                                  && item.SinDate <= endDate
+                                                                  && item.SanteiKbn == 0);
+        var ordInfQuery = from raiinInf in hokenQuery
+                          join odrInf in odrInfs
+                          on new { raiinInf.raiinInf.HpId, raiinInf.raiinInf.PtId, raiinInf.raiinInf.RaiinNo, raiinInf.raiinInf.SinDate, raiinInf.raiinInf.HokenPid } equals new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.SinDate, odrInf.HokenPid }
+                          select new
+                          {
+                              OdrInf = odrInf
+                          };
+
+        var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                              && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                              && item.SinDate >= startDate
+                                                                              && item.SinDate <= endDate
+                                                                              && !(item.ItemCd == "@SHIN" && item.Suryo == 5));
+        var query = from ordInf in ordInfQuery
+                    join ordDetail in odrInfDetails
+                    on new { ordInf.OdrInf.PtId, ordInf.OdrInf.RaiinNo, ordInf.OdrInf.SinDate, ordInf.OdrInf.RpNo, ordInf.OdrInf.RpEdaNo } equals
+                       new { ordDetail.PtId, ordDetail.RaiinNo, ordDetail.SinDate, ordDetail.RpNo, ordDetail.RpEdaNo }
+                    select new
+                    {
+                        OrdInf = ordInf.OdrInf,
+                        ItemCd = ordDetail.ItemCd
+                    };
+        if (ptId == 0)
+        {
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                          && item.MasterSbt == "S"
+                                                                          && item.Kokuji2 != "7");
+            switch (dataType)
+            {
+                case 1:
+                    tenMstQuery = tenMstQuery.Where(item => item.CdKbn == "B" && item.CdKbnno == 1 && item.CdEdano == 3);
+                    break;
+                case 2:
+                    tenMstQuery = tenMstQuery.Where(item => item.CdKbn == "C"
+                                                            && ((item.CdKbnno == 1 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 1 && item.CdEdano == 1)
+                                                                || (item.CdKbnno == 2 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 2 && item.CdEdano == 2)
+                                                                || (item.CdKbnno == 3 && item.CdEdano == 0)));
+                    break;
+                case 3:
+                    tenMstQuery = tenMstQuery.Where(item => item.CdKbn == "H"
+                                                            && ((item.CdKbnno == 0 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 1 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 1 && item.CdEdano == 2)
+                                                                || (item.CdKbnno == 2 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 3 && item.CdEdano == 0)));
+                    break;
+            }
+            query = from ordInf in query
+                    join tenMst in tenMstQuery
+                    on ordInf.ItemCd equals tenMst.ItemCd
+                    select new
+                    {
+                        OrdInf = ordInf.OrdInf,
+                        ItemCd = tenMst.ItemCd
+                    };
+        }
+
+        return query.AsEnumerable().Select(x => x.OrdInf?.PtId ?? 0).GroupBy(x => x).Select(x => x.First()).ToList();
     }
 
     public void ReleaseResource()

@@ -56,7 +56,7 @@ public class YousikiController : AuthorizeControllerBase
     [HttpPost(ApiPath.AddYousiki)]
     public ActionResult<Response<AddYousikiResponse>> AddYousiki([FromBody] AddYousikiRequest request)
     {
-        var input = new AddYousikiInputData(HpId, request.SinYm, request.PtNum, request.SelectDataType);
+        var input = new AddYousikiInputData(HpId, request.SinYm, request.PtNum, request.SelectDataType, request.ReactAddYousiki);
         var output = _bus.Handle(input);
         var presenter = new AddYousikiPresenter();
         presenter.Complete(output);
