@@ -95,7 +95,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
     {
         string updateDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
 
-        string updateQuery = $"UPDATE \"online_confirmation_history\r\n\" SET \"uketuke_status\" = {uketukeStatus}, \"update_date\" = '{updateDate}'"
+        string updateQuery = $"UPDATE \"online_confirmation_history\" SET \"uketuke_status\" = {uketukeStatus}, \"update_date\" = '{updateDate}'"
                              + $", \"update_id\" = {userId}"
                              + $" WHERE \"id\" = {id} AND \"uketuke_status\" = 0";
 
