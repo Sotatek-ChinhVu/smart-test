@@ -9,6 +9,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Services;
 using PostgreDataContext;
 using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
 using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
@@ -120,7 +121,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .FirstOrDefault() ?? new PhysicalAverage();
         }
 
-        private List<M56ExIngrdtMain> GetDrugTypeInfo(int haigouSetting, List<string> itemCodeList)
+        public List<M56ExIngrdtMain> GetDrugTypeInfo(int haigouSetting, List<string> itemCodeList)
         {
             return _tenMstCacheService
                 .GetM56ExIngrdtMainList(itemCodeList)
@@ -156,10 +157,14 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     return new(tenMstList, m56ExEdIngredientList);
                 }
 
-                var dataByPatientInf = getData(listDrugAllergyAsPatientCode);
+                // Get the largest EndDate TenMsts including expired items
                 var listDrugAllergyAsPatientInfo =
-                    (from drugMst in dataByPatientInf.tenMstList
-                     join componentInfo in dataByPatientInf.m56ExEdIngredientList
+                    (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) 
+                                                                                           && i.StartDate <= sinDate 
+                                                                                           && i.IsDeleted == DeleteTypes.None).ToList()
+                                       group item by item.ItemCd into grp
+                                       select grp.OrderByDescending(c => c.EndDate).FirstOrDefault())
+                     join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
                      on drugMst.YjCd equals componentInfo.YjCd
                      select new
                      {
@@ -250,7 +255,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
+                (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
+                                                                                           && i.StartDate <= sinDate
+                                                                                           && i.IsDeleted == DeleteTypes.None).ToList()
+                                  group item by item.ItemCd into grp
+                                  select grp.OrderByDescending(c => c.EndDate).FirstOrDefault())
                  join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.ProdrugCheck != null && i.ProdrugCheck != string.Empty && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugPro in NoTrackingDataContext.M56ProdrugCd
@@ -319,7 +328,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
+                                                                                           && i.StartDate <= sinDate
+                                                                                           && i.IsDeleted == DeleteTypes.None).ToList()
+                                   group item by item.ItemCd into grp
+                                   select grp.OrderByDescending(c => c.EndDate).FirstOrDefault()
                  join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugAnalogue in NoTrackingDataContext.M56ExAnalogue
@@ -386,7 +399,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                   }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                 (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
+                 (from drugMst in from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
+                                                                                           && i.StartDate <= sinDate
+                                                                                           && i.IsDeleted == DeleteTypes.None).ToList()
+                                  group item by item.ItemCd into grp
+                                  select grp.OrderByDescending(c => c.EndDate).FirstOrDefault()
                   join componentInfo in NoTrackingDataContext.M56AlrgyDerivatives
                   on drugMst.YjCd equals componentInfo.YjCd
                   join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode
@@ -2682,7 +2699,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         #region private method
 
-        private double GetRatio(int fromDay, int today)
+        public double GetRatio(int fromDay, int today)
         {
             double result;
             int yyyy = 0;
@@ -2718,7 +2735,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        private double GetCommonWeight(int birdthDay, int sinday, int sex)
+        public double GetCommonWeight(int birdthDay, int sinday, int sex)
         {
             PhysicalAverage commonBodyInfo = GetCommonBodyInfo(birdthDay, sinday);
             double weight = 0;
@@ -2736,7 +2753,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return weight;
         }
 
-        private double GetCommonHeight(int birdthDay, int sinday, int sex)
+        public double GetCommonHeight(int birdthDay, int sinday, int sex)
         {
             PhysicalAverage commonBodyInfo = GetCommonBodyInfo(birdthDay, sinday);
             double height = 0;
@@ -2754,7 +2771,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return height;
         }
 
-        private double GetPatientWeight(int hpId, long ptId, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
+        public double GetPatientWeight(int hpId, long ptId, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
             if (isDataOfDb)
             {
@@ -2782,7 +2799,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return GetCommonWeight(birdthDay, sinday, sex);
         }
 
-        private double GetPatientHeight(int hpId, long ptID, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels)
+        public double GetPatientHeight(int hpId, long ptID, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels)
         {
             var heightInfoModel = kensaInfDetailModels.Where(k => k.HpId == hpId && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V0001" && !string.IsNullOrEmpty(k.ResultVal))
             .OrderByDescending(k => k.IraiDate).FirstOrDefault();
@@ -2796,7 +2813,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return GetCommonHeight(birdthDay, sinday, sex);
         }
 
-        internal double GetBodySize(double weight, double height, double age)
+        public double GetBodySize(double weight, double height, double age)
         {
             double bodySize;
             if (age >= 6)

@@ -25,12 +25,12 @@ public class CoSta3041PrintConf
     /// <summary>
     /// 帳票タイトル
     /// </summary>
-    public string ReportName { get; set; } = string.Empty;
+    public string ReportName { get; set; }
 
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    public string FormFileName { get; set; } = string.Empty;
+    public string FormFileName { get; set; }
 
     /// <summary>
     /// 期間From(YYYYMM)

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M01_KINKI_CMT")]
+    [Table(name: "m01_kinki_cmt")]
     public class M01KinkiCmt : EmrCloneable<M01KinkiCmt>
     {
         /// <summary>
@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("CMT_CD", Order = 1)]
+        [Column("cmt_cd", Order = 1)]
         [MaxLength(6)]
         public string CmtCd { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// コメント
         /// 
         /// </summary>
-        [Column("CMT")]
+        [Column("cmt")]
         [MaxLength(200)]
         public string? Cmt { get; set; } = string.Empty;
 

@@ -36,20 +36,21 @@ public class AuthController : ControllerBase
     [HttpPost("ExchangeToken"), Produces("application/json")]
     public ActionResult<Response<ExchangeTokenResponse>> ExchangeToken([FromBody] ExchangeTokenRequest req)
     {
-        var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
+        var getUserInput = new GetUserByLoginIdInputData(req.LoginId, req.Password);
         var getUserOutput = _bus.Handle(getUserInput);
         var user = getUserOutput.User;
         if (user is null)
         {
-            var errorResult = GetErrorResult("The loginId is invalid.");
+            var errorResult = GetErrorResult("The loginId or password is invalid.");
             return BadRequest(errorResult);
         }
 
-        if (req.Password != user.LoginPass)
-        {
-            var errorResult = GetErrorResult("The password is invalid.");
-            return BadRequest(errorResult);
-        }
+        ///Check user and pasword in repository
+        ///if (req.Password != user.LoginPass)
+        ///{
+        ///    var errorResult = GetErrorResult("The password is invalid.");
+        ///    return BadRequest(errorResult);
+        ///}
 
         // The claims that will be persisted in the tokens.
         var claims = new Claim[]
@@ -66,7 +67,7 @@ public class AuthController : ControllerBase
         if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(resultRefreshToken.refreshToken))
         {
             // set cookie
-            SetCookie(token);
+            SetCookie(user.HpId, user.UserId, resultRefreshToken.refreshToken);
 
             var successResult = GetSuccessResult(token, user.UserId, user.LoginId, user.Name, user.KanaName, user.KaId, user.JobCd == 1, user.ManagerKbn, user.Sname, user.HpId, resultRefreshToken.refreshToken, resultRefreshToken.refreshTokenExpiryTime);
             return Ok(successResult);
@@ -124,7 +125,7 @@ public class AuthController : ControllerBase
             });
 
             // set cookie with new token
-            SetCookie(newToken);
+            SetCookie(principal.FindFirstValue(ParamConstant.HpId).AsInteger(), userId, output.UserToken.RefreshToken);
 
             return new Response<RefreshTokenResponse>
             {
@@ -153,7 +154,7 @@ public class AuthController : ControllerBase
     [HttpPost("AppToken"), Produces("application/json")]
     public ActionResult<Response<AppTokenResponse>> AppToken([FromBody] AppTokenRequest req)
     {
-        var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
+        var getUserInput = new GetUserByLoginIdInputData(req.LoginId, req.Password);
         var getUserOutput = _bus.Handle(getUserInput);
         var user = getUserOutput.User;
         if (user is null)
@@ -230,8 +231,8 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Set Cookie to report author
     /// </summary>
-    /// <param name="token"></param>
-    private void SetCookie(string token)
+    /// <param name="refreshToken"></param>
+    private void SetCookie(int hpId, int userId, string refreshToken)
     {
         // get domain from headers
         var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
@@ -244,7 +245,7 @@ public class AuthController : ControllerBase
         options.Secure = true;
         options.SameSite = SameSiteMode.None;
 
-        var cookieObject = new CookieModel(clientDomain, token);
+        var cookieObject = new CookieModel(hpId, userId, clientDomain, refreshToken);
         string dataCookie = JsonSerializer.Serialize(cookieObject);
         HttpContext.Response.Cookies.Append(DomainCookie.CookieReportKey, dataCookie, options);
     }

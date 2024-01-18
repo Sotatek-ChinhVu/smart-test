@@ -13,6 +13,7 @@ public class CoSta3071PrintConf
 
     public CoSta3071PrintConf()
     {
+        MenuId = 0;
         RangeFrom = -1;
         RangeTo = -1;
     }
@@ -84,11 +85,11 @@ public class CoSta3071PrintConf
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public List<int> KaIds { get; set; } = new();
+    public List<int> KaIds { get; set; }
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public List<int> TantoIds { get; set; } = new();
+    public List<int> TantoIds { get; set; }
 
 }

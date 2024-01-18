@@ -43,9 +43,9 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP43WelfareReceInfModel> receInfs = new();
-        private List<CoP43WelfareReceInfModel> curReceInfs = new();
-        private CoHpInfModel hpInf = new();
+        private List<CoP43WelfareReceInfModel> receInfs;
+        private List<CoP43WelfareReceInfModel> curReceInfs;
+        private CoHpInfModel hpInf;
 
         private pageType curPgType = 0;
         private List<pageType> tgtPgType = new List<pageType>();
@@ -95,7 +95,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     {
                         // 国保/社保・２割/３割に分けて作成
                         curPgType = pgType;
-                        
+                        curReceInfs = null;
                         switch (curPgType)
                         {
                             case pageType.Kokuho20:
@@ -191,21 +191,21 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var wrkRece = curReceInfs[ptIndex];
 
                     //受給者証番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece?.JyukyusyaNo(kohiHoubetus) ?? string.Empty));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, wrkRece.JyukyusyaNo(kohiHoubetus)));
                     //氏名
-                    listDataPerPage.Add(new("ptName", 0, rowNo, wrkRece?.PtName ?? string.Empty));
+                    listDataPerPage.Add(new("ptName", 0, rowNo, wrkRece.PtName));
                     //生年月日(g ee・MM・dd)
-                    string wYmd = CIUtil.SDateToShowWDate(wrkRece == null ? 0 : wrkRece.BirthDay);
+                    string wYmd = CIUtil.SDateToShowWDate(wrkRece.BirthDay);
                     wYmd = wYmd.Replace("/", "・");
                     listDataPerPage.Add(new("birthday", 0, rowNo, wYmd));
                     //住所
-                    listDataPerPage.Add(new("homeAddress", 0, rowNo, wrkRece?.HomeAddress1 + wrkRece?.HomeAddress2));
+                    listDataPerPage.Add(new("homeAddress", 0, rowNo, wrkRece.HomeAddress1 + wrkRece.HomeAddress2));
                     //総点数
-                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkRece?.Tensu.ToString() ?? string.Empty));
-                    totalData.Tensu += wrkRece == null ? 0 : wrkRece.Tensu;
+                    listDataPerPage.Add(new("tensu", 0, rowNo, wrkRece.Tensu.ToString()));
+                    totalData.Tensu += wrkRece.Tensu;
                     //請求金額
-                    listDataPerPage.Add(new("seikyu", 0, rowNo, wrkRece == null ? "0" : wrkRece.HokenIchibuFutan.ToString()));
-                    totalData.Seikyu += wrkRece == null ? 0 : wrkRece.HokenIchibuFutan;
+                    listDataPerPage.Add(new("seikyu", 0, rowNo, wrkRece.HokenIchibuFutan.ToString()));
+                    totalData.Seikyu += wrkRece.HokenIchibuFutan;
 
                     ptIndex++;
                     if (ptIndex >= curReceInfs.Count)

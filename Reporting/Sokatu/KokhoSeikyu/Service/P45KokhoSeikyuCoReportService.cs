@@ -47,12 +47,6 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             _extralData = new();
             _listTextData = new();
             _visibleFieldData = new();
-            hpInf = new();
-            hokensyaNos = new();
-            receInfs = new();
-            currentHokensyaNo = "";
-            printHokensyaNos = new();
-            hokensyaNames = new();
         }
         #endregion
 
@@ -100,7 +94,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
                 //県内・県外
                 var curReceInfs = receInfs.Where(r => r.HokensyaNo == currentHokensyaNo);
-                List<CoReceInfModel> wrkReces = new();
+                List<CoReceInfModel> wrkReces = null;
                 wrkReces = curReceInfs.Where(r => r.IsPrefIn).ToList();
                 if (wrkReces.Count == 0)
                 {
@@ -140,7 +134,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                 for (short rowNo = 0; rowNo < maxRow; rowNo++)
                 {
-                    List<CoReceInfModel> wrkReces = new();
+                    List<CoReceInfModel> wrkReces = null;
                     switch (rowNo)
                     {
                         //国保
@@ -153,7 +147,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                         case 5: wrkReces = curReceInfs.Where(r => r.IsRetFamily).ToList(); break;
                         case 6: wrkReces = curReceInfs.Where(r => r.IsRetPreSchool).ToList(); break;
                     }
-                    if (wrkReces.Count == 0) continue;
+                    if (wrkReces == null) continue;
 
                     countData wrkData = new countData();
                     //件数
@@ -176,7 +170,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
                 kohiIndex = 0;
                 kohiHoubetusIndex = 0;
 
-                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
+                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
                 if (kohiHoubetus.Count == 0)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);
@@ -264,7 +258,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
 
                 const int maxKohiRow = 7;
 
-                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), new());
+                var kohiHoubetus = SokatuUtil.GetKohiHoubetu(curReceInfs.Where(r => r.IsHeiyo).ToList(), null);
                 if (kohiIndex >= kohiTotalCnt)
                 {
                     _listTextData.Add(pageIndex, listDataPerPage);
@@ -366,7 +360,7 @@ namespace Reporting.Sokatu.KokhoSeikyu.Service
             hpInf = _kokhoFinder.GetHpInf(hpId, seikyuYm);
             receInfs = _kokhoFinder.GetReceInf(hpId, seikyuYm, seikyuType, KokhoKind.Kokho, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
             //保険者番号の指定がある場合は絞り込み
-            var wrkReceInfs = printHokensyaNos.Count == 0 ? receInfs.ToList() :
+            var wrkReceInfs = printHokensyaNos == null ? receInfs.ToList() :
                 receInfs.Where(r => printHokensyaNos.Contains(r.HokensyaNo)).ToList();
             //保険者番号リストを取得（県内→県外）
             hokensyaNos = wrkReceInfs.Where(r => r.IsPrefIn).GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();

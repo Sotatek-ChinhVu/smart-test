@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,46 +7,46 @@ namespace Entity.Tenant
     /// <summary>
     /// 来院情報
     /// </summary>
-    [Table("RAIIN_INF")]
-    [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(IsDeleted), Name = "RAIIN_INF_IDX01")]
-    [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(SyosaisinKbn), nameof(IsDeleted), Name = "RAIIN_INF_IDX02")]
-    [Index(nameof(IsDeleted), nameof(SinDate), nameof(PtId), Name = "RAIIN_INF_IDX03")]
-    [Index(nameof(HpId), nameof(RaiinNo), nameof(IsDeleted), nameof(Status), Name = "RAIIN_INF_IDX04")]
+    [Table("raiin_inf")]
+    [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(IsDeleted), Name = "raiin_inf_idx01")]
+    [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(SyosaisinKbn), nameof(IsDeleted), Name = "raiin_inf_idx02")]
+    [Index(nameof(IsDeleted), nameof(SinDate), nameof(PtId), Name = "raiin_inf_idx03")]
+    [Index(nameof(HpId), nameof(RaiinNo), nameof(IsDeleted), nameof(Status), Name = "raiin_inf_idx04")]
     public class RaiinInf : EmrCloneable<RaiinInf>
     {
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
 
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         ///		患者を識別するためのシステム固有の番号
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         ///		yyyymmdd	
         /// </summary>
-        [Column("SIN_DATE")]
+        [Column("sin_date")]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 来院番号
         /// </summary>
 
-        [Column("RAIIN_NO", Order = 2)]
+        [Column("raiin_no", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// 親来院番号
         /// </summary>
-        [Column("OYA_RAIIN_NO")]
+        [Column("oya_raiin_no")]
         public long OyaRaiinNo { get; set; }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         ///		7:精算待ち
         ///		9:精算済
         /// </summary>
-        [Column("STATUS")]
+        [Column("status")]
         [CustomAttribute.DefaultValue(0)]
         public int Status { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 予約フラグ
         ///		1:予約の来院		
         /// </summary>
-        [Column("IS_YOYAKU")]
+        [Column("is_yoyaku")]
         [CustomAttribute.DefaultValue(0)]
         public int IsYoyaku { get; set; }
 
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// 予約時間
         ///		HH24MISS
         /// </summary>
-        [Column("YOYAKU_TIME")]
+        [Column("yoyaku_time")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
         public string? YoyakuTime { get; set; } = string.Empty;
@@ -82,14 +82,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 予約者ID
         /// </summary>
-        [Column("YOYAKU_ID")]
+        [Column("yoyaku_id")]
         [CustomAttribute.DefaultValue(0)]
         public int YoyakuId { get; set; }
 
         /// <summary>
         /// 受付種別
         /// </summary>
-        [Column("UKETUKE_SBT")]
+        [Column("uketuke_sbt")]
         [CustomAttribute.DefaultValue(0)]
         public int UketukeSbt { get; set; }
 
@@ -97,7 +97,7 @@ namespace Entity.Tenant
         /// 受付時間
         ///		HH24MISS
         /// </summary>
-        [Column("UKETUKE_TIME")]
+        [Column("uketuke_time")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
         public string? UketukeTime { get; set; } = string.Empty;
@@ -105,14 +105,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 受付者ID
         /// </summary>
-        [Column("UKETUKE_ID")]
+        [Column("uketuke_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UketukeId { get; set; }
 
         /// <summary>
         /// 受付番号
         /// </summary>
-        [Column("UKETUKE_NO")]
+        [Column("uketuke_no")]
         [CustomAttribute.DefaultValue(0)]
         public int UketukeNo { get; set; }
 
@@ -120,7 +120,7 @@ namespace Entity.Tenant
         /// 診察開始時間
         ///		HH24MISS
         /// </summary>
-        [Column("SIN_START_TIME")]
+        [Column("sin_start_time")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
         public string? SinStartTime { get; set; } = string.Empty;
@@ -129,7 +129,7 @@ namespace Entity.Tenant
         /// 診察終了時間
         ///		HH24MISS　※状態が計算以上になった時間								
         /// </summary>
-        [Column("SIN_END_TIME")]
+        [Column("sin_end_time")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
         public string? SinEndTime { get; set; } = string.Empty;
@@ -138,7 +138,7 @@ namespace Entity.Tenant
         /// 精算時間
         ///		HH24MISS
         /// </summary>
-        [Column("KAIKEI_TIME")]
+        [Column("kaikei_time")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
         public string? KaikeiTime { get; set; } = string.Empty;
@@ -146,21 +146,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 精算者ID
         /// </summary>
-        [Column("KAIKEI_ID")]
+        [Column("kaikei_id")]
         [CustomAttribute.DefaultValue(0)]
         public int KaikeiId { get; set; }
 
         /// <summary>
         /// 診療科ID
         /// </summary>
-        [Column("KA_ID")]
+        [Column("ka_id")]
         [CustomAttribute.DefaultValue(0)]
         public int KaId { get; set; }
 
         /// <summary>
         /// 担当医ID
         /// </summary>
-        [Column("TANTO_ID")]
+        [Column("tanto_id")]
         [CustomAttribute.DefaultValue(0)]
         public int TantoId { get; set; }
 
@@ -168,7 +168,7 @@ namespace Entity.Tenant
         /// 保険組合せID
         ///		患者別に保険情報を識別するための固有の番号
         /// </summary>
-        [Column("HOKEN_PID")]
+        [Column("hoken_pid")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenPid { get; set; }
 
@@ -176,7 +176,7 @@ namespace Entity.Tenant
         /// 算定区分
         ///     2: 自費算定
         /// </summary>
-        [Column("SANTEI_KBN")]
+        [Column("santei_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SanteiKbn { get; set; }
 
@@ -184,7 +184,7 @@ namespace Entity.Tenant
         /// 初再診区分
         ///		受付時設定、ODR_INF更新後はトリガーで設定							
         /// </summary>
-        [Column("SYOSAISIN_KBN")]
+        [Column("syosaisin_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SyosaisinKbn { get; set; }
 
@@ -192,21 +192,21 @@ namespace Entity.Tenant
         /// 時間枠区分
         ///		受付時設定、ODR_INF更新後はトリガーで設定							
         /// </summary>
-        [Column("JIKAN_KBN")]
+        [Column("jikan_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int JikanKbn { get; set; }
 
         /// <summary>
         /// CONFIRMATION_RESULT
         /// </summary>
-        [Column("CONFIRMATION_RESULT")]
+        [Column("confirmation_result")]
         [MaxLength(120)]
         public string? ConfirmationResult { get; set; } = string.Empty;
 
         /// <summary>
         /// CONFIRMATION_STATE
         /// </summary>
-        [Column("CONFIRMATION_STATE")]
+        [Column("confirmation_state")]
         [CustomAttribute.DefaultValue(0)]
         public int ConfirmationState { get; set; }
 
@@ -215,18 +215,18 @@ namespace Entity.Tenant
         ///		1: マイナンバーカードで確認
         ///     2: 保険証で確認
         /// </summary>
-        [Column("CONFIRMATION_TYPE")]
+        [Column("confirmation_type")]
         [CustomAttribute.DefaultValue(0)]
         public int ConfirmationType { get; set; }
 
-        [Column("INFO_CONS_FLG")]
+        [Column("info_cons_flg")]
         [MaxLength(10)]
         public string? InfoConsFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// PRESCRIPTION_ISSUE_TYPE
         /// </summary>
-        [Column("PRESCRIPTION_ISSUE_TYPE")]
+        [Column("prescription_issue_type")]
         [CustomAttribute.DefaultValue(0)]
         public int PrescriptionIssueType { get; set; }
 
@@ -234,48 +234,48 @@ namespace Entity.Tenant
         /// 削除区分
         ///		1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
         /// <summary>
         /// 作成日時	
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         [CustomAttribute.DefaultValueSql("current_timestamp")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者		
         /// </summary>
-        [Column(name: "CREATE_ID")]
+        [Column(name: "create_id")]
         [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末			
         /// </summary>
-        [Column(name: "CREATE_MACHINE")]
+        [Column(name: "create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者			
         /// </summary>
-        [Column(name: "UPDATE_ID")]
+        [Column(name: "update_id")]
         [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末			
         /// </summary>
-        [Column(name: "UPDATE_MACHINE")]
+        [Column(name: "update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

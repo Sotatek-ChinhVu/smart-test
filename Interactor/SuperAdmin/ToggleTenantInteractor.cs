@@ -42,7 +42,7 @@ namespace Interactor.SuperAdmin
                     return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantDoesNotExist);
                 }
 
-                if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && inputData.Type==0)
+                if (tenant.Status != ConfigConstant.StatusTenantDictionary()["available"] && inputData.Type == 0)
                 {
                     return new ToggleTenantOutputData(false, ToggleTenantStatus.TenantNotAvailable);
                 }
@@ -55,11 +55,17 @@ namespace Interactor.SuperAdmin
                 if (inputData.Type == 0)
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["stopping"]);
+                    var messenge = tenant.EndSubDomain + $"が停止中です。";
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusNotiSuccess, ConfigConstant.StatusTenantStopping, messenge));
                 }
                 else
                 {
                     _tenantRepositoryRunTask.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["starting"]);
+                    var messenge = tenant.EndSubDomain + $"が開始中です。";
+                    _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusNotiSuccess, ConfigConstant.StatusTenantStopping, messenge));
                 }
+
+
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 _ = Task.Run(() =>

@@ -1,12 +1,14 @@
 ﻿using Domain.Models.AccountDue;
 using Domain.Models.Insurance;
+using UseCase.Accounting.GetAccountingInf;
 
 namespace EmrCloudApi.Responses.Accounting
 {
     public class GetAccountingResponse
     {
-        public GetAccountingResponse(List<SyunoSeikyuModel> syunoSeikyuModels, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> allSyunoSeikyuModel, bool isSettled)
+        public GetAccountingResponse(List<RaiinInfItem> listRaiinInf, List<SyunoSeikyuModel> syunoSeikyuModels, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> allSyunoSeikyuModel, bool isSettled)
         {
+            ListRaiinInf = listRaiinInf;
             SyunoSeikyuModels = syunoSeikyuModels;
             TotalPoint = totalPoint;
             KanFutan = kanFutan;
@@ -25,6 +27,7 @@ namespace EmrCloudApi.Responses.Accounting
             IsSettled = isSettled;
         }
 
+        public List<RaiinInfItem> ListRaiinInf { get; private set; }
         public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
         public int TotalPoint { get; private set; }
         public int KanFutan { get; private set; }

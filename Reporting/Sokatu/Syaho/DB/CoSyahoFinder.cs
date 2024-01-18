@@ -77,7 +77,7 @@ public class CoSyahoFinder : RepositoryBase, ICoSyahoFinder
 
         var result = joinQuery.AsEnumerable().Select(
             data => new CoReceInfModel(
-                data.receInf, data.ptHokenInf, new(), new(), new(), new(), HokensyaNoKbn.NoSum, 0
+                data.receInf, data.ptHokenInf, null, null, null, null, HokensyaNoKbn.NoSum, 0
             )
         ).ToList();
 

@@ -215,6 +215,11 @@
         /// 公費保険番号枝番To
         /// </summary>
         public const int KohiHokenEdaNoTo = 121;
+
+        /// <summary>
+        /// 有効/期限切れ
+        /// </summary>
+        public const int ValidOrExpired = 122;
         #endregion
 
         #region 病名情報

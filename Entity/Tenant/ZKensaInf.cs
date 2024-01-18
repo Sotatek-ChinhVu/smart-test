@@ -1,27 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "Z_KENSA_INF")]
+    [Table(name: "z_kensa_inf")]
     public class ZKensaInf : EmrCloneable<ZKensaInf>
     {
         
-        [Column("OP_ID", Order = 1)]
+        [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
-        [Column("OP_TYPE")]
+        [Column("op_type")]
         [MaxLength(10)]
         public string? OpType { get; set; } = string.Empty;
 
-        [Column("OP_TIME")]
+        [Column("op_time")]
         public DateTime OpTime { get; set; }
 
-        [Column("OP_ADDR")]
+        [Column("op_addr")]
         [MaxLength(100)]
         public string? OpAddr { get; set; } = string.Empty;
 
-        [Column("OP_HOSTNAME")]
+        [Column("op_hostname")]
         [MaxLength(100)]
         public string? OpHostName { get; set; } = string.Empty;
 
@@ -30,21 +30,21 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID")]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// 
         /// </summary>
-        [Column("PT_ID")]
+        [Column("pt_id")]
         public long PtId { get; set; }
 
         /// <summary>
         /// 検査依頼コード
         /// SEQUENCE
         /// </summary>
-        [Column("IRAI_CD")]
+        [Column("irai_cd")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long IraiCd { get; set; }
 
@@ -52,14 +52,14 @@ namespace Entity.Tenant
         /// 依頼日
         /// 
         /// </summary>
-        [Column("IRAI_DATE")]
+        [Column("irai_date")]
         public int IraiDate { get; set; }
 
         /// <summary>
         /// 来院番号
         /// 
         /// </summary>
-        [Column("RAIIN_NO")]
+        [Column("raiin_no")]
         public long RaiinNo { get; set; }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Entity.Tenant
         /// "0: 院内
         /// 1: 院外"
         /// </summary>
-        [Column("INOUT_KBN")]
+        [Column("inout_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int InoutKbn { get; set; }
 
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// 1: 検査中
         /// 2: 検査完了"
         /// </summary>
-        [Column("STATUS")]
+        [Column("status")]
         [CustomAttribute.DefaultValue(0)]
         public int Status { get; set; }
 
@@ -87,7 +87,7 @@ namespace Entity.Tenant
         /// 1: 透析前
         /// 2: 透析後"
         /// </summary>
-        [Column("TOSEKI_KBN")]
+        [Column("toseki_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int TosekiKbn { get; set; }
 
@@ -96,7 +96,7 @@ namespace Entity.Tenant
         /// "0: 通常
         /// 1: 至急"
         /// </summary>
-        [Column("SIKYU_KBN")]
+        [Column("sikyu_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int SikyuKbn { get; set; }
 
@@ -105,7 +105,7 @@ namespace Entity.Tenant
         /// "0: 未確認
         /// 1: 確認済み"
         /// </summary>
-        [Column("RESULT_CHECK")]
+        [Column("result_check")]
         [CustomAttribute.DefaultValue(0)]
         public int ResultCheck { get; set; }
 
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// センターコード
         /// 
         /// </summary>
-        [Column("CENTER_CD")]
+        [Column("center_cd")]
         [MaxLength(10)]
         public string? CenterCd { get; set; } = string.Empty;
 
@@ -121,7 +121,7 @@ namespace Entity.Tenant
         /// 乳び
         /// 
         /// </summary>
-        [Column("NYUBI")]
+        [Column("nyubi")]
         [MaxLength(3)]
         public string? Nyubi { get; set; } = string.Empty;
 
@@ -129,7 +129,7 @@ namespace Entity.Tenant
         /// 溶血
         /// 
         /// </summary>
-        [Column("YOKETU")]
+        [Column("yoketu")]
         [MaxLength(3)]
         public string? Yoketu { get; set; } = string.Empty;
 
@@ -137,7 +137,7 @@ namespace Entity.Tenant
         /// ビリルビン
         /// 
         /// </summary>
-        [Column("BILIRUBIN")]
+        [Column("bilirubin")]
         [MaxLength(3)]
         public string? Bilirubin { get; set; } = string.Empty;
 
@@ -145,7 +145,7 @@ namespace Entity.Tenant
         /// 削除区分
         /// 1: 削除
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
@@ -153,21 +153,21 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         public int CreateId { get; set; }
 
         /// <summary>
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -175,21 +175,21 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         public int UpdateId { get; set; }
 
         /// <summary>
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "KENSA_SET_DETAIL")]
+    [Table(name: "kensa_set_detail")]
     [Serializable]
-    [Index(nameof(HpId), nameof(SetId), nameof(SetEdaNo) , Name = "KENSA_SET_DETAIL_PKEY")]
+    [Index(nameof(HpId), nameof(SetId), nameof(SetEdaNo) , Name = "kensa_set_detail_pkey")]
     public class KensaSetDetail
     {
         /// <summary>
@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// </summary>
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
+        [Column("hp_id", Order = 1)]
         [MaxLength(2)]
         public int HpId { get; set; }
 
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("SET_ID", Order = 2)]
+        [Column("set_id", Order = 2)]
         [MaxLength(9)]
         public int SetId { get; set; }
 
@@ -35,12 +35,12 @@ namespace Entity.Tenant
         /// </summary>
         
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("SET_EDA_NO", Order = 3)]
+        [Column("set_eda_no", Order = 3)]
         [MaxLength(9)]
         public int SetEdaNo { get; set; }
 
 
-        [Column("SEQ_PARENT_NO")]
+        [Column("seq_parent_no")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(9)]
         public int SetEdaParentNo { get; set; }
@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// 検査項目コード
         /// 
         /// </summary>
-        [Column("KENSA_ITEM_CD")]
+        [Column("kensa_item_cd")]
         [MaxLength(10)]
         public string? KensaItemCd { get; set; } = string.Empty;
 
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 検査項目コード
         /// 
         /// </summary>
-        [Column("KENSA_ITEM_SEQ_NO")]
+        [Column("kensa_item_seq_no")]
         [MaxLength(2)]
         public int KensaItemSeqNo { get; set; }
 
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// 並び順
         /// 
         /// </summary>
-        [Column("SORT_NO")]
+        [Column("sort_no")]
         [MaxLength(9)]
         public int SortNo { get; set; }
 
@@ -73,7 +73,7 @@ namespace Entity.Tenant
         /// 削除フラグ
         /// 
         /// </summary>
-        [Column("IS_DELETED")]
+        [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(1)]
         public int IsDeleted { get; set; }
@@ -82,14 +82,14 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Column("CREATE_DATE")]
+        [Column("create_date")]
         public DateTime CreateDate { get; set; }
 
         /// <summary>
         /// 作成者
         /// 
         /// </summary>
-        [Column("CREATE_ID")]
+        [Column("create_id")]
         [MaxLength(8)]
         public int CreateId { get; set; }
 
@@ -97,7 +97,7 @@ namespace Entity.Tenant
         /// 作成端末
         /// 
         /// </summary>
-        [Column("CREATE_MACHINE")]
+        [Column("create_machine")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
 
@@ -105,14 +105,14 @@ namespace Entity.Tenant
         /// 更新日時
         /// 
         /// </summary>
-        [Column("UPDATE_DATE")]
+        [Column("update_date")]
         public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// 更新者
         /// 
         /// </summary>
-        [Column("UPDATE_ID")]
+        [Column("update_id")]
         [MaxLength(8)]
         public int UpdateId { get; set; }
 
@@ -120,7 +120,7 @@ namespace Entity.Tenant
         /// 更新端末
         /// 
         /// </summary>
-        [Column("UPDATE_MACHINE")]
+        [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
     }

@@ -731,9 +731,8 @@ namespace Reporting.ReceiptList.Service
                                                                                 item.RpEdaNo,
                                                                                 item.RpNo,
                                                                                 item.PtId,
-                                                                                item.ItemCd ?? string.Empty,
-                                                                                item.Suryo,
-                                                                                item.ItemName ?? string.Empty));
+                                                                                item.ItemCd,
+                                                                                item.Suryo, item.ItemName));
 
                         enumOdrDetailItemSum = (from odrDetail in odrDetails.AsEnumerable()
                                                 join rece in receInfs on new { odrDetail.HpId, odrDetail.PtId, odrDetail.SinYm } equals new { rece.HpId, rece.PtId, rece.SinYm }
@@ -936,34 +935,34 @@ namespace Reporting.ReceiptList.Service
                     {
                         bool isFreeByomei = item.IsComment;
                         var ptByoNextQuery = NoTrackingDataContext.PtByomeis.Where(x => x.HpId == hpId
-                                                                                        && (isFreeByomei ? (x.ByomeiCd ?? string.Empty).Trim() == ByomeiConstant.FreeWordCode : (x.ByomeiCd ?? string.Empty).Trim() == item.ByomeiCd.Trim())
-                                                                                        && (!isFreeByomei || (x.Byomei ?? string.Empty).Trim().Contains(item.InputName.Trim()))
+                                                                                        && (isFreeByomei ? x.ByomeiCd.Trim() == ByomeiConstant.FreeWordCode : x.ByomeiCd.Trim() == item.ByomeiCd.Trim())
+                                                                                        && (!isFreeByomei || x.Byomei.Trim().Contains(item.InputName.Trim()))
                                                                                         && x.IsDeleted == 0);
 
                         // 疑い病名のみ
                         if (searchModel.IsOnlySuspectedDisease)
                         {
-                            ptByoNextQuery = ptByoNextQuery.Where(x => ((x.SyusyokuCd1 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd2 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd3 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd4 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd5 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd6 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd7 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd8 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd9 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd10 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd11 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd12 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd13 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd14 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd15 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd16 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd17 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd18 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd19 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd20 ?? string.Empty).Trim() == valueCheck
-                                                                    || (x.SyusyokuCd21 ?? string.Empty).Trim() == valueCheck)
+                            ptByoNextQuery = ptByoNextQuery.Where(x => (x.SyusyokuCd1.Trim() == valueCheck
+                                                                    || x.SyusyokuCd2.Trim() == valueCheck
+                                                                    || x.SyusyokuCd3.Trim() == valueCheck
+                                                                    || x.SyusyokuCd4.Trim() == valueCheck
+                                                                    || x.SyusyokuCd5.Trim() == valueCheck
+                                                                    || x.SyusyokuCd6.Trim() == valueCheck
+                                                                    || x.SyusyokuCd7.Trim() == valueCheck
+                                                                    || x.SyusyokuCd8.Trim() == valueCheck
+                                                                    || x.SyusyokuCd9.Trim() == valueCheck
+                                                                    || x.SyusyokuCd10.Trim() == valueCheck
+                                                                    || x.SyusyokuCd11.Trim() == valueCheck
+                                                                    || x.SyusyokuCd12.Trim() == valueCheck
+                                                                    || x.SyusyokuCd13.Trim() == valueCheck
+                                                                    || x.SyusyokuCd14.Trim() == valueCheck
+                                                                    || x.SyusyokuCd15.Trim() == valueCheck
+                                                                    || x.SyusyokuCd16.Trim() == valueCheck
+                                                                    || x.SyusyokuCd11.Trim() == valueCheck
+                                                                    || x.SyusyokuCd18.Trim() == valueCheck
+                                                                    || x.SyusyokuCd19.Trim() == valueCheck
+                                                                    || x.SyusyokuCd20.Trim() == valueCheck
+                                                                    || x.SyusyokuCd21.Trim() == valueCheck)
                                                                     );
                         }
 

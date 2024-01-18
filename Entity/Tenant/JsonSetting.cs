@@ -1,16 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant;
 
-[Table("JSON_SETTING")]
+[Table("json_setting")]
 public class JsonSetting
 {
-    [Column("USER_ID")]
+    [Column("user_id")]
     public int UserId { get; set; }
 
-    [Column("KEY")]
+    [Column("key")]
     public string Key { get; set; } = null!;
 
-    [Column("VALUE")]
+    [Column("value")]
     public string Value { get; set; } = null!;
 }

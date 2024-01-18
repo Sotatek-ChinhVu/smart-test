@@ -3,6 +3,7 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
@@ -144,32 +145,25 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
 
         var joinQuery = (
             from syunoNyukin in syunoNyukins
-                //join preNyukin in preNyukins on
-                //    new { syunoNyukin.HpId, syunoNyukin.RaiinNo, syunoNyukin.SeqNo } equals
-                //    new { preNyukin.HpId, preNyukin.RaiinNo, preNyukin.SeqNo }
-            join payMst in payMsts on
-                new { syunoNyukin.HpId, syunoNyukin.PaymentMethodCd } equals
-                new { payMst.HpId, payMst.PaymentMethodCd } into payMstJoin
-            from payMstj in payMstJoin.DefaultIfEmpty()
             join syunoSeikyu in syunoSeikyus on
-                new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                new { syunoSeikyu.HpId, syunoSeikyu.RaiinNo }
+                    new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
+                    new { syunoSeikyu.HpId, syunoSeikyu.RaiinNo }
             join raiinInf in raiinInfs on
-                new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                new { raiinInf.HpId, raiinInf.RaiinNo }
+      new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
+      new { raiinInf.HpId, raiinInf.RaiinNo }
             join firstRaiin in firstRaiins on
                 new { syunoNyukin.HpId, syunoNyukin.PtId } equals
                 new { firstRaiin.HpId, firstRaiin.PtId }
-            join kaikeiFutan in kaikeiFutans on
-                new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } into kaikeiFutanJoin
-            from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
             join ptInf in ptInfs on
-                new { syunoNyukin.HpId, syunoNyukin.PtId } equals
-                new { ptInf.HpId, ptInf.PtId }
+   new { syunoNyukin.HpId, syunoNyukin.PtId } equals
+   new { ptInf.HpId, ptInf.PtId }
+            join payMst in payMsts on
+            new { syunoNyukin.HpId, syunoNyukin.PaymentMethodCd } equals
+            new { payMst.HpId, payMst.PaymentMethodCd } into payMstJoin
+            from payMstj in payMstJoin.DefaultIfEmpty()
             join uketukeSbtMst in uketukeSbtMsts on
-                new { syunoNyukin.HpId, syunoNyukin.UketukeSbt } equals
-                new { uketukeSbtMst.HpId, UketukeSbt = uketukeSbtMst.KbnId } into uketukeSbtMstJoin
+              new { syunoNyukin.HpId, syunoNyukin.UketukeSbt } equals
+              new { uketukeSbtMst.HpId, UketukeSbt = uketukeSbtMst.KbnId } into uketukeSbtMstJoin
             from uketukeSbtMstj in uketukeSbtMstJoin.DefaultIfEmpty()
             join userMst in userMsts on
                 new { syunoNyukin.HpId, syunoNyukin.UpdateId } equals
@@ -187,11 +181,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 new { raiinInf.HpId, raiinInf.UketukeId } equals
                 new { userMst.HpId, UketukeId = userMst.UserId } into uketukeUserMstJoin
             from uketukeUserMst in uketukeUserMstJoin.DefaultIfEmpty()
-                //join kaikeiHoken in kaikeiHokens on
-                //    new { raiinInf.HpId, raiinInf.RaiinNo } equals
-                //    new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
-                //from kaikeiHokenj in kaikeiHokenJoin.DefaultIfEmpty()
-            where
+        where
                 syunoNyukin.HpId == hpId &&
                 (
                     printConf.StartNyukinDate == printConf.EndNyukinDate ?
@@ -203,96 +193,98 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 syunoNyukin.IsDeleted == DeleteStatus.None
             select new
             {
-                RaiinNo = syunoNyukin.RaiinNo,
-                SinDate = syunoNyukin.SinDate,
+                syunoNyukin.RaiinNo,
+                syunoNyukin.SinDate,
                 NyukinSeqNo = syunoNyukin.SeqNo,
                 NyukinAdjustFutan = syunoNyukin.AdjustFutan,
                 NyukinPaymentMethodCd = syunoNyukin.PaymentMethodCd,
                 NyukinSortNo = syunoNyukin.SortNo,
-                NyukinGaku = syunoNyukin.NyukinGaku,
-                NyukinDate = syunoNyukin.NyukinDate,
+                syunoNyukin.NyukinGaku,
+                syunoNyukin.NyukinDate,
                 NyukinUpdateId = syunoNyukin.UpdateId,
                 NyukinUketukeSbt = syunoNyukin.UketukeSbt,
-                NyukinCmt = syunoNyukin.NyukinCmt,
+                syunoNyukin.NyukinCmt,
                 NyukinUpdateDate = syunoNyukin.UpdateDate,
-                NyukinKbn = syunoSeikyu.NyukinKbn,
-                SeikyuTensu = syunoSeikyu.SeikyuTensu,
-                NewSeikyuTensu = syunoSeikyu.NewSeikyuTensu,
-                SeikyuGaku = syunoSeikyu.SeikyuGaku,
-                NewSeikyuGaku = syunoSeikyu.NewSeikyuGaku,
-                PtFutan = kaikeiFutanj != null ? kaikeiFutanj.PtFutan : 0,
-                JihiFutan = kaikeiFutanj != null ? kaikeiFutanj.JihiFutan : 0,
-                JihiTax = kaikeiFutanj != null ? kaikeiFutanj.JihiTax : 0,
-                JihiFutanTaxFree = kaikeiFutanj != null ? kaikeiFutanj.JihiFutanTaxFree : 0,
-                JihiFutanTaxNr = kaikeiFutanj != null ? kaikeiFutanj.JihiFutanTaxNr : 0,
-                JihiFutanTaxGen = kaikeiFutanj != null ? kaikeiFutanj.JihiFutanTaxGen : 0,
-                JihiTaxNr = kaikeiFutanj != null ? kaikeiFutanj.JihiTaxNr : 0,
-                JihiTaxGen = kaikeiFutanj != null ? kaikeiFutanj.JihiTaxGen : 0,
-                JihiFutanOuttaxNr = kaikeiFutanj != null ? kaikeiFutanj.JihiFutanOuttaxNr : 0,
-                JihiFutanOuttaxGen = kaikeiFutanj != null ? kaikeiFutanj.JihiFutanOuttaxGen : 0,
-                JihiOuttaxNr = kaikeiFutanj != null ? kaikeiFutanj.JihiOuttaxNr : 0,
-                JihiOuttaxGen = kaikeiFutanj != null ? kaikeiFutanj.JihiOuttaxGen : 0,
-                KaikeiAdjustFutan = kaikeiFutanj != null ? -kaikeiFutanj.AdjustFutan : 0,
-                //HokenKbn = kaikeiHokenj!=null? kaikeiHokenj.HokenKbn:0,
-                //HokenSbtCd = kaikeiHokenj!=null?kaikeiHokenj.HokenSbtCd:0,
-                //ReceSbt = kaikeiHokenj!=null?kaikeiHokenj.ReceSbt:string.Empty,
-                HokenKbn = 0,
-                HokenSbtCd = 0,
-                ReceSbt = string.Empty,
-                PaySname = payMstj != null ? payMstj.PaySname : string.Empty,
+                syunoSeikyu.NyukinKbn,
+                syunoSeikyu.SeikyuTensu,
+                syunoSeikyu.NewSeikyuTensu,
+                syunoSeikyu.SeikyuGaku,
+                syunoSeikyu.NewSeikyuGaku,
+
+                // anh.vu3 refactor
+                //PtFutan = kaikeiFutanj.PtFutan != null ? kaikeiFutanj.PtFutan : 0,
+                //JihiFutan = kaikeiFutanj.JihiFutan != null ? kaikeiFutanj.JihiFutan : 0,
+                //JihiTax = kaikeiFutanj.JihiTax != null ? kaikeiFutanj.JihiTax : 0,
+                //JihiFutanTaxFree = kaikeiFutanj.JihiFutanTaxFree != null ? kaikeiFutanj.JihiFutanTaxFree : 0,
+                //JihiFutanTaxNr = kaikeiFutanj.JihiFutanTaxNr != null ? kaikeiFutanj.JihiFutanTaxNr : 0,
+                //JihiFutanTaxGen = kaikeiFutanj.JihiFutanTaxGen != null ? kaikeiFutanj.JihiFutanTaxGen : 0,
+                //JihiTaxNr = kaikeiFutanj.JihiTaxNr != null ? kaikeiFutanj.JihiTaxNr : 0,
+                //JihiTaxGen = kaikeiFutanj.JihiTaxGen != null ? kaikeiFutanj.JihiTaxGen : 0,
+                //JihiFutanOuttaxNr = kaikeiFutanj.JihiFutanOuttaxNr != null ? kaikeiFutanj.JihiFutanOuttaxNr : 0,
+                //JihiFutanOuttaxGen = kaikeiFutanj.JihiFutanOuttaxGen != null ? kaikeiFutanj.JihiFutanOuttaxGen : 0,
+                //JihiOuttaxNr = kaikeiFutanj.JihiOuttaxNr != null ? kaikeiFutanj.JihiOuttaxNr : 0,
+                //JihiOuttaxGen = kaikeiFutanj.JihiOuttaxGen != null ? kaikeiFutanj.JihiOuttaxGen : 0,
+                //KaikeiAdjustFutan = kaikeiFutanj.AdjustFutan != null ? -kaikeiFutanj.AdjustFutan : 0,
+                //HokenKbn = kaikeiHokenj != null ? kaikeiHokenj.HokenKbn : 0,
+                //HokenSbtCd = kaikeiHokenj != null ? kaikeiHokenj.HokenSbtCd : 0,
+                //ReceSbt = kaikeiHokenj != null ? kaikeiHokenj.ReceSbt : string.Empty,
+                PaySname = payMstj.PaySname != null ? payMstj.PaySname : string.Empty,
                 raiinInf.OyaRaiinNo,
                 raiinInf.KaId,
-                KaSname = kaMstj != null ? kaMstj.KaSname : string.Empty,
+                KaSname = kaMstj.KaSname != null ? kaMstj.KaSname : string.Empty,
                 raiinInf.TantoId,
-                TantoSname = tantoMst != null ? tantoMst.Sname : string.Empty,
+                TantoSname = tantoMst.Sname != null ? tantoMst.Sname : string.Empty,
                 raiinInf.UketukeTime,
                 raiinInf.KaikeiTime,
                 raiinInf.UketukeId,
-                UketukeSname = uketukeUserMst != null ? uketukeUserMst.Sname : string.Empty,
+                UketukeSname = uketukeUserMst.Sname != null ? uketukeUserMst.Sname : string.Empty,
                 raiinInf.SyosaisinKbn,
                 ptInf.PtNum,
                 PtName = ptInf.Name,
                 PtKanaName = ptInf.KanaName,
-                UketukeSbtName = uketukeSbtMstj != null ? uketukeSbtMstj.KbnName : string.Empty,
-                NyukinUserSname = nyukinUserMst != null ? nyukinUserMst.Sname : string.Empty,
+                UketukeSbtName = uketukeSbtMstj.KbnName != null ? uketukeSbtMstj.KbnName : string.Empty,
+                NyukinUserSname = nyukinUserMst.Sname != null ? nyukinUserMst.Sname : string.Empty,
                 firstRaiin.FirstRaiinDate
             }
         );
+        var joinList = joinQuery.ToList();
 
         if (printConf.UketukeSbtIds?.Count >= 1)
         {
             //受付種別の条件指定
-            joinQuery = joinQuery.Where(n => printConf.UketukeSbtIds.Contains(n.NyukinUketukeSbt));
+            joinList = joinList.Where(n => printConf.UketukeSbtIds.Contains(n.NyukinUketukeSbt)).ToList();
         }
         if (printConf.PaymentMethodCds?.Count >= 1)
         {
             //支払区分の条件指定
-            joinQuery = joinQuery.Where(n => printConf.PaymentMethodCds.Contains(n.NyukinPaymentMethodCd));
+            joinList = joinList.Where(n => printConf.PaymentMethodCds.Contains(n.NyukinPaymentMethodCd)).ToList();
         }
 
-        var result = joinQuery.AsEnumerable().Select(
+        var result = joinList.Select(
             data =>
                 new CoSyunoInfModel()
                 {
                     IsNyukin = true,
                     PreNyukinGaku = 0,
                     PreAdjustFutan = 0,
-                    PtFutan = data.PtFutan,
-                    JihiFutan = data.JihiFutan,
-                    JihiTax = data.JihiTax,
-                    JihiFutanTaxFree = data.JihiFutanTaxFree,
-                    JihiFutanTaxNr = data.JihiFutanTaxNr,
-                    JihiFutanTaxGen = data.JihiFutanTaxGen,
-                    JihiTaxNr = data.JihiTaxNr,
-                    JihiTaxGen = data.JihiTaxGen,
-                    JihiFutanOuttaxNr = data.JihiFutanOuttaxNr,
-                    JihiFutanOuttaxGen = data.JihiFutanOuttaxGen,
-                    JihiOuttaxNr = data.JihiOuttaxNr,
-                    JihiOuttaxGen = data.JihiOuttaxGen,
-                    KaikeiAdjustFutan = data.KaikeiAdjustFutan,
-                    HokenKbn = data.HokenKbn,
-                    HokenSbtCd = data.HokenSbtCd,
-                    ReceSbt = data.ReceSbt,
+
+                    // anh.vu3 refactor
+                    //PtFutan = data.PtFutan,
+                    //JihiFutan = data.JihiFutan,
+                    //JihiTax = data.JihiTax,
+                    //JihiFutanTaxFree = data.JihiFutanTaxFree,
+                    //JihiFutanTaxNr = data.JihiFutanTaxNr,
+                    //JihiFutanTaxGen = data.JihiFutanTaxGen,
+                    //JihiTaxNr = data.JihiTaxNr,
+                    //JihiTaxGen = data.JihiTaxGen,
+                    //JihiFutanOuttaxNr = data.JihiFutanOuttaxNr,
+                    //JihiFutanOuttaxGen = data.JihiFutanOuttaxGen,
+                    //JihiOuttaxNr = data.JihiOuttaxNr,
+                    //JihiOuttaxGen = data.JihiOuttaxGen,
+                    //KaikeiAdjustFutan = data.KaikeiAdjustFutan,
+                    //HokenKbn = data.HokenKbn,
+                    //HokenSbtCd = data.HokenSbtCd,
+                    //ReceSbt = data.ReceSbt,
                     FirstRaiinDate = data.FirstRaiinDate,
                     RaiinNo = data.RaiinNo,
                     OyaRaiinNo = data.OyaRaiinNo,
@@ -383,20 +375,13 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
 
             var joinSeikyu = (
                 from unSeikyu in unSeikyus
-                join syunoNyukin in syunoNyukins on
-                    new { unSeikyu.HpId, unSeikyu.RaiinNo } equals
-                    new { syunoNyukin.HpId, syunoNyukin.RaiinNo } into syunoNyukinJoin
-                from syunoNyukinj in syunoNyukinJoin.DefaultIfEmpty()
+      
                 join raiinInf in raiinInfs on
                     new { unSeikyu.HpId, unSeikyu.RaiinNo } equals
                     new { raiinInf.HpId, raiinInf.RaiinNo }
                 join firstRaiin in firstRaiins on
                     new { unSeikyu.HpId, unSeikyu.PtId } equals
                     new { firstRaiin.HpId, firstRaiin.PtId }
-                join kaikeiFutan in kaikeiFutans on
-                    new { unSeikyu.HpId, unSeikyu.RaiinNo } equals
-                    new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } into kaikeiFutanJoin
-                from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
                 join ptInf in ptInfs on
                     new { unSeikyu.HpId, unSeikyu.PtId } equals
                     new { ptInf.HpId, ptInf.PtId }
@@ -416,73 +401,68 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                     new { raiinInf.HpId, raiinInf.UketukeId } equals
                     new { userMst.HpId, UketukeId = userMst.UserId } into uketukeUserMstJoin
                 from uketukeUserMst in uketukeUserMstJoin.DefaultIfEmpty()
-                    //join kaikeiHoken in kaikeiHokens on
-                    //    new { raiinInf.HpId, raiinInf.RaiinNo } equals
-                    //    new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
-                    //from kaikeiHokenj in kaikeiHokenJoin.DefaultIfEmpty()
+                join syunoNyukin in syunoNyukins on
+          new { unSeikyu.HpId, unSeikyu.RaiinNo } equals
+          new { syunoNyukin.HpId, syunoNyukin.RaiinNo } into syunoNyukinJoin
+                from syunoNyukinj in syunoNyukinJoin.DefaultIfEmpty()
                 select new
                 {
-                    RaiinNo = unSeikyu.RaiinNo,
-                    SinDate = unSeikyu.SinDate,
-                    NyukinSeqNo = syunoNyukinj != null ? syunoNyukinj.SeqNo : 0,
-                    NyukinAdjustFutan = syunoNyukinj != null ? syunoNyukinj.AdjustFutan : 0,
-                    NyukinPaymentMethodCd = syunoNyukinj != null ? syunoNyukinj.PaymentMethodCd : 0,
-                    NyukinSortNo = syunoNyukinj != null ? syunoNyukinj.SortNo : 0,
-                    NyukinGaku = syunoNyukinj != null ? syunoNyukinj.NyukinGaku : 0,
-                    NyukinDate = syunoNyukinj != null ? syunoNyukinj.NyukinDate : 0,
-                    NyukinUpdateId = syunoNyukinj != null ? syunoNyukinj.UpdateId : 0,
-                    NyukinCmt = syunoNyukinj != null ? syunoNyukinj.NyukinCmt : string.Empty,
-                    NyukinUpdateDate = syunoNyukinj != null ? syunoNyukinj.UpdateDate : DateTime.MinValue,
-                    NyukinKbn = unSeikyu.NyukinKbn,
-                    SeikyuTensu = unSeikyu.SeikyuTensu,
-                    NewSeikyuTensu = unSeikyu.NewSeikyuTensu,
-                    SeikyuGaku = unSeikyu.SeikyuGaku,
-                    NewSeikyuGaku = unSeikyu.NewSeikyuGaku,
-                    PtFutan = kaikeiFutanj.PtFutan,
-                    JihiFutan = kaikeiFutanj.JihiFutan,
-                    JihiTax = kaikeiFutanj.JihiTax,
-                    kaikeiFutanj.JihiFutanTaxFree,
-                    kaikeiFutanj.JihiFutanTaxNr,
-                    kaikeiFutanj.JihiFutanTaxGen,
-                    kaikeiFutanj.JihiTaxNr,
-                    kaikeiFutanj.JihiTaxGen,
-                    kaikeiFutanj.JihiFutanOuttaxNr,
-                    kaikeiFutanj.JihiFutanOuttaxGen,
-                    kaikeiFutanj.JihiOuttaxNr,
-                    kaikeiFutanj.JihiOuttaxGen,
-                    KaikeiAdjustFutan = -kaikeiFutanj.AdjustFutan,
-                    //HokenKbn = kaikeiHokenj!=null? kaikeiHokenj.HokenKbn:0,
-                    //HokenSbtCd = kaikeiHokenj!=null?kaikeiHokenj.HokenSbtCd:0,
-                    //ReceSbt = kaikeiHokenj!=null?kaikeiHokenj.ReceSbt:string.Empty,
-                    HokenKbn = 0,
-                    HokenSbtCd = 0,
-                    ReceSbt = string.Empty,
+                    unSeikyu.RaiinNo,
+                    unSeikyu.SinDate,
+                    NyukinSeqNo = syunoNyukinj.SeqNo == null ? 0 : syunoNyukinj.SeqNo,
+                    NyukinAdjustFutan = syunoNyukinj.AdjustFutan == null ? 0 : syunoNyukinj.AdjustFutan,
+                    NyukinPaymentMethodCd = syunoNyukinj.PaymentMethodCd == null ? 0 : syunoNyukinj.PaymentMethodCd,
+                    NyukinSortNo = syunoNyukinj.SortNo == null ? 0 : syunoNyukinj.SortNo,
+                    NyukinGaku = syunoNyukinj.NyukinGaku == null ? 0 : syunoNyukinj.NyukinGaku,
+                    NyukinDate = syunoNyukinj.NyukinDate == null ? 0 : syunoNyukinj.NyukinDate,
+                    NyukinUpdateId = syunoNyukinj.UpdateId == null ? 0 : syunoNyukinj.UpdateId,
+                    NyukinCmt = syunoNyukinj.NyukinCmt == null ? string.Empty : syunoNyukinj.NyukinCmt,
+                    NyukinUpdateDate = syunoNyukinj.UpdateDate == null ? DateTime.MinValue : syunoNyukinj.UpdateDate,
+                    unSeikyu.NyukinKbn,
+                    unSeikyu.SeikyuTensu,
+                    unSeikyu.NewSeikyuTensu,
+                    unSeikyu.SeikyuGaku,
+                    unSeikyu.NewSeikyuGaku,
+                    //PtFutan = kaikeiFutanj.PtFutan != null ? kaikeiFutanj.PtFutan : 0,
+                    //JihiFutan = kaikeiFutanj.JihiFutan != null ? kaikeiFutanj.JihiFutan : 0,
+                    //JihiTax = kaikeiFutanj.JihiTax != null ? kaikeiFutanj.JihiTax : 0,
+                    //JihiFutanTaxFree = kaikeiFutanj.JihiFutanTaxFree != null ? kaikeiFutanj.JihiFutanTaxFree : 0,
+                    //JihiFutanTaxNr = kaikeiFutanj.JihiFutanTaxNr != null ? kaikeiFutanj.JihiFutanTaxNr : 0,
+                    //JihiFutanTaxGen = kaikeiFutanj.JihiFutanTaxGen != null ? kaikeiFutanj.JihiFutanTaxGen : 0,
+                    //JihiTaxNr = kaikeiFutanj.JihiTaxNr != null ? kaikeiFutanj.JihiTaxNr : 0,
+                    //JihiTaxGen = kaikeiFutanj.JihiTaxGen != null ? kaikeiFutanj.JihiTaxGen : 0,
+                    //JihiFutanOuttaxNr = kaikeiFutanj.JihiFutanOuttaxNr != null ? kaikeiFutanj.JihiFutanOuttaxNr : 0,
+                    //JihiFutanOuttaxGen = kaikeiFutanj.JihiFutanOuttaxGen != null ? kaikeiFutanj.JihiFutanOuttaxGen : 0,
+                    //JihiOuttaxNr = kaikeiFutanj.JihiOuttaxNr != null ? kaikeiFutanj.JihiOuttaxNr : 0,
+                    //JihiOuttaxGen = kaikeiFutanj.JihiOuttaxGen != null ? kaikeiFutanj.JihiOuttaxGen : 0,
+                    //KaikeiAdjustFutan = kaikeiFutanj.AdjustFutan != null ? -kaikeiFutanj.AdjustFutan : 0,
+                    //HokenKbn = kaikeiHokenj != null ? kaikeiHokenj.HokenKbn : 0,
+                    //HokenSbtCd = kaikeiHokenj != null ? kaikeiHokenj.HokenSbtCd : 0,
+                    //ReceSbt = kaikeiHokenj != null ? kaikeiHokenj.ReceSbt : string.Empty,
                     raiinInf.OyaRaiinNo,
                     raiinInf.KaId,
-                    KaSname = kaMstj != null ? kaMstj.KaSname : string.Empty,
+                    KaSname = kaMstj.KaSname != null ? kaMstj.KaSname : string.Empty,
                     raiinInf.TantoId,
-                    TantoSname = tantoMst.Sname,
+                    TantoSname = tantoMst.Sname != null ? tantoMst.Sname : string.Empty,
                     raiinInf.UketukeTime,
                     raiinInf.KaikeiTime,
                     raiinInf.UketukeId,
-                    UketukeSname = uketukeUserMst != null ? uketukeUserMst.Sname : string.Empty,
+                    UketukeSname = uketukeUserMst.Sname != null ? uketukeUserMst.Sname : string.Empty,
                     raiinInf.SyosaisinKbn,
                     raiinInf.UketukeSbt,
                     ptInf.PtNum,
                     PtName = ptInf.Name,
                     PtKanaName = ptInf.KanaName,
-                    UketukeSbtName = uketukeSbtMstj != null ? uketukeSbtMstj.KbnName : string.Empty,
+                    UketukeSbtName = uketukeSbtMstj.KbnName != null ? uketukeSbtMstj.KbnName : string.Empty,
                     firstRaiin.FirstRaiinDate
                 }
             );
-
+            var seikyus = joinSeikyu.ToList();
             if (printConf.UketukeSbtIds?.Count >= 1)
             {
                 //受付種別の条件指定
-                joinSeikyu = joinSeikyu.Where(n => printConf.UketukeSbtIds.Contains(n.UketukeSbt));
+                seikyus = seikyus.Where(n => printConf.UketukeSbtIds.Contains(n.UketukeSbt)).ToList();
             }
-
-            var seikyus = joinSeikyu.ToList();
 
             seikyus?.ForEach(seikyu =>
             {
@@ -493,22 +473,22 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                         IsNyukin = !(staMonthType == 2 && seikyu.NyukinKbn >= 1) && seikyu.NyukinSeqNo != 0,  //当日入金レコードがない場合は未入金扱い
                         PreNyukinGaku = 0,
                         PreAdjustFutan = 0,
-                        PtFutan = seikyu.PtFutan,
-                        JihiFutan = seikyu.JihiFutan,
-                        JihiTax = seikyu.JihiTax,
-                        JihiFutanTaxFree = seikyu.JihiFutanTaxFree,
-                        JihiFutanTaxNr = seikyu.JihiFutanTaxNr,
-                        JihiFutanTaxGen = seikyu.JihiFutanTaxGen,
-                        JihiTaxNr = seikyu.JihiTaxNr,
-                        JihiTaxGen = seikyu.JihiTaxGen,
-                        JihiFutanOuttaxNr = seikyu.JihiFutanOuttaxNr,
-                        JihiFutanOuttaxGen = seikyu.JihiFutanOuttaxGen,
-                        JihiOuttaxNr = seikyu.JihiOuttaxNr,
-                        JihiOuttaxGen = seikyu.JihiOuttaxGen,
-                        KaikeiAdjustFutan = seikyu.KaikeiAdjustFutan,
-                        HokenKbn = seikyu.HokenKbn,
-                        HokenSbtCd = seikyu.HokenSbtCd,
-                        ReceSbt = seikyu.ReceSbt,
+                        //PtFutan = seikyu.PtFutan,
+                        //JihiFutan = seikyu.JihiFutan,
+                        //JihiTax = seikyu.JihiTax,
+                        //JihiFutanTaxFree = seikyu.JihiFutanTaxFree,
+                        //JihiFutanTaxNr = seikyu.JihiFutanTaxNr,
+                        //JihiFutanTaxGen = seikyu.JihiFutanTaxGen,
+                        //JihiTaxNr = seikyu.JihiTaxNr,
+                        //JihiTaxGen = seikyu.JihiTaxGen,
+                        //JihiFutanOuttaxNr = seikyu.JihiFutanOuttaxNr,
+                        //JihiFutanOuttaxGen = seikyu.JihiFutanOuttaxGen,
+                        //JihiOuttaxNr = seikyu.JihiOuttaxNr,
+                        //JihiOuttaxGen = seikyu.JihiOuttaxGen,
+                        //KaikeiAdjustFutan = seikyu.KaikeiAdjustFutan,
+                        //HokenKbn = seikyu.HokenKbn,
+                        //HokenSbtCd = seikyu.HokenSbtCd,
+                        //ReceSbt = seikyu.ReceSbt,
                         FirstRaiinDate = seikyu.FirstRaiinDate,
                         RaiinNo = seikyu.RaiinNo,
                         OyaRaiinNo = seikyu.OyaRaiinNo,
@@ -552,6 +532,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         }
         #endregion
 
+        // anh.vu3 refactor
         // set KaikeiInf to result data 
         var raiinNoList = result.Select(item => item.RaiinNo).Distinct().ToList();
         var kaikeiHokens = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId && raiinNoList.Contains(item.RaiinNo))
@@ -559,12 +540,28 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                            .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
                            .Select(k => k.OrderByDescending(x => x.HokenSbtCd).Take(1)).SelectMany(k => k)
                            .ToList();
-        foreach (var syunoInf in result)
+        var kaikeiFutanList = kaikeiFutans.Where(item => item.HpId == hpId && raiinNoList.Contains(item.RaiinNo)).ToList();
+
+       foreach(var syunoInf in  result)
         {
             var kaikeiHokenj = kaikeiHokens.FirstOrDefault(item => item.RaiinNo == syunoInf.RaiinNo);
+            var kaikeiFutanj = kaikeiFutanList.FirstOrDefault(item => item.RaiinNo == syunoInf.RaiinNo);
             syunoInf.HokenKbn = kaikeiHokenj?.HokenKbn ?? 0;
             syunoInf.HokenSbtCd = kaikeiHokenj?.HokenSbtCd ?? 0;
             syunoInf.ReceSbt = kaikeiHokenj?.ReceSbt ?? string.Empty;
+            syunoInf.PtFutan = kaikeiFutanj?.PtFutan ?? 0;
+            syunoInf.JihiFutan = kaikeiFutanj?.JihiFutan ?? 0;
+            syunoInf.JihiTax = kaikeiFutanj?.JihiTax ?? 0;
+            syunoInf.JihiFutanTaxFree = kaikeiFutanj?.JihiFutanTaxFree ?? 0;
+            syunoInf.JihiFutanTaxNr = kaikeiFutanj?.JihiFutanTaxNr ?? 0;
+            syunoInf.JihiFutanTaxGen = kaikeiFutanj?.JihiFutanTaxGen ?? 0;
+            syunoInf.JihiTaxNr = kaikeiFutanj?.JihiTaxNr ?? 0;
+            syunoInf.JihiTaxGen = kaikeiFutanj?.JihiTaxGen ?? 0;
+            syunoInf.JihiFutanOuttaxNr = kaikeiFutanj?.JihiFutanOuttaxNr ?? 0;
+            syunoInf.JihiFutanOuttaxGen = kaikeiFutanj?.JihiFutanOuttaxGen ?? 0;
+            syunoInf.JihiOuttaxNr = kaikeiFutanj?.JihiOuttaxNr ?? 0;
+            syunoInf.JihiOuttaxGen = kaikeiFutanj?.JihiOuttaxGen ?? 0;
+            syunoInf.KaikeiAdjustFutan = kaikeiFutanj != null ? -kaikeiFutanj.AdjustFutan : 0;
         }
         return result;
     }
@@ -590,7 +587,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         //当日入金がある来院
         var theDayNyukins = NoTrackingDataContext.SyunoNyukin
             .Where(n => n.HpId == hpId && n.SinDate == n.NyukinDate && n.IsDeleted == DeleteStatus.None)
-            .Select(n => n.RaiinNo);
+            .Select(n => n.RaiinNo).ToList();
 
         //未精算or当日入金レコードがない来院の請求情報
         var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus
@@ -598,7 +595,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 n.HpId == hpId &&
                 n.SinDate >= printConf.StartNyukinDate &&
                 n.SinDate <= printConf.EndNyukinDate &&
-                (n.NyukinKbn == 0 || (n.NyukinKbn >= 1 && !theDayNyukins.Contains(n.RaiinNo)))
+                (n.NyukinKbn == 0 || (n.NyukinKbn >= 1))
             )
             .GroupBy(n => new { n.HpId, n.PtId, n.RaiinNo })
             .Select(n => new { n.Key.HpId, n.Key.PtId, n.Key.RaiinNo });
@@ -622,24 +619,38 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
             where
                 sinKoui.CdKbn == "JS" || sinRpInf.SanteiKbn == 2
-            group new
+            select new
             {
                 sinKouiCount.PtId,
                 sinKouiCount.RaiinNo,
                 sinKoui.JihiSbt,
-                TotalTen = sinKoui.EntenKbn == 0 ? sinKoui.Ten * EntenRate.Val * sinKouiCount.Count :
-                    sinKoui.Ten * sinKouiCount.Count
-            } by new { sinKouiCount.PtId, sinKouiCount.RaiinNo, sinKoui.JihiSbt } into sinKouiGroup
-            select new
-            {
-                sinKouiGroup.Key.PtId,
-                sinKouiGroup.Key.RaiinNo,
-                sinKouiGroup.Key.JihiSbt,
-                JihiFutan = (int)sinKouiGroup.Sum(x => Math.Floor(x.TotalTen)),  //小数点以下切り捨て
-            }
-        );
+                sinKoui.Ten,
+                sinKoui.EntenKbn,
+                EntenRate.Val,
+                sinKouiCount.Count,
 
-        var result = jihiQuery.AsEnumerable().Select(
+            });
+        var jihiList = jihiQuery.ToList();
+        jihiList = jihiList.Where(j => !theDayNyukins.Contains(j.RaiinNo)).ToList();
+
+        var jihiGroup = from jihi in jihiList
+                        group new
+                        {
+                            jihi.PtId,
+                            jihi.RaiinNo,
+                            jihi.JihiSbt,
+                            TotalTen = jihi.EntenKbn == 0 ? jihi.Ten * EntenRate.Val * jihi.Count :
+                            jihi.Ten * jihi.Count
+                        } by new { jihi.PtId, jihi.RaiinNo, jihi.JihiSbt } into sinKouiGroup
+                        select new
+                        {
+                            sinKouiGroup.Key.PtId,
+                            sinKouiGroup.Key.RaiinNo,
+                            sinKouiGroup.Key.JihiSbt,
+                            JihiFutan = (int)sinKouiGroup.Sum(x => Math.Floor(x.TotalTen)),  //小数点以下切り捨て
+                        };
+
+        var result = jihiGroup.Select(
             data =>
                 new CoJihiSbtFutan(
                     data.PtId,

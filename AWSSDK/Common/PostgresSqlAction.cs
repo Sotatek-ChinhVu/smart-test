@@ -77,6 +77,68 @@ namespace AWSSDK.Common
             await Execute(batchContent);
         }
 
+        /// <summary>
+        /// Excute script sql use CLI
+        /// </summary>
+        /// <param name="contentScript"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task PostgreSqlExcuteScript(string contentScript, string host, int port, string database, string user, string password, string pathFolderUpdateDataTenant)
+        {
+            try
+            {
+                Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
+                string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+                string sqlFilePath = Path.Combine(pathFolderUpdateDataTenant, $"{Guid.NewGuid()}.sql");
+                // Save script sql to file
+                System.IO.File.WriteAllText(sqlFilePath, contentScript.ToString(), Encoding.ASCII);
+                string batchContent =
+                      $"{Set} PGPASSWORD={password}\n" +
+                    $"psql -h {host} -p {port} -U {user} -d {database} -f {sqlFilePath} 2> /app/update-data-tenant/log-excute-sql.txt";
+                await Execute(batchContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ExcuteScript Error: " + ex.Message);
+                throw new Exception("ExcuteScript Error: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Excute file sql script
+        /// </summary>
+        /// <param name="pathFileScript"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="database"></param>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task PostgreSqlExcuteFileScript(string pathFileScript, string host, int port, string database, string user, string password)
+        {
+            try
+            {
+                Console.WriteLine($"Start: run  PostgreSqlExcuteFileDump");
+                string Set = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "set " : "export ";
+                // Save script sql to file
+                string batchContent =
+                      $"{Set} PGPASSWORD={password}\n" +
+                    $"psql -h {host} -p {port} -U {user} -d {database} -f {pathFileScript} 2> /app/update-data-tenant/log-update-schema-sql.txt";
+                await Execute(batchContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ExcuteScript Error: " + ex.Message);
+                throw new Exception("ExcuteScript Error: " + ex.Message);
+            }
+        }
+
 
         /// <summary>
         ///  Create file .sh / .bat to execute conent script sql

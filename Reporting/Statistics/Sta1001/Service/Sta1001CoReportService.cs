@@ -642,10 +642,10 @@ namespace Reporting.Statistics.Sta1001.Service
 
             hpInf = _sta1001Finder.GetHpInf(HpId, _printConf.StartNyukinDate);
 
-            syunoInfs = _sta1001Finder.GetSyunoInfs(HpId, _printConf, 0);
-            if ((syunoInfs?.Count ?? 0) == 0) return false;
+            //syunoInfs = _sta1001Finder.GetSyunoInfs(HpId, _printConf, 0);
+            //if ((syunoInfs?.Count ?? 0) == 0) return false;
 
-            jihiSbtMsts = _sta1001Finder.GetJihiSbtMst(HpId);
+            //jihiSbtMsts = _sta1001Finder.GetJihiSbtMst(HpId);
             jihiSbtFutans = _sta1001Finder.GetJihiSbtFutan(HpId, _printConf);
 
             //来院コメントの取得
@@ -653,7 +653,7 @@ namespace Reporting.Statistics.Sta1001.Service
             {
                 foreach (var syunoInf in syunoInfs!)
                 {
-                    syunoInf.RaiinCmt = _sta1001Finder.GetRaiinCmtInf(HpId, syunoInf.RaiinNo);
+                    //syunoInf.RaiinCmt = _sta1001Finder.GetRaiinCmtInf(HpId, syunoInf.RaiinNo);
                 }
             }
 
@@ -743,8 +743,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 //自費種別毎の金額
                 for (int i = 0; i <= jihiSbtMsts.Count - 1; i++)
                 {
-                    // check null printData.JihiSbtFutans
-                    if (printData.JihiSbtFutans == null || !printData.JihiSbtFutans.Any()) break;
+                    if (printData.JihiSbtFutans == null) break;
                     var jihiSbtMst = jihiSbtMsts[i];
                     celldata.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
                 }
@@ -766,8 +765,8 @@ namespace Reporting.Statistics.Sta1001.Service
                     {
                         _extralData.Add("headerLine", "true");
                     }
-                    _extralData.Add("baseListName" + rowNoKey, baseListName);
-                    _extralData.Add("rowNo" + rowNoKey, rowNo.ToString());
+                    _extralData.Add("baseListName_" + rowNoKey, baseListName);
+                    _extralData.Add("rowNo_" + rowNoKey, rowNo.ToString());
                 }
 
                 CellData.Add(celldata);

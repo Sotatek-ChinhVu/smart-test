@@ -25,11 +25,11 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoWelfareReceInfModel> receInfs = new();
-        private CoHpInfModel hpInf = new();
+        private List<CoWelfareReceInfModel> receInfs;
+        private CoHpInfModel hpInf;
 
-        private List<CoHokensyaMstModel> hokensyaNames = new();
-        private List<CoKohiHoubetuMstModel> kohiHoubetuMsts = new();
+        private List<CoHokensyaMstModel> hokensyaNames;
+        private List<CoKohiHoubetuMstModel> kohiHoubetuMsts;
         #endregion
 
         #region Constructor and Init

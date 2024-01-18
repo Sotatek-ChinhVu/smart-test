@@ -29,11 +29,11 @@ namespace Reporting.AccountingCard.Model
             {
                 foreach (CoPtKohiModel ptKohi in kaikeiInf.PtKohis)
                 {
-                    int count = kohiIds.Count;
+                    int count = kohiIds.Count();
 
                     kohiIds.Add(ptKohi.HokenId);
 
-                    if (kohiIds.Count > count)
+                    if (kohiIds.Count() > count)
                     {
                         PtKohis.Add(ptKohi);
                     }
@@ -42,10 +42,6 @@ namespace Reporting.AccountingCard.Model
 
             // 優先順に並べ替えておく
             PtKohis = PtKohis.OrderBy(p => p.SortKey).ToList();
-        }
-
-        public CoAccountingCardModel()
-        {
         }
 
         /// <summary>
@@ -148,19 +144,19 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null)
                 {
-                    foreach (var hokenSyu in KaikeiInfModels.Select(item => item.HokenSyu).ToList())
+                    foreach (CoKaikeiInfModel kaikeiInfModel in KaikeiInfModels)
                     {
-                        if (ret == string.Empty)
+                        if (ret == "")
                         {
-                            ret = hokenSyu;
+                            ret = kaikeiInfModel.HokenSyu;
                         }
-                        else if (ret != hokenSyu)
+                        else if (ret != kaikeiInfModel.HokenSyu)
                         {
-                            ret = string.Empty;
+                            ret = "";
                             break;
                         }
                     }
@@ -175,6 +171,7 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public int? FutanRate
         {
+            //get => KaikeiInfModels.First().FutanRate;
             get
             {
                 int? ret = null;
@@ -190,11 +187,16 @@ namespace Reporting.AccountingCard.Model
                     // 自費
                     ret = 100;
                 }
+                else
+                {
+                    // 労災・自賠
+                    //ret = null;
+                }
 
 
                 if (PtKohis != null)
                 {
-                    for (int i = 0; i < PtKohis.Count; i++)
+                    for (int i = 0; i < PtKohis.Count(); i++)
                     {
                         if (PtKohis[i].HokenMst.FutanKbn == 0)
                         {
@@ -237,9 +239,9 @@ namespace Reporting.AccountingCard.Model
                     else if (IsElder() && houbetu != "39")
                     {
                         wrkRate =
-                            IsElder20per() ? 20 :  //前期高齢
-                            IsElderExpat() ? 20 :  //75歳以上海外居住者
-                            10;
+                            IsElder20per() ? wrkRate = 20 :  //前期高齢
+                            IsElderExpat() ? wrkRate = 20 :  //75歳以上海外居住者
+                            wrkRate = 10;
                     }
 
                     if (IsElder() || houbetu == "39")
@@ -321,7 +323,7 @@ namespace Reporting.AccountingCard.Model
                 var groupsums = (
                     from kaikeiInf in KaikeiInfModels
                     group kaikeiInf by kaikeiInf.SinDate into A
-                    select new { A.Key, sum = A.Sum(a => a.Nissu) }
+                    select new { A.Key, sum = A.Sum(a => (int)a.Nissu) }
                     ).ToList();
 
                 foreach (var groupsum in groupsums)
@@ -405,7 +407,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -422,7 +424,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -439,7 +441,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -453,7 +455,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -470,7 +472,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -487,7 +489,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -504,7 +506,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -522,7 +524,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -539,7 +541,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -556,7 +558,7 @@ namespace Reporting.AccountingCard.Model
         {
             get
             {
-                string ret = string.Empty;
+                string ret = "";
 
                 if (KaikeiInfModels != null && KaikeiInfModels.Any())
                 {
@@ -571,9 +573,13 @@ namespace Reporting.AccountingCard.Model
         /// </summary>
         public string KohiFutansyaNo(int index)
         {
-            string ret = string.Empty;
+            string ret = "";
 
-            if (PtKohis != null && index >= 0 && index < PtKohis.Count)
+            //if (KaikeiInfModels != null && KaikeiInfModels.Any())
+            //{
+            //    ret = KaikeiInfModels.First().KohiFutansyaNo(index);
+            //}
+            if (PtKohis != null && index >= 0 && index < PtKohis.Count())
             {
                 ret = PtKohis[index].FutansyaNo;
             }
@@ -587,8 +593,13 @@ namespace Reporting.AccountingCard.Model
         /// <returns></returns>
         public string KohiJyukyusyaNo(int index)
         {
-            string ret = string.Empty;
-            if (PtKohis != null && index >= 0 && index < PtKohis.Count)
+            string ret = "";
+
+            //if (KaikeiInfModels != null && KaikeiInfModels.Any())
+            //{
+            //    ret = KaikeiInfModels.First().KohiJyukyusyaNo(index);
+            //}
+            if (PtKohis != null && index >= 0 && index < PtKohis.Count())
             {
                 ret = PtKohis[index].JyukyusyaNo;
             }

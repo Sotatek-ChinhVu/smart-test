@@ -441,8 +441,8 @@
         public const string GetLockInfo = "GetLockInfo";
         public const string CheckLockVisiting = "CheckLockVisiting";
         public const string CheckLockOpenAccounting = "CheckLockOpenAccounting";
-        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut"; 
-        public const string GetLockInf = "GetLockInf"; 
+        public const string RemoveLockWhenLogOut = "RemoveLockWhenLogOut";
+        public const string GetLockInf = "GetLockInf";
         public const string Unlock = "Unlock";
         public const string CheckIsExistedOQLockInfo = "CheckIsExistedOQLockInfo";
 
@@ -521,6 +521,7 @@
 
         //ByomeiSetMst
         public const string UpdateByomeiSetMst = "UpdateByomeiSetMst";
+        public const string IsHokenInfInUsed = "IsHokenInfInUsed";
         //PatientManagement
         public const string SearchPtInfs = "SearchPtInfs";
         public const string GetHokenMst = "GetHokenMst";
@@ -554,5 +555,14 @@
         public const string GetSinrekiFilterMstList = "GetSinrekiFilterMstList";
         public const string SaveSinrekiFilterMstList = "SaveSinrekiFilterMstList";
         public const string GetContentDrugUsageHistory = "GetContentDrugUsageHistory";
+
+        //Yousiki
+        public const string GetYousiki1InfModelWithCommonInf = "GetYousiki1InfModelWithCommonInf";
+        public const string GetYousiki1InfDetails = "GetYousiki1InfDetails";
+        public const string GetVisitingInfs = "GetVisitingInfs";
+        public const string GetHistoryYousiki = "GetHistoryYousiki";
+        public const string GetYousiki1InfModel = "GetYousiki1InfModel";
+        public const string GetKacodeYousikiMstDict = "GetKacodeYousikiMstDict";
+        public const string GetByomeisInMonth = "GetByomeisInMonth";
     }
 }

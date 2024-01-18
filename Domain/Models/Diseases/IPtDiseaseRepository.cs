@@ -21,8 +21,13 @@ namespace Domain.Models.Diseases
         List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds);
 
         List<PtDiseaseModel> GetAllByomeiByPtId(int hpId, long ptId, int pageIndex, int pageSize);
+
         bool UpdateByomeiSetMst(int userId, int hpId, List<ByomeiSetMstUpdateModel> listData);
 
         Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds);
+
+        bool IsHokenInfInUsed(int hpId, long ptId, int hokenId);
+
+        List<PtDiseaseModel> GetByomeisInMonth(int hpId, long ptId, int sinYm);
     }
 }

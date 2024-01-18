@@ -52,7 +52,7 @@ public class CoHikariDiskFinder : RepositoryBase, ICoHikariDiskFinder
         joinQuery = joinQuery.Where(r => r.IsPaperRece == 0);
 
         var result = joinQuery.AsEnumerable().Select(
-            data => new CoReceInfModel(data.receInf, new(), new(), new(), new(), new(), HokensyaNoKbn.NoSum, 0)
+            data => new CoReceInfModel(data.receInf, null, null, null, null, null, HokensyaNoKbn.NoSum, 0)
         ).ToList();
 
         return result;

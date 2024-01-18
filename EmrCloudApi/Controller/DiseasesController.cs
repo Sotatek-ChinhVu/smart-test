@@ -1,12 +1,12 @@
 ﻿using Domain.Models.Diseases;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Diseases;
-using EmrCloudApi.Presenters.MstItem;
+using EmrCloudApi.Presenters.Yousiki;
 using EmrCloudApi.Requests.Diseases;
-using EmrCloudApi.Requests.ListSetMst;
+using EmrCloudApi.Requests.Yousiki;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Diseases;
-using EmrCloudApi.Responses.MstItem;
+using EmrCloudApi.Responses.Yousiki;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ByomeiSetMst.UpdateByomeiSetMst;
@@ -14,9 +14,10 @@ using UseCase.Core.Sync;
 using UseCase.Diseases.GetAllByomeiByPtId;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
+using UseCase.Diseases.IsHokenInfInUsed;
 using UseCase.Diseases.Upsert;
 using UseCase.Diseases.Validation;
-using UseCase.ListSetMst.UpdateListSetMst;
+using UseCase.Yousiki.GetByomeisInMonth;
 
 namespace EmrCloudApi.Controller
 {
@@ -147,6 +148,26 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
-        
+
+
+        [HttpGet(ApiPath.IsHokenInfInUsed)]
+        public ActionResult<Response<UpdateByomeiSetMstResponse>> IsHokenInfInUsed([FromQuery] IsHokenInfInUsedRequest request)
+        {
+            var input = new IsHokenInfInUsedInputData(HpId, request.PtId, request.HokenPId);
+            var output = _bus.Handle(input);
+            var presenter = new IsHokenInfInUsedPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetByomeisInMonth)]
+        public ActionResult<Response<GetByomeisInMonthResponse>> GetByomeisInMonth([FromQuery] GetByomeisInMonthRequest request)
+        {
+            var input = new GetByomeisInMonthInputData(HpId, request.PtId, request.SinYm);
+            var output = _bus.Handle(input);
+            var presenter = new GetByomeisInMonthPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetByomeisInMonthResponse>>(presenter.Result);
+        }
     }
 }

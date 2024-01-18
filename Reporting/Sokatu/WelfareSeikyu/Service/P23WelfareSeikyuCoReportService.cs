@@ -35,13 +35,13 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private List<CoP23WelfareReceInfModel> receInfs = new();
-        private CoHpInfModel hpInf = new();
+        private List<CoP23WelfareReceInfModel> receInfs;
+        private CoHpInfModel hpInf;
 
-        private List<string> cityNames = new();
-        private string currentCityName = "";
-        private List<CoHokensyaMstModel> hokensyaNames = new();
-        private List<CoKohiHoubetuMstModel> kohiHoubetuMsts = new();
+        private List<string> cityNames;
+        private string currentCityName;
+        private List<CoHokensyaMstModel> hokensyaNames;
+        private List<CoKohiHoubetuMstModel> kohiHoubetuMsts;
         #endregion
 
         private readonly Dictionary<int, Dictionary<string, string>> _setFieldData;
@@ -171,7 +171,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Service
                     var curReceInf = curReceInfs[ptIndex];
 
                     //受給者証番号
-                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareJyukyusyaNo ?? string.Empty));
+                    listDataPerPage.Add(new("jyukyusyaNo", 0, rowNo, curReceInf.WelfareJyukyusyaNo));
                     //氏名
                     listDataPerPage.Add(new("ptName", 0, rowNo, curReceInf.PtName));
                     totalData.Count++;

@@ -41,6 +41,9 @@ using UseCase.SuperAdmin.DeleteJunkFileS3;
 using SuperAdminAPI.ScheduleTask;
 using UseCase.SuperAdmin.UploadDrugImage;
 using Domain.SuperAdminModels.SystemChangeLog;
+using SuperAdminAPI.BackgroundService;
+using Domain.Models.User;
+using Infrastructure.Repositories;
 
 namespace SuperAdmin.Configs.Dependency
 {
@@ -85,6 +88,7 @@ namespace SuperAdmin.Configs.Dependency
             //services.AddScoped<ILoggingHandler, LoggingHandler>();
 
             services.AddScoped<ISystemStartDbService, SystemStartDbService>();
+            services.AddScoped<IUserInfoService, UserInfoService>();
             services.AddScoped<IDeleteJunkFileS3Service, DeleteJunkFileS3Service>();
         }
 
@@ -97,7 +101,9 @@ namespace SuperAdmin.Configs.Dependency
 
             services.AddSingleton<IHostedService, TaskScheduleRevokeInsertPermission>();
             services.AddSingleton<IHostedService, TaskScheduleDeleteJunkFileS3>();
+            services.AddSingleton<IHostedService, UpdateScriptSchemaProcessor>();
 
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<INotificationRepository, NotificationRepository>();
         }
 
