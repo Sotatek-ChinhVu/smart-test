@@ -6,6 +6,6 @@
 
         public long PtNum { get; set; }
 
-        public int DataTypes { get; set; }
+        public int DataType { get; set; }
     }
 }

@@ -1,0 +1,28 @@
+﻿using Domain.Models.Yousiki;
+
+namespace EmrCloudApi.Responses.Yousiki.Dto;
+
+public class RaiinListInfDto
+{
+    public RaiinListInfDto(RaiinListInfModel model)
+    {
+        PtId = model.PtId;
+        SinDate = model.SinDate;
+        RaiinNo = model.RaiinNo;
+        GrpId = model.GrpId;
+        KbnCd = model.KbnCd;
+        IsContainsFile = model.IsContainsFile;
+    }
+
+    public long PtId { get; private set; }
+
+    public int SinDate { get; private set; }
+
+    public long RaiinNo { get; private set; }
+
+    public int GrpId { get; private set; }
+
+    public int KbnCd { get; private set; }
+
+    public bool IsContainsFile { get; private set; }
+}

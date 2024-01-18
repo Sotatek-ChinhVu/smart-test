@@ -340,11 +340,7 @@ namespace Infrastructure.CommonDB
                 {
                     return string.Empty;
                 }
-                var jwtToken = new JwtSecurityToken(cookie.Token);
-                if (jwtToken.ValidFrom < DateTime.UtcNow && jwtToken.ValidTo > DateTime.UtcNow)
-                {
-                    return cookie.Domain;
-                }
+                return cookie.Domain;
             }
             return string.Empty;
         }

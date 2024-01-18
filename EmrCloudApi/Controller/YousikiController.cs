@@ -6,6 +6,8 @@ using EmrCloudApi.Responses.Yousiki;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Yousiki.GetVisitingInfs;
+using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetHistoryYousiki;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetYousiki1InfModel;
@@ -26,11 +28,31 @@ public class YousikiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetYousiki1InfModelWithCommonInf)]
     public ActionResult<Response<GetYousiki1InfModelWithCommonInfResponse>> GetYousiki1InfModelWithCommonInf([FromQuery] GetYousiki1InfModelWithCommonInfRequest request)
     {
-        var input = new GetYousiki1InfModelWithCommonInfInputData(HpId, request.SinYm, request.PtNum, request.DataTypes, request.Status);
+        var input = new GetYousiki1InfModelWithCommonInfInputData(HpId, request.SinYm, request.PtNum, request.DataType, request.Status);
         var output = _bus.Handle(input);
         var presenter = new GetYousiki1InfModelWithCommonInfPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetYousiki1InfModelWithCommonInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetYousiki1InfDetails)]
+    public ActionResult<Response<GetYousiki1InfDetailsResponse>> GetYousiki1InfDetails([FromQuery] GetYousiki1InfDetailsRequest request)
+    {
+        var input = new GetYousiki1InfDetailsInputData(HpId, request.SinYm, request.PtId, request.DataType, request.SeqNo);
+        var output = _bus.Handle(input);
+        var presenter = new GetYousiki1InfDetailsPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetYousiki1InfDetailsResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetVisitingInfs)]
+    public ActionResult<Response<GetVisitingInfsResponse>> GetVisitingInfs([FromQuery] GetVisitingInfsRequest request)
+    {
+        var input = new GetVisitingInfsInputData(HpId, request.PtId, request.SinYm);
+        var output = _bus.Handle(input);
+        var presenter = new GetVisitingInfsPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetVisitingInfsResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetHistoryYousiki)]
@@ -46,7 +68,7 @@ public class YousikiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetYousiki1InfModel)]
     public ActionResult<Response<GetYousiki1InfModelResponse>> GetYousiki1InfModel([FromQuery] GetYousiki1InfModelRequest request)
     {
-        var input = new GetYousiki1InfModelInputData(HpId, request.SinYm, request.PtNum, request.DataTypes);
+        var input = new GetYousiki1InfModelInputData(HpId, request.SinYm, request.PtNum, request.DataType);
         var output = _bus.Handle(input);
         var presenter = new GetYousiki1InfModelPresenter();
         presenter.Complete(output);
