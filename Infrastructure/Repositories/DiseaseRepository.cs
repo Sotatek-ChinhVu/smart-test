@@ -8,8 +8,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System.ComponentModel;
+using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
 {
@@ -565,7 +564,7 @@ namespace Infrastructure.Repositories
 
             var ptByomeiModels = new List<PtDiseaseModel>();
 
-            foreach (var ptByomei in ptByomeis.ToList())
+            foreach (var ptByomei in ptByomeis)
             {
                 var byomeiMst = byomeiMstQuery.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd);
 
@@ -698,14 +697,15 @@ namespace Infrastructure.Repositories
                         ptByomeiModel.Icd1022013 = string.Empty;
                     }
 
+                    var ptByomei = ptByomeis.Where(x => x.ByomeiCd == ptByomeiModel.ByomeiCd).First();
+
                     for (int i = 1; i <= 21; i++)
                     {
-                        string byoCd = /*ptByomeis.Where(x => x.ByomeiCd == ptByomeiModel.ByomeiCd).ToList()*/ptByomeis.ToList()[3].GetMemberValue("SyusyokuCd" + i).AsString();
+                        string byoCd = ptByomei.GetMemberValue("SyusyokuCd" + i).AsString();
                         if (string.IsNullOrEmpty(byoCd))
                         {
                             break;
                         }
-                        ptByomeiModel.SetMemberValue("SyusyokuName" + i, byomeiMstForSyusyokuList.FirstOrDefault(item => item.ByomeiCd == byoCd)?.Sbyomei ?? string.Empty);
                     }
                 }
                 finally
