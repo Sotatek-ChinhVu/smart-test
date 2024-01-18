@@ -27,8 +27,16 @@ public class AddYousikiInteractor : IAddYousikiInputPort
                 return validateResult.outputData;
             }
             var ptId = validateResult.ptId;
-            var listPtId = _yousikiRepository.GetListPtIdHealthInsuranceAccepted(inputData.HpId, inputData.SinYm, ptId, inputData.SelectDataType);
-            return new AddYousikiOutputData(string.Empty, AddYousikiStatus.Successed);
+            var ptIdList = _yousikiRepository.GetListPtIdHealthInsuranceAccepted(inputData.HpId, inputData.SinYm, ptId, inputData.SelectDataType);
+            if (!ptIdList.Any())
+            {
+                return new AddYousikiOutputData(mFree00030, AddYousikiStatus.InvalidHealthInsuranceAccepted);
+            }
+            if (_yousikiRepository.AddYousikiInfByMonth(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.SelectDataType, ptIdList))
+            {
+                return new AddYousikiOutputData(string.Empty, AddYousikiStatus.Successed);
+            }
+            return new AddYousikiOutputData(string.Empty, AddYousikiStatus.Failed);
         }
         finally
         {
@@ -47,16 +55,19 @@ public class AddYousikiInteractor : IAddYousikiInputPort
             return (new AddYousikiOutputData(mFree00030, AddYousikiStatus.InvalidYousikiSelectDataType0), 0);
         }
         var ptId = _patientInforRepository.IsPatientExist(inputData.HpId, inputData.PtNum);
-        if ((inputData.PtNum == 0 || ptId == 0) && !inputData.ReactAddYousiki.ConfirmSelectDataType)
+        if (inputData.ReactAddYousiki.ConfirmSelectDataType)
         {
-            switch (inputData.SelectDataType)
+            if (inputData.PtNum == 0 || ptId == 0)
             {
-                case 1:
-                    return (new AddYousikiOutputData(mFree00010, AddYousikiStatus.InvalidYousikiSelectDataType1), 0);
-                case 2:
-                    return (new AddYousikiOutputData(mFree00010, AddYousikiStatus.InvalidYousikiSelectDataType2), 0);
-                case 3:
-                    return (new AddYousikiOutputData(mFree00010, AddYousikiStatus.InvalidYousikiSelectDataType3), 0);
+                switch (inputData.SelectDataType)
+                {
+                    case 1:
+                        return (new AddYousikiOutputData(mFree00010, AddYousikiStatus.InvalidYousikiSelectDataType1), 0);
+                    case 2:
+                        return (new AddYousikiOutputData(mFree00010, AddYousikiStatus.InvalidYousikiSelectDataType2), 0);
+                    case 3:
+                        return (new AddYousikiOutputData(mFree00010, AddYousikiStatus.InvalidYousikiSelectDataType3), 0);
+                }
             }
         }
         else if (_yousikiRepository.IsYousikiExist(inputData.HpId, inputData.SinYm, ptId))

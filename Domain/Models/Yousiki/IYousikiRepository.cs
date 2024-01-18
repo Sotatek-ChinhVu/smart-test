@@ -15,4 +15,6 @@ public interface IYousikiRepository : IRepositoryBase
     List<long> GetListPtIdHealthInsuranceAccepted(int hpId, int sinYm, long ptId, int dataType);
 
     List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType);
+
+    bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList);
 }

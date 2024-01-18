@@ -1,8 +1,12 @@
 ﻿using Domain.Models.Yousiki;
+using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
@@ -255,6 +259,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                       && item.IsDeleted == DeleteTypes.None);
         var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
                                                                 && item.IsDelete == DeleteTypes.None
+                                                                && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
                                                                 && item.IsTester == 0);
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
                                                                           && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
@@ -344,6 +349,115 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
         return query.AsEnumerable().Select(x => x.OrdInf?.PtId ?? 0).GroupBy(x => x).Select(x => x.First()).ToList();
     }
+
+    /// <summary>
+    /// Add YousikiInf by month
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="dataType"></param>
+    /// <param name="ptIdList"></param>
+    /// <returns></returns>
+    public bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList)
+    {
+        bool successed = false;
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
+            {
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
+                {
+                    AddYousikiInfByMonthAction(hpId, userId, sinYm, dataType, ptIdList);
+                    TrackingDataContext.SaveChanges();
+                    transaction.Commit();
+                    successed = true;
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    successed = false;
+                }
+            });
+        return successed;
+    }
+
+
+    #region private function
+    /// <summary>
+    /// main action add yousikiInfByMonth
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="dataType"></param>
+    /// <param name="ptIdList"></param>
+    private void AddYousikiInfByMonthAction(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList)
+    {
+        var allYousiki1InfByPtIdList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId
+                                                                                        && ptIdList.Contains(item.PtId)
+                                                                                        && item.SinYm == sinYm)
+                                                                         .ToList();
+        foreach (var ptId in ptIdList)
+        {
+            if (dataType != 0)
+            {
+                // check exist common Yousiki, if does not exist then add new Yousiki with DataType = 0
+                var existCommonInf = allYousiki1InfByPtIdList.Any(item => item.PtId == ptId
+                                                                          && item.DataType == 0
+                                                                          && item.IsDeleted == 0);
+                if (!existCommonInf)
+                {
+                    int maxCommonSeqNo = allYousiki1InfByPtIdList.Where(item => item.PtId == ptId
+                                                                                && item.DataType == 0)
+                                                                 .Select(item => item.SeqNo)
+                                                                 .OrderByDescending(item => item)
+                                                                 .FirstOrDefault();
+
+                    var newCommonInf = new Yousiki1Inf()
+                    {
+                        HpId = hpId,
+                        SinYm = sinYm,
+                        PtId = ptId,
+                        DataType = 0,
+                        SeqNo = maxCommonSeqNo + 1,
+                        CreateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    };
+                    TrackingDataContext.Yousiki1Infs.Add(newCommonInf);
+                }
+            }
+            var existYousiki1Inf = allYousiki1InfByPtIdList.Any(item => item.PtId == ptId
+                                                                        && item.DataType == dataType
+                                                                        && item.IsDeleted == 0);
+            if (!existYousiki1Inf)
+            {
+                int maxSeqNo = allYousiki1InfByPtIdList.Where(item => item.PtId == ptId
+                                                                      && item.DataType == dataType)
+                                                       .Select(item => item.SeqNo)
+                                                       .OrderByDescending(item => item)
+                                                       .FirstOrDefault();
+
+                var newYousiki = new Yousiki1Inf()
+                {
+                    HpId = hpId,
+                    SinYm = sinYm,
+                    PtId = ptId,
+                    DataType = dataType,
+                    SeqNo = maxSeqNo + 1,
+                    CreateId = userId,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                };
+                TrackingDataContext.Yousiki1Infs.Add(newYousiki);
+            }
+        }
+    }
+    #endregion
 
     public void ReleaseResource()
     {
