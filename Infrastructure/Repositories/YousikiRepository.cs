@@ -1,5 +1,7 @@
 ﻿using Domain.Models.Yousiki;
 using Helper.Constants;
+using Helper.Enum;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -255,6 +257,39 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
+    }
+
+    public void UpdateYosiki(List<CategoryItemModel> categoryList, Yousiki1InfDetailModel yousiki1InfDetailModels, bool isTemporarySave = false)
+    {
+        using var transaction = TrackingDataContext.Database.BeginTransaction();
+        try
+        {
+            bool isSaveAtHomeYousiki = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.AtHome && x.Visibility);
+            bool isSaveLivingHabit = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.LifestyleHabit && x.Visibility);
+            bool isSaveRahabilitation = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.Rehabilitation && x.Visibility);
+            bool isErrorBirthDay = false;
+            if (!isTemporarySave)
+            {
+                if (!ValidationData(isErrorBirthDay, yousiki1InfDetailModels))
+                {
+                    return;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            transaction.Rollback();
+        }
+    }
+
+    public bool ValidationData(bool isErrorBirthDay, Yousiki1InfDetailModel yousiki1InfDetailModels)
+    {
+        if (yousiki1InfDetailModels.Value.AsInteger() <= 0)
+        {
+            isErrorBirthDay = true;
+            return false;
+        }
+        return true;
     }
 
     public void ReleaseResource()

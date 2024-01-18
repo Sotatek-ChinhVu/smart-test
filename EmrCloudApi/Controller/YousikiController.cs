@@ -84,4 +84,14 @@ public class YousikiController : AuthorizeControllerBase
         presenter.Complete(output);
         return new ActionResult<Response<GetKacodeYousikiMstDictResponse>>(presenter.Result);
     }
+
+    [HttpGet(ApiPath.UpdateYosiki)]
+    public ActionResult<Response<GetYousiki1InfModelResponse>> UpdateYosiki([FromQuery] GetYousiki1InfModelRequest request)
+    {
+        var input = new GetYousiki1InfModelInputData(HpId, request.SinYm, request.PtNum, request.DataTypes);
+        var output = _bus.Handle(input);
+        var presenter = new GetYousiki1InfModelPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetYousiki1InfModelResponse>>(presenter.Result);
+    }
 }

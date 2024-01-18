@@ -15,4 +15,6 @@ public interface IYousikiRepository : IRepositoryBase
     List<Yousiki1InfModel> GetYousiki1InfModel(int hpId, int sinYm, long ptNumber, int dataTypes);
 
     Dictionary<string, string> GetKacodeYousikiMstDict();
+
+    void UpdateYosiki(List<CategoryItemModel> CategoryList, Yousiki1InfDetailModel yousiki1InfDetailModels, bool isTemporarySave = false);
 }
