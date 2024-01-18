@@ -14,6 +14,12 @@ public class Yousiki1InfDetailModel
         Value = value;
     }
 
+    public Yousiki1InfDetailModel()
+    { 
+        CodeNo = string.Empty;
+        Value = string.Empty;
+    }
+
     public long PtId { get; private set; }
 
     public int SinYm { get; private set; }

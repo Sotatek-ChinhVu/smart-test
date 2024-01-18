@@ -282,17 +282,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         }
     }
 
-    public bool ValidationData(bool isErrorBirthDay, Yousiki1InfDetailModel yousiki1InfDetailModels)
-    {
-        if (yousiki1InfDetailModels.Value.AsInteger() <= 0)
-        {
-            isErrorBirthDay = true;
-            string message = string.Format(EmrMessageType.mInp00010.Message, "共通 - 属性 - 生年月日");
-            return false;
-        }
-        return true;
-    }
-
     public void ReleaseResource()
     {
         DisposeDataContext();
