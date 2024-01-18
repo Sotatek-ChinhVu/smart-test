@@ -815,6 +815,8 @@ using UseCase.Yousiki.GetYousiki1InfModel;
 using Interactor.Yousiki.GetYousiki1InfModel;
 using Interactor.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
+using UseCase.Yousiki.GetByomeisInMonth;
+using Interactor.Yousiki.GetByomeisInMonth;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1551,6 +1553,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
             busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
             busBuilder.RegisterUseCase<IsHokenInfInUsedInputData, IsHokenInfInUsedInteractor>();
+            busBuilder.RegisterUseCase<GetByomeisInMonthInputData, GetByomeisInMonthInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
