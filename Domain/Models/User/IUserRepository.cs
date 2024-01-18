@@ -73,5 +73,9 @@ namespace Domain.Models.User
         List<UserMstModel> GetUsersByPermission(int hpId, int managerKbn);
 
         void UpdateHashPassword();
+
+        byte[] GenerateSalt();
+
+        byte[] CreateHash(byte[] password, byte[] salt);
     }
 }
