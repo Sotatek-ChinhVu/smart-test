@@ -27,5 +27,7 @@ namespace Domain.Models.Diseases
         Dictionary<string, string> GetByomeiMst(int hpId, List<string> byomeiCds);
 
         bool IsHokenInfInUsed(int hpId, long ptId, int hokenId);
+
+        List<PtDiseaseModel> GetByomeisInMonth(int hpId, long ptId, int sinYm);
     }
 }

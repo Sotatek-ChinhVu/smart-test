@@ -4,12 +4,12 @@ namespace UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 
 public class GetYousiki1InfModelWithCommonInfInputData : IInputData<GetYousiki1InfModelWithCommonInfOutputData>
 {
-    public GetYousiki1InfModelWithCommonInfInputData(int hpId, int sinYm, long ptNum, int dataTypes, int status)
+    public GetYousiki1InfModelWithCommonInfInputData(int hpId, int sinYm, long ptNum, int dataType, int status)
     {
         HpId = hpId;
         SinYm = sinYm;
         PtNum = ptNum;
-        DataTypes = dataTypes;
+        DataType = dataType;
         Status = status;
     }
 
@@ -19,7 +19,7 @@ public class GetYousiki1InfModelWithCommonInfInputData : IInputData<GetYousiki1I
 
     public long PtNum { get; private set; }
 
-    public int DataTypes { get; private set; }
+    public int DataType { get; private set; }
 
     public int Status { get; private set; }
 }
