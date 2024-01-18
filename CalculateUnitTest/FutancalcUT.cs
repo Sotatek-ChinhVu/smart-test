@@ -1,7 +1,7 @@
-﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Futan.Models;
-using EmrCalculateApi.Futan.ViewModels;
-using EmrCalculateApi.Interface;
+﻿using CalculateService.Constants;
+using CalculateService.Futan.Models;
+using CalculateService.Futan.ViewModels;
+using CalculateService.Interface;
 using Entity.Tenant;
 using Helper.Constants;
 using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions;

@@ -1,6 +1,6 @@
-﻿using EmrCalculateApi.Futan.Models;
-using EmrCalculateApi.Futan.ViewModels;
-using EmrCalculateApi.Interface;
+﻿using CalculateService.Futan.Models;
+using CalculateService.Futan.ViewModels;
+using CalculateService.Interface;
 using Entity.Tenant;
 using Moq;
 
