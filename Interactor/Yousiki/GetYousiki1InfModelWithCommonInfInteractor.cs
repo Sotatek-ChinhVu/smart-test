@@ -16,7 +16,7 @@ public class GetYousiki1InfModelWithCommonInfInteractor : IGetYousiki1InfModelWi
     {
         try
         {
-            var result = _yousikiRepository.GetYousiki1InfModelWithCommonInf(inputData.HpId, inputData.SinYm, inputData.PtNum, inputData.DataTypes, inputData.Status);
+            var result = _yousikiRepository.GetYousiki1InfModelWithCommonInf(inputData.HpId, inputData.SinYm, inputData.PtNum, inputData.DataType, inputData.Status);
             return new GetYousiki1InfModelWithCommonInfOutputData(result, GetYousiki1InfModelWithCommonInfStatus.Successed);
         }
         finally

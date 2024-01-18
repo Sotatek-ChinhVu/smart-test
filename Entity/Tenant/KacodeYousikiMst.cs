@@ -9,6 +9,14 @@ namespace Emr.DatabaseEntity
     public class KacodeYousikiMst : EmrCloneable<KacodeYousikiMst>
     {
         /// <summary>
+        /// 医療機関識別ID
+        /// </summary>
+
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Column("hp_id", Order = 1)]
+        public int HpId { get; set; }
+
+        /// <summary>
         /// 様式1診療科コード
         /// </summary>
         [Key]
