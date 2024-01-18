@@ -14,5 +14,5 @@ public interface IYousikiRepository : IRepositoryBase
 
     List<Yousiki1InfModel> GetYousiki1InfModel(int hpId, int sinYm, long ptNumber, int dataType);
 
-    Dictionary<string, string> GetKacodeYousikiMstDict();
+    Dictionary<string, string> GetKacodeYousikiMstDict(int hpId);
 }

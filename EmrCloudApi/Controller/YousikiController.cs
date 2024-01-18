@@ -78,7 +78,7 @@ public class YousikiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetKacodeYousikiMstDict)]
     public ActionResult<Response<GetKacodeYousikiMstDictResponse>> GetKacodeYousikiMstDict()
     {
-        var input = new GetKacodeYousikiMstDictInputData();
+        var input = new GetKacodeYousikiMstDictInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetKacodeYousikiMstDictPresenter();
         presenter.Complete(output);

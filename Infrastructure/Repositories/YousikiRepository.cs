@@ -244,9 +244,9 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return result;
     }
 
-    public Dictionary<string, string> GetKacodeYousikiMstDict()
+    public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
     {
-        var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.ToList();
+        var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
         if (listKacodeMst.Count == 0) 
         {
             return new Dictionary<string, string>();
