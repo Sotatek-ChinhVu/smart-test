@@ -2,7 +2,6 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -14,17 +13,17 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
     public List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType)
     {
-        return NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId && x.PtId == ptId && x.DataType == dataType && x.IsDeleted == 0 && (x.Status == 1 || x.Status == 2) &&
-                                x.SinYm < sinYm)
-            .OrderByDescending(x => x.SinYm)
-            .AsEnumerable()
-            .Select(x => new Yousiki1InfModel(
-                    x.PtId,
-                    x.SinYm,
-                    x.DataType,
-                    x.SeqNo,
-                    x.IsDeleted,
-                    x.Status)).ToList();
+        return NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId && x.PtId == ptId && x.DataType == dataType && x.IsDeleted == 0 && (x.Status == 1 || x.Status == 2) && x.SinYm < sinYm)
+                                                 .OrderByDescending(x => x.SinYm)
+                                                 .AsEnumerable()
+                                                 .Select(x => new Yousiki1InfModel(
+                                                        x.PtId,
+                                                        x.SinYm,
+                                                        x.DataType,
+                                                        x.SeqNo,
+                                                        x.IsDeleted,
+                                                        x.Status))
+                                                 .ToList();
     }
 
     public List<Yousiki1InfModel> GetYousiki1InfModel(int hpId, int sinYm, long ptNumber, int dataType)
@@ -51,7 +50,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                             x.yousikiInf.DataType,
                             x.yousikiInf.SeqNo,
                             x.yousikiInf.IsDeleted,
-                            x.yousikiInf.Status, 
+                            x.yousikiInf.Status,
                             x.ptInf.PtNum,
                             x.ptInf.Name ?? string.Empty))
                     .ToList();
@@ -243,6 +242,19 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             model.UpdateRaiinListInfList(raiinList);
         }
         return result;
+    }
+
+    public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
+    {
+        var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
+        if (listKacodeMst.Count == 0) 
+        {
+            return new Dictionary<string, string>();
+        }
+        
+        return listKacodeMst.OrderBy(u => u.SortNo)
+                            .ThenBy(u => u.YousikiKaCd)
+                            .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
     }
 
     public void ReleaseResource()

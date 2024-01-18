@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240118041939_add_hpId_to_kacode_yousiki_mst")]
+    partial class addhpIdtokacodeyousikimst
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8046,7 +8049,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("\"function_cd\" IN ('02000000', '03000000')");
+                        .HasFilter("\"FUNCTION_CD\" IN ('02000000', '03000000')");
 
                     b.ToTable("lock_inf");
                 });
@@ -19316,7 +19319,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "RsvDate")
                         .IsUnique()
-                        .HasFilter("\"rsvkrt_kbn\" = 0 AND \"is_deleted\" = 0");
+                        .HasFilter("\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0");
 
                     b.ToTable("rsvkrt_mst");
                 });
@@ -20893,7 +20896,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "SetCd", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3")
                         .IsUnique()
-                        .HasFilter("\"is_deleted\" = 0");
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("set_mst");
                 });
@@ -26310,7 +26313,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("UserId")
                         .IsUnique()
-                        .HasFilter("\"is_deleted\" = 0");
+                        .HasFilter("\"IS_DELETED\" = 0");
 
                     b.ToTable("user_mst");
                 });
