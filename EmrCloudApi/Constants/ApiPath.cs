@@ -563,5 +563,8 @@
         public const string GetHistoryYousiki = "GetHistoryYousiki";
         public const string AddYousiki = "AddYousiki";
         public const string DeleteYousikiInf = "DeleteYousikiInf";
+        public const string GetYousiki1InfModel = "GetYousiki1InfModel";
+        public const string GetKacodeYousikiMstDict = "GetKacodeYousikiMstDict";
+        public const string GetByomeisInMonth = "GetByomeisInMonth";
     }
 }

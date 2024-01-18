@@ -10,6 +10,8 @@ using UseCase.Yousiki.AddYousiki;
 using UseCase.Yousiki.GetVisitingInfs;
 using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.GetKacodeYousikiMstDict;
+using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.DeleteYousikiInf;
 
@@ -28,7 +30,7 @@ public class YousikiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetYousiki1InfModelWithCommonInf)]
     public ActionResult<Response<GetYousiki1InfModelWithCommonInfResponse>> GetYousiki1InfModelWithCommonInf([FromQuery] GetYousiki1InfModelWithCommonInfRequest request)
     {
-        var input = new GetYousiki1InfModelWithCommonInfInputData(HpId, request.SinYm, request.PtNum, request.DataTypes, request.Status);
+        var input = new GetYousiki1InfModelWithCommonInfInputData(HpId, request.SinYm, request.PtNum, request.DataType, request.Status);
         var output = _bus.Handle(input);
         var presenter = new GetYousiki1InfModelWithCommonInfPresenter();
         presenter.Complete(output);
@@ -83,5 +85,25 @@ public class YousikiController : AuthorizeControllerBase
         var presenter = new DeleteYousikiInfPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<DeleteYousikiInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetYousiki1InfModel)]
+    public ActionResult<Response<GetYousiki1InfModelResponse>> GetYousiki1InfModel([FromQuery] GetYousiki1InfModelRequest request)
+    {
+        var input = new GetYousiki1InfModelInputData(HpId, request.SinYm, request.PtNum, request.DataType);
+        var output = _bus.Handle(input);
+        var presenter = new GetYousiki1InfModelPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetYousiki1InfModelResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetKacodeYousikiMstDict)]
+    public ActionResult<Response<GetKacodeYousikiMstDictResponse>> GetKacodeYousikiMstDict()
+    {
+        var input = new GetKacodeYousikiMstDictInputData(HpId);
+        var output = _bus.Handle(input);
+        var presenter = new GetKacodeYousikiMstDictPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetKacodeYousikiMstDictResponse>>(presenter.Result);
     }
 }

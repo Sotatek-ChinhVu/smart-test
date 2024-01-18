@@ -12,8 +12,8 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    [Migration("20240117085554_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240118041939_add_hpId_to_kacode_yousiki_mst")]
+    partial class addhpIdtokacodeyousikimst
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,6 +93,11 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
+
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("KaName")
                         .IsRequired()
@@ -27331,6 +27336,125 @@ namespace TenantMigration.Migrations
                     b.ToTable("yoho_set_mst");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.Yousiki1Inf", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("pt_id")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SinYm")
+                        .HasColumnType("integer")
+                        .HasColumnName("sin_ym")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer")
+                        .HasColumnName("data_type")
+                        .HasColumnOrder(4);
+
+                    b.Property<int>("SeqNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("seq_no")
+                        .HasColumnOrder(5);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_date");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("create_id");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("create_machine");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_date");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("update_id");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("update_machine");
+
+                    b.HasKey("HpId", "PtId", "SinYm", "DataType", "SeqNo");
+
+                    b.ToTable("yousiki1_inf");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.Yousiki1InfDetail", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("pt_id")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SinYm")
+                        .HasColumnType("integer")
+                        .HasColumnName("sin_ym")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer")
+                        .HasColumnName("data_type")
+                        .HasColumnOrder(4);
+
+                    b.Property<int>("SeqNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("seq_no")
+                        .HasColumnOrder(5);
+
+                    b.Property<string>("CodeNo")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("code_no")
+                        .HasColumnOrder(6);
+
+                    b.Property<int>("RowNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("row_no")
+                        .HasColumnOrder(7);
+
+                    b.Property<int>("Payload")
+                        .HasColumnType("integer")
+                        .HasColumnName("payload")
+                        .HasColumnOrder(8);
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
+                        .HasColumnName("value");
+
+                    b.HasKey("HpId", "PtId", "SinYm", "DataType", "SeqNo", "CodeNo", "RowNo", "Payload");
+
+                    b.ToTable("yousiki1_inf_detail");
+                });
+
             modelBuilder.Entity("Entity.Tenant.YoyakuOdrInf", b =>
                 {
                     b.Property<int>("HpId")
@@ -33499,6 +33623,166 @@ namespace TenantMigration.Migrations
                     b.HasKey("OpId");
 
                     b.ToTable("z_uketuke_sbt_day_inf");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.ZYousiki1Inf", b =>
+                {
+                    b.Property<long>("OpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("op_id")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("OpId"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_date");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("create_id");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("create_machine");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer")
+                        .HasColumnName("data_type");
+
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("OpAddr")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("op_addr");
+
+                    b.Property<string>("OpHostName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("op_hostname");
+
+                    b.Property<DateTime>("OpTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("op_time");
+
+                    b.Property<string>("OpType")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("op_type");
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("pt_id");
+
+                    b.Property<int>("SeqNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("seq_no");
+
+                    b.Property<int>("SinYm")
+                        .HasColumnType("integer")
+                        .HasColumnName("sin_ym");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update_date");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("update_id");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("update_machine");
+
+                    b.HasKey("OpId");
+
+                    b.ToTable("z_yousiki1_inf");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.ZYousiki1InfDetail", b =>
+                {
+                    b.Property<long>("OpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("op_id")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("OpId"));
+
+                    b.Property<string>("CodeNo")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("code_no");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer")
+                        .HasColumnName("data_type");
+
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
+                    b.Property<string>("OpAddr")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("op_addr");
+
+                    b.Property<string>("OpHostName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("op_hostname");
+
+                    b.Property<DateTime>("OpTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("op_time");
+
+                    b.Property<string>("OpType")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("op_type");
+
+                    b.Property<int>("Payload")
+                        .HasColumnType("integer")
+                        .HasColumnName("payload");
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("pt_id");
+
+                    b.Property<int>("RowNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("row_no");
+
+                    b.Property<int>("SeqNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("seq_no");
+
+                    b.Property<int>("SinYm")
+                        .HasColumnType("integer")
+                        .HasColumnName("sin_ym");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
+                        .HasColumnName("value");
+
+                    b.HasKey("OpId");
+
+                    b.ToTable("z_yousiki1_inf_detail");
                 });
 #pragma warning restore 612, 618
         }

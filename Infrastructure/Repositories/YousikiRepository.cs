@@ -18,17 +18,47 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
     public List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType)
     {
-        return NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId && x.PtId == ptId && x.DataType == dataType && x.IsDeleted == 0 && (x.Status == 1 || x.Status == 2) &&
-                                x.SinYm < sinYm)
-            .OrderByDescending(x => x.SinYm)
-            .AsEnumerable()
-            .Select(x => new Yousiki1InfModel(
-                    x.PtId,
-                    x.SinYm,
-                    x.DataType,
-                    x.SeqNo,
-                    x.IsDeleted,
-                    x.Status)).ToList();
+        return NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId && x.PtId == ptId && x.DataType == dataType && x.IsDeleted == 0 && (x.Status == 1 || x.Status == 2) && x.SinYm < sinYm)
+                                                 .OrderByDescending(x => x.SinYm)
+                                                 .AsEnumerable()
+                                                 .Select(x => new Yousiki1InfModel(
+                                                        x.PtId,
+                                                        x.SinYm,
+                                                        x.DataType,
+                                                        x.SeqNo,
+                                                        x.IsDeleted,
+                                                        x.Status))
+                                                 .ToList();
+    }
+
+    public List<Yousiki1InfModel> GetYousiki1InfModel(int hpId, int sinYm, long ptNumber, int dataType)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId &&
+                                x.IsDelete == 0 &&
+                                (ptNumber == 0 || x.PtNum == ptNumber));
+        var yousiki1Infs = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
+                            (dataType == 0 || x.DataType == dataType) &&
+                            x.IsDeleted == 0 &&
+                            x.SinYm == sinYm);
+        var query = from yousikiInf in yousiki1Infs
+                    join ptInf in ptInfs on
+                    yousikiInf.PtId equals ptInf.PtId
+                    select new
+                    {
+                        yousikiInf,
+                        ptInf
+                    };
+        return query.AsEnumerable()
+                    .Select(x => new Yousiki1InfModel(
+                            x.yousikiInf.PtId,
+                            x.yousikiInf.SinYm,
+                            x.yousikiInf.DataType,
+                            x.yousikiInf.SeqNo,
+                            x.yousikiInf.IsDeleted,
+                            x.yousikiInf.Status,
+                            x.ptInf.PtNum,
+                            x.ptInf.Name ?? string.Empty))
+                    .ToList();
     }
 
     /// <summary>
@@ -37,10 +67,10 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <param name="hpId"></param>
     /// <param name="sinYm"></param>
     /// <param name="ptNum"></param>
-    /// <param name="dataTypes"></param>
+    /// <param name="dataType"></param>
     /// <param name="status"></param>
     /// <returns></returns>
-    public List<Yousiki1InfModel> GetYousiki1InfModelWithCommonInf(int hpId, int sinYm, long ptNum, int dataTypes, int status = -1)
+    public List<Yousiki1InfModel> GetYousiki1InfModelWithCommonInf(int hpId, int sinYm, long ptNum, int dataType, int status = -1)
     {
         List<Yousiki1InfModel> compoundedResultList = new();
         var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
@@ -68,7 +98,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         foreach (var group in groups)
         {
             var orderGroup = group.OrderBy(x => x.DataType).ToList();
-            var yousiki = orderGroup.FirstOrDefault(x => (dataTypes == 0 || x.DataType == dataTypes) && (status == -1 || x.Status == status));
+            var yousiki = orderGroup.FirstOrDefault(x => (dataType == 0 || x.DataType == dataType) && (status == -1 || x.Status == status));
             if (yousiki == null)
             {
                 continue;
@@ -501,6 +531,19 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         }
     }
     #endregion
+
+    public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
+    {
+        var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
+        if (listKacodeMst.Count == 0) 
+        {
+            return new Dictionary<string, string>();
+        }
+        
+        return listKacodeMst.OrderBy(u => u.SortNo)
+                            .ThenBy(u => u.YousikiKaCd)
+                            .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
+    }
 
     public void ReleaseResource()
     {
