@@ -16,7 +16,7 @@ namespace Interactor.Yousiki.GetYousiki1InfModel
         {
             try
             {
-                var result = _yousikiRepository.GetYousiki1InfModel(inputData.HpId, inputData.SinYm, inputData.PtNum, inputData.DataTypes);
+                var result = _yousikiRepository.GetYousiki1InfModel(inputData.HpId, inputData.SinYm, inputData.PtNum, inputData.DataType);
                 return new GetYousiki1InfModelOutputData(result, GetYousiki1InfModelStatus.Successed);
             }
             finally
