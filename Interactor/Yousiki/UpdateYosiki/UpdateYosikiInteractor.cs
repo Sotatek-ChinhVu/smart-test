@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.Yousiki;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -31,11 +32,12 @@ namespace Interactor.Yousiki.UpdateYosiki
             }
         }
 
-        public Dictionary<bool, string> ValidationData(int hpId, string codeNo, int rowNo, int payLoad, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfDetailModel yousiki1InfDetailModel, Yousiki1InfModel yousiki1InfModel, string valueDefault = "")
+        public Dictionary<bool, string> ValidationData(int hpId, string codeNo, int rowNo, int payLoad, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfDetailModel yousiki1InfDetailModel, Yousiki1InfModel yousiki1InfModel, int sinYm, string valueDefault = "")
         {
             Dictionary<bool, string> result = new();
+            var birthDayModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 1, yousiki1InfDetailModels, yousiki1InfDetailModel);
 
-            if (GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 1, yousiki1InfDetailModels, yousiki1InfDetailModel).Value.AsInteger() <= 0)
+            if (birthDayModel.Value.AsInteger() <= 0)
             {
                 string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 属性 - 生年月日");
                 result.Add(false, message);
@@ -89,10 +91,44 @@ namespace Interactor.Yousiki.UpdateYosiki
                 if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || (!smokingNumberOfDayModel.Value.Equals("000") && smokingNumberOfDayModel.Value.AsInteger() <= 0))
                 {
                     string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 喫煙歴 - 1日の喫煙本数");
-                    IsErrorSmokingNumberOfDay = true;
-                    return false;
+                    result.Add(false, message);
+
+                    return result;
+                }
+
+                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || !smokingYearModel.Value.Equals("000") && smokingYearModel.Value.AsInteger() <= 0)
+                {
+                    string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 喫煙歴 - 喫煙年数");
+                    result.Add(false, message);
+
+                    return result;
                 }
             }
+
+            int sinDate = CIUtil.GetLastDateOfMonth(sinYm * 100 + 1);
+            int age = CIUtil.SDateToAge(birthDayModel.Value.AsInteger(), sinDate);
+            var elderlyInfModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 1, yousiki1InfDetailModels, yousiki1InfDetailModel);
+            var careRequiedLevelModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 2, yousiki1InfDetailModels, yousiki1InfDetailModel);
+            
+            if (age >= 65)
+            {
+                if (elderlyInfModel.Value.AsInteger() < 0)
+                {
+                    string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 介護情報 - 高齢者情報");
+                    result.Add(false, message);
+
+                    return result;
+                }
+
+                if (careRequiedLevelModel.Value.AsInteger() < 0)
+                {
+                    string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 介護情報 - 要介護度");
+                    result.Add(false, message);
+
+                    return result;
+                }
+            }
+
             return result;
         }
 
