@@ -444,20 +444,20 @@ namespace PostgreDataContext
             modelBuilder.Entity<ZYousiki1InfDetail>().HasKey(s => new { s.OpId });
 
             modelBuilder.Entity<SetMst>()
-           .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
+           .HasIndex(s => new { s.HpId, s.SetCd, s.SetKbn, s.SetKbnEdaNo, s.GenerationId, s.Level1, s.Level2, s.Level3 }).HasFilter($"\"is_deleted\" = 0").IsUnique();
 
             modelBuilder.Entity<RsvkrtMst>()
-           .HasIndex(r => new { r.HpId, r.PtId, r.RsvDate }).HasFilter($"\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0").IsUnique();
+           .HasIndex(r => new { r.HpId, r.PtId, r.RsvDate }).HasFilter($"\"rsvkrt_kbn\" = 0 AND \"is_deleted\" = 0").IsUnique();
 
             modelBuilder
                 .Entity<SetMst>()
                 .HasQueryFilter(p => p.IsDeleted == 0);
 
             modelBuilder.Entity<LockInf>()
-           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"FUNCTION_CD\" IN ('02000000', '03000000')").IsUnique();
+           .HasIndex(s => new { s.HpId, s.PtId, s.UserId }).HasFilter($"\"function_cd\" IN ('02000000', '03000000')").IsUnique();
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
             modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
-            modelBuilder.Entity<UserMst>().HasIndex(u => new { u.UserId }).HasFilter($"\"IS_DELETED\" = 0").IsUnique();
+            modelBuilder.Entity<UserMst>().HasIndex(u => new { u.UserId }).HasFilter($"\"is_deleted\" = 0").IsUnique();
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
