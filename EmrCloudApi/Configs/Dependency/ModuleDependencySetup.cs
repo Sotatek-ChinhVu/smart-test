@@ -811,6 +811,8 @@ using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetVisitingInfs;
 using UseCase.Yousiki.GetHistoryYousiki;
 using Interactor.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.GetYousiki1InfModel;
+using Interactor.Yousiki.GetYousiki1InfModel;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1744,6 +1746,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
             busBuilder.RegisterUseCase<GetHistoryYousikiInputData, GetHistoryYousikiInteractor>();
+            busBuilder.RegisterUseCase<GetYousiki1InfModelInputData, GetYousiki1InfModelInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
