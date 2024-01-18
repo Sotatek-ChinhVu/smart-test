@@ -11,6 +11,7 @@ using UseCase.Yousiki.GetVisitingInfs;
 using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetHistoryYousiki;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using UseCase.Yousiki.DeleteYousikiInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -72,5 +73,15 @@ public class YousikiController : AuthorizeControllerBase
         var presenter = new AddYousikiPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<AddYousikiResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.DeleteYousikiInf)]
+    public ActionResult<Response<DeleteYousikiInfResponse>> DeleteYousikiInf([FromBody] DeleteYousikiInfRequest request)
+    {
+        var input = new DeleteYousikiInfInputData(HpId, UserId, request.SinYm, request.PtId, request.DataType);
+        var output = _bus.Handle(input);
+        var presenter = new DeleteYousikiInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<DeleteYousikiInfResponse>>(presenter.Result);
     }
 }

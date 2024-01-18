@@ -562,5 +562,6 @@
         public const string GetVisitingInfs = "GetVisitingInfs";
         public const string GetHistoryYousiki = "GetHistoryYousiki";
         public const string AddYousiki = "AddYousiki";
+        public const string DeleteYousikiInf = "DeleteYousikiInf";
     }
 }
