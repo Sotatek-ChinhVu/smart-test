@@ -10,7 +10,7 @@ public class CreateYuIchiFilePresenter : ICreateYuIchiFileOutputPort
     public Response<CreateYuIchiFileResponse> Result { get; private set; } = new();
     public void Complete(CreateYuIchiFileOutputData outputData)
     {
-        Result.Data = new CreateYuIchiFileResponse(outputData.Status == CreateYuIchiFileStatus.Successed);
+        Result.Data = new CreateYuIchiFileResponse(outputData.MessageType, outputData.ConfirmMessage);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

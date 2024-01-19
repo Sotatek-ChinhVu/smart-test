@@ -15,6 +15,10 @@ using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.DeleteYousikiInf;
 using UseCase.Yousiki.CreateYuIchiFile;
+using Helper.Messaging;
+using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
+using System.Text;
+using System.Text.Json;
 
 namespace EmrCloudApi.Controller;
 
@@ -23,9 +27,11 @@ namespace EmrCloudApi.Controller;
 public class YousikiController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    public YousikiController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly IMessenger _messenger;
+    public YousikiController(UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
     {
         _bus = bus;
+        _messenger = messenger;
     }
 
     [HttpGet(ApiPath.GetYousiki1InfModelWithCommonInf)]
@@ -91,11 +97,20 @@ public class YousikiController : AuthorizeControllerBase
     [HttpPost(ApiPath.CreateYuIchiFile)]
     public ActionResult<Response<CreateYuIchiFileResponse>> CreateYuIchiFile([FromBody] CreateYuIchiFileRequest request)
     {
-        var input = new CreateYuIchiFileInputData(HpId, request.SinYm, request.IsCreateForm1File, request.IsCreateEFFile, request.IsCreateEFile, request.IsCreateFFile, request.IsCreateKData, request.ReactCreateYuIchiFile);
-        var output = _bus.Handle(input);
-        var presenter = new CreateYuIchiFilePresenter();
-        presenter.Complete(output);
-        return new ActionResult<Response<CreateYuIchiFileResponse>>(presenter.Result);
+        try
+        {
+            _messenger.Register<CreateYuIchiFileStatus>(this, UpdateCreateYuIchiFileStatus);
+            HttpContext.Response.ContentType = "application/json";
+            var input = new CreateYuIchiFileInputData(HpId, request.SinYm, request.IsCreateForm1File, request.IsCreateEFFile, request.IsCreateEFile, request.IsCreateFFile, request.IsCreateKData, request.ReactCreateYuIchiFile, _messenger);
+            var output = _bus.Handle(input);
+            var presenter = new CreateYuIchiFilePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CreateYuIchiFileResponse>>(presenter.Result);
+        }
+        finally
+        {
+            _messenger.Deregister<CreateYuIchiFileStatus>(this, UpdateCreateYuIchiFileStatus);
+        }
     }
 
     [HttpGet(ApiPath.GetYousiki1InfModel)]
@@ -117,4 +132,14 @@ public class YousikiController : AuthorizeControllerBase
         presenter.Complete(output);
         return new ActionResult<Response<GetKacodeYousikiMstDictResponse>>(presenter.Result);
     }
+
+    #region private function
+    private void UpdateCreateYuIchiFileStatus(CreateYuIchiFileStatus status)
+    {
+        string result = "\n" + JsonSerializer.Serialize(status);
+        var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+        HttpContext.Response.Body.FlushAsync();
+    }
+    #endregion
 }

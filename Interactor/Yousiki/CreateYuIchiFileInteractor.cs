@@ -1,7 +1,11 @@
 ﻿using Domain.Models.Yousiki;
 using Helper.Extension;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using System.Text;
 using UseCase.Yousiki.CreateYuIchiFile;
+using CreateYuIchiFileProgressStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
+using CreateYuIchiFileStatus = UseCase.Yousiki.CreateYuIchiFile.CreateYuIchiFileStatus;
 
 namespace Interactor.Yousiki;
 
@@ -12,6 +16,7 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
     private const string mFree00030 = "mFree00030";
     private const string mFree00040 = "mFree00040";
     private const string confirmMessage = "confirmMessage";
+    private IMessenger? _messenger;
 
     public CreateYuIchiFileInteractor(IYousikiRepository yousikiRepository)
     {
@@ -20,6 +25,7 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
 
     public CreateYuIchiFileOutputData Handle(CreateYuIchiFileInputData inputData)
     {
+        _messenger = inputData.Messenger;
         try
         {
             bool isExported = false;
@@ -50,7 +56,7 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
 
             if (inputData.IsCreateForm1File)
             {
-                isExported = ExportOutpatientForm1() || isExported;
+                isExported = ExportOutpatientForm1(inputData.SinYm) || isExported;
             }
             if (inputData.IsCreateEFFile || inputData.IsCreateEFile || inputData.IsCreateFFile)
             {
@@ -82,9 +88,10 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
         throw new NotImplementedException();
     }
 
-    private bool ExportOutpatientForm1()
+    private bool ExportOutpatientForm1(int sinYm)
     {
-        throw new NotImplementedException();
+        SendMessager(new CreateYuIchiFileProgressStatus(false, $"様式１{sinYm}月分　作成中・・・"));
+        return false;
     }
 
     private CreateYuIchiFileOutputData ValidateData(CreateYuIchiFileInputData data)
@@ -102,5 +109,10 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
             return new CreateYuIchiFileOutputData(mFree00030, string.Empty, CreateYuIchiFileStatus.InvalidCreateYuIchiFileSinYm);
         }
         return new CreateYuIchiFileOutputData(string.Empty, string.Empty, CreateYuIchiFileStatus.ValidateSuccessed);
+    }
+
+    private void SendMessager(CreateYuIchiFileProgressStatus status)
+    {
+        _messenger!.Send(status);
     }
 }
