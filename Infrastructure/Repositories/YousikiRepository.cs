@@ -259,7 +259,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
     }
 
-    public void UpdateYosiki(List<CategoryItemModel> categoryList, Yousiki1InfDetailModel yousiki1InfDetailModels, bool isTemporarySave = false)
+    public void UpdateYosiki(List<CategoryItemModel> categoryList, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, bool isTemporarySave = false)
     {
         using var transaction = TrackingDataContext.Database.BeginTransaction();
         try
@@ -268,13 +268,33 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             bool isSaveLivingHabit = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.LifestyleHabit && x.Visibility);
             bool isSaveRahabilitation = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.Rehabilitation && x.Visibility);
             bool isErrorBirthDay = false;
-            if (!isTemporarySave)
+
+            foreach (var category in categoryList)
             {
-                if (!ValidationData(isErrorBirthDay, yousiki1InfDetailModels))
+                int dataType = 0;
+                switch (category.CategoryDisplayName)
                 {
-                    return;
+                    case "生活習慣":
+                        dataType = 1;
+                        break;
+                    case "在宅":
+                        dataType = 2;
+                        break;
+                    case "リハビリ":
+                        dataType = 3;
+                        break;
+                }
+
+                if (category.Status == ModelStatus.Deleted && !category.Visibility)
+                {
+                    DeleteYousikiInf(yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType);
+                }else if(category.Status == ModelStatus.Added && category.Visibility)
+                {
+
                 }
             }
+
+            transaction.Commit();
         }
         catch (Exception ex)
         {
