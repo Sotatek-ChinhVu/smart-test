@@ -14,6 +14,7 @@ using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.DeleteYousikiInf;
+using UseCase.Yousiki.CreateYuIchiFile;
 
 namespace EmrCloudApi.Controller;
 
@@ -85,6 +86,16 @@ public class YousikiController : AuthorizeControllerBase
         var presenter = new DeleteYousikiInfPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<DeleteYousikiInfResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.CreateYuIchiFile)]
+    public ActionResult<Response<CreateYuIchiFileResponse>> CreateYuIchiFile([FromBody] CreateYuIchiFileRequest request)
+    {
+        var input = new CreateYuIchiFileInputData(HpId, request.SinYm, request.IsCreateForm1File, request.IsCreateEFFile, request.IsCreateEFile, request.IsCreateFFile, request.IsCreateKData, request.ReactCreateYuIchiFile);
+        var output = _bus.Handle(input);
+        var presenter = new CreateYuIchiFilePresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<CreateYuIchiFileResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetYousiki1InfModel)]

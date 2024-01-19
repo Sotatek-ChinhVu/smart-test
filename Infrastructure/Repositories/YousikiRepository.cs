@@ -457,6 +457,73 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return true;
     }
 
+    public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
+    {
+        var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
+        if (listKacodeMst.Count == 0)
+        {
+            return new Dictionary<string, string>();
+        }
+
+        return listKacodeMst.OrderBy(u => u.SortNo)
+                            .ThenBy(u => u.YousikiKaCd)
+                            .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
+    }
+
+    /// <summary>
+    /// Get ListYousiki1Inf for export data
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public List<Yousiki1InfModel> GetListYousiki1Inf(int hpId, int sinYm, int status = -1)
+    {
+        var yousiki1InfList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId && item.SinYm == sinYm && item.IsDeleted == 0 && (status == -1 || item.Status == status)).ToList();
+        var ptIdList = yousiki1InfList.Select(item => item.PtId).Distinct().ToList();
+        var yousiki1InfDetailList = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.HpId == hpId && item.SinYm == sinYm && ptIdList.Contains(item.PtId)).ToList();
+        var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId && item.IsDelete == 0 && ptIdList.Contains(item.PtId));
+
+        var yousiki1InfQuery = from yousiki1Inf in yousiki1InfList
+                              join ptInf in ptInfList on
+                                 new { yousiki1Inf.HpId, yousiki1Inf.PtId } equals
+                                 new { ptInf.HpId, ptInf.PtId }
+                               join yousiki1InfDetail in yousiki1InfDetailList on
+                                 new { yousiki1Inf.HpId, yousiki1Inf.PtId, yousiki1Inf.DataType, yousiki1Inf.SinYm, yousiki1Inf.SeqNo } equals
+                                 new { yousiki1InfDetail.HpId, yousiki1InfDetail.PtId, yousiki1InfDetail.DataType, yousiki1InfDetail.SinYm, yousiki1InfDetail.SeqNo } into listYousiki1InfDetail
+                               select new
+                               {
+                                   ptInf,
+                                   yousiki1Inf,
+                                   ListYousiki1InfDetail = listYousiki1InfDetail
+                               };
+
+        return yousiki1InfQuery
+               .Select(item => new Yousiki1InfModel(
+                                   item.ptInf.PtNum,
+                                   item.ptInf.Name ?? string.Empty,
+                                   item.yousiki1Inf.PtId,
+                                   item.yousiki1Inf.SinYm,
+                                   item.yousiki1Inf.DataType,
+                                   item.yousiki1Inf.Status,
+                                   new(),
+                                   item.yousiki1Inf.SeqNo,
+                                   item.ListYousiki1InfDetail.Select(itemDetail => new Yousiki1InfDetailModel(
+                                                                                       itemDetail.PtId,
+                                                                                       itemDetail.SinYm,
+                                                                                       itemDetail.DataType,
+                                                                                       itemDetail.SeqNo,
+                                                                                       itemDetail.CodeNo ?? string.Empty,
+                                                                                       itemDetail.RowNo,
+                                                                                       itemDetail.Payload,
+                                                                                       itemDetail.Value ?? string.Empty))
+                                                             .OrderBy(item => item.CodeNo)
+                                                             .ThenBy(item => item.RowNo)
+                                                             .ThenBy(item => item.Payload)
+                                                             .ToList()))
+               .ToList();
+    }
+
     #region private function
     /// <summary>
     /// main action add yousikiInfByMonth
@@ -531,19 +598,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         }
     }
     #endregion
-
-    public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
-    {
-        var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
-        if (listKacodeMst.Count == 0) 
-        {
-            return new Dictionary<string, string>();
-        }
-        
-        return listKacodeMst.OrderBy(u => u.SortNo)
-                            .ThenBy(u => u.YousikiKaCd)
-                            .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
-    }
 
     public void ReleaseResource()
     {

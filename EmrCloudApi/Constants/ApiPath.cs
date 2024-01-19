@@ -566,5 +566,6 @@
         public const string GetYousiki1InfModel = "GetYousiki1InfModel";
         public const string GetKacodeYousikiMstDict = "GetKacodeYousikiMstDict";
         public const string GetByomeisInMonth = "GetByomeisInMonth";
+        public const string CreateYuIchiFile = "CreateYuIchiFile";
     }
 }
