@@ -3,6 +3,7 @@ using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
@@ -71,7 +72,7 @@ namespace Infrastructure.Repositories
                                 x.RaiinInf.PtId,
                                 x.RaiinInf.SinDate,
                                 1,
-                                x.PtInf.PtNum,
+                                x.PtInf.PtNum.AsLong(),
                                 x.PtInf.KanaName ?? string.Empty,
                                 x.PtInf.Name ?? string.Empty,
                                 x.KaId,

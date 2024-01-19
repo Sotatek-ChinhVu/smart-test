@@ -280,7 +280,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                             firstTodayOdr.RaiinInf.RaiinNo,
                             0,
                             firstTodayOdr.PtInf.PtId,
-                            firstTodayOdr.PtInf.PtNum,
+                            firstTodayOdr.PtInf.PtNum.AsLong(),
                             firstTodayOdr.PtInf.Name ?? string.Empty,
                             firstTodayOdr.PtInf.KanaName ?? string.Empty,
                             firstTodayOdr.PtInf.Sex,
@@ -498,7 +498,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                      kensaInf.RaiinNo,
                                      kensaInf.IraiCd,
                                      kensaInf.PtId,
-                                     ptInf.PtNum,
+                                     ptInf.PtNum.AsLong(),
                                      ptInf.Name ?? string.Empty,
                                      ptInf.KanaName ?? string.Empty,
                                      ptInf.Sex,
@@ -591,7 +591,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                              raiinInf.RaiinNo,
                                              0,
                                              ptInf.PtId,
-                                             ptInf.PtNum,
+                                             ptInf.PtNum.AsLong(),
                                              ptInf.Name ?? string.Empty,
                                              ptInf.KanaName ?? string.Empty,
                                              ptInf.Sex,
@@ -608,7 +608,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
 
         oldKensaIraiList.AddRange(newKensaIraiList);
         oldKensaIraiList = oldKensaIraiList.OrderBy(item => item.SinDate)
-                                           .ThenBy(item => item.PtNum)
+                                           .ThenBy(item => item.PtNum.AsLong())
                                            .ThenBy(item => item.SikyuKbn)
                                            .ToList();
         return oldKensaIraiList;
@@ -1043,7 +1043,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                           item.kensaInf.IsDeleted == 1,
                                           item.kensaInf.CreateId,
                                           item.PrimaryKbn,
-                                          item.PtNum,
+                                          item.PtNum.AsLong(),
                                           item.Name,
                                           item.CenterName,
                                           item.kensaInf.UpdateDate,
@@ -1522,7 +1522,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                     kensaInf.PtId,
                                                                     iraiCd,
                                                                     iraiDate,
-                                                                    ptInf?.PtNum ?? 0,
+                                                                    ptInf?.PtNum.AsLong() ?? 0,
                                                                     ptInf?.Name ?? string.Empty,
                                                                     kensaInfDetailMessageList));
                     SendMessager(new KensaInfMessageStatus(false, false, itemSuccessed, string.Empty));
@@ -1532,7 +1532,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                 kensaInf.PtId,
                                                                 iraiCd,
                                                                 iraiDate,
-                                                                ptInf?.PtNum ?? 0,
+                                                                ptInf?.PtNum.AsLong() ?? 0,
                                                                 ptInf?.Name ?? string.Empty,
                                                                 new()
                                                                 {
@@ -1549,7 +1549,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                   kensaInf.PtId,
                                                                   iraiCd,
                                                                   iraiDate,
-                                                                  ptInf?.PtNum ?? 0,
+                                                                  ptInf?.PtNum.AsLong() ?? 0,
                                                                   ptInf?.Name ?? string.Empty,
                                                                   kensaInfDetailMessageList));
                     SendMessager(new KensaInfMessageStatus(false, false, message, string.Empty));
@@ -1558,7 +1558,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                                                                 kensaInf.PtId,
                                                                 iraiCd,
                                                                 iraiDate,
-                                                                ptInf?.PtNum ?? 0,
+                                                                ptInf?.PtNum.AsLong() ?? 0,
                                                                 ptInf?.Name ?? string.Empty,
                                                                 new()
                                                                 {
@@ -1634,7 +1634,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
                          kensaInf.PtId,
                          iraiCd,
                          iraiDate,
-                         ptInf?.PtNum ?? 0,
+                         ptInf?.PtNum.AsLong() ?? 0,
                          ptInf?.Name ?? string.Empty,
                          kensaInfDetailMessageList);
         return (result, false);

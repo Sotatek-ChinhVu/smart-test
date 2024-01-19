@@ -1,5 +1,6 @@
 ﻿using Entity.Tenant;
 using Helper.Constants;
+using Helper.Extension;
 
 namespace Reporting.ReceiptCheck.Model;
 
@@ -69,7 +70,7 @@ public class CoReceiptCheckModel
 
     public long PtNum
     {
-        get => PtInf != null ? PtInf.PtNum : 0;
+        get => PtInf != null ? PtInf.PtNum.AsLong() : 0;
     }
 
     public long PtId

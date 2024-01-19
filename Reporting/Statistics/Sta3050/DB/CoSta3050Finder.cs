@@ -210,8 +210,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
 
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
         ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
-        ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
-        ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
+        ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum.AsLong() >= printConf.StartPtNum) : ptInfs;
+        ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum.AsLong() <= printConf.EndPtNum) : ptInfs;
         IQueryable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs;
         #region 条件指定
         //診療科
@@ -505,7 +505,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 new CoSinKouiModel()
                 {
                     PtId = data.PtId,
-                    PtNum = data.PtNum,
+                    PtNum = data.PtNum.AsLong(),
                     PtKanaName = data.PtKanaName,
                     PtName = data.PtName,
                     Sex = data.Sex,
@@ -632,8 +632,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
     {
         IQueryable<PtInf> ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
         ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
-        ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
-        ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
+        ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum.AsLong() >= printConf.StartPtNum) : ptInfs;
+        ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum.AsLong() <= printConf.EndPtNum) : ptInfs;
 
         var ptInfList = ptInfs.ToList();
         var ptIdInfList = ptInfList.Select(item => item.PtId).Distinct().ToList();
@@ -1024,7 +1024,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 new CoSinKouiModel()
                 {
                     PtId = data.PtId,
-                    PtNum = data.PtNum,
+                    PtNum = data.PtNum.AsLong(),
                     PtKanaName = data.PtKanaName,
                     PtName = data.PtName,
                     Sex = data.Sex,

@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -200,7 +201,7 @@ namespace Infrastructure.Repositories
                     ti2.JikanKbn,
                     ti2.Status,
                     ti2.IsVisitDeleted,
-                    PtNum = pi1 == null ? 0 : pi1.PtNum,
+                    PtNum = pi1 == null ? 0 : pi1.PtNum.AsLong(),
                     PatientName = pi1 == null ? string.Empty : pi1.Name,
                     PrimaryDoctorName = primaryDoctor == null ? string.Empty : primaryDoctor.Sname,
                     KaSname = kaInf == null ? string.Empty : kaInf.KaSname,

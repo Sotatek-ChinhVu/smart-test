@@ -1026,7 +1026,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
         ptInfs?.ForEach(entity =>
         {
-            results.Add(entity.PtNum);
+            results.Add(entity.PtNum.AsLong());
         }
         );
 

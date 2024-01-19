@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Entity.Tenant;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -478,7 +479,7 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
                         Tensu7 = data.Tensu7,
                         Tensu8 = data.Tensu8,
                         TotalPtFutan = data.TotalPtFutan,
-                        PtNum = data.PtNum,
+                        PtNum = data.PtNum.AsLong(),
                         PtName = data.PtName,
                         TensuSyosin = data.TensuSyosin,
                         TensuSaisin = data.TensuSaisin

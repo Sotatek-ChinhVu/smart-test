@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using System;
+using Helper.Extension;
 
 namespace Infrastructure.Repositories
 {
@@ -81,7 +82,7 @@ namespace Infrastructure.Repositories
                                                                               u.ReceSeikyuPending?.ReceSeikyu?.SeikyuKbn ?? 0,
                                                                               u.ReceSeikyuPending?.ReceSeikyu?.PreHokenId ?? 0,
                                                                               u.ReceSeikyuPending?.ReceSeikyu?.Cmt ?? string.Empty,
-                                                                              u.ReceSeikyuPending?.PtInfo?.PtNum ?? 0,
+                                                                              u.ReceSeikyuPending?.PtInfo?.PtNum.AsLong() ?? 0,
                                                                               u.ReceSeikyuPending?.PtHokenInfItem?.HokenKbn ?? 0,
                                                                               u.ReceSeikyuPending?.PtHokenInfItem?.Houbetu ?? string.Empty,
                                                                               u.ReceSeikyuPending?.PtHokenInfItem?.StartDate ?? 0,
@@ -127,7 +128,7 @@ namespace Infrastructure.Repositories
                                           && !(!isIncludingUnConfirmed && receSeikyu.SeikyuYm == 999999)
                                           && !(sinYm > 0 && receSeikyu.SeikyuYm != 999999 && receSeikyu.SeikyuYm != sinYm)
 
-                                          && (ptNumSearch == 0 || ptInf.PtNum == ptNumSearch)
+                                          && (ptNumSearch == 0 || ptInf.PtNum.AsLong() == ptNumSearch)
                                           && (noFilter ||
                                                 (isFilterMonthlyDelay && receSeikyu.SeikyuKbn == 1) ||
                                                 (isFilterReturn && receSeikyu.SeikyuKbn == 2) ||
@@ -162,7 +163,7 @@ namespace Infrastructure.Repositories
                                                               x.ReceSeikyuPending.ReceSeikyu.SeikyuKbn,
                                                               x.ReceSeikyuPending.ReceSeikyu.PreHokenId,
                                                               x.ReceSeikyuPending.ReceSeikyu.Cmt ?? string.Empty,
-                                                              x.ReceSeikyuPending.PtInfo.PtNum,
+                                                              x.ReceSeikyuPending.PtInfo.PtNum.AsLong(),
                                                               x.ReceSeikyuPending.PtHokenInfItem.HokenKbn,
                                                               x.ReceSeikyuPending.PtHokenInfItem.Houbetu ?? string.Empty,
                                                               x.ReceSeikyuPending.PtHokenInfItem.StartDate,
@@ -218,7 +219,7 @@ namespace Infrastructure.Repositories
                                ptInf.PtId,
                                receSeikyu?.SinYm ?? 0,
                                receSeikyu?.HokenId ?? 0,
-                               ptInf.PtNum,
+                               ptInf.PtNum.AsLong(),
                                receSeikyu?.SeikyuKbn ?? 0
                           ));
             }
@@ -231,7 +232,7 @@ namespace Infrastructure.Repositories
 
             var ptInfo = NoTrackingDataContext.PtInfs.Where(u => u.HpId == hpId &&
                                                                                        u.IsDelete == 0 &&
-                                                                                       u.PtNum == ptNum).FirstOrDefault() ?? new();
+                                                                                       u.PtNum.AsLong() == ptNum).FirstOrDefault() ?? new();
             var raiinInf = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
                                                                                       u.IsDeleted == DeleteTypes.None &&
                                                                                       u.Status >= RaiinState.Calculate &&
@@ -280,7 +281,7 @@ namespace Infrastructure.Repositories
                                             0,
                                             0,
                                             string.Empty,
-                                            ptInfo?.PtNum ?? 0,
+                                            ptInfo?.PtNum.AsLong() ?? 0,
                                             ptInformation?.PtHokenInfo?.HokenKbn ?? 0,
                                             ptInformation?.PtHokenInfo?.Houbetu ?? string.Empty,
                                             ptInformation?.PtHokenInfo?.StartDate ?? 0,
@@ -312,7 +313,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm)
         {
-            PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId && u.PtNum == ptNum && u.IsDelete == 0);
+            PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId && u.PtNum.AsLong() == ptNum && u.IsDelete == 0);
             if (ptInf == null) return new List<RegisterSeikyuModel>();
 
             var listPtHokenInf = NoTrackingDataContext.PtHokenInfs.Where(u => u.HpId == hpId && u.PtId == ptInf.PtId && u.IsDeleted == 0);

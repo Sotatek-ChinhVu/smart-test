@@ -1,5 +1,6 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
+using Helper.Extension;
 
 namespace Reporting.Statistics.Sta1010.Models;
 
@@ -105,7 +106,7 @@ public class CoSyunoInfModel
     /// </summary>
     public long PtNum
     {
-        get => PtInf.PtNum;
+        get => PtInf.PtNum.AsLong();
     }
 
     /// <summary>

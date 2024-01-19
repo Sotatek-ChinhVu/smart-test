@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Entity.Tenant;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
@@ -482,7 +483,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                 {
                     ReportKbn = printConf.ReportKbn,
                     PtId = sinGroupj.Key.PtId,
-                    PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.PtNum ?? 0) : 0,
+                    PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.PtNum.AsLong() ?? 0) : 0,
                     PtName = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Name ?? string.Empty) : string.Empty,
                     Sex = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Sex ?? 0) : 0,
                     RaiinNo = sinGroupj.Key.RaiinNo,
@@ -1131,7 +1132,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
              {
                  ReportKbn = printConf.ReportKbn,
                  PtId = sinGroupj.Key.PtId,
-                 PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.PtNum ?? 0) : 0,
+                 PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.PtNum.AsLong() ?? 0) : 0,
                  PtName = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Name ?? string.Empty) : string.Empty,
                  Sex = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Sex ?? 0) : 0,
                  RaiinNo = sinGroupj.Key.RaiinNo,

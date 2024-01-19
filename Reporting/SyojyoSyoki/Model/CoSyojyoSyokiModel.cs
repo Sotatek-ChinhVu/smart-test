@@ -1,4 +1,5 @@
 ﻿using Entity.Tenant;
+using Helper.Extension;
 
 namespace Reporting.SyojyoSyoki.Model
 {
@@ -45,7 +46,7 @@ namespace Reporting.SyojyoSyoki.Model
         /// </summary>
         public long PtNum
         {
-            get => PtInf == null ? 0 : PtInf.PtNum;
+            get => PtInf == null ? 0 : PtInf.PtNum.AsLong();
         }
         public long PtId
         {

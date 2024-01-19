@@ -1,4 +1,5 @@
 ﻿using Entity.Tenant;
+using Helper.Extension;
 
 namespace Reporting.OrderLabel.Model;
 
@@ -50,7 +51,7 @@ public class CoPtInfModel
     /// </summary>
     public long PtNum
     {
-        get { return PtInf.PtNum; }
+        get { return PtInf.PtNum.AsLong(); }
     }
 
     /// <summary>

@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
 
         (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId, int sinDate)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum && x.IsDelete == 0).FirstOrDefault();
+            var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum.AsLong() == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
             {
                 return (new PatientInforModel(), false);
@@ -62,7 +62,7 @@ namespace Infrastructure.Repositories
             List<PatientInforModel> result = new();
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                where p.IsDelete == 0 && (p.PtNum.AsLong() == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
                 orderby p.PtNum descending
                 select new PatientInfQueryModel
                 {
@@ -144,7 +144,7 @@ namespace Infrastructure.Repositories
                 itemData.PtId,
                 itemData.ReferenceNo,
                 itemData.SeqNo,
-                itemData.PtNum,
+                itemData.PtNum.AsLong(),
                 kanaName ?? string.Empty,
                 name ?? string.Empty,
                 itemData.Sex,
@@ -198,7 +198,7 @@ namespace Infrastructure.Repositories
             long ptNum = keyword.AsLong();
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
+                where p.IsDelete == 0 && (p.PtNum.AsLong() == ptNum || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
                 select new
                 {
                     ptInf = p,
@@ -224,11 +224,11 @@ namespace Infrastructure.Repositories
             // PtNum
             if (input.FromPtNum > 0)
             {
-                ptInfQuery = ptInfQuery.Where(p => p.PtNum >= input.FromPtNum);
+                ptInfQuery = ptInfQuery.Where(p => p.PtNum.AsLong() >= input.FromPtNum);
             }
             if (input.ToPtNum > 0)
             {
-                ptInfQuery = ptInfQuery.Where(p => p.PtNum <= input.ToPtNum);
+                ptInfQuery = ptInfQuery.Where(p => p.PtNum.AsLong() <= input.ToPtNum);
             }
             // Name
             if (!string.IsNullOrEmpty(input.Name))
@@ -687,7 +687,7 @@ namespace Infrastructure.Repositories
                 p.PtId,
                 p.ReferenceNo,
                 p.SeqNo,
-                p.PtNum,
+                p.PtNum.AsLong(),
                 p.KanaName ?? string.Empty,
                 p.Name ?? string.Empty,
                 p.Sex,
@@ -735,7 +735,7 @@ namespace Infrastructure.Repositories
                 p.PtId,
                 p.ReferenceNo,
                 p.SeqNo,
-                p.PtNum,
+                p.PtNum.AsLong(),
                 p.KanaName ?? string.Empty,
                 p.Name ?? string.Empty,
                 p.Sex,
@@ -979,7 +979,7 @@ namespace Infrastructure.Repositories
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
             List<PatientInforModel> result = new();
 
-            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
+            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum.AsLong() >= startIndex && p.PtNum.AsLong() <= endIndex).ToList();
             for (long i = startIndex; i < endIndex; i++)
             {
                 if (result.Count > originPageSize || i > 9999999999)
@@ -990,14 +990,14 @@ namespace Infrastructure.Repositories
                 {
                     continue;
                 }
-                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 || p.IsDelete == 0));
+                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum.AsLong() == i && (autoSetting != 1 || p.IsDelete == 0));
                 if (checkExistPtNum == null)
                 {
                     result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
                 }
                 else
                 {
-                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum, string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
+                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum.AsLong(), string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
                 }
             }
 
@@ -1147,7 +1147,7 @@ namespace Infrastructure.Repositories
             int hpId = ptInf.HpId;
 
             PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
-            if (patientInsert.PtNum == 0)
+            if (patientInsert.PtNum.AsLong() == 0)
             {
                 patientInsert.PtNum = GetAutoPtNum(hpId);
             }
@@ -1354,7 +1354,7 @@ namespace Infrastructure.Repositories
             #endregion Maxmoney
 
             #region insurancesCan
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
+            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum.AsLong(), patientInsert.PtId);
             if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
                 TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
@@ -1375,7 +1375,7 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        private long GetAutoPtNum(int hpId)
+        private string GetAutoPtNum(int hpId)
         {
             long startPtNum = 1;
             long startPtNumSetting = (long)GetSettingValue(1014, hpId, 1);
@@ -1386,11 +1386,11 @@ namespace Infrastructure.Repositories
             return GetAutoPtNumAction(startPtNum, hpId);
         }
 
-        private long GetAutoPtNumAction(long startValue, int hpId)
+        private string GetAutoPtNumAction(long startValue, int hpId)
         {
             int ptNumCheckDigit = (int)GetSettingValue(1001, hpId, 0);
             int autoSetting = (int)GetSettingValue(1014, hpId, 0);
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue).Select(pt => pt.PtNum);
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum.AsLong() >= startValue).Select(pt => pt.PtNum.AsLong());
             long minPtNum = 0;
 
             if (ptNumCheckDigit == 1)
@@ -1405,14 +1405,14 @@ namespace Infrastructure.Repositories
                         minPtNum = ptInfNoNext.FirstOrDefault();
                     }
                 }
-                return CIUtil.PtIDChkDgtMakeM10W31(minPtNum + 1);
+                return CIUtil.PtIDChkDgtMakeM10W31(minPtNum + 1).AsString();
             }
             else
             {
-                var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
+                var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum.AsLong() == startValue);
                 if (ptNumExisting == null)
                 {
-                    return startValue;
+                    return startValue.AsString();
                 }
 
                 var ptInfNoNext = ptList?.Where(pt => !ptList.Distinct().Contains(pt + 1)).OrderBy(pt => pt).ToList();
@@ -1422,7 +1422,7 @@ namespace Infrastructure.Repositories
                     minPtNum = ptInfNoNext.FirstOrDefault();
                 }
 
-                return minPtNum + 1;
+                return (minPtNum + 1).AsString();
             }
         }
 
@@ -1909,7 +1909,7 @@ namespace Infrastructure.Repositories
 
             #region insuranceScan
             var insuranceScanDatabases = TrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == patientInfo.PtId && x.IsDeleted == DeleteTypes.None).ToList();
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInfo.PtNum, patientInfo.PtId);
+            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInfo.PtNum.AsLong(), patientInfo.PtId);
             if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
                 foreach (var scan in insuranceScanDatas)
@@ -2171,7 +2171,7 @@ namespace Infrastructure.Repositories
                         ptInf.PtId,
                         ptInf.ReferenceNo,
                         ptInf.SeqNo,
-                        ptInf.PtNum,
+                        ptInf.PtNum.AsLong(),
                         ptInf.KanaName ?? string.Empty,
                         ptInf.Name ?? string.Empty,
                         ptInf.Sex,
@@ -2249,7 +2249,7 @@ namespace Infrastructure.Repositories
             result = ptInfs.Select((x) => new PatientInforModel(
                             x.HpId,
                             x.PtId,
-                            x.PtNum,
+                            x.PtNum.AsLong(),
                             x.KanaName ?? string.Empty,
                             x.Name ?? string.Empty,
                             x.Birthday,
@@ -2277,7 +2277,7 @@ namespace Infrastructure.Repositories
                                                                     && ptIdList.Contains(item.PtId))
                                                      .Select(item => new PatientInforModel(
                                                                             item.PtId,
-                                                                            item.PtNum,
+                                                                            item.PtNum.AsLong(),
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
                                                                             item.Sex,
@@ -2294,7 +2294,7 @@ namespace Infrastructure.Repositories
                                                                     && ptIdList.Contains(item.PtId))
                                                      .Select(item => new PatientInforModel(
                                                                             item.PtId,
-                                                                            item.PtNum,
+                                                                            item.PtNum.AsLong(),
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
                                                                             item.Sex,
@@ -2634,7 +2634,7 @@ namespace Infrastructure.Repositories
         public long GetPtIdFromPtNum(int hpId, long ptNum)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
-                                                                                            && item.PtNum == ptNum);
+                                                                                            && item.PtNum.AsLong() == ptNum);
             if (ptInf != null)
             {
                 return ptInf.PtId;
@@ -2663,7 +2663,7 @@ namespace Infrastructure.Repositories
                                                                                   x.PtId,
                                                                                   x.ReferenceNo,
                                                                                   x.SeqNo,
-                                                                                  x.PtNum,
+                                                                                  x.PtNum.AsLong(),
                                                                                   x.KanaName ?? string.Empty,
                                                                                   x.Name ?? string.Empty,
                                                                                   x.Sex,
