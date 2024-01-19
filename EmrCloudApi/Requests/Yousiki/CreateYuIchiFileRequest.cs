@@ -1,6 +1,4 @@
-﻿using UseCase.Yousiki.CreateYuIchiFile;
-
-namespace EmrCloudApi.Requests.Yousiki;
+﻿namespace EmrCloudApi.Requests.Yousiki;
 
 public class CreateYuIchiFileRequest
 {
@@ -16,5 +14,12 @@ public class CreateYuIchiFileRequest
 
     public bool IsCreateKData { get; set; }
 
-    public ReactCreateYuIchiFile ReactCreateYuIchiFile { get; set; } = new();
+    public bool IsCheckedTestPatient { get; set; }
+
+    public ReactCreateYuIchiFileRequestItem ReactCreateYuIchiFile { get; set; } = new();
+}
+
+public class ReactCreateYuIchiFileRequestItem
+{
+    public bool ConfirmPatientList { get; set; }
 }

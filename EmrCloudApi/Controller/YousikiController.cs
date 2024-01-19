@@ -95,20 +95,18 @@ public class YousikiController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.CreateYuIchiFile)]
-    public ActionResult<Response<CreateYuIchiFileResponse>> CreateYuIchiFile([FromBody] CreateYuIchiFileRequest request)
+    public void CreateYuIchiFile([FromBody] CreateYuIchiFileRequest request)
     {
         try
         {
             _messenger.Register<CreateYuIchiFileStatus>(this, UpdateCreateYuIchiFileStatus);
             HttpContext.Response.ContentType = "application/json";
-            var input = new CreateYuIchiFileInputData(HpId, request.SinYm, request.IsCreateForm1File, request.IsCreateEFFile, request.IsCreateEFile, request.IsCreateFFile, request.IsCreateKData, request.ReactCreateYuIchiFile, _messenger);
-            var output = _bus.Handle(input);
-            var presenter = new CreateYuIchiFilePresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<CreateYuIchiFileResponse>>(presenter.Result);
+            var input = new CreateYuIchiFileInputData(HpId, request.SinYm, request.IsCreateForm1File, request.IsCreateEFFile, request.IsCreateEFile, request.IsCreateFFile, request.IsCreateKData, request.IsCheckedTestPatient, new ReactCreateYuIchiFile(request.ReactCreateYuIchiFile.ConfirmPatientList), _messenger);
+            _bus.Handle(input);
         }
         finally
         {
+            HttpContext.Response.Body.Close();
             _messenger.Deregister<CreateYuIchiFileStatus>(this, UpdateCreateYuIchiFileStatus);
         }
     }

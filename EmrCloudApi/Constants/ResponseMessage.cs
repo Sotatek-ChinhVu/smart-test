@@ -1084,9 +1084,5 @@
         public static readonly string IsYousikiExist = "既に登録があるため、追加できません。";
         public static readonly string InvalidHealthInsuranceAccepted = "指定した受診年月に来院がないため、追加できません。";
         public static readonly string InvalidYousikiInf = "Invalid YousikiInf, YousikiInf does not exist or has been deleted";
-        public static readonly string InvalidCreateYuIchiFileSinYm = "受診年月を入力してください。";
-        public static readonly string InvalidCreateYuIchiFileCheckedOption = "出力したいファイルにチェックを付けてください。";
-        public static readonly string CreateYuIchiFileSuccessed = "ファイルを保存しました。";
-        public static readonly string CreateYuIchiFileFailed = "出力対象が見つかりません。";
     }
 }

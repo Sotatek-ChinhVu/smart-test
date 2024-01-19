@@ -5,7 +5,7 @@ namespace UseCase.Yousiki.CreateYuIchiFile;
 
 public class CreateYuIchiFileInputData : IInputData<CreateYuIchiFileOutputData>
 {
-    public CreateYuIchiFileInputData(int hpId, int sinYm, bool isCreateForm1File, bool isCreateEFFile, bool isCreateEFile, bool isCreateFFile, bool isCreateKData, ReactCreateYuIchiFile reactCreateYuIchiFile, IMessenger messenger)
+    public CreateYuIchiFileInputData(int hpId, int sinYm, bool isCreateForm1File, bool isCreateEFFile, bool isCreateEFile, bool isCreateFFile, bool isCreateKData, bool isCheckedTestPatient, ReactCreateYuIchiFile reactCreateYuIchiFile, IMessenger messenger)
     {
         HpId = hpId;
         SinYm = sinYm;
@@ -14,6 +14,7 @@ public class CreateYuIchiFileInputData : IInputData<CreateYuIchiFileOutputData>
         IsCreateEFile = isCreateEFile;
         IsCreateFFile = isCreateFFile;
         IsCreateKData = isCreateKData;
+        IsCheckedTestPatient = isCheckedTestPatient;
         ReactCreateYuIchiFile = reactCreateYuIchiFile;
         Messenger = messenger;
     }
@@ -31,6 +32,8 @@ public class CreateYuIchiFileInputData : IInputData<CreateYuIchiFileOutputData>
     public bool IsCreateFFile { get; private set; }
 
     public bool IsCreateKData { get; private set; }
+
+    public bool IsCheckedTestPatient { get; private set; }
 
     public ReactCreateYuIchiFile ReactCreateYuIchiFile { get; private set; }
 
