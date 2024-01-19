@@ -10,5 +10,10 @@ public class AddYousikiRequest
 
     public int SelectDataType { get; set; }
 
-    public ReactAddYousiki ReactAddYousiki { get; set; } = new();
+    public ReactAddYousikiRequestItem ReactAddYousiki { get; set; } = new();
+}
+
+public class ReactAddYousikiRequestItem
+{
+    public bool ConfirmSelectDataType { get; set; }
 }
