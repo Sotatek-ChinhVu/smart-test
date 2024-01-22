@@ -1,9 +1,11 @@
 ﻿using Domain.Models.HpInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.Yousiki;
+using Helper.Common;
 using Helper.Extension;
 using Helper.Messaging;
 using System.Text;
+using System.Text.RegularExpressions;
 using UseCase.Yousiki.CreateYuIchiFile;
 using CreateYuIchiFileProgressStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 using CreateYuIchiFileStatus = UseCase.Yousiki.CreateYuIchiFile.CreateYuIchiFileStatus;
@@ -79,7 +81,7 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
             }
             if (inputData.IsCreateKData)
             {
-                isExported = ExportForeignKCsvFile(inputData.SinYm) || isExported;
+                isExported = ExportForeignKCsvFile(inputData.HpId, inputData.SinYm, inputData.IsCheckedTestPatient) || isExported;
             }
             if (isExported)
             {
@@ -99,13 +101,41 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
 
 
     #region export data
-    private bool ExportForeignKCsvFile(int sinYm)
+    private bool ExportForeignKCsvFile(int hpId, int sinYm, bool isCheckedTestPatient)
     {
         // send message progress to export data
         SendMessager(false, progress, $"Kファイル{sinYm}月分　作成中・・・");
-        string fileName = string.Empty;
-        // send contentData to export data
-        SendMessager(false, fileContent, $"Kファイル{sinYm}月分　作成中・・・", string.Empty, fileName);
+
+        var raiinInfs = _yousikiRepository.GetRaiinInfsInMonth(hpId, sinYm);
+        if (!raiinInfs.Any())
+        {
+            return false;
+        }
+        string facilityCode = GetFacilityCode(hpId, sinYm);
+        string fileName = Path.Combine($"Kg_{facilityCode}_{sinYm}.csv");
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        var encoding = Encoding.GetEncoding(932);
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+            byte[] bytes;
+            using (StreamWriter writer = new StreamWriter(memoryStream, encoding))
+            {
+                foreach (var raiinInf in raiinInfs)
+                {
+                    if (isCheckedTestPatient || !raiinInf.IsTester)
+                    {
+                        writer.WriteLine($"{facilityCode},{raiinInf.PtNum.AsString().PadLeft(10, '0')},{raiinInf.SinDate}" +
+                        $",{HenkanJ.Instance.ToFullsize(Regex.Replace(raiinInf.KanaName, @"\s+", string.Empty))},{raiinInf.Sex},{raiinInf.Birthday.AsString().PadLeft(8, '0')}");
+                    }
+                }
+            }
+            bytes = memoryStream.ToArray();
+
+            string base64Data = Convert.ToBase64String(bytes);
+            // send contentData to export data
+            SendMessager(false, fileContent, $"Kファイル{sinYm}月分　作成中・・・", base64Data, fileName);
+        }
+
         return true;
     }
 
@@ -141,7 +171,7 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
         return true;
     }
 
-    #region ExportOutpatientForm1
+    #region Export Outpatient Form 1 (FF1)
     /// <summary>
     /// Export OutPatient Form1
     /// </summary>

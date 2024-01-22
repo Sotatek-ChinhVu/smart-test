@@ -526,6 +526,57 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                .ToList();
     }
 
+    /// <summary>
+    /// Get RaiinInfs in month
+    /// </summary>
+    /// <param name="sinYm"></param>
+    /// <returns></returns>
+    public List<ForeignKFileModel> GetRaiinInfsInMonth(int hpId, int sinYm)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId);
+
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(p => p.HpId == hpId);
+
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId
+                                                                   && p.IsDeleted == DeleteTypes.None
+                                                                   && p.SinDate / 100 == sinYm
+                                                                   && p.Status >= RaiinState.Calculate);
+
+        var joinkaikeiInfQuery = from raiinInf in raiinInfs
+                                 join kaikeiInf in kaikeiInfs
+                                 on new { raiinInf.PtId, raiinInf.SinDate, raiinInf.RaiinNo }
+                                 equals new { kaikeiInf.PtId, kaikeiInf.SinDate, kaikeiInf.RaiinNo }
+                                 select new
+                                 {
+                                     RaiinInf = raiinInf,
+                                     KaikeiInf = kaikeiInf
+                                 };
+        var joinPtInfQuery = from joinkaikeiInf in joinkaikeiInfQuery
+                             join ptInf in ptInfs
+                             on joinkaikeiInf.RaiinInf.PtId equals ptInf.PtId
+                             select new
+                             {
+                                 joinkaikeiInf.RaiinInf.SinDate,
+                                 joinkaikeiInf.KaikeiInf.HokenKbn,
+                                 PtInf = ptInf
+                             };
+        var result = joinPtInfQuery.Where(item => item.HokenKbn == 1 || item.HokenKbn == 2)
+                                   .GroupBy(item => new { item.SinDate, item.PtInf.PtId })
+                                   .AsEnumerable()
+                                   .Select(item => item.FirstOrDefault())
+                                   .OrderBy(item => item?.PtInf.PtNum)
+                                   .ThenBy(item => item?.SinDate)
+                                   .Select(item => new ForeignKFileModel(
+                                                       item?.SinDate ?? 0,
+                                                       item?.PtInf.PtNum ?? 0,
+                                                       item?.PtInf.KanaName ?? string.Empty,
+                                                       item?.PtInf.Sex ?? 0,
+                                                       item?.PtInf.Birthday ?? 0,
+                                                       item?.PtInf.IsTester == 1))
+                                   .ToList();
+        return result;
+    }
+
     #region private function
     /// <summary>
     /// main action add yousikiInfByMonth
