@@ -8,6 +8,8 @@ public interface IYousikiRepository : IRepositoryBase
 
     List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, long ptId, int dataType, int seqNo);
 
+    List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, List<long> ptIdList);
+
     List<VisitingInfModel> GetVisitingInfs(int hpId, long ptId, int sinYm);
 
     List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType);
