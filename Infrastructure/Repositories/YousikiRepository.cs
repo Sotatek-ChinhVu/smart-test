@@ -141,6 +141,32 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     }
 
     /// <summary>
+    /// Get Yousiki1InfDetail list
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="ptIdList"></param>
+    /// <returns></returns>
+    public List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, List<long> ptIdList)
+    {
+        var result = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
+                                                                            && ptIdList.Contains(item.PtId)
+                                                                            && item.HpId == hpId)
+                                                             .Select(item => new Yousiki1InfDetailModel(
+                                                                                 item.PtId,
+                                                                                 item.SinYm,
+                                                                                 item.DataType,
+                                                                                 item.SeqNo,
+                                                                                 item.CodeNo ?? string.Empty,
+                                                                                 item.RowNo,
+                                                                                 item.Payload,
+                                                                                 item.Value ?? string.Empty))
+                                                             .ToList();
+        return result;
+    }
+
+    /// <summary>
     /// Get VisitingInf in month
     /// </summary>
     /// <param name="hpId"></param>
@@ -409,65 +435,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <returns></returns>
     public bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList)
     {
-        bool successed = false;
-        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-        executionStrategy.Execute(
-            () =>
-            {
-                using var transaction = TrackingDataContext.Database.BeginTransaction();
-                try
-                {
-                    AddYousikiInfByMonthAction(hpId, userId, sinYm, dataType, ptIdList);
-                    TrackingDataContext.SaveChanges();
-                    transaction.Commit();
-                    successed = true;
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    successed = false;
-                }
-            });
-        return successed;
-    }
-
-    /// <summary>
-    /// Delete YousikiInf
-    /// </summary>
-    /// <param name="hpId"></param>
-    /// <param name="userId"></param>
-    /// <param name="sinYm"></param>
-    /// <param name="ptId"></param>
-    /// <param name="dataType"></param>
-    /// <returns></returns>
-    public bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType)
-    {
-        var yousikiInf = TrackingDataContext.Yousiki1Infs.FirstOrDefault(item => item.SinYm == sinYm
-                                                                                 && item.PtId == ptId
-                                                                                 && item.DataType == dataType
-                                                                                 && item.HpId == hpId
-                                                                                 && item.IsDeleted == 0);
-        if (yousikiInf != null)
-        {
-            yousikiInf.IsDeleted = 1;
-            yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            yousikiInf.UpdateId = userId;
-        }
-        TrackingDataContext.SaveChanges();
-        return true;
-    }
-
-    #region private function
-    /// <summary>
-    /// main action add yousikiInfByMonth
-    /// </summary>
-    /// <param name="hpId"></param>
-    /// <param name="userId"></param>
-    /// <param name="sinYm"></param>
-    /// <param name="dataType"></param>
-    /// <param name="ptIdList"></param>
-    private void AddYousikiInfByMonthAction(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList)
-    {
         var allYousiki1InfByPtIdList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId
                                                                                         && ptIdList.Contains(item.PtId)
                                                                                         && item.SinYm == sinYm)
@@ -529,17 +496,18 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                 TrackingDataContext.Yousiki1Infs.Add(newYousiki);
             }
         }
+        TrackingDataContext.SaveChanges();
+        return true;
     }
-    #endregion
 
     public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
     {
         var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
-        if (listKacodeMst.Count == 0) 
+        if (listKacodeMst.Count == 0)
         {
             return new Dictionary<string, string>();
         }
-        
+
         return listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
