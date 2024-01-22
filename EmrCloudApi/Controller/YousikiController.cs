@@ -136,8 +136,8 @@ public class YousikiController : AuthorizeControllerBase
     {
         string result = "\n" + JsonSerializer.Serialize(status);
         var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
-        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-        HttpContext.Response.Body.FlushAsync();
+        HttpContext.Response.Body.Write(resultForFrontEnd, 0, resultForFrontEnd.Length);
+        HttpContext.Response.Body.Flush();
     }
     #endregion
 }
