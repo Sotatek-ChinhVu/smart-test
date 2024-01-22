@@ -98,6 +98,7 @@
         public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
         public const string UploadListFileKarte = "UploadListFileKarte";
         public const string GetListInsuranceScan = "GetListInsuranceScan";
+        public const string ResizeImage = "ResizeImage";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";

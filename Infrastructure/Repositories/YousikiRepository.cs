@@ -141,6 +141,32 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     }
 
     /// <summary>
+    /// Get Yousiki1InfDetail list
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="ptIdList"></param>
+    /// <returns></returns>
+    public List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, List<long> ptIdList)
+    {
+        var result = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
+                                                                            && ptIdList.Contains(item.PtId)
+                                                                            && item.HpId == hpId)
+                                                             .Select(item => new Yousiki1InfDetailModel(
+                                                                                 item.PtId,
+                                                                                 item.SinYm,
+                                                                                 item.DataType,
+                                                                                 item.SeqNo,
+                                                                                 item.CodeNo ?? string.Empty,
+                                                                                 item.RowNo,
+                                                                                 item.Payload,
+                                                                                 item.Value ?? string.Empty))
+                                                             .ToList();
+        return result;
+    }
+
+    /// <summary>
     /// Get VisitingInf in month
     /// </summary>
     /// <param name="hpId"></param>
@@ -492,11 +518,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
     {
         var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
-        if (listKacodeMst.Count == 0) 
+        if (listKacodeMst.Count == 0)
         {
             return new Dictionary<string, string>();
         }
-        
+
         return listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
