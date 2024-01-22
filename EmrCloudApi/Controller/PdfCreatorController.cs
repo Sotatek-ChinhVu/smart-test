@@ -1,13 +1,16 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.UserToken;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.DrugInfor;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.DrugInfor;
 using EmrCloudApi.Requests.ExportPDF;
+using EmrCloudApi.Requests.File;
 using EmrCloudApi.Requests.KensaHistory;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.PatientManagement;
 using Helper.Enum;
 using Helper.Extension;
+using Helper.Redis;
 using Interactor.DrugInfor.CommonDrugInf;
 using Interactor.MedicalExamination.HistoryCommon;
 using iText.Kernel.Pdf;
@@ -21,15 +24,14 @@ using Reporting.Mappers.Common;
 using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
+using StackExchange.Redis;
+using System.Drawing;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Web;
 using UseCase.DrugInfor.GetDataPrintDrugInfo;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
-using StackExchange.Redis;
-using Helper.Redis;
-using Domain.Models.UserToken;
 
 namespace EmrCloudApi.Controller;
 
@@ -728,6 +730,45 @@ public class PdfCreatorController : CookieController
                     return File(result, "application/pdf");
                 }
             }
+        }
+    }
+
+    [HttpGet(ApiPath.ResizeImage)]
+    public async Task<IActionResult> Resize([FromQuery] ResizeImageRequest request)
+    {
+        try
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(request.ImagePath))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest($"Failed to download image from {request.ImagePath}");
+                    }
+
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    {
+                        using (var originalImage = Image.FromStream(stream))
+                        {
+                            int newWidth = (int)Math.Floor((double)originalImage.Width / originalImage.Height * request.Height);
+
+                            using (var resizedImage = new Bitmap(originalImage, new Size(newWidth, request.Height)))
+                            {
+                                var resultStream = new MemoryStream();
+                                resizedImage.Save(resultStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                resultStream.Position = 0;
+
+                                return File(resultStream, "image/jpeg");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            return BadRequest("Error resizing image");
         }
     }
 
