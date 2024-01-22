@@ -55,7 +55,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         var ptInfo = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId);
         if (ptInfo != null)
         {
-            info.PtNo = ptInfo.PtNum.AsLong();
+            info.PtNo = Convert.ToInt64(ptInfo.PtNum);
             info.PtName = ptInfo.Name ?? string.Empty;
             info.Sex = ptInfo.Sex == 1 ? "M" : "F";
             info.IntAge = (intOrderDate - ptInfo.Birthday) / 10000;

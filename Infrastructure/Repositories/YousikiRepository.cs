@@ -31,7 +31,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     {
         var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId &&
                                 x.IsDelete == 0 &&
-                                (ptNumber == 0 ? true : x.PtNum.AsLong() == ptNumber));
+                                (ptNumber == 0 ? true : Convert.ToInt64(x.PtNum) == ptNumber));
         var yousiki1Infs = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
                             (dataType == 0 ? true : x.DataType == dataType) &&
                             x.IsDeleted == 0 &&
@@ -71,7 +71,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         List<Yousiki1InfModel> compoundedResultList = new();
         var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
                                                                 && item.IsDelete == 0
-                                                                && (ptNum == 0 || item.PtNum.AsLong() == ptNum));
+                                                                && (ptNum == 0 || Convert.ToInt64(item.PtNum) == ptNum));
         var yousiki1Infs = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId
                                                                             && item.IsDeleted == 0
                                                                             && (sinYm == 0 || item.SinYm == sinYm));
@@ -248,11 +248,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
     {
         var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
-        if (listKacodeMst.Count == 0) 
+        if (listKacodeMst.Count == 0)
         {
             return new Dictionary<string, string>();
         }
-        
+
         return listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);

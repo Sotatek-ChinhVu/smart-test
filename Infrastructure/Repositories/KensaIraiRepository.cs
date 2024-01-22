@@ -9,7 +9,6 @@ using Helper.Messaging.Data;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories;
@@ -608,7 +607,7 @@ public class KensaIraiRepository : RepositoryBase, IKensaIraiRepository
 
         oldKensaIraiList.AddRange(newKensaIraiList);
         oldKensaIraiList = oldKensaIraiList.OrderBy(item => item.SinDate)
-                                           .ThenBy(item => item.PtNum.AsLong())
+                                           .ThenBy(item => Convert.ToInt64(item.PtNum))
                                            .ThenBy(item => item.SikyuKbn)
                                            .ToList();
         return oldKensaIraiList;

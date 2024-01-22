@@ -2,15 +2,11 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using System;
-using Helper.Extension;
 
 namespace Infrastructure.Repositories
 {
@@ -232,7 +228,7 @@ namespace Infrastructure.Repositories
 
             var ptInfo = NoTrackingDataContext.PtInfs.Where(u => u.HpId == hpId &&
                                                                                        u.IsDelete == 0 &&
-                                                                                       u.PtNum.AsLong() == ptNum).FirstOrDefault() ?? new();
+                                                                                       Convert.ToInt64(u.PtNum) == ptNum).FirstOrDefault() ?? new();
             var raiinInf = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
                                                                                       u.IsDeleted == DeleteTypes.None &&
                                                                                       u.Status >= RaiinState.Calculate &&
@@ -313,7 +309,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm)
         {
-            PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId && u.PtNum.AsLong() == ptNum && u.IsDelete == 0);
+            PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId && Convert.ToInt64(u.PtNum) == ptNum && u.IsDelete == 0);
             if (ptInf == null) return new List<RegisterSeikyuModel>();
 
             var listPtHokenInf = NoTrackingDataContext.PtHokenInfs.Where(u => u.HpId == hpId && u.PtId == ptInf.PtId && u.IsDeleted == 0);

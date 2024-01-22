@@ -482,11 +482,11 @@ namespace Reporting.ReceiptList.Service
                 {
                     if (searchModel.PtIdFrom > 0)
                     {
-                        ptInfs = ptInfs.Where(item => item.PtNum.AsLong() >= searchModel.PtIdFrom);
+                        ptInfs = ptInfs.Where(item => Convert.ToInt64(item.PtNum) >= searchModel.PtIdFrom);
                     }
                     if (searchModel.PtIdTo > 0)
                     {
-                        ptInfs = ptInfs.Where(item => item.PtNum.AsLong() <= searchModel.PtIdTo);
+                        ptInfs = ptInfs.Where(item => Convert.ToInt64(item.PtNum) <= searchModel.PtIdTo);
                     }
                     listPtIds = ptInfs.Select(pt => pt.PtId).Distinct().ToList();
                     receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
@@ -494,7 +494,7 @@ namespace Reporting.ReceiptList.Service
                 else if (searchModel.PtSearchOption == PtIdSearchOptionEnum.IndividualSearch && !string.IsNullOrEmpty(searchModel.PtId))
                 {
                     List<long> ptIdList = searchModel.PtId.Split(',').Select(item => item.AsLong()).ToList();
-                    ptInfs = ptInfs.Where(item => ptIdList.Contains(item.PtNum.AsLong()));
+                    ptInfs = ptInfs.Where(item => ptIdList.Contains(Convert.ToInt64(item.PtNum)));
                     listPtIds = ptInfs.Select(pt => pt.PtId).Distinct().ToList();
                     receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
                 }

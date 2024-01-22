@@ -1429,7 +1429,7 @@ namespace Infrastructure.Repositories
 
         public ReceptionModel? GetLastKarute(int hpId, long ptNum)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum.AsLong() == ptNum && p.IsDelete == DeleteTypes.None);
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && Convert.ToInt64(p.PtNum) == ptNum && p.IsDelete == DeleteTypes.None);
 
             if (ptInf != null)
             {

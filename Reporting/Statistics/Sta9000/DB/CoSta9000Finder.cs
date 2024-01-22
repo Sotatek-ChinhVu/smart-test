@@ -1202,9 +1202,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         if (ptConf != null)
         {
             //患者番号
-            ptInfs = ptConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum.AsLong() >= ptConf.StartPtNum) : ptInfs;
-            ptInfs = ptConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum.AsLong() <= ptConf.EndPtNum) : ptInfs;
-            ptInfs = ptConf.PtNums?.Count > 0 ? ptInfs.Where(p => (ptConf.PtNums.Count == 0 || ptConf.PtNums.Contains(p.PtNum.AsLong()))) : ptInfs;
+            ptInfs = ptConf.StartPtNum > 0 ? ptInfs.Where(p => Convert.ToInt64(p.PtNum) >= ptConf.StartPtNum) : ptInfs;
+            ptInfs = ptConf.EndPtNum > 0 ? ptInfs.Where(p => Convert.ToInt64(p.PtNum) <= ptConf.EndPtNum) : ptInfs;
+            ptInfs = ptConf.PtNums?.Count > 0 ? ptInfs.Where(p => (ptConf.PtNums.Count == 0 || ptConf.PtNums.Contains(Convert.ToInt64(p.PtNum)))) : ptInfs;
             //カナ氏名
             ptInfs = ptConf.KanaName != string.Empty ? ptInfs.Where(p => p.KanaName != null && p.KanaName.Contains(ptConf.KanaName) == true) : ptInfs;
             ptInfs = ptConf.Name != string.Empty ? ptInfs.Where(p => p.Name != null && p.Name.Contains(ptConf.Name)) : ptInfs;
@@ -2726,13 +2726,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 (
                     p =>
                         p.HpId == hpId &&
-                        ptNums.Contains(p.PtNum.AsLong()) &&
+                        ptNums.Contains(Convert.ToInt64(p.PtNum)) &&
                         p.IsDelete == DeleteStatus.None
                 ).ToList();
 
             foreach (var kensaData in kensaDatas)
             {
-                kensaData.PtId = ptIds.Find(p => p.PtNum.AsLong() == kensaData.PtId)?.PtId ?? 0;
+                kensaData.PtId = ptIds.Find(p => Convert.ToInt64(p.PtNum) == kensaData.PtId)?.PtId ?? 0;
             }
         }
         #endregion
