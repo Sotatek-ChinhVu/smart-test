@@ -292,6 +292,24 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     }
 
     /// <summary>
+    /// check exist Yousiki
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    public bool IsYousikiExist(int hpId, int sinYm, long ptId, int dataType)
+    {
+        var yousiki1InfExist = NoTrackingDataContext.Yousiki1Infs.Any(item => item.HpId == hpId
+                                                                              && item.IsDeleted == 0
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId
+                                                                              && item.DataType == dataType);
+        return yousiki1InfExist;
+    }
+
+    /// <summary>
     /// Get List PtIdHealthInsuranceAccepted
     /// </summary>
     /// <param name="hpId"></param>
@@ -493,6 +511,32 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
+    }
+
+    /// <summary>
+    /// Delete YousikiInf
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    public bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType)
+    {
+        var yousikiInf = TrackingDataContext.Yousiki1Infs.FirstOrDefault(item => item.SinYm == sinYm
+                                                                                 && item.PtId == ptId
+                                                                                 && item.DataType == dataType
+                                                                                 && item.HpId == hpId
+                                                                                 && item.IsDeleted == 0);
+        if (yousikiInf != null)
+        {
+            yousikiInf.IsDeleted = 1;
+            yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            yousikiInf.UpdateId = userId;
+        }
+        TrackingDataContext.SaveChanges();
+        return true;
     }
 
     public void ReleaseResource()

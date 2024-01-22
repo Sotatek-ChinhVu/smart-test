@@ -14,6 +14,8 @@ public interface IYousikiRepository : IRepositoryBase
 
     bool IsYousikiExist(int hpId, int sinYm, long ptId);
 
+    bool IsYousikiExist(int hpId, int sinYm, long ptId, int dataType);
+
     List<long> GetListPtIdHealthInsuranceAccepted(int hpId, int sinYm, long ptId, int dataType);
 
     List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType);
@@ -23,4 +25,6 @@ public interface IYousikiRepository : IRepositoryBase
     Dictionary<string, string> GetKacodeYousikiMstDict(int hpId);
 
     bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList);
+
+    bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType);
 }
