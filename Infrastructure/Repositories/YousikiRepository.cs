@@ -85,6 +85,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                      select new Yousiki1InfModel(
                                                 ptInf.PtNum,
                                                 ptInf.Name ?? string.Empty,
+                                                ptInf.IsTester == 1,
                                                 yousikiInf.PtId,
                                                 yousikiInf.SinYm,
                                                 yousikiInf.DataType,
@@ -511,6 +512,112 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
+    }
+
+    /// <summary>
+    /// Get ListYousiki1Inf for export data
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public List<Yousiki1InfModel> GetListYousiki1Inf(int hpId, int sinYm, int status = -1)
+    {
+        var yousiki1InfList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId && item.SinYm == sinYm && item.IsDeleted == 0 && (status == -1 || item.Status == status)).ToList();
+        var ptIdList = yousiki1InfList.Select(item => item.PtId).Distinct().ToList();
+        var yousiki1InfDetailList = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.HpId == hpId && item.SinYm == sinYm && ptIdList.Contains(item.PtId)).ToList();
+        var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId && item.IsDelete == 0 && ptIdList.Contains(item.PtId)).ToList();
+
+        var yousiki1InfQuery = from yousiki1Inf in yousiki1InfList
+                               join ptInf in ptInfList on
+                                  new { yousiki1Inf.HpId, yousiki1Inf.PtId } equals
+                                  new { ptInf.HpId, ptInf.PtId }
+                               join yousiki1InfDetail in yousiki1InfDetailList on
+                                 new { yousiki1Inf.HpId, yousiki1Inf.PtId, yousiki1Inf.DataType, yousiki1Inf.SinYm, yousiki1Inf.SeqNo } equals
+                                 new { yousiki1InfDetail.HpId, yousiki1InfDetail.PtId, yousiki1InfDetail.DataType, yousiki1InfDetail.SinYm, yousiki1InfDetail.SeqNo } into listYousiki1InfDetail
+                               select new
+                               {
+                                   ptInf,
+                                   yousiki1Inf,
+                                   ListYousiki1InfDetail = listYousiki1InfDetail
+                               };
+
+        return yousiki1InfQuery
+               .Select(item => new Yousiki1InfModel(
+                                   item.ptInf.PtNum,
+                                   item.ptInf.Name ?? string.Empty,
+                                   item.ptInf.IsTester == 1,
+                                   item.yousiki1Inf.PtId,
+                                   item.yousiki1Inf.SinYm,
+                                   item.yousiki1Inf.DataType,
+                                   item.yousiki1Inf.Status,
+                                   new(),
+                                   item.yousiki1Inf.SeqNo,
+                                   item.ListYousiki1InfDetail.Select(itemDetail => new Yousiki1InfDetailModel(
+                                                                                       itemDetail.PtId,
+                                                                                       itemDetail.SinYm,
+                                                                                       itemDetail.DataType,
+                                                                                       itemDetail.SeqNo,
+                                                                                       itemDetail.CodeNo ?? string.Empty,
+                                                                                       itemDetail.RowNo,
+                                                                                       itemDetail.Payload,
+                                                                                       itemDetail.Value ?? string.Empty))
+                                                             .OrderBy(item => item.CodeNo)
+                                                             .ThenBy(item => item.RowNo)
+                                                             .ThenBy(item => item.Payload)
+                                                             .ToList()))
+               .ToList();
+    }
+
+    /// <summary>
+    /// Get RaiinInfs in month
+    /// </summary>
+    /// <param name="sinYm"></param>
+    /// <returns></returns>
+    public List<ForeignKFileModel> GetRaiinInfsInMonth(int hpId, int sinYm)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId);
+
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(p => p.HpId == hpId);
+
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId
+                                                                   && p.IsDeleted == DeleteTypes.None
+                                                                   && p.SinDate / 100 == sinYm
+                                                                   && p.Status >= RaiinState.Calculate);
+
+        var joinkaikeiInfQuery = from raiinInf in raiinInfs
+                                 join kaikeiInf in kaikeiInfs
+                                 on new { raiinInf.PtId, raiinInf.SinDate, raiinInf.RaiinNo }
+                                 equals new { kaikeiInf.PtId, kaikeiInf.SinDate, kaikeiInf.RaiinNo }
+                                 select new
+                                 {
+                                     RaiinInf = raiinInf,
+                                     KaikeiInf = kaikeiInf
+                                 };
+        var joinPtInfQuery = from joinkaikeiInf in joinkaikeiInfQuery
+                             join ptInf in ptInfs
+                             on joinkaikeiInf.RaiinInf.PtId equals ptInf.PtId
+                             select new
+                             {
+                                 joinkaikeiInf.RaiinInf.SinDate,
+                                 joinkaikeiInf.KaikeiInf.HokenKbn,
+                                 PtInf = ptInf
+                             };
+        var result = joinPtInfQuery.Where(item => item.HokenKbn == 1 || item.HokenKbn == 2)
+                                   .GroupBy(item => new { item.SinDate, item.PtInf.PtId })
+                                   .AsEnumerable()
+                                   .Select(item => item.FirstOrDefault())
+                                   .OrderBy(item => item?.PtInf.PtNum)
+                                   .ThenBy(item => item?.SinDate)
+                                   .Select(item => new ForeignKFileModel(
+                                                       item?.SinDate ?? 0,
+                                                       item?.PtInf.PtNum ?? 0,
+                                                       item?.PtInf.KanaName ?? string.Empty,
+                                                       item?.PtInf.Sex ?? 0,
+                                                       item?.PtInf.Birthday ?? 0,
+                                                       item?.PtInf.IsTester == 1))
+                                   .ToList();
+        return result;
     }
 
     /// <summary>

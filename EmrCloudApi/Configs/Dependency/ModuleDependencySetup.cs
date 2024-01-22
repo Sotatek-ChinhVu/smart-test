@@ -815,6 +815,7 @@ using UseCase.Yousiki.DeleteYousikiInf;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetByomeisInMonth;
+using UseCase.Yousiki.CreateYuIchiFile;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1923,6 +1924,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetVisitingInfsInputData, GetVisitingInfsInteractor>();
             busBuilder.RegisterUseCase<AddYousikiInputData, AddYousikiInteractor>();
             busBuilder.RegisterUseCase<DeleteYousikiInfInputData, DeleteYousikiInfInteractor>();
+            busBuilder.RegisterUseCase<CreateYuIchiFileInputData, CreateYuIchiFileInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

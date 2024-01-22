@@ -27,4 +27,8 @@ public interface IYousikiRepository : IRepositoryBase
     bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList);
 
     bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType);
+
+    List<Yousiki1InfModel> GetListYousiki1Inf(int hpId, int sinYm, int status = -1);
+
+    List<ForeignKFileModel> GetRaiinInfsInMonth(int hpId, int sinYm);
 }

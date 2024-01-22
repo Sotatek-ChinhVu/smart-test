@@ -7,9 +7,11 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Collections;
+using System.Drawing;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories;
