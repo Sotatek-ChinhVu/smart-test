@@ -10,11 +10,21 @@ public interface IYousikiRepository : IRepositoryBase
 
     List<VisitingInfModel> GetVisitingInfs(int hpId, long ptId, int sinYm);
 
+    bool IsYousikiExist(int hpId, int sinYm, long ptId);
+
+    bool IsYousikiExist(int hpId, int sinYm, long ptId, int dataType);
+
+    List<long> GetListPtIdHealthInsuranceAccepted(int hpId, int sinYm, long ptId, int dataType);
+
     List<Yousiki1InfModel> GetHistoryYousiki(int hpId, int sinYm, long ptId, int dataType);
 
     List<Yousiki1InfModel> GetYousiki1InfModel(int hpId, int sinYm, long ptNumber, int dataType);
 
     Dictionary<string, string> GetKacodeYousikiMstDict(int hpId);
+
+    bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList);
+
+    bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType);
 
     void UpdateYosiki(List<CategoryItemModel> CategoryList, Yousiki1InfDetailModel yousiki1InfDetailModels, bool isTemporarySave = false);
 }

@@ -6,12 +6,14 @@ using EmrCloudApi.Responses.Yousiki;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Yousiki.AddYousiki;
 using UseCase.Yousiki.GetVisitingInfs;
 using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetHistoryYousiki;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using UseCase.Yousiki.DeleteYousikiInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -63,6 +65,26 @@ public class YousikiController : AuthorizeControllerBase
         var presenter = new GetHistoryYousikiPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetHistoryYousikiResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.AddYousiki)]
+    public ActionResult<Response<AddYousikiResponse>> AddYousiki([FromBody] AddYousikiRequest request)
+    {
+        var input = new AddYousikiInputData(HpId, UserId, request.SinYm, request.PtNum, request.SelectDataType, request.ReactAddYousiki);
+        var output = _bus.Handle(input);
+        var presenter = new AddYousikiPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<AddYousikiResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.DeleteYousikiInf)]
+    public ActionResult<Response<DeleteYousikiInfResponse>> DeleteYousikiInf([FromBody] DeleteYousikiInfRequest request)
+    {
+        var input = new DeleteYousikiInfInputData(HpId, UserId, request.SinYm, request.PtId, request.DataType);
+        var output = _bus.Handle(input);
+        var presenter = new DeleteYousikiInfPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<DeleteYousikiInfResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetYousiki1InfModel)]
