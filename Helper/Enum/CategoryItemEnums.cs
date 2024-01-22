@@ -2,13 +2,6 @@
 {
     public enum CategoryItemEnums
     {
-        Common,
-        //生活習慣
-        LifestyleHabit,
-        //在宅
-        AtHome,
-        //リハビリ
-        Rehabilitation,
         /// <summary>
         /// 基本設定
         /// </summary>
