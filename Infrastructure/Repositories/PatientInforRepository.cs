@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
 
         (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId, int sinDate)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.AsEnumerable().Where(x => x.PtNum.AsLong() == ptNum && x.IsDelete == 0).FirstOrDefault();
+            var ptInf = NoTrackingDataContext.PtInfs.Where(x => Convert.ToInt64(x.PtNum) == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
             {
                 return (new PatientInforModel(), false);
@@ -61,8 +61,8 @@ namespace Infrastructure.Repositories
         {
             List<PatientInforModel> result = new();
             var ptInfWithLastVisitDate =
-                from p in NoTrackingDataContext.PtInfs.AsEnumerable()
-                where p.IsDelete == 0 && (p.PtNum.AsLong() == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                from p in NoTrackingDataContext.PtInfs
+                where p.IsDelete == 0 && (Convert.ToInt64(p.PtNum)  == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
                 orderby p.PtNum descending
                 select new PatientInfQueryModel
                 {
@@ -81,6 +81,7 @@ namespace Infrastructure.Repositories
             result = sortGroup
                          ?
                          ptInfWithLastVisitDate
+                         .AsEnumerable()
                          .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                          .ToList()
                          :
@@ -194,10 +195,9 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId)
         {
-            long ptNum = keyword.AsLong();
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum.AsLong() == ptNum || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
+                where p.IsDelete == 0 && (p.PtNum == keyword || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
                 select new
                 {
                     ptInf = p,
@@ -223,11 +223,11 @@ namespace Infrastructure.Repositories
             // PtNum
             if (input.FromPtNum > 0)
             {
-                ptInfQuery = ptInfQuery.Where(p => p.PtNum.AsLong() >= input.FromPtNum);
+                ptInfQuery = ptInfQuery.Where(p => Convert.ToInt64(p.PtNum)  >= input.FromPtNum);
             }
             if (input.ToPtNum > 0)
             {
-                ptInfQuery = ptInfQuery.Where(p => p.PtNum.AsLong() <= input.ToPtNum);
+                ptInfQuery = ptInfQuery.Where(p => Convert.ToInt64(p.PtNum) <= input.ToPtNum);
             }
             // Name
             if (!string.IsNullOrEmpty(input.Name))
@@ -978,7 +978,7 @@ namespace Infrastructure.Repositories
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
             List<PatientInforModel> result = new();
 
-            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum.AsLong() >= startIndex && p.PtNum.AsLong() <= endIndex).ToList();
+            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && Convert.ToInt64(p.PtNum) >= startIndex && Convert.ToInt64(p.PtNum) <= endIndex).ToList();
             for (long i = startIndex; i < endIndex; i++)
             {
                 if (result.Count > originPageSize || i > 9999999999)
@@ -989,7 +989,7 @@ namespace Infrastructure.Repositories
                 {
                     continue;
                 }
-                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum.AsLong() == i && (autoSetting != 1 || p.IsDelete == 0));
+                var checkExistPtNum = existPtNum.FirstOrDefault(p => Convert.ToInt64(p.PtNum) == i && (autoSetting != 1 || p.IsDelete == 0));
                 if (checkExistPtNum == null)
                 {
                     result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
@@ -2319,13 +2319,14 @@ namespace Infrastructure.Repositories
             public int LastVisitDate { get; set; }
         }
 
-        private List<PatientInforModel> SortData(IEnumerable<PatientInfQueryModel> ptInfWithLastVisitDate, Dictionary<string, string> sortData, int pageIndex, int pageSize)
+        private List<PatientInforModel> SortData(IQueryable<PatientInfQueryModel> ptInfWithLastVisitDate, Dictionary<string, string> sortData, int pageIndex, int pageSize)
         {
             if (!sortData.Any())
             {
                 return ptInfWithLastVisitDate
                        .Skip((pageIndex - 1) * pageSize)
                        .Take(pageSize)
+                       .AsEnumerable()
                        .Select(p => ToModel(p.PtInf, string.Empty, p.LastVisitDate))
                        .ToList();
             }
@@ -2353,7 +2354,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private IOrderedEnumerable<PatientInfQueryModel> OrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedEnumerable<PatientInfQueryModel> sortQuery)
+        private IOrderedQueryable<PatientInfQueryModel> OrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedQueryable<PatientInfQueryModel> sortQuery)
         {
             switch (field)
             {
@@ -2491,7 +2492,7 @@ namespace Infrastructure.Repositories
             return sortQuery;
         }
 
-        private IOrderedEnumerable<PatientInfQueryModel> ThenOrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedEnumerable<PatientInfQueryModel> sortQuery)
+        private IOrderedQueryable<PatientInfQueryModel> ThenOrderByAction(FieldSortPatientEnum field, string typeSort, IOrderedQueryable<PatientInfQueryModel> sortQuery)
         {
             switch (field)
             {
@@ -2631,8 +2632,8 @@ namespace Infrastructure.Repositories
 
         public long GetPtIdFromPtNum(int hpId, long ptNum)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.AsEnumerable().FirstOrDefault(item => item.HpId == hpId
-                                                                                            && item.PtNum.AsLong() == ptNum);
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                            && Convert.ToInt64(item.PtNum) == ptNum);
             if (ptInf != null)
             {
                 return ptInf.PtId;
