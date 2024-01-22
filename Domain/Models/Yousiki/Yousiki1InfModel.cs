@@ -48,6 +48,12 @@ public class Yousiki1InfModel
         return this;
     }
 
+    public Yousiki1InfModel ChangeYousiki1InfDetailList(List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    {
+        Yousiki1InfDetailList = yousiki1InfDetailList;
+        return this;
+    }
+
     public long PtNum { get; private set; }
 
     public string Name { get; private set; }
