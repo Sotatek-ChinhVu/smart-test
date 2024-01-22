@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Yousiki.GetByomeisInMonth;
 
-namespace Interactor.Yousiki.GetByomeisInMonth
+namespace Interactor.Yousiki
 {
     public class GetByomeisInMonthInteractor : IGetByomeisInMonthInputPort
     {

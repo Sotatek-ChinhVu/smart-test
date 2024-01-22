@@ -562,8 +562,11 @@
         public const string GetYousiki1InfDetails = "GetYousiki1InfDetails";
         public const string GetVisitingInfs = "GetVisitingInfs";
         public const string GetHistoryYousiki = "GetHistoryYousiki";
+        public const string AddYousiki = "AddYousiki";
+        public const string DeleteYousikiInf = "DeleteYousikiInf";
         public const string GetYousiki1InfModel = "GetYousiki1InfModel";
         public const string GetKacodeYousikiMstDict = "GetKacodeYousikiMstDict";
         public const string GetByomeisInMonth = "GetByomeisInMonth";
+        public const string CreateYuIchiFile = "CreateYuIchiFile";
     }
 }
