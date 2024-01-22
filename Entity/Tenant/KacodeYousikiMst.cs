@@ -1,5 +1,4 @@
 using Entity;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,8 +11,7 @@ namespace Emr.DatabaseEntity
         /// 医療機関識別ID
         /// </summary>
 
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
+        [Column("hp_id")]
         public int HpId { get; set; }
 
         /// <summary>
