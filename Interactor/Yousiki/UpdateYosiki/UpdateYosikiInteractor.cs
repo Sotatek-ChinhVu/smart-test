@@ -1,11 +1,9 @@
 ﻿using Domain.Constant;
 using Domain.Models.Yousiki;
-using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 using UseCase.Yousiki.UpdateYosiki;
 
 namespace Interactor.Yousiki.UpdateYosiki
@@ -24,18 +22,29 @@ namespace Interactor.Yousiki.UpdateYosiki
         {
             try
             {
+                if (!inputData.IsTemporarySave)
+                {
+                    var validate = ValidationData(inputData.HpId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf);
+                    if (!validate.First().Key)
+                    {
+                        return new UpdateYosikiOutputData(UpdateYosikiStatus.Failed, validate.First().Value);
+                    }
+                }
 
+                _yousikiRepository.UpdateYosiki(inputData.HpId, inputData.UserId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf, inputData.DataTypes, inputData.IsTemporarySave);
+
+                return new UpdateYosikiOutputData(UpdateYosikiStatus.Successed, "");
             }
             finally
             {
-
+                _yousikiRepository.ReleaseResource();
             }
         }
 
-        public Dictionary<bool, string> ValidationData(int hpId, string codeNo, int rowNo, int payLoad, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfDetailModel yousiki1InfDetailModel, Yousiki1InfModel yousiki1InfModel, int sinYm, string valueDefault = "")
+        public Dictionary<bool, string> ValidationData(int hpId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, string valueDefault = "")
         {
             Dictionary<bool, string> result = new();
-            var birthDayModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 1, yousiki1InfDetailModels, yousiki1InfDetailModel);
+            var birthDayModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 1, yousiki1InfDetailModels, yousiki1InfModel);
 
             if (birthDayModel.Value.AsInteger() <= 0)
             {
@@ -45,7 +54,7 @@ namespace Interactor.Yousiki.UpdateYosiki
                 return result;
             }
 
-            if (GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 2, yousiki1InfDetailModels, yousiki1InfDetailModel).Value.AsInteger() <= 0)
+            if (GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 2, yousiki1InfDetailModels, yousiki1InfModel).Value.AsInteger() <= 0)
             {
                 string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 属性 - 性別");
                 result.Add(false, message);
@@ -53,7 +62,7 @@ namespace Interactor.Yousiki.UpdateYosiki
                 return result;
             }
 
-            var homePostModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 2, yousiki1InfDetailModels, yousiki1InfDetailModel).Value;
+            var homePostModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_Attributes, 0, 2, yousiki1InfDetailModels, yousiki1InfModel).Value;
 
             if (string.IsNullOrEmpty(homePostModel))
             {
@@ -63,8 +72,8 @@ namespace Interactor.Yousiki.UpdateYosiki
                 return result;
             }
 
-            var bodyHeight = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_HeightAndWeight, 0, 1, yousiki1InfDetailModels, yousiki1InfDetailModel).Value ?? string.Empty;
-            var bodyWeight = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_HeightAndWeight, 0, 2, yousiki1InfDetailModels, yousiki1InfDetailModel).Value ?? string.Empty;
+            var bodyHeight = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_HeightAndWeight, 0, 1, yousiki1InfDetailModels, yousiki1InfModel).Value ?? string.Empty;
+            var bodyWeight = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_HeightAndWeight, 0, 2, yousiki1InfDetailModels, yousiki1InfModel).Value ?? string.Empty;
 
             if (!bodyHeight.Equals("000") && bodyHeight.AsInteger() <= 0)
             {
@@ -82,9 +91,9 @@ namespace Interactor.Yousiki.UpdateYosiki
                 return result;
             }
 
-            var smokingTypeModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 1, yousiki1InfDetailModels, yousiki1InfDetailModel, "0");
-            var smokingNumberOfDayModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 2, yousiki1InfDetailModels, yousiki1InfDetailModel); 
-            var smokingYearModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 3, yousiki1InfDetailModels, yousiki1InfDetailModel);
+            var smokingTypeModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 1, yousiki1InfDetailModels, yousiki1InfModel, "0");
+            var smokingNumberOfDayModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 2, yousiki1InfDetailModels, yousiki1InfModel);
+            var smokingYearModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_SmokingHistory, 0, 3, yousiki1InfDetailModels, yousiki1InfModel);
 
             if (smokingTypeModel.Value.AsInteger() > 0)
             {
@@ -105,11 +114,11 @@ namespace Interactor.Yousiki.UpdateYosiki
                 }
             }
 
-            int sinDate = CIUtil.GetLastDateOfMonth(sinYm * 100 + 1);
+            int sinDate = CIUtil.GetLastDateOfMonth(yousiki1InfModel.SinYm * 100 + 1);
             int age = CIUtil.SDateToAge(birthDayModel.Value.AsInteger(), sinDate);
-            var elderlyInfModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 1, yousiki1InfDetailModels, yousiki1InfDetailModel);
-            var careRequiedLevelModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 2, yousiki1InfDetailModels, yousiki1InfDetailModel);
-            
+            var elderlyInfModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 1, yousiki1InfDetailModels, yousiki1InfModel);
+            var careRequiedLevelModel = GetYousiki1InfDetailModel(hpId, Yousiki1InfDetailConstant.CodeNo_NursingCareInf, 0, 2, yousiki1InfDetailModels, yousiki1InfModel);
+
             if (age >= 65)
             {
                 if (elderlyInfModel.Value.AsInteger() < 0)
@@ -132,26 +141,26 @@ namespace Interactor.Yousiki.UpdateYosiki
             return result;
         }
 
-        private Yousiki1InfDetailModel GetYousiki1InfDetailModel(int hpId, string codeNo, int rowNo, int payLoad, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfDetailModel yousiki1InfDetailModel, string valueDefault = "")
+        private Yousiki1InfDetailModel GetYousiki1InfDetailModel(int hpId, string codeNo, int rowNo, int payLoad, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, string valueDefault = "")
         {
             Yousiki1InfDetailModel detail;
             if (yousiki1InfDetailModels == null || yousiki1InfDetailModels.Count == 0)
             {
-                detail = CreateYousiki1InfDetailModel(hpId, codeNo, rowNo, payLoad, yousiki1InfDetailModel, valueDefault);
+                detail = CreateYousiki1InfDetailModel(hpId, codeNo, rowNo, payLoad, yousiki1InfModel);
             }
             else
             {
-                detail = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_Attributes && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload) ?? new();
+                detail = yousiki1InfDetailModels.FirstOrDefault(x => x.CodeNo == Yousiki1InfDetailConstant.CodeNo_Attributes) ?? new();
                 if (detail == null || detail == new Yousiki1InfDetailModel())
                 {
-                    detail = CreateYousiki1InfDetailModel(hpId, codeNo, rowNo, payLoad, yousiki1InfDetailModel, valueDefault);
+                    detail = CreateYousiki1InfDetailModel(hpId, codeNo, rowNo, payLoad, yousiki1InfModel);
                 }
             }
             yousiki1InfDetailModels.Add(detail);
             return detail;
         }
 
-        private Yousiki1InfDetailModel CreateYousiki1InfDetailModel(int hpId, string codeNo, int rowNo, int payLoad, Yousiki1InfDetailModel yousiki1InfDetailModel, string valueDefault = "")
+        private Yousiki1InfDetailModel CreateYousiki1InfDetailModel(int hpId, string codeNo, int rowNo, int payLoad, Yousiki1InfModel yousiki1InfDetailModel)
         {
             var yousiki1Inf = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == codeNo && x.RowNo == rowNo && x.Payload == payLoad).First();
             if (yousiki1Inf == null)

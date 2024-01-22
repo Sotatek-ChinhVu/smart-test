@@ -2,13 +2,9 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Enum;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
@@ -537,51 +533,91 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             yousikiInf.UpdateId = userId;
         }
-        TrackingDataContext.SaveChanges();
         return true;
     }
 
-    public void UpdateYosiki(List<CategoryItemModel> categoryList, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, bool isTemporarySave = false)
+    public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, Dictionary<int, int> dataTypes, bool isTemporarySave)
     {
-        using var transaction = TrackingDataContext.Database.BeginTransaction();
-        try
-        {
-            bool isSaveAtHomeYousiki = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.AtHome && x.Visibility);
-            bool isSaveLivingHabit = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.LifestyleHabit && x.Visibility);
-            bool isSaveRahabilitation = categoryList.Any(x => x.CategoryItemEnums == CategoryItemEnums.Rehabilitation && x.Visibility);
-            bool isErrorBirthDay = false;
-
-            foreach (var category in categoryList)
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
             {
-                int dataType = 0;
-                switch (category.CategoryDisplayName)
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
                 {
-                    case "生活習慣":
-                        dataType = 1;
-                        break;
-                    case "在宅":
-                        dataType = 2;
-                        break;
-                    case "リハビリ":
-                        dataType = 3;
-                        break;
+                    UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
+                    foreach (var dataType in dataTypes)
+                    {
+                        UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key, isTemporarySave ? 1 : 2);
+                        DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key);
+                    }
+
+                    foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
+                    {
+                        if (yousiki1InfDetailModel.IsDeleted == 1)
+                        {
+                            var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                            if (yousiki1InfDetail != null)
+                            {
+                                TrackingDataContext.Remove(yousiki1InfDetail);
+                            }
+                        }
+                        else
+                        {
+                            var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                            if (yousiki1InfDetail != null)
+                            {
+                                yousiki1InfDetail.Value = yousiki1InfDetailModel.Value;
+                            }
+                            else
+                            {
+                                var yousiki1InfDetailNew = ConvertToModel(yousiki1InfDetailModel);
+                                TrackingDataContext.Yousiki1InfDetails.Add(yousiki1InfDetailNew);
+                            }
+                        }
+                    }
+
+                    TrackingDataContext.SaveChanges();
+                    transaction.Commit();
                 }
-
-                if (category.Status == ModelStatus.Deleted && !category.Visibility)
+                catch
                 {
-                    DeleteYousikiInf(yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType);
-                }else if(category.Status == ModelStatus.Added && category.Visibility)
-                {
-
+                    transaction.Rollback();
                 }
-            }
+            });
 
-            transaction.Commit();
-        }
-        catch (Exception ex)
+    }
+
+    private Yousiki1InfDetail ConvertToModel(Yousiki1InfDetailModel yousiki1InfDetailModel)
+    {
+        return new Yousiki1InfDetail()
         {
-            transaction.Rollback();
+            PtId = yousiki1InfDetailModel.PtId,
+            SinYm = yousiki1InfDetailModel.SinYm,
+            DataType = yousiki1InfDetailModel.DataType,
+            SeqNo = yousiki1InfDetailModel.SeqNo,
+            CodeNo = yousiki1InfDetailModel.CodeNo,
+            RowNo = yousiki1InfDetailModel.RowNo,
+            Payload = yousiki1InfDetailModel.Payload,
+            Value = yousiki1InfDetailModel.Value
+        };
+    }
+
+    public bool UpdateDateTimeYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType, int status)
+    {
+        var yousikiInf = TrackingDataContext.Yousiki1Infs.Where(x => x.SinYm == sinYm &&
+                                                                                x.PtId == ptId &&
+                                                                                x.DataType == dataType &&
+                                                                                x.HpId == hpId &&
+                                                                                x.IsDeleted == 0).FirstOrDefault();
+        if (yousikiInf != null)
+        {
+            yousikiInf.Status = status;
+            yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            yousikiInf.UpdateId = userId;
         }
+
+        return true;
     }
 
     public void ReleaseResource()

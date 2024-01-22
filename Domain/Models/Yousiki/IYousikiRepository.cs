@@ -28,5 +28,5 @@ public interface IYousikiRepository : IRepositoryBase
 
     bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType);
 
-    void UpdateYosiki(List<CategoryItemModel> CategoryList, Yousiki1InfDetailModel yousiki1InfDetailModels, bool isTemporarySave = false);
+    void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, Dictionary<int, int> dataTypes, bool isTemporarySave = false);
 }

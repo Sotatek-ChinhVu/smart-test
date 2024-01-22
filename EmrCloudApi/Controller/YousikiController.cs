@@ -14,6 +14,9 @@ using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.DeleteYousikiInf;
+using UseCase.Yousiki.UpdateYosiki;
+using Domain.Models.Yousiki;
+using EmrCloudApi.Requests.Yousiki.RequestItem;
 
 namespace EmrCloudApi.Controller;
 
@@ -107,13 +110,37 @@ public class YousikiController : AuthorizeControllerBase
         return new ActionResult<Response<GetKacodeYousikiMstDictResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.UpdateYosiki)]
-    public ActionResult<Response<GetYousiki1InfModelResponse>> UpdateYosiki([FromQuery] GetYousiki1InfModelRequest request)
+    [HttpPost(ApiPath.UpdateYosiki)]
+    public ActionResult<Response<UpdateYosikiResponse>> UpdateYosiki([FromBody] UpdateYosikiRequest request)
     {
-        var input = new GetYousiki1InfModelInputData(HpId, request.SinYm, request.PtNum, request.DataTypes);
+        var input = new UpdateYosikiInputData(HpId, UserId, ConvertModelToYousiki1Inf(request.Yousiki1InfModel), ConvertModelToYousiki1InfDetail(request.Yousiki1InfDetailModels), request.DataTypes, request.IsTemporarySave);
         var output = _bus.Handle(input);
-        var presenter = new GetYousiki1InfModelPresenter();
+        var presenter = new UpdateYosikiPresenter();
         presenter.Complete(output);
-        return new ActionResult<Response<GetYousiki1InfModelResponse>>(presenter.Result);
+        return new ActionResult<Response<UpdateYosikiResponse>>(presenter.Result);
+    }
+
+    private List<Yousiki1InfDetailModel> ConvertModelToYousiki1InfDetail(List<UpdateYosiki1InfDetailRequestItem> items)
+    {
+        List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items)
+        {
+            result.Add( new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload, item.Value));
+        }
+
+        return result;
+    }
+
+    private Yousiki1InfModel ConvertModelToYousiki1Inf(UpdateYosikiInfRequestItem item)
+    {
+        return new Yousiki1InfModel(item.PtId, item.SinYm, item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
     }
 }

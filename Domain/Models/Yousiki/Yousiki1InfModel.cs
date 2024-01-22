@@ -42,6 +42,13 @@ public class Yousiki1InfModel
         Yousiki1InfDetailList = new();
     }
 
+    public Yousiki1InfModel()
+    {
+        Name = string.Empty;
+        StatusDic = new();
+        Yousiki1InfDetailList = new();
+    }
+
     public Yousiki1InfModel ChangeStatusDic(Dictionary<int, int> statusDic)
     {
         StatusDic = statusDic;
