@@ -24,8 +24,9 @@ using Reporting.Mappers.Common;
 using Reporting.PatientManagement.Models;
 using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using StackExchange.Redis;
-using System.Drawing;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -734,7 +735,7 @@ public class PdfCreatorController : CookieController
     }
 
     [HttpGet(ApiPath.ResizeImage)]
-    public async Task<IActionResult> Resize([FromQuery] ResizeImageRequest request)
+    public async Task<IActionResult> ResizeImage([FromQuery] ResizeImageRequest request)
     {
         try
         {
@@ -749,18 +750,19 @@ public class PdfCreatorController : CookieController
 
                     using (var stream = await response.Content.ReadAsStreamAsync())
                     {
-                        using (var originalImage = Image.FromStream(stream))
+                        using (var image = Image.Load(stream))
                         {
-                            int newWidth = (int)Math.Floor((double)originalImage.Width / originalImage.Height * request.Height);
-
-                            using (var resizedImage = new Bitmap(originalImage, new Size(newWidth, request.Height)))
+                            image.Mutate(x => x.Resize(new ResizeOptions
                             {
-                                var resultStream = new MemoryStream();
-                                resizedImage.Save(resultStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                                resultStream.Position = 0;
+                                Size = new Size(image.Width * request.Height / image.Height, request.Height),
+                                Mode = ResizeMode.Max
+                            }));
 
-                                return File(resultStream, "image/jpeg");
-                            }
+                            var resultStream = new MemoryStream();
+                            image.SaveAsJpeg(resultStream);
+                            resultStream.Position = 0;
+
+                            return File(resultStream, "image/jpeg");
                         }
                     }
                 }
