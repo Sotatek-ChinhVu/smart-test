@@ -417,40 +417,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <returns></returns>
     public bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList)
     {
-        bool successed = false;
-        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-        executionStrategy.Execute(
-            () =>
-            {
-                using var transaction = TrackingDataContext.Database.BeginTransaction();
-                try
-                {
-                    AddYousikiInfByMonthAction(hpId, userId, sinYm, dataType, ptIdList);
-                    TrackingDataContext.SaveChanges();
-                    transaction.Commit();
-                    successed = true;
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    successed = false;
-                }
-            });
-        return successed;
-    }
-
-
-    #region private function
-    /// <summary>
-    /// main action add yousikiInfByMonth
-    /// </summary>
-    /// <param name="hpId"></param>
-    /// <param name="userId"></param>
-    /// <param name="sinYm"></param>
-    /// <param name="dataType"></param>
-    /// <param name="ptIdList"></param>
-    private void AddYousikiInfByMonthAction(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList)
-    {
         var allYousiki1InfByPtIdList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId
                                                                                         && ptIdList.Contains(item.PtId)
                                                                                         && item.SinYm == sinYm)
@@ -512,8 +478,9 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                 TrackingDataContext.Yousiki1Infs.Add(newYousiki);
             }
         }
+        TrackingDataContext.SaveChanges();
+        return true;
     }
-    #endregion
 
     public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
     {
