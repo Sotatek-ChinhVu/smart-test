@@ -1704,14 +1704,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
     public (bool SaveSuccess, List<SetMstModel> SetMstUpdateList) SaveOdrSet(int hpId, int userId, int sinDate, List<OdrSetNameModel> setNameModelList, List<OdrSetNameModel> updateSetNameList)
     {
-        var setOdrInfId = setNameModelList.Select(item => item.SetOrdInfId).Distinct().ToList();
         var rowNoList = setNameModelList.Select(item => item.RowNo).Distinct().ToList();
-        var setCdList = setNameModelList.Select(item => item.SetCd).Distinct().ToList();
+        var setCdList = setNameModelList.Select(item => item.SetCd).ToList();
+        setCdList.AddRange(updateSetNameList.Select(item => item.SetCd));
+        setCdList = setCdList.Distinct().ToList();
         var itemCdList = setNameModelList.Select(item => item.ItemCd).Distinct().ToList();
 
-        var odrInfDbList = NoTrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
-                                                                         && item.IsDeleted == 0
-                                                                         && setOdrInfId.Contains(item.Id))
+        var odrInfDbList = TrackingDataContext.SetOdrInf.Where(item => item.HpId == hpId
+                                                                       && item.IsDeleted == 0
+                                                                       && setCdList.Contains(item.SetCd))
                                                           .ToList();
 
         var tenMstDBList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
@@ -1848,6 +1849,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
             setMst.UpdateId = userId;
             generationIdList.Add(setMst.GenerationId);
+
+            // update rpName
+            var setOdrInfUpdateRpNameList = odrInfDbList.Where(item => item.SetCd == model.SetCd).ToList();
+            foreach (var setOdrInf in setOdrInfUpdateRpNameList)
+            {
+                setOdrInf.RpName = setMst.SetName;
+                setOdrInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                setOdrInf.UpdateId = userId;
+            }
         }
         #endregion
         var saveSuccess = TrackingDataContext.SaveChanges() > 0;

@@ -14,6 +14,11 @@ using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.DeleteYousikiInf;
+using UseCase.Yousiki.CreateYuIchiFile;
+using Helper.Messaging;
+using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
+using System.Text;
+using System.Text.Json;
 using UseCase.Yousiki.UpdateYosiki;
 using Domain.Models.Yousiki;
 using EmrCloudApi.Requests.Yousiki.RequestItem;
@@ -25,9 +30,11 @@ namespace EmrCloudApi.Controller;
 public class YousikiController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    public YousikiController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly IMessenger _messenger;
+    public YousikiController(UseCaseBus bus, IUserService userService, IMessenger messenger) : base(userService)
     {
         _bus = bus;
+        _messenger = messenger;
     }
 
     [HttpGet(ApiPath.GetYousiki1InfModelWithCommonInf)]
@@ -90,6 +97,23 @@ public class YousikiController : AuthorizeControllerBase
         return new ActionResult<Response<DeleteYousikiInfResponse>>(presenter.Result);
     }
 
+    [HttpPost(ApiPath.CreateYuIchiFile)]
+    public void CreateYuIchiFile([FromBody] CreateYuIchiFileRequest request)
+    {
+        try
+        {
+            _messenger.Register<CreateYuIchiFileStatus>(this, UpdateCreateYuIchiFileStatus);
+            HttpContext.Response.ContentType = "application/json";
+            var input = new CreateYuIchiFileInputData(HpId, request.SinYm, request.IsCreateForm1File, request.IsCreateEFFile, request.IsCreateEFile, request.IsCreateFFile, request.IsCreateKData, request.IsCheckedTestPatient, new ReactCreateYuIchiFile(request.ReactCreateYuIchiFile.ConfirmPatientList), _messenger);
+            _bus.Handle(input);
+        }
+        finally
+        {
+            HttpContext.Response.Body.Close();
+            _messenger.Deregister<CreateYuIchiFileStatus>(this, UpdateCreateYuIchiFileStatus);
+        }
+    }
+
     [HttpGet(ApiPath.GetYousiki1InfModel)]
     public ActionResult<Response<GetYousiki1InfModelResponse>> GetYousiki1InfModel([FromQuery] GetYousiki1InfModelRequest request)
     {
@@ -143,4 +167,14 @@ public class YousikiController : AuthorizeControllerBase
     {
         return new Yousiki1InfModel(item.PtId, item.SinYm, item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
     }
+
+    #region private function
+    private void UpdateCreateYuIchiFileStatus(CreateYuIchiFileStatus status)
+    {
+        string result = "\n" + JsonSerializer.Serialize(status);
+        var resultForFrontEnd = Encoding.UTF8.GetBytes(result.ToString());
+        HttpContext.Response.Body.Write(resultForFrontEnd, 0, resultForFrontEnd.Length);
+        HttpContext.Response.Body.Flush();
+    }
+    #endregion
 }
