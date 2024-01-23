@@ -2,13 +2,10 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using PostgreDataContext;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3061.Models;
-using System.Diagnostics;
-using System.Text.Json;
 
 namespace Reporting.Statistics.Sta3061.DB;
 
@@ -482,7 +479,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                 {
                     ReportKbn = printConf.ReportKbn,
                     PtId = sinGroupj.Key.PtId,
-                    PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.PtNum ?? 0) : 0,
+                    PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf != null ? Convert.ToInt64(x.ptInf.PtNum) : 0) : 0,
                     PtName = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Name ?? string.Empty) : string.Empty,
                     Sex = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Sex ?? 0) : 0,
                     RaiinNo = sinGroupj.Key.RaiinNo,
@@ -1131,7 +1128,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
              {
                  ReportKbn = printConf.ReportKbn,
                  PtId = sinGroupj.Key.PtId,
-                 PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.PtNum ?? 0) : 0,
+                 PtNum = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf != null ? Convert.ToInt64(x.ptInf.PtNum) : 0) : 0,
                  PtName = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Name ?? string.Empty) : string.Empty,
                  Sex = sinGroupj != null && sinGroupj.Any() ? sinGroupj.Max(x => x.ptInf?.Sex ?? 0) : 0,
                  RaiinNo = sinGroupj.Key.RaiinNo,

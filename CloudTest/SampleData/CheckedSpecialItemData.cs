@@ -951,8 +951,7 @@ namespace CloudUnitTest.SampleData
                                     ptInf.SeqNo = seqNo;
                                     break;
                                 case "D":
-                                    int.TryParse(text, out int ptNum);
-                                    ptInf.PtNum = ptNum;
+                                    ptInf.PtNum = text;
                                     break;
                                 case "E":
                                     ptInf.KanaName = text;

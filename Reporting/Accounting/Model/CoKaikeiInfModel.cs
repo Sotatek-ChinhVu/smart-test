@@ -1,6 +1,7 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 
 namespace Reporting.Accounting.Model;
 
@@ -53,7 +54,7 @@ public class CoKaikeiInfModel
     /// </summary>
     public long PtNum
     {
-        get => PtInf != null ? PtInf.PtNum : 0;
+        get => PtInf != null ? PtInf.PtNum.AsLong() : 0;
     }
     /// <summary>
     /// 来院番号
