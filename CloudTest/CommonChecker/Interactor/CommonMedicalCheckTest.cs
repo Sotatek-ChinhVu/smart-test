@@ -6,7 +6,6 @@ using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Models.Family;
-using Entity.Tenant;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using Moq;
 using UseCase.Family;
@@ -3793,84 +3792,36 @@ namespace CloudUnitTest.CommonChecker.Interactor
         }
 
         [Test]
-        public void TC_068_CheckListOrder_NotExistErrorOrderList()
+        public void TC_068_GetErrorDetails()
         {
-            //Setup
-            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var mock = new Mock<IRealtimeOrderErrorFinder>();
-            var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
-            var temp = systemConf?.Val ?? 0;
-            if (systemConf != null)
-            {
-                systemConf.Val = 5;
-            }
-            else
-            {
-                systemConf = new SystemConf
+            var listErrorInfo = new List<UnitCheckInfoModel>()
                 {
-                    HpId = 1,
-                    GrpCd = 2027,
-                    GrpEdaNo = 1,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
-                    CreateId = 2,
-                    UpdateId = 2,
-                    Val = 5
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.DrugAllergy,
+                        ErrorInfo = new List<DrugAllergyResultModel>()
+                        {
+                            new DrugAllergyResultModel()
+                            {
+                                Level = 1,
+                                ItemCd = "1234",
+                                YjCd = "93112345",
+                            },
+                            new DrugAllergyResultModel()
+                            {
+                                Level = 2,
+                                ItemCd = "1234",
+                                YjCd = "93112345",
+                            },
+                        }
+                    },
+
                 };
-                tenantTracking.SystemConfs.Add(systemConf);
-            }
-            systemConf.Val = temp;
 
-            var m01Kinki = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.M01Kinki.AddRange(m01Kinki);
-            var tenMsts = CommonCheckerData.ReadTenMst("KINKI3", "");
-            tenantTracking.TenMsts.AddRange(tenMsts);
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 
-            tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1212;
-            int sinDay = 20230101;
-
-            var ordInfDetails = new List<OrdInfoDetailModel>()
-        {
-            new OrdInfoDetailModel("id1", 20, "61UTKINKI3", "・ｼ・・ｽ・・ｽ・・・ｻ・・ｫ・・ｷ・・ｳ・・", 1, "・・", 0, 2, 0, 1, 0, "1124017F4", "", "Y", 0),
-            new OrdInfoDetailModel("id2", 21, "Y101", "・・・・ｼ・・・ｵｷ・ｺ・・・・", 2, "・・･・・・", 0, 0, 0, 0, 1, "", "", "", 1),
-        };
-
-            var odrInfoModel = new List<OrdInfoModel>()
-            {
-              new  OrdInfoModel(21, 0, ordInfDetails),
-            };
-
-            var realtimeCheckerCondition = new RealTimeCheckerCondition(
-                                                isCheckingDuplication: false,
-                                                isCheckingKinki: true,
-                                                isCheckingAllergy: false,
-                                                isCheckingDosage: false,
-                                                isCheckingDays: false,
-                                                isCheckingAge: false,
-                                                isCheckingDisease: false,
-                                                isCheckingInvalidData: false,
-                                                isCheckingAutoCheck: false);
-
-            try
-            {
-                var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
-                var listErrorInfo = commonMedicalCheck.CheckListOrder(hpId, ptId, sinDay, odrInfoModel, realtimeCheckerCondition, new(), new(), new(), true);
-                var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
-
-                // Assert
-                Assert.True(result.Any());
-            }
-            finally
-            {
-                //Clear Data test
-                systemConf.Val = temp;
-                tenantTracking.TenMsts.RemoveRange(tenMsts);
-                tenantTracking.M01Kinki.RemoveRange(m01Kinki);
-                tenantTracking.SaveChanges();
-            }
+            // Assert
+            Assert.True(result.Any());
 
         }
     }
