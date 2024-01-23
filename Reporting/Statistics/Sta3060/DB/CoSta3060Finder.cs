@@ -478,7 +478,7 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
                         Tensu7 = data.Tensu7,
                         Tensu8 = data.Tensu8,
                         TotalPtFutan = data.TotalPtFutan,
-                        PtNum = Convert.ToInt64(data.PtNum),
+                        PtNum = data.PtNum,
                         PtName = data.PtName,
                         TensuSyosin = data.TensuSyosin,
                         TensuSaisin = data.TensuSaisin

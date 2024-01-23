@@ -35,7 +35,7 @@ namespace Reporting.Statistics.Sta9000.Models
         /// </summary>
         public long PtNum
         {
-            get => PtInf.PtNum.AsLong();
+            get => PtInf.PtNum;
         }
 
         /// <summary>

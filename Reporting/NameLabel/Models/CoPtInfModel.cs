@@ -1,5 +1,4 @@
 ﻿using Entity.Tenant;
-using Helper.Extension;
 
 namespace Reporting.NameLabel.Models
 {
@@ -22,7 +21,7 @@ namespace Reporting.NameLabel.Models
 
         public long PtNum
         {
-            get { return PtInf.PtNum.AsLong(); }
+            get { return PtInf.PtNum; }
         }
 
         /// <summary>

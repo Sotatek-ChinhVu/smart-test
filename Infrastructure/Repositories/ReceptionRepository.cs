@@ -952,7 +952,7 @@ namespace Infrastructure.Repositories
                 r.relatedLockInf is not null,
                 r.raiinInf.Status,
                 r.raiinInf.IsDeleted,
-                Convert.ToInt64(r.ptInf.PtNum),
+                r.ptInf.PtNum,
                 r.ptInf.KanaName ?? string.Empty,
                 r.ptInf.Name ?? string.Empty,
                 r.ptInf.Sex,
@@ -1429,7 +1429,7 @@ namespace Infrastructure.Repositories
 
         public ReceptionModel? GetLastKarute(int hpId, long ptNum)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && Convert.ToInt64(p.PtNum) == ptNum && p.IsDelete == DeleteTypes.None);
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtNum == ptNum && p.IsDelete == DeleteTypes.None);
 
             if (ptInf != null)
             {
@@ -1759,7 +1759,7 @@ namespace Infrastructure.Repositories
                                                                        0,
                                                                        data.Raiin?.KaId ?? 0,
                                                                        data.Pt?.PtId ?? 0,
-                                                                       data.Pt?.PtNum.AsLong() ?? 0,
+                                                                       data.Pt?.PtNum ?? 0,
                                                                        data.PtHokenPatternItem?.HokenHobetu ?? string.Empty,
                                                                        data.PtHokenPatternItem?.PtHokenPattern.HokenKbn ?? 0,
                                                                        string.Empty,

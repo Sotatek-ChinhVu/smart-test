@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 
 namespace Reporting.Kensalrai.Model
 {
@@ -19,7 +18,7 @@ namespace Reporting.Kensalrai.Model
             RaiinNo = raiinInf.RaiinNo;
             IraiCd = iraiCd;
             PtId = ptInf.PtId;
-            PtNum = ptInf.PtNum.AsLong();
+            PtNum = ptInf.PtNum;
             Name = ptInf.Name ?? string.Empty;
             KanaName = ptInf.KanaName ?? string.Empty;
             Sex = ptInf.Sex;

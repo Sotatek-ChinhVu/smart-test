@@ -4,7 +4,6 @@ using Domain.Models.Lock;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
@@ -548,11 +547,11 @@ namespace Infrastructure.Repositories
             ///                        }).ToList();
 
             result.AddRange(lockInfQuerry.AsEnumerable().Select(l => new LockInfModel(
-                new LockPtInfModel(l.LockInf.PtId, l.FunctName, Convert.ToInt64(l.PtNum), l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo, l.LockInf.UserId)
+                new LockPtInfModel(l.LockInf.PtId, l.FunctName, l.PtNum, l.LockInf.SinDate, l.LockInf.LockDate, l.LockInf.Machine ?? string.Empty, l.LockInf.FunctionCd, l.LockInf.RaiinNo, l.LockInf.OyaRaiinNo, l.LockInf.UserId)
             )).ToList());
 
             result.AddRange(docInfQuerry.AsEnumerable().Select(doc => new LockInfModel(
-                new LockDocInfModel(doc.DocInf.PtId, Convert.ToInt64(doc.PtNum), doc.DocInf.SinDate, doc.DocInf.RaiinNo, doc.DocInf.SeqNo, doc.DocInf.CategoryCd, doc.DocInf.FileName ?? string.Empty, doc.DocInf.DspFileName ?? string.Empty, doc.DocInf.IsLocked, (doc.DocInf.LockDate ?? DateTime.MinValue), doc.DocInf.LockId, doc.DocInf.LockMachine ?? string.Empty, doc.DocInf.IsDeleted)
+                new LockDocInfModel(doc.DocInf.PtId, doc.PtNum, doc.DocInf.SinDate, doc.DocInf.RaiinNo, doc.DocInf.SeqNo, doc.DocInf.CategoryCd, doc.DocInf.FileName ?? string.Empty, doc.DocInf.DspFileName ?? string.Empty, doc.DocInf.IsLocked, (doc.DocInf.LockDate ?? DateTime.MinValue), doc.DocInf.LockId, doc.DocInf.LockMachine ?? string.Empty, doc.DocInf.IsDeleted)
             )).ToList());
 
             ///result.AddRange(calcStatusQuerry.AsEnumerable().Select(cal => new LockInfModel(

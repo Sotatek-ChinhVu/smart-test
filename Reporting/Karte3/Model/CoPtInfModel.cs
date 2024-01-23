@@ -1,5 +1,4 @@
 ﻿using Entity.Tenant;
-using Helper.Extension;
 
 namespace Reporting.Karte3.Model;
 
@@ -51,7 +50,7 @@ public class CoPtInfModel
     /// </summary>
     public long PtNum
     {
-        get { return PtInf.PtNum.AsLong(); }
+        get { return PtInf.PtNum; }
     }
 
     /// <summary>

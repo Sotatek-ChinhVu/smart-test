@@ -1,5 +1,4 @@
 ﻿using Entity.Tenant;
-using Helper.Extension;
 
 namespace Reporting.ReceTarget.Model;
 
@@ -19,7 +18,7 @@ public class CoReceInfModel
     /// </summary>
     public long PtNum
     {
-        get => PtInf.PtNum.AsLong();
+        get => PtInf.PtNum;
     }
     /// <summary>
     /// 患者氏名

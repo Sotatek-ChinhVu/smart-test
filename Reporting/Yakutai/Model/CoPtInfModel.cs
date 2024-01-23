@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 
 namespace Reporting.Yakutai.Model
 {
@@ -51,7 +50,7 @@ namespace Reporting.Yakutai.Model
         /// </summary>
         public long PtNum
         {
-            get { return PtInf.PtNum.AsLong(); }
+            get { return PtInf.PtNum; }
         }
 
         /// <summary>

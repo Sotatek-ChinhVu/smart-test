@@ -12799,10 +12799,8 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("primary_doctor");
 
-                    b.Property<string>("PtNum")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                    b.Property<long>("PtNum")
+                        .HasColumnType("bigint")
                         .HasColumnName("pt_num");
 
                     b.Property<long>("ReferenceNo")
@@ -30060,10 +30058,8 @@ namespace TenantMigration.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("pt_id");
 
-                    b.Property<string>("PtNum")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                    b.Property<long>("PtNum")
+                        .HasColumnType("bigint")
                         .HasColumnName("pt_num");
 
                     b.Property<long>("ReferenceNo")

@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 using Reporting.Sijisen.Model;
 
 namespace Reporting.InDrug.Model
@@ -60,7 +59,7 @@ namespace Reporting.InDrug.Model
         /// </summary>
         public long PtNum
         {
-            get { return PtInf.PtNum.AsLong(); }
+            get { return PtInf.PtNum; }
         }
 
         /// <summary>

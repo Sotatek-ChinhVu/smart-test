@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 
 namespace Reporting.Sijisen.Model
 {
@@ -64,7 +63,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public long PtNum
         {
-            get { return PtInf.PtNum.AsLong(); }
+            get { return PtInf.PtNum; }
         }
 
         /// <summary>
