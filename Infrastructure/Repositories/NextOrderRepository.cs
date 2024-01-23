@@ -184,8 +184,6 @@ namespace Infrastructure.Repositories
 
                     if (oldNextOrder != null)
                     {
-                        if (oldNextOrder.IsDeleted == DeleteTypes.None)
-                        {
                             oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
                             oldNextOrder.RsvDate = nextOrderModel.RsvDate;
                             oldNextOrder.RsvName = nextOrderModel.RsvName;
@@ -197,8 +195,6 @@ namespace Infrastructure.Repositories
                             UpsertByomei(ref rsvkrtByomeiList, userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
                             UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
                             UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
-                        }
-
                     }
                     else
                     {
