@@ -640,6 +640,8 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             yousikiInf.UpdateId = userId;
         }
+
+        TrackingDataContext.SaveChanges();
         return true;
     }
 
