@@ -64,6 +64,8 @@ namespace EmrCloudApi.Responses.MstItem
             IsGetPriceInYakka = model.IsGetPriceInYakka;
             Kasan1 = model.Kasan1;
             Kasan2 = model.Kasan2;
+            KOKUJI1 = model.Kokuji1;
+            KOKUJI2 = model.Kokuji2;
         }
 
         [JsonConstructor]
@@ -121,6 +123,8 @@ namespace EmrCloudApi.Responses.MstItem
             DefaultValue = defaultValue;
             ModeStatus = modeStatus;
             IpnName = string.Empty;
+            KOKUJI1 = string.Empty;
+            KOKUJI2 = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -238,5 +242,9 @@ namespace EmrCloudApi.Responses.MstItem
         public int Kasan1 { get; private set; }
 
         public int Kasan2 { get; private set; }
+
+        public string KOKUJI1 {  get; private set; }
+
+        public string KOKUJI2 { get; private set; }
     }
 }

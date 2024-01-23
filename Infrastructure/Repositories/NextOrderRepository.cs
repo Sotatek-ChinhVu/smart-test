@@ -805,11 +805,11 @@ namespace Infrastructure.Repositories
                 bool kensaCondition;
                 if (kensaIraiCondition == 0)
                 {
-                    kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                    kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9";
                 }
                 else
                 {
-                    kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                    kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
                 }
 
                 if (kensaCondition && inOutKbn == 1)
