@@ -3619,30 +3619,19 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
     public List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd)
     {
-        var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd);
-        var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
+        var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd).ToList();
+        var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinDate && kinkiQuery.Select(i => i.HpId).Contains(item.HpId) && kinkiQuery.Select(i => i.BCd).Contains(item.ItemCd) && item.IsDeleted == DeleteTypes.None).ToList();
 
-        var query = from kinki in kinkiQuery
-                    join tenMst in itemMstQuery on new { kinki.HpId, ItemCd = kinki.BCd }
-                                            equals new { tenMst.HpId, tenMst.ItemCd } into tenMstLeft
-                    from tMst in tenMstLeft.DefaultIfEmpty()
-                    select new
-                    {
-                        Kinki = kinki,
-                        TenMst = tMst ?? new TenMst()
-                    };
-
-        return query.AsEnumerable().Select(
-               data => new CombinedContraindicationModel(data.Kinki.Id,
-                                                         data.Kinki.HpId,
-                                                         data.Kinki.ACd,
-                                                         data.Kinki.BCd ?? string.Empty,
-                                                         data.Kinki.SeqNo,
-                                                         data.Kinki.IsDeleted == 1,
-                                                         data.TenMst?.Name ?? string.Empty,
+        return kinkiQuery.Select(data => new CombinedContraindicationModel(data.Id,
+                                                         data.HpId,
+                                                         data.ACd,
+                                                         data.BCd ?? string.Empty,
+                                                         data.SeqNo,
+                                                         data.IsDeleted == 1,
+                                                         itemMstQuery.OrderByDescending(i => i.EndDate).FirstOrDefault(i => i.ItemCd == data.BCd && i.HpId == data.HpId)?.Name ?? string.Empty, // By default, get the largest endDate
                                                          false,
                                                          false,
-                                                         data.Kinki.BCd ?? string.Empty)).ToList();
+                                                         data.BCd ?? string.Empty)).ToList();
     }
 
     public bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId)
