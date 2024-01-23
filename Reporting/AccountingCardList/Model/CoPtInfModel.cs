@@ -1,5 +1,6 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
+using Helper.Extension;
 
 namespace Reporting.AccountingCardList.Model;
 
@@ -57,7 +58,7 @@ public class CoPtInfModel
     /// </summary>
     public long PtNum
     {
-        get { return PtInf.PtNum; }
+        get { return PtInf.PtNum.AsLong(); }
     }
 
     /// <summary>

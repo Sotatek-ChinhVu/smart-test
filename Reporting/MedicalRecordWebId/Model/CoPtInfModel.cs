@@ -1,4 +1,5 @@
 ﻿using Entity.Tenant;
+using Helper.Extension;
 
 namespace Reporting.MedicalRecordWebId.Model;
 
@@ -21,7 +22,7 @@ public class CoPtInfModel
     /// 患者番号
     ///  医療機関が患者特定するための番号
     /// </summary>
-    public long PtNum => PtInf.PtNum;
+    public long PtNum => PtInf.PtNum.AsLong();
 
     /// <summary>
     /// 氏名

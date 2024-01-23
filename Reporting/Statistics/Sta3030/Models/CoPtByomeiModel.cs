@@ -33,7 +33,7 @@ public class CoPtByomeiModel
     /// </summary>
     public long PtNum
     {
-        get => PtInf.PtNum;
+        get => PtInf.PtNum.AsLong();
     }
 
     /// <summary>

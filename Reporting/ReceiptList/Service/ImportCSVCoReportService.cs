@@ -482,11 +482,11 @@ namespace Reporting.ReceiptList.Service
                 {
                     if (searchModel.PtIdFrom > 0)
                     {
-                        ptInfs = ptInfs.Where(item => item.PtNum >= searchModel.PtIdFrom);
+                        ptInfs = ptInfs.Where(item => Convert.ToInt64(item.PtNum) >= searchModel.PtIdFrom);
                     }
                     if (searchModel.PtIdTo > 0)
                     {
-                        ptInfs = ptInfs.Where(item => item.PtNum <= searchModel.PtIdTo);
+                        ptInfs = ptInfs.Where(item => Convert.ToInt64(item.PtNum) <= searchModel.PtIdTo);
                     }
                     listPtIds = ptInfs.Select(pt => pt.PtId).Distinct().ToList();
                     receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
@@ -494,7 +494,7 @@ namespace Reporting.ReceiptList.Service
                 else if (searchModel.PtSearchOption == PtIdSearchOptionEnum.IndividualSearch && !string.IsNullOrEmpty(searchModel.PtId))
                 {
                     List<long> ptIdList = searchModel.PtId.Split(',').Select(item => item.AsLong()).ToList();
-                    ptInfs = ptInfs.Where(item => ptIdList.Contains(item.PtNum));
+                    ptInfs = ptInfs.Where(item => ptIdList.Contains(Convert.ToInt64(item.PtNum)));
                     listPtIds = ptInfs.Select(pt => pt.PtId).Distinct().ToList();
                     receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
                 }
@@ -1092,7 +1092,7 @@ namespace Reporting.ReceiptList.Service
                             StatusKbn = receStatus != null ? receStatus.StatusKbn : 0,
                             ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? receCheckErr?.Message1 ?? string.Empty + receCheckErr?.Message2 ?? string.Empty : string.Empty),
                             IsPending = receCheckCmt != null ? receCheckCmt.IsPending : -1,
-                            PtNum = ptInf != null ? ptInf.PtNum : 0,
+                            PtNum = ptInf != null ? Convert.ToInt64(ptInf.PtNum) : 0,
                             Name = ptKyusei != null ? ptKyusei.Name : ptInf.Name,
                             KanaName = ptKyusei != null ? ptKyusei.KanaName : ptInf.KanaName,
                             Sex = ptInf != null ? ptInf.Sex : 0,

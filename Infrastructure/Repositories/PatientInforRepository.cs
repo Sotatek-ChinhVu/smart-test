@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
 
         (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId, int sinDate)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum && x.IsDelete == 0).FirstOrDefault();
+            var ptInf = NoTrackingDataContext.PtInfs.Where(x => Convert.ToInt64(x.PtNum) == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
             {
                 return (new PatientInforModel(), false);
@@ -62,7 +62,7 @@ namespace Infrastructure.Repositories
             List<PatientInforModel> result = new();
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                where p.IsDelete == 0 && (Convert.ToInt64(p.PtNum) == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
                 orderby p.PtNum descending
                 select new PatientInfQueryModel
                 {
@@ -144,7 +144,7 @@ namespace Infrastructure.Repositories
                 itemData.PtId,
                 itemData.ReferenceNo,
                 itemData.SeqNo,
-                itemData.PtNum,
+                Convert.ToInt64(itemData.PtNum),
                 kanaName ?? string.Empty,
                 name ?? string.Empty,
                 itemData.Sex,
@@ -195,10 +195,9 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId)
         {
-            long ptNum = keyword.AsLong();
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
+                where p.IsDelete == 0 && (p.PtNum == keyword || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
                 select new
                 {
                     ptInf = p,
@@ -224,11 +223,11 @@ namespace Infrastructure.Repositories
             // PtNum
             if (input.FromPtNum > 0)
             {
-                ptInfQuery = ptInfQuery.Where(p => p.PtNum >= input.FromPtNum);
+                ptInfQuery = ptInfQuery.Where(p => Convert.ToInt64(p.PtNum) >= input.FromPtNum);
             }
             if (input.ToPtNum > 0)
             {
-                ptInfQuery = ptInfQuery.Where(p => p.PtNum <= input.ToPtNum);
+                ptInfQuery = ptInfQuery.Where(p => Convert.ToInt64(p.PtNum) <= input.ToPtNum);
             }
             // Name
             if (!string.IsNullOrEmpty(input.Name))
@@ -687,7 +686,7 @@ namespace Infrastructure.Repositories
                 p.PtId,
                 p.ReferenceNo,
                 p.SeqNo,
-                p.PtNum,
+                Convert.ToInt64(p.PtNum),
                 p.KanaName ?? string.Empty,
                 p.Name ?? string.Empty,
                 p.Sex,
@@ -735,7 +734,7 @@ namespace Infrastructure.Repositories
                 p.PtId,
                 p.ReferenceNo,
                 p.SeqNo,
-                p.PtNum,
+                Convert.ToInt64(p.PtNum),
                 p.KanaName ?? string.Empty,
                 p.Name ?? string.Empty,
                 p.Sex,
@@ -979,7 +978,7 @@ namespace Infrastructure.Repositories
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
             List<PatientInforModel> result = new();
 
-            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
+            var existPtNum = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && Convert.ToInt64(p.PtNum) >= startIndex && Convert.ToInt64(p.PtNum) <= endIndex).ToList();
             for (long i = startIndex; i < endIndex; i++)
             {
                 if (result.Count > originPageSize || i > 9999999999)
@@ -990,14 +989,14 @@ namespace Infrastructure.Repositories
                 {
                     continue;
                 }
-                var checkExistPtNum = existPtNum.FirstOrDefault(p => p.PtNum == i && (autoSetting != 1 || p.IsDelete == 0));
+                var checkExistPtNum = existPtNum.FirstOrDefault(p => Convert.ToInt64(p.PtNum) == i && (autoSetting != 1 || p.IsDelete == 0));
                 if (checkExistPtNum == null)
                 {
                     result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
                 }
                 else
                 {
-                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum, string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
+                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, Convert.ToInt64(checkExistPtNum.PtNum), string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
                 }
             }
 
@@ -1147,15 +1146,15 @@ namespace Infrastructure.Repositories
             int hpId = ptInf.HpId;
 
             PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
-            if (patientInsert.PtNum == 0)
+            if (Convert.ToInt64(patientInsert.PtNum) == 0)
             {
-                patientInsert.PtNum = GetAutoPtNum(hpId);
+                patientInsert.PtNum = GetAutoPtNum(hpId).AsString();
             }
             else
             {
                 var ptExists = NoTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtNum == patientInsert.PtNum && x.HpId == hpId);
                 if (ptExists != null)
-                    patientInsert.PtNum = GetAutoPtNum(hpId);
+                    patientInsert.PtNum = GetAutoPtNum(hpId).AsString();
             }
             if (patientInsert.DeathDate > 0)
             {
@@ -1171,7 +1170,7 @@ namespace Infrastructure.Repositories
             patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.HpId = hpId;
 
-            string querySql = $"INSERT INTO public.\"pt_inf\"\r\n(\"hp_id\", \"pt_num\", \"kana_name\", \"name\", \"sex\", \"birthday\", \"is_dead\", \"death_date\", \"home_post\", \"home_address1\", \"home_address2\", \"tel1\", \"tel2\", \"mail\", \"setainusi\", \"zokugara\", \"job\", \"renraku_name\", \"renraku_post\", \"renraku_address1\", \"renraku_address2\", \"renraku_tel\", \"renraku_memo\", \"office_name\", \"office_post\", \"office_address1\", \"office_address2\", \"office_tel\", \"office_memo\", \"is_ryosyo_detail\", \"primary_doctor\", \"is_tester\", \"is_delete\", \"create_date\", \"create_id\", \"create_machine\", \"update_date\", \"update_id\", \"update_machine\", \"main_hoken_pid\", \"limit_cons_flg\") VALUES({patientInsert.HpId}, {patientInsert.PtNum}, '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
+            string querySql = $"INSERT INTO public.\"pt_inf\"\r\n(\"hp_id\", \"pt_num\", \"kana_name\", \"name\", \"sex\", \"birthday\", \"is_dead\", \"death_date\", \"home_post\", \"home_address1\", \"home_address2\", \"tel1\", \"tel2\", \"mail\", \"setainusi\", \"zokugara\", \"job\", \"renraku_name\", \"renraku_post\", \"renraku_address1\", \"renraku_address2\", \"renraku_tel\", \"renraku_memo\", \"office_name\", \"office_post\", \"office_address1\", \"office_address2\", \"office_tel\", \"office_memo\", \"is_ryosyo_detail\", \"primary_doctor\", \"is_tester\", \"is_delete\", \"create_date\", \"create_id\", \"create_machine\", \"update_date\", \"update_id\", \"update_machine\", \"main_hoken_pid\", \"limit_cons_flg\") VALUES({patientInsert.HpId}, '{patientInsert.PtNum}', '{patientInsert.KanaName}', '{patientInsert.Name}', {patientInsert.Sex}, {patientInsert.Birthday}, {patientInsert.IsDead}, {patientInsert.DeathDate}, '{patientInsert.HomePost}', '{patientInsert.HomeAddress1}', '{patientInsert.HomeAddress2}', '{patientInsert.Tel1}', '{patientInsert.Tel2}', '{patientInsert.Mail}', '{patientInsert.Setanusi}', '{patientInsert.Zokugara}', '{patientInsert.Job}', '{patientInsert.RenrakuName}', '{patientInsert.RenrakuPost}', '{patientInsert.RenrakuAddress1}', '{patientInsert.RenrakuAddress2}', '{patientInsert.RenrakuTel}', '{patientInsert.RenrakuMemo}', '{patientInsert.OfficeName}', '{patientInsert.OfficePost}', '{patientInsert.OfficeAddress1}', '{patientInsert.OfficeAddress2}', '{patientInsert.OfficeTel}', '{patientInsert.OfficeMemo}', {patientInsert.IsRyosyoDetail}, {patientInsert.PrimaryDoctor}, {patientInsert.IsTester}, {patientInsert.IsDelete}, '{patientInsert.CreateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.CreateId}, '', '{patientInsert.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff")}', {patientInsert.UpdateId}, '', {patientInsert.MainHokenPid}, {patientInsert.LimitConsFlg}) ON CONFLICT DO NOTHING;";
             TrackingDataContext.Database.SetCommandTimeout(1200);
             bool resultCreatePatient = TrackingDataContext.Database.ExecuteSqlRaw(querySql) > 0;
 
@@ -1354,7 +1353,7 @@ namespace Infrastructure.Repositories
             #endregion Maxmoney
 
             #region insurancesCan
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
+            var insuranceScanDatas = handlerInsuranceScans(hpId, Convert.ToInt64(patientInsert.PtNum), patientInsert.PtId);
             if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
                 TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
@@ -1390,7 +1389,7 @@ namespace Infrastructure.Repositories
         {
             int ptNumCheckDigit = (int)GetSettingValue(1001, hpId, 0);
             int autoSetting = (int)GetSettingValue(1014, hpId, 0);
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue).Select(pt => pt.PtNum);
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && Convert.ToInt64(ptInf.PtNum) >= startValue).Select(pt => Convert.ToInt64(pt.PtNum));
             long minPtNum = 0;
 
             if (ptNumCheckDigit == 1)
@@ -1409,7 +1408,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
+                var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue.ToString());
                 if (ptNumExisting == null)
                 {
                     return startValue;
@@ -1422,7 +1421,7 @@ namespace Infrastructure.Repositories
                     minPtNum = ptInfNoNext.FirstOrDefault();
                 }
 
-                return minPtNum + 1;
+                return (minPtNum + 1);
             }
         }
 
@@ -1909,7 +1908,7 @@ namespace Infrastructure.Repositories
 
             #region insuranceScan
             var insuranceScanDatabases = TrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == patientInfo.PtId && x.IsDeleted == DeleteTypes.None).ToList();
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInfo.PtNum, patientInfo.PtId);
+            var insuranceScanDatas = handlerInsuranceScans(hpId, Convert.ToInt64(patientInfo.PtNum), patientInfo.PtId);
             if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
                 foreach (var scan in insuranceScanDatas)
@@ -2171,7 +2170,7 @@ namespace Infrastructure.Repositories
                         ptInf.PtId,
                         ptInf.ReferenceNo,
                         ptInf.SeqNo,
-                        ptInf.PtNum,
+                        Convert.ToInt64(ptInf.PtNum),
                         ptInf.KanaName ?? string.Empty,
                         ptInf.Name ?? string.Empty,
                         ptInf.Sex,
@@ -2249,7 +2248,7 @@ namespace Infrastructure.Repositories
             result = ptInfs.Select((x) => new PatientInforModel(
                             x.HpId,
                             x.PtId,
-                            x.PtNum,
+                            Convert.ToInt64(x.PtNum),
                             x.KanaName ?? string.Empty,
                             x.Name ?? string.Empty,
                             x.Birthday,
@@ -2277,7 +2276,7 @@ namespace Infrastructure.Repositories
                                                                     && ptIdList.Contains(item.PtId))
                                                      .Select(item => new PatientInforModel(
                                                                             item.PtId,
-                                                                            item.PtNum,
+                                                                            Convert.ToInt64(item.PtNum),
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
                                                                             item.Sex,
@@ -2294,7 +2293,7 @@ namespace Infrastructure.Repositories
                                                                     && ptIdList.Contains(item.PtId))
                                                      .Select(item => new PatientInforModel(
                                                                             item.PtId,
-                                                                            item.PtNum,
+                                                                            Convert.ToInt64(item.PtNum),
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
                                                                             item.Sex,
@@ -2634,7 +2633,7 @@ namespace Infrastructure.Repositories
         public long GetPtIdFromPtNum(int hpId, long ptNum)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
-                                                                                            && item.PtNum == ptNum);
+                                                                                            && Convert.ToInt64(item.PtNum) == ptNum);
             if (ptInf != null)
             {
                 return ptInf.PtId;
@@ -2646,7 +2645,7 @@ namespace Infrastructure.Repositories
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
                                                                             && item.IsDelete == 0
-                                                                            && item.PtNum == ptNum);
+                                                                            && Convert.ToInt64(item.PtNum) == ptNum);
             return ptInf?.PtId ?? 0;
         }
 
@@ -2671,7 +2670,7 @@ namespace Infrastructure.Repositories
                                                                                   x.PtId,
                                                                                   x.ReferenceNo,
                                                                                   x.SeqNo,
-                                                                                  x.PtNum,
+                                                                                  Convert.ToInt64(x.PtNum),
                                                                                   x.KanaName ?? string.Empty,
                                                                                   x.Name ?? string.Empty,
                                                                                   x.Sex,

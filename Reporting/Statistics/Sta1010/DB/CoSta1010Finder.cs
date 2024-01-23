@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Entity.Tenant;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
@@ -95,8 +96,8 @@ public class CoSta1010Finder : RepositoryBase, ICoSta1010Finder
         {
             ptInfs = ptInfs.Where(p => p.IsTester == 0);
         }
-        ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
-        ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
+        ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => Convert.ToInt64(p.PtNum) >= printConf.StartPtNum) : ptInfs;
+        ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => Convert.ToInt64(p.PtNum) <= printConf.EndPtNum) : ptInfs;
 
         //来院情報
         IQueryable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs;

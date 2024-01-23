@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Accounting.Model;
@@ -591,7 +592,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                 new CoKaikeiInfListModel(
                     data.HpId,
                     data.PtId,
-                    data.PtNum,
+                    Convert.ToInt64(data.PtNum),
                     data.Name,
                     data.KanaName,
                     data.Sex,
@@ -865,10 +866,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
 
         foreach (var j in join.FindAll(p => p.syunoInf.syunoSeikyu.SeikyuGaku != p.syunoInf.syunoSeikyu.NewSeikyuGaku))
         {
-            if (j.ptInf.PtNum != prePtNum)
+            if (Convert.ToInt64(j.ptInf.PtNum) != prePtNum)
             {
-                retWarningMessages.Add(new CoWarningMessage() { PtNum = j.ptInf.PtNum, WarningMessage = $"請求金額に差異がある来院があります。" });
-                prePtNum = j.ptInf.PtNum;
+                retWarningMessages.Add(new CoWarningMessage() { PtNum = Convert.ToInt64(j.ptInf.PtNum), WarningMessage = $"請求金額に差異がある来院があります。" });
+                prePtNum = Convert.ToInt64(j.ptInf.PtNum);
                 preSinDate = 0;
             }
 
@@ -1728,7 +1729,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
 
         ptInfs?.ForEach(entity =>
         {
-            results.Add(entity.PtNum);
+            results.Add(Convert.ToInt64(entity.PtNum));
         }
         );
 
@@ -1746,7 +1747,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
 
         if (ptInfs != null && ptInfs.Any())
         {
-            result = ptInfs.First().PtNum;
+            result = Convert.ToInt64(ptInfs.First().PtNum);
         }
 
         return result;
