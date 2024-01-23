@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 
-namespace Interactor.Yousiki.GetKacodeYousikiMstDict
+namespace Interactor.Yousiki
 {
     public class GetKacodeYousikiMstDictInteractor : IGetKacodeYousikiMstDictInputPort
     {

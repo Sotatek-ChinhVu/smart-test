@@ -809,14 +809,13 @@ using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using Interactor.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetVisitingInfs;
+using UseCase.Yousiki.AddYousiki;
 using UseCase.Yousiki.GetHistoryYousiki;
-using Interactor.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.DeleteYousikiInf;
 using UseCase.Yousiki.GetYousiki1InfModel;
-using Interactor.Yousiki.GetYousiki1InfModel;
-using Interactor.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetByomeisInMonth;
-using Interactor.Yousiki.GetByomeisInMonth;
+using UseCase.Yousiki.CreateYuIchiFile;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1923,6 +1922,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetYousiki1InfModelWithCommonInfInputData, GetYousiki1InfModelWithCommonInfInteractor>();
             busBuilder.RegisterUseCase<GetYousiki1InfDetailsInputData, GetYousiki1InfDetailsInteractor>();
             busBuilder.RegisterUseCase<GetVisitingInfsInputData, GetVisitingInfsInteractor>();
+            busBuilder.RegisterUseCase<AddYousikiInputData, AddYousikiInteractor>();
+            busBuilder.RegisterUseCase<DeleteYousikiInfInputData, DeleteYousikiInfInteractor>();
+            busBuilder.RegisterUseCase<CreateYuIchiFileInputData, CreateYuIchiFileInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();
