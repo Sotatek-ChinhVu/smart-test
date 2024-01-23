@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 
 namespace Reporting.Byomei.Model
 {
@@ -28,7 +27,7 @@ namespace Reporting.Byomei.Model
 
         public int ToDay { get; set; }
 
-        public long PtNum => PtInf.PtNum.AsLong();
+        public long PtNum => PtInf.PtNum;
 
         public string KanjiName => PtInf.Name ?? string.Empty;
 

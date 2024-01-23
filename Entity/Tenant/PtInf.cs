@@ -41,8 +41,7 @@ namespace Entity.Tenant
         ///		医療機関が患者特定するための番号
         /// </summary>
         [Column("pt_num")]
-        [MaxLength(100)]
-        public string PtNum { get; set; } = string.Empty;
+        public long PtNum { get; set; }
 
         /// <summary>
         /// カナ氏名

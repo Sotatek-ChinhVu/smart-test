@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 
 namespace Reporting.Accounting.Model;
 
@@ -52,7 +51,7 @@ public class CoPtInfModel
     /// </summary>
     public long PtNum
     {
-        get { return PtInf.PtNum.AsLong(); }
+        get { return PtInf.PtNum; }
     }
 
     /// <summary>

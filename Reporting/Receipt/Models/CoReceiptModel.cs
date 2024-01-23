@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Receipt.Models;
 
@@ -116,7 +115,7 @@ namespace Reporting.Receipt.Models
         /// </summary>
         public long PtNum
         {
-            get { return _ptInfModel.PtInf.PtNum.AsLong(); }
+            get { return _ptInfModel.PtInf.PtNum; }
         }
 
         /// <summary>

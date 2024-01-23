@@ -409,7 +409,7 @@ namespace Infrastructure.Repositories
                        receInf.SeikyuKbn,
                        receInf.SeikyuYm,
                        receInf.PtId,
-                       Convert.ToInt64(ptInf.PtNum),
+                       ptInf.PtNum,
                        receInf.SinYm,
                        receInf.HokenId,
                        receInf.HokenId2,
@@ -475,7 +475,7 @@ namespace Infrastructure.Repositories
                           ptInf.PtId,
                           ptInf.ReferenceNo,
                           ptInf.SeqNo,
-                          Convert.ToInt64(ptInf.PtNum),
+                          ptInf.PtNum,
                           ptInf.KanaName ?? string.Empty,
                           ptInf.Name ?? string.Empty,
                           ptInf.Sex,
@@ -977,7 +977,7 @@ namespace Infrastructure.Repositories
         {
             return new SinKouiDetailModel(
                                           ptInf.PtId,
-                                          Convert.ToInt64(ptInf.PtNum),
+                                          ptInf.PtNum,
                                           sinKouiDetail.SinYm,
                                           tenMst.MaxAge ?? string.Empty,
                                           tenMst.MinAge ?? string.Empty,
@@ -994,7 +994,7 @@ namespace Infrastructure.Repositories
 
         private ReceSeikyuModel ConvertToModel(PtInf ptInf, ReceSeikyu receSeikyu)
         {
-            return new ReceSeikyuModel(ptInf.PtId, receSeikyu.SinYm, receSeikyu.HokenId, Convert.ToInt64(ptInf.PtNum), receSeikyu.SeikyuKbn);
+            return new ReceSeikyuModel(ptInf.PtId, receSeikyu.SinYm, receSeikyu.HokenId, ptInf.PtNum, receSeikyu.SeikyuKbn);
         }
 
         private PtDiseaseModel ConvertToModel(PtByomei ptByomei, ByomeiMst byomeiMst)
