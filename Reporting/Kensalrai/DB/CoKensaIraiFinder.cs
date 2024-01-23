@@ -2,7 +2,6 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Kensalrai.Model;
@@ -236,7 +235,7 @@ namespace Reporting.Kensalrai.DB
             result = query.AsEnumerable()
                           .Select(x => new KensaInfModel(
                                         x.kensaInf,
-                                        Convert.ToInt64(x.PtNum),
+                                        x.PtNum,
                                         x.Name,
                                         x.PrimaryKbn,
                                         x.CenterName,

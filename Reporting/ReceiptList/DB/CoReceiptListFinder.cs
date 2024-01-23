@@ -1,10 +1,10 @@
 ﻿using Entity.Tenant;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.CommonMasters.Config;
 using Reporting.ReceiptList.Model;
+using Helper.Extension;
 
 namespace Reporting.ReceiptList.DB;
 
@@ -212,7 +212,7 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                     StatusKbn = data.StatusKbn,
                     ReceStatusCreateId = data.ReceStatusCreateId,
                     ReceCheckCmt = data.ReceCheckCmt,
-                    PtNum = Convert.ToInt64(data.PtNum),
+                    PtNum = data.PtNum,
                     KanaName = data.KanaName,
                     Name = data.Name,
                     Sex = data.Sex,
@@ -537,7 +537,7 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                     data.Output,
                     data.FusenKbn,
                     data.StatusKbn,
-                    Convert.ToInt64(data.PtNum),
+                    data.PtNum,
                     data.KanaName,
                     data.Name,
                     data.Sex,
@@ -560,7 +560,7 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                     data.FutansyaNoKohi4,
                     data.IsTester == 1,
                     data.HokenNissu ?? 0,
-                    data.ReceCheckCmt,
+                    data.ReceCheckCmt, 
                     data.RousaiKofuNo,
                     data.RousaiJigyosyoName,
                     data.RousaiPrefName,

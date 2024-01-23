@@ -1,7 +1,6 @@
 ﻿using Domain.Constant;
 using Entity.Tenant;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -290,7 +289,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                     RaiinNo = data.RaiinNo,
                     OyaRaiinNo = data.OyaRaiinNo,
                     SinDate = data.SinDate,
-                    PtNum = Convert.ToInt64(data.PtNum),
+                    PtNum = data.PtNum,
                     PtName = data.PtName,
                     PtKanaName = data.PtKanaName,
                     Tensu = data.SeikyuTensu,
@@ -494,7 +493,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                         RaiinNo = seikyu.RaiinNo,
                         OyaRaiinNo = seikyu.OyaRaiinNo,
                         SinDate = seikyu.SinDate,
-                        PtNum = Convert.ToInt64(seikyu.PtNum),
+                        PtNum = seikyu.PtNum,
                         PtName = seikyu.PtName,
                         PtKanaName = seikyu.PtKanaName,
                         Tensu = seikyu.SeikyuTensu,

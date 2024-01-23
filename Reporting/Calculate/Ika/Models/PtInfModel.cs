@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Helper.Common;
-using Helper.Extension;
 
 namespace Reporting.Calculate.Ika.Models
 {
@@ -76,7 +75,7 @@ namespace Reporting.Calculate.Ika.Models
         /// </summary>
         public long PtNum
         {
-            get { return PtInf.PtNum.AsLong(); }
+            get { return PtInf.PtNum; }
         }
         ///// <summary>
         ///// 連番

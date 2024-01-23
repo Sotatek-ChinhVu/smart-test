@@ -1,5 +1,4 @@
 ﻿using Domain.Constant;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Statistics.DB;
@@ -143,7 +142,7 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
         var retData = seisinDayCareInfs.AsEnumerable().Select(data => new CoSeisinDayCareInf()
         {
             SinYm = data.SinYm,
-            PtNum = Convert.ToInt64(data.PtNum),
+            PtNum = data.PtNum,
             Name = data.Name,
             KanaName = data.KanaName,
             ItemCd = data.ItemCd,
