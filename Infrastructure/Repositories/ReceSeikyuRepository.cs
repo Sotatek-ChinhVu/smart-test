@@ -124,7 +124,7 @@ namespace Infrastructure.Repositories
                                           && !(!isIncludingUnConfirmed && receSeikyu.SeikyuYm == 999999)
                                           && !(sinYm > 0 && receSeikyu.SeikyuYm != 999999 && receSeikyu.SeikyuYm != sinYm)
 
-                                          && (ptNumSearch == 0 || ptInf.PtNum.AsLong() == ptNumSearch)
+                                          && (ptNumSearch == 0 || Convert.ToInt64(ptInf.PtNum) == ptNumSearch)
                                           && (noFilter ||
                                                 (isFilterMonthlyDelay && receSeikyu.SeikyuKbn == 1) ||
                                                 (isFilterReturn && receSeikyu.SeikyuKbn == 2) ||
@@ -159,7 +159,7 @@ namespace Infrastructure.Repositories
                                                               x.ReceSeikyuPending.ReceSeikyu.SeikyuKbn,
                                                               x.ReceSeikyuPending.ReceSeikyu.PreHokenId,
                                                               x.ReceSeikyuPending.ReceSeikyu.Cmt ?? string.Empty,
-                                                              x.ReceSeikyuPending.PtInfo.PtNum.AsLong(),
+                                                              Convert.ToInt64(x.ReceSeikyuPending.PtInfo.PtNum),
                                                               x.ReceSeikyuPending.PtHokenInfItem.HokenKbn,
                                                               x.ReceSeikyuPending.PtHokenInfItem.Houbetu ?? string.Empty,
                                                               x.ReceSeikyuPending.PtHokenInfItem.StartDate,
@@ -215,7 +215,7 @@ namespace Infrastructure.Repositories
                                ptInf.PtId,
                                receSeikyu?.SinYm ?? 0,
                                receSeikyu?.HokenId ?? 0,
-                               ptInf.PtNum.AsLong(),
+                               Convert.ToInt64(ptInf.PtNum),
                                receSeikyu?.SeikyuKbn ?? 0
                           ));
             }

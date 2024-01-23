@@ -1092,7 +1092,7 @@ namespace Reporting.ReceiptList.Service
                             StatusKbn = receStatus != null ? receStatus.StatusKbn : 0,
                             ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? receCheckErr?.Message1 ?? string.Empty + receCheckErr?.Message2 ?? string.Empty : string.Empty),
                             IsPending = receCheckCmt != null ? receCheckCmt.IsPending : -1,
-                            PtNum = ptInf != null ? ptInf.PtNum.AsLong() : 0,
+                            PtNum = ptInf != null ? Convert.ToInt64(ptInf.PtNum) : 0,
                             Name = ptKyusei != null ? ptKyusei.Name : ptInf.Name,
                             KanaName = ptKyusei != null ? ptKyusei.KanaName : ptInf.KanaName,
                             Sex = ptInf != null ? ptInf.Sex : 0,

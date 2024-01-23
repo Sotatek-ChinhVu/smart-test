@@ -952,7 +952,7 @@ namespace Infrastructure.Repositories
                 r.relatedLockInf is not null,
                 r.raiinInf.Status,
                 r.raiinInf.IsDeleted,
-                r.ptInf.PtNum.AsLong(),
+                Convert.ToInt64(r.ptInf.PtNum),
                 r.ptInf.KanaName ?? string.Empty,
                 r.ptInf.Name ?? string.Empty,
                 r.ptInf.Sex,

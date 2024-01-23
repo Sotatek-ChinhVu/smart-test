@@ -592,7 +592,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                 new CoKaikeiInfListModel(
                     data.HpId,
                     data.PtId,
-                    data.PtNum.AsLong(),
+                    Convert.ToInt64(data.PtNum),
                     data.Name,
                     data.KanaName,
                     data.Sex,

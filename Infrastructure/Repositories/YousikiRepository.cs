@@ -52,7 +52,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                             x.yousikiInf.SeqNo,
                             x.yousikiInf.IsDeleted,
                             x.yousikiInf.Status,
-                            x.ptInf.PtNum.AsLong(),
+                            Convert.ToInt64(x.ptInf.PtNum),
                             x.ptInf.Name ?? string.Empty))
                     .ToList();
     }
@@ -79,7 +79,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                      join ptInf in ptInfs on
                                      yousikiInf.PtId equals ptInf.PtId
                                      select new Yousiki1InfModel(
-                                                ptInf.PtNum.AsLong(),
+                                                Convert.ToInt64(ptInf.PtNum),
                                                 ptInf.Name ?? string.Empty,
                                                 yousikiInf.PtId,
                                                 yousikiInf.SinYm,

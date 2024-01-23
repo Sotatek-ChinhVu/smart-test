@@ -1347,7 +1347,7 @@ namespace Infrastructure.Repositories
         private long GetPtNum(int hpId, long ptId)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
-            return ptInf != null ? ptInf.PtNum.AsLong() : 0;
+            return ptInf != null ? Convert.ToInt64(ptInf.PtNum) : 0;
         }
 
         private void SaveFileNextOrder(int hpId, long ptId, long ptNum, long rsvkrtNo, NextOrderModel nextOrderModel)

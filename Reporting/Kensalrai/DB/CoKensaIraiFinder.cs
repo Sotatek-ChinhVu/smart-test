@@ -236,7 +236,7 @@ namespace Reporting.Kensalrai.DB
             result = query.AsEnumerable()
                           .Select(x => new KensaInfModel(
                                         x.kensaInf,
-                                        x.PtNum.AsLong(),
+                                        Convert.ToInt64(x.PtNum),
                                         x.Name,
                                         x.PrimaryKbn,
                                         x.CenterName,

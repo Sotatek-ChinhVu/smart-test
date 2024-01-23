@@ -70,7 +70,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 data.PtFamily.SeqNo,
                 data.PtFamily.ZokugaraCd ?? string.Empty,
                 data.PtFamily.FamilyId,
-                data.PtInf.PtNum.AsLong(),
+                Convert.ToInt64(data.PtInf.PtNum),
                 data.PtFamily.Name ?? string.Empty,
                 data.PtFamily.KanaName ?? string.Empty,
                 data.PtFamily.Sex,
@@ -110,7 +110,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
         return ptInfList.Select(item => new FamilyModel(
                                                             item.PtId,
-                                                            item.PtNum.AsLong(),
+                                                            Convert.ToInt64(item.PtNum),
                                                             item.Name ?? string.Empty,
                                                             item.KanaName ?? string.Empty,
                                                             item.Sex,
@@ -229,7 +229,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
         return ptInfList.Select(item => new FamilyModel(
                                             item.PtId,
-                                            item.PtNum.AsLong(),
+                                            Convert.ToInt64(item.PtNum),
                                             item.Name ?? string.Empty,
                                             item.KanaName ?? string.Empty,
                                             item.Sex,
@@ -247,7 +247,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                               .Select(item => ConvertToPtFamilyRekiModel(item))
                                               .ToList();
 
-        long familyPtNum = ptInf != null ? ptInf.PtNum.AsLong() : 0;
+        long familyPtNum = ptInf != null ? Convert.ToInt64(ptInf.PtNum) : 0;
         string name = ptInf != null ? ptInf.Name ?? string.Empty : ptFamily.Name ?? string.Empty;
         int sex = ptInf != null ? ptInf.Sex : ptFamily.Sex;
         int birthday = ptInf != null ? ptInf.Birthday : ptFamily.Birthday;
@@ -377,7 +377,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 TrackingDataContext.SaveChanges();
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
                 SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis);
-                            }
+            }
             else
             {
                 var ptFamilyEntity = listFamilyDB.FirstOrDefault(item => item.FamilyId == familyModel.FamilyId);

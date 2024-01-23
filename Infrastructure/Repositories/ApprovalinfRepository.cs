@@ -3,10 +3,8 @@ using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using static Helper.Constants.UserConst;
 
 
@@ -72,7 +70,7 @@ namespace Infrastructure.Repositories
                                 x.RaiinInf.PtId,
                                 x.RaiinInf.SinDate,
                                 1,
-                                x.PtInf.PtNum.AsLong(),
+                                Convert.ToInt64(x.PtInf.PtNum),
                                 x.PtInf.KanaName ?? string.Empty,
                                 x.PtInf.Name ?? string.Empty,
                                 x.KaId,
@@ -113,7 +111,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var seqNo = approvedInfo.SeqNo + 1 ;
+                    var seqNo = approvedInfo.SeqNo + 1;
 
                     TrackingDataContext.ApprovalInfs.Add(new ApprovalInf()
                     {

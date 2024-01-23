@@ -143,7 +143,7 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
         var retData = seisinDayCareInfs.AsEnumerable().Select(data => new CoSeisinDayCareInf()
         {
             SinYm = data.SinYm,
-            PtNum = data.PtNum.AsLong(),
+            PtNum = Convert.ToInt64(data.PtNum),
             Name = data.Name,
             KanaName = data.KanaName,
             ItemCd = data.ItemCd,

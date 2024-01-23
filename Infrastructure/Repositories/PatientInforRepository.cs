@@ -62,7 +62,7 @@ namespace Infrastructure.Repositories
             List<PatientInforModel> result = new();
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
-                where p.IsDelete == 0 && (Convert.ToInt64(p.PtNum)  == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                where p.IsDelete == 0 && (Convert.ToInt64(p.PtNum) == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
                 orderby p.PtNum descending
                 select new PatientInfQueryModel
                 {
@@ -144,7 +144,7 @@ namespace Infrastructure.Repositories
                 itemData.PtId,
                 itemData.ReferenceNo,
                 itemData.SeqNo,
-                itemData.PtNum.AsLong(),
+                Convert.ToInt64(itemData.PtNum),
                 kanaName ?? string.Empty,
                 name ?? string.Empty,
                 itemData.Sex,
@@ -223,7 +223,7 @@ namespace Infrastructure.Repositories
             // PtNum
             if (input.FromPtNum > 0)
             {
-                ptInfQuery = ptInfQuery.Where(p => Convert.ToInt64(p.PtNum)  >= input.FromPtNum);
+                ptInfQuery = ptInfQuery.Where(p => Convert.ToInt64(p.PtNum) >= input.FromPtNum);
             }
             if (input.ToPtNum > 0)
             {
@@ -686,7 +686,7 @@ namespace Infrastructure.Repositories
                 p.PtId,
                 p.ReferenceNo,
                 p.SeqNo,
-                p.PtNum.AsLong(),
+                Convert.ToInt64(p.PtNum),
                 p.KanaName ?? string.Empty,
                 p.Name ?? string.Empty,
                 p.Sex,
@@ -734,7 +734,7 @@ namespace Infrastructure.Repositories
                 p.PtId,
                 p.ReferenceNo,
                 p.SeqNo,
-                p.PtNum.AsLong(),
+                Convert.ToInt64(p.PtNum),
                 p.KanaName ?? string.Empty,
                 p.Name ?? string.Empty,
                 p.Sex,
@@ -996,7 +996,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum.AsLong(), string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
+                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, Convert.ToInt64(checkExistPtNum.PtNum), string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
                 }
             }
 
@@ -1146,7 +1146,7 @@ namespace Infrastructure.Repositories
             int hpId = ptInf.HpId;
 
             PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
-            if (patientInsert.PtNum.AsLong() == 0)
+            if (Convert.ToInt64(patientInsert.PtNum) == 0)
             {
                 patientInsert.PtNum = GetAutoPtNum(hpId).AsString();
             }
@@ -1353,7 +1353,7 @@ namespace Infrastructure.Repositories
             #endregion Maxmoney
 
             #region insurancesCan
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum.AsLong(), patientInsert.PtId);
+            var insuranceScanDatas = handlerInsuranceScans(hpId, Convert.ToInt64(patientInsert.PtNum), patientInsert.PtId);
             if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
                 TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
@@ -1908,7 +1908,7 @@ namespace Infrastructure.Repositories
 
             #region insuranceScan
             var insuranceScanDatabases = TrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == patientInfo.PtId && x.IsDeleted == DeleteTypes.None).ToList();
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInfo.PtNum.AsLong(), patientInfo.PtId);
+            var insuranceScanDatas = handlerInsuranceScans(hpId, Convert.ToInt64(patientInfo.PtNum), patientInfo.PtId);
             if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
                 foreach (var scan in insuranceScanDatas)
@@ -2170,7 +2170,7 @@ namespace Infrastructure.Repositories
                         ptInf.PtId,
                         ptInf.ReferenceNo,
                         ptInf.SeqNo,
-                        ptInf.PtNum.AsLong(),
+                        Convert.ToInt64(ptInf.PtNum),
                         ptInf.KanaName ?? string.Empty,
                         ptInf.Name ?? string.Empty,
                         ptInf.Sex,
@@ -2248,7 +2248,7 @@ namespace Infrastructure.Repositories
             result = ptInfs.Select((x) => new PatientInforModel(
                             x.HpId,
                             x.PtId,
-                            x.PtNum.AsLong(),
+                            Convert.ToInt64(x.PtNum),
                             x.KanaName ?? string.Empty,
                             x.Name ?? string.Empty,
                             x.Birthday,
@@ -2276,7 +2276,7 @@ namespace Infrastructure.Repositories
                                                                     && ptIdList.Contains(item.PtId))
                                                      .Select(item => new PatientInforModel(
                                                                             item.PtId,
-                                                                            item.PtNum.AsLong(),
+                                                                            Convert.ToInt64(item.PtNum),
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
                                                                             item.Sex,
@@ -2293,7 +2293,7 @@ namespace Infrastructure.Repositories
                                                                     && ptIdList.Contains(item.PtId))
                                                      .Select(item => new PatientInforModel(
                                                                             item.PtId,
-                                                                            item.PtNum.AsLong(),
+                                                                            Convert.ToInt64(item.PtNum),
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
                                                                             item.Sex,
@@ -2662,7 +2662,7 @@ namespace Infrastructure.Repositories
                                                                                   x.PtId,
                                                                                   x.ReferenceNo,
                                                                                   x.SeqNo,
-                                                                                  x.PtNum.AsLong(),
+                                                                                  Convert.ToInt64(x.PtNum),
                                                                                   x.KanaName ?? string.Empty,
                                                                                   x.Name ?? string.Empty,
                                                                                   x.Sex,
