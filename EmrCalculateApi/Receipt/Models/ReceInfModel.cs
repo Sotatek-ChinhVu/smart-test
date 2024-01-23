@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +76,7 @@ namespace EmrCalculateApi.Receipt.Models
 
         public long PtNum
         {
-            get { return PtInf == null ? 0 : PtInf.PtNum.AsLong(); }
+            get { return PtInf == null ? 0 : PtInf.PtNum; }
         }
 
         /// <summary>

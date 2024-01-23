@@ -342,19 +342,19 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             {
                 if (searchModel.PtIdFrom > 0)
                 {
-                    ptInfs = ptInfs.Where(item => Convert.ToInt64(item.PtNum) >= searchModel.PtIdFrom);
+                    ptInfs = ptInfs.Where(item => item.PtNum >= searchModel.PtIdFrom);
                 }
                 if (searchModel.PtIdTo > 0)
                 {
-                    ptInfs = ptInfs.Where(item => Convert.ToInt64(item.PtNum) <= searchModel.PtIdTo);
+                    ptInfs = ptInfs.Where(item => item.PtNum <= searchModel.PtIdTo);
                 }
                 listPtIds = ptInfs.Select(pt => pt.PtId).Distinct().ToList();
                 receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
             }
             else if (searchModel.PtSearchOption == PtIdSearchOptionEnum.IndividualSearch && !string.IsNullOrEmpty(searchModel.PtId))
             {
-                List<long> ptIdList = searchModel.PtId.Split(',').Select(item =>Convert.ToInt64(item)).ToList();
-                ptInfs = ptInfs.Where(item => ptIdList.Contains(Convert.ToInt64(item.PtNum)));
+                List<long> ptIdList = searchModel.PtId.Split(',').Select(item => item.AsLong()).ToList();
+                ptInfs = ptInfs.Where(item => ptIdList.Contains(item.PtNum));
                 listPtIds = ptInfs.Select(pt => pt.PtId).Distinct().ToList();
                 receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
             }
@@ -953,7 +953,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         StatusKbn = receStatus != null ? receStatus.StatusKbn : 0,
                         ReceCheckCmt = receCheckCmt != null ? receCheckCmt.Cmt : (receCheckErr != null ? receCheckErr?.Message1 ?? string.Empty + receCheckErr?.Message2 ?? string.Empty : string.Empty),
                         IsPending = receCheckCmt != null ? receCheckCmt.IsPending : -1,
-                        PtNum = ptInf != null ? Convert.ToInt64(ptInf.PtNum) : 0,
+                        PtNum = ptInf != null ? ptInf.PtNum : 0,
                         Name = ptKyusei != null ? ptKyusei.Name : ptInf.Name,
                         KanaName = ptKyusei != null ? ptKyusei.KanaName : ptInf.KanaName,
                         Sex = ptInf != null ? ptInf.Sex : 0,
@@ -2130,7 +2130,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     receStatus?.IsPaperRece ?? 0,
                     ptInf.Birthday,
                     receInf.PtId,
-                    Convert.ToInt64(ptInf.PtNum),
+                    ptInf.PtNum,
                     receInf.SinYm,
                     receInf.Houbetu ?? string.Empty,
                     receInf.Kohi1Houbetu ?? string.Empty,
@@ -2704,7 +2704,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                            entity.SinKouiDetail?.PtId ?? 0,
                            entity.SinKouiDetail?.SinYm ?? 0,
                            0,
-                           Convert.ToInt64(entity.PtInf.PtNum),
+                           entity.PtInf.PtNum,
                            entity.TenMst?.MaxAge ?? string.Empty,
                            entity.TenMst?.MinAge ?? string.Empty,
                            entity.SinKouiDetail?.ItemCd ?? string.Empty,
@@ -3564,7 +3564,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     };
 
         return query.Select(x => new ReceInfValidateModel(x.PtInf.PtId,
-                                                         Convert.ToInt64(x.PtInf.PtNum),
+                                                         x.PtInf.PtNum,
                                                          x.ReceInf.SinYm,
                                                          x.ReceInf.IsTester,
                                                          x.ReceInf.HokenKbn,
@@ -3600,7 +3600,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         rc.SinYm
                     };
 
-        return query.AsEnumerable().Select(x => new ReceInfForCheckErrSwapHokenModel(x.PtId, Convert.ToInt64(x.PtNum), x.SinYm, x.HokenId)).ToList();
+        return query.AsEnumerable().Select(x => new ReceInfForCheckErrSwapHokenModel(x.PtId, x.PtNum, x.SinYm, x.HokenId)).ToList();
     }
 
     public bool HasErrorCheck(int sinYm, long ptId, int hokenId)

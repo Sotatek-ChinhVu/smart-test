@@ -1026,7 +1026,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
         ptInfs?.ForEach(entity =>
         {
-            results.Add(Convert.ToInt64(entity.PtNum));
+            results.Add(entity.PtNum);
         }
         );
 

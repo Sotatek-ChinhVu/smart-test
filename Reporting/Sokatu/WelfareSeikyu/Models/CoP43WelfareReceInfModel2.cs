@@ -1,6 +1,5 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Helper.Extension;
 
 namespace Reporting.Sokatu.WelfareSeikyu.Models
 {
@@ -37,7 +36,7 @@ namespace Reporting.Sokatu.WelfareSeikyu.Models
         /// </summary>
         public long PtNum
         {
-            get => PtInf.PtNum.AsLong();
+            get => PtInf.PtNum;
         }
 
         /// <summary>
