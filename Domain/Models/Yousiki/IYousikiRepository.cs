@@ -31,4 +31,6 @@ public interface IYousikiRepository : IRepositoryBase
     List<Yousiki1InfModel> GetListYousiki1Inf(int hpId, int sinYm, int status = -1);
 
     List<ForeignKFileModel> GetRaiinInfsInMonth(int hpId, int sinYm);
+
+    void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, Dictionary<int, int> dataTypes, bool isTemporarySave = false);
 }
