@@ -14,6 +14,17 @@ public class Yousiki1InfDetailModel
         Value = value;
     }
 
+    /// <summary>
+    /// update value
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public Yousiki1InfDetailModel ChangeValue(string value)
+    {
+        Value = value;
+        return this;
+    }
+
     public long PtId { get; private set; }
 
     public int SinYm { get; private set; }

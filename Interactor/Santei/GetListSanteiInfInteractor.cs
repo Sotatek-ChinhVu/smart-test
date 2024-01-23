@@ -74,6 +74,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
                                                                    .ThenBy(item => item.Id)
                                                                    .ToList();
 
+            var kisanSbt = 0;
             foreach (var item in santeiInfDetailList)
             {
                 // Add byomei to byomei List
@@ -81,15 +82,18 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
                 {
                     byomeiList.Add(item.Byomei);
                 }
-
                 if (sinDate > item.EndDate) continue;
-                //if 区分 is 「初回算定, do not display 起算日
-                if (item.KisanDate > kisanDate && item.KisanSbt != 1)
+                if (item.KisanDate > kisanDate)
                 {
+                    kisanSbt = item.KisanSbt;
                     kisanDate = item.KisanDate;
                 }
             }
-
+            //Type 初回算定 =>  If 前回日 already exists, 起算日 will not be displayed
+            if (santeiInf.LastOdrDate > 0 && kisanSbt == 1)
+            {
+                kisanDate = 0;
+            }
             // dayCount
             int targetDateInt = kisanDate != 0 ? kisanDate : santeiInf.LastOdrDate;
             dayCount = CIUtil.GetSanteInfDayCount(sinDate, targetDateInt, santeiInf.AlertTerm);

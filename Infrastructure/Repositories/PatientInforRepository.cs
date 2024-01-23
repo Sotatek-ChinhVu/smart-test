@@ -2641,6 +2641,14 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
+        public long IsPatientExist(int hpId, long ptNum)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.IsDelete == 0
+                                                                            && Convert.ToInt64(item.PtNum) == ptNum);
+            return ptInf?.PtId ?? 0;
+        }
+
         public int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus)
         {
             return NoTrackingDataContext.RaiinInfs.Count(u => u.PtId == ptId &&

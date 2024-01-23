@@ -1,8 +1,13 @@
 ﻿using Domain.Models.Yousiki;
+using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
@@ -31,9 +36,9 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     {
         var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId &&
                                 x.IsDelete == 0 &&
-                                (ptNumber == 0 ? true : Convert.ToInt64(x.PtNum) == ptNumber));
+                                (ptNumber == 0 || Convert.ToInt64(x.PtNum) == ptNumber));
         var yousiki1Infs = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
-                            (dataType == 0 ? true : x.DataType == dataType) &&
+                            (dataType == 0 || x.DataType == dataType) &&
                             x.IsDeleted == 0 &&
                             x.SinYm == sinYm);
         var query = from yousikiInf in yousiki1Infs
@@ -81,6 +86,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                      select new Yousiki1InfModel(
                                                 Convert.ToInt64(ptInf.PtNum),
                                                 ptInf.Name ?? string.Empty,
+                                                ptInf.IsTester == 1,
                                                 yousikiInf.PtId,
                                                 yousikiInf.SinYm,
                                                 yousikiInf.DataType,
@@ -122,6 +128,32 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                             && item.PtId == ptId
                                                                             && item.DataType == dataType
                                                                             && item.SeqNo == seqNo
+                                                                            && item.HpId == hpId)
+                                                             .Select(item => new Yousiki1InfDetailModel(
+                                                                                 item.PtId,
+                                                                                 item.SinYm,
+                                                                                 item.DataType,
+                                                                                 item.SeqNo,
+                                                                                 item.CodeNo ?? string.Empty,
+                                                                                 item.RowNo,
+                                                                                 item.Payload,
+                                                                                 item.Value ?? string.Empty))
+                                                             .ToList();
+        return result;
+    }
+
+    /// <summary>
+    /// Get Yousiki1InfDetail list
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="ptIdList"></param>
+    /// <returns></returns>
+    public List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, List<long> ptIdList)
+    {
+        var result = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
+                                                                            && ptIdList.Contains(item.PtId)
                                                                             && item.HpId == hpId)
                                                              .Select(item => new Yousiki1InfDetailModel(
                                                                                  item.PtId,
@@ -245,6 +277,231 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return result;
     }
 
+    /// <summary>
+    /// check exist Yousiki
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <returns></returns>
+    public bool IsYousikiExist(int hpId, int sinYm, long ptId)
+    {
+        var yousiki1InfExist = NoTrackingDataContext.Yousiki1Infs.Any(item => item.HpId == hpId
+                                                                              && item.IsDeleted == 0
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId);
+        return yousiki1InfExist;
+    }
+
+    /// <summary>
+    /// check exist Yousiki
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    public bool IsYousikiExist(int hpId, int sinYm, long ptId, int dataType)
+    {
+        var yousiki1InfExist = NoTrackingDataContext.Yousiki1Infs.Any(item => item.HpId == hpId
+                                                                              && item.IsDeleted == 0
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId
+                                                                              && item.DataType == dataType);
+        return yousiki1InfExist;
+    }
+
+    /// <summary>
+    /// Get List PtIdHealthInsuranceAccepted
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    public List<long> GetListPtIdHealthInsuranceAccepted(int hpId, int sinYm, long ptId, int dataType)
+    {
+        if (sinYm <= 0 || dataType < 1 || dataType > 3)
+        {
+            return new();
+        }
+        int startDate = sinYm * 100 + 01;
+        int endDate = sinYm * 100 + 31;
+
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                      && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                      && item.SinDate >= startDate
+                                                                      && item.SinDate <= endDate
+                                                                      && item.IsDeleted == DeleteTypes.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                && item.IsDelete == DeleteTypes.None
+                                                                && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                && item.IsTester == 0);
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
+                                                                          && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                          && (item.HokenKbn == 1 || item.HokenKbn == 2)
+                                                                          && item.IsDeleted == 0);
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                                  && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                                  && item.IsDeleted == 0);
+        var hokenInfs = from ptHokenPattern in ptHokenPatterns
+                        join pthoken in ptHokenInfs on new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals new { pthoken.HpId, pthoken.PtId, pthoken.HokenId }
+                        join ptinf in ptInfs on ptHokenPattern.PtId equals ptinf.PtId
+                        select new
+                        {
+                            PtHokenPattern = ptHokenPattern
+                        };
+
+        var hokenQuery = from raiinInf in raiinInfs
+                         join hokenInf in hokenInfs on new { raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid } equals new { hokenInf.PtHokenPattern.HpId, hokenInf.PtHokenPattern.PtId, hokenInf.PtHokenPattern.HokenPid }
+                         select new
+                         {
+                             raiinInf
+                         };
+        var odrInfs = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                  && item.IsDeleted == 0
+                                                                  && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                  && item.SinDate >= startDate
+                                                                  && item.SinDate <= endDate
+                                                                  && item.SanteiKbn == 0);
+        var ordInfQuery = from raiinInf in hokenQuery
+                          join odrInf in odrInfs
+                          on new { raiinInf.raiinInf.HpId, raiinInf.raiinInf.PtId, raiinInf.raiinInf.RaiinNo, raiinInf.raiinInf.SinDate, raiinInf.raiinInf.HokenPid } equals new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.SinDate, odrInf.HokenPid }
+                          select new
+                          {
+                              OdrInf = odrInf
+                          };
+
+        var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                              && (ptId == 0 || (ptId > 0 && item.PtId == ptId))
+                                                                              && item.SinDate >= startDate
+                                                                              && item.SinDate <= endDate
+                                                                              && !(item.ItemCd == "@SHIN" && item.Suryo == 5));
+        var query = from ordInf in ordInfQuery
+                    join ordDetail in odrInfDetails
+                    on new { ordInf.OdrInf.PtId, ordInf.OdrInf.RaiinNo, ordInf.OdrInf.SinDate, ordInf.OdrInf.RpNo, ordInf.OdrInf.RpEdaNo } equals
+                       new { ordDetail.PtId, ordDetail.RaiinNo, ordDetail.SinDate, ordDetail.RpNo, ordDetail.RpEdaNo }
+                    select new
+                    {
+                        OrdInf = ordInf.OdrInf,
+                        ItemCd = ordDetail.ItemCd
+                    };
+        if (ptId == 0)
+        {
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                          && item.MasterSbt == "S"
+                                                                          && item.Kokuji2 != "7");
+            switch (dataType)
+            {
+                case 1:
+                    tenMstQuery = tenMstQuery.Where(item => item.CdKbn == "B" && item.CdKbnno == 1 && item.CdEdano == 3);
+                    break;
+                case 2:
+                    tenMstQuery = tenMstQuery.Where(item => item.CdKbn == "C"
+                                                            && ((item.CdKbnno == 1 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 1 && item.CdEdano == 1)
+                                                                || (item.CdKbnno == 2 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 2 && item.CdEdano == 2)
+                                                                || (item.CdKbnno == 3 && item.CdEdano == 0)));
+                    break;
+                case 3:
+                    tenMstQuery = tenMstQuery.Where(item => item.CdKbn == "H"
+                                                            && ((item.CdKbnno == 0 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 1 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 1 && item.CdEdano == 2)
+                                                                || (item.CdKbnno == 2 && item.CdEdano == 0)
+                                                                || (item.CdKbnno == 3 && item.CdEdano == 0)));
+                    break;
+            }
+            query = from ordInf in query
+                    join tenMst in tenMstQuery
+                    on ordInf.ItemCd equals tenMst.ItemCd
+                    select new
+                    {
+                        OrdInf = ordInf.OrdInf,
+                        ItemCd = tenMst.ItemCd
+                    };
+        }
+
+        return query.AsEnumerable().Select(x => x.OrdInf?.PtId ?? 0).GroupBy(x => x).Select(x => x.First()).ToList();
+    }
+
+    /// <summary>
+    /// Add YousikiInf by month
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="dataType"></param>
+    /// <param name="ptIdList"></param>
+    /// <returns></returns>
+    public bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList)
+    {
+        var allYousiki1InfByPtIdList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId
+                                                                                        && ptIdList.Contains(item.PtId)
+                                                                                        && item.SinYm == sinYm)
+                                                                         .ToList();
+        foreach (var ptId in ptIdList)
+        {
+            if (dataType != 0)
+            {
+                // check exist common Yousiki, if does not exist then add new Yousiki with DataType = 0
+                var existCommonInf = allYousiki1InfByPtIdList.Any(item => item.PtId == ptId
+                                                                          && item.DataType == 0
+                                                                          && item.IsDeleted == 0);
+                if (!existCommonInf)
+                {
+                    int maxCommonSeqNo = allYousiki1InfByPtIdList.Where(item => item.PtId == ptId
+                                                                                && item.DataType == 0)
+                                                                 .Select(item => item.SeqNo)
+                                                                 .OrderByDescending(item => item)
+                                                                 .FirstOrDefault();
+
+                    var newCommonInf = new Yousiki1Inf()
+                    {
+                        HpId = hpId,
+                        SinYm = sinYm,
+                        PtId = ptId,
+                        DataType = 0,
+                        SeqNo = maxCommonSeqNo + 1,
+                        CreateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    };
+                    TrackingDataContext.Yousiki1Infs.Add(newCommonInf);
+                }
+            }
+            var existYousiki1Inf = allYousiki1InfByPtIdList.Any(item => item.PtId == ptId
+                                                                        && item.DataType == dataType
+                                                                        && item.IsDeleted == 0);
+            if (!existYousiki1Inf)
+            {
+                int maxSeqNo = allYousiki1InfByPtIdList.Where(item => item.PtId == ptId
+                                                                      && item.DataType == dataType)
+                                                       .Select(item => item.SeqNo)
+                                                       .OrderByDescending(item => item)
+                                                       .FirstOrDefault();
+
+                var newYousiki = new Yousiki1Inf()
+                {
+                    HpId = hpId,
+                    SinYm = sinYm,
+                    PtId = ptId,
+                    DataType = dataType,
+                    SeqNo = maxSeqNo + 1,
+                    CreateId = userId,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                };
+                TrackingDataContext.Yousiki1Infs.Add(newYousiki);
+            }
+        }
+        TrackingDataContext.SaveChanges();
+        return true;
+    }
+
     public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
     {
         var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
@@ -256,6 +513,138 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
                             .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
+    }
+
+    /// <summary>
+    /// Get ListYousiki1Inf for export data
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public List<Yousiki1InfModel> GetListYousiki1Inf(int hpId, int sinYm, int status = -1)
+    {
+        var yousiki1InfList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId && item.SinYm == sinYm && item.IsDeleted == 0 && (status == -1 || item.Status == status)).ToList();
+        var ptIdList = yousiki1InfList.Select(item => item.PtId).Distinct().ToList();
+        var yousiki1InfDetailList = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.HpId == hpId && item.SinYm == sinYm && ptIdList.Contains(item.PtId)).ToList();
+        var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId && item.IsDelete == 0 && ptIdList.Contains(item.PtId)).ToList();
+
+        var yousiki1InfQuery = from yousiki1Inf in yousiki1InfList
+                               join ptInf in ptInfList on
+                                  new { yousiki1Inf.HpId, yousiki1Inf.PtId } equals
+                                  new { ptInf.HpId, ptInf.PtId }
+                               join yousiki1InfDetail in yousiki1InfDetailList on
+                                 new { yousiki1Inf.HpId, yousiki1Inf.PtId, yousiki1Inf.DataType, yousiki1Inf.SinYm, yousiki1Inf.SeqNo } equals
+                                 new { yousiki1InfDetail.HpId, yousiki1InfDetail.PtId, yousiki1InfDetail.DataType, yousiki1InfDetail.SinYm, yousiki1InfDetail.SeqNo } into listYousiki1InfDetail
+                               select new
+                               {
+                                   ptInf,
+                                   yousiki1Inf,
+                                   ListYousiki1InfDetail = listYousiki1InfDetail
+                               };
+
+        return yousiki1InfQuery
+               .Select(item => new Yousiki1InfModel(
+                                   Convert.ToInt64(item.ptInf.PtNum),
+                                   item.ptInf.Name ?? string.Empty,
+                                   item.ptInf.IsTester == 1,
+                                   item.yousiki1Inf.PtId,
+                                   item.yousiki1Inf.SinYm,
+                                   item.yousiki1Inf.DataType,
+                                   item.yousiki1Inf.Status,
+                                   new(),
+                                   item.yousiki1Inf.SeqNo,
+                                   item.ListYousiki1InfDetail.Select(itemDetail => new Yousiki1InfDetailModel(
+                                                                                       itemDetail.PtId,
+                                                                                       itemDetail.SinYm,
+                                                                                       itemDetail.DataType,
+                                                                                       itemDetail.SeqNo,
+                                                                                       itemDetail.CodeNo ?? string.Empty,
+                                                                                       itemDetail.RowNo,
+                                                                                       itemDetail.Payload,
+                                                                                       itemDetail.Value ?? string.Empty))
+                                                             .OrderBy(item => item.CodeNo)
+                                                             .ThenBy(item => item.RowNo)
+                                                             .ThenBy(item => item.Payload)
+                                                             .ToList()))
+               .ToList();
+    }
+
+    /// <summary>
+    /// Get RaiinInfs in month
+    /// </summary>
+    /// <param name="sinYm"></param>
+    /// <returns></returns>
+    public List<ForeignKFileModel> GetRaiinInfsInMonth(int hpId, int sinYm)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId);
+
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(p => p.HpId == hpId);
+
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId
+                                                                   && p.IsDeleted == DeleteTypes.None
+                                                                   && p.SinDate / 100 == sinYm
+                                                                   && p.Status >= RaiinState.Calculate);
+
+        var joinkaikeiInfQuery = from raiinInf in raiinInfs
+                                 join kaikeiInf in kaikeiInfs
+                                 on new { raiinInf.PtId, raiinInf.SinDate, raiinInf.RaiinNo }
+                                 equals new { kaikeiInf.PtId, kaikeiInf.SinDate, kaikeiInf.RaiinNo }
+                                 select new
+                                 {
+                                     RaiinInf = raiinInf,
+                                     KaikeiInf = kaikeiInf
+                                 };
+        var joinPtInfQuery = from joinkaikeiInf in joinkaikeiInfQuery
+                             join ptInf in ptInfs
+                             on joinkaikeiInf.RaiinInf.PtId equals ptInf.PtId
+                             select new
+                             {
+                                 joinkaikeiInf.RaiinInf.SinDate,
+                                 joinkaikeiInf.KaikeiInf.HokenKbn,
+                                 PtInf = ptInf
+                             };
+        var result = joinPtInfQuery.Where(item => item.HokenKbn == 1 || item.HokenKbn == 2)
+                                   .GroupBy(item => new { item.SinDate, item.PtInf.PtId })
+                                   .AsEnumerable()
+                                   .Select(item => item.FirstOrDefault())
+                                   .OrderBy(item => Convert.ToInt64(item?.PtInf.PtNum))
+                                   .ThenBy(item => item?.SinDate)
+                                   .Select(item => new ForeignKFileModel(
+                                                       item?.SinDate ?? 0,
+                                                       Convert.ToInt64(item?.PtInf.PtNum ?? "0"),
+                                                       item?.PtInf.KanaName ?? string.Empty,
+                                                       item?.PtInf.Sex ?? 0,
+                                                       item?.PtInf.Birthday ?? 0,
+                                                       item?.PtInf.IsTester == 1))
+                                   .ToList();
+        return result;
+    }
+
+    /// <summary>
+    /// Delete YousikiInf
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <param name="dataType"></param>
+    /// <returns></returns>
+    public bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType)
+    {
+        var yousikiInf = TrackingDataContext.Yousiki1Infs.FirstOrDefault(item => item.SinYm == sinYm
+                                                                                 && item.PtId == ptId
+                                                                                 && item.DataType == dataType
+                                                                                 && item.HpId == hpId
+                                                                                 && item.IsDeleted == 0);
+        if (yousikiInf != null)
+        {
+            yousikiInf.IsDeleted = 1;
+            yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            yousikiInf.UpdateId = userId;
+        }
+        TrackingDataContext.SaveChanges();
+        return true;
     }
 
     public void ReleaseResource()
