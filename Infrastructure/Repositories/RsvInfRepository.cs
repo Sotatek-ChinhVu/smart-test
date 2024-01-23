@@ -124,7 +124,7 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                                         raiinInf.SinDate,
                                         raiinInf.RaiinNo,
                                         raiinInf.PtId,
-                                        ptInf.PtNum,
+                                        Convert.ToInt64(ptInf.PtNum),
                                         ptInf.Birthday,
                                         raiinInf.TantoId,
                                         raiinInf.KaId,

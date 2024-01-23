@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Calculate.Extensions;
@@ -23,7 +24,7 @@ namespace Reporting.KensaLabel.DB
             return NoTrackingDataContext.PtInfs.FindListQueryable(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete != 1)
                 .Select(pt => new PtInfModel()
                 {
-                    PtNum = pt.PtNum,
+                    PtNum = pt.PtNum.AsLong(),
                     KanaName = pt.KanaName,
                     Name = pt.Name,
                     PrintDate = printDate,

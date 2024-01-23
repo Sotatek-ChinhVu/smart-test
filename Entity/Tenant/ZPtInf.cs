@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,7 +6,7 @@ namespace Entity.Tenant
     [Table("z_pt_inf")]
     public class ZPtInf : EmrCloneable<ZPtInf>
     {
-        
+
         [Column("op_id", Order = 1)]
         public long OpId { get; set; }
 
@@ -50,7 +49,8 @@ namespace Entity.Tenant
         ///        医療機関が患者特定するための番号
         /// </summary>
         [Column("pt_num")]
-        public long PtNum { get; set; }
+        [MaxLength(100)]
+        public string PtNum { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ氏名
@@ -320,7 +320,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "update_machine")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// MAIN_HOKEN_PID

@@ -1,4 +1,5 @@
 ﻿using Entity.Tenant;
+using Helper.Extension;
 
 namespace Reporting.Statistics.Sta3041.Models;
 
@@ -37,7 +38,7 @@ public class CoKouseisinInf
     /// </summary>
     public long PtNum
     {
-        get => PtInf.PtNum;
+        get => PtInf.PtNum.AsLong();
     }
 
     /// <summary>

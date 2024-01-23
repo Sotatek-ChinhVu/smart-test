@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
@@ -35,7 +36,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     {
         var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId &&
                                 x.IsDelete == 0 &&
-                                (ptNumber == 0 || x.PtNum == ptNumber));
+                                (ptNumber == 0 || Convert.ToInt64(x.PtNum) == ptNumber));
         var yousiki1Infs = NoTrackingDataContext.Yousiki1Infs.Where(x => x.HpId == hpId &&
                             (dataType == 0 || x.DataType == dataType) &&
                             x.IsDeleted == 0 &&
@@ -56,7 +57,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                             x.yousikiInf.SeqNo,
                             x.yousikiInf.IsDeleted,
                             x.yousikiInf.Status,
-                            x.ptInf.PtNum,
+                            Convert.ToInt64(x.ptInf.PtNum),
                             x.ptInf.Name ?? string.Empty))
                     .ToList();
     }
@@ -75,7 +76,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         List<Yousiki1InfModel> compoundedResultList = new();
         var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
                                                                 && item.IsDelete == 0
-                                                                && (ptNum == 0 || item.PtNum == ptNum));
+                                                                && (ptNum == 0 || Convert.ToInt64(item.PtNum) == ptNum));
         var yousiki1Infs = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId
                                                                             && item.IsDeleted == 0
                                                                             && (sinYm == 0 || item.SinYm == sinYm));
@@ -83,7 +84,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                      join ptInf in ptInfs on
                                      yousikiInf.PtId equals ptInf.PtId
                                      select new Yousiki1InfModel(
-                                                ptInf.PtNum,
+                                                Convert.ToInt64(ptInf.PtNum),
                                                 ptInf.Name ?? string.Empty,
                                                 ptInf.IsTester == 1,
                                                 yousikiInf.PtId,
@@ -544,7 +545,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
         return yousiki1InfQuery
                .Select(item => new Yousiki1InfModel(
-                                   item.ptInf.PtNum,
+                                   Convert.ToInt64(item.ptInf.PtNum),
                                    item.ptInf.Name ?? string.Empty,
                                    item.ptInf.IsTester == 1,
                                    item.yousiki1Inf.PtId,
@@ -607,11 +608,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                    .GroupBy(item => new { item.SinDate, item.PtInf.PtId })
                                    .AsEnumerable()
                                    .Select(item => item.FirstOrDefault())
-                                   .OrderBy(item => item?.PtInf.PtNum)
+                                   .OrderBy(item => Convert.ToInt64(item?.PtInf.PtNum))
                                    .ThenBy(item => item?.SinDate)
                                    .Select(item => new ForeignKFileModel(
                                                        item?.SinDate ?? 0,
-                                                       item?.PtInf.PtNum ?? 0,
+                                                       Convert.ToInt64(item?.PtInf.PtNum ?? "0"),
                                                        item?.PtInf.KanaName ?? string.Empty,
                                                        item?.PtInf.Sex ?? 0,
                                                        item?.PtInf.Birthday ?? 0,
