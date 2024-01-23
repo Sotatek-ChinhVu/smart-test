@@ -162,7 +162,7 @@ namespace Interactor.Yousiki.UpdateYosiki
 
         private Yousiki1InfDetailModel CreateYousiki1InfDetailModel(int hpId, string codeNo, int rowNo, int payLoad, Yousiki1InfModel yousiki1InfDetailModel)
         {
-            var yousiki1Inf = NoTrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == codeNo && x.RowNo == rowNo && x.Payload == payLoad).First();
+            var yousiki1Inf = NoTrackingDataContext.Yousiki1InfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == codeNo && x.RowNo == rowNo && x.Payload == payLoad);
             if (yousiki1Inf == null)
             {
                 return new();

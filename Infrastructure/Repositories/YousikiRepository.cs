@@ -4,7 +4,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -647,54 +646,40 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
     public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, Dictionary<int, int> dataTypes, bool isTemporarySave)
     {
-        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
-        executionStrategy.Execute(
-            () =>
+        UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
+
+        foreach (var dataType in dataTypes)
+        {
+            UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key, isTemporarySave ? 1 : 2);
+            DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key);
+        }
+
+        foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
+        {
+            if (yousiki1InfDetailModel.IsDeleted == 1)
             {
-                using var transaction = TrackingDataContext.Database.BeginTransaction();
-                try
+                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                if (yousiki1InfDetail != null)
                 {
-                    UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
-                    foreach (var dataType in dataTypes)
-                    {
-                        UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key, isTemporarySave ? 1 : 2);
-                        DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key);
-                    }
-
-                    foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
-                    {
-                        if (yousiki1InfDetailModel.IsDeleted == 1)
-                        {
-                            var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
-                            if (yousiki1InfDetail != null)
-                            {
-                                TrackingDataContext.Remove(yousiki1InfDetail);
-                            }
-                        }
-                        else
-                        {
-                            var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
-                            if (yousiki1InfDetail != null)
-                            {
-                                yousiki1InfDetail.Value = yousiki1InfDetailModel.Value;
-                            }
-                            else
-                            {
-                                var yousiki1InfDetailNew = ConvertToModel(yousiki1InfDetailModel);
-                                TrackingDataContext.Yousiki1InfDetails.Add(yousiki1InfDetailNew);
-                            }
-                        }
-                    }
-
-                    TrackingDataContext.SaveChanges();
-                    transaction.Commit();
+                    TrackingDataContext.Remove(yousiki1InfDetail);
                 }
-                catch
+            }
+            else
+            {
+                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                if (yousiki1InfDetail != null)
                 {
-                    transaction.Rollback();
+                    yousiki1InfDetail.Value = yousiki1InfDetailModel.Value;
                 }
-            });
+                else
+                {
+                    var yousiki1InfDetailNew = ConvertToModel(yousiki1InfDetailModel);
+                    TrackingDataContext.Yousiki1InfDetails.Add(yousiki1InfDetailNew);
+                }
+            }
+        }
 
+        TrackingDataContext.SaveChanges();
     }
 
     private Yousiki1InfDetail ConvertToModel(Yousiki1InfDetailModel yousiki1InfDetailModel)
