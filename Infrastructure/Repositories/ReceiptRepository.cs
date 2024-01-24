@@ -2412,8 +2412,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
 
         var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(item => item.HpId == hpId
-                                                                      && item.SinYm >= startYm
                                                                       && item.PtId == ptId
+                                                                      && item.SinYm >= startYm
                                                                       && item.SinYm <= endYm
                                                                       && checkHokenKbn.Contains(item.HokenKbn)
                                                                       && checkSanteiKbn.Contains(item.SanteiKbn))
@@ -2435,85 +2435,28 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                 && item.FmtKbn != 10  // 在がん医総のダミー項目を除く
                                                                  ).ToList();
 
-        if (raiinNo == 0)
-        {
-            var sinKouis = NoTrackingDataContext.SinKouis.Where(o => o.HpId == hpId &&
-                                                                     o.PtId == ptId &&
-                                                                     o.IsDeleted == 0);
+        var joinQuery = (from sinKouiDetail in sinKouiDetails
+                         join sinKouiCount in sinKouiCounts on
+                             new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                             new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                         join sinRpInf in sinRpInfs on
+                             new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
+                             new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+                         where
+                             sinKouiDetail.HpId == hpId
+                             && sinKouiDetail.PtId == ptId
+                             && sinKouiDetail.SinYm >= startYm
+                             && sinKouiDetail.SinYm <= endYm
+                             && sinKouiDetail.ItemCd != null
+                             && itemCds.Contains(sinKouiDetail.ItemCd)
+                             && sinKouiCount.SinDate >= startDate
+                             && sinKouiCount.SinDate <= endDate
+                             && sinKouiCount.RaiinNo != raiinNo
+                         group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
+                         select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || (a.sinKouiDetail.ItemCd != null && ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd)) ? 1 : a.sinKouiDetail.Suryo)) }
+        );
 
-            var joinSinkouiWithSinKouiCount = from sinKouiCount in sinKouiCounts
-                                              join sinKoui in sinKouis on
-                new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo } equals
-                new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
-                                              select new
-                                              {
-                                                  SinKouiCount = sinKouiCount,
-                                                  SinKoui = sinKoui
-                                              };
-
-            var joinQuery = (from sinKouiDetail in sinKouiDetails
-                             join joinSinkouiCount in joinSinkouiWithSinKouiCount on
-                                 new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
-                                 new { joinSinkouiCount.SinKouiCount.HpId, joinSinkouiCount.SinKouiCount.PtId, joinSinkouiCount.SinKouiCount.SinYm, joinSinkouiCount.SinKouiCount.RpNo, joinSinkouiCount.SinKouiCount.SeqNo }
-                             join sinRpInf in sinRpInfs on
-                                 new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
-                                 new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
-                             where
-                                 sinKouiDetail.HpId == hpId
-                                 && sinKouiDetail.PtId == ptId
-                                 && sinKouiDetail.SinYm >= startYm
-                                 && sinKouiDetail.SinYm <= endYm
-                                 && sinKouiDetail.ItemCd != null
-                                 && itemCds.Contains(sinKouiDetail.ItemCd)
-                                 && joinSinkouiCount.SinKouiCount.SinDate >= startDate
-                                 && joinSinkouiCount.SinKouiCount.SinDate <= endDate
-                                 && joinSinkouiCount.SinKouiCount.RaiinNo != raiinNo
-                             group new { sinKouiDetail, joinSinkouiCount } by new { joinSinkouiCount.SinKouiCount.HpId } into A
-                             select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || (a.sinKouiDetail.ItemCd != null && ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd)) ? 1 : a.sinKouiDetail.Suryo)) }
-                             );
-            var result = joinQuery.ToList();
-
-            if (result.Any())
-            {
-                return result.FirstOrDefault().sum;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else
-        {
-            var joinQuery = (from sinKouiDetail in sinKouiDetails
-                             join sinKouiCount in sinKouiCounts on
-                                 new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
-                                 new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
-                             join sinRpInf in sinRpInfs on
-                                 new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
-                                 new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
-                             where
-                                 sinKouiDetail.HpId == hpId
-                                 && sinKouiDetail.PtId == ptId
-                                 && sinKouiDetail.SinYm >= startYm
-                                 && sinKouiDetail.SinYm <= endYm
-                                 && sinKouiDetail.ItemCd != null
-                                 && itemCds.Contains(sinKouiDetail.ItemCd)
-                                 && sinKouiCount.SinDate >= startDate
-                                 && sinKouiCount.SinDate <= endDate
-                                 && sinKouiCount.RaiinNo != raiinNo
-                             group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
-                             select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || (a.sinKouiDetail.ItemCd != null && ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd)) ? 1 : a.sinKouiDetail.Suryo)) }
-                             );
-            var result = joinQuery.ToList();
-            if (result.Any())
-            {
-                return result.FirstOrDefault().sum;
-            }
-            else
-            {
-                return 0;
-            }
-        }
+        return joinQuery.FirstOrDefault()?.sum ?? 0;
     }
 
     public List<SinKouiMstModel> GetListSinKoui(int hpId, long ptId, int sinYm, int hokenId)
