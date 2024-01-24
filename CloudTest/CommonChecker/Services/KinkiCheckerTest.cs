@@ -300,7 +300,7 @@ public class KinkiCheckerTest : BaseUT
         try
         {
             /// Act
-            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
+             var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
 
             //// Assert
             Assert.True(result.IsError == true);
