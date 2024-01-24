@@ -3792,8 +3792,13 @@ namespace CloudUnitTest.CommonChecker.Interactor
         }
 
         [Test]
-        public void TC_068_GetErrorDetails()
+        public void TC_068_GetErrorDetails_DrugAllergy()
         {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
             var listErrorInfo = new List<UnitCheckInfoModel>()
                 {
                     new UnitCheckInfoModel()
@@ -3806,23 +3811,489 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                 Level = 1,
                                 ItemCd = "1234",
                                 YjCd = "93112345",
+                                SeibunCd = "123",
                             },
                             new DrugAllergyResultModel()
                             {
                                 Level = 2,
                                 ItemCd = "1234",
-                                YjCd = "93112345",
+                                YjCd = "93112346",
+                                SeibunCd = "124",
                             },
                         }
                     },
-
                 };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> inputList, int sinday) => new Dictionary<string, string> {
+                                                                                              { "93112345", "Item Mock 1" },
+                                                                                              { "93112346", "Item Mock 2" }
+                                                                                             });
+
+            mock.Setup(finder => finder.FindComponentNameDic(It.IsAny<List<string>>()))
+            .Returns((List<string> inputList) => new Dictionary<string, string> {
+                                                                                   { "123", "Sebun Mock 1" },
+                                                                                   { "124", "Sebun Mock 2" }
+                                                                                 });
 
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 
             // Assert
-            Assert.True(result.Any());
+            Assert.True(result.Count() == 2);
+        }
 
+        [Test]
+        public void TC_069_GetErrorDetails_FoodAllergy()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.FoodAllergy,
+                        ErrorInfo = new List<FoodAllergyResultModel>()
+                        {
+                            new FoodAllergyResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                                YjCd = "93112345",
+                                AlrgyKbn = "3",
+                                TenpuLevel = "A",
+                            },
+                            new FoodAllergyResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1234",
+                                YjCd = "93112346",
+                                AlrgyKbn = "4",
+                                TenpuLevel = "1",
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> inputList, int sinday) => new Dictionary<string, string> {
+                                                                                              { "93112345", "Item Mock 1" },
+                                                                                              { "93112346", "Item Mock 2" }
+                                                                                             });
+
+            mock.Setup(finder => finder.FindFoodNameDic(It.IsAny<List<string>>()))
+            .Returns((List<string> inputList) => new Dictionary<string, string> {
+                                                                                   { "3", "Food Name Mock 1" },
+                                                                                   { "4", "Food Name Mock 2" }
+                                                                                 });
+
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TC_070_GetErrorDetails_Age()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.Age,
+                        ErrorInfo = new List<AgeResultModel>()
+                        {
+                            new AgeResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                                YjCd = "93112345",
+                                TenpuLevel = "A",
+                            },
+                            new AgeResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1234",
+                                YjCd = "93112346",
+                                TenpuLevel = "1",
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> inputList, int sinday) => new Dictionary<string, string> {
+                                                                                              { "93112345", "Item Mock 1" },
+                                                                                              { "93112346", "Item Mock 2" }
+                                                                                             });
+
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TC_071_GetErrorDetails_Disease()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.Disease,
+                        ErrorInfo = new List<DiseaseResultModel>()
+                        {
+                            new DiseaseResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                                YjCd = "93112345",
+                                ByotaiCd = "33333",
+                                DiseaseType = 1,
+                                TenpuLevel = 2,
+                            },
+                            new DiseaseResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1234",
+                                YjCd = "93112346",
+                                ByotaiCd = "44444",
+                                DiseaseType = 2,
+                                TenpuLevel = 3,
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> inputList, int sinday) => new Dictionary<string, string> {
+                                                                                              { "93112345", "Item Mock 1" },
+                                                                                              { "93112346", "Item Mock 2" }
+                                                                                             });
+
+            mock.Setup(finder => finder.FindDiseaseNameDic(It.IsAny<List<string>>()))
+            .Returns((List<string> inputList) => new Dictionary<string, string> {
+                                                                                              { "33333", "Byotai Mock 1" },
+                                                                                              { "44444", "Byotai Mock 2" }
+                                                                                             });
+
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TC_072_GetErrorDetails_Kinki()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.KinkiSupplement,
+                        ErrorInfo = new List<KinkiResultModel>()
+                        {
+                            new KinkiResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                                KinkiItemCd = "23456",
+                                SeibunCd = "33333",
+                                CommentCode = "C1234",
+                                SayokijyoCode = "S1234",
+                                Kyodo = "2",
+                            },
+                            new KinkiResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1235",
+                                SeibunCd = "44444",
+                                CommentCode = "C1235",
+                                SayokijyoCode = "S1235",
+                                Kyodo = "3",
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            commonMedicalCheck._suppleItemNameDictionary = new Dictionary<string, string> {
+                                                                                            { "S1234", "SeibunName_Mocked_Test_1" },
+                                                                                            { "S1235", "SeibunName_Mocked_Test_2" },
+                                                                                          };
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> input, int input2) => new Dictionary<string, string> {
+                                                                        { "1234", "ItemName Mock 1" },
+                                                                        { "1235", "ItemName Mock 2" }
+                                                                      });
+
+            mock.Setup(finder => finder.FindClassName(It.IsAny<string>()))
+            .Returns((string input) => ("ClassName_Mocked_Test"));
+
+            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            .Returns((List<string> input) => new Dictionary<string, string>
+                                                                       {
+                                                                        { "33333", "Byotai Mock 1" },
+                                                                        { "44444", "Byotai Mock 2" }
+                                                                       });
+
+            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            .Returns((List<string> input) => new Dictionary<string, string>
+                                                                       {
+                                                                        { "C1234", "Comment Mock 1" },
+                                                                        { "C1235", "Comment Mock 2" }
+                                                                       });
+
+            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            .Returns((List<string> input) => new Dictionary<string, string>
+                                                                       {
+                                                                        { "S1234", "Kijyo Mock 1" },
+                                                                        { "S1235", "Kijyo Mock 2" }
+                                                                       });
+
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            .Returns((List<string> input) => new Dictionary<string, string>
+                                                                       {
+                                                                        { "33333", "Supplement Mock 1" },
+                                                                        { "44444", "Supplement Mock 2" }
+                                                                       });
+
+            // Act
+
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TC_073_GetErrorDetails_KinkiUser()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.KinkiUser,
+                        ErrorInfo = new List<KinkiResultModel>()
+                        {
+                            new KinkiResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                                KinkiItemCd = "23456",
+                                SeibunCd = "33333",
+                                CommentCode = "C1234",
+                                SayokijyoCode = "S1234",
+                                Kyodo = "2",
+                                AYjCd = "A1234",
+                                BYjCd = "B1234",
+                            },
+                            new KinkiResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1235",
+                                SeibunCd = "44444",
+                                CommentCode = "C1235",
+                                SayokijyoCode = "S1235",
+                                Kyodo = "3",
+                                AYjCd = "A1235",
+                                BYjCd = "B1235",
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> input, int input2) => new Dictionary<string, string>
+                                                                       {
+                                                                        { "A1234", "Item Mock 1" },
+                                                                        { "B1234", "Item Mock 2" },
+                                                                        { "A1235", "Item Mock 1" },
+                                                                        { "B1235", "Item Mock 2" },
+                                                                       });
+
+            // Act
+
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TC_074_GetErrorDetails_Days()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.Days,
+                        ErrorInfo = new List<DayLimitResultModel>()
+                        {
+                            new DayLimitResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                            },
+                            new DayLimitResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1235",
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemName(It.IsAny<string>(), It.IsAny<int>()))
+            .Returns((string stringInput, int sinday) => "Item Name Mock");
+
+            // Act
+
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TC_075_GetErrorDetails_Dosage()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.Dosage,
+                        ErrorInfo = new List<DosageResultModel>()
+                        {
+                            new DosageResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                                YjCd = "333444",
+                            },
+                            new DosageResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1235",
+                                YjCd = "444555",
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> input, int input2) => new Dictionary<string, string> {
+                                                                        { "1234", "ItemName Mock 1" },
+                                                                        { "1235", "ItemName Mock 2" }
+                                                                      });
+
+            mock.Setup(finder => finder.GetUsageDosageDic(It.IsAny<List<string>>()))
+            .Returns((List<string> input) => new Dictionary<string, string> {
+                                                                        { "333444", "ItemName Mock 1" },
+                                                                        { "444555", "ItemName Mock 2" }
+                                                                      });
+            
+            // Act
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TC_076_GetErrorDetails_Duplication()
+        {
+            var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 999;
+            long ptId = 1212;
+            int sinDay = 20230101;
+
+            var listErrorInfo = new List<UnitCheckInfoModel>()
+                {
+                    new UnitCheckInfoModel()
+                    {
+                        CheckerType = RealtimeCheckerType.Duplication,
+                        ErrorInfo = new List<DuplicationResultModel>()
+                        {
+                            new DuplicationResultModel()
+                            {
+                                Id = "1",
+                                ItemCd = "1234",
+                            },
+                            new DuplicationResultModel()
+                            {
+                                Id = "2",
+                                ItemCd = "1235",
+                            },
+                        }
+                    },
+                };
+
+            var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
+
+            mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> input, int input2) => new Dictionary<string, string> {
+                                                                        { "1234", "ItemName Mock 1" },
+                                                                        { "1235", "ItemName Mock 2" }
+                                                                      });
+
+            mock.Setup(finder => finder.FindItemNameByItemCodeDic(It.IsAny<List<string>>(), It.IsAny<int>()))
+            .Returns((List<string> inputList, int sinday) =>
+            inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
+
+            // Act
+            var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
         }
     }
 }
