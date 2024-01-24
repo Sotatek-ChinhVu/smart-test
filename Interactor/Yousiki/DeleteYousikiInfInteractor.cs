@@ -16,11 +16,11 @@ public class DeleteYousikiInfInteractor : IDeleteYousikiInfInputPort
     {
         try
         {
-            if (!_yousikiRepository.IsYousikiExist(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.DataType))
+            if (!_yousikiRepository.IsYousikiExist(inputData.HpId, inputData.SinYm, inputData.PtId))
             {
                 return new DeleteYousikiInfOutputData(DeleteYousikiInfStatus.InvalidYousikiInf);
             }
-            else if (_yousikiRepository.DeleteYousikiInf(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.PtId, inputData.DataType))
+            else if (_yousikiRepository.DeleteYousikiInf(inputData.HpId, inputData.UserId, inputData.SinYm, inputData.PtId))
             {
                 return new DeleteYousikiInfOutputData(DeleteYousikiInfStatus.Successed);
             }

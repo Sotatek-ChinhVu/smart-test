@@ -90,7 +90,7 @@ public class YousikiController : AuthorizeControllerBase
     [HttpPost(ApiPath.DeleteYousikiInf)]
     public ActionResult<Response<DeleteYousikiInfResponse>> DeleteYousikiInf([FromBody] DeleteYousikiInfRequest request)
     {
-        var input = new DeleteYousikiInfInputData(HpId, UserId, request.SinYm, request.PtId, request.DataType);
+        var input = new DeleteYousikiInfInputData(HpId, UserId, request.SinYm, request.PtId);
         var output = _bus.Handle(input);
         var presenter = new DeleteYousikiInfPresenter();
         presenter.Complete(output);

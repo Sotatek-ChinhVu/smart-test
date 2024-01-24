@@ -28,6 +28,8 @@ public interface IYousikiRepository : IRepositoryBase
 
     bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType);
 
+    bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId);
+
     List<Yousiki1InfModel> GetListYousiki1Inf(int hpId, int sinYm, int status = -1);
 
     List<ForeignKFileModel> GetRaiinInfsInMonth(int hpId, int sinYm);
