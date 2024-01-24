@@ -296,7 +296,7 @@ namespace Interactor.MstItem
 
         private CombinedContraindicationTabModel LoadCombinedContraindication(string itemCd, int sinDate)
         {
-            List<CombinedContraindicationModel> combinedContraindications = _mstItemRepository.GetContraindicationModelList(sinDate, itemCd);
+            List<CombinedContraindicationModel> combinedContraindications = _mstItemRepository.GetContraindicationModelList(sinDate, itemCd).OrderBy(x => x.BCd).ToList();
             return new CombinedContraindicationTabModel(combinedContraindications);
         }
     }

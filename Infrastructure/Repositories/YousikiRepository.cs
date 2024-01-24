@@ -4,9 +4,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 namespace Infrastructure.Repositories;
 
@@ -642,7 +639,105 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             yousikiInf.UpdateId = userId;
         }
+
         TrackingDataContext.SaveChanges();
+        return true;
+    }
+
+
+    /// <summary>
+    /// Delete YousikiInf
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <returns></returns>
+    public bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId)
+    {
+        var yousikiInfList = TrackingDataContext.Yousiki1Infs.Where(item => item.SinYm == sinYm
+                                                                            && item.PtId == ptId
+                                                                            && item.HpId == hpId
+                                                                            && item.IsDeleted == 0)
+                                                             .ToList();
+        foreach (var yousikiInf in yousikiInfList)
+        {
+            yousikiInf.IsDeleted = 1;
+            yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            yousikiInf.UpdateId = userId;
+        }
+
+        TrackingDataContext.SaveChanges();
+        return true;
+    }
+
+    public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, Dictionary<int, int> dataTypes, bool isTemporarySave)
+    {
+        UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
+
+        foreach (var dataType in dataTypes)
+        {
+            UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key, isTemporarySave ? 1 : 2);
+            DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key);
+        }
+
+        foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
+        {
+            if (yousiki1InfDetailModel.IsDeleted == 1)
+            {
+                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                if (yousiki1InfDetail != null)
+                {
+                    TrackingDataContext.Remove(yousiki1InfDetail);
+                }
+            }
+            else
+            {
+                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                if (yousiki1InfDetail != null)
+                {
+                    yousiki1InfDetail.Value = yousiki1InfDetailModel.Value;
+                }
+                else
+                {
+                    var yousiki1InfDetailNew = ConvertToModel(yousiki1InfDetailModel);
+                    TrackingDataContext.Yousiki1InfDetails.Add(yousiki1InfDetailNew);
+                }
+            }
+        }
+
+        TrackingDataContext.SaveChanges();
+    }
+
+    private Yousiki1InfDetail ConvertToModel(Yousiki1InfDetailModel yousiki1InfDetailModel)
+    {
+        return new Yousiki1InfDetail()
+        {
+            PtId = yousiki1InfDetailModel.PtId,
+            SinYm = yousiki1InfDetailModel.SinYm,
+            DataType = yousiki1InfDetailModel.DataType,
+            SeqNo = yousiki1InfDetailModel.SeqNo,
+            CodeNo = yousiki1InfDetailModel.CodeNo,
+            RowNo = yousiki1InfDetailModel.RowNo,
+            Payload = yousiki1InfDetailModel.Payload,
+            Value = yousiki1InfDetailModel.Value
+        };
+    }
+
+    public bool UpdateDateTimeYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType, int status)
+    {
+        var yousikiInf = TrackingDataContext.Yousiki1Infs.Where(x => x.SinYm == sinYm &&
+                                                                                x.PtId == ptId &&
+                                                                                x.DataType == dataType &&
+                                                                                x.HpId == hpId &&
+                                                                                x.IsDeleted == 0).FirstOrDefault();
+        if (yousikiInf != null)
+        {
+            yousikiInf.Status = status;
+            yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            yousikiInf.UpdateId = userId;
+        }
+
         return true;
     }
 

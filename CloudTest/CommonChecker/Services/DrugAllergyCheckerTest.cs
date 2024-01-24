@@ -58,6 +58,8 @@ namespace CloudUnitTest.CommonChecker.Services
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                     RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
 
+            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 1);
+
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
             var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
@@ -85,6 +87,7 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
+                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
@@ -175,9 +178,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var ptId = 1231;
             var sinDate = 20230101;
 
-            var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 1);
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
@@ -185,6 +186,10 @@ namespace CloudUnitTest.CommonChecker.Services
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
+
+            var cache = new MasterDataCacheService(TenantProvider);
+            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
@@ -196,12 +201,16 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
+                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
             }
         }
 
+        /// <summary>
+        /// IsSameComponentChecked = true
+        /// </summary>
         [Test]
         public void CheckDrugAllergyChecker_004_CheckingError_IsDuplicatedItemCode()
         {
@@ -282,6 +291,8 @@ namespace CloudUnitTest.CommonChecker.Services
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                     RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
 
+            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 1);
+
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
             var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
@@ -309,6 +320,7 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
+                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
@@ -395,6 +407,7 @@ namespace CloudUnitTest.CommonChecker.Services
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                     RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
 
+            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 1);
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
             var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
@@ -421,6 +434,7 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
+                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
