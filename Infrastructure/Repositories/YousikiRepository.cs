@@ -644,6 +644,33 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return true;
     }
 
+
+    /// <summary>
+    /// Delete YousikiInf
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="sinYm"></param>
+    /// <param name="ptId"></param>
+    /// <returns></returns>
+    public bool DeleteYousikiInf(int hpId, int userId, int sinYm, long ptId)
+    {
+        var yousikiInfList = TrackingDataContext.Yousiki1Infs.Where(item => item.SinYm == sinYm
+                                                                            && item.PtId == ptId
+                                                                            && item.HpId == hpId
+                                                                            && item.IsDeleted == 0)
+                                                             .ToList();
+        foreach (var yousikiInf in yousikiInfList)
+        {
+            yousikiInf.IsDeleted = 1;
+            yousikiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            yousikiInf.UpdateId = userId;
+        }
+
+        TrackingDataContext.SaveChanges();
+        return true;
+    }
+
     public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, Dictionary<int, int> dataTypes, bool isTemporarySave)
     {
         UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
