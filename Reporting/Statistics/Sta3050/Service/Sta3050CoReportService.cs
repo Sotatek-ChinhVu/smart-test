@@ -71,9 +71,9 @@ public class Sta3050CoReportService : ISta3050CoReportService
     /// <summary>
     /// CoReport Model
     /// </summary>
-    private List<CoSta3050PrintData> printDatas;
-    private List<string> headerL1;
-    private List<string> headerL2;
+    private List<CoSta3050PrintData>? printDatas;
+    private List<string>? headerL1;
+    private List<string>? headerL2;
     private List<CoSinKouiModel> sinKouis;
     private CoHpInfModel hpInf;
 
@@ -137,6 +137,7 @@ public class Sta3050CoReportService : ISta3050CoReportService
         }
         finally
         {
+            printDatas = null;
             _finder.ReleaseResource();
         }
     }
