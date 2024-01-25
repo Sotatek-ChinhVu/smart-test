@@ -1,4 +1,6 @@
 ﻿using Domain.Models.Yousiki;
+using Interactor.Yousiki;
+using UseCase.Yousiki.CommonOutputData;
 
 namespace EmrCloudApi.Responses.Yousiki.Dto;
 
@@ -14,10 +16,7 @@ public class Yousiki1InfDto
         Status = model.Status;
         StatusDic = model.StatusDic;
         SeqNo = model.SeqNo;
-        CommonList = model.Yousiki1InfDetailList.Where(item => item.DataType == 0).Select(item => new Yousiki1InfDetailDto(item)).ToList();
-        LivingHabitList = model.Yousiki1InfDetailList.Where(item => item.DataType == 1).Select(item => new Yousiki1InfDetailDto(item)).ToList();
-        AtHomeList = model.Yousiki1InfDetailList.Where(item => item.DataType == 2).Select(item => new Yousiki1InfDetailDto(item)).ToList();
-        RehabilitationList = model.Yousiki1InfDetailList.Where(item => item.DataType == 3).Select(item => new Yousiki1InfDetailDto(item)).ToList();
+        TabYousiki = ReturnYousikiTabService.RenderTabYousiki(model);
     }
 
     public long PtNum { get; private set; }
@@ -36,11 +35,5 @@ public class Yousiki1InfDto
 
     public int SeqNo { get; private set; }
 
-    public List<Yousiki1InfDetailDto> CommonList { get; private set; }
-
-    public List<Yousiki1InfDetailDto> LivingHabitList { get; private set; }
-
-    public List<Yousiki1InfDetailDto> AtHomeList { get; private set; }
-
-    public List<Yousiki1InfDetailDto> RehabilitationList { get; private set; }
+    public TabYousikiModel TabYousiki { get; private set; }
 }

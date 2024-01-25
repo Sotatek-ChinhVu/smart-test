@@ -816,7 +816,6 @@ using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetByomeisInMonth;
 using UseCase.Yousiki.CreateYuIchiFile;
-using Interactor.Yousiki.UpdateYosiki;
 using UseCase.Yousiki.UpdateYosiki;
 
 namespace EmrCloudApi.Configs.Dependency

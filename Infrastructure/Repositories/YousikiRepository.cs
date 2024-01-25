@@ -118,24 +118,53 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <param name="dataType"></param>
     /// <param name="seqNo"></param>
     /// <returns></returns>
-    public List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, long ptId, int dataType, int seqNo)
+    public Yousiki1InfModel GetYousiki1InfDetails(int hpId, int sinYm, long ptId, int dataType, int seqNo)
     {
-        var result = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
-                                                                            && item.PtId == ptId
-                                                                            && item.DataType == dataType
-                                                                            && item.SeqNo == seqNo
-                                                                            && item.HpId == hpId)
-                                                             .Select(item => new Yousiki1InfDetailModel(
-                                                                                 item.PtId,
-                                                                                 item.SinYm,
-                                                                                 item.DataType,
-                                                                                 item.SeqNo,
-                                                                                 item.CodeNo ?? string.Empty,
-                                                                                 item.RowNo,
-                                                                                 item.Payload,
-                                                                                 item.Value ?? string.Empty))
-                                                             .ToList();
-        return result;
+        var yousiki1Inf = NoTrackingDataContext.Yousiki1Infs.FirstOrDefault(item => item.SinYm == sinYm
+                                                                                    && item.PtId == ptId
+                                                                                    && item.DataType == dataType
+                                                                                    && item.SeqNo == seqNo
+                                                                                    && item.HpId == hpId
+                                                                                    && item.IsDeleted == 0);
+        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.PtId == ptId && item.IsDelete == 0);
+        if (yousiki1Inf == null || ptInf == null)
+        {
+            return new();
+        }
+        var yousiki1InfDetailList = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
+                                                                                           && item.PtId == ptId
+                                                                                           && item.DataType == dataType
+                                                                                           && item.SeqNo == seqNo
+                                                                                           && item.HpId == hpId)
+                                                                            .Select(item => new Yousiki1InfDetailModel(
+                                                                                                item.PtId,
+                                                                                                item.SinYm,
+                                                                                                item.DataType,
+                                                                                                item.SeqNo,
+                                                                                                item.CodeNo ?? string.Empty,
+                                                                                                item.RowNo,
+                                                                                                item.Payload,
+                                                                                                item.Value ?? string.Empty))
+                                                                            .ToList();
+        return new Yousiki1InfModel(ptInf.PtNum,
+                                    ptInf.Name ?? string.Empty,
+                                    ptInf.IsTester == 1,
+                                    yousiki1Inf.PtId,
+                                    yousiki1Inf.SinYm,
+                                    yousiki1Inf.DataType,
+                                    yousiki1Inf.Status,
+                                    new(),
+                                    yousiki1Inf.SeqNo,
+                                    yousiki1InfDetailList.Select(itemDetail => new Yousiki1InfDetailModel(
+                                                                                        itemDetail.PtId,
+                                                                                        itemDetail.SinYm,
+                                                                                        itemDetail.DataType,
+                                                                                        itemDetail.SeqNo,
+                                                                                        itemDetail.CodeNo ?? string.Empty,
+                                                                                        itemDetail.RowNo,
+                                                                                        itemDetail.Payload,
+                                                                                        itemDetail.Value ?? string.Empty))
+                                                         .ToList());
     }
 
     /// <summary>

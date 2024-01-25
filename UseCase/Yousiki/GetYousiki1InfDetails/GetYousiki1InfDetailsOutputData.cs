@@ -5,13 +5,13 @@ namespace UseCase.Yousiki.GetYousiki1InfDetails;
 
 public class GetYousiki1InfDetailsOutputData : IOutputData
 {
-    public GetYousiki1InfDetailsOutputData(List<Yousiki1InfDetailModel> yousiki1InfDetailList, GetYousiki1InfDetailsStatus status)
+    public GetYousiki1InfDetailsOutputData(Yousiki1InfModel yousiki1Inf, GetYousiki1InfDetailsStatus status)
     {
-        Yousiki1InfDetailList = yousiki1InfDetailList;
+        Yousiki1Inf = yousiki1Inf;
         Status = status;
     }
 
-    public List<Yousiki1InfDetailModel> Yousiki1InfDetailList { get; private set; }
+    public Yousiki1InfModel Yousiki1Inf { get; private set; }
 
     public GetYousiki1InfDetailsStatus Status { get; private set; }
 }
