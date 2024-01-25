@@ -619,7 +619,7 @@ namespace Interactor.MedicalExamination
                     int startDate = 0;
                     List<int> checkHokenKbnTmp = new List<int>();
                     checkHokenKbnTmp.AddRange(GetCheckHokenKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
-                    
+
                     if (densiSanteiKaisu.TargetKbn == 1)
                     {
                         // 健保のみ対象の場合はすべて対象
@@ -784,20 +784,47 @@ namespace Interactor.MedicalExamination
                             }
 
                             string errMsg = string.Format("'{0}' は、初診から1カ月以内のため、" + conditionMsg, odrDetail.ItemName);
-                            CheckedSpecialItem checkSpecialItem = new CheckedSpecialItem();
-                            checkSpecialItem.CheckingType = CheckSpecialType.CalculationCount;
-                            checkSpecialItem.Label = string.Empty;
-                            checkSpecialItem.CheckingContent = errMsg;
-                            checkSpecialItem.ItemCd = odrDetail.ItemCd;
-
+                            var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
                             checkSpecialItemList.Add(checkSpecialItem);
                         }
                     }
-                }
-                //var densiSanteiKaisuModelFilters = densiSanteiKaisuModels.Where(d => d.ItemCd == santeiItemCd).ToList();
+                    else
+                    {
+                        double count = 0;
+                        if (startDate >= 0)
+                        {
+                            List<string> itemCds = new List<string>();
 
-                //checkSpecialItemList.AddRange(ExecuteDensiSantei(ptId, hpId, endDate, raiinNo, hokensyuHandling, sinDate, syosinDate, suryo, itemName, densiSanteiKaisuModelFilters, odrDetail, hokenIds, allOdrInfDetail, itemGrpMsts));
-                // チェック期間と表記を取得する
+                            if (densiSanteiKaisu.ItemGrpCd > 0)
+                            {
+                                // 項目グループの設定がある場合
+                                itemGrpMsts = _mstItemRepository.FindItemGrpMst(hpId, sinDate, 1, densiSanteiKaisuModels.Select(x => x.ItemGrpCd).ToList());
+                            }
+
+                            if (itemGrpMsts != null && itemGrpMsts.Any())
+                            {
+                                // 項目グループの設定がある場合
+                                itemCds.AddRange(itemGrpMsts.Select(x => x.ItemCd));
+                            }
+                            else
+                            {
+                                itemCds.Add(odrDetail.ItemCd);
+                            }
+
+                            count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
+                        }
+                        if (densiSanteiKaisu.MaxCount <= count // 上限値を超えるかチェックする
+                        || densiSanteiKaisu.MaxCount < count + suryo) // 今回分を足すと超えてしまう場合は注意（MaxCount = count + konkaiSuryoはセーフ）
+                        {
+                            string errMsg = $"\"{itemName}\" {sTerm}{count + suryo}回算定({densiSanteiKaisu.MaxCount}回まで)";
+                            if (!checkSpecialItemList.Any(p => p.CheckingContent == errMsg))
+                            {
+                                CheckedSpecialItem checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
+                                checkSpecialItemList.Add(checkSpecialItem);
+                            }
+                        }
+                    }
+                }
                 checkedItem.Add(odrDetail.ItemCd);
             }
 
