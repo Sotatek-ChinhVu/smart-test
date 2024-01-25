@@ -5465,7 +5465,7 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
 
         var totalCount = joinedQuery.Count();
 
-        var entities = joinedQuery.OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
+        var entities = joinedQuery.OrderByDescending(item => item.TenMst.IsAdopted).ThenBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
 
         var tenMstModels = entities.Select(item => new TenItemModel(
                                                          item.TenMst.HpId,
