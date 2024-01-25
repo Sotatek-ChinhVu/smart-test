@@ -17,7 +17,7 @@ namespace Interactor.Yousiki
             {
                 var result = _yousikiRepository.GetKacodeYousikiMstDict(inputData.HpId);
 
-                return new GetKacodeYousikiMstDictOutputData(result, GetKacodeYousikiMstDictStatus.Successed);
+                return new GetKacodeYousikiMstDictOutputData(result.Item1, result.Item2, GetKacodeYousikiMstDictStatus.Successed);
             }
             finally
             {

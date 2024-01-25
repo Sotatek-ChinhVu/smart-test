@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.Ka;
 
 namespace Domain.Models.Yousiki;
 
@@ -22,7 +23,7 @@ public interface IYousikiRepository : IRepositoryBase
 
     List<Yousiki1InfModel> GetYousiki1InfModel(int hpId, int sinYm, long ptNumber, int dataType);
 
-    Dictionary<string, string> GetKacodeYousikiMstDict(int hpId);
+    (Dictionary<string, string>, List<KaMstModel>) GetKacodeYousikiMstDict(int hpId);
 
     bool AddYousikiInfByMonth(int hpId, int userId, int sinYm, int dataType, List<long> ptIdList);
 

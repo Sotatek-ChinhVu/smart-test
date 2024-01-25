@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.Yousiki
         public Response<GetKacodeYousikiMstDictResponse> Result { get; private set; } = new();
         public void Complete(GetKacodeYousikiMstDictOutputData outputData)
         {
-            Result.Data = new GetKacodeYousikiMstDictResponse(outputData.KacodeYousikiMstDict);
+            Result.Data = new GetKacodeYousikiMstDictResponse(outputData.KacodeYousikiMstDict, outputData.KaMstModels);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

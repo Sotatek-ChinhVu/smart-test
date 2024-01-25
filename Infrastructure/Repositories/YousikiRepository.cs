@@ -1,4 +1,5 @@
-﻿using Domain.Models.Yousiki;
+﻿using Domain.Models.Ka;
+using Domain.Models.Yousiki;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -498,17 +499,25 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return true;
     }
 
-    public Dictionary<string, string> GetKacodeYousikiMstDict(int hpId)
+    public (Dictionary<string, string>, List<KaMstModel>) GetKacodeYousikiMstDict(int hpId)
     {
         var listKacodeMst = NoTrackingDataContext.KacodeYousikiMsts.Where(x => x.HpId == hpId).ToList();
-        if (listKacodeMst.Count == 0)
+        var KaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0).OrderBy(x => x.SortNo).ToList();
+        List<KaMstModel> kaMstModels = new List<KaMstModel>();
+        foreach (var item in KaMsts)
         {
-            return new Dictionary<string, string>();
+            KaMstModel kaMst = new KaMstModel(item.Id, item.KaId, item.SortNo, item.ReceKaCd ?? string.Empty, item.KaSname ?? string.Empty, item.KaName ?? string.Empty, item.YousikiKaCd ?? string.Empty);
+            kaMstModels.Add(kaMst);
         }
 
-        return listKacodeMst.OrderBy(u => u.SortNo)
+        if (listKacodeMst.Count == 0)
+        {
+            return (new Dictionary<string, string>(), new());
+        }
+
+        return (listKacodeMst.OrderBy(u => u.SortNo)
                             .ThenBy(u => u.YousikiKaCd)
-                            .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName);
+                            .ToDictionary(kaMst => kaMst.YousikiKaCd.PadLeft(3, '0'), kaMst => kaMst.KaName), kaMstModels);
     }
 
     /// <summary>
