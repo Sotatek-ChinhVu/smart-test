@@ -7,11 +7,9 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Collections;
-using System.Drawing;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories;
@@ -19,16 +17,12 @@ namespace Infrastructure.Repositories;
 public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 {
     private readonly IDatabase _cache;
-    private readonly string key;
+    private readonly string getListSystemConfigKey;
     private readonly IConfiguration _configuration;
 
     public SystemConfRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
     {
-        key = GetCacheKey() + "SystemConf";
-        if (key.StartsWith("-"))
-        {
-            key = "ClinicID-SystemConfRepository" + "SystemConf";
-        }
+        getListSystemConfigKey = GetDomainKey() + CacheKeyConstant.GetListSystemConf;
         _configuration = configuration;
         GetRedis();
         _cache = RedisConnectorHelper.Connection.GetDatabase();
@@ -49,14 +43,14 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                                     .Where(item => item.HpId == hpId)
                                     .ToList();
         var json = JsonSerializer.Serialize(result);
-        _cache.StringSet(key, json);
+        _cache.StringSet(getListSystemConfigKey, json);
 
         return result;
     }
 
     private List<SystemConf> ReadCache()
     {
-        var results = _cache.StringGet(key);
+        var results = _cache.StringGet(getListSystemConfigKey);
         var json = results.AsString();
         var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<SystemConf>>(json) : new();
         return datas ?? new();
@@ -65,7 +59,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     private List<SystemConf> GetData(int hpId)
     {
         List<SystemConf> result;
-        if (!_cache.KeyExists(key))
+        if (!_cache.KeyExists(getListSystemConfigKey))
         {
             result = ReloadCache(hpId);
         }
