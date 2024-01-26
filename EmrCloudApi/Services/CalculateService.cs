@@ -69,9 +69,9 @@ namespace EmrCloudApi.Services
 
                 var timer = new Stopwatch();
                 timer.Start();
-                using (var cts = new CancellationTokenSource(new TimeSpan(0, 5, 0)))
+                using (var cts = new CancellationTokenSource(new TimeSpan(0, 10, 0)))
                 {
-                    var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, cts.Token).ConfigureAwait(false);
+                    var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, cts.Token).ConfigureAwait(true);
                     timer.Stop();
                     TimeSpan timeTaken = timer.Elapsed;
                     string foo = "Time taken: " + timeTaken.ToString(@"m\:ss\.fff");
