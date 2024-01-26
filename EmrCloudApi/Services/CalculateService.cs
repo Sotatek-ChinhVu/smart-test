@@ -1,9 +1,12 @@
-﻿using Domain.Models.CalculateModel;
+﻿using Amazon.Runtime.Internal.Endpoints.StandardLibrary;
+using Domain.Models.CalculateModel;
 using Helper.Enum;
 using Infrastructure.Interfaces;
 using Infrastructure.Logger;
 using Interactor.CalculateService;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Net.Http;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
@@ -64,15 +67,23 @@ namespace EmrCloudApi.Services
             {
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
 
-                var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
-                if (response.IsSuccessStatusCode)
+                var timer = new Stopwatch();
+                timer.Start();
+                using (var cts = new CancellationTokenSource(new TimeSpan(0, 5, 0)))
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    return new CalculateResponse(responseContent, ResponseStatus.Successed);
+                    var response = await _httpClient.PostAsync($"{basePath}{functionName}", content, cts.Token).ConfigureAwait(false);
+                    timer.Stop();
+                    TimeSpan timeTaken = timer.Elapsed;
+                    string foo = "Time taken: " + timeTaken.ToString(@"m\:ss\.fff");
+                    Console.WriteLine(foo);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        return new CalculateResponse(responseContent, ResponseStatus.Successed);
+                    }
+
+                    return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
                 }
-
-                return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
-
             }
             catch (Exception ex)
             {
