@@ -145,7 +145,7 @@ namespace EmrCloudApi.Services
 
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                     return new();
-
+                Console.WriteLine("Step-Debug" + task.Result.ResponseMessage + task.Result.ResponseStatus);
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result ?? new();
             }
