@@ -18,7 +18,6 @@ namespace Interactor.MedicalExamination
     public class CheckedSpecialItemInteractor : ICheckedSpecialItemInputPort
     {
         private readonly ITodayOdrRepository _todayOdrRepository;
-        private readonly ISystemConfig? _systemConfig;
         private List<string> _syosinls =
             new List<string>
             {
@@ -39,14 +38,13 @@ namespace Interactor.MedicalExamination
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IReceptionRepository _receptionRepository;
 
-        public CheckedSpecialItemInteractor(ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository, IInsuranceRepository insuranceRepository, ISystemConfRepository systemConfRepository, IReceptionRepository receptionRepository, ISystemConfig systemConfig)
+        public CheckedSpecialItemInteractor(ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository, IInsuranceRepository insuranceRepository, ISystemConfRepository systemConfRepository, IReceptionRepository receptionRepository)
         {
             _todayOdrRepository = todayOdrRepository;
             _mstItemRepository = mstItemRepository;
             _insuranceRepository = insuranceRepository;
             _systemConfRepository = systemConfRepository;
             _receptionRepository = receptionRepository;
-            _systemConfig = systemConfig;
         }
 
         public CheckedSpecialItemOutputData Handle(CheckedSpecialItemInputData inputData)
@@ -604,7 +602,7 @@ namespace Interactor.MedicalExamination
 
                 int hokenKbn = GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds);
 
-                if (hokenKbn == 11 || hokenKbn == 12 || hokenKbn == 13 || (hokenKbn == 14 && _systemConfig?.JibaiJunkyo() == 1))
+                if (hokenKbn == 11 || hokenKbn == 12 || hokenKbn == 13 || (hokenKbn == 14 && _systemConfRepository?.GetSettingValue(3001, 0, hpId) == 1))
                 {
                     densiSanteiKaisuModels = densiSanteiKaisuModels.FindAll(p => p.TargetKbn == 2 || p.TargetKbn == 0);
                 }
