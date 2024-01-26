@@ -700,7 +700,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
             foreach (var raiinKbnMst in raiinKbnMsts)
             {
-                var curKbns = raiinKbns.Where(r => r.RaiinNo == raiinData.RaiinNo && r.GrpId == raiinKbnMst.GrpCd).FirstOrDefault();
+                var curKbns = raiinKbns.FirstOrDefault(r => r.RaiinNo == raiinData.RaiinNo && r.GrpId == raiinKbnMst.GrpCd);
 
                 raiinData.RaiinKbns.Add
                 (
@@ -951,9 +951,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         var userMsts = NoTrackingDataContext.UserMsts;
         //診療行為
         var sinCounts = NoTrackingDataContext.SinKouiCounts;
-        var sinRpInfs = NoTrackingDataContext.SinRpInfs;
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.InoutKbn != 1);
-        IQueryable<SinKouiDetail> sinKouiDetails = NoTrackingDataContext.SinKouiDetails;
+        var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.IsDeleted == DeleteStatus.None && item.InoutKbn != 1);
+        IQueryable<SinKouiDetail> sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.IsDeleted == DeleteStatus.None);
         var jihiSbtMsts = NoTrackingDataContext.JihiSbtMsts;
         //保険情報
         (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
@@ -1244,7 +1244,16 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 isPtGrp = true;
                 foreach (var ptGrp in ptConf.PtGrps)
                 {
-                    var curPtGrps = ptGrpInfs.Where(p => p.GroupId == ptGrp.GrpId && p.GroupCode == ptGrp.GrpCode);
+                    var curPtGrps = ptGrpInfs;
+                    if (ptGrp.GrpCode == "al")
+                    {
+                        //患者グループコード「すべて」選択時
+                        curPtGrps = curPtGrps.Where(p => p.GroupId == ptGrp.GrpId);
+                    }
+                    else
+                    {
+                        curPtGrps = curPtGrps.Where(p => p.GroupId == ptGrp.GrpId && p.GroupCode == ptGrp.GrpCode);
+                    }
                     ptGrpInfs = (
                         from ptGrpInf in ptGrpInfs
                         where
@@ -1353,9 +1362,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
         #region 診療情報
         //算定
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.InoutKbn != 1);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.IsDeleted == DeleteStatus.None && item.InoutKbn != 1);
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails;
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.IsDeleted == DeleteStatus.None);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -1982,8 +1991,15 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             string sEdaNo = hokenConf.EdaNo.TrimStart('0');
 
             //保険者番号
-            ptHokenInfs = hokenConf.StartHokensyaNo != string.Empty ? ptHokenInfs.Where(p => p.HokensyaNo.CompareTo(hokenConf.StartHokensyaNo) >= 0) : ptHokenInfs;
-            ptHokenInfs = hokenConf.EndHokensyaNo != string.Empty ? ptHokenInfs.Where(p => p.HokensyaNo.CompareTo(hokenConf.EndHokensyaNo) <= 0) : ptHokenInfs;
+            if (hokenConf.StartHokensyaNo != string.Empty && hokenConf.StartHokensyaNo == hokenConf.EndHokensyaNo)
+            {
+                ptHokenInfs = ptHokenInfs.Where(p => p.HokensyaNo == hokenConf.StartHokensyaNo);
+            }
+            else
+            {
+                ptHokenInfs = hokenConf.StartHokensyaNo != string.Empty ? ptHokenInfs.Where(p => p.HokensyaNo.CompareTo(hokenConf.StartHokensyaNo) >= 0) : ptHokenInfs;
+                ptHokenInfs = hokenConf.EndHokensyaNo != string.Empty ? ptHokenInfs.Where(p => p.HokensyaNo.CompareTo(hokenConf.EndHokensyaNo) <= 0) : ptHokenInfs;
+            }
             //記号
             ptHokenInfs = hokenConf.Kigo != string.Empty ? ptHokenInfs.Where(p => p.Kigo.Contains(hokenConf.Kigo)) : ptHokenInfs;
             //番号
@@ -1992,14 +2008,38 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             //本人・家族
             ptHokenInfs = hokenConf.HonkeKbn > 0 ? ptHokenInfs.Where(p => p.HonkeKbn == hokenConf.HonkeKbn) : ptHokenInfs;
             //公費負担者番号
-            ptKohis = hokenConf.StartFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo.CompareTo(hokenConf.StartFutansyaNo) >= 0) : ptKohis;
-            ptKohis = hokenConf.EndFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo.CompareTo(hokenConf.EndFutansyaNo) <= 0) : ptKohis;
+            if (hokenConf.StartFutansyaNo != string.Empty && hokenConf.StartFutansyaNo == hokenConf.EndFutansyaNo)
+            {
+                ptKohis = ptKohis.Where(p => p.FutansyaNo == hokenConf.StartFutansyaNo);
+            }
+            else
+            {
+                ptKohis = hokenConf.StartFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo.CompareTo(hokenConf.StartFutansyaNo) >= 0) : ptKohis;
+                ptKohis = hokenConf.EndFutansyaNo != string.Empty ? ptKohis.Where(p => p.FutansyaNo.CompareTo(hokenConf.EndFutansyaNo) <= 0) : ptKohis;
+            }
             //公費特殊番号
-            ptKohis = hokenConf.StartTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo.CompareTo(hokenConf.StartTokusyuNo) >= 0) : ptKohis;
-            ptKohis = hokenConf.EndTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo.CompareTo(hokenConf.EndTokusyuNo) <= 0) : ptKohis;
+            if (hokenConf.StartTokusyuNo != string.Empty && hokenConf.StartTokusyuNo == hokenConf.EndTokusyuNo)
+            {
+                ptKohis = ptKohis.Where(p => p.TokusyuNo == hokenConf.StartTokusyuNo);
+            }
+            else
+            {
+                ptKohis = hokenConf.StartTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo.CompareTo(hokenConf.StartTokusyuNo) >= 0) : ptKohis;
+                ptKohis = hokenConf.EndTokusyuNo != string.Empty ? ptKohis.Where(p => p.TokusyuNo.CompareTo(hokenConf.EndTokusyuNo) <= 0) : ptKohis;
+            }
             //有効期限
-            ptHokenPatterns = hokenConf.StartDate > 0 ? ptHokenPatterns.Where(p => p.EndDate >= hokenConf.StartDate) : ptHokenPatterns;
-            ptHokenPatterns = hokenConf.EndDate > 0 ? ptHokenPatterns.Where(p => p.StartDate <= hokenConf.EndDate) : ptHokenPatterns;
+            if (hokenConf.YukoKbn != 1)
+            {
+                //有効
+                ptHokenPatterns = hokenConf.StartDate > 0 ? ptHokenPatterns.Where(p => p.EndDate >= hokenConf.StartDate) : ptHokenPatterns;
+                ptHokenPatterns = hokenConf.EndDate > 0 ? ptHokenPatterns.Where(p => p.StartDate <= hokenConf.EndDate) : ptHokenPatterns;
+            }
+            else
+            {
+                //期限切れ
+                ptHokenPatterns = hokenConf.StartDate > 0 ? ptHokenPatterns.Where(p => p.EndDate >= hokenConf.StartDate) : ptHokenPatterns;
+                ptHokenPatterns = hokenConf.EndDate > 0 ? ptHokenPatterns.Where(p => p.EndDate <= hokenConf.EndDate) : ptHokenPatterns;
+            }
             //保険種別
             if (hokenConf.HokenSbts?.Count >= 1)
             {

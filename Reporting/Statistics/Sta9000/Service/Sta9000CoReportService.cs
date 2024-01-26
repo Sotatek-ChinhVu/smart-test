@@ -405,12 +405,10 @@ public class Sta9000CoReportService : ISta9000CoReportService
     private readonly List<Dictionary<string, CellModel>> _tableFieldData = new();
     private readonly ICoSta9000Finder _finder;
     private readonly IReadRseReportFileService _readRseReportFileService;
-    private readonly ICoSta9000Finder _coSta9000Finder;
-    public Sta9000CoReportService(ICoSta9000Finder finder, IReadRseReportFileService readRseReportFileService, ICoSta9000Finder coSta9000Finder)
+    public Sta9000CoReportService(ICoSta9000Finder finder, IReadRseReportFileService readRseReportFileService)
     {
         _finder = finder;
         _readRseReportFileService = readRseReportFileService;
-        _coSta9000Finder = coSta9000Finder;
     }
 
     private int reportType;
@@ -751,9 +749,6 @@ public class Sta9000CoReportService : ISta9000CoReportService
 
         void MakePrintData()
         {
-
-            var ptInfs = _coSta9000Finder.GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf, kensaConf, ptIds);
-
             printDatas = new List<CoSta9000PrintData>();
 
             //ソート順

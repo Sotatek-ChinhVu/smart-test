@@ -1,11 +1,14 @@
-﻿namespace Infrastructure.Interfaces
+﻿using Entity.Tenant;
+
+namespace Infrastructure.Interfaces;
+
+public interface IKaService
 {
-    public interface IKaService
-    {
-        void Reload();
+    void Reload();
 
-        string GetNameById(int id);
+    string GetNameById(int id);
 
-        void DisposeSource();
-    }
+    List<KaMst> AllKaMstList();
+
+    void DisposeSource();
 }

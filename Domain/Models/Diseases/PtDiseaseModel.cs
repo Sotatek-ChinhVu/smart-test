@@ -386,7 +386,7 @@ namespace Domain.Models.Diseases
             UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList, int tenkiKbn)
+        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, int hokenId, List<PrefixSuffixModel> prefixList, int tenkiKbn)
         {
             PtId = ptId;
             ByomeiCd = byomeiCd;
@@ -400,6 +400,7 @@ namespace Domain.Models.Diseases
             TenkiDate = tenkiDate;
             HosokuCmt = hosokuCmt;
             TogetuByomei = togetuByomei;
+            HokenId = hokenId;
             PrefixSuffixList = new List<PrefixSuffixModel>();
             PrefixSuffixList.AddRange(prefixList);
             Icd10 = string.Empty;
@@ -434,7 +435,7 @@ namespace Domain.Models.Diseases
             UpdateDate = string.Empty;
         }
 
-        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, int isNodspRece, int tenkiKbn, List<PrefixSuffixModel> prefixList)
+        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, int isNodspRece, int tenkiKbn, int hokenId, List<PrefixSuffixModel> prefixList)
         {
             PtId = ptId;
             ByomeiCd = byomeiCd;
@@ -449,6 +450,7 @@ namespace Domain.Models.Diseases
             TogetuByomei = togetuByomei;
             IsNodspRece = isNodspRece;
             TenkiKbn = tenkiKbn;
+            HokenId = hokenId;
             PrefixSuffixList = new List<PrefixSuffixModel>();
             PrefixSuffixList.AddRange(prefixList);
             Icd10 = string.Empty;

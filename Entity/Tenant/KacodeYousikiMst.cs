@@ -1,5 +1,4 @@
 using Entity;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,6 +7,13 @@ namespace Emr.DatabaseEntity
     [Table(name: "kacode_yousiki_mst")]
     public class KacodeYousikiMst : EmrCloneable<KacodeYousikiMst>
     {
+        /// <summary>
+        /// 医療機関識別ID
+        /// </summary>
+
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 様式1診療科コード
         /// </summary>

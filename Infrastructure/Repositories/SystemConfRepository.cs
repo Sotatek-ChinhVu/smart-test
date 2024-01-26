@@ -7,9 +7,11 @@ using Helper.Extension;
 using Helper.Redis;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 using System.Collections;
+using System.Drawing;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories;
@@ -484,6 +486,14 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId
             });
+        }
+
+        // remove key when save SystemGenerationConf
+        int hpId = systemConfMenuModels.FirstOrDefault()?.HpId ?? 0;
+        var finalKey = GetDomainKey() + CacheKeyConstant.SystemGenerationConf + hpId;
+        if (_cache.KeyExists(finalKey))
+        {
+            _cache.KeyDelete(finalKey);
         }
 
         return TrackingDataContext.SaveChanges() > 0;
