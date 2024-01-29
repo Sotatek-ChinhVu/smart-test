@@ -107,7 +107,7 @@ namespace EmrCalculateApi.Futan.Models
         /// <summary>
         /// 期間内の公費に係る一部負担金相当額合計を取得
         /// </summary>
-        public int GetKohiIchibuFutan(int kohiId, CountType countType, int LimitKbn)
+        public int GetKohiIchibuFutan(int kohiId, CountType countType, int LimitKbn, int hokenPid = 0)
         {
             int fromDate = FromDate(countType);
             int toDate = _kaikeiDetail.SinDate;
@@ -121,6 +121,12 @@ namespace EmrCalculateApi.Futan.Models
                     (k.Kohi4Id == kohiId)
                 )
             );
+
+            //保険組合せの指定
+            if (hokenPid > 0)
+            {
+                wrkQuery = wrkQuery.Where(k => k.HokenPid == hokenPid);
+            }
 
             //同一来院内の負担を取得
             if (countType == CountType.Times)
@@ -518,4 +524,12 @@ namespace EmrCalculateApi.Futan.Models
         public const int ExcludeKogakuTotal = 1;
         public const int IncludeKogakuTotal = 2;
     }
+
+    /// <summary>
+    /// 高額療養費の上限計算
+    ///     IncKohi: 公費を加味した上限
+    ///     ExcKohi: 公費がない場合の所得に応じた上限
+    ///     Total: 合算上限
+    /// </summary>
+    public enum KogakuLimitType { IncKohi = 0, ExcKohi = 1, Total = 2 };
 }

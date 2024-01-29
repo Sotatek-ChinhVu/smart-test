@@ -140,5 +140,13 @@ namespace Entity.Tenant
         [Column("update_machine")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
+
+        /// <summary>
+        /// EF対象フラグ
+        ///     1:EFファイル出力対象の削除項目   
+        /// </summary>
+        [Column("ef_flg")]
+        [CustomAttribute.DefaultValue(0)]
+        public int EfFlg { get; set; }
     }
 }

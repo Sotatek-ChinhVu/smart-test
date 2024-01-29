@@ -137,7 +137,8 @@ namespace EmrCalculateApi.Futan.DB.Finder
                 sinKouis = _tenantDataContext.SinKouis.FindListNoTrack(x =>
                     x.HpId == hpId &&
                     x.PtId == ptId &&
-                    x.SinYm == sinDate / 100
+                    x.SinYm == sinDate / 100 &&
+                    x.IsDeleted == DeleteStatus.None
                 ).Select(x => new SinKouiModel(x)).ToList();
 
             }
@@ -152,7 +153,8 @@ namespace EmrCalculateApi.Futan.DB.Finder
                 sinKouiDetails = _tenantDataContext.SinKouiDetails.FindListNoTrack(x =>
                     x.HpId == hpId &&
                     x.PtId == ptId &&
-                    x.SinYm == sinDate / 100
+                    x.SinYm == sinDate / 100 &&
+                    x.IsDeleted == DeleteStatus.None
                 ).Select(x => new SinKouiDetailModel(x, null)).ToList();
             }
             if (sinRpInfs == null)
@@ -166,7 +168,8 @@ namespace EmrCalculateApi.Futan.DB.Finder
                 sinRpInfs = _tenantDataContext.SinRpInfs.FindListNoTrack(x =>
                     x.HpId == hpId &&
                     x.PtId == ptId &&
-                    x.SinYm == sinDate / 100
+                    x.SinYm == sinDate / 100 &&
+                    x.IsDeleted == DeleteStatus.None
                 ).Select(x => new SinRpInfModel(x)).ToList();
             }
 
@@ -766,8 +769,8 @@ namespace EmrCalculateApi.Futan.DB.Finder
                 if (daysAgo13 / 100 < raiinTensu.SinDate / 100)
                 {
                     var wrkKouiCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack();
-                    var wrkKouiDetails = _tenantDataContext.SinKouiDetails.FindListQueryableNoTrack();
-                    var wrkRpInfs = _tenantDataContext.SinRpInfs.FindListQueryableNoTrack();
+                    var wrkKouiDetails = _tenantDataContext.SinKouiDetails.FindListQueryableNoTrack(p => p.IsDeleted == DeleteStatus.None);
+                    var wrkRpInfs = _tenantDataContext.SinRpInfs.FindListQueryableNoTrack(p => p.IsDeleted == DeleteStatus.None);
 
                     //診療行為ベース
                     var wrkKouiBases = (
