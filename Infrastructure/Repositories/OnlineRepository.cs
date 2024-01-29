@@ -289,7 +289,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                     TrackingDataContext.SaveChanges();
                     if (isUpdateRaiinInf)
                     {
-                        UpdateOnlineInRaiinInf(hpId, userId, ptId, onlineConfirmationDate, confirmationType, infConsFlg);
+                        UpdateOnlineInRaiinInfAction(hpId, userId, ptId, onlineConfirmationDate, confirmationType, infConsFlg);
                     }
                     transaction.Commit();
                     success = true;
@@ -313,13 +313,7 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 using var transaction = TrackingDataContext.Database.BeginTransaction();
                 try
                 {
-                    int sindate = CIUtil.DateTimeToInt(onlineConfirmationDate);
-                    var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == ptId).ToList();
-                    UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, confirmationType);
-                    if (!string.IsNullOrEmpty(infConsFlg))
-                    {
-                        UpdateInfConsFlgInRaiinInf(userId, raiinInfsInSameday, infConsFlg);
-                    }
+                    UpdateOnlineInRaiinInfAction(hpId, userId, ptId, onlineConfirmationDate, confirmationType, infConsFlg);
                     transaction.Commit();
                     success = true;
                 }
@@ -330,6 +324,26 @@ public class OnlineRepository : RepositoryBase, IOnlineRepository
                 }
             });
         return success;
+    }
+
+    /// <summary>
+    /// UpdateOnlineInRaiinInf action without transaction
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="userId"></param>
+    /// <param name="ptId"></param>
+    /// <param name="onlineConfirmationDate"></param>
+    /// <param name="confirmationType"></param>
+    /// <param name="infConsFlg"></param>
+    private void UpdateOnlineInRaiinInfAction(int hpId, int userId, long ptId, DateTime onlineConfirmationDate, int confirmationType, string infConsFlg)
+    {
+        int sindate = CIUtil.DateTimeToInt(onlineConfirmationDate);
+        var raiinInfsInSameday = TrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sindate && x.PtId == ptId).ToList();
+        UpdateConfirmationTypeInRaiinInf(userId, raiinInfsInSameday, confirmationType);
+        if (!string.IsNullOrEmpty(infConsFlg))
+        {
+            UpdateInfConsFlgInRaiinInf(userId, raiinInfsInSameday, infConsFlg);
+        }
     }
 
     public bool UpdatePtInfOnlineQualify(int hpId, int userId, long ptId, List<PtInfConfirmationModel> resultList)
