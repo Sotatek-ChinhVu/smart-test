@@ -1,6 +1,6 @@
-﻿using EmrCalculateApi.Interface;
-using EmrCalculateApi.Receipt.ViewModels;
-using EmrCalculateApi.Requests;
+﻿using CalculateService.Interface;
+using CalculateService.Receipt.ViewModels;
+using CalculateService.Requests;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
