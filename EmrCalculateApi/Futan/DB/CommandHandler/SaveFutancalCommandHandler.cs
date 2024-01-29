@@ -179,11 +179,13 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
                         sinKoui.SyukeiSaki, sinKoui.RpNo, sinKoui.SeqNo
                     select new
                     {
+                        sinKoui.Ten,
+                        sinKouiCount.Count,
                         sinKoui.DetailData
                     }
                 );
                 //複数行を改行コードで連結
-                string detailData = string.Join("\r\n", sinKouiJoin.Select(s => s.DetailData));
+                string detailData = string.Join("\r\n", sinKouiJoin.Select(s => $"{{\"ten\":{s.Ten},\"cnt\":{s.Count}}}" + s.DetailData));
 
                 if (syunoSeikyu == null)
                 {
