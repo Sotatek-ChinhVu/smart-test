@@ -1,4 +1,4 @@
-﻿using Reporting.Calculate.Receipt.ViewModels;
+﻿using CalculateService.Receipt.ViewModels;
 
 namespace Reporting.Accounting.Model;
 

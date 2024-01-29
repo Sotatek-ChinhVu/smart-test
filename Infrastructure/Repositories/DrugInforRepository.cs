@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
         public DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd)
         {
             var queryItems = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && new[] { 20, 30 }.Contains(item.SinKouiKbn)
-                                                                    && item.StartDate <= sinDate && item.EndDate >= sinDate);
+                                                                && item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
 
             ////Join
             var joinQuery = from m28DrugMst in NoTrackingDataContext.M28DrugMst
@@ -29,17 +29,17 @@ namespace Infrastructure.Repositories
                             on m28DrugMst.KikinCd equals tenItem.ItemCd
                             join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains
                             on m28DrugMst.YjCd equals m34DrugInfoMain.YjCd
-                            join drugInf in NoTrackingDataContext.PiProductInfs
-                            on m28DrugMst.YjCd equals drugInf.YjCd
+                            join tekiouByomei in NoTrackingDataContext.TekiouByomeiMsts
+                               on tenItem.ItemCd equals tekiouByomei.ItemCd into listtekiouByomeis
                             where string.IsNullOrEmpty(itemCd) || tenItem.ItemCd == itemCd
                             select new
                             {
                                 m28DrugMst,
                                 tenItem,
                                 m34DrugInfoMain,
-                                drugInf
+                                TekiouByomei = listtekiouByomeis.FirstOrDefault()
                             };
-
+            
             // piczai pichou
             string pathServerDefault = _configuration["PathImageDrugFolder"] ?? string.Empty;
 
@@ -91,13 +91,15 @@ namespace Infrastructure.Repositories
             }
 
             var rs = joinQuery.FirstOrDefault();
+            var yjCd = rs?.m28DrugMst?.YjCd;
+            var drugInf = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.YjCd == yjCd);
             if (rs != null)
             {
                 return new DrugInforModel(rs.tenItem != null ? (rs.tenItem.Name ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.GenericName ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.Unit ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.Maker ?? string.Empty) : string.Empty,
-                                          rs.drugInf != null ? (rs.drugInf.Vender ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.GenericName ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.Unit ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.Maker ?? string.Empty) : string.Empty,
+                                          drugInf != null ? (drugInf.Vender ?? string.Empty) : string.Empty,
                                           rs.tenItem != null ? rs.tenItem.KohatuKbn : 0,
                                           rs.tenItem != null ? rs.tenItem.Ten : 0,
                                           rs.tenItem != null ? (rs.tenItem.ReceUnitName ?? string.Empty) : string.Empty,

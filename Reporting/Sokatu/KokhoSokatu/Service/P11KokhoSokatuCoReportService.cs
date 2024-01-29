@@ -1,5 +1,5 @@
 ﻿using Helper.Common;
-using Reporting.Calculate.Constants;
+using CalculateService.Constants;
 using Reporting.Mappers.Common;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Sokatu.Common.Utils;

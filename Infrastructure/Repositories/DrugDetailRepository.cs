@@ -28,15 +28,12 @@ namespace Infrastructure.Repositories
             var joinQueryDrugInf = from m28DrugMst in queryM28DrugMsts
                                    join tenItem in quetyTenMsts
                                    on m28DrugMst.KikinCd equals tenItem.ItemCd
-                                   join drugInfor in queryDrugInfs
-                                   on m28DrugMst.YjCd equals drugInfor.YjCd
-                                   select new { drugInfor, tenItem };
+                                   select new { m28DrugMst, tenItem };
             var drugInf = joinQueryDrugInf.FirstOrDefault();
-            if (drugInf != null && drugInf.drugInfor != null)
-            {
-                yjCode = drugInf.drugInfor != null ? drugInf.drugInfor.YjCd ?? string.Empty : string.Empty;
-                drugName = drugInf.tenItem != null ? drugInf.tenItem.Name ?? string.Empty : string.Empty;
-            }
+            var yjCd = drugInf?.m28DrugMst?.YjCd;
+            var drugInfo = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.YjCd == yjCd);
+            yjCode = drugInfo?.YjCd ?? drugInf?.tenItem?.YjCd;
+            drugName = drugInf?.tenItem != null ? drugInf?.tenItem?.Name ?? string.Empty : string.Empty;
             // create drug item
 
             List<DrugMenuItemModel> drugMenuItems = new List<DrugMenuItemModel>();

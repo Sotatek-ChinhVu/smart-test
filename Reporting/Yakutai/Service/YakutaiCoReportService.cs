@@ -1,7 +1,7 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Reporting.Calculate.Constants;
+using CalculateService.Constants;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;

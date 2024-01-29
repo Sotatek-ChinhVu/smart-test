@@ -976,35 +976,87 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             p.FmtKbn != 10  // 在がん医総のダミー項目を除く
             );
 
-        var joinQuery = (
-            from sinKouiDetail in sinKouiDetails
-            join sinKouiCount in sinKouiCounts on
-                new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
-                new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
-            join sinRpInf in sinRpInfs on
-                new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
-                new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
-            where
-                sinKouiDetail.HpId == hpId &&
-                sinKouiDetail.PtId == ptId &&
-                sinKouiDetail.SinYm >= startYm &&
-                sinKouiDetail.SinYm <= endYm &&
-                itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
-                sinKouiCount.SinDate >= startDate &&
-                sinKouiCount.SinDate <= endDate &&
-                sinKouiCount.RaiinNo != raiinNo
-            group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
-            select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
-        );
-
-        var result = joinQuery.ToList();
-        if (result.Any())
+        if (raiinNo == 0)
         {
-            return result.FirstOrDefault()?.sum ?? 0;
+            var sinKouis = NoTrackingDataContext.SinKouis.Where(o => o.HpId == hpId &&
+                                                             o.PtId == ptId &&
+                                                             o.IsDeleted == 0);
+
+            var joinSinkouiWithSinKouiCount = from sinKouiCount in sinKouiCounts
+                                              join sinKoui in sinKouis on
+                new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo } equals
+                new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
+                                              select new
+                                              {
+                                                  SinKouiCount = sinKouiCount,
+                                                  SinKoui = sinKoui
+                                              };
+
+            var joinQuery = (
+                from sinKouiDetail in sinKouiDetails
+                join joinSinkouiCount in joinSinkouiWithSinKouiCount on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { joinSinkouiCount.SinKouiCount.HpId, joinSinkouiCount.SinKouiCount.PtId, joinSinkouiCount.SinKouiCount.SinYm, joinSinkouiCount.SinKouiCount.RpNo, joinSinkouiCount.SinKouiCount.SeqNo }
+                join sinRpInf in sinRpInfs on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
+                    new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+                where
+                    sinKouiDetail.HpId == hpId &&
+                    sinKouiDetail.PtId == ptId &&
+                    sinKouiDetail.SinYm >= startYm &&
+                    sinKouiDetail.SinYm <= endYm &&
+                    itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
+                    joinSinkouiCount.SinKouiCount.SinDate >= startDate &&
+                    joinSinkouiCount.SinKouiCount.SinDate <= endDate &&
+                    joinSinkouiCount.SinKouiCount.RaiinNo != raiinNo
+                group new { sinKouiDetail, joinSinkouiCount } by new { joinSinkouiCount.SinKouiCount.HpId } into A
+                select new { sum = A.Sum(a => (double)a.joinSinkouiCount.SinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
+            );
+
+            var result = joinQuery.ToList();
+
+            if (result.Any())
+            {
+                return result.FirstOrDefault()?.sum ?? 0;
+            }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
-            return 0;
+            var joinQuery = (
+                from sinKouiDetail in sinKouiDetails
+                join sinKouiCount in sinKouiCounts on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinRpInf in sinRpInfs on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
+                    new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+                where
+                    sinKouiDetail.HpId == hpId &&
+                    sinKouiDetail.PtId == ptId &&
+                    sinKouiDetail.SinYm >= startYm &&
+                    sinKouiDetail.SinYm <= endYm &&
+                    itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
+                    sinKouiCount.SinDate >= startDate &&
+                    sinKouiCount.SinDate <= endDate &&
+                    sinKouiCount.RaiinNo != raiinNo
+                group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
+                select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
+            );
+
+            var result = joinQuery.ToList();
+
+            if (result.Any())
+            {
+                return result.FirstOrDefault()?.sum ?? 0;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 
@@ -1301,11 +1353,11 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             bool kensaCondition;
             if (kensaIraiCondition == 0)
             {
-                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokiji2 != "7" && odrInfDetail.Kokiji2 != "9";
             }
             else
             {
-                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokiji2 != "7" && odrInfDetail.Kokiji2 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
             }
 
             if (kensaCondition && inOutKbn == 1)
@@ -1360,11 +1412,11 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
             bool kensaCondition;
             if (kensaIraiCondition == 0)
             {
-                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9";
             }
             else
             {
-                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
             }
 
             if (kensaCondition && inOutKbn == 1)
@@ -3561,7 +3613,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                         odrDateDetail.IsDeleted = 1;
                     }
                 }
-                else 
+                else
                 {
                     var odrDateDetail = TrackingDataContext.OdrDateDetails.FirstOrDefault(x => x.HpId == hpId && x.GrpId == OdrDateDetailItem.GrpId && x.SeqNo == OdrDateDetailItem.SeqNo);
                     if (odrDateDetail != null)
@@ -3588,7 +3640,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         TrackingDataContext.OdrDateDetails.AddRange(odrDateDetails);
 
-        return TrackingDataContext.SaveChanges() > 0; 
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private OdrDateInf ConvertOdrDateInfList(int hpId, int userId, OdrDateInfModel u)

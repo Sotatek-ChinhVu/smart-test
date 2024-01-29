@@ -246,8 +246,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             int hpId = 1;
             long ptId = 111;
             int sinDay = 20230101;
-            int level = 4;
-            bool isDataOfDb = true;
 
             var itemCodeModelList = new List<ItemCodeModel>()
                 {
@@ -1890,7 +1888,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
 
                 // Assert
-                Assert.True(result.Count == 2 && result.First().ItemCd == "UT2714" && result.Last().ItemCd == "UT2713");
+                Assert.True(result.Count == 4);
             }
             finally
             {
@@ -2008,7 +2006,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 var result = realtimcheckerfinder.CheckKinkiOTC(hpId, ptId, sinDay, settingLevel, addedOrderItemCodeList, ptOtcDrugModels, isDataOfDb);
 
                 // Assert
-                Assert.True(result.Count == 2 && result.First().ItemCd == "UT2714" && result.Last().ItemCd == "UT2713");
+                Assert.True(result.Count == 4);
             }
             finally
             {

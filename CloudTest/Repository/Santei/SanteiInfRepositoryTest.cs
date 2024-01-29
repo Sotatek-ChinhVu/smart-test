@@ -47,8 +47,7 @@ public class SanteiInfRepositoryTest : BaseUT
             long ptId = 123456789;
             var resultQuery = santeiInfRepository.GetListSanteiInf(1, ptId, 20221212);
 
-            //Sau khi sửa nghiệp vụ check lại case này Assert phải là True
-            Assert.False(CompareListSanteiInf(ptId, resultQuery, santeiInfs, santeiInfDetails, orderInfs, orderInfDetails, tenMsts));
+            Assert.True(CompareListSanteiInf(ptId, resultQuery, santeiInfs, santeiInfDetails, orderInfs, orderInfDetails, tenMsts));
         }
         finally
         {

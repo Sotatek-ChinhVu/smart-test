@@ -22,6 +22,11 @@ namespace Domain.Models.MstItem
             SeqNo = seqNo;
         }
 
+        public ItemGrpMstModel()
+        {
+            ItemCd = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public long GrpSbt { get; private set; }

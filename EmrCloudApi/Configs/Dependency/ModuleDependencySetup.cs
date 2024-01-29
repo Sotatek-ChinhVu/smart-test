@@ -187,8 +187,8 @@ using Reporting.AccountingCardList.DB;
 using Reporting.AccountingCardList.Service;
 using Reporting.Byomei.DB;
 using Reporting.Byomei.Service;
-using Reporting.Calculate.Implementation;
-using Reporting.Calculate.Interface;
+using CalculateService.Implementation;
+using CalculateService.Interface;
 using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
 using Reporting.CommonMasters.Config;
@@ -1117,7 +1117,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP46WelfareSeikyu99CoReportService, P46WelfareSeikyu99CoReportService>();
             services.AddTransient<ICoNameLabelFinder, CoNameLabelFinder>();
             //call Calculate API
-            services.AddTransient<ICalculateService, CalculateService>();
+            services.AddTransient<ICalculateService, EmrCloudApi.Services.CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
             #endregion Reporting
         }
