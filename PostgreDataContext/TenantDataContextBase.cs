@@ -458,6 +458,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<UserToken>().HasKey(s => new { s.UserId, s.RefreshToken });
             modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
             modelBuilder.Entity<UserMst>().HasIndex(u => new { u.UserId }).HasFilter($"\"is_deleted\" = 0").IsUnique();
+            modelBuilder.Entity<Test>().HasNoKey().ToView(null);
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -1223,5 +1224,7 @@ namespace PostgreDataContext
         public DbSet<ZYousiki1Inf> ZYousiki1Infs { get; set; } = default!;
 
         public DbSet<ZYousiki1InfDetail> ZYousiki1InfDetails { get; set; } = default!;
+
+        public DbSet<Test> Tests { get; set; } = default!;
     }
 }

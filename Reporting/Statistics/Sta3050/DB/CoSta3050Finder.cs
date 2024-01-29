@@ -4,6 +4,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3050.Models;
@@ -509,6 +510,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             }
             #endregion
 
+            var sql = joinQuery.ToQueryString();
+
             retData = joinQuery.AsEnumerable().Select(
                 data =>
                     new CoSinKouiModel()
@@ -635,6 +638,8 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             ptKohiPatterns = null;
 
             #endregion
+
+            var cities = NoTrackingDataContext.Tests.FromSqlRaw("select * from public.test();").ToList();
 
             return retData ?? new();
         }
