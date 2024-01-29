@@ -395,21 +395,5 @@ namespace Entity.Tenant
         [Column("is_deleted")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
-
-        /// <summary>
-        /// EF対象フラグ
-        ///     1:EFファイル出力対象の削除項目   
-        /// </summary>
-        [Column("ef_flg")]
-        [CustomAttribute.DefaultValue(0)]
-        public int EfFlg { get; set; }
-
-        /// <summary>
-        /// 一般名処方フラグ
-        ///     1:一般名処方(院外処方薬剤のみ有効)
-        /// </summary>
-        [Column("ipn_flg")]
-        [CustomAttribute.DefaultValue(0)]
-        public int IpnFlg { get; set; }
     }
 }
