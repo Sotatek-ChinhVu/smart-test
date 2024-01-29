@@ -144,6 +144,12 @@ public class YousikiController : AuthorizeControllerBase
         return new ActionResult<Response<UpdateYosikiResponse>>(presenter.Result);
     }
 
+    private int ReplaceSinYm(string sinYmDisplay)
+    {
+        var sinYmString = sinYmDisplay.Replace("/", "");
+        return int.Parse(sinYmString);
+    }
+
     private List<Yousiki1InfDetailModel> ConvertModelToYousiki1InfDetail(List<UpdateYosiki1InfDetailRequestItem> items)
     {
         List<Yousiki1InfDetailModel> result = new();
@@ -152,7 +158,7 @@ public class YousikiController : AuthorizeControllerBase
         {
             result.Add( new Yousiki1InfDetailModel(
                 item.PtId,
-                item.SinYm,
+                ReplaceSinYm(item.SinYmDisplay),
                 item.DataType,
                 item.SeqNo,
                 item.CodeNo,
@@ -165,7 +171,7 @@ public class YousikiController : AuthorizeControllerBase
 
     private Yousiki1InfModel ConvertModelToYousiki1Inf(UpdateYosikiInfRequestItem item)
     {
-        return new Yousiki1InfModel(item.PtId, item.SinYm, item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
+        return new Yousiki1InfModel(item.PtId, ReplaceSinYm(item.SinYmDisplay), item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
     }
 
     #region private function
