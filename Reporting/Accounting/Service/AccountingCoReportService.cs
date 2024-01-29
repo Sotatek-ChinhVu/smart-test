@@ -6,9 +6,9 @@ using Reporting.Accounting.Constants;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.Receipt.Constants;
-using Reporting.Calculate.Receipt.ViewModels;
+using CalculateService.Interface;
+using CalculateService.Receipt.Constants;
+using CalculateService.Receipt.ViewModels;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
@@ -379,7 +379,6 @@ public class AccountingCoReportService : IAccountingCoReportService
         {
             _systemConfig.ReleaseResource();
             _finder.ReleaseResource();
-            _systemConfigProvider.ReleaseResource();
             _tenantProvider.DisposeDataContext();
         }
     }

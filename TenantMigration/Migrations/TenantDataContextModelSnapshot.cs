@@ -21363,6 +21363,24 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("detail_data");
 
+                    b.Property<int>("EfFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ef_flg");
+
+                    b.Property<double>("EfTen")
+                        .HasColumnType("double precision")
+                        .HasColumnName("ef_ten");
+
+                    b.Property<string>("EfTenCount")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("ef_ten_count");
+
+                    b.Property<double>("EfTotalTen")
+                        .HasColumnType("double precision")
+                        .HasColumnName("ef_total_ten");
+
                     b.Property<int>("EntenKbn")
                         .HasColumnType("integer")
                         .HasColumnName("enten_kbn");
@@ -21610,9 +21628,21 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(240)")
                         .HasColumnName("cmt_opt3");
 
+                    b.Property<int>("EfFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ef_flg");
+
+                    b.Property<double>("EfTen")
+                        .HasColumnType("double precision")
+                        .HasColumnName("ef_ten");
+
                     b.Property<int>("FmtKbn")
                         .HasColumnType("integer")
                         .HasColumnName("fmt_kbn");
+
+                    b.Property<int>("IpnFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ipn_flg");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -21726,6 +21756,10 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
+
+                    b.Property<int>("EfFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ef_flg");
 
                     b.Property<int>("FirstDay")
                         .HasColumnType("integer")
@@ -26443,6 +26477,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
 
+                    b.Property<int>("EfFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ef_flg");
+
                     b.Property<int>("HokatuKensa")
                         .HasColumnType("integer")
                         .HasColumnName("hokatu_kensa");
@@ -26614,9 +26652,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(160)")
                         .HasColumnName("cmt_opt3");
 
+                    b.Property<int>("EfFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ef_flg");
+
                     b.Property<int>("FmtKbn")
                         .HasColumnType("integer")
                         .HasColumnName("fmt_kbn");
+
+                    b.Property<int>("IpnFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ipn_flg");
 
                     b.Property<int>("IsAutoAdd")
                         .HasColumnType("integer")
@@ -26769,6 +26815,24 @@ namespace TenantMigration.Migrations
                         .HasColumnName("item_seq_no")
                         .HasColumnOrder(7);
 
+                    b.Property<int>("CdEdano")
+                        .HasColumnType("integer")
+                        .HasColumnName("cd_edano");
+
+                    b.Property<string>("CdKbn")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("cd_kbn");
+
+                    b.Property<int>("CdKbnno")
+                        .HasColumnType("integer")
+                        .HasColumnName("cd_kbnno");
+
+                    b.Property<int>("CdKouno")
+                        .HasColumnType("integer")
+                        .HasColumnName("cd_kouno");
+
                     b.Property<string>("DelItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
@@ -26786,6 +26850,18 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("item_cd");
+
+                    b.Property<string>("Kokuji1")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("kokuji1");
+
+                    b.Property<string>("Kokuji2")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)")
+                        .HasColumnName("kokuji2");
 
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
@@ -26851,6 +26927,10 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
+
+                    b.Property<int>("EfFlg")
+                        .HasColumnType("integer")
+                        .HasColumnName("ef_flg");
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")

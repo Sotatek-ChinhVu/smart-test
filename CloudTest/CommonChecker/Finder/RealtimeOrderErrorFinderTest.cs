@@ -2,7 +2,7 @@
 using CommonChecker.DB;
 using Entity.Tenant;
 using Helper.Extension;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 
 namespace CloudUnitTest.CommonChecker.Finder
 {
