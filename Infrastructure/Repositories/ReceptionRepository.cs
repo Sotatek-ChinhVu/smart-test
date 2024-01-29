@@ -994,6 +994,7 @@ namespace Infrastructure.Repositories
                 r.ptKohi3?.HokenSbtKbn ?? CommonConstants.InvalidId,
                 r.ptKohi3?.Houbetu ?? string.Empty,
                 r.ptKohi4?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.raiinInf.InfoConsFlg ?? string.Empty,
                 r.ptKohi4?.Houbetu ?? string.Empty
             )).ToList();
 
