@@ -3,6 +3,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Reporting.Accounting.Model;
 
 namespace Reporting.Accounting.DB;
@@ -489,7 +490,8 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                     nyukinGroups.Key.PtId,
                     nyukinGroups.Key.SinDate,
                     nyukinGroups.Key.RaiinNo,
-                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku)
+                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku),
+                    NyukinAdjust = nyukinGroups.Sum(p => p.AdjustFutan)
                 }
             );
 
@@ -564,6 +566,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                 kaikeiInfGroups.Key.RenrakuTel,
                 SeikyuGaku = kaikeiInfGroups.Sum(p => p.syunoInf.syunoSeikyu.SeikyuGaku),
                 NyukinGaku = kaikeiInfGroups.Sum(p => p.syunoInf.syunoNyukinJoin.NyukinGaku),
+                NyukinAdjust = kaikeiInfGroups.Sum(p => p.syunoInf.syunoNyukinJoin.NyukinAdjust),
                 Misyu = kaikeiInfGroups.Sum(p => p.syunoInf.syunoSeikyu.SeikyuGaku) - kaikeiInfGroups.Sum(p => p.syunoInf.syunoNyukinJoin.NyukinGaku),
                 Tensu = kaikeiInfGroups.Sum(p => p.kaikeiInf.Tensu),
                 TotalIryohi = kaikeiInfGroups.Sum(p => p.kaikeiInf.TotalIryohi),
@@ -606,6 +609,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                     // (この時点では、同一来院に複数保険種の保険を使用した場合、重複した金額が入ってしまう為）
                     data.SeikyuGaku,
                     data.NyukinGaku,
+                    data.NyukinAdjust,
                     data.Misyu,
                     data.Tensu,
                     data.TotalIryohi,
@@ -671,9 +675,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                     entity.Tel1,
                     entity.Tel2,
                     entity.RenrakuTel,
-                    // 請求額、入金額、未収額について重複のない金額を設定する
+                    // 請求額、入金額、入金調整額、未収額について重複のない金額を設定する
                     filterdSyunoInfs.Sum(p => p.syunoSeikyu.SeikyuGaku),
                     filterdSyunoInfs.Sum(p => p.syunoNyukinJoin.NyukinGaku),
+                    filterdSyunoInfs.Sum(p => p.syunoNyukinJoin.NyukinAdjust),
                     filterdSyunoInfs.Sum(p => p.syunoSeikyu.SeikyuGaku) - filterdSyunoInfs.Sum(p => p.syunoNyukinJoin.NyukinGaku),
                     entity.Tensu,
                     entity.TotalIryohi,
@@ -814,7 +819,8 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                     nyukinGroups.Key.PtId,
                     nyukinGroups.Key.SinDate,
                     nyukinGroups.Key.RaiinNo,
-                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku)
+                    NyukinGaku = nyukinGroups.Sum(p => p.NyukinGaku),
+                    NyukinAdjust = nyukinGroups.Sum(p => p.AdjustFutan)
                 }
             );
 
@@ -1929,5 +1935,18 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
                            x.PtGrpItems.AsEnumerable().Select(grpItem => new PtGrpItemModel(grpItem)).OrderBy(gi => gi.SortNo)
                        )).OrderBy(gr => gr.SortNo).ToList();
         return result;
+    }
+
+    public bool ExistCalculateRequest(int hpId, long ptId, int startDate, int endDate)
+    {
+        var calcStatuies = NoTrackingDataContext.CalcStatus.Any(p =>
+            p.HpId == hpId &&
+            p.PtId == ptId &&
+            p.SinDate >= startDate &&
+            p.SinDate <= endDate &&
+            p.Status == 1
+        );
+
+        return calcStatuies;
     }
 }

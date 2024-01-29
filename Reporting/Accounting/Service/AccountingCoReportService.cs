@@ -1,4 +1,8 @@
-﻿using Helper.Common;
+﻿using CalculateService.Interface;
+using CalculateService.Receipt.Constants;
+using CalculateService.Receipt.ViewModels;
+using Domain.Constant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
@@ -6,15 +10,11 @@ using Reporting.Accounting.Constants;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
-using CalculateService.Interface;
-using CalculateService.Receipt.Constants;
-using CalculateService.Receipt.ViewModels;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using System.Text;
-using Domain.Constant;
 
 namespace Reporting.Accounting.Service;
 
@@ -106,6 +106,10 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// 合計未収額
     /// </summary>
     int totalMisyu;
+    /// <summary>
+    /// 合計未収額（入金調整額除く）
+    /// </summary>
+    int totalMisyuAdjust;
     /// <summary>
     /// 合計自費負担
     /// </summary>
@@ -647,6 +651,20 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void PrintOut()
     {
+        // 印刷対象期間に計算中のデータがないかチェック 最大60秒待機
+        bool isCalculate = false;
+        int count = 0;
+        while (isCalculate == false && count < 600)
+        {
+            isCalculate = _finder.ExistCalculateRequest(hpId, ptId, startDate, endDate);
+            Thread.Sleep(100);
+        }
+
+        if (isCalculate)
+        {
+            // 計算中の場合、ログを残し、処理は続行する
+        }
+
         if (mode == PrintMode.SinglePrint)
         {
             PrintOutSingle();
@@ -816,6 +834,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         totalSeikyuGaku = 0;
         totalNyukinGaku = 0;
         totalMisyu = 0;
+        totalMisyuAdjust = 0;
         totalJihiFutan = 0;
         totalJihiKoumoku = 0;
         totalJihiSinryo = 0;
@@ -908,6 +927,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             "入金額," +
             "請求金額," +
             "未収金額," +
+            "調整後未収金額," +
             "診療合計自費合計," +
             "性別," +
             "生年月日," +
@@ -964,6 +984,8 @@ public class AccountingCoReportService : IAccountingCoReportService
             line += $"{kaikeiInf.SeikyuGaku},";
             // 未収金額
             line += $"{kaikeiInf.Misyu},";
+            // 未収金額（入金調整額除く）
+            line += $"{kaikeiInf.Misyu - kaikeiInf.NyukinAdjust},";
             // 診療合計自費合計
             line += $"{kaikeiInf.TotalIryohi + kaikeiInf.JihiFutan + kaikeiInf.JihiOuttax},";
             // 性別
@@ -2224,7 +2246,8 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 調整額
             void _printAdjust()
             {
-                int value = coModel.AdjustFutan + coModel.TotalNyukinAjust;
+                //int value = coModel.AdjustFutan + coModel.TotalNyukinAjust;
+                int value = coModel.TotalNyukinAjust - coModel.AdjustFutan;
                 SetFieldDataRep("dfAdjust_", 1, 2, value);
             }
             // 請求額（調整前）
@@ -2382,6 +2405,18 @@ public class AccountingCoReportService : IAccountingCoReportService
                 {
                     SetFieldDataRep("KanMisyu", 1, 2, value);
                 }
+            }
+            // 未収額（入金調整額を引いたもの）
+            void _printMisyuAdjust()
+            {
+                int value = coModel.Misyu - coModel.TotalNyukinAjust;
+                SetFieldDataRep("dfMisyuAdjust_", 1, 2, value);
+            }
+            // 患者未収額（入金調整額を引いたもの）
+            void _printPtMisyuAdjust()
+            {
+                int value = coModel.PtMisyu - coModel.TotalNyukinAjust;
+                SetFieldDataRep("dfPtMisyuAdjust_", 1, 2, value);
             }
             // 返金額
             void _printHenkin()
@@ -2706,7 +2741,8 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 調整額リスト
             void _printAdjustList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
-                int value = kaikeidaily.AdjustFutan + kaikeidaily.TotalNyukinAdjust;
+                //int value = kaikeidaily.AdjustFutan + kaikeidaily.TotalNyukinAdjust;
+                int value = kaikeidaily.TotalNyukinAdjust - kaikeidaily.AdjustFutan;
                 SetListDataRep("lsAdjust_", 1, 2, 0, listRow, value);
             }
             // 自費負担リスト
@@ -2771,10 +2807,23 @@ public class AccountingCoReportService : IAccountingCoReportService
                     SetListDataRep("MisyuList", 1, 2, 0, listRow, value);
                 }
             }
+            // 患者未収金リスト
             void _printPtMisyuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.PtMisyu;
                 SetListDataRep("lsPtMisyu_", 1, 2, 0, listRow, value);
+            }
+            // 未収金リスト（入金調整額を引いたもの）
+            void _printMisyuAdjustList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
+            {
+                int value = kaikeidaily.Misyu - kaikeidaily.TotalNyukinAdjust;
+                SetListDataRep("lsMisyuAdjust_", 1, 2, 0, listRow, value);
+            }
+            // 患者未収金リスト（入金調整額を引いたもの）
+            void _printPtMisyuAdjustList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
+            {
+                int value = kaikeidaily.PtMisyu - kaikeidaily.TotalNyukinAdjust;
+                SetListDataRep("lsPtMisyuAdjust_", 1, 2, 0, listRow, value);
             }
             //リスト
             void _printListData()
@@ -2809,6 +2858,10 @@ public class AccountingCoReportService : IAccountingCoReportService
                     _printMisyuList(listRow, kaikeidaily);
                     // 患者未収金リスト
                     _printPtMisyuList(listRow, kaikeidaily);
+                    // 未収金リスト（入金調整額を引いたもの）
+                    _printMisyuAdjustList(listRow, kaikeidaily);
+                    // 患者未収金リスト（入金調整額を引いたもの）
+                    _printPtMisyuAdjustList(listRow, kaikeidaily);
 
                     listRow++;
                 }
@@ -3115,6 +3168,10 @@ public class AccountingCoReportService : IAccountingCoReportService
             _printMisyu();
             // 患者未収額
             _printPtMisyu();
+            // 未収額（入金調整額を引いたもの）
+            _printMisyuAdjust();
+            // 患者未収額（入金調整額を引いたもの）
+            _printPtMisyuAdjust();
             // 返金額
             _printHenkin();
 
@@ -3570,6 +3627,13 @@ public class AccountingCoReportService : IAccountingCoReportService
                 // 下位互換
                 ListText("MisyuList", 0, row, coModelList.KaikeiInfListModels[index].Misyu);
             }
+            // 未収金リスト（入金調整額を引いたもの）
+            void _printMisyuAdjust(short row, int index)
+            {
+                SetListDataRep("lsMisyuAdjust_", 1, 2, 0, row,
+                    coModelList.KaikeiInfListModels[index].Misyu -
+                    coModelList.KaikeiInfListModels[index].NyukinAdjust);
+            }
             // 総医療費
             void _printTotalIryohi(short row, int index)
             {
@@ -3746,6 +3810,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 SetListDataRep("lsSeikyuGaku_", 1, 2, 0, row, totalSeikyuGaku);
                 SetListDataRep("lsNyukinGaku_", 1, 2, 0, row, totalNyukinGaku);
                 SetListDataRep("lsMisyu_", 1, 2, 0, row, totalMisyu);
+                SetListDataRep("lsMisyuAdjust_", 1, 2, 0, row, totalMisyuAdjust);
                 SetListDataRep("lsTotalIryohi_", 1, 2, 0, row, totalIryohi);
                 SetListDataRep("lsPtFutan_", 1, 2, 0, row, totalPtFutan);
                 SetListDataRep("lsJihiFutan_", 1, 2, 0, row, totalJihiFutan);
@@ -3790,6 +3855,8 @@ public class AccountingCoReportService : IAccountingCoReportService
                 SetFieldDataRep("dfNyukinGaku_", 1, 2, totalNyukinGaku);
                 // 未収額の合計
                 SetFieldDataRep("dfMisyu_", 1, 2, totalMisyu);
+                // 未収額（入金調整額除く）の合計
+                SetFieldDataRep("dfMisyuAdjust_", 1, 2, totalMisyuAdjust);
                 // 医療費の合計
                 SetFieldDataRep("dfTotalIryohi_", 1, 2, totalIryohi);
                 // 患者負担の合計
@@ -3856,6 +3923,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 totalSeikyuGaku += coModelList.KaikeiInfListModels[idx].SeikyuGaku;
                 totalNyukinGaku += coModelList.KaikeiInfListModels[idx].NyukinGaku;
                 totalMisyu += coModelList.KaikeiInfListModels[idx].Misyu;
+                totalMisyuAdjust += coModelList.KaikeiInfListModels[idx].Misyu - coModelList.KaikeiInfListModels[idx].NyukinAdjust;
                 totalIryohi += coModelList.KaikeiInfListModels[idx].TotalIryohi;
                 totalPtFutan += coModelList.KaikeiInfListModels[idx].PtFutan +
                     coModelList.KaikeiInfListModels[idx].AdjustRound;
@@ -3978,6 +4046,9 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                     // 未収金リスト
                     _printMisyu(i, listIndex);
+
+                    // 未収金リスト（入金調整額を引いたもの）
+                    _printMisyuAdjust(i, listIndex);
 
                     // 総医療費リスト
                     _printTotalIryohi(i, listIndex);
