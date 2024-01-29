@@ -525,5 +525,36 @@ namespace Entity.Tenant
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
 
+        /// <summary>
+        /// EF対象フラグ
+        ///     1:EFファイル出力対象の削除項目   
+        /// </summary>
+        [Column("ef_flg")]
+        [CustomAttribute.DefaultValue(0)]
+        public int EfFlg { get; set; }
+
+        /// <summary>
+        /// EF用合計点数
+        /// 
+        /// </summary>
+        [Column("ef_total_ten")]
+        [CustomAttribute.DefaultValue(0)]
+        public double EfTotalTen { get; set; }
+
+        /// <summary>
+        /// EF用点数小計
+        /// 
+        /// </summary>
+        [Column("ef_ten")]
+        [CustomAttribute.DefaultValue(0)]
+        public double EfTen { get; set; }
+
+        /// <summary>
+        /// EF用点数回数
+        /// 
+        /// </summary>
+        [Column("ef_ten_count")]
+        [MaxLength(20)]
+        public string EfTenCount { get; set; }
     }
 }
