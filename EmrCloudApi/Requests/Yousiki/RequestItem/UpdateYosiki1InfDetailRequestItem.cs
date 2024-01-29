@@ -4,7 +4,7 @@
     {
         public long PtId { get; set; }
 
-        public int SinYm { get; set; }
+        public string SinYmDisplay { get; set; } = string.Empty;
 
         public int DataType { get; set; }
 
