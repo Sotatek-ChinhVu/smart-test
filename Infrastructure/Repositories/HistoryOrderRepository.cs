@@ -694,11 +694,12 @@ namespace Infrastructure.Repositories
 
             int minSinDate = allOdrDetailInfList.Min(o => o.SinDate);
             int maxSinDate = allOdrDetailInfList.Max(o => o.SinDate);
-
             //Read config
             var itemCds = allOdrDetailInfList.Select(od => od.ItemCd).Distinct().ToList();
             var ipnCds = allOdrDetailInfList.Select(od => od.IpnCd).Distinct().ToList();
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= minSinDate && t.EndDate >= maxSinDate && itemCds.Contains(t.ItemCd)).ToList();
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && 
+            ((t.StartDate <= minSinDate && t.EndDate >= minSinDate ) || (t.StartDate >= minSinDate && t.EndDate <= maxSinDate) || (t.StartDate <= maxSinDate && t.EndDate >= maxSinDate))
+            && itemCds.Contains(t.ItemCd)).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
             var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);

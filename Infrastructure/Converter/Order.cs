@@ -32,7 +32,10 @@ namespace Infrastructure.Converter
                 double cnvTermVal = 0;
                 string yjCd = string.Empty;
 
-                var tenMst = tenMstList.FirstOrDefault(t => t.ItemCd == itemCd);
+                var tenMst = tenMstList
+                    .Where(t => t.ItemCd == itemCd && t.StartDate <= detail.SinDate && detail.SinDate <= t.EndDate)
+                    .OrderByDescending(t => t.StartDate)
+                    .FirstOrDefault();
                 if (tenMst != null)
                 {
                     ten = tenMst.Ten;
