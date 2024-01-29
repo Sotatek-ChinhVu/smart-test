@@ -1,4 +1,4 @@
-﻿using KaikeiInfModelOfFutan = EmrCalculateApi.Futan.Models.KaikeiInfModel;
+﻿using KaikeiInfModelOfFutan = CalculateService.Futan.Models.KaikeiInfModel;
 
 namespace Domain.Models.Futan
 {

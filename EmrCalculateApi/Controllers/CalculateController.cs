@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Futan;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
+using CalculateService.Interface;
+using CalculateService.Requests;
 using EmrCalculateApi.Responses;
 using EmrCalculateApi.Constants;
 using EmrCalculateApi.Realtime;
