@@ -821,6 +821,7 @@ namespace CalculateService.Ika.DB.Finder
 
             return results;
         }
+
         private (int, int) GetReceInfTerm(int hpId, int seikyuYm)
         {
             int min = 0;
