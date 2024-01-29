@@ -10,6 +10,7 @@ using CalculateService.Ika.Constants;
 using CalculateService.Interface;
 using CalculateService.Utils;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CalculateService.Ika.DB.Finder
 {
@@ -724,19 +725,21 @@ namespace CalculateService.Ika.DB.Finder
             {
                 sinDateTo = sinTo;
             }
+            var sinKouiDetailList = sinKouiDetails.ToList();
+            var itemCds = sinKouiDetailList.Select(s => s.ItemCd).Distinct();
 
             // 診療月時点で有効な点数マスタを取得する
             var tenMaxs = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
                 t.HpId == hpId &&
                 t.StartDate <= (sinDateTo) &&
-                (t.EndDate >= (sinDateFrom)))
+                (t.EndDate >= (sinDateFrom)) && itemCds.Contains(t.ItemCd))
                 .GroupBy(p => p.ItemCd)
                 .Select(p => new { ItemCd = p.Key, StartDate = p.Max(q => q.StartDate) });
 
             var tenBases = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
                 t.HpId == hpId &&
                 t.StartDate <= (sinDateTo) &&
-                (t.EndDate >= (sinDateFrom)));
+                (t.EndDate >= (sinDateFrom)) && itemCds.Contains(t.ItemCd));
 
             var tenMsts = (
 
@@ -748,10 +751,10 @@ namespace CalculateService.Ika.DB.Finder
                 {
                     tenMst = tenBase
                 }
-                );
+                ).ToList();
 
             var joinQuery = (
-                from sinKouiDetail in sinKouiDetails
+                from sinKouiDetail in sinKouiDetailList
                 join tenMst in tenMsts on
                     new { sinKouiDetail.HpId, sinKouiDetail.ItemCd } equals
                     new { tenMst.tenMst.HpId, tenMst.tenMst.ItemCd } into tm
@@ -761,9 +764,10 @@ namespace CalculateService.Ika.DB.Finder
                     sinKouiDetail,
                     tenMst = a
                 }
-                );
-
-            var entities = joinQuery.AsEnumerable().Select(
+                ).ToList();
+            tenMsts = null;
+            sinKouiDetailList = null;
+            var entities = joinQuery.Select(
                 data =>
                     new SinKouiDetailModel(
                         data.sinKouiDetail,
@@ -771,6 +775,7 @@ namespace CalculateService.Ika.DB.Finder
                     )
                 )
                 .ToList();
+            joinQuery = null;
             List<SinKouiDetailModel> results = new List<SinKouiDetailModel>();
 
             entities?.ForEach(entity =>

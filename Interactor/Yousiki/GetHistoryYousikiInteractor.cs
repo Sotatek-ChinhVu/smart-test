@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Yousiki;
 using UseCase.Yousiki.GetHistoryYousiki;
 
-namespace Interactor.Yousiki.GetHistoryYousiki
+namespace Interactor.Yousiki
 {
     public class GetHistoryYousikiInteractor : IGetHistoryYousikiInputPort
     {

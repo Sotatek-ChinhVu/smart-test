@@ -91,6 +91,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
 
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("KaName")
                         .IsRequired()
                         .HasMaxLength(40)
@@ -8041,7 +8045,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "UserId")
                         .IsUnique()
-                        .HasFilter("\"FUNCTION_CD\" IN ('02000000', '03000000')");
+                        .HasFilter("\"function_cd\" IN ('02000000', '03000000')");
 
                     b.ToTable("lock_inf");
                 });
@@ -19311,7 +19315,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "PtId", "RsvDate")
                         .IsUnique()
-                        .HasFilter("\"RSVKRT_KBN\" = 0 AND \"IS_DELETED\" = 0");
+                        .HasFilter("\"rsvkrt_kbn\" = 0 AND \"is_deleted\" = 0");
 
                     b.ToTable("rsvkrt_mst");
                 });
@@ -20888,7 +20892,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("HpId", "SetCd", "SetKbn", "SetKbnEdaNo", "GenerationId", "Level1", "Level2", "Level3")
                         .IsUnique()
-                        .HasFilter("\"IS_DELETED\" = 0");
+                        .HasFilter("\"is_deleted\" = 0");
 
                     b.ToTable("set_mst");
                 });
@@ -26305,7 +26309,7 @@ namespace TenantMigration.Migrations
 
                     b.HasIndex("UserId")
                         .IsUnique()
-                        .HasFilter("\"IS_DELETED\" = 0");
+                        .HasFilter("\"is_deleted\" = 0");
 
                     b.ToTable("user_mst");
                 });

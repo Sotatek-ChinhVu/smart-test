@@ -809,10 +809,15 @@ using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using Interactor.Yousiki;
 using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetVisitingInfs;
+using UseCase.Yousiki.AddYousiki;
 using UseCase.Yousiki.GetHistoryYousiki;
-using Interactor.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.DeleteYousikiInf;
 using UseCase.Yousiki.GetYousiki1InfModel;
-using Interactor.Yousiki.GetYousiki1InfModel;
+using UseCase.Yousiki.GetKacodeYousikiMstDict;
+using UseCase.Yousiki.GetByomeisInMonth;
+using UseCase.Yousiki.CreateYuIchiFile;
+using Interactor.Yousiki.UpdateYosiki;
+using UseCase.Yousiki.UpdateYosiki;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1549,6 +1554,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
             busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
             busBuilder.RegisterUseCase<IsHokenInfInUsedInputData, IsHokenInfInUsedInteractor>();
+            busBuilder.RegisterUseCase<GetByomeisInMonthInputData, GetByomeisInMonthInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -1747,6 +1753,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
             busBuilder.RegisterUseCase<GetHistoryYousikiInputData, GetHistoryYousikiInteractor>();
             busBuilder.RegisterUseCase<GetYousiki1InfModelInputData, GetYousiki1InfModelInteractor>();
+            busBuilder.RegisterUseCase<GetKacodeYousikiMstDictInputData, GetKacodeYousikiMstDictInteractor>();
+            busBuilder.RegisterUseCase<UpdateYosikiInputData, UpdateYosikiInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
@@ -1917,6 +1925,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetYousiki1InfModelWithCommonInfInputData, GetYousiki1InfModelWithCommonInfInteractor>();
             busBuilder.RegisterUseCase<GetYousiki1InfDetailsInputData, GetYousiki1InfDetailsInteractor>();
             busBuilder.RegisterUseCase<GetVisitingInfsInputData, GetVisitingInfsInteractor>();
+            busBuilder.RegisterUseCase<AddYousikiInputData, AddYousikiInteractor>();
+            busBuilder.RegisterUseCase<DeleteYousikiInfInputData, DeleteYousikiInfInteractor>();
+            busBuilder.RegisterUseCase<CreateYuIchiFileInputData, CreateYuIchiFileInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

@@ -98,6 +98,7 @@
         public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
         public const string UploadListFileKarte = "UploadListFileKarte";
         public const string GetListInsuranceScan = "GetListInsuranceScan";
+        public const string ResizeImage = "ResizeImage";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -561,6 +562,12 @@
         public const string GetYousiki1InfDetails = "GetYousiki1InfDetails";
         public const string GetVisitingInfs = "GetVisitingInfs";
         public const string GetHistoryYousiki = "GetHistoryYousiki";
+        public const string AddYousiki = "AddYousiki";
+        public const string DeleteYousikiInf = "DeleteYousikiInf";
         public const string GetYousiki1InfModel = "GetYousiki1InfModel";
+        public const string GetKacodeYousikiMstDict = "GetKacodeYousikiMstDict";
+        public const string GetByomeisInMonth = "GetByomeisInMonth";
+        public const string CreateYuIchiFile = "CreateYuIchiFile";
+        public const string UpdateYosiki = "UpdateYosiki";
     }
 }

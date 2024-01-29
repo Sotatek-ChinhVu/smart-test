@@ -47,8 +47,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         var santeiInfDetailQuery = NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
                                                                                      && item.PtId == ptId
                                                                                      && item.IsDeleted == 0
-                                                                                     && item.EndDate >= sinDate
-                                                                                     && item.KisanSbt != 1) // if 区分 is 「初回算定, do not display 起算日
+                                                                                     && item.EndDate >= sinDate)
                                                                          .Select(item => new { item.ItemCd, item.KisanDate });
 
         // Get 起算日. Get min KISAN_DATE (Check YUUKOU_DATE >= SINDATE)
@@ -63,7 +62,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         // Get Last order 前回日
         var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
                                                                                         && item.PtId == ptId
-                                                                                        && item.SinDate < sinDate)
+                                                                                        && item.SinDate <= sinDate)
                                                                                         .Select(item => new
                                                                                         {
                                                                                             item.HpId,
@@ -78,7 +77,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
         var odrInfQuery = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
                                                                                 && item.PtId == ptId
-                                                                                && item.SinDate < sinDate
+                                                                                && item.SinDate <= sinDate
                                                                                 && item.IsDeleted == 0)
                                                                                 .Select(item => new
                                                                                 {
@@ -100,42 +99,13 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                  select new
                                  {
                                      ItemCd = g.Key,
-                                     SinDate = g.Max(x => x.SinDate)
+                                     SinDate = g.Where(o => o.SinDate < sinDate).Max(x => x.SinDate)
                                  };
 
         Dictionary<string, int> dicLastOrderDate = new();
         foreach (var lastOdr in odrInfLastOdrQuery.ToList())
         {
             dicLastOrderDate.Add(lastOdr.ItemCd, lastOdr.SinDate);
-        }
-
-        // if 区分 is 「初回算定, 経過日数、回数、数量 calculated by 前回日
-        var kisanDateUpdateList = (from kisanDate in NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
-                                                                                                          && item.PtId == ptId
-                                                                                                          && item.IsDeleted == 0
-                                                                                                          && item.EndDate >= sinDate
-                                                                                                          && item.KisanSbt == 1) // if 区分 is 「初回算定, do not display 起算日
-                                                                                           .Select(item => new { item.ItemCd, item.KisanDate })
-                                   group kisanDate by kisanDate.ItemCd into g
-                                   select new
-                                   {
-                                       ItemCd = g.Key,
-                                       KisanDate = g.Select(item => item.KisanDate).Max()
-                                   })
-                                   .ToList();
-        foreach (var item in kisanDateUpdateList)
-        {
-            if (dicLastOrderDate.ContainsKey(item.ItemCd))
-            {
-                if (dicLastOrderDate[item.ItemCd] < item.KisanDate)
-                {
-                    dicLastOrderDate[item.ItemCd] = item.KisanDate;
-                }
-            }
-            else
-            {
-                dicLastOrderDate.Add(item.ItemCd, item.KisanDate);
-            }
         }
 
         // Count and sum 回数 and 数量
