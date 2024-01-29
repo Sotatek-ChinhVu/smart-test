@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240118051250_add_column_sintable")]
+    partial class addcolumnsintable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,10 +93,6 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
-
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id");
 
                     b.Property<string>("KaName")
                         .IsRequired()
