@@ -124,6 +124,25 @@ namespace CalculateService.Futan.Models
             }
         }
 
+        public string AdjustKidPriority
+        {
+            get
+            {
+                string value =
+                    KaikeiDetail.AdjustKid == KaikeiDetail.Kohi1Id ? Kohi1Priority :
+                    KaikeiDetail.AdjustKid == KaikeiDetail.Kohi2Id ? Kohi2Priority :
+                    KaikeiDetail.AdjustKid == KaikeiDetail.Kohi3Id ? Kohi3Priority :
+                    KaikeiDetail.AdjustKid == KaikeiDetail.Kohi4Id ? Kohi4Priority :
+                    string.Empty;
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    value = "99999999";
+                }
+                return value;
+            }
+        }
+
         /// <summary>
         /// 保険区分
         /// 
@@ -405,11 +424,6 @@ namespace CalculateService.Futan.Models
         }
 
         /// <summary>
-        /// True: 適用区分一般
-        /// </summary>
-        public bool IsKogakuTekiyoIppan { get; set; }
-
-        /// <summary>
         /// 限度額特例フラグ
         /// 
         /// </summary>
@@ -475,6 +489,11 @@ namespace CalculateService.Futan.Models
         /// マル長 公費インデックス番号
         /// </summary>
         public int ChokiKohiNo { get; set; }
+
+        /// <summary>
+        /// マル長 日単位計算
+        /// </summary>
+        public bool IsChokiRangeDay { get; set; }
 
         /// <summary>
         /// 高額療養費限度額
