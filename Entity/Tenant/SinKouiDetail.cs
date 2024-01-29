@@ -283,29 +283,5 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValue(0)]
         //[Index("sin_koui_detail_idx03", 4)]
         public int IsDeleted { get; set; }
-
-        /// <summary>
-        /// EF対象フラグ
-        ///     1:EFファイル出力対象の削除項目   
-        /// </summary>
-        [Column("ef_flg")]
-        [CustomAttribute.DefaultValue(0)]
-        public int EfFlg { get; set; }
-
-        /// <summary>
-        /// 一般名処方フラグ
-        ///     1:一般名処方(院外処方薬剤のみ有効)
-        /// </summary>
-        [Column("ipn_flg")]
-        [CustomAttribute.DefaultValue(0)]
-        public int IpnFlg { get; set; }
-
-        /// <summary>
-        /// EF用点数
-        /// 当該項目の点数。金額項目の場合、10で割ったものを記録
-        /// </summary>
-        [Column("ef_ten")]
-        [CustomAttribute.DefaultValue(0)]
-        public double EfTen { get; set; }
     }
 }
