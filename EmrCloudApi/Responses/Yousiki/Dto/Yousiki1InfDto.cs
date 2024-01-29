@@ -6,7 +6,7 @@ namespace EmrCloudApi.Responses.Yousiki.Dto;
 
 public class Yousiki1InfDto
 {
-    public Yousiki1InfDto(Yousiki1InfModel model)
+    public Yousiki1InfDto(Yousiki1InfModel model, Dictionary<string, string> kacodeYousikiMstDict)
     {
         PtNum = model.PtNum;
         Name = model.Name;
@@ -16,7 +16,7 @@ public class Yousiki1InfDto
         Status = model.Status;
         StatusDic = model.StatusDic;
         SeqNo = model.SeqNo;
-        TabYousiki = ReturnYousikiTabService.RenderTabYousiki(model);
+        TabYousiki = ReturnYousikiTabService.RenderTabYousiki(model, kacodeYousikiMstDict);
     }
 
     public long PtNum { get; private set; }

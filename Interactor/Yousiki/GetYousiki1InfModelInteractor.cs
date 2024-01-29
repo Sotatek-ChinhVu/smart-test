@@ -17,7 +17,8 @@ namespace Interactor.Yousiki
             try
             {
                 var result = _yousikiRepository.GetYousiki1InfModel(inputData.HpId, inputData.SinYm, inputData.PtNum, inputData.DataType);
-                return new GetYousiki1InfModelOutputData(result, GetYousiki1InfModelStatus.Successed);
+                var kacodeYousikiMstDict = _yousikiRepository.GetKacodeYousikiMstDict(inputData.HpId);
+                return new GetYousiki1InfModelOutputData(result, kacodeYousikiMstDict, GetYousiki1InfModelStatus.Successed);
             }
             finally
             {

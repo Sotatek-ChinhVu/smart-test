@@ -17,7 +17,8 @@ public class GetYousiki1InfDetailsInteractor : IGetYousiki1InfDetailsInputPort
         try
         {
             var result = _yousikiRepository.GetYousiki1InfDetails(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.DataType, inputData.SeqNo);
-            return new GetYousiki1InfDetailsOutputData(result, GetYousiki1InfDetailsStatus.Successed);
+            var kacodeYousikiMstDict = _yousikiRepository.GetKacodeYousikiMstDict(inputData.HpId);
+            return new GetYousiki1InfDetailsOutputData(result, kacodeYousikiMstDict, GetYousiki1InfDetailsStatus.Successed);
         }
         finally
         {

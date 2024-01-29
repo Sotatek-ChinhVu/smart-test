@@ -12,7 +12,7 @@ public class GetYousiki1InfDetailsPresenter : IGetYousiki1InfDetailsOutputPort
 
     public void Complete(GetYousiki1InfDetailsOutputData output)
     {
-        Result.Data = new GetYousiki1InfDetailsResponse(new Yousiki1InfDto(output.Yousiki1Inf));
+        Result.Data = new GetYousiki1InfDetailsResponse(new Yousiki1InfDto(output.Yousiki1Inf, output.KacodeYousikiMstDict));
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

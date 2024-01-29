@@ -26,12 +26,14 @@ public class OutpatientConsultationModel
 
     public string CodeNo { get; private set; } = string.Empty;
 
-    public OutpatientConsultationModel(List<Yousiki1InfDetailModel> yousiki1InfDetails)
+    public string DepartmentCodeDisplay { get; private set; } = string.Empty;
+
+    public OutpatientConsultationModel(List<Yousiki1InfDetailModel> yousiki1InfDetails, Dictionary<string, string> kacodeYousikiMstDict)
     {
-        SetData(yousiki1InfDetails);
+        SetData(yousiki1InfDetails, kacodeYousikiMstDict);
     }
 
-    public OutpatientConsultationModel SetData(List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    public OutpatientConsultationModel SetData(List<Yousiki1InfDetailModel> yousiki1InfDetailList, Dictionary<string, string> kacodeYousikiMstDict)
     {
         if (!yousiki1InfDetailList.Any())
         {
@@ -65,6 +67,8 @@ public class OutpatientConsultationModel
             else if (item.Payload == 4)
             {
                 DepartmentCode = item;
+                var departmentValue = kacodeYousikiMstDict.ContainsKey(item.Value) ? kacodeYousikiMstDict[item.Value] : string.Empty;
+                DepartmentCodeDisplay = item.Value + " " + departmentValue ?? string.Empty;
             }
         }
         return this;

@@ -32,7 +32,7 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    public static TabYousikiModel RenderTabYousiki(Yousiki1InfModel yousiki1Inf)
+    public static TabYousikiModel RenderTabYousiki(Yousiki1InfModel yousiki1Inf, Dictionary<string, string> kacodeYousikiMstDict)
     {
         var commonYousiki1InfDetailList = yousiki1Inf.Yousiki1InfDetailList.Where(item => item.DataType == 0).ToList();
         var livingHabitYousiki1InfDetailList = yousiki1Inf.Yousiki1InfDetailList.Where(item => item.DataType == 1).ToList();
@@ -42,7 +42,7 @@ public static class ReturnYousikiTabService
         var commonData = RenderCommon(yousiki1Inf, commonYousiki1InfDetailList);
         var livingHabitData = RenderLivingHabit(livingHabitYousiki1InfDetailList);
         var atHomeData = RenderAtHomeYousiki(yousiki1Inf, atHomeYousiki1InfDetailList);
-        var rehabilitationData = RenderRehabilitation(yousiki1Inf, rehabilitationYousiki1InfDetailList);
+        var rehabilitationData = RenderRehabilitation(yousiki1Inf, rehabilitationYousiki1InfDetailList, kacodeYousikiMstDict);
         return new TabYousikiModel(commonData, atHomeData, livingHabitData, rehabilitationData);
     }
 
@@ -610,9 +610,9 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static RehabilitationModel RenderRehabilitation(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private static RehabilitationModel RenderRehabilitation(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList, Dictionary<string, string> kacodeYousikiMstDict)
     {
-        var outpatientConsultationList = GetOutpatientConsultation(ref yousiki1InfDetailList);
+        var outpatientConsultationList = GetOutpatientConsultation(ref yousiki1InfDetailList, kacodeYousikiMstDict);
         var byomeiRehabilitationList = GetByomeiRehabilitation(yousiki1Inf, ref yousiki1InfDetailList);
         var patientStatus = GetPatientStatus(ref yousiki1InfDetailList);
         var barthelIndexList = patientStatus.barthelIndexList;
@@ -631,7 +631,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<OutpatientConsultationModel> GetOutpatientConsultation(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private static List<OutpatientConsultationModel> GetOutpatientConsultation(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, Dictionary<string, string> kacodeYousikiMstDict)
     {
         List<OutpatientConsultationModel> result = new();
         var yousikiOutpatientConsultationList = yousiki1InfDetailList.Where(item => item.CodeNo == CodeNo_OutpatientConsultate).ToList();
@@ -642,7 +642,7 @@ public static class ReturnYousikiTabService
             foreach (var rowNo in listRowNo)
             {
                 var detailList = yousikiOutpatientConsultationList.Where(x => x.RowNo == rowNo).ToList();
-                result.Add(new OutpatientConsultationModel(detailList));
+                result.Add(new OutpatientConsultationModel(detailList, kacodeYousikiMstDict));
             }
         }
         return result;
