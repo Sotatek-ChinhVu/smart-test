@@ -72,14 +72,10 @@ namespace Domain.Models.ReceSeikyu
             ListRecedenHenJiyuuModel = new();
         }
 
-        public ReceSeikyuModel UpdateReceSeikyuModel(int isDeleted)
+        public ReceSeikyuModel UpdateReceSeikyuModel(int seqNo, int isDeleted, int preHokenId, string cmt)
         {
+            SeqNo = seqNo;
             IsDeleted = isDeleted;
-            return this;
-        }
-
-        public ReceSeikyuModel UpdateReceSeikyuModel(int preHokenId, string cmt)
-        {
             PreHokenId = preHokenId;
             Cmt = cmt;
             return this;
@@ -152,7 +148,7 @@ namespace Domain.Models.ReceSeikyu
 
         public bool IsChecked
         {
-             set
+            set
             {
                 _IsChecked = value;
                 if (!value)
