@@ -1,10 +1,14 @@
-﻿using Domain.Models.Accounting;
+﻿using DocumentFormat.OpenXml.EMMA;
+using Domain.Models.Accounting;
 using Domain.Models.CalculateModel;
 using Domain.Models.MstItem;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
+using Infrastructure.Interfaces;
+using Infrastructure.Logger;
 using Interactor.CalculateService;
+using System;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.GetSinMei;
 
@@ -14,11 +18,13 @@ namespace Interactor.Accounting
     {
         private readonly IAccountingRepository _accountingRepository;
         private readonly ICalculateService _calculateService;
+        private readonly ILoggingHandler _loggingHandler;
 
-        public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository, ICalculateService calculateService)
+        public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository, ICalculateService calculateService, ITenantProvider tenantProvider)
         {
             _accountingRepository = accountingRepository;
             _calculateService = calculateService;
+            _loggingHandler = new LoggingHandler(tenantProvider.CreateNewTrackingAdminDbContextOption(), tenantProvider);
         }
 
         public GetMeiHoGaiOutputData Handle(GetMeiHoGaiInputData inputData)
@@ -39,11 +45,17 @@ namespace Interactor.Accounting
                 return new GetMeiHoGaiOutputData(sinMei, sinHo, sinGai, GetMeiHoGaiStatus.Successed);
 
             }
+            catch (Exception ex)
+            {
+                _loggingHandler.WriteLogExceptionAsync(ex);
+            }
             finally
             {
                 _accountingRepository.ReleaseResource();
                 _calculateService.ReleaseSource();
+                _loggingHandler.Dispose();
             }
+            return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.Failed);
         }
 
         private List<SinMeiModel> GetSinMei(GetSinMeiDtoInputData sinMeiInputData)

@@ -453,7 +453,7 @@ namespace Infrastructure.Repositories
         /// <param name="rsvkrtNo"></param>
         private void UpsertKarteInf(ref List<RsvkrtKarteInf> rsvkrtKarteInfEntityList, int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
         {
-            var oldKarteInf = rsvkrtKarteInfEntityList.FirstOrDefault(o => o.RsvkrtNo == rsvkrtNo);
+            var oldKarteInf = rsvkrtKarteInfEntityList.Where(o => o.RsvkrtNo == rsvkrtNo).OrderByDescending(x=> x.SeqNo).FirstOrDefault();
             if (karteInf.IsDeleted == DeleteTypes.Deleted || karteInf.IsDeleted == DeleteTypes.Confirm)
             {
                 if (oldKarteInf != null && oldKarteInf.IsDeleted == DeleteTypes.None)
