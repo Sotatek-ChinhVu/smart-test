@@ -99,9 +99,8 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                  select new
                                  {
                                      ItemCd = g.Key,
-                                     SinDate = g.Where(o => o.SinDate < sinDate).Max(x => x.SinDate)
+                                     SinDate = g.Where(o => o.SinDate < sinDate).Select(x => x.SinDate).OrderByDescending(x => x).FirstOrDefault()
                                  };
-
         Dictionary<string, int> dicLastOrderDate = new();
         foreach (var lastOdr in odrInfLastOdrQuery.ToList())
         {
