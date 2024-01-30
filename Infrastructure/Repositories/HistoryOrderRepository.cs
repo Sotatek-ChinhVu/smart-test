@@ -707,6 +707,12 @@ namespace Infrastructure.Repositories
             var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
+            var ipnMinYakkaMstQuery = NoTrackingDataContext.IpnMinYakkaMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteTypes.None && (u.StartDate <= maxSinDate || u.EndDate >= maxSinDate));
+
+            var ipnKasanExcludeQuery = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && (u.StartDate <= maxSinDate || u.EndDate >= maxSinDate));
+
+            var ipnKasanExcludeItemQuery = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && (u.StartDate <= maxSinDate || u.EndDate >= maxSinDate));
+
             Dictionary<long, List<OrdInfModel>> result = new Dictionary<long, List<OrdInfModel>>();
             foreach (long raiinNo in raiinNoList)
             {
@@ -734,7 +740,8 @@ namespace Infrastructure.Repositories
                         }
                     }
 
-                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, odrInf.OdrKouiKbn, (int)kensaIrai, (int)kensaIraiCondition);
+                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, odrInf.OdrKouiKbn, (int)kensaIrai, (int)kensaIraiCondition,
+                        ipnMinYakkaMstQuery, ipnKasanExcludeQuery, ipnKasanExcludeItemQuery);
                     odrInfModelList.Add(ordInfModel);
                 }
 
