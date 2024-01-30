@@ -1,11 +1,10 @@
-﻿using Domain.Models.Yousiki;
-using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
+﻿using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
 
 namespace Domain.Models.Yousiki.CommonModel;
 
 public class AtHomeModel
 {
-    public AtHomeModel(List<Yousiki1InfDetailModel> yousiki1InfDetailList, List<StatusVisitModel> statusVisitList, List<StatusVisitModel> statusVisitNursingList, List<StatusEmergencyConsultationModel> statusEmergencyConsultationList, List<StatusShortTermAdmissionModel> statusShortTermAdmissionList, List<PatientSitutationModel> patientSitutationList, List<BarthelIndexModel> barthelIndexList, List<StatusNurtritionModel> statusNurtritionList, List<CommonForm1Model> hospitalizationStatusList, List<CommonForm1Model> statusHomeVisitList)
+    public AtHomeModel(List<Yousiki1InfDetailModel> yousiki1InfDetailList, List<StatusVisitModel> statusVisitList, List<StatusVisitModel> statusVisitNursingList, List<StatusEmergencyConsultationModel> statusEmergencyConsultationList, List<StatusShortTermAdmissionModel> statusShortTermAdmissionList, List<PatientSitutationModel> patientSitutationList, List<BarthelIndexModel> barthelIndexList, List<StatusNurtritionModel> statusNurtritionList, List<CommonForm1Model> hospitalizationStatusList, List<CommonForm1Model> statusHomeVisitList, CommonForm1Model finalExaminationInf, CommonForm1Model finalExaminationInf2)
     {
         Yousiki1InfDetailList = yousiki1InfDetailList;
         StatusVisitList = statusVisitList;
@@ -17,6 +16,8 @@ public class AtHomeModel
         StatusNurtritionList = statusNurtritionList;
         HospitalizationStatusList = hospitalizationStatusList;
         StatusHomeVisitList = statusHomeVisitList;
+        FinalExaminationInf = finalExaminationInf;
+        FinalExaminationInf2 = finalExaminationInf2;
     }
 
     public List<Yousiki1InfDetailModel> Yousiki1InfDetailList { get; private set; }
@@ -38,4 +39,8 @@ public class AtHomeModel
     public List<CommonForm1Model> HospitalizationStatusList { get; private set; }
 
     public List<CommonForm1Model> StatusHomeVisitList { get; private set; }
+
+    public CommonForm1Model FinalExaminationInf { get; private set; }
+
+    public CommonForm1Model FinalExaminationInf2 { get; private set; }
 }

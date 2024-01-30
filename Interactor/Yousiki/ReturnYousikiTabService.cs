@@ -29,6 +29,8 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
     private const string CodeNo_OutpatientConsultate = "RR00001";
     private const string CodeNo_ByomeiRehabilitation = "RCD0001";
     private const string CodeNo_PatientStatus = "RPADL01";
+    private const string CodeNo_MainInjuryOfVisit = "HCVD001";
+    private const string CodeNo_ApprearanceDiagnosis = "HPCD001";
 
     private readonly IPtDiseaseRepository _ptDiseaseRepository;
 
@@ -268,6 +270,8 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
         var statusNurtritionList = GetStatusNurtritionModels(ref yousiki1InfDetailList, yousiki1Inf.PtId, yousiki1Inf.SinYm, yousiki1Inf.DataType, yousiki1Inf.SeqNo, CodeNo_PresenceNurtrition, 0, 3);
         var hospitalizationStatusList = GetHospitalizationStatus(yousiki1Inf, ref yousiki1InfDetailList);
         var statusHomeVisitList = GetStatusHomeVisits(yousiki1Inf, ref yousiki1InfDetailList);
+        var finalExaminationInf = GetAtHomeEndOfMedicineInf(yousiki1Inf, ref yousiki1InfDetailList);
+        var finalExaminationInf2 = GetEndOfMedicineInf2(yousiki1Inf, ref yousiki1InfDetailList);
 
         #region Set byomei data
         List<string> byomeiCdList = new();
@@ -279,6 +283,8 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
         {
             byomeiCdList.AddRange(item.GetByomeiCdList());
         }
+        byomeiCdList.AddRange(finalExaminationInf.GetByomeiCdList());
+        byomeiCdList.AddRange(finalExaminationInf2.GetByomeiCdList());
         byomeiCdList = byomeiCdList.Distinct().ToList();
 
         if (byomeiCdList.Any())
@@ -292,6 +298,8 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
             {
                 item.GetCommonImageInf(byomeiDictionary);
             }
+            finalExaminationInf.GetCommonImageInf(byomeiDictionary);
+            finalExaminationInf2.GetCommonImageInf(byomeiDictionary);
         }
         #endregion
 
@@ -305,7 +313,9 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
                          barthelIndexList,
                          statusNurtritionList,
                          hospitalizationStatusList,
-                         statusHomeVisitList);
+                         statusHomeVisitList,
+                         finalExaminationInf,
+                         finalExaminationInf2);
         return result;
     }
 
@@ -608,6 +618,60 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
 
         var result = SetData(CodeNo_StatusHomeVisit, yousiki1Inf, yousikiStatusHomeVisitList, isCanSortRow: false, listType: ByomeiListType.StatusHomeVisit);
         return result;
+    }
+
+    /// <summary>
+    /// GetAtHomeEndOfMedicineInf
+    /// </summary>
+    /// <param name="yousiki1Inf"></param>
+    /// <param name="yousiki1InfDetailList"></param>
+    /// <returns></returns>
+    private CommonForm1Model GetAtHomeEndOfMedicineInf(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    {
+        var endOfMedicineYousikiList = yousiki1InfDetailList.Where(item => item.CodeNo == CodeNo_MainInjuryOfVisit && item.RowNo == 0 && item.Payload >= 2).ToList();
+
+        var finalExaminationInf = new CommonForm1Model(CodeNo_MainInjuryOfVisit, yousiki1Inf)
+        {
+            IsEnableICD10Code = true,
+            PayLoadInjuryName = 9,
+            PayLoadICD10Code = 2,
+            PayLoadInjuryNameCode = 3,
+            PayLoadModifierCode = 4,
+        };
+
+        if (endOfMedicineYousikiList.Any())
+        {
+            RemoveRange(ref yousiki1InfDetailList, endOfMedicineYousikiList);
+            finalExaminationInf.SetData(endOfMedicineYousikiList);
+        }
+
+        return finalExaminationInf;
+    }
+
+    /// <summary>
+    /// GetEndOfMedicineInf2
+    /// </summary>
+    /// <param name="yousiki1Inf"></param>
+    /// <param name="yousiki1InfDetailList"></param>
+    /// <returns></returns>
+    private CommonForm1Model GetEndOfMedicineInf2(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    {
+        var finalExaminationInfYousikiList = yousiki1InfDetailList.Where(x => x.CodeNo == CodeNo_ApprearanceDiagnosis && x.RowNo == 0 && x.Payload >= 2).ToList();
+        var finalExaminationInf2 = new CommonForm1Model(CodeNo_ApprearanceDiagnosis, yousiki1Inf)
+        {
+            IsEnableICD10Code = true,
+            PayLoadInjuryName = 9,
+            PayLoadICD10Code = 2,
+            PayLoadInjuryNameCode = 3,
+            PayLoadModifierCode = 4,
+        };
+
+        if (finalExaminationInfYousikiList.Any())
+        {
+            RemoveRange(ref yousiki1InfDetailList, finalExaminationInfYousikiList);
+            finalExaminationInf2.SetData(finalExaminationInfYousikiList);
+        }
+        return finalExaminationInf2;
     }
     #endregion
 
