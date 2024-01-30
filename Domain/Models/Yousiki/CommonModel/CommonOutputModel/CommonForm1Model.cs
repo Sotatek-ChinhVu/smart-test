@@ -37,6 +37,8 @@ public class CommonForm1Model
 
     public string CodeNo { get; set; } = string.Empty;
 
+    public bool IsDeleted { get; set; }
+
     #region 入院の状況
     /// <summary>
     /// 入院年月日
