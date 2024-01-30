@@ -745,6 +745,24 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
         var patientStatus = GetPatientStatus(ref yousiki1InfDetailList);
         var barthelIndexList = patientStatus.barthelIndexList;
         var FIMList = patientStatus.FIMList;
+
+        #region set byomei data
+        List<string> byomeiCdList = new();
+        foreach (var item in byomeiRehabilitationList)
+        {
+            byomeiCdList.AddRange(item.GetByomeiCdList());
+        }
+        byomeiCdList = byomeiCdList.Distinct().ToList();
+        if (byomeiCdList.Any())
+        {
+            var byomeiDictionary = _ptDiseaseRepository.GetByomeiMst(yousiki1Inf.HpId, byomeiCdList);
+            foreach (var item in byomeiRehabilitationList)
+            {
+                item.GetCommonImageInf(byomeiDictionary);
+            }
+        }
+        #endregion
+
         var result = new RehabilitationModel(
                          yousiki1InfDetailList,
                          outpatientConsultationList,
