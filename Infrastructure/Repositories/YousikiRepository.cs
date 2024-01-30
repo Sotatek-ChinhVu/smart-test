@@ -240,6 +240,8 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                              })
                              .ToList();
 
+        var raiinKbnMsts = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId).ToList();
+
         foreach (var model in result)
         {
             List<RaiinListInfModel> raiinList = new();
@@ -263,6 +265,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                             item.SinDate,
                                             item.RaiinNo,
                                             item.GrpId,
+                                            raiinKbnMsts.FirstOrDefault(x => x.GrpCd == item.GrpId)?.GrpName ?? string.Empty,
                                             item.KbnCd,
                                             isContainsFile);
                 raiinList.Add(raiinListInfModel);

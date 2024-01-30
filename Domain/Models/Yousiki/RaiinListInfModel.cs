@@ -2,12 +2,13 @@
 
 public class RaiinListInfModel
 {
-    public RaiinListInfModel(long ptId, int sinDate, long raiinNo, int grpId, int kbnCd, bool isContainsFile)
+    public RaiinListInfModel(long ptId, int sinDate, long raiinNo, int grpId, string grpName, int kbnCd, bool isContainsFile)
     {
         PtId = ptId;
         SinDate = sinDate;
         RaiinNo = raiinNo;
         GrpId = grpId;
+        GrpName = grpName;
         KbnCd = kbnCd;
         IsContainsFile = isContainsFile;
     }
@@ -19,6 +20,8 @@ public class RaiinListInfModel
     public long RaiinNo { get; private set; }
 
     public int GrpId { get; private set; }
+
+    public string GrpName { get; private set; } = string.Empty;
 
     public int KbnCd { get; private set; }
 

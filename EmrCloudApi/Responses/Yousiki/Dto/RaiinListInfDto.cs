@@ -10,6 +10,7 @@ public class RaiinListInfDto
         SinDate = model.SinDate;
         RaiinNo = model.RaiinNo;
         GrpId = model.GrpId;
+        GrpName = model.GrpName;
         KbnCd = model.KbnCd;
         IsContainsFile = model.IsContainsFile;
     }
@@ -21,6 +22,8 @@ public class RaiinListInfDto
     public long RaiinNo { get; private set; }
 
     public int GrpId { get; private set; }
+
+    public string GrpName { get; private set; }
 
     public int KbnCd { get; private set; }
 
