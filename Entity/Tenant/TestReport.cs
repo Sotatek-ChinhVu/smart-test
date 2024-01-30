@@ -26,13 +26,13 @@ namespace Entity.Tenant
 
         public int SinDate { get; set; }
 
-        public int SinId {get; set;}
+        public string SinId {get; set;}
 
         public double Suryo { get; set; }
 
         public string UnitName { get; set; }
 
-        public int Count { get; set; }
+        public int Count1 { get; set; }
 
         public double TotalSuryo { get; set; }
 
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         public string KaSname { get; set;}
         public int TantoId { get; set; }
         public string TantoSname { get; set; }
-        public int SinKouiKbn { get; set; }
+        public string SinKouiKbn { get; set; }
         public int MadokuKbn { get; set; }
         public int DrugKbn { get; set; }
         public int KouseisinKbn { get; set; }
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         public int HokenPid { get; set; }
         public int HokenKbn { get; set; }
         public string Houbetu { get; set; }
-        public string HokenSbtCd { get; set; }
+        public int HokenSbtCd { get; set; }
         public int InoutKbn { get; set; }
         public int KohatuKbn { get; set; }
         public int IsAdopted { get; set; }

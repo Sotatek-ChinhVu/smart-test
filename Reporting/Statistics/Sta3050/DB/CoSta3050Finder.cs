@@ -60,7 +60,9 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
 
     private List<CoSinKouiModel> GetSinKouiDataKinds(int hpId, CoSta3050PrintConf printConf)
     {
-        List<CoSinKouiModel>? retData;
+        //var cities = NoTrackingDataContext.TestReports.FromSqlRaw(" SELECT s.pt_id AS \"PtId\", t3.pt_num AS \"PtNum\", t3.kana_name AS \"PtKanaName\", t3.name AS \"PtName\", t3.sex AS \"Sex\", t3.birthday AS \"BirthDay\", s.raiin_no AS \"RaiinNo\", s.sin_ym AS \"SinYm\", s.sin_date AS \"SinDate\", CASE\r\n    WHEN t0.sin_id IN (11, 12) THEN '1x'\r\n    WHEN t0.sin_id IN (24, 25, 26, 27, 28, 29) THEN '2x'\r\n    ELSE t0.sin_id::text\r\nEND AS \"SinId\", t1.suryo AS \"Suryo\", t1.unit_name AS \"UnitName\", s.count AS \"Count\", t1.suryo * s.count::double precision AS \"TotalSuryo\", CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    ELSE t1.item_cd\r\nEND AS \"ItemCd\", CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    WHEN t2.master_sbt = 'C' THEN t1.item_name\r\n    ELSE t1.item_cd\r\nEND AS \"ItemCdCmt\", CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    WHEN t1.item_cd = '810000001' THEN t1.item_name\r\n    ELSE t1.item_cd\r\nEND AS \"SrcItemCd\", t1.item_name AS \"ItemName\", t2.kana_name1 AS \"ItemKanaName1\", t2.kana_name2 AS \"ItemKanaName2\", t2.kana_name3 AS \"ItemKanaName3\", t2.kana_name4 AS \"ItemKanaName4\", t2.kana_name5 AS \"ItemKanaName5\", t2.kana_name6 AS \"ItemKanaName6\", t2.kana_name7 AS \"ItemKanaName7\", r.ka_id AS \"KaId\", k.ka_sname AS \"KaSname\", r.tanto_id AS \"TantoId\", t4.sname AS \"TantoSname\", CASE\r\n    WHEN t2.master_sbt = 'T' AND t2.sin_koui_kbn <> 77 THEN 'T'\r\n    WHEN t2.master_sbt = 'C' THEN '99'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn = 1 THEN '21'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn = 6 THEN '23'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn IN (3, 8) THEN '2x'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn = 4 THEN '30'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) THEN '20'\r\n    ELSE t2.sin_koui_kbn::text\r\nEND AS \"SinKouiKbn\", t2.madoku_kbn AS \"MadokuKbn\", t2.drug_kbn AS \"DrugKbn\", t2.kouseisin_kbn AS \"KouseisinKbn\", t2.kazei_kbn AS \"KazeiKbn\", CASE\r\n    WHEN t2.ten_id IN (1, 2, 4, 10, 11, 99) THEN 1\r\n    ELSE 0\r\nEND AS \"EntenKbn\", CASE\r\n    WHEN t2.ten_id IN (5, 6, 7, 9) THEN t1.ten\r\n    WHEN t2.ten_id = 8 THEN -t2.ten\r\n    WHEN t2.ten_id = 10 THEN t2.ten / 10.0\r\n    WHEN t2.ten_id = 11 THEN t2.ten * 10.0\r\n    ELSE t2.ten\r\nEND AS \"Ten\", r.syosaisin_kbn AS \"SyosaisinKbn\", p0.hoken_pid AS \"HokenPid\", p0.hoken_kbn AS \"HokenKbn\", p1.houbetu AS \"Houbetu\", p0.hoken_sbt_cd AS \"HokenSbtCd\", t.inout_kbn AS \"InoutKbn\", t2.kohatu_kbn AS \"KohatuKbn\", t2.is_adopted AS \"IsAdopted\", t2.kizami_id AS \"KizamiId\", t1.ten * s.count::double precision AS \"TenDetail\"\r\nFROM sin_koui_count AS s\r\nINNER JOIN (\r\n    SELECT s0.hp_id, s0.pt_id, s0.sin_ym, s0.rp_no, s0.seq_no, s0.hoken_pid, s0.inout_kbn\r\n    FROM sin_koui AS s0\r\n    WHERE s0.is_deleted = 0\r\n) AS t ON s.hp_id = t.hp_id AND s.pt_id = t.pt_id AND s.sin_ym = t.sin_ym AND s.rp_no = t.rp_no AND s.seq_no = t.seq_no\r\nINNER JOIN (\r\n    SELECT s1.hp_id, s1.pt_id, s1.sin_ym, s1.rp_no, s1.sin_id\r\n    FROM sin_rp_inf AS s1\r\n    WHERE s1.is_deleted = 0\r\n) AS t0 ON s.hp_id = t0.hp_id AND s.pt_id = t0.pt_id AND s.sin_ym = t0.sin_ym AND s.rp_no = t0.rp_no\r\nINNER JOIN (\r\n    SELECT s2.hp_id, s2.pt_id, s2.sin_ym, s2.rp_no, s2.seq_no, s2.item_cd, s2.item_name, s2.item_sbt, s2.odr_item_cd, s2.rec_id, s2.suryo, s2.ten, s2.unit_name\r\n    FROM sin_koui_detail AS s2\r\n    WHERE s2.is_deleted = 0 AND (s2.item_cd IS NOT NULL) AND NOT (s2.item_cd LIKE '@8%') AND NOT (s2.item_cd LIKE '@9%') AND s2.item_cd <> 'XNOODR'\r\n) AS t1 ON s.hp_id = t1.hp_id AND s.pt_id = t1.pt_id AND s.sin_ym = t1.sin_ym AND s.rp_no = t1.rp_no AND s.seq_no = t1.seq_no\r\nINNER JOIN ten_mst AS t2 ON t1.hp_id = t2.hp_id AND CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    ELSE t1.item_cd\r\nEND = t2.item_cd\r\nINNER JOIN (\r\n    SELECT p.hp_id, p.pt_id, p.birthday, p.kana_name, p.name, p.pt_num, p.sex\r\n    FROM pt_inf AS p\r\n    WHERE p.is_delete = 0 AND p.is_tester = 0\r\n) AS t3 ON s.hp_id = t3.hp_id AND s.pt_id = t3.pt_id\r\nINNER JOIN raiin_inf AS r ON s.hp_id = r.hp_id AND s.raiin_no = r.raiin_no\r\nINNER JOIN pt_hoken_pattern AS p0 ON t.hp_id = p0.hp_id AND t.pt_id = p0.pt_id AND t.hoken_pid = p0.hoken_pid\r\nINNER JOIN pt_hoken_inf AS p1 ON p0.hp_id = p1.hp_id AND p0.pt_id = p1.pt_id AND p0.hoken_id = p1.hoken_id\r\nLEFT JOIN ka_mst AS k ON r.hp_id = k.hp_id AND r.ka_id = k.ka_id\r\nLEFT JOIN (\r\n    SELECT u.hp_id, u.sname, u.user_id\r\n    FROM user_mst AS u\r\n    WHERE u.is_deleted = 0\r\n) AS t4 ON r.hp_id = t4.hp_id AND r.tanto_id = t4.user_id\r\nWHERE s.hp_id = 1 AND s.sin_date >= 20200101 AND s.sin_date <= 20201231 AND t2.start_date <= s.sin_date AND CASE\r\n    WHEN t2.end_date = 12341234 THEN 99999999\r\n    ELSE t2.end_date\r\nEND >= s.sin_date").ToList();
+
+        List<CoSinKouiModel>? retData = new();
         try
         {
             var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId);
@@ -510,61 +512,112 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             }
             #endregion
 
-            var sql = "-- @__8__locals1_hpId_0='1'\r\n-- @__8__locals1_printConf_StartSinDate_1='20200101'\r\n-- @__8__locals1_printConf_EndSinDate_2='20200110'\r\nSELECT s.pt_id AS \"PtId\", t3.pt_num AS \"PtNum\", t3.kana_name AS \"PtKanaName\", t3.name AS \"PtName\", t3.sex AS \"Sex\", t3.birthday AS \"BirthDay\", s.raiin_no AS \"RaiinNo\", s.sin_ym AS \"SinYm\", s.sin_date AS \"SinDate\", CASE\r\n    WHEN t0.sin_id IN (11, 12) THEN '1x'\r\n    WHEN t0.sin_id IN (24, 25, 26, 27, 28, 29) THEN '2x'\r\n    ELSE t0.sin_id::text\r\nEND AS \"SinId\", t1.suryo AS \"Suryo\", t1.unit_name AS \"UnitName\", s.count AS \"Count\", t1.suryo * s.count::double precision AS \"TotalSuryo\", CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    ELSE t1.item_cd\r\nEND AS \"ItemCd\", CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    WHEN t2.master_sbt = 'C' THEN t1.item_name\r\n    ELSE t1.item_cd\r\nEND AS \"ItemCdCmt\", CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    WHEN t1.item_cd = '810000001' THEN t1.item_name\r\n    ELSE t1.item_cd\r\nEND AS \"SrcItemCd\", t1.item_name AS \"ItemName\", t2.kana_name1 AS \"ItemKanaName1\", t2.kana_name2 AS \"ItemKanaName2\", t2.kana_name3 AS \"ItemKanaName3\", t2.kana_name4 AS \"ItemKanaName4\", t2.kana_name5 AS \"ItemKanaName5\", t2.kana_name6 AS \"ItemKanaName6\", t2.kana_name7 AS \"ItemKanaName7\", r.ka_id AS \"KaId\", k.ka_sname AS \"KaSname\", r.tanto_id AS \"TantoId\", t4.sname AS \"TantoSname\", CASE\r\n    WHEN t2.master_sbt = 'T' AND t2.sin_koui_kbn <> 77 THEN 'T'\r\n    WHEN t2.master_sbt = 'C' THEN '99'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn = 1 THEN '21'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn = 6 THEN '23'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn IN (3, 8) THEN '2x'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) AND t2.drug_kbn = 4 THEN '30'\r\n    WHEN t2.sin_koui_kbn IN (20, 21, 22, 23) THEN '20'\r\n    ELSE t2.sin_koui_kbn::text\r\nEND AS \"SinKouiKbn\", t2.madoku_kbn AS \"MadokuKbn\", t2.drug_kbn AS \"DrugKbn\", t2.kouseisin_kbn AS \"KouseisinKbn\", t2.kazei_kbn AS \"KazeiKbn\", CASE\r\n    WHEN t2.ten_id IN (1, 2, 4, 10, 11, 99) THEN 1\r\n    ELSE 0\r\nEND AS \"EntenKbn\", CASE\r\n    WHEN t2.ten_id IN (5, 6, 7, 9) THEN t1.ten\r\n    WHEN t2.ten_id = 8 THEN -t2.ten\r\n    WHEN t2.ten_id = 10 THEN t2.ten / 10.0\r\n    WHEN t2.ten_id = 11 THEN t2.ten * 10.0\r\n    ELSE t2.ten\r\nEND AS \"Ten\", r.syosaisin_kbn AS \"SyosaisinKbn\", p0.hoken_pid AS \"HokenPid\", p0.hoken_kbn AS \"HokenKbn\", p1.houbetu AS \"Houbetu\", p0.hoken_sbt_cd AS \"HokenSbtCd\", t.inout_kbn AS \"InoutKbn\", t2.kohatu_kbn AS \"KohatuKbn\", t2.is_adopted AS \"IsAdopted\", t2.kizami_id AS \"KizamiId\", t1.ten * s.count::double precision AS \"TenDetail\"\r\nFROM sin_koui_count AS s\r\nINNER JOIN (\r\n    SELECT s0.hp_id, s0.pt_id, s0.sin_ym, s0.rp_no, s0.seq_no, s0.hoken_pid, s0.inout_kbn\r\n    FROM sin_koui AS s0\r\n    WHERE s0.is_deleted = 0\r\n) AS t ON s.hp_id = t.hp_id AND s.pt_id = t.pt_id AND s.sin_ym = t.sin_ym AND s.rp_no = t.rp_no AND s.seq_no = t.seq_no\r\nINNER JOIN (\r\n    SELECT s1.hp_id, s1.pt_id, s1.sin_ym, s1.rp_no, s1.sin_id\r\n    FROM sin_rp_inf AS s1\r\n    WHERE s1.is_deleted = 0\r\n) AS t0 ON s.hp_id = t0.hp_id AND s.pt_id = t0.pt_id AND s.sin_ym = t0.sin_ym AND s.rp_no = t0.rp_no\r\nINNER JOIN (\r\n    SELECT s2.hp_id, s2.pt_id, s2.sin_ym, s2.rp_no, s2.seq_no, s2.item_cd, s2.item_name, s2.item_sbt, s2.odr_item_cd, s2.rec_id, s2.suryo, s2.ten, s2.unit_name\r\n    FROM sin_koui_detail AS s2\r\n    WHERE s2.is_deleted = 0 AND (s2.item_cd IS NOT NULL) AND NOT (s2.item_cd LIKE '@8%') AND NOT (s2.item_cd LIKE '@9%') AND s2.item_cd <> 'XNOODR'\r\n) AS t1 ON s.hp_id = t1.hp_id AND s.pt_id = t1.pt_id AND s.sin_ym = t1.sin_ym AND s.rp_no = t1.rp_no AND s.seq_no = t1.seq_no\r\nINNER JOIN ten_mst AS t2 ON t1.hp_id = t2.hp_id AND CASE\r\n    WHEN (t1.odr_item_cd IS NOT NULL) AND (t1.odr_item_cd LIKE 'Z%') AND t1.item_sbt = 0 AND t1.rec_id = 'TO' THEN t1.odr_item_cd\r\n    ELSE t1.item_cd\r\nEND = t2.item_cd\r\nINNER JOIN (\r\n    SELECT p.hp_id, p.pt_id, p.birthday, p.kana_name, p.name, p.pt_num, p.sex\r\n    FROM pt_inf AS p\r\n    WHERE p.is_delete = 0 AND p.is_tester = 0\r\n) AS t3 ON s.hp_id = t3.hp_id AND s.pt_id = t3.pt_id\r\nINNER JOIN raiin_inf AS r ON s.hp_id = r.hp_id AND s.raiin_no = r.raiin_no\r\nINNER JOIN pt_hoken_pattern AS p0 ON t.hp_id = p0.hp_id AND t.pt_id = p0.pt_id AND t.hoken_pid = p0.hoken_pid\r\nINNER JOIN pt_hoken_inf AS p1 ON p0.hp_id = p1.hp_id AND p0.pt_id = p1.pt_id AND p0.hoken_id = p1.hoken_id\r\nLEFT JOIN ka_mst AS k ON r.hp_id = k.hp_id AND r.ka_id = k.ka_id\r\nLEFT JOIN (\r\n    SELECT u.hp_id, u.sname, u.user_id\r\n    FROM user_mst AS u\r\n    WHERE u.is_deleted = 0\r\n) AS t4 ON r.hp_id = t4.hp_id AND r.tanto_id = t4.user_id\r\nWHERE s.hp_id = 1 AND s.sin_date >= 20200101 AND s.sin_date <= 20201231 AND t2.start_date <= s.sin_date AND CASE\r\n    WHEN t2.end_date = 12341234 THEN 99999999\r\n    ELSE t2.end_date\r\nEND >= s.sin_date";
+            var temp = joinQuery.AsEnumerable();
 
-
-            retData = joinQuery.AsEnumerable().Select(
-                data =>
-                    new CoSinKouiModel()
-                    {
-                        PtId = data.PtId,
-                        PtNum = data.PtNum,
-                        PtKanaName = data.PtKanaName,
-                        PtName = data.PtName,
-                        Sex = data.Sex,
-                        BirthDay = data.BirthDay,
-                        RaiinNo = data.RaiinNo,
-                        SinYm = data.SinYm,
-                        SinDate = data.SinDate,
-                        SinId = data.SinId,
-                        Suryo = data.Suryo,
-                        UnitName = data.UnitName,
-                        Count = data.Count,
-                        TotalSuryo = data.TotalSuryo,
-                        Money =
+            foreach (var data in temp)
+            {
+                retData.Add(new CoSinKouiModel()
+                {
+                    PtId = data.PtId,
+                    PtNum = data.PtNum,
+                    PtKanaName = data.PtKanaName,
+                    PtName = data.PtName,
+                    Sex = data.Sex,
+                    BirthDay = data.BirthDay,
+                    RaiinNo = data.RaiinNo,
+                    SinYm = data.SinYm,
+                    SinDate = data.SinDate,
+                    SinId = data.SinId,
+                    Suryo = data.Suryo,
+                    UnitName = data.UnitName,
+                    Count = data.Count,
+                    TotalSuryo = data.TotalSuryo,
+                    Money =
                             data.KizamiId == 1 ? (int)Math.Round(data.TenDetail * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
                             (int)Math.Round(data.Ten * data.Suryo * data.Count * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
-                        ItemCd = data.ItemCd,
-                        ItemCdCmt = data.ItemCdCmt,
-                        ItemName = data.ItemName,
-                        ItemKanaName1 = data.ItemKanaName1,
-                        ItemKanaName2 = data.ItemKanaName2,
-                        ItemKanaName3 = data.ItemKanaName3,
-                        ItemKanaName4 = data.ItemKanaName4,
-                        ItemKanaName5 = data.ItemKanaName5,
-                        ItemKanaName6 = data.ItemKanaName6,
-                        ItemKanaName7 = data.ItemKanaName7,
-                        KaId = data.KaId,
-                        KaSname = data.KaSname,
-                        TantoId = data.TantoId,
-                        TantoSname = data.TantoSname,
-                        SinKouiKbn = data.SinKouiKbn,
-                        MadokuKbn = data.MadokuKbn,
-                        KouseisinKbn = data.KouseisinKbn,
-                        KazeiKbn = data.KazeiKbn,
-                        EntenKbn = data.EntenKbn,
-                        Ten = data.Ten,
-                        SyosaisinKbn = data.SyosaisinKbn,
-                        HokenPid = data.HokenPid,
-                        HokenKbn = data.HokenKbn,
-                        Houbetu = data.Houbetu,
-                        HokenSbtCd = data.HokenSbtCd,
-                        InoutKbn = data.InoutKbn,
-                        KohatuKbn = data.KohatuKbn,
-                        IsAdopted = data.IsAdopted
-                    }
-            )
-            .ToList();
+                    ItemCd = data.ItemCd,
+                    ItemCdCmt = data.ItemCdCmt,
+                    ItemName = data.ItemName,
+                    ItemKanaName1 = data.ItemKanaName1,
+                    ItemKanaName2 = data.ItemKanaName2,
+                    ItemKanaName3 = data.ItemKanaName3,
+                    ItemKanaName4 = data.ItemKanaName4,
+                    ItemKanaName5 = data.ItemKanaName5,
+                    ItemKanaName6 = data.ItemKanaName6,
+                    ItemKanaName7 = data.ItemKanaName7,
+                    KaId = data.KaId,
+                    KaSname = data.KaSname,
+                    TantoId = data.TantoId,
+                    TantoSname = data.TantoSname,
+                    SinKouiKbn = data.SinKouiKbn,
+                    MadokuKbn = data.MadokuKbn,
+                    KouseisinKbn = data.KouseisinKbn,
+                    KazeiKbn = data.KazeiKbn,
+                    EntenKbn = data.EntenKbn,
+                    Ten = data.Ten,
+                    SyosaisinKbn = data.SyosaisinKbn,
+                    HokenPid = data.HokenPid,
+                    HokenKbn = data.HokenKbn,
+                    Houbetu = data.Houbetu,
+                    HokenSbtCd = data.HokenSbtCd,
+                    InoutKbn = data.InoutKbn,
+                    KohatuKbn = data.KohatuKbn,
+                    IsAdopted = data.IsAdopted
+                });
+            }
+
+            //retData = joinQuery.AsEnumerable().Select(
+            //    data =>
+            //        new CoSinKouiModel()
+            //        {
+            //            PtId = data.PtId,
+            //            PtNum = data.PtNum,
+            //            PtKanaName = data.PtKanaName,
+            //            PtName = data.PtName,
+            //            Sex = data.Sex,
+            //            BirthDay = data.BirthDay,
+            //            RaiinNo = data.RaiinNo,
+            //            SinYm = data.SinYm,
+            //            SinDate = data.SinDate,
+            //            SinId = data.SinId,
+            //            Suryo = data.Suryo,
+            //            UnitName = data.UnitName,
+            //            Count = data.Count,
+            //            TotalSuryo = data.TotalSuryo,
+            //            Money =
+            //                data.KizamiId == 1 ? (int)Math.Round(data.TenDetail * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
+            //                (int)Math.Round(data.Ten * data.Suryo * data.Count * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
+            //            ItemCd = data.ItemCd,
+            //            ItemCdCmt = data.ItemCdCmt,
+            //            ItemName = data.ItemName,
+            //            ItemKanaName1 = data.ItemKanaName1,
+            //            ItemKanaName2 = data.ItemKanaName2,
+            //            ItemKanaName3 = data.ItemKanaName3,
+            //            ItemKanaName4 = data.ItemKanaName4,
+            //            ItemKanaName5 = data.ItemKanaName5,
+            //            ItemKanaName6 = data.ItemKanaName6,
+            //            ItemKanaName7 = data.ItemKanaName7,
+            //            KaId = data.KaId,
+            //            KaSname = data.KaSname,
+            //            TantoId = data.TantoId,
+            //            TantoSname = data.TantoSname,
+            //            SinKouiKbn = data.SinKouiKbn,
+            //            MadokuKbn = data.MadokuKbn,
+            //            KouseisinKbn = data.KouseisinKbn,
+            //            KazeiKbn = data.KazeiKbn,
+            //            EntenKbn = data.EntenKbn,
+            //            Ten = data.Ten,
+            //            SyosaisinKbn = data.SyosaisinKbn,
+            //            HokenPid = data.HokenPid,
+            //            HokenKbn = data.HokenKbn,
+            //            Houbetu = data.Houbetu,
+            //            HokenSbtCd = data.HokenSbtCd,
+            //            InoutKbn = data.InoutKbn,
+            //            KohatuKbn = data.KohatuKbn,
+            //            IsAdopted = data.IsAdopted
+            //        }
+            //)
+            //.ToList();
 
             #region 公費法別
             var ptKohis = NoTrackingDataContext.PtKohis;
@@ -639,8 +692,6 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             ptKohiPatterns = null;
 
             #endregion
-
-            var cities = NoTrackingDataContext.Tests.FromSqlRaw("select * from public.test();").ToList();
 
             return retData ?? new();
         }
