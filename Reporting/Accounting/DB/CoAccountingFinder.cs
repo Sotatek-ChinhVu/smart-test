@@ -422,7 +422,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
 
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p =>
             p.HpId == hpId &&
-            ((hokenKbn != 1) || new int[] { 1, 2 }.Contains(p.HokenKbn)));
+            (hokenKbn == 1 ? new int[] { 1, 2 }.Contains(p.HokenKbn) : true));
 
         var hokenMsts = NoTrackingDataContext.HokenMsts;
         //診療日基準で保険番号マスタのキー情報を取得
@@ -466,9 +466,9 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             p.HpId == hpId &&
             p.SinDate >= startDate &&
             p.SinDate <= endDate &&
-            (saiKbn != 0 || p.SeikyuGaku == p.NewSeikyuGaku) &&
-            (misyuKbn != 1 || p.NyukinKbn == 1) &&
-            (seikyuKbn != 0 || p.SeikyuGaku > 0)
+            (saiKbn == 0 ? p.SeikyuGaku == p.NewSeikyuGaku : true) &&
+            (misyuKbn == 1 ? p.NyukinKbn == 1 : true) &&
+            (seikyuKbn == 0 ? p.SeikyuGaku > 0 : true)
         );
 
         // 収納入金
@@ -593,47 +593,47 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             data =>
                 new CoKaikeiInfListModel(
                     data.HpId,
-                    data.PtId,
-                    data.PtNum,
-                    data.Name,
-                    data.KanaName,
-                    data.Sex,
-                    data.Birthday,
-                    data.HomePost,
-                    data.HomeAddress1,
-                    data.HomeAddress2,
-                    data.Tel1,
-                    data.Tel2,
-                    data.RenrakuTel,
-                    // 請求額、入金額、未収額については、後で再設定する
-                    // (この時点では、同一来院に複数保険種の保険を使用した場合、重複した金額が入ってしまう為）
-                    data.SeikyuGaku,
-                    data.NyukinGaku,
-                    data.NyukinAdjust,
-                    data.Misyu,
-                    data.Tensu,
-                    data.TotalIryohi,
-                    data.PtFutan,
-                    data.AdjustFutan,
-                    data.AdjustRound,
-                    data.TotalPtFutan,
-                    data.JihiFutan,
-                    data.JihiOuttax,
-                    data.JihiTax,
-                    data.JihiFutanFree,
-                    data.JihiFutanOuttaxNr,
-                    data.JihiFutanOuttaxGen,
-                    data.JihiFutanTaxNr,
-                    data.JihiFutanTaxGen,
-                    data.JihiOuttaxNr,
-                    data.JihiOuttaxGen,
-                    data.JihiTaxNr,
-                    data.JihiTaxGen,
-                    new(),
-                    new(),
-                    new(),
-                    new(),
-                    new()
+                        data.PtId,
+                        data.PtNum,
+                        data.Name,
+                        data.KanaName,
+                        data.Sex,
+                        data.Birthday,
+                        data.HomePost,
+                        data.HomeAddress1,
+                        data.HomeAddress2,
+                        data.Tel1,
+                        data.Tel2,
+                        data.RenrakuTel,
+                        // 請求額、入金額、未収額については、後で再設定する
+                        // (この時点では、同一来院に複数保険種の保険を使用した場合、重複した金額が入ってしまう為）
+                        data.SeikyuGaku,
+                        data.NyukinGaku,
+                        data.NyukinAdjust,
+                        data.Misyu,
+                        data.Tensu,
+                        data.TotalIryohi,
+                        data.PtFutan,
+                        data.AdjustFutan,
+                        data.AdjustRound,
+                        data.TotalPtFutan,
+                        data.JihiFutan,
+                        data.JihiOuttax,
+                        data.JihiTax,
+                        data.JihiFutanFree,
+                        data.JihiFutanOuttaxNr,
+                        data.JihiFutanOuttaxGen,
+                        data.JihiFutanTaxNr,
+                        data.JihiFutanTaxGen,
+                        data.JihiOuttaxNr,
+                        data.JihiOuttaxGen,
+                        data.JihiTaxNr,
+                        data.JihiTaxGen,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
                 )
             )
             .ToList();

@@ -109,7 +109,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// <summary>
     /// 合計未収額（入金調整額除く）
     /// </summary>
-    int totalMisyuAdjust;
+    int totalNyukinAdjust;
     /// <summary>
     /// 合計自費負担
     /// </summary>
@@ -652,9 +652,9 @@ public class AccountingCoReportService : IAccountingCoReportService
     private void PrintOut()
     {
         // 印刷対象期間に計算中のデータがないかチェック 最大60秒待機
-        bool isCalculate = false;
+        bool isCalculate = true;
         int count = 0;
-        while (isCalculate == false && count < 600)
+        while (isCalculate == true && count < 600)
         {
             isCalculate = _finder.ExistCalculateRequest(hpId, ptId, startDate, endDate);
             Thread.Sleep(100);
@@ -834,7 +834,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         totalSeikyuGaku = 0;
         totalNyukinGaku = 0;
         totalMisyu = 0;
-        totalMisyuAdjust = 0;
+        totalNyukinAdjust = 0;
         totalJihiFutan = 0;
         totalJihiKoumoku = 0;
         totalJihiSinryo = 0;
@@ -914,46 +914,46 @@ public class AccountingCoReportService : IAccountingCoReportService
         output.Add(head);
 
         output.Add(
-            "患者番号," +
-            "患者漢字氏名," +
-            "患者カナ氏名," +
-            "診療総点数," +
-            "診療合計額," +
-            "患者負担合計," +
-            "自費合計額," +
-            "保険外医療計," +
-            "自費分患者負担額," +
-            "外税," +
-            "入金額," +
-            "請求金額," +
-            "未収金額," +
-            "調整後未収金額," +
-            "診療合計自費合計," +
-            "性別," +
-            "生年月日," +
-            "郵便番号," +
-            "住所," +
-            "電話１," +
-            "電話２," +
-            "電話３," +
-            "分類コード１," +
-            "分類名称１," +
-            "分類コード２," +
-            "分類名称２," +
-            "分類コード３," +
-            "分類名称３," +
-            "分類コード４," +
-            "分類名称４," +
-            "分類コード５," +
-            "分類名称５," +
-            "分類コード６," +
-            "分類名称６," +
-            "患者メモ１," +
-            "患者メモ２," +
-            "患者メモ３," +
-            "患者メモ４," +
-            "患者メモ５"
-            );
+                "患者番号," +
+                "患者漢字氏名," +
+                "患者カナ氏名," +
+                "診療総点数," +
+                "診療合計額," +
+                "患者負担合計," +
+                "自費合計額," +
+                "保険外医療計," +
+                "自費分患者負担額," +
+                "外税," +
+                "請求金額," +
+                "調整額," +
+                "入金額," +
+                "未収金額," +
+                "診療合計自費合計," +
+                "性別," +
+                "生年月日," +
+                "郵便番号," +
+                "住所," +
+                "電話１," +
+                "電話２," +
+                "電話３," +
+                "分類コード１," +
+                "分類名称１," +
+                "分類コード２," +
+                "分類名称２," +
+                "分類コード３," +
+                "分類名称３," +
+                "分類コード４," +
+                "分類名称４," +
+                "分類コード５," +
+                "分類名称５," +
+                "分類コード６," +
+                "分類名称６," +
+                "患者メモ１," +
+                "患者メモ２," +
+                "患者メモ３," +
+                "患者メモ４," +
+                "患者メモ５"
+                );
 
         foreach (CoKaikeiInfListModel kaikeiInf in coModelList.KaikeiInfListModels)
         {
@@ -978,13 +978,13 @@ public class AccountingCoReportService : IAccountingCoReportService
             line += $"{kaikeiInf.JihiSinryo},";
             // 消費税
             line += $"{kaikeiInf.JihiOuttax},";
+            // 請求金額
+            line += $"{kaikeiInf.SeikyuGaku - kaikeiInf.AdjustFutan},";
+            // 調整額
+            line += $"{kaikeiInf.NyukinAdjust - kaikeiInf.AdjustFutan},";
             // 入金額
             line += $"{kaikeiInf.NyukinGaku},";
-            // 請求金額
-            line += $"{kaikeiInf.SeikyuGaku},";
             // 未収金額
-            line += $"{kaikeiInf.Misyu},";
-            // 未収金額（入金調整額除く）
             line += $"{kaikeiInf.Misyu - kaikeiInf.NyukinAdjust},";
             // 診療合計自費合計
             line += $"{kaikeiInf.TotalIryohi + kaikeiInf.JihiFutan + kaikeiInf.JihiOuttax},";
@@ -3810,7 +3810,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 SetListDataRep("lsSeikyuGaku_", 1, 2, 0, row, totalSeikyuGaku);
                 SetListDataRep("lsNyukinGaku_", 1, 2, 0, row, totalNyukinGaku);
                 SetListDataRep("lsMisyu_", 1, 2, 0, row, totalMisyu);
-                SetListDataRep("lsMisyuAdjust_", 1, 2, 0, row, totalMisyuAdjust);
+                SetListDataRep("lsMisyuAdjust_", 1, 2, 0, row, totalMisyu - totalNyukinAdjust);
                 SetListDataRep("lsTotalIryohi_", 1, 2, 0, row, totalIryohi);
                 SetListDataRep("lsPtFutan_", 1, 2, 0, row, totalPtFutan);
                 SetListDataRep("lsJihiFutan_", 1, 2, 0, row, totalJihiFutan);
@@ -3856,7 +3856,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 // 未収額の合計
                 SetFieldDataRep("dfMisyu_", 1, 2, totalMisyu);
                 // 未収額（入金調整額除く）の合計
-                SetFieldDataRep("dfMisyuAdjust_", 1, 2, totalMisyuAdjust);
+                SetFieldDataRep("dfMisyuAdjust_", 1, 2, totalMisyu - totalNyukinAdjust);
                 // 医療費の合計
                 SetFieldDataRep("dfTotalIryohi_", 1, 2, totalIryohi);
                 // 患者負担の合計
@@ -3923,7 +3923,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 totalSeikyuGaku += coModelList.KaikeiInfListModels[idx].SeikyuGaku;
                 totalNyukinGaku += coModelList.KaikeiInfListModels[idx].NyukinGaku;
                 totalMisyu += coModelList.KaikeiInfListModels[idx].Misyu;
-                totalMisyuAdjust += coModelList.KaikeiInfListModels[idx].Misyu - coModelList.KaikeiInfListModels[idx].NyukinAdjust;
+                totalNyukinAdjust += coModelList.KaikeiInfListModels[idx].NyukinAdjust;
                 totalIryohi += coModelList.KaikeiInfListModels[idx].TotalIryohi;
                 totalPtFutan += coModelList.KaikeiInfListModels[idx].PtFutan +
                     coModelList.KaikeiInfListModels[idx].AdjustRound;
