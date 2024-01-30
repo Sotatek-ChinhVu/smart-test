@@ -1,17 +1,19 @@
-﻿using Domain.Models.Yousiki;
+﻿using Domain.Models.Diseases;
+using Domain.Models.Yousiki;
+using Domain.Models.Yousiki.CommonModel;
+using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
 using Helper.Enum;
 using Helper.Extension;
-using UseCase.Yousiki.CommonOutputData;
-using UseCase.Yousiki.CommonOutputData.CommonOutputModel;
+using Infrastructure.Interfaces;
 
 namespace Interactor.Yousiki;
 
-public static class ReturnYousikiTabService
+public class ReturnYousikiTabService : IReturnYousikiTabService
 {
     private const string _outpatientConsultationInfCodeNo = "LR00001";
-    private static List<string> _listStrokeCodeNo = new() { "LMHCA01", "LMHCA02" };
-    private static List<string> _listAcuteCoronaryCodeNo = new() { "LMHACS1", "LMHACS2" };
-    private static List<string> _listAcuteAorticCodeNo = new() { "LMHAAD1", "LMHAAD2" };
+    private readonly List<string> _listStrokeCodeNo = new() { "LMHCA01", "LMHCA02" };
+    private readonly List<string> _listAcuteCoronaryCodeNo = new() { "LMHACS1", "LMHACS2" };
+    private readonly List<string> _listAcuteAorticCodeNo = new() { "LMHAAD1", "LMHAAD2" };
     private const string CodeNo_DiagnosticInfInjuries = "CD00001";
     private const string CodeNo_StatusOfVisit = "HCVMT01";
     private const string CodeNo_StatusOfNursingVisit = "HCVNS01";
@@ -21,10 +23,19 @@ public static class ReturnYousikiTabService
     private const string CodeNo_BartherIndex = "HPS0002";
     private const string CodeNo_PresenceNurtrition = "HPS0006";
     private const string CodeNo_HospitalizationStatus = "HCH0001";
+    private const string CodeNo_CommonHospitalizationStatus = "CH00001";
+    private const string CodeNo_EndOfMedicineInf = "CDF0001";
     private const string CodeNo_StatusHomeVisit = "HCHC001";
     private const string CodeNo_OutpatientConsultate = "RR00001";
     private const string CodeNo_ByomeiRehabilitation = "RCD0001";
     private const string CodeNo_PatientStatus = "RPADL01";
+
+    private readonly IPtDiseaseRepository _ptDiseaseRepository;
+
+    public ReturnYousikiTabService(IPtDiseaseRepository ptDiseaseRepository)
+    {
+        _ptDiseaseRepository = ptDiseaseRepository;
+    }
 
     /// <summary>
     /// RenderTabYousiki
@@ -32,7 +43,7 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    public static TabYousikiModel RenderTabYousiki(Yousiki1InfModel yousiki1Inf, Dictionary<string, string> kacodeYousikiMstDict)
+    public TabYousikiModel RenderTabYousiki(Yousiki1InfModel yousiki1Inf, Dictionary<string, string> kacodeYousikiMstDict)
     {
         var commonYousiki1InfDetailList = yousiki1Inf.Yousiki1InfDetailList.Where(item => item.DataType == 0).ToList();
         var livingHabitYousiki1InfDetailList = yousiki1Inf.Yousiki1InfDetailList.Where(item => item.DataType == 1).ToList();
@@ -53,10 +64,30 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static CommonModel RenderCommon(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private CommonModel RenderCommon(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var diagnosticInjuryList = GetDiagnosticInfInjuries(yousiki1Inf, ref yousiki1InfDetailList);
-        var commonModel = new CommonModel(yousiki1InfDetailList, diagnosticInjuryList);
+        var hospitalizationStatusInf = GetCommonHospitalizationStatus(yousiki1Inf, ref yousiki1InfDetailList);
+        var finalExaminationInf = GetEndOfMedicineInf(yousiki1Inf, ref yousiki1InfDetailList);
+
+        List<string> byomeiCdList = new();
+        byomeiCdList.AddRange(hospitalizationStatusInf.ByomeiInf.GetByomeiCdList());
+        byomeiCdList.AddRange(finalExaminationInf.ByomeiInf.GetByomeiCdList());
+        foreach (var item in diagnosticInjuryList)
+        {
+            byomeiCdList.AddRange(item.GetByomeiCdList());
+        }
+        byomeiCdList = byomeiCdList.Distinct().ToList();
+
+        Dictionary<string, string> byomeiDictionary = _ptDiseaseRepository.GetByomeiMst(yousiki1Inf.HpId, byomeiCdList);
+        hospitalizationStatusInf.ByomeiInf.GetCommonImageInf(byomeiDictionary);
+        finalExaminationInf.ByomeiInf.GetCommonImageInf(byomeiDictionary);
+        foreach (var item in diagnosticInjuryList)
+        {
+            item.GetCommonImageInf(byomeiDictionary);
+        }
+
+        var commonModel = new CommonModel(yousiki1InfDetailList, diagnosticInjuryList, hospitalizationStatusInf, finalExaminationInf);
         return commonModel;
     }
 
@@ -66,12 +97,68 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<CommonForm1Model> GetDiagnosticInfInjuries(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<CommonForm1Model> GetDiagnosticInfInjuries(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var yousiki1DiagnosticInjuryList = yousiki1InfDetailList.Where(x => x.CodeNo == CodeNo_DiagnosticInfInjuries).ToList();
         RemoveRange(ref yousiki1InfDetailList, yousiki1DiagnosticInjuryList);
 
         return SetData(CodeNo_DiagnosticInfInjuries, yousiki1Inf, yousiki1DiagnosticInjuryList, 10, true);
+    }
+
+    /// <summary>
+    /// GetCommonHospitalizationStatus
+    /// </summary>
+    /// <param name="yousiki1Inf"></param>
+    /// <param name="yousiki1InfDetailList"></param>
+    /// <returns></returns>
+    private InputByomeiCommonModel GetCommonHospitalizationStatus(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    {
+        string codeNo = CodeNo_CommonHospitalizationStatus;
+        var commonForm1Model = new CommonForm1Model(codeNo, yousiki1Inf)
+        {
+            PayLoadValueSelect = 1,
+            PayLoadInjuryName = 9,
+            PayLoadICD10Code = 2,
+            PayLoadInjuryNameCode = 3,
+            PayLoadModifierCode = 4,
+        };
+
+        var hospitalizationStatusYousikiList = yousiki1InfDetailList.Where(x => x.CodeNo == codeNo && x.RowNo == 0).ToList();
+        if (hospitalizationStatusYousikiList.Any())
+        {
+            RemoveRange(ref yousiki1InfDetailList, hospitalizationStatusYousikiList);
+
+            commonForm1Model.SetData(hospitalizationStatusYousikiList);
+        }
+
+        var result = new InputByomeiCommonModel(commonForm1Model);
+        return result;
+    }
+
+    private InputByomeiCommonModel GetEndOfMedicineInf(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    {
+        string codeNo = CodeNo_EndOfMedicineInf;
+        var duringMonthMedicineInfModel = GetYousiki1InfDetailModel(ref yousiki1InfDetailList, codeNo, 0, 1);
+        var finalMedicineDateModel = GetYousiki1InfDetailModel(ref yousiki1InfDetailList, codeNo, 0, 2);
+
+        var commonForm1Model = new CommonForm1Model(codeNo, yousiki1Inf)
+        {
+            IsEnableICD10Code = true,
+            PayLoadInjuryName = 9,
+            PayLoadICD10Code = 3,
+            PayLoadInjuryNameCode = 4,
+            PayLoadModifierCode = 5,
+        };
+
+        var finalExaminationYousikiList = yousiki1InfDetailList.Where(x => x.CodeNo == codeNo && x.RowNo == 0 && x.Payload > 2).ToList();
+        if (finalExaminationYousikiList.Any())
+        {
+            RemoveRange(ref yousiki1InfDetailList, finalExaminationYousikiList);
+            commonForm1Model.SetData(finalExaminationYousikiList);
+        }
+
+        var result = new InputByomeiCommonModel(commonForm1Model, duringMonthMedicineInfModel, finalMedicineDateModel);
+        return result;
     }
 
     /// <summary>
@@ -84,7 +171,7 @@ public static class ReturnYousikiTabService
     /// <param name="isCanSortRow"></param>
     /// <param name="listType"></param>
     /// <returns></returns>
-    private static List<CommonForm1Model> SetData(string codeNo, Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList, int maxRow = 0, bool isCanSortRow = false, ByomeiListType listType = ByomeiListType.None)
+    private List<CommonForm1Model> SetData(string codeNo, Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList, int maxRow = 0, bool isCanSortRow = false, ByomeiListType listType = ByomeiListType.None)
     {
         List<CommonForm1Model> listCommonImageModel = new();
         if (yousiki1InfDetailList.Any())
@@ -147,6 +234,16 @@ public static class ReturnYousikiTabService
         }
         return listCommonImageModel;
     }
+
+    private Yousiki1InfDetailModel? GetYousiki1InfDetailModel(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, string codeNo, int rowNo, int payLoad, string valueDefault = "")
+    {
+        var detail = yousiki1InfDetailList.FirstOrDefault(x => x.CodeNo == codeNo && x.RowNo == rowNo && x.Payload == payLoad);
+        if (detail != null)
+        {
+            yousiki1InfDetailList.Remove(detail);
+        }
+        return detail;
+    }
     #endregion
 
     #region RenderAtHomeYousiki
@@ -156,7 +253,7 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static AtHomeModel RenderAtHomeYousiki(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private AtHomeModel RenderAtHomeYousiki(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var statusVisitList = GetStatusVisitModels(ref yousiki1InfDetailList, yousiki1Inf.PtId, yousiki1Inf.SinYm, yousiki1Inf.DataType, yousiki1Inf.SeqNo, CodeNo_StatusOfVisit, 1, 2);
         var statusVisitNursingList = GetStatusVisitModels(ref yousiki1InfDetailList, yousiki1Inf.PtId, yousiki1Inf.SinYm, yousiki1Inf.DataType, yousiki1Inf.SeqNo, CodeNo_StatusOfNursingVisit, 1, 2);
@@ -193,7 +290,7 @@ public static class ReturnYousikiTabService
     /// <param name="payload1"></param>
     /// <param name="payload2"></param>
     /// <returns></returns>
-    private static List<StatusVisitModel> GetStatusVisitModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int payload1, int payload2)
+    private List<StatusVisitModel> GetStatusVisitModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int payload1, int payload2)
     {
         var sinDateList = yousiki1InfDetailList.Where(item => item.CodeNo == codeNo && item.Payload == payload1).ToList();
         RemoveRange(ref yousiki1InfDetailList, sinDateList);
@@ -231,7 +328,7 @@ public static class ReturnYousikiTabService
     /// <param name="payload3"></param>
     /// <param name="payload4"></param>
     /// <returns></returns>
-    private static List<StatusEmergencyConsultationModel> GetStatusEmergencyConsultations(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int payload1, int payload2, int payload3, int payload4)
+    private List<StatusEmergencyConsultationModel> GetStatusEmergencyConsultations(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int payload1, int payload2, int payload3, int payload4)
     {
         var emergencyConsultationDayList = yousiki1InfDetailList.Where(item => item.CodeNo == codeNo && item.Payload == payload1).ToList();
         RemoveRange(ref yousiki1InfDetailList, emergencyConsultationDayList);
@@ -292,7 +389,7 @@ public static class ReturnYousikiTabService
     /// <param name="payload2"></param>
     /// <param name="payload3"></param>
     /// <returns></returns>
-    private static List<StatusShortTermAdmissionModel> GetStatusShortTermAdmissionModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int payload1, int payload2, int payload3)
+    private List<StatusShortTermAdmissionModel> GetStatusShortTermAdmissionModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int payload1, int payload2, int payload3)
     {
         var admissionDateList = yousiki1InfDetailList.Where(item => item.CodeNo == codeNo && item.Payload == payload1).ToList();
         RemoveRange(ref yousiki1InfDetailList, admissionDateList);
@@ -341,7 +438,7 @@ public static class ReturnYousikiTabService
     /// <param name="rowNo"></param>
     /// <param name="payload"></param>
     /// <returns></returns>
-    private static List<PatientSitutationModel> GetPatientSitutations(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int payload)
+    private List<PatientSitutationModel> GetPatientSitutations(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int payload)
     {
         var yousiki1InfDetail = yousiki1InfDetailList.FirstOrDefault(item => item.CodeNo == codeNo
                                                                              && item.RowNo == rowNo
@@ -386,7 +483,7 @@ public static class ReturnYousikiTabService
     /// <param name="rowNo"></param>
     /// <param name="payload"></param>
     /// <returns></returns>
-    private static List<BarthelIndexModel> GetBarthelIndexModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int payload)
+    private List<BarthelIndexModel> GetBarthelIndexModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int payload)
     {
         var yousiki1InfDetail = yousiki1InfDetailList.FirstOrDefault(item => item.CodeNo == codeNo
                                                                              && item.RowNo == rowNo
@@ -427,7 +524,7 @@ public static class ReturnYousikiTabService
     /// <param name="rowNo"></param>
     /// <param name="payload"></param>
     /// <returns></returns>
-    private static List<StatusNurtritionModel> GetStatusNurtritionModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int payload)
+    private List<StatusNurtritionModel> GetStatusNurtritionModels(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, long ptId, int sinYm, int dataType, int seqNo, string codeNo, int rowNo, int payload)
     {
         var yousiki1InfDetail = yousiki1InfDetailList.FirstOrDefault(item => item.CodeNo == codeNo
                                                                              && item.RowNo == rowNo
@@ -458,7 +555,7 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<CommonForm1Model> GetHospitalizationStatus(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<CommonForm1Model> GetHospitalizationStatus(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var yousikiHospitalizationStatusList = yousiki1InfDetailList.Where(item => item.CodeNo == CodeNo_HospitalizationStatus).ToList();
         RemoveRange(ref yousiki1InfDetailList, yousikiHospitalizationStatusList);
@@ -473,7 +570,7 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<CommonForm1Model> GetStatusHomeVisits(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<CommonForm1Model> GetStatusHomeVisits(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var yousikiStatusHomeVisitList = yousiki1InfDetailList.Where(item => item.CodeNo == CodeNo_StatusHomeVisit).ToList();
         RemoveRange(ref yousiki1InfDetailList, yousikiStatusHomeVisitList);
@@ -489,7 +586,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static LivingHabitModel RenderLivingHabit(List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private LivingHabitModel RenderLivingHabit(List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var acuteAorticHistoryList = GetAcuteAorticHistories(ref yousiki1InfDetailList);
         var acuteCoronaryHistoryList = GetAcuteCoronaryHistories(ref yousiki1InfDetailList);
@@ -509,7 +606,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<AcuteAorticDissectionHistoryModel> GetAcuteAorticHistories(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<AcuteAorticDissectionHistoryModel> GetAcuteAorticHistories(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var yousikiAcuteAorticDissectionHistoryList = yousiki1InfDetailList.Where(item => item.CodeNo == _listAcuteAorticCodeNo[1] && item.Payload == 1).ToList();
         RemoveRange(ref yousiki1InfDetailList, yousikiAcuteAorticDissectionHistoryList);
@@ -524,7 +621,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<AcuteCoronaryHistoryModel> GetAcuteCoronaryHistories(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<AcuteCoronaryHistoryModel> GetAcuteCoronaryHistories(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var typeList = yousiki1InfDetailList.Where(item => item.CodeNo == _listAcuteCoronaryCodeNo[1] && item.Payload == 1).ToList();
         RemoveRange(ref yousiki1InfDetailList, typeList);
@@ -552,7 +649,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<StrokeHistoryModel> GetStrokeHistories(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<StrokeHistoryModel> GetStrokeHistories(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var typeList = yousiki1InfDetailList.Where(x => x.CodeNo == _listStrokeCodeNo[1] && x.Payload == 1).ToList();
         RemoveRange(ref yousiki1InfDetailList, typeList);
@@ -580,7 +677,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<OutpatientConsultationInfModel> GetOutpatientConsultationInfs(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<OutpatientConsultationInfModel> GetOutpatientConsultationInfs(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var consultationDateList = yousiki1InfDetailList.Where(item => item.CodeNo == _outpatientConsultationInfCodeNo && item.Payload == 1).ToList();
         RemoveRange(ref yousiki1InfDetailList, consultationDateList);
@@ -610,7 +707,7 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static RehabilitationModel RenderRehabilitation(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList, Dictionary<string, string> kacodeYousikiMstDict)
+    private RehabilitationModel RenderRehabilitation(Yousiki1InfModel yousiki1Inf, List<Yousiki1InfDetailModel> yousiki1InfDetailList, Dictionary<string, string> kacodeYousikiMstDict)
     {
         var outpatientConsultationList = GetOutpatientConsultation(ref yousiki1InfDetailList, kacodeYousikiMstDict);
         var byomeiRehabilitationList = GetByomeiRehabilitation(yousiki1Inf, ref yousiki1InfDetailList);
@@ -631,7 +728,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<OutpatientConsultationModel> GetOutpatientConsultation(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, Dictionary<string, string> kacodeYousikiMstDict)
+    private List<OutpatientConsultationModel> GetOutpatientConsultation(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, Dictionary<string, string> kacodeYousikiMstDict)
     {
         List<OutpatientConsultationModel> result = new();
         var yousikiOutpatientConsultationList = yousiki1InfDetailList.Where(item => item.CodeNo == CodeNo_OutpatientConsultate).ToList();
@@ -654,7 +751,7 @@ public static class ReturnYousikiTabService
     /// <param name="yousiki1Inf"></param>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static List<CommonForm1Model> GetByomeiRehabilitation(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private List<CommonForm1Model> GetByomeiRehabilitation(Yousiki1InfModel yousiki1Inf, ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var yousikiByomeiRehabilitationList = yousiki1InfDetailList.Where(item => item.CodeNo == CodeNo_ByomeiRehabilitation).ToList();
         RemoveRange(ref yousiki1InfDetailList, yousikiByomeiRehabilitationList);
@@ -668,7 +765,7 @@ public static class ReturnYousikiTabService
     /// </summary>
     /// <param name="yousiki1InfDetailList"></param>
     /// <returns></returns>
-    private static (List<PatientStatusModel> barthelIndexList, List<PatientStatusModel> FIMList) GetPatientStatus(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    private (List<PatientStatusModel> barthelIndexList, List<PatientStatusModel> FIMList) GetPatientStatus(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
         var yousikiPatientStatus = yousiki1InfDetailList.Where(item => item.CodeNo == CodeNo_PatientStatus).ToList();
         RemoveRange(ref yousiki1InfDetailList, yousikiPatientStatus);
@@ -705,7 +802,7 @@ public static class ReturnYousikiTabService
     /// <param name="value"></param>
     /// <param name="listLabel"></param>
     /// <returns></returns>
-    private static List<PatientStatusModel> ConvertPatientStatus(string value, List<string> listLabel)
+    private List<PatientStatusModel> ConvertPatientStatus(string value, List<string> listLabel)
     {
         List<PatientStatusModel> patientStatusList = new();
 
@@ -724,7 +821,7 @@ public static class ReturnYousikiTabService
     #endregion
 
     #region common function
-    private static void RemoveRange(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, List<Yousiki1InfDetailModel> removeYousiki1InfDetailList)
+    private void RemoveRange(ref List<Yousiki1InfDetailModel> yousiki1InfDetailList, List<Yousiki1InfDetailModel> removeYousiki1InfDetailList)
     {
         foreach (var item in removeYousiki1InfDetailList)
         {

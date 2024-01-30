@@ -1,12 +1,11 @@
 ﻿using Domain.Models.Yousiki;
-using Interactor.Yousiki;
-using UseCase.Yousiki.CommonOutputData;
+using Domain.Models.Yousiki.CommonModel;
 
 namespace EmrCloudApi.Responses.Yousiki.Dto;
 
 public class Yousiki1InfDto
 {
-    public Yousiki1InfDto(Yousiki1InfModel model, Dictionary<string, string> kacodeYousikiMstDict)
+    public Yousiki1InfDto(Yousiki1InfModel model, TabYousikiModel tabYousiki)
     {
         PtNum = model.PtNum;
         Name = model.Name;
@@ -16,7 +15,20 @@ public class Yousiki1InfDto
         Status = model.Status;
         StatusDic = model.StatusDic;
         SeqNo = model.SeqNo;
-        TabYousiki = ReturnYousikiTabService.RenderTabYousiki(model, kacodeYousikiMstDict);
+        TabYousiki = tabYousiki;
+    }
+
+    public Yousiki1InfDto(Yousiki1InfModel model)
+    {
+        PtNum = model.PtNum;
+        Name = model.Name;
+        PtId = model.PtId;
+        SinYm = model.SinYm;
+        DataType = model.DataType;
+        Status = model.Status;
+        StatusDic = model.StatusDic;
+        SeqNo = model.SeqNo;
+        TabYousiki = null;
     }
 
     public long PtNum { get; private set; }
@@ -35,5 +47,5 @@ public class Yousiki1InfDto
 
     public int SeqNo { get; private set; }
 
-    public TabYousikiModel TabYousiki { get; private set; }
+    public TabYousikiModel? TabYousiki { get; private set; }
 }

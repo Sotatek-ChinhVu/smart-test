@@ -1,4 +1,4 @@
-﻿namespace UseCase.Yousiki.CommonOutputData;
+﻿namespace Domain.Models.Yousiki.CommonModel;
 
 public class TabYousikiModel
 {

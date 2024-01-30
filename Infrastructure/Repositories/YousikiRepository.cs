@@ -19,6 +19,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                  .OrderByDescending(x => x.SinYm)
                                                  .AsEnumerable()
                                                  .Select(x => new Yousiki1InfModel(
+                                                        hpId,
                                                         x.PtId,
                                                         x.SinYm,
                                                         x.DataType,
@@ -47,6 +48,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                     };
         return query.AsEnumerable()
                     .Select(x => new Yousiki1InfModel(
+                            hpId,
                             x.yousikiInf.PtId,
                             x.yousikiInf.SinYm,
                             x.yousikiInf.DataType,
@@ -80,6 +82,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                      join ptInf in ptInfs on
                                      yousikiInf.PtId equals ptInf.PtId
                                      select new Yousiki1InfModel(
+                                                hpId,
                                                 ptInf.PtNum,
                                                 ptInf.Name ?? string.Empty,
                                                 ptInf.IsTester == 1,
@@ -146,7 +149,8 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                                 item.Payload,
                                                                                                 item.Value ?? string.Empty))
                                                                             .ToList();
-        return new Yousiki1InfModel(ptInf.PtNum,
+        return new Yousiki1InfModel(hpId,
+                                    ptInf.PtNum,
                                     ptInf.Name ?? string.Empty,
                                     ptInf.IsTester == 1,
                                     yousiki1Inf.PtId,
@@ -570,6 +574,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
         return yousiki1InfQuery
                .Select(item => new Yousiki1InfModel(
+                                   hpId,
                                    item.ptInf.PtNum,
                                    item.ptInf.Name ?? string.Empty,
                                    item.ptInf.IsTester == 1,

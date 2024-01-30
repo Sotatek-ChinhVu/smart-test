@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Yousiki;
-using UseCase.Yousiki.CommonOutputData.CommonOutputModel;
+using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
 
-namespace UseCase.Yousiki.CommonOutputData;
+namespace Domain.Models.Yousiki.CommonModel;
 
 public class AtHomeModel
 {

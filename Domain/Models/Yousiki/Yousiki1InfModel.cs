@@ -4,8 +4,9 @@ namespace Domain.Models.Yousiki;
 
 public class Yousiki1InfModel
 {
-    public Yousiki1InfModel(long ptNum, string name, bool isTester, long ptId, int sinYm, int dataType, int status, Dictionary<int, int> statusDic, int seqNo, List<Yousiki1InfDetailModel> yousiki1InfDetailList)
+    public Yousiki1InfModel(int hpId, long ptNum, string name, bool isTester, long ptId, int sinYm, int dataType, int status, Dictionary<int, int> statusDic, int seqNo, List<Yousiki1InfDetailModel> yousiki1InfDetailList)
     {
+        HpId = hpId;
         PtNum = ptNum;
         Name = name;
         IsTester = isTester;
@@ -22,8 +23,9 @@ public class Yousiki1InfModel
         FilterYousiki1InfDetailList = Yousiki1InfDetailList.Where(FilterDetails).ToList();
     }
 
-    public Yousiki1InfModel(long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status)
+    public Yousiki1InfModel(int hpId, long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status)
     {
+        HpId = hpId;
         PtId = ptId;
         SinYm = sinYm;
         DataType = dataType;
@@ -36,8 +38,9 @@ public class Yousiki1InfModel
         FilterYousiki1InfDetailList = new();
     }
 
-    public Yousiki1InfModel(long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status, long ptNum, string name)
+    public Yousiki1InfModel(int hpId, long ptId, int sinYm, int dataType, int seqNo, int isDeleted, int status, long ptNum, string name)
     {
+        HpId = hpId;
         PtId = ptId;
         SinYm = sinYm;
         DataType = dataType;
@@ -69,6 +72,8 @@ public class Yousiki1InfModel
         Yousiki1InfDetailList = yousiki1InfDetailList;
         return this;
     }
+
+    public int HpId { get; private set; }
 
     public long PtNum { get; private set; }
 

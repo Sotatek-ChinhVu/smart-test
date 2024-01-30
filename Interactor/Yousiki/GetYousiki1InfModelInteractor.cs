@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Yousiki;
+using Infrastructure.Interfaces;
 using UseCase.Yousiki.GetYousiki1InfModel;
 
 namespace Interactor.Yousiki
@@ -17,8 +18,7 @@ namespace Interactor.Yousiki
             try
             {
                 var result = _yousikiRepository.GetYousiki1InfModel(inputData.HpId, inputData.SinYm, inputData.PtNum, inputData.DataType);
-                var kacodeYousikiMstDict = _yousikiRepository.GetKacodeYousikiMstDict(inputData.HpId);
-                return new GetYousiki1InfModelOutputData(result, kacodeYousikiMstDict, GetYousiki1InfModelStatus.Successed);
+                return new GetYousiki1InfModelOutputData(result, GetYousiki1InfModelStatus.Successed);
             }
             finally
             {

@@ -150,7 +150,7 @@ public class YousikiController : AuthorizeControllerBase
 
         foreach (var item in items)
         {
-            result.Add( new Yousiki1InfDetailModel(
+            result.Add(new Yousiki1InfDetailModel(
                 item.PtId,
                 item.SinYm,
                 item.DataType,
@@ -165,7 +165,7 @@ public class YousikiController : AuthorizeControllerBase
 
     private Yousiki1InfModel ConvertModelToYousiki1Inf(UpdateYosikiInfRequestItem item)
     {
-        return new Yousiki1InfModel(item.PtId, item.SinYm, item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
+        return new Yousiki1InfModel(HpId, item.PtId, item.SinYm, item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
     }
 
     #region private function

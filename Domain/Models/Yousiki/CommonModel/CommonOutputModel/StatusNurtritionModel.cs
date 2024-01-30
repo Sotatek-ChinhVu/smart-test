@@ -1,4 +1,4 @@
-﻿namespace UseCase.Yousiki.CommonOutputData.CommonOutputModel;
+﻿namespace Domain.Models.Yousiki.CommonModel.CommonOutputModel;
 
 public class StatusNurtritionModel
 {

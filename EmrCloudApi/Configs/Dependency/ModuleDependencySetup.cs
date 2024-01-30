@@ -856,6 +856,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Cache data
             services.AddTransient<IUserInfoService, UserInfoService>();
             services.AddTransient<IKaService, KaService>();
+            services.AddTransient<IReturnYousikiTabService, ReturnYousikiTabService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();

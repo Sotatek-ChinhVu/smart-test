@@ -1,28 +1,27 @@
-﻿using Domain.Models.Yousiki;
-using Helper.Enum;
+﻿using Helper.Enum;
 using Helper.Extension;
 
-namespace UseCase.Yousiki.CommonOutputData.CommonOutputModel;
+namespace Domain.Models.Yousiki.CommonModel.CommonOutputModel;
 
 public class CommonForm1Model
 {
-    public int PayLoadValueSelect { get; set; }
+    public int PayLoadValueSelect { get; set; } = 1;
 
     public int ValueSelect { get; set; }
 
-    public int PayLoadInjuryName { get; set; }
+    public int PayLoadInjuryName { get; set; } = 9;
 
     public Yousiki1InfDetailModel InjuryNameLast { get; set; }
 
-    public int PayLoadICD10Code { get; set; }
+    public int PayLoadICD10Code { get; set; } = 2;
 
     public Yousiki1InfDetailModel ICD10Code { get; set; }
 
-    public int PayLoadInjuryNameCode { get; set; }
+    public int PayLoadInjuryNameCode { get; set; } = 3;
 
     public Yousiki1InfDetailModel InjuryNameCode { get; set; }
 
-    public int PayLoadModifierCode { get; set; }
+    public int PayLoadModifierCode { get; set; } = 4;
 
     public Yousiki1InfDetailModel ModifierCode { get; set; }
 
@@ -93,6 +92,14 @@ public class CommonForm1Model
     public Yousiki1InfDetailModel MaximumNumberDate { get; set; }
 
     public ByomeiListType GridType { get; set; } = ByomeiListType.None;
+    #endregion
+
+    #region byomei
+    public string ByomeiCd { get; set; } = string.Empty;
+
+    public string Byomei { get; set; } = string.Empty;
+
+    public List<PrefixSuffixModel> PrefixSuffixList { get; set; } = new();
     #endregion
 
     public CommonForm1Model(string codeNo, Yousiki1InfModel yousiki1Inf)
@@ -248,6 +255,58 @@ public class CommonForm1Model
                 }
             }
         }
+        return this;
+    }
+
+    public List<string> GetByomeiCdList()
+    {
+        List<string> result = new();
+        var byomeiCd = InjuryNameCode?.Value;
+        if (!string.IsNullOrEmpty(byomeiCd))
+        {
+            result.Add(byomeiCd);
+        }
+
+        var modifierCode = ModifierCode?.Value;
+        int i = 1;
+        while (!string.IsNullOrEmpty(modifierCode) && modifierCode.Length >= 4)
+        {
+            var mstItemCd = modifierCode.Substring(0, 4);
+            if (!string.IsNullOrEmpty(mstItemCd))
+            {
+                result.Add(mstItemCd);
+            }
+            modifierCode = modifierCode.Remove(0, 4);
+            i++;
+        }
+
+        return result;
+    }
+
+    public CommonForm1Model GetCommonImageInf(Dictionary<string, string> byomeiDictionary)
+    {
+        ByomeiCd = InjuryNameCode?.Value ?? string.Empty;
+        if (string.IsNullOrEmpty(ByomeiCd))
+        {
+            return this;
+        }
+
+        Byomei = byomeiDictionary.ContainsKey(ByomeiCd) ? byomeiDictionary[ByomeiCd] : string.Empty;
+        var modifierCode = ModifierCode?.Value;
+
+        int i = 1;
+        while (!string.IsNullOrEmpty(modifierCode) && modifierCode.Length >= 4)
+        {
+            var mstItemCd = modifierCode.Substring(0, 4);
+            if (byomeiDictionary.ContainsKey(mstItemCd))
+            {
+                PrefixSuffixList.Add(new PrefixSuffixModel(mstItemCd, byomeiDictionary[mstItemCd]));
+            }
+
+            modifierCode = modifierCode.Remove(0, 4);
+            i++;
+        }
+
         return this;
     }
 }

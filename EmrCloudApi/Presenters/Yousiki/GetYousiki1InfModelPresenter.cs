@@ -12,7 +12,7 @@ namespace EmrCloudApi.Presenters.Yousiki
         public Response<GetYousiki1InfModelResponse> Result { get; private set; } = new();
         public void Complete(GetYousiki1InfModelOutputData outputData)
         {
-            Result.Data = new GetYousiki1InfModelResponse(outputData.Yousiki1InfModels.Select(item => new Yousiki1InfDto(item, outputData.KacodeYousikiMstDict)).ToList());
+            Result.Data = new GetYousiki1InfModelResponse(outputData.Yousiki1InfModels.Select(item => new Yousiki1InfDto(item)).ToList());
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
