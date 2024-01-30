@@ -509,28 +509,27 @@ public class AccountingCoReportService : IAccountingCoReportService
         printType = 0;
         this.formFileName = formFileName;
         int index = 1;
-        foreach (var item in coAccountingParamListModels)
-        {
-            accountingOutputModelList = new();
-            SingleFieldDataResult = new();
-            ListTextModelResult = new();
-            SystemConfigList = new();
 
-            startDate = item.StartDate;
-            endDate = item.EndDate;
-            ptConditions = item.PtConditions;
-            grpConditions = item.GrpConditions;
-            if (grpConditions.Any())
-            {
-                ptConditions.AddRange(_finder.FindPtInf(hpId, grpConditions));
-            }
-            PrintOut();
-            if (accountingOutputModelList.Any())
-            {
-                accountingDicResult.Add(index, accountingOutputModelList);
-                index++;
-            }
+        accountingOutputModelList = new();
+        SingleFieldDataResult = new();
+        ListTextModelResult = new();
+        SystemConfigList = new();
+
+        startDate = coAccountingParamListModels.First().StartDate;
+        endDate = coAccountingParamListModels.First().EndDate;
+        ptConditions = coAccountingParamListModels.First().PtConditions;
+        grpConditions = coAccountingParamListModels.First().GrpConditions;
+        if (grpConditions.Any())
+        {
+            ptConditions.AddRange(_finder.FindPtInf(hpId, grpConditions));
         }
+        PrintOut();
+        if (accountingOutputModelList.Any())
+        {
+            accountingDicResult.Add(index, accountingOutputModelList);
+            index++;
+        }
+
         fileNamePageMap.Add(1, this.formFileName);
         return new AccountingResponse(
                   fileNamePageMap,
