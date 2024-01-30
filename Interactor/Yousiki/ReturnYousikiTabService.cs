@@ -70,6 +70,7 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
         var hospitalizationStatusInf = GetCommonHospitalizationStatus(yousiki1Inf, ref yousiki1InfDetailList);
         var finalExaminationInf = GetEndOfMedicineInf(yousiki1Inf, ref yousiki1InfDetailList);
 
+        #region set byomei data
         List<string> byomeiCdList = new();
         byomeiCdList.AddRange(hospitalizationStatusInf.ByomeiInf.GetByomeiCdList());
         byomeiCdList.AddRange(finalExaminationInf.ByomeiInf.GetByomeiCdList());
@@ -78,14 +79,17 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
             byomeiCdList.AddRange(item.GetByomeiCdList());
         }
         byomeiCdList = byomeiCdList.Distinct().ToList();
-
-        Dictionary<string, string> byomeiDictionary = _ptDiseaseRepository.GetByomeiMst(yousiki1Inf.HpId, byomeiCdList);
-        hospitalizationStatusInf.ByomeiInf.GetCommonImageInf(byomeiDictionary);
-        finalExaminationInf.ByomeiInf.GetCommonImageInf(byomeiDictionary);
-        foreach (var item in diagnosticInjuryList)
+        if (byomeiCdList.Any())
         {
-            item.GetCommonImageInf(byomeiDictionary);
+            var byomeiDictionary = _ptDiseaseRepository.GetByomeiMst(yousiki1Inf.HpId, byomeiCdList);
+            hospitalizationStatusInf.ByomeiInf.GetCommonImageInf(byomeiDictionary);
+            finalExaminationInf.ByomeiInf.GetCommonImageInf(byomeiDictionary);
+            foreach (var item in diagnosticInjuryList)
+            {
+                item.GetCommonImageInf(byomeiDictionary);
+            }
         }
+        #endregion
 
         var commonModel = new CommonModel(yousiki1InfDetailList, diagnosticInjuryList, hospitalizationStatusInf, finalExaminationInf);
         return commonModel;
@@ -264,6 +268,33 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
         var statusNurtritionList = GetStatusNurtritionModels(ref yousiki1InfDetailList, yousiki1Inf.PtId, yousiki1Inf.SinYm, yousiki1Inf.DataType, yousiki1Inf.SeqNo, CodeNo_PresenceNurtrition, 0, 3);
         var hospitalizationStatusList = GetHospitalizationStatus(yousiki1Inf, ref yousiki1InfDetailList);
         var statusHomeVisitList = GetStatusHomeVisits(yousiki1Inf, ref yousiki1InfDetailList);
+
+        #region Set byomei data
+        List<string> byomeiCdList = new();
+        foreach (var item in hospitalizationStatusList)
+        {
+            byomeiCdList.AddRange(item.GetByomeiCdList());
+        }
+        foreach (var item in statusHomeVisitList)
+        {
+            byomeiCdList.AddRange(item.GetByomeiCdList());
+        }
+        byomeiCdList = byomeiCdList.Distinct().ToList();
+
+        if (byomeiCdList.Any())
+        {
+            var byomeiDictionary = _ptDiseaseRepository.GetByomeiMst(yousiki1Inf.HpId, byomeiCdList);
+            foreach (var item in hospitalizationStatusList)
+            {
+                item.GetCommonImageInf(byomeiDictionary);
+            }
+            foreach (var item in statusHomeVisitList)
+            {
+                item.GetCommonImageInf(byomeiDictionary);
+            }
+        }
+        #endregion
+
         var result = new AtHomeModel(
                          yousiki1InfDetailList,
                          statusVisitList,
