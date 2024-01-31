@@ -1,7 +1,7 @@
 ﻿using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 using Reporting.KensaLabel.Model;
 
 namespace Reporting.KensaLabel.DB

@@ -1,5 +1,5 @@
-﻿using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
+﻿using CalculateService.Interface;
+using CalculateService.Requests;
 using EmrCalculateApi.Responses;
 using Helper.Messaging.Data;
 using Helper.Messaging;

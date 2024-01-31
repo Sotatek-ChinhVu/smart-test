@@ -187,8 +187,8 @@ using Reporting.AccountingCardList.DB;
 using Reporting.AccountingCardList.Service;
 using Reporting.Byomei.DB;
 using Reporting.Byomei.Service;
-using Reporting.Calculate.Implementation;
-using Reporting.Calculate.Interface;
+using CalculateService.Implementation;
+using CalculateService.Interface;
 using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
 using Reporting.CommonMasters.Config;
@@ -816,7 +816,6 @@ using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetByomeisInMonth;
 using UseCase.Yousiki.CreateYuIchiFile;
-using Interactor.Yousiki.UpdateYosiki;
 using UseCase.Yousiki.UpdateYosiki;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -857,6 +856,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Cache data
             services.AddTransient<IUserInfoService, UserInfoService>();
             services.AddTransient<IKaService, KaService>();
+            services.AddTransient<IReturnYousikiTabService, ReturnYousikiTabService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
@@ -1118,7 +1118,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP46WelfareSeikyu99CoReportService, P46WelfareSeikyu99CoReportService>();
             services.AddTransient<ICoNameLabelFinder, CoNameLabelFinder>();
             //call Calculate API
-            services.AddTransient<ICalculateService, CalculateService>();
+            services.AddTransient<ICalculateService, EmrCloudApi.Services.CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
             #endregion Reporting
         }

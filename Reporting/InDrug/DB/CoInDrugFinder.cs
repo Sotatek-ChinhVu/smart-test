@@ -3,7 +3,7 @@ using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 using Reporting.InDrug.Model;
 using System;
 using System.Collections.Generic;

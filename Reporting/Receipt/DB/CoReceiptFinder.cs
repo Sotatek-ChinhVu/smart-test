@@ -1,15 +1,15 @@
-﻿using Domain.Constant;
-using Domain.Models.Accounting;
+﻿using CalculateService.Constants;
+using CalculateService.Ika.Models;
+using CalculateService.Interface;
+using CalculateService.Receipt.Models;
+using Reporting.Receipt.Constants;
+using Reporting.Receipt.Models;
+using Domain.Constant;
 using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Reporting.Calculate.Constants;
-using Reporting.Calculate.Ika.Models;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.Receipt.Models;
 using Reporting.Receipt.Constants;
 using Reporting.Receipt.Models;
 
@@ -556,7 +556,7 @@ namespace Reporting.Receipt.DB
         }
 
         public List<ReceInfModel> FindReceInf(int hpId,
-            Reporting.Calculate.ReceFutan.Models.ReceInfModel receInf)
+            CalculateService.ReceFutan.Models.ReceInfModel receInf)
         {
             var ptInfs =
                 NoTrackingDataContext.PtInfs.Where(p =>
@@ -931,7 +931,7 @@ namespace Reporting.Receipt.DB
                 kaId = 0;
             }
 
-            var receInfs = GetReceInfVar(hpId,seikyuYm, ptId, sinYm, hokenId, mode, includeTester, seikyuKbns, tantoId, kaId);
+            var receInfs = GetReceInfVar(hpId, seikyuYm, ptId, sinYm, hokenId, mode, includeTester, seikyuKbns, tantoId, kaId);
             var kaikeiInfs = GetKaikeiInfVar(hpId, ptId, sinYm, hokenId);
             var raiinInfs = GetRaiinInfVar(hpId, ptId, sinYm, tantoIdRaiin, kaIdRaiin);
             var kaikei_raiins = (
@@ -995,7 +995,7 @@ namespace Reporting.Receipt.DB
                     (
                         from receInf in joinReceInfs
                         where
-                            receInf.receInf.HpId ==hpId &&
+                            receInf.receInf.HpId == hpId &&
                             receInf.receInf.SeikyuYm == seikyuYm
                         select receInf
                     ).Any(
@@ -1724,7 +1724,7 @@ namespace Reporting.Receipt.DB
             try
             {
                 return NoTrackingDataContext.ReceInfs
-                    .Where(item =>item.HpId == hpId && item.PtId == ptId && item.SeikyuYm != 999999)
+                    .Where(item => item.HpId == hpId && item.PtId == ptId && item.SeikyuYm != 999999)
                     .AsEnumerable()
                     .Select(item => new RecePreviewModel(item))
                     .OrderByDescending(item => item.SeikyuYmDisplay)

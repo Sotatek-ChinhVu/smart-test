@@ -1,12 +1,10 @@
-﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Futan.Models;
-using EmrCalculateApi.Futan.ViewModels;
-using EmrCalculateApi.Interface;
+﻿using CalculateService.Constants;
+using CalculateService.Futan.Models;
+using CalculateService.Futan.ViewModels;
+using CalculateService.Interface;
 using Entity.Tenant;
 using Helper.Constants;
-using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions;
 using Moq;
-using System.Linq.Dynamic.Core.Tokenizer;
 
 namespace CalculateUnitTest
 {
@@ -566,7 +564,7 @@ namespace CalculateUnitTest
             (
                 futanVm: futanCalcVm,
                 sinDate: 20181001,
-                birthDay:19850101
+                birthDay: 19850101
             );
             newPtHoken
             (
@@ -1950,7 +1948,7 @@ namespace CalculateUnitTest
             //3日目
             newRaiinTensu(futanVm: futanCalcVm, sinDate: 20181003, tensu: 10000);
             futanCalcVm.DetailCalculate(false);
-            AssertEqualTo(futanCalcVm.KaikeiDetail, 10000, 80000, 20000, -200, 0, 0, 0, 200, 200);            
+            AssertEqualTo(futanCalcVm.KaikeiDetail, 10000, 80000, 20000, -200, 0, 0, 0, 200, 200);
         }
 
         //国保+千葉85(200円)（特殊計算[2]: 認定証の提示がない70歳未満の県外国保組合の場合、高額療養費の上限を超えた分を患者負担とする）
@@ -4419,7 +4417,7 @@ namespace CalculateUnitTest
                 hokenSbtKbn: HokenSbtKbn.Ippan,
                 futanKbn: 1,
                 dayLimitFutan: 500,
-                monthLimitCount: 2                
+                monthLimitCount: 2
             );
             newHokenPattern(1, 2, 0, 0, 0);
             newHokenPattern(1, 1, 2, 0, 0);
@@ -9205,7 +9203,7 @@ namespace CalculateUnitTest
             //1日目
             newRaiinTensu(futanVm: futanCalcVm, sinDate: 20181001, tensu: 496);
             futanCalcVm.DetailCalculate(false);
-            AssertEqualTo(futanCalcVm.KaikeiDetail, 496, 4464, 0, 0,0, 0, 0, 496, 500);
+            AssertEqualTo(futanCalcVm.KaikeiDetail, 496, 4464, 0, 0, 0, 0, 0, 496, 500);
             AssertEqualTo(futanCalcVm.LimitListInfs, 500, 4960);
             //2日目
             newRaiinTensu(futanVm: futanCalcVm, sinDate: 20181002, tensu: 496);
@@ -9607,7 +9605,7 @@ namespace CalculateUnitTest
             newPtKohi
             (
                 prefNo: 0,
-                houbetu : "21",
+                houbetu: "21",
                 monthLimitFutan: 2500
             );
             newHokenPattern(1, 1, 0, 0, 0);
@@ -11134,5 +11132,5 @@ namespace CalculateUnitTest
             AssertEqualTo(futanCalcVm.KaikeiDetail, 1000, 9000, 0, 0, 0, 0, 0, 1000, 1000);
             AssertEqualTo(futanCalcVm.AdjustDetails, 2, 2, 1000, 0, 0, 0, 0, -1000, -1000);
         }
-    } 
+    }
 }
