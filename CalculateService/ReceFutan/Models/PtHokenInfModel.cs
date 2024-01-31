@@ -267,7 +267,7 @@ namespace CalculateService.ReceFutan.Models
         /// 点数単価
         ///  点数1点あたりの単価を円で表す
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get { return HokenMst.EnTen; }
         }

@@ -185,9 +185,9 @@
         public int HokenKbn { get; set; }
 
         /// <summary>
-        /// 労災イ点負担額
+        /// 労災イ点数
         /// </summary>
-        public int RousaiIFutan { get; set; }
+        public int RousaiITensu { get; set; }
 
         /// <summary>
         /// 労災ロ円負担額

@@ -523,7 +523,7 @@ namespace CalculateService.ReceFutan.Models
         /// 点数単価
         /// 
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get { return ReceInf.EnTen; }
             set
@@ -1730,6 +1730,20 @@ namespace CalculateService.ReceFutan.Models
             {
                 if (ReceInf.PtStatus == value) return;
                 ReceInf.PtStatus = value;
+            }
+        }
+
+        /// <summary>
+        /// 労災イ点数
+        /// 
+        /// </summary>
+        public int RousaiITensu
+        {
+            get { return ReceInf.RousaiITensu; }
+            set
+            {
+                if (ReceInf.RousaiITensu == value) return;
+                ReceInf.RousaiITensu = value;
             }
         }
 
