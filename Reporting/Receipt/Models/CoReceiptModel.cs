@@ -1,7 +1,7 @@
 ﻿using Entity.Tenant;
 using Helper.Common;
-using Reporting.Calculate.Ika.Models;
-using Reporting.Calculate.Receipt.Models;
+using CalculateService.Ika.Models;
+using CalculateService.Receipt.Models;
 
 namespace Reporting.Receipt.Models
 {

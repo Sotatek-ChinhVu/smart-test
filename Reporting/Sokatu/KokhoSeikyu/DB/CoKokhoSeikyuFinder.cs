@@ -2,7 +2,7 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Reporting.Calculate.Constants;
+using CalculateService.Constants;
 using Reporting.Sokatu.Common.DB;
 using Reporting.Sokatu.Common.Models;
 using Reporting.Structs;

@@ -8,7 +8,7 @@ using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Entity.Tenant;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 
 namespace CloudUnitTest.CommonChecker.Services;
 
