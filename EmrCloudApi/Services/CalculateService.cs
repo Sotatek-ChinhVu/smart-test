@@ -63,7 +63,6 @@ namespace EmrCloudApi.Services
             try
             {
                 content.Headers.Add("domain", _tenantProvider.GetDomainFromHeader());
-                _httpClient.Timeout = new TimeSpan(0, 5, 0);
                 var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
                 if (response.IsSuccessStatusCode)
                 {
