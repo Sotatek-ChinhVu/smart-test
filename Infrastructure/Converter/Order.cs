@@ -1,4 +1,5 @@
-﻿using Domain.Models.OrdInfDetails;
+﻿using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Constants;
@@ -12,7 +13,7 @@ namespace Infrastructure.Converter
 
         }
 
-        public static OrdInfModel CreateBy(OdrInf odrInf, List<OdrInfDetail> odrInfDetailList, List<TenMst> tenMstList, List<KensaMst> kensaMstList, List<IpnNameMst> ipnNameMstList, string createName, string updateName, int odrKouiKbn, int kensaIrai, int kensaIraiCondition)
+        public static OrdInfModel CreateBy(OdrInf odrInf, List<OdrInfDetail> odrInfDetailList, List<TenMst> tenMstList, List<KensaMst> kensaMstList, List<IpnNameMst> ipnNameMstList, string createName, string updateName, int odrKouiKbn, int kensaIrai, int kensaIraiCondition, IQueryable<IpnMinYakkaMst> ipnMinYakkaMstQuery, IQueryable<IpnKasanExclude> ipnKasanExcludeQuery, IQueryable<IpnKasanExcludeItem> ipnKasanExcludeItemQuery)
         {
             int inOutKbn = odrInf.InoutKbn;
 
@@ -31,8 +32,23 @@ namespace Infrastructure.Converter
                 double odrTermVal = 0;
                 double cnvTermVal = 0;
                 string yjCd = string.Empty;
+                IpnMinYakkaMstModel ipnMinYakkaMstModel = new IpnMinYakkaMstModel();
+                bool isGetYakka = false;
 
-                var tenMst = tenMstList.FirstOrDefault(t => t.ItemCd == itemCd);
+                var tenMst = tenMstList
+                     .Where(t => t.ItemCd == itemCd && t.StartDate <= detail.SinDate && detail.SinDate <= t.EndDate)
+                     .OrderByDescending(t => t.StartDate)
+                     .FirstOrDefault();
+
+                var ipnMinYakka = ipnMinYakkaMstQuery.Where(ipnYakka => ipnYakka.IpnNameCd == detail.IpnCd && ipnYakka.StartDate <= detail.SinDate && ipnYakka.EndDate >= detail.SinDate).OrderByDescending(ipnYakka => ipnYakka.EndDate).FirstOrDefault();
+                if (ipnMinYakka != null)
+                {
+                    ipnMinYakkaMstModel = new IpnMinYakkaMstModel(ipnMinYakka.Id, ipnMinYakka.HpId, ipnMinYakka.IpnNameCd,
+                        ipnMinYakka.StartDate, ipnMinYakka.EndDate, ipnMinYakka.Yakka, ipnMinYakka.SeqNo, ipnMinYakka.IsDeleted, false);
+                }
+
+                isGetYakka = ipnKasanExcludeQuery.FirstOrDefault(ipnKasan => ipnKasan.IpnNameCd == detail.IpnCd && ipnKasan.StartDate <= detail.SinDate && ipnKasan.EndDate >= detail.SinDate) == null && ipnKasanExcludeItemQuery.FirstOrDefault(ipnKasan => ipnKasan.ItemCd == detail.ItemCd && ipnKasan.StartDate <= detail.SinDate && ipnKasan.EndDate >= detail.SinDate) == null;
+
                 if (tenMst != null)
                 {
                     ten = tenMst.Ten;
@@ -119,6 +135,8 @@ namespace Infrastructure.Converter
                                           tenMst?.CmtCol4 ?? 0,
                                           tenMst?.HandanGrpKbn ?? 0,
                                           kensaMst == null,
+                                          ipnMinYakkaMstModel,
+                                          isGetYakka,
                                           new(),
                                           odrInf.OdrKouiKbn
                                           );
