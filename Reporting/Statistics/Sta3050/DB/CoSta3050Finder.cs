@@ -513,58 +513,73 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
             #endregion
 
             var temp = joinQuery.AsEnumerable();
-
-            foreach (var data in temp)
+            var skip = 0;
+            bool flag = false;
+            var tempList = new List<object>();
+            while (!flag)
             {
-                retData.Add(new CoSinKouiModel()
+                var temp2 = temp.Skip(1000).Take(1000).ToList();
+                var count3 = temp2.Count;
+                skip += count3;
+                if (count3 == 0)
                 {
-                    PtId = data.PtId,
-                    PtNum = data.PtNum,
-                    PtKanaName = data.PtKanaName,
-                    PtName = data.PtName,
-                    Sex = data.Sex,
-                    BirthDay = data.BirthDay,
-                    RaiinNo = data.RaiinNo,
-                    SinYm = data.SinYm,
-                    SinDate = data.SinDate,
-                    SinId = data.SinId,
-                    Suryo = data.Suryo,
-                    UnitName = data.UnitName,
-                    Count = data.Count,
-                    TotalSuryo = data.TotalSuryo,
-                    Money =
-                            data.KizamiId == 1 ? (int)Math.Round(data.TenDetail * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
-                            (int)Math.Round(data.Ten * data.Suryo * data.Count * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
-                    ItemCd = data.ItemCd,
-                    ItemCdCmt = data.ItemCdCmt,
-                    ItemName = data.ItemName,
-                    ItemKanaName1 = data.ItemKanaName1,
-                    ItemKanaName2 = data.ItemKanaName2,
-                    ItemKanaName3 = data.ItemKanaName3,
-                    ItemKanaName4 = data.ItemKanaName4,
-                    ItemKanaName5 = data.ItemKanaName5,
-                    ItemKanaName6 = data.ItemKanaName6,
-                    ItemKanaName7 = data.ItemKanaName7,
-                    KaId = data.KaId,
-                    KaSname = data.KaSname,
-                    TantoId = data.TantoId,
-                    TantoSname = data.TantoSname,
-                    SinKouiKbn = data.SinKouiKbn,
-                    MadokuKbn = data.MadokuKbn,
-                    KouseisinKbn = data.KouseisinKbn,
-                    KazeiKbn = data.KazeiKbn,
-                    EntenKbn = data.EntenKbn,
-                    Ten = data.Ten,
-                    SyosaisinKbn = data.SyosaisinKbn,
-                    HokenPid = data.HokenPid,
-                    HokenKbn = data.HokenKbn,
-                    Houbetu = data.Houbetu,
-                    HokenSbtCd = data.HokenSbtCd,
-                    InoutKbn = data.InoutKbn,
-                    KohatuKbn = data.KohatuKbn,
-                    IsAdopted = data.IsAdopted
-                });
+                    flag = true;
+                }
+                tempList.Add(temp2);
+                
             }
+            
+            //foreach (var data in temp.Take(1000))
+            //{
+            //    retData.Add(new CoSinKouiModel()
+            //    {
+            //        PtId = data.PtId,
+            //        PtNum = data.PtNum,
+            //        PtKanaName = data.PtKanaName,
+            //        PtName = data.PtName,
+            //        Sex = data.Sex,
+            //        BirthDay = data.BirthDay,
+            //        RaiinNo = data.RaiinNo,
+            //        SinYm = data.SinYm,
+            //        SinDate = data.SinDate,
+            //        SinId = data.SinId,
+            //        Suryo = data.Suryo,
+            //        UnitName = data.UnitName,
+            //        Count = data.Count,
+            //        TotalSuryo = data.TotalSuryo,
+            //        Money =
+            //                data.KizamiId == 1 ? (int)Math.Round(data.TenDetail * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
+            //                (int)Math.Round(data.Ten * data.Suryo * data.Count * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
+            //        ItemCd = data.ItemCd,
+            //        ItemCdCmt = data.ItemCdCmt,
+            //        ItemName = data.ItemName,
+            //        ItemKanaName1 = data.ItemKanaName1,
+            //        ItemKanaName2 = data.ItemKanaName2,
+            //        ItemKanaName3 = data.ItemKanaName3,
+            //        ItemKanaName4 = data.ItemKanaName4,
+            //        ItemKanaName5 = data.ItemKanaName5,
+            //        ItemKanaName6 = data.ItemKanaName6,
+            //        ItemKanaName7 = data.ItemKanaName7,
+            //        KaId = data.KaId,
+            //        KaSname = data.KaSname,
+            //        TantoId = data.TantoId,
+            //        TantoSname = data.TantoSname,
+            //        SinKouiKbn = data.SinKouiKbn,
+            //        MadokuKbn = data.MadokuKbn,
+            //        KouseisinKbn = data.KouseisinKbn,
+            //        KazeiKbn = data.KazeiKbn,
+            //        EntenKbn = data.EntenKbn,
+            //        Ten = data.Ten,
+            //        SyosaisinKbn = data.SyosaisinKbn,
+            //        HokenPid = data.HokenPid,
+            //        HokenKbn = data.HokenKbn,
+            //        Houbetu = data.Houbetu,
+            //        HokenSbtCd = data.HokenSbtCd,
+            //        InoutKbn = data.InoutKbn,
+            //        KohatuKbn = data.KohatuKbn,
+            //        IsAdopted = data.IsAdopted
+            //    });
+            //}
 
             //retData = joinQuery.AsEnumerable().Select(
             //    data =>
