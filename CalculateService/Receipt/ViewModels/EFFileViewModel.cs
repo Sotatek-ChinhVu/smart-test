@@ -42,7 +42,7 @@ public class EFFileViewModel : IDisposable
     /// Eファイルを作成する
     /// </summary>
     /// <returns></returns>
-    public string GetEFileData(int sinYm, bool includeTester)
+    public string GetEFileData(int hpId, int sinYm, bool includeTester)
     {
         const string conFncName = nameof(GetEFileData);
         _emrLogger.WriteLogStart(this, conFncName,
@@ -103,7 +103,7 @@ public class EFFileViewModel : IDisposable
     /// Fファイルを作成する
     /// </summary>
     /// <returns></returns>
-    public string GetFFileData(int sinYm, bool includeTester)
+    public string GetFFileData(int hpId, int sinYm, bool includeTester)
     {
         const string conFncName = nameof(GetFFileData);
         _emrLogger.WriteLogStart(this, conFncName,
@@ -164,7 +164,7 @@ public class EFFileViewModel : IDisposable
     /// EFファイルを作成する
     /// </summary>
     /// <returns></returns>
-    public string GetEFFileData(int sinYm, bool includeTester)
+    public string GetEFFileData(int hpId, int sinYm, bool includeTester)
     {
         const string conFncName = nameof(GetEFFileData);
         _emrLogger.WriteLogStart(this, conFncName,

@@ -1,9 +1,12 @@
-﻿using Domain.Models.HpInf;
+﻿using CalculateService.Interface;
+using CalculateService.Receipt.ViewModels;
+using Domain.Models.HpInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.Yousiki;
 using Helper.Common;
 using Helper.Extension;
 using Helper.Messaging;
+using Infrastructure.Interfaces;
 using System.Text;
 using System.Text.RegularExpressions;
 using UseCase.Yousiki.CreateYuIchiFile;
@@ -28,12 +31,18 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
     public const string CreateYuIchiFileSuccessed = "ファイルを保存しました。";
     public const string CreateYuIchiFileFailed = "出力対象が見つかりません。";
     private IMessenger? _messenger;
+    private readonly ITenantProvider _tenantProvider;
+    private readonly ISystemConfigProvider _systemConfigProvider;
+    private readonly IEmrLogger _emrLogger;
 
-    public CreateYuIchiFileInteractor(IYousikiRepository yousikiRepository, IHpInfRepository hpInfRepository, ISystemGenerationConfRepository systemGenerationConfRepository)
+    public CreateYuIchiFileInteractor(IYousikiRepository yousikiRepository, IHpInfRepository hpInfRepository, ISystemGenerationConfRepository systemGenerationConfRepository, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
     {
         _yousikiRepository = yousikiRepository;
         _hpInfRepository = hpInfRepository;
         _systemGenerationConfRepository = systemGenerationConfRepository;
+        _tenantProvider = tenantProvider;
+        _systemConfigProvider = systemConfigProvider;
+        _emrLogger = emrLogger;
     }
 
     public CreateYuIchiFileOutputData Handle(CreateYuIchiFileInputData inputData)
@@ -148,230 +157,59 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
         string facilityCode = GetFacilityCode(hpId, sinYm);
         string fileData;
         string fileName;
-        if (isCreateEFFile)
+        var _fileViewModel = new EFFileViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
+        try
         {
-            // send progress to export data
-            SendMessager(false, progress, $"EFファイル{sinYm}月分　作成中・・・");
-
-            fileData = GetEFFileData(hpId, sinYm, isCheckedTestPatient);
-            if (!string.IsNullOrEmpty(fileData))
+            if (isCreateEFFile)
             {
-                result = true;
-                fileName = $"EFg_{facilityCode}_{sinYm}.txt";
+                // send progress to export data
+                SendMessager(false, progress, $"EFファイル{sinYm}月分　作成中・・・");
 
-                // Export txt file
-                ExportTxtFile(fileName, $"EFファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
+                fileData = _fileViewModel.GetEFFileData(hpId, sinYm, isCheckedTestPatient);
+                if (!string.IsNullOrEmpty(fileData))
+                {
+                    result = true;
+                    fileName = $"EFg_{facilityCode}_{sinYm}.txt";
+
+                    // Export txt file
+                    ExportTxtFile(fileName, $"EFファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
+                }
+            }
+            if (isCreateEFile)
+            {
+                // send progress to export data
+                SendMessager(false, progress, $"Fファイル{sinYm}月分　作成中・・・");
+
+                fileData = _fileViewModel.GetEFileData(hpId, sinYm, isCheckedTestPatient);
+                if (!string.IsNullOrEmpty(fileData))
+                {
+                    result = true;
+                    fileName = $"Eg_{facilityCode}_{sinYm}.txt";
+
+                    // Export txt file
+                    ExportTxtFile(fileName, $"Fファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
+                }
+            }
+            if (isCreateFFile)
+            {
+                // send progress to export data
+                SendMessager(false, progress, $"Fファイル{sinYm}月分　作成中・・・");
+                fileData = _fileViewModel.GetFFileData(hpId, sinYm, isCheckedTestPatient);
+                if (!string.IsNullOrEmpty(fileData))
+                {
+                    result = true;
+                    fileName = $"Fg_{facilityCode}_{sinYm}.txt";
+
+                    // Export txt file
+                    ExportTxtFile(fileName, $"Fファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
+                }
             }
         }
-        if (isCreateEFile)
+        finally
         {
-            // send progress to export data
-            SendMessager(false, progress, $"Fファイル{sinYm}月分　作成中・・・");
-
-            fileData = GetEFileData(hpId, sinYm, isCheckedTestPatient);
-            if (!string.IsNullOrEmpty(fileData))
-            {
-                result = true;
-                fileName = $"Eg_{facilityCode}_{sinYm}.txt";
-
-                // Export txt file
-                ExportTxtFile(fileName, $"Fファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
-            }
-        }
-        if (isCreateFFile)
-        {
-            // send progress to export data
-            SendMessager(false, progress, $"Fファイル{sinYm}月分　作成中・・・");
-            fileData = GetFFileData(hpId, sinYm, isCheckedTestPatient);
-            if (!string.IsNullOrEmpty(fileData))
-            {
-                result = true;
-                fileName = $"Fg_{facilityCode}_{sinYm}.txt";
-
-                // Export txt file
-                ExportTxtFile(fileName, $"Fファイル{sinYm}月分　作成中・・・", string.Empty, fileData, false);
-            }
+            _fileViewModel.Dispose();
         }
         return result;
-    }
-
-    /// <summary>
-    /// EFファイルを作成する
-    /// </summary>
-    /// <returns></returns>
-    public string GetEFFileData(int hpId, int sinYm, bool includeTester)
-    {
-        return string.Empty;
-        //// 対象を取得
-        //// RECE_INF HOKEN_KBN in (1,2) 診療月ベースで取得
-        //List<ReceInfModel> receInfModels =
-        //    _ptFinder.FindEFReceInf(hpId, sinYm, includeTester);
-
-        //if (receInfModels != null)
-        //{
-        //    receInfModels = receInfModels.OrderBy(p => p.PtNum).ThenBy(p => p.HokenId).ToList();
-        //}
-
-        //List<Ika.Models.SinRpInfModel> sinRpInfModels = _santeiFinder.FindSinRpInfDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiModel> sinKouiModels = _santeiFinder.FindSinKouiDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiDetailModel> sinKouiDetailModels = _santeiFinder.FindSinKouiDetailDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiCountModel> sinKouiCountModels = _santeiFinder.FindSinKouiCountDataForEF(hpId, sinYm, includeTester);
-
-        //List<EFFileDataModel> _efFileViewModels = new List<EFFileDataModel>();
-        //List<EFRaiinInfModel> raiinInfs =
-        //    _receMasterFinder.FindRaiinDatas(hpId, sinYm);
-
-        //foreach (ReceInfModel receInfModel in receInfModels)
-        //{
-        //    // EFファイル用データを取得する
-        //    if (raiinInfs.Any(p => p.PtId == receInfModel.PtId))
-        //    {
-        //        List<Ika.Models.SinRpInfModel> filteredSinRpInfs = sinRpInfModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiModel> filteredSinKouis = sinKouiModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiDetailModel> filteredSinKouiDetails = sinKouiDetailModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiCountModel> filteredSinKouiCounts = sinKouiCountModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        EFFileDataModel retEFFileView = GetEFData(
-        //           receInfModel, filteredSinRpInfs, filteredSinKouis, filteredSinKouiDetails, filteredSinKouiCounts, raiinInfs);
-
-        //        _efFileViewModels.Add(retEFFileView);
-        //    }
-        //}
-
-        //string ret = string.Empty;
-        //foreach (EFFileDataModel fFile in _efFileViewModels)
-        //{
-        //    if (string.IsNullOrEmpty(fFile.EFFileData) == false)
-        //    {
-        //        if (string.IsNullOrEmpty(ret) == false)
-        //        {
-        //            ret += "\r\n";
-        //        }
-        //        ret += fFile.EFFileData;
-        //    }
-        //}
-        //// 改行がなければ支援ツールで最終行が読み込まれない
-        //ret += "\r\n";
-
-        //return ret;
-    }
-
-
-    /// <summary>
-    /// Eファイルを作成する
-    /// </summary>
-    /// <returns></returns>
-    public string GetEFileData(int hpId, int sinYm, bool includeTester)
-    {
-        return string.Empty;
-        //// 対象を取得
-        //// RECE_INF HOKEN_KBN in (1,2) 診療月ベースで取得
-        //List<ReceInfModel> receInfModels =
-        //    _ptFinder.FindEFReceInf(hpId, sinYm, includeTester);
-
-        //if (receInfModels != null)
-        //{
-        //    receInfModels = receInfModels.OrderBy(p => p.PtNum).ThenBy(p => p.HokenId).ToList();
-        //}
-
-        //List<Ika.Models.SinRpInfModel> sinRpInfModels = _santeiFinder.FindSinRpInfDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiModel> sinKouiModels = _santeiFinder.FindSinKouiDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiDetailModel> sinKouiDetailModels = _santeiFinder.FindSinKouiDetailDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiCountModel> sinKouiCountModels = _santeiFinder.FindSinKouiCountDataForEF(hpId, sinYm, includeTester);
-
-        //List<EFileDataModel> _eFileViewModels = new List<EFileDataModel>();
-        //List<EFRaiinInfModel> raiinInfs =
-        //    _receMasterFinder.FindRaiinDatas(hpId, sinYm);
-        //foreach (ReceInfModel receInfModel in receInfModels)
-        //{
-        //    // EFファイル用データを取得する
-        //    if (raiinInfs.Any(p => p.PtId == receInfModel.PtId))
-        //    {
-        //        List<Ika.Models.SinRpInfModel> filteredSinRpInfs = sinRpInfModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiModel> filteredSinKouis = sinKouiModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiDetailModel> filteredSinKouiDetails = sinKouiDetailModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiCountModel> filteredSinKouiCounts = sinKouiCountModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        EFileDataModel retEFileView = GetEData(
-        //           receInfModel, filteredSinRpInfs, filteredSinKouis, filteredSinKouiDetails, filteredSinKouiCounts, raiinInfs);
-
-        //        _eFileViewModels.Add(retEFileView);
-        //    }
-        //}
-
-        //string ret = string.Empty;
-        //foreach (EFileDataModel eFile in _eFileViewModels)
-        //{
-        //    if (string.IsNullOrEmpty(eFile.EFileData) == false)
-        //    {
-        //        if (string.IsNullOrEmpty(ret) == false)
-        //        {
-        //            ret += "\r\n";
-        //        }
-        //        ret += eFile.EFileData;
-        //    }
-        //}
-        //// 改行がなければ支援ツールで最終行が読み込まれない
-        //ret += "\r\n";
-
-        //return ret;
-    }
-
-    /// <summary>
-    /// Fファイルを作成する
-    /// </summary>
-    /// <returns></returns>
-    public string GetFFileData(int hpId, int sinYm, bool includeTester)
-    {
-        return string.Empty;
-        //// 対象を取得
-        //// RECE_INF HOKEN_KBN in (1,2) 診療月ベースで取得
-        //List<ReceInfModel> receInfModels =
-        //    _ptFinder.FindEFReceInf(hpId, sinYm, includeTester);
-
-        //if (receInfModels != null)
-        //{
-        //    receInfModels = receInfModels.OrderBy(p => p.PtNum).ThenBy(p => p.HokenId).ToList();
-        //}
-
-        //List<Ika.Models.SinRpInfModel> sinRpInfModels = _santeiFinder.FindSinRpInfDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiModel> sinKouiModels = _santeiFinder.FindSinKouiDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiDetailModel> sinKouiDetailModels = _santeiFinder.FindSinKouiDetailDataForEF(hpId, sinYm, includeTester);
-        //List<Ika.Models.SinKouiCountModel> sinKouiCountModels = _santeiFinder.FindSinKouiCountDataForEF(hpId, sinYm, includeTester);
-
-        //List<FFileDataModel> _fFileViewModels = new List<FFileDataModel>();
-        //List<EFRaiinInfModel> raiinInfs =
-        //    _receMasterFinder.FindRaiinDatas(hpId, sinYm);
-        //foreach (ReceInfModel receInfModel in receInfModels)
-        //{
-        //    // EFファイル用データを取得する
-        //    if (raiinInfs.Any(p => p.PtId == receInfModel.PtId))
-        //    {
-        //        List<Ika.Models.SinRpInfModel> filteredSinRpInfs = sinRpInfModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiModel> filteredSinKouis = sinKouiModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiDetailModel> filteredSinKouiDetails = sinKouiDetailModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        List<Ika.Models.SinKouiCountModel> filteredSinKouiCounts = sinKouiCountModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //        FFileDataModel retFFileView = GetFData(
-        //           receInfModel, filteredSinRpInfs, filteredSinKouis, filteredSinKouiDetails, filteredSinKouiCounts);
-
-        //        _fFileViewModels.Add(retFFileView);
-        //    }
-        //}
-
-        //string ret = string.Empty;
-        //foreach (FFileDataModel fFile in _fFileViewModels)
-        //{
-        //    if (string.IsNullOrEmpty(fFile.FFileData) == false)
-        //    {
-        //        if (string.IsNullOrEmpty(ret) == false)
-        //        {
-        //            ret += "\r\n";
-        //        }
-        //        ret += fFile.FFileData;
-        //    }
-        //}
-        //// 改行がなければ支援ツールで最終行が読み込まれない
-        //ret += "\r\n";
-
-        //return ret;
     }
     #endregion
 
