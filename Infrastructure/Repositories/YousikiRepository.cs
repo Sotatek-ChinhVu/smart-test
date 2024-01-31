@@ -724,7 +724,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         {
             if (yousiki1InfDetailModel.IsDeleted == 1)
             {
-                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload);
                 if (yousiki1InfDetail != null)
                 {
                     TrackingDataContext.Remove(yousiki1InfDetail);
@@ -732,7 +732,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             }
             else
             {
-                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.Where(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload).First();
+                var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload);
                 if (yousiki1InfDetail != null)
                 {
                     yousiki1InfDetail.Value = yousiki1InfDetailModel.Value;
@@ -765,11 +765,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
     public bool UpdateDateTimeYousikiInf(int hpId, int userId, int sinYm, long ptId, int dataType, int status)
     {
-        var yousikiInf = TrackingDataContext.Yousiki1Infs.Where(x => x.SinYm == sinYm &&
+        var yousikiInf = TrackingDataContext.Yousiki1Infs.FirstOrDefault(x => x.SinYm == sinYm &&
                                                                                 x.PtId == ptId &&
                                                                                 x.DataType == dataType &&
                                                                                 x.HpId == hpId &&
-                                                                                x.IsDeleted == 0).FirstOrDefault();
+                                                                                x.IsDeleted == 0);
         if (yousikiInf != null)
         {
             yousikiInf.Status = status;
