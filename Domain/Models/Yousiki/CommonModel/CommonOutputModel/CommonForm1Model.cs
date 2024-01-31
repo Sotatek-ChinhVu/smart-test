@@ -15,7 +15,7 @@ public class CommonForm1Model
 
     public int PayLoadICD10Code { get; set; } = 2;
 
-    public Yousiki1InfDetailModel ICD10Code { get; set; }
+    public Yousiki1InfDetailModel Icd10 { get; set; }
 
     public int PayLoadInjuryNameCode { get; set; } = 3;
 
@@ -36,6 +36,8 @@ public class CommonForm1Model
     public int SeqNo { get; set; }
 
     public string CodeNo { get; set; } = string.Empty;
+
+    public bool IsDeleted { get; set; }
 
     #region 入院の状況
     /// <summary>
@@ -151,7 +153,7 @@ public class CommonForm1Model
                 }
                 else if (item.Value.AsInteger() == PayLoadICD10Code)
                 {
-                    ICD10Code = item;
+                    Icd10 = item;
                 }
                 else if (item.Payload == PayLoadInjuryNameCode)
                 {
@@ -170,7 +172,7 @@ public class CommonForm1Model
                 }
                 else if (item.Payload == PayLoadICD10Code)
                 {
-                    ICD10Code = item;
+                    Icd10 = item;
                 }
                 else if (item.Payload == PayLoadInjuryNameCode)
                 {
@@ -202,7 +204,7 @@ public class CommonForm1Model
                 }
                 else if (item.Payload == PayLoadICD10Code)
                 {
-                    ICD10Code = item;
+                    Icd10 = item;
                 }
                 else if (item.Payload == PayLoadInjuryNameCode)
                 {
@@ -231,7 +233,7 @@ public class CommonForm1Model
                 }
                 else if (item.Payload == PayLoadICD10Code)
                 {
-                    ICD10Code = item;
+                    Icd10 = item;
                 }
                 else if (item.Payload == PayLoadInjuryNameCode)
                 {
