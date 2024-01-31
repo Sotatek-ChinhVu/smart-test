@@ -2778,7 +2778,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 //Get data in db
                 KensaInfDetail weightInfo = GetBodyInfo(hpId, ptId, sinday, IraiCodeConstant.WEIGHT_CODE);
 
-                if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
+                if (weightInfo != null && CIUtil.IsNumberic(weightInfo?.ResultVal ?? string.Empty))
                 {
                     return weightInfo?.ResultVal?.AsDouble() ?? 0;
                 }
@@ -2790,7 +2790,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                           .Where(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == IraiCodeConstant.WEIGHT_CODE && !string.IsNullOrEmpty(k.ResultVal))
                           .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
-                if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
+                if (weightInfo != null && CIUtil.IsNumberic(weightInfo?.ResultVal ?? string.Empty))
                 {
                     return weightInfo?.ResultVal?.AsDouble() ?? 0;
                 }
@@ -2804,7 +2804,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var heightInfoModel = kensaInfDetailModels.Where(k => k.HpId == hpId && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V0001" && !string.IsNullOrEmpty(k.ResultVal))
             .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
-            if (heightInfoModel != null && CIUtil.IsDigitsOnly(heightInfoModel.ResultVal ?? string.Empty))
+            if (heightInfoModel != null && CIUtil.IsNumberic(heightInfoModel.ResultVal ?? string.Empty))
             {
                 var value = heightInfoModel.ResultVal ?? string.Empty;
                 return value.AsDouble();
