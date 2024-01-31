@@ -1,5 +1,4 @@
-﻿using Domain.Models.Yousiki;
-using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
+﻿using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
 
 namespace Domain.Models.Yousiki.CommonModel;
 

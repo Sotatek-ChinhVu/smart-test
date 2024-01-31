@@ -4,7 +4,7 @@
     {
         public long PtId { get; set; }
 
-        public string SinYmDisplay { get; set; } = string.Empty;
+        public int SinYm { get; set; }
 
         public int DataType { get; set; }
 
@@ -17,5 +17,7 @@
         public int Payload { get; set; }
 
         public string Value { get; set; } = string.Empty;
+
+        public int IsDeleted { get; set; }
     }
 }

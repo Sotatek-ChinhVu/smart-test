@@ -1,17 +1,30 @@
-﻿using Domain.Models.Yousiki;
-
-namespace EmrCloudApi.Requests.Yousiki.RequestItem
+﻿namespace EmrCloudApi.Requests.Yousiki.RequestItem
 {
     public class OutpatientConsultationInfModelRequest
     {
-        public UpdateYosiki1InfDetailRequestItem ConsultationDate { get; set; } = new();
+        /*public UpdateYosiki1InfDetailRequestItem ConsultationDate { get; set; } = new();
 
         public UpdateYosiki1InfDetailRequestItem FirstVisit { get; set; } = new();
 
         public UpdateYosiki1InfDetailRequestItem AppearanceReferral { get; set; } = new();
 
-        public UpdateYosiki1InfDetailRequestItem DepartmentCode { get; set; } = new();
+        public UpdateYosiki1InfDetailRequestItem DepartmentCode { get; set; } = new();*/
+        public long PtId { get; set; }
 
-        public bool IsDeleted { get; private set; }
+        public int SinYm { get; set; }
+
+        public int DataType { get; set; }
+
+        public int SeqNo { get; set; }
+
+        public string CodeNo { get; set; } = string.Empty;
+
+        public int RowNo { get; set; }
+
+        public int Payload { get; set; }
+
+        public string Value { get; set; } = string.Empty;
+
+        public int IsDeleted { get; set; }
     }
 }

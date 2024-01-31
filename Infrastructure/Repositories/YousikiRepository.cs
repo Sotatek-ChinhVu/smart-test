@@ -711,8 +711,13 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
         foreach (var dataType in dataTypes)
         {
+            if (dataType.Value == 1)
+            {
+
+                DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key);
+            }
+
             UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key, isTemporarySave ? 1 : 2);
-            DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key);
         }
 
         foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)

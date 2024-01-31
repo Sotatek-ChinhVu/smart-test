@@ -137,11 +137,235 @@ public class YousikiController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpdateYosiki)]
     public ActionResult<Response<UpdateYosikiResponse>> UpdateYosiki([FromBody] UpdateYosikiRequest request)
     {
-        var input = new UpdateYosikiInputData(HpId, UserId, ConvertModelToYousiki1Inf(request.Yousiki1InfModel), ConvertModelToYousiki1InfDetail(request.Yousiki1InfDetailModels), request.DataTypes, request.IsTemporarySave);
+        List<Yousiki1InfDetailModel> totalRequest = new();
+        var commonModelRequests = ConvertTabCommonModelToYousiki1InfDetail(request.CommonModelRequest);
+        totalRequest.AddRange(commonModelRequests);
+        var livingHabitModelRequests = ConvertTabLivingHabitModelToYousiki1InfDetail(request.LivingHabitModelRequest);
+        totalRequest.AddRange(livingHabitModelRequests);
+        var atHomeModelRequests = ConvertTabAtHomeModelToYousiki1InfDetail(request.AtHomeModelRequest);
+        totalRequest.AddRange(atHomeModelRequests);
+        var rehabilitationModelRequests = ConvertTabRehabilitationModelToYousiki1InfDetail(request.RehabilitationModelRequest);
+        totalRequest.AddRange(rehabilitationModelRequests);
+
+
+        var input = new UpdateYosikiInputData(HpId, UserId, ConvertModelToYousiki1Inf(request.Yousiki1InfModel), totalRequest, request.DataTypes, request.IsTemporarySave);
         var output = _bus.Handle(input);
         var presenter = new UpdateYosikiPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<UpdateYosikiResponse>>(presenter.Result);
+    }
+
+    private List<Yousiki1InfDetailModel> ConvertTabRehabilitationModelToYousiki1InfDetail(RehabilitationModelRequest items)
+    {
+        List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items.OutpatientConsultationList)
+        {
+            foreach (var outpatientConsultationModel in item.OutpatientConsultationModel)
+            {
+                result.Add(new Yousiki1InfDetailModel(
+                outpatientConsultationModel.PtId,
+                outpatientConsultationModel.SinYm,
+                outpatientConsultationModel.DataType,
+                outpatientConsultationModel.SeqNo,
+                outpatientConsultationModel.CodeNo,
+                outpatientConsultationModel.RowNo,
+                outpatientConsultationModel.Payload,
+                outpatientConsultationModel.Value,
+                outpatientConsultationModel.IsDeleted
+            ));
+            } 
+        }
+
+        foreach (var item in items.ByomeiRehabilitationList)
+        {
+            foreach (var byomeiRehabilitationItem in item.CommonForm1ModelRequestItems)
+            {
+                result.Add(new Yousiki1InfDetailModel(
+                byomeiRehabilitationItem.PtId,
+                byomeiRehabilitationItem.SinYm,
+                byomeiRehabilitationItem.DataType,
+                byomeiRehabilitationItem.SeqNo,
+                byomeiRehabilitationItem.CodeNo,
+                byomeiRehabilitationItem.RowNo,
+                byomeiRehabilitationItem.Payload,
+                byomeiRehabilitationItem.Value,
+                byomeiRehabilitationItem.IsDeleted
+            ));
+            }
+        }
+
+        return result;
+    }
+
+    private List<Yousiki1InfDetailModel> ConvertTabAtHomeModelToYousiki1InfDetail(AtHomeModelRequest items)
+    {
+        List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items.StatusVisitList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.StatusVisitNursingList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.StatusEmergencyConsultationList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.HospitalizationStatusList)
+        {
+            foreach (var atHomeModelRequestItems in item.CommonForm1ModelRequestItems)
+            {
+                result.Add(new Yousiki1InfDetailModel(
+                    atHomeModelRequestItems.PtId,
+                    atHomeModelRequestItems.SinYm,
+                    atHomeModelRequestItems.DataType,
+                    atHomeModelRequestItems.SeqNo,
+                    atHomeModelRequestItems.CodeNo,
+                    atHomeModelRequestItems.RowNo,
+                    atHomeModelRequestItems.Payload,
+                    atHomeModelRequestItems.Value,
+                    atHomeModelRequestItems.IsDeleted
+                ));
+            }
+        }
+
+        foreach (var item in items.StatusShortTermAdmissionList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.StatusHomeVisitList)
+        {
+            foreach (var atHomeModelRequestItems in item.CommonForm1ModelRequestItems)
+            {
+                result.Add(new Yousiki1InfDetailModel(
+                atHomeModelRequestItems.PtId,
+                atHomeModelRequestItems.SinYm,
+                atHomeModelRequestItems.DataType,
+                atHomeModelRequestItems.SeqNo,
+                atHomeModelRequestItems.CodeNo,
+                atHomeModelRequestItems.RowNo,
+                atHomeModelRequestItems.Payload,
+                atHomeModelRequestItems.Value,
+                atHomeModelRequestItems.IsDeleted
+            ));
+            }
+        }
+
+        return result;
+    }
+
+    private List<Yousiki1InfDetailModel> ConvertTabLivingHabitModelToYousiki1InfDetail(LivingHabitModelRequest items)
+    {
+        List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items.OutpatientConsultationInfList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.StrokeHistoryList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.AcuteCoronaryHistoryList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.AcuteAorticHistoryList)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        return result;
     }
 
     private int ReplaceSinYm(string sinYmDisplay)
@@ -158,7 +382,7 @@ public class YousikiController : AuthorizeControllerBase
         {
             result.Add(new Yousiki1InfDetailModel(
                 item.PtId,
-                ReplaceSinYm(item.SinYmDisplay),
+                item.SinYm,
                 item.DataType,
                 item.SeqNo,
                 item.CodeNo,
@@ -169,9 +393,31 @@ public class YousikiController : AuthorizeControllerBase
         return result;
     }
 
+    private List<Yousiki1InfDetailModel> ConvertTabCommonModelToYousiki1InfDetail(CommonForm1ModelRequest items)
+    {
+        List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items.CommonForm1ModelRequestItems)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        return result;
+    }
+
     private Yousiki1InfModel ConvertModelToYousiki1Inf(UpdateYosikiInfRequestItem item)
     {
-        return new Yousiki1InfModel(HpId, item.PtId, ReplaceSinYm(item.SinYmDisplay), item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
+        return new Yousiki1InfModel(HpId, item.PtId, item.SinYm, item.DataType, item.SeqNo, item.IsDeleted, item.IsDeleted);
     }
 
     #region private function

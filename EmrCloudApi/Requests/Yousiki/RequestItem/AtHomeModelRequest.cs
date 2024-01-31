@@ -10,10 +10,10 @@ namespace EmrCloudApi.Requests.Yousiki.RequestItem
 
         public List<StatusEmergencyConsultationModelRequest> StatusEmergencyConsultationList { get; set; } = new();
 
-        public List<CommonModelRequest> HospitalizationStatusList { get; set; } = new();
+        public List<CommonForm1ModelRequest> HospitalizationStatusList { get; set; } = new();
 
         public List<StatusShortTermAdmissionModelRequest> StatusShortTermAdmissionList { get; set; } = new();
 
-        public List<CommonModelRequest> StatusHomeVisitList { get; set; } = new();
+        public List<CommonForm1ModelRequest> StatusHomeVisitList { get; set; } = new();
     }
 }
