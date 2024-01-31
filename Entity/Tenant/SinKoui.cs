@@ -555,6 +555,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ef_ten_count")]
         [MaxLength(20)]
-        public string EfTenCount { get; set; }
+        public string EfTenCount { get; set; } = string.Empty;
     }
 }
