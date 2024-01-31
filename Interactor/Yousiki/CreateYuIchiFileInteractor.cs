@@ -202,57 +202,57 @@ public class CreateYuIchiFileInteractor : ICreateYuIchiFileInputPort
     public string GetEFFileData(int hpId, int sinYm, bool includeTester)
     {
         return string.Empty;
-        //    // 対象を取得
-        //    // RECE_INF HOKEN_KBN in (1,2) 診療月ベースで取得
-        //    List<ReceInfModel> receInfModels =
-        //        _ptFinder.FindEFReceInf(hpId, sinYm, includeTester);
+        //// 対象を取得
+        //// RECE_INF HOKEN_KBN in (1,2) 診療月ベースで取得
+        //List<ReceInfModel> receInfModels =
+        //    _ptFinder.FindEFReceInf(hpId, sinYm, includeTester);
 
-        //    if (receInfModels != null)
+        //if (receInfModels != null)
+        //{
+        //    receInfModels = receInfModels.OrderBy(p => p.PtNum).ThenBy(p => p.HokenId).ToList();
+        //}
+
+        //List<Ika.Models.SinRpInfModel> sinRpInfModels = _santeiFinder.FindSinRpInfDataForEF(hpId, sinYm, includeTester);
+        //List<Ika.Models.SinKouiModel> sinKouiModels = _santeiFinder.FindSinKouiDataForEF(hpId, sinYm, includeTester);
+        //List<Ika.Models.SinKouiDetailModel> sinKouiDetailModels = _santeiFinder.FindSinKouiDetailDataForEF(hpId, sinYm, includeTester);
+        //List<Ika.Models.SinKouiCountModel> sinKouiCountModels = _santeiFinder.FindSinKouiCountDataForEF(hpId, sinYm, includeTester);
+
+        //List<EFFileDataModel> _efFileViewModels = new List<EFFileDataModel>();
+        //List<EFRaiinInfModel> raiinInfs =
+        //    _receMasterFinder.FindRaiinDatas(hpId, sinYm);
+
+        //foreach (ReceInfModel receInfModel in receInfModels)
+        //{
+        //    // EFファイル用データを取得する
+        //    if (raiinInfs.Any(p => p.PtId == receInfModel.PtId))
         //    {
-        //        receInfModels = receInfModels.OrderBy(p => p.PtNum).ThenBy(p => p.HokenId).ToList();
+        //        List<Ika.Models.SinRpInfModel> filteredSinRpInfs = sinRpInfModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
+        //        List<Ika.Models.SinKouiModel> filteredSinKouis = sinKouiModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
+        //        List<Ika.Models.SinKouiDetailModel> filteredSinKouiDetails = sinKouiDetailModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
+        //        List<Ika.Models.SinKouiCountModel> filteredSinKouiCounts = sinKouiCountModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
+        //        EFFileDataModel retEFFileView = GetEFData(
+        //           receInfModel, filteredSinRpInfs, filteredSinKouis, filteredSinKouiDetails, filteredSinKouiCounts, raiinInfs);
+
+        //        _efFileViewModels.Add(retEFFileView);
         //    }
+        //}
 
-        //    List<Ika.Models.SinRpInfModel> sinRpInfModels = _santeiFinder.FindSinRpInfDataForEF(hpId, sinYm, includeTester);
-        //    List<Ika.Models.SinKouiModel> sinKouiModels = _santeiFinder.FindSinKouiDataForEF(hpId, sinYm, includeTester);
-        //    List<Ika.Models.SinKouiDetailModel> sinKouiDetailModels = _santeiFinder.FindSinKouiDetailDataForEF(hpId, sinYm, includeTester);
-        //    List<Ika.Models.SinKouiCountModel> sinKouiCountModels = _santeiFinder.FindSinKouiCountDataForEF(hpId, sinYm, includeTester);
-
-        //    List<EFFileDataModel> _efFileViewModels = new List<EFFileDataModel>();
-        //    List<EFRaiinInfModel> raiinInfs =
-        //        _receMasterFinder.FindRaiinDatas(hpId, sinYm);
-
-        //    foreach (ReceInfModel receInfModel in receInfModels)
+        //string ret = string.Empty;
+        //foreach (EFFileDataModel fFile in _efFileViewModels)
+        //{
+        //    if (string.IsNullOrEmpty(fFile.EFFileData) == false)
         //    {
-        //        // EFファイル用データを取得する
-        //        if (raiinInfs.Any(p => p.PtId == receInfModel.PtId))
+        //        if (string.IsNullOrEmpty(ret) == false)
         //        {
-        //            List<Ika.Models.SinRpInfModel> filteredSinRpInfs = sinRpInfModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //            List<Ika.Models.SinKouiModel> filteredSinKouis = sinKouiModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //            List<Ika.Models.SinKouiDetailModel> filteredSinKouiDetails = sinKouiDetailModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //            List<Ika.Models.SinKouiCountModel> filteredSinKouiCounts = sinKouiCountModels.FindAll(p => p.PtId == receInfModel.PtId && p.SinYm == receInfModel.SinYm);
-        //            EFFileDataModel retEFFileView = GetEFData(
-        //               receInfModel, filteredSinRpInfs, filteredSinKouis, filteredSinKouiDetails, filteredSinKouiCounts, raiinInfs);
-
-        //            _efFileViewModels.Add(retEFFileView);
+        //            ret += "\r\n";
         //        }
+        //        ret += fFile.EFFileData;
         //    }
+        //}
+        //// 改行がなければ支援ツールで最終行が読み込まれない
+        //ret += "\r\n";
 
-        //    string ret = string.Empty;
-        //    foreach (EFFileDataModel fFile in _efFileViewModels)
-        //    {
-        //        if (string.IsNullOrEmpty(fFile.EFFileData) == false)
-        //        {
-        //            if (string.IsNullOrEmpty(ret) == false)
-        //            {
-        //                ret += "\r\n";
-        //            }
-        //            ret += fFile.EFFileData;
-        //        }
-        //    }
-        //    // 改行がなければ支援ツールで最終行が読み込まれない
-        //    ret += "\r\n";
-
-        //    return ret;
+        //return ret;
     }
 
 
