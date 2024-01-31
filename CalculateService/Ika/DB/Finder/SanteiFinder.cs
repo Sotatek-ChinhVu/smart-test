@@ -2580,11 +2580,13 @@ namespace CalculateService.Ika.DB.Finder
                     }
                 );
 
+            var maxStartDate = sinYm * 100 + 31;
+            var minEndDate = sinYm * 100 + 1;
             // 当該項目の最終算定日時点で有効な点数マスタを取得する
             var tenMstAs = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
                 t.HpId == hpId &&
-                t.StartDate <= sinYm * 100 + 31 &&
-                t.EndDate >= sinYm * 100 + 1 || t.EndDate == 12341234);
+                t.StartDate <= maxStartDate &&
+                t.EndDate >= minEndDate || t.EndDate == 12341234);
             //var tenMsts = (
             //    from sinDtl in sinDtls
             //    //join sinCount in sinCountMaxs on
@@ -2629,39 +2631,16 @@ namespace CalculateService.Ika.DB.Finder
             //    }
             //);
 
-            var joinQuery = (
+            var join = (
                 from sinDtl in sinDtls
                 join sinCount in sinCountMaxs on
                     new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
                     new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
                 from b in sc.DefaultIfEmpty()
-                    //join tenMst in tenMsts on
-                    //    new { sinDtl.HpId, sinDtl.PtId, sinDtl.SinYm, sinDtl.RpNo, sinDtl.SeqNo, sinDtl.RowNo } equals
-                    //    new { tenMst.HpId, tenMst.PtId, tenMst.SinYm, tenMst.RpNo, tenMst.SeqNo, tenMst.RowNo } into tm
-                    //from a in tm.DefaultIfEmpty()
                 join tenMst in tenMstAs on
                     new { sinDtl.HpId, sinDtl.ItemCd } equals
                     new { tenMst.HpId, tenMst.ItemCd } into tm
                 from a in tm.DefaultIfEmpty()
-                where (
-                        (
-                            a.StartDate <= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) &&
-                            (a.EndDate >= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) || a.EndDate == 12341234)
-                        )
-                //&&
-                //(
-                //    from receInf in receInfs
-                //    where
-                //        receInf.HpId == hpId &&
-                //        receInf.SinYm == sinYm
-                //    select receInf
-                //).Any(
-                //    r =>
-                //        r.HpId == sinDtl.HpId &&
-                //        r.PtId == sinDtl.PtId &&
-                //        r.SinYm == sinDtl.SinYm
-                //)
-                )
                 select new
                 {
                     SinKouiDetail = sinDtl,
@@ -2670,6 +2649,52 @@ namespace CalculateService.Ika.DB.Finder
                 }
 
             ).ToList();
+
+            var joinQuery = join.Where(item => item.TenMst?.StartDate <= (item.SinKouiCount == null ? item.SinKouiDetail.SinYm * 100 + 28 : item.SinKouiCount.LastDate) &&
+                                       (item.TenMst?.EndDate >= (item.SinKouiCount == null ? item.SinKouiDetail.SinYm * 100 + 28 : item.SinKouiCount.LastDate) || item.TenMst?.EndDate == 12341234))
+                                .ToList();
+
+            //var joinQuery = (
+            //    from sinDtl in sinDtls
+            //    join sinCount in sinCountMaxs on
+            //        new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
+            //        new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
+            //    from b in sc.DefaultIfEmpty()
+            //        //join tenMst in tenMsts on
+            //        //    new { sinDtl.HpId, sinDtl.PtId, sinDtl.SinYm, sinDtl.RpNo, sinDtl.SeqNo, sinDtl.RowNo } equals
+            //        //    new { tenMst.HpId, tenMst.PtId, tenMst.SinYm, tenMst.RpNo, tenMst.SeqNo, tenMst.RowNo } into tm
+            //        //from a in tm.DefaultIfEmpty()
+            //    join tenMst in tenMstAs on
+            //        new { sinDtl.HpId, sinDtl.ItemCd } equals
+            //        new { tenMst.HpId, tenMst.ItemCd } into tm
+            //    from a in tm.DefaultIfEmpty()
+            //    where (
+            //            (
+            //                a.StartDate <= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) &&
+            //                (a.EndDate >= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) || a.EndDate == 12341234)
+            //            )
+            //    //&&
+            //    //(
+            //    //    from receInf in receInfs
+            //    //    where
+            //    //        receInf.HpId == hpId &&
+            //    //        receInf.SinYm == sinYm
+            //    //    select receInf
+            //    //).Any(
+            //    //    r =>
+            //    //        r.HpId == sinDtl.HpId &&
+            //    //        r.PtId == sinDtl.PtId &&
+            //    //        r.SinYm == sinDtl.SinYm
+            //    //)
+            //    )
+            //    select new
+            //    {
+            //        SinKouiDetail = sinDtl,
+            //        SinKouiCount = b,
+            //        TenMst = a
+            //    }
+
+            //).ToList();
 
             List<SinKouiDetailModel> results = new List<SinKouiDetailModel>();
 
