@@ -12,6 +12,8 @@ public class RaiinListInfDto
         GrpId = model.GrpId;
         GrpName = model.GrpName;
         KbnCd = model.KbnCd;
+        KbnName = model.KbnName;
+        ColorCd = model.ColorCd;
         IsContainsFile = model.IsContainsFile;
     }
 
@@ -26,6 +28,10 @@ public class RaiinListInfDto
     public string GrpName { get; private set; }
 
     public int KbnCd { get; private set; }
+
+    public string KbnName { get; private set; }
+
+    public string ColorCd { get; private set; }
 
     public bool IsContainsFile { get; private set; }
 }
