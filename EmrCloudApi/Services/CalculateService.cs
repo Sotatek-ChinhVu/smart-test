@@ -73,8 +73,7 @@ namespace EmrCloudApi.Services
                     return new CalculateResponse(responseContent, ResponseStatus.Successed);
                 }
 
-                    return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
-                }
+                return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
             }
             catch (Exception ex)
             {
@@ -128,7 +127,6 @@ namespace EmrCloudApi.Services
                 }
 
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
-
             }
             catch (HttpRequestException ex)
             {
