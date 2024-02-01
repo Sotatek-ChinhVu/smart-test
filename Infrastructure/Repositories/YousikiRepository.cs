@@ -217,6 +217,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                           raiinInf.SyosaisinKbn,
                           uketukesbt.KbnName ?? string.Empty,
                           ptCmt.Text ?? string.Empty,
+                          ka.YousikiKaCd ?? string.Empty,
                           new()
                       ))
                       .ToList();
