@@ -869,6 +869,70 @@ namespace CalculateService.Ika.Models
                 //RaisePropertyChanged(() => IsDeleted);
             }
         }
+        /// <summary>
+        /// EF対象フラグ
+        ///     1:EFファイル出力対象の削除項目   
+        /// </summary>
+        public int EfFlg
+        {
+            get { return SinKoui.EfFlg; }
+            set
+            {
+                if (SinKoui.EfFlg == value) return;
+                SinKoui.EfFlg = value;
+                //RaisePropertyChanged(() => EfFlg);
+            }
+        }
+        /// <summary>
+        /// EF用合計点数
+        /// 
+        /// </summary>
+        public double EfTotalTen
+        {
+            get { return SinKoui.EfTotalTen; }
+            set
+            {
+                if (SinKoui.EfTotalTen == value) return;
+                SinKoui.EfTotalTen = value;
+                //RaisePropertyChanged(() => EfTotalTen);
+            }
+        }
+
+        /// <summary>
+        /// EF用点数小計
+        /// 
+        /// </summary>
+        public double EfTen
+        {
+            get { return SinKoui.EfTen; }
+            set
+            {
+                if (SinKoui.EfTen == value) return;
+                SinKoui.EfTen = value;
+                //RaisePropertyChanged(() => EfTen);
+
+                UpdateEfTenCount();
+            }
+        }
+
+        /// <summary>
+        /// EF用点数回数
+        /// 
+        /// </summary>
+        public string EfTenCount
+        {
+            get { return SinKoui.EfTenCount; }
+            set
+            {
+                if (SinKoui.EfTenCount == value) return;
+                SinKoui.EfTenCount = value;
+                //RaisePropertyChanged(() => EfTenCount);
+            }
+        }
+        /// <summary>
+        /// EF調整済みフラグ
+        /// </summary>
+        public bool EfDone { get; set; } = false;
 
         /// <summary>
         /// 作成日時
@@ -1038,6 +1102,13 @@ namespace CalculateService.Ika.Models
                 string.Format(FormatConst.TenCount, Ten, Count);
             TotalTen =
                 Ten * Count;
+        }
+        private void UpdateEfTenCount()
+        {
+            EfTenCount =
+                string.Format(FormatConst.TenCount, EfTen, Count);
+            EfTotalTen =
+                EfTen * Count;
         }
     }
 

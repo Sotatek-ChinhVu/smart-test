@@ -337,6 +337,9 @@ namespace CalculateService.Ika.ViewModels
                     bool addMukofu = false;
                     (int HokenPid, int HokenId, int SanteiKbn) mukofuHokenStatus = (0, 0, 0);
 
+                    bool addHoumonCommentCancel = false;
+                    (int HokenPid, int HokenId, int SanteiKbn) houmonCommentCancelStatus = (0, 0, 0);
+
                     if (filteredOdrDtl.Any())
                     {
                         // 医科外来等感染症対策実施加算（在宅医療）チェック
@@ -366,7 +369,13 @@ namespace CalculateService.Ika.ViewModels
 
                         foreach (OdrDtlTenModel odrDtl in filteredOdrDtl)
                         {
-                            if (!odrDtl.IsJihi && (odrDtl.IsSorCommentItem(commentSkipFlg) || _common.IsSelectComment(odrDtl.ItemCd)))
+                            if (odrDtl.ItemCd == ItemCdConst.HoumonCommentCancel)
+                            {
+                                // 在がん医総訪問日コメント取消しは、別Rpで算定
+                                addHoumonCommentCancel = true;
+                                houmonCommentCancelStatus = (odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn);
+                            }
+                            else if (!odrDtl.IsJihi && (odrDtl.IsSorCommentItem(commentSkipFlg) || _common.IsSelectComment(odrDtl.ItemCd)))
                             {
                                 // 診療行為・コメント
 
@@ -448,7 +457,7 @@ namespace CalculateService.Ika.ViewModels
                                             suryo = 1;
                                         }
 
-                                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, suryo) == 2)
+                                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, suryo) == 2)
                                         {
                                             // 算定回数マスタのチェックにより算定不可
                                             _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
@@ -575,15 +584,6 @@ namespace CalculateService.Ika.ViewModels
 
                         }
 
-                        if (suryoFurikaels.Any())
-                        {
-                            // 当該Rpに数量振替が必要な項目が存在した場合、加算用項目を算定する
-                            foreach ((string itemCd, double suryo, int kizamiMin) in suryoFurikaels)
-                            {
-                                SuryoFurikae(itemCd, suryo, kizamiMin, odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn, filteredOdrDtl);
-                            }
-                        }
-
                         // 医科外来等感染症対策実施加算対応
                         if (kansenTaisaku && existKansenTaisakuTarget)
                         {
@@ -601,6 +601,15 @@ namespace CalculateService.Ika.ViewModels
                             if (surveillance)
                             {
                                 _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.ZaitakuSurveillance, autoAdd: 1);
+                            }
+                        }
+
+                        if (suryoFurikaels.Any())
+                        {
+                            // 当該Rpに数量振替が必要な項目が存在した場合、加算用項目を算定する
+                            foreach ((string itemCd, double suryo, int kizamiMin) in suryoFurikaels)
+                            {
+                                SuryoFurikae(itemCd, suryo, kizamiMin, odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn, filteredOdrDtl);
                             }
                         }
 
@@ -659,6 +668,15 @@ namespace CalculateService.Ika.ViewModels
                                 // 特材・コメント以外の項目が来たら、以降のコメントはこの項目に付随するものなのでスキップ
                                 commentSkipFlg = true;
                             }
+                        }
+
+                        // 在がん医総訪問日コメント取消し
+                        if (addHoumonCommentCancel)
+                        {
+                            // Rp分ける
+                            _common.Wrk.AppendNewWrkSinRpInf(ReceKouiKbn.Zaitaku, ReceSinId.Zaitaku, odrInf.SanteiKbn);
+                            _common.Wrk.AppendNewWrkSinKoui(houmonCommentCancelStatus.HokenPid, houmonCommentCancelStatus.HokenId, ReceSyukeisaki.ZaiSonota, cdKbn: _common.GetCdKbn(houmonCommentCancelStatus.SanteiKbn, "C"));
+                            _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.HoumonCommentCancel, autoAdd: 0);
                         }
                     }
                 }
@@ -983,8 +1001,16 @@ namespace CalculateService.Ika.ViewModels
                     {
                         ret = false;
                     }
-                    else if (new List<int> { SyosaiConst.SaisinDenwa, SyosaiConst.SaisinDenwa2, SyosaiConst.SyosinCorona,
-                    SyosaiConst.SyosinJouhou, SyosaiConst.Syosin2Jouhou, SyosaiConst.SaisinJouhou, SyosaiConst.Saisin2Jouhou}.Contains((int)_common.syosai))
+                    else if (new List<int> { 
+                                SyosaiConst.SaisinDenwa, 
+                                SyosaiConst.SaisinDenwa2, 
+                                SyosaiConst.SyosinCorona,
+                                SyosaiConst.SyosinJouhou, 
+                                SyosaiConst.Syosin2Jouhou, 
+                                SyosaiConst.SaisinJouhou, 
+                                SyosaiConst.Saisin2Jouhou, 
+                                SyosaiConst.SaisinDenwaTokurei
+                        }.Contains((int)_common.syosai))
                     {
                         // 電話、通信機器等を用いている場合、自動算定しない
                         ret = false;
@@ -1716,7 +1742,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェックする
-                    if (_common.CheckSanteiKaisu(ItemCdConst.ZaitakuKansenKojo, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.ZaitakuKansenKojo, 0, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -1773,7 +1799,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェック
-                    if (_common.CheckSanteiKaisu(ItemCdConst.ZaitakuRenkeiKyoka, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.ZaitakuRenkeiKyoka, 0, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -1829,7 +1855,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェック
-                    if (_common.CheckSanteiKaisu(ItemCdConst.ZaitakuSurveillance, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.ZaitakuSurveillance, 0, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;

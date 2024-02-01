@@ -141,6 +141,27 @@ namespace CalculateService.Ika.DB.Finder
                     hokenKbn.Contains(p.HokenKbn) &&
                     isTester.Contains(p.IsTester));
         }
+        private IQueryable<ReceInf> GetReceInfVarForEF(int hpId, int sinYm, bool includeTester)
+        {
+            List<int> hokenKbn = new List<int> { 1, 2 };
+
+            List<int> isTester = null;
+            if (includeTester)
+            {
+                isTester = new List<int> { 0, 1 };
+            }
+            else
+            {
+                isTester = new List<int> { 0 };
+            }
+
+            return
+                _tenantDataContext.ReceInfs.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.SinYm == sinYm &&
+                    hokenKbn.Contains(p.HokenKbn) &&
+                    isTester.Contains(p.IsTester));
+        }
         private IQueryable<KaikeiInf> GetKaikeiInfVar(int hpId)
         {
             return
@@ -266,7 +287,97 @@ namespace CalculateService.Ika.DB.Finder
 
             return result;
         }
+        public List<SinRpInfModel> FindSinRpInfDataForEF(int hpId, int sinYm, bool includeTester)
+        {
 
+            var sinRps = _tenantDataContext.SinRpInfs.FindListQueryableNoTrack(s =>
+                    s.HpId == hpId &&
+                    s.SinYm == sinYm);
+
+            //int tantoIdRaiin = 0;
+            //int kaIdRaiin = 0;
+
+            var receInfs = GetReceInfVarForEF(hpId, sinYm, includeTester);
+            //var kaikeiInfs = GetKaikeiInfVar(hpId);
+            //var raiinInfs = GetRaiinInfVar(hpId, tantoIdRaiin, kaIdRaiin);
+            //var kaikei_raiins = (
+            //        from kaikeiInf in kaikeiInfs
+            //        join raiinInf in raiinInfs on
+            //            new { kaikeiInf.HpId, kaikeiInf.PtId, kaikeiInf.RaiinNo } equals
+            //            new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
+            //        group kaikeiInf by new { kaikeiInf.HpId, kaikeiInf.PtId, SinYm = kaikeiInf.SinDate / 100, kaikeiInf.HokenId } into A
+            //        select new
+            //        {
+            //            A.Key.HpId,
+            //            A.Key.PtId,
+            //            A.Key.SinYm,
+            //            A.Key.HokenId
+            //        }
+            //    );
+
+            var joinQuery = (
+                from sinRp in sinRps
+                where (
+                    (
+                        from receInf in receInfs
+                        where
+                            receInf.HpId == hpId &&
+                            receInf.SinYm == sinYm
+                        select receInf
+                    ).Any(
+                        r =>
+                            r.HpId == sinRp.HpId &&
+                            r.PtId == sinRp.PtId &&
+                            r.SinYm == sinRp.SinYm
+                    )
+                )
+                select new
+                {
+                    sinRp
+                }
+
+            );
+
+            //if (tantoIdRaiin > 0 || kaIdRaiin > 0)
+            //{
+            //    // 担当医、診療科の指定があった場合は、kaikei_raiinを条件に含める
+            //    // 含めると遅くなることがある
+            //    joinQuery = (
+            //        from sinRp in sinRps
+            //        where (
+            //            (
+            //                from receInf in receInfs
+            //                join kaikei_raiin in kaikei_raiins on
+            //                    new { receInf.HpId, receInf.PtId, receInf.SinYm, receInf.HokenId } equals
+            //                    new { kaikei_raiin.HpId, kaikei_raiin.PtId, kaikei_raiin.SinYm, kaikei_raiin.HokenId }
+            //                where
+            //                    receInf.HpId == hpId &&
+            //                    receInf.SinYm == sinYm
+            //                select receInf
+            //            ).Any(
+            //                r =>
+            //                    r.HpId == sinRp.HpId &&
+            //                    r.PtId == sinRp.PtId &&
+            //                    r.SinYm == sinRp.SinYm
+            //            )
+            //        )
+            //        select new
+            //        {
+            //            sinRp
+            //        }
+            //    );
+            //}
+
+            var result = joinQuery.AsEnumerable().Select(
+                data =>
+                    new SinRpInfModel(
+                        data.sinRp
+                )
+            )
+            .ToList();
+
+            return result;
+        }
         /// <summary>
         /// SIN_KOUIを取得する（指定日が属する月）
         /// </summary>
@@ -445,7 +556,66 @@ namespace CalculateService.Ika.DB.Finder
 
             return result;
         }
+        public List<SinKouiModel> FindSinKouiDataForEF(int hpId, int sinYm, bool includeTester)
+        {
 
+            var sinKouis = _tenantDataContext.SinKouis.FindListQueryableNoTrack(s =>
+                    s.HpId == hpId &&
+                    s.SinYm == sinYm);
+
+            //int tantoIdRaiin = 0;
+            //int kaIdRaiin = 0;
+
+            var receInfs = GetReceInfVarForEF(hpId, sinYm, includeTester);
+            //var kaikeiInfs = GetKaikeiInfVar(hpId);
+            //var raiinInfs = GetRaiinInfVar(hpId, tantoIdRaiin, kaIdRaiin);
+            //var kaikei_raiins = (
+            //        from kaikeiInf in kaikeiInfs
+            //        join raiinInf in raiinInfs on
+            //            new { kaikeiInf.HpId, kaikeiInf.PtId, kaikeiInf.RaiinNo } equals
+            //            new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
+            //        group kaikeiInf by new { kaikeiInf.HpId, kaikeiInf.PtId, SinYm = kaikeiInf.SinDate / 100, kaikeiInf.HokenId } into A
+            //        select new
+            //        {
+            //            A.Key.HpId,
+            //            A.Key.PtId,
+            //            A.Key.SinYm,
+            //            A.Key.HokenId
+            //        }
+            //    );
+
+            var joinQuery = (
+                from sinKoui in sinKouis
+                where (
+                    (
+                        from receInf in receInfs
+                        where
+                            receInf.HpId == hpId &&
+                            receInf.SinYm == sinYm
+                        select receInf
+                    ).Any(
+                        r =>
+                            r.HpId == sinKoui.HpId &&
+                            r.PtId == sinKoui.PtId &&
+                            r.SinYm == sinKoui.SinYm
+                    )
+                )
+                select new
+                {
+                    sinKoui
+                }
+            );
+            
+            var result = joinQuery.AsEnumerable().Select(
+                data =>
+                    new SinKouiModel(
+                        data.sinKoui
+                )
+            )
+            .ToList();
+
+            return result;
+        }
         /// <summary>
         /// SIN_KOUI_DETAILを取得する（指定日が属する月）
         /// </summary>
@@ -1127,7 +1297,460 @@ namespace CalculateService.Ika.DB.Finder
 
             return results;
         }
+        /*
+        public List<SinKouiDetailModel> FindSinKouiDetailDataForEF(int hpId, int sinYm, bool includeTester)
+        {
+            var receInfs = GetReceInfVarForEF(hpId, sinYm, includeTester);
 
+            var sinDtls = dbService.SinKouiDetailRepository.FindListQueryableNoTrack(s =>
+                s.HpId == hpId && s.SinYm == sinYm
+            );
+            //var sinDtls = (
+            //        from sinDtl in sinDtlsA
+            //        where
+            //        (
+            //            from receInf in receInfs
+            //            where
+            //                receInf.HpId == hpId &&
+            //                receInf.SinYm == sinYm
+            //            select receInf
+            //        ).Any(
+            //            r =>
+            //                r.HpId == sinDtl.HpId &&
+            //                r.PtId == sinDtl.PtId &&
+            //                r.SinYm == sinDtl.SinYm
+            //        )
+            //        select new
+            //        {
+            //            sinDtl
+            //        }
+            //    );
+
+            var sinCounts = dbService.SinKouiCountRepository.FindListQueryableNoTrack(s =>
+                    s.HpId == hpId && s.SinYm == sinYm
+                );
+
+            //var sinCounts = (
+            //        from sinCount in sinCountsA
+            //        where
+            //        (
+            //            from receInf in receInfs
+            //                //join kaikei_raiin in kaikei_raiins on
+            //                //    new { receInf.HpId, receInf.PtId, receInf.SinYm, receInf.HokenId } equals
+            //                //    new { kaikei_raiin.HpId, kaikei_raiin.PtId, kaikei_raiin.SinYm, kaikei_raiin.HokenId }
+            //            where
+            //                receInf.HpId == hpId &&
+            //                receInf.SinYm == sinYm
+            //            select receInf
+            //        ).Any(
+            //            r =>
+            //                r.HpId == sinCount.HpId &&
+            //                r.PtId == sinCount.PtId &&
+            //                r.SinYm == sinCount.SinYm
+            //        )
+            //        select new
+            //        {
+            //            sinCount
+            //        }
+            //    );
+
+            var sinCountMaxs = (
+                    from sinCount in sinCounts
+                    group new { sinCount } by new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } into A
+                    select new
+                    {
+                        HpId = A.Key.HpId,
+                        PtId = A.Key.PtId,
+                        SinYm = A.Key.SinYm,
+                        RpNo = A.Key.RpNo,
+                        SeqNo = A.Key.SeqNo,
+                        LastDate = A.Max(a => a.sinCount.SinDate)
+                    }
+                );
+
+            // 当該項目の最終算定日時点で有効な点数マスタを取得する
+            var tenMstAs = dbService.TenMstRepository.FindListQueryableNoTrack(t =>
+                t.HpId == hpId &&
+                t.StartDate <= sinYm * 100 + 31 &&
+                t.EndDate >= sinYm * 100 + 1 || t.EndDate == 12341234);
+            var tenMsts = (
+                from sinDtl in sinDtls
+                    //join sinCount in sinCountMaxs on
+                    //    new { sinDtl.HpId, sinDtl.PtId, sinDtl.SinYm, sinDtl.RpNo, sinDtl.SeqNo } equals
+                    //    new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } into sc
+                    //from b in sc.DefaultIfEmpty()
+                join tenMst in tenMstAs on
+                    new { sinDtl.HpId, sinDtl.ItemCd } equals
+                    new { tenMst.HpId, tenMst.ItemCd } into tm
+                from a in tm.DefaultIfEmpty()
+                where (
+                    (
+                        a.StartDate <= sinDtl.SinYm * 100 + 31 &&
+                        (a.EndDate >= sinDtl.SinYm * 100 + 1 || a.EndDate == 12341234)
+                    )
+                    &&
+                    (
+                        from receInf in receInfs
+                        where
+                            receInf.HpId == hpId &&
+                            receInf.SinYm == sinYm
+                        select receInf
+                    ).Any(
+                        r =>
+                            r.HpId == sinDtl.HpId &&
+                            r.PtId == sinDtl.PtId &&
+                            r.SinYm == sinDtl.SinYm &&
+                            (a != null ? r.SinYm * 100 + 1 <= a.EndDate : true) &&
+                            (a != null ? r.SinYm * 100 + 31 >= a.StartDate : true)
+                    )
+                )
+                where (a.StartDate <= sinYm * 100 + 31 && (a.EndDate >= sinYm * 100 + 1 || a.EndDate == 12341234))
+                select new
+                {
+                    HpId = sinDtl.HpId,
+                    PtId = sinDtl.PtId,
+                    SinYm = sinDtl.SinYm,
+                    RpNo = sinDtl.RpNo,
+                    SeqNo = sinDtl.SeqNo,
+                    RowNo = sinDtl.RowNo,
+                    TenMst = a
+                }
+            );
+
+            var joinQuery = (
+                from sinDtl in sinDtls
+                join sinCount in sinCountMaxs on
+                    new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
+                    new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
+                from b in sc.DefaultIfEmpty()
+                join tenMst in tenMsts on
+                    new { sinDtl.HpId, sinDtl.PtId, sinDtl.SinYm, sinDtl.RpNo, sinDtl.SeqNo, sinDtl.RowNo } equals
+                    new { tenMst.HpId, tenMst.PtId, tenMst.SinYm, tenMst.RpNo, tenMst.SeqNo, tenMst.RowNo } into tm
+                from a in tm.DefaultIfEmpty()
+                where (
+                        (
+                            a.TenMst.StartDate <= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) &&
+                            (a.TenMst.EndDate >= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) || a.TenMst.EndDate == 12341234)
+                        )
+                        &&
+                    (
+                        from receInf in receInfs
+                        where
+                            receInf.HpId == hpId &&
+                            receInf.SinYm == sinYm
+                        select receInf
+                    ).Any(
+                        r =>
+                            r.HpId == sinDtl.HpId &&
+                            r.PtId == sinDtl.PtId &&
+                            r.SinYm == sinDtl.SinYm
+                    )
+                )
+                select new
+                {
+                    SinKouiDetail = sinDtl,
+                    SinKouiCount = b,
+                    TenMst = a.TenMst
+                }
+
+            ).ToList();
+
+            List<SinKouiDetailModel> results = new List<SinKouiDetailModel>();
+
+            joinQuery.ForEach(entity =>
+            {
+                if (entity.TenMst == null || (string.IsNullOrEmpty(entity.SinKouiDetail.OdrItemCd) == false && entity.SinKouiDetail.OdrItemCd.StartsWith("Z")))
+                {
+                    // 点数マスタが取得できなかった or 特材の場合（特材は、電算データの作成に必要な情報があって、オーダー診療行為コード基準で取得する必要がある）
+
+                    // 診療日に最も近い点数マスタを取得
+                    int stdDate = (entity.SinKouiCount == null ? entity.SinKouiDetail.SinYm * 100 + 1 : entity.SinKouiCount.LastDate);
+                    var tenMstsBase = dbService.TenMstRepository.FindListQueryableNoTrack(t =>
+                        t.HpId == hpId &&
+                        t.StartDate <= stdDate &&
+                        t.ItemCd == entity.SinKouiDetail.OdrItemCd);
+
+                    var tenMstsMax = (
+                            from tenMst in tenMstsBase
+                            where tenMst.StartDate < stdDate
+                            group tenMst by new { tenMst.HpId, tenMst.ItemCd } into A
+                            select new { HpId = A.Key.HpId, ItemCd = A.Key.ItemCd, StartDate = A.Max(a => a.StartDate) }
+                        );
+                    var odrTenMst = (
+                            from tenMst in tenMstsBase
+                            join tenMstMax in tenMstsMax on
+                                new { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate } equals
+                                new { tenMstMax.HpId, tenMstMax.ItemCd, tenMstMax.StartDate }
+                            select new
+                            {
+                                tenMst
+                            }
+                        ).OrderByDescending(p => p.tenMst.StartDate).ToList();
+
+                    if (odrTenMst != null && odrTenMst.Any())
+                    {
+                        results.Add(new SinKouiDetailModel(entity.SinKouiDetail, odrTenMst.First().tenMst));
+                    }
+                    else
+                    {
+                        results.Add(new SinKouiDetailModel(entity.SinKouiDetail, entity.TenMst ?? null));
+                    }
+
+                    if ((string.IsNullOrEmpty(entity.SinKouiDetail.OdrItemCd) == false && entity.SinKouiDetail.OdrItemCd.StartsWith("Z")))
+                    {
+                        // Z特材の場合、算定用項目コードのマスタからマスタ種別と点数識別を取得
+                        var tenEntities = dbService.TenMstRepository.FindListQueryableNoTrack(p =>
+                            p.HpId == hpId &&
+                            p.StartDate <= stdDate &&
+                            (p.EndDate >= stdDate || p.EndDate == 12341234) &&
+                            p.ItemCd == entity.SinKouiDetail.ItemCd)
+                        .OrderBy(p => p.HpId)
+                        .ThenBy(p => p.ItemCd)
+                        .ThenByDescending(p => p.StartDate);
+
+                        if (tenEntities.FirstOrDefault() != null)
+                        {
+                            results.Last().Z_TenId = tenEntities.First().TenId;
+                        }
+                    }
+                }
+                else
+                {
+                    results.Add(new SinKouiDetailModel(entity.SinKouiDetail, entity.TenMst ?? null));
+                }
+            });
+
+            return results;
+        }
+        */
+        public List<SinKouiDetailModel> FindSinKouiDetailDataForEF(int hpId, int sinYm, bool includeTester)
+        {
+            var receInfs = GetReceInfVarForEF(hpId, sinYm, includeTester);
+
+            var sinDtls = _tenantDataContext.SinKouiDetails.FindListQueryableNoTrack(s =>
+                s.HpId == hpId && s.SinYm == sinYm
+            );
+            //var sinDtls = (
+            //        from sinDtl in sinDtlsA
+            //        where
+            //        (
+            //            from receInf in receInfs
+            //            where
+            //                receInf.HpId == hpId &&
+            //                receInf.SinYm == sinYm
+            //            select receInf
+            //        ).Any(
+            //            r =>
+            //                r.HpId == sinDtl.HpId &&
+            //                r.PtId == sinDtl.PtId &&
+            //                r.SinYm == sinDtl.SinYm
+            //        )
+            //        select new
+            //        {
+            //            sinDtl
+            //        }
+            //    );
+
+            var sinCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack(s =>
+                    s.HpId == hpId && s.SinYm == sinYm
+                );
+
+            //var sinCounts = (
+            //        from sinCount in sinCountsA
+            //        where
+            //        (
+            //            from receInf in receInfs
+            //                //join kaikei_raiin in kaikei_raiins on
+            //                //    new { receInf.HpId, receInf.PtId, receInf.SinYm, receInf.HokenId } equals
+            //                //    new { kaikei_raiin.HpId, kaikei_raiin.PtId, kaikei_raiin.SinYm, kaikei_raiin.HokenId }
+            //            where
+            //                receInf.HpId == hpId &&
+            //                receInf.SinYm == sinYm
+            //            select receInf
+            //        ).Any(
+            //            r =>
+            //                r.HpId == sinCount.HpId &&
+            //                r.PtId == sinCount.PtId &&
+            //                r.SinYm == sinCount.SinYm
+            //        )
+            //        select new
+            //        {
+            //            sinCount
+            //        }
+            //    );
+
+            var sinCountMaxs = (
+                    from sinCount in sinCounts
+                    group new { sinCount } by new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } into A
+                    select new
+                    {
+                        HpId = A.Key.HpId,
+                        PtId = A.Key.PtId,
+                        SinYm = A.Key.SinYm,
+                        RpNo = A.Key.RpNo,
+                        SeqNo = A.Key.SeqNo,
+                        LastDate = A.Max(a => a.sinCount.SinDate)
+                    }
+                );
+
+            // 当該項目の最終算定日時点で有効な点数マスタを取得する
+            var tenMstAs = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
+                t.HpId == hpId &&
+                t.StartDate <= sinYm * 100 + 31 &&
+                t.EndDate >= sinYm * 100 + 1 || t.EndDate == 12341234);
+            //var tenMsts = (
+            //    from sinDtl in sinDtls
+            //    //join sinCount in sinCountMaxs on
+            //    //    new { sinDtl.HpId, sinDtl.PtId, sinDtl.SinYm, sinDtl.RpNo, sinDtl.SeqNo } equals
+            //    //    new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } into sc
+            //    //from b in sc.DefaultIfEmpty()
+            //    join tenMst in tenMstAs on
+            //        new { sinDtl.HpId, sinDtl.ItemCd } equals
+            //        new { tenMst.HpId, tenMst.ItemCd } into tm
+            //    from a in tm.DefaultIfEmpty()
+            //    where (
+            //        (
+            //            a.StartDate <= sinDtl.SinYm * 100 + 31 &&
+            //            (a.EndDate >= sinDtl.SinYm * 100 + 1 || a.EndDate == 12341234)
+            //        )
+            //        &&
+            //        (
+            //            from receInf in receInfs
+            //            where
+            //                receInf.HpId == hpId &&
+            //                receInf.SinYm == sinYm
+            //            select receInf
+            //        ).Any(
+            //            r =>
+            //                r.HpId == sinDtl.HpId &&
+            //                r.PtId == sinDtl.PtId &&
+            //                r.SinYm == sinDtl.SinYm &&
+            //                (a != null ? r.SinYm * 100 + 1 <= a.EndDate : true) &&
+            //                (a != null ? r.SinYm * 100 + 31 >= a.StartDate : true)
+            //        )
+            //    )
+            //    where (a.StartDate <= sinYm * 100 + 31 && (a.EndDate >= sinYm * 100 + 1 || a.EndDate == 12341234))
+            //    select new
+            //    {
+            //        HpId = sinDtl.HpId,
+            //        PtId = sinDtl.PtId,
+            //        SinYm = sinDtl.SinYm,
+            //        RpNo = sinDtl.RpNo,
+            //        SeqNo = sinDtl.SeqNo,
+            //        RowNo = sinDtl.RowNo,
+            //        TenMst = a
+            //    }
+            //);
+
+            var joinQuery = (
+                from sinDtl in sinDtls
+                join sinCount in sinCountMaxs on
+                    new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
+                    new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc
+                from b in sc.DefaultIfEmpty()
+                    //join tenMst in tenMsts on
+                    //    new { sinDtl.HpId, sinDtl.PtId, sinDtl.SinYm, sinDtl.RpNo, sinDtl.SeqNo, sinDtl.RowNo } equals
+                    //    new { tenMst.HpId, tenMst.PtId, tenMst.SinYm, tenMst.RpNo, tenMst.SeqNo, tenMst.RowNo } into tm
+                    //from a in tm.DefaultIfEmpty()
+                join tenMst in tenMstAs on
+                    new { sinDtl.HpId, sinDtl.ItemCd } equals
+                    new { tenMst.HpId, tenMst.ItemCd } into tm
+                from a in tm.DefaultIfEmpty()
+                where (
+                        (
+                            a.StartDate <= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) &&
+                            (a.EndDate >= (b == null ? sinDtl.SinYm * 100 + 28 : b.LastDate) || a.EndDate == 12341234)
+                        )
+                    //&&
+                    //(
+                    //    from receInf in receInfs
+                    //    where
+                    //        receInf.HpId == hpId &&
+                    //        receInf.SinYm == sinYm
+                    //    select receInf
+                    //).Any(
+                    //    r =>
+                    //        r.HpId == sinDtl.HpId &&
+                    //        r.PtId == sinDtl.PtId &&
+                    //        r.SinYm == sinDtl.SinYm
+                    //)
+                )
+                select new
+                {
+                    SinKouiDetail = sinDtl,
+                    SinKouiCount = b,
+                    TenMst = a
+                }
+
+            ).ToList();
+
+            List<SinKouiDetailModel> results = new List<SinKouiDetailModel>();
+
+            joinQuery.ForEach(entity =>
+            {
+                if (entity.TenMst == null || (string.IsNullOrEmpty(entity.SinKouiDetail.OdrItemCd) == false && entity.SinKouiDetail.OdrItemCd.StartsWith("Z")))
+                {
+                    // 点数マスタが取得できなかった or 特材の場合（特材は、電算データの作成に必要な情報があって、オーダー診療行為コード基準で取得する必要がある）
+
+                    // 診療日に最も近い点数マスタを取得
+                    int stdDate = (entity.SinKouiCount == null ? entity.SinKouiDetail.SinYm * 100 + 1 : entity.SinKouiCount.LastDate);
+                    var tenMstsBase = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
+                        t.HpId == hpId &&
+                        t.StartDate <= stdDate &&
+                        t.ItemCd == entity.SinKouiDetail.OdrItemCd);
+
+                    var tenMstsMax = (
+                            from tenMst in tenMstsBase
+                            where tenMst.StartDate < stdDate
+                            group tenMst by new { tenMst.HpId, tenMst.ItemCd } into A
+                            select new { HpId = A.Key.HpId, ItemCd = A.Key.ItemCd, StartDate = A.Max(a => a.StartDate) }
+                        );
+                    var odrTenMst = (
+                            from tenMst in tenMstsBase
+                            join tenMstMax in tenMstsMax on
+                                new { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate } equals
+                                new { tenMstMax.HpId, tenMstMax.ItemCd, tenMstMax.StartDate }
+                            select new
+                            {
+                                tenMst
+                            }
+                        ).OrderByDescending(p => p.tenMst.StartDate).ToList();
+
+                    if (odrTenMst != null && odrTenMst.Any())
+                    {
+                        results.Add(new SinKouiDetailModel(entity.SinKouiDetail, odrTenMst.First().tenMst));
+                    }
+                    else
+                    {
+                        results.Add(new SinKouiDetailModel(entity.SinKouiDetail, entity.TenMst ?? null));
+                    }
+
+                    if ((string.IsNullOrEmpty(entity.SinKouiDetail.OdrItemCd) == false && entity.SinKouiDetail.OdrItemCd.StartsWith("Z")))
+                    {
+                        // Z特材の場合、算定用項目コードのマスタからマスタ種別と点数識別を取得
+                        var tenEntities = _tenantDataContext.TenMsts.FindListQueryableNoTrack(p =>
+                            p.HpId == hpId &&
+                            p.StartDate <= stdDate &&
+                            (p.EndDate >= stdDate || p.EndDate == 12341234) &&
+                            p.ItemCd == entity.SinKouiDetail.ItemCd)
+                        .OrderBy(p => p.HpId)
+                        .ThenBy(p => p.ItemCd)
+                        .ThenByDescending(p => p.StartDate);
+
+                        if (tenEntities.FirstOrDefault() != null)
+                        {
+                            results.Last().Z_TenId = tenEntities.First().TenId;
+                        }
+                    }
+                }
+                else
+                {
+                    results.Add(new SinKouiDetailModel(entity.SinKouiDetail, entity.TenMst ?? null));
+                }
+            });
+
+            return results;
+        }
         /// <summary>
         /// SIN_KOUI_COUNT取得（指定日が属する月）
         /// </summary>
@@ -1306,6 +1929,62 @@ namespace CalculateService.Ika.DB.Finder
 
             return result;
         }
+        public List<SinKouiCountModel> FindSinKouiCountDataForEF(int hpId, int sinYm, bool includeTester)
+        {
+
+            var sinKouiCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack(s =>
+                    s.HpId == hpId);
+
+            var receInfs = GetReceInfVarForEF(hpId, sinYm, includeTester);
+            var kaikeiInfs = GetKaikeiInfVar(hpId);
+            var raiinInfs = GetRaiinInfVar(hpId, 0, 0);
+            var kaikei_raiins = (
+                    from kaikeiInf in kaikeiInfs
+                    join raiinInf in raiinInfs on
+                        new { kaikeiInf.HpId, kaikeiInf.PtId, kaikeiInf.RaiinNo } equals
+                        new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
+                    group kaikeiInf by new { kaikeiInf.HpId, kaikeiInf.PtId, SinYm = kaikeiInf.SinDate / 100, kaikeiInf.HokenId } into A
+                    select new
+                    {
+                        A.Key.HpId,
+                        A.Key.PtId,
+                        A.Key.SinYm,
+                        A.Key.HokenId
+                    }
+                );
+
+            var joinQuery = (
+                from sinKouiCount in sinKouiCounts
+                where (
+                    (
+                        from receInf in receInfs
+                        where
+                            receInf.HpId == hpId &&
+                            receInf.SinYm == sinYm
+                        select receInf
+                    ).Any(
+                        r =>
+                            r.HpId == sinKouiCount.HpId &&
+                            r.PtId == sinKouiCount.PtId &&
+                            r.SinYm == sinKouiCount.SinYm
+                    )
+                )
+                select new
+                {
+                    sinKouiCount
+                }
+            );
+                        
+            var result = joinQuery.AsEnumerable().Select(
+                data =>
+                    new SinKouiCountModel(
+                        data.sinKouiCount
+                )
+            )
+            .ToList();
+
+            return result;
+        }
         /// <summary>
         /// SIN_RP_NO_INF取得（指定日が属する月）
         /// </summary>
@@ -1395,7 +2074,7 @@ namespace CalculateService.Ika.DB.Finder
         /// <param name="itemCds">チェックする項目のリスト</param>
         /// <param name="santeiKbn">算定区分</param>
         /// <returns>true: 算定あり</returns>
-        public bool CheckSanteiTerm(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, int hokenKbn, int santeiKbn = SanteiKbnConst.Santei)
+        public bool CheckSanteiTerm(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, int hokenKbn, int santeiKbn = SanteiKbnConst.Santei, int hokenId = 0)
         {
             int startYm = startDate / 100;
             int endYm = endDate / 100;
@@ -1408,10 +2087,19 @@ namespace CalculateService.Ika.DB.Finder
                 o.PtId == ptId &&
                 o.SinYm >= startYm &&
                 o.SinYm <= endYm &&
+                o.EfFlg == 0 &&
                 //o.HokenKbn != 4 &&
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 //o.SanteiKbn == santeiKbn
                 checkSanteiKbn.Contains(o.SanteiKbn)
+            );
+            var sinKouis = _tenantDataContext.SinKouis.FindListQueryableNoTrack(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinYm >= startYm &&
+                o.SinYm <= endYm &&
+                o.EfFlg == 0 &&
+                (hokenId == 0 || o.HokenId == hokenId)
             );
             var sinKouiCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack(o =>
                 o.HpId == hpId &&
@@ -1429,10 +2117,14 @@ namespace CalculateService.Ika.DB.Finder
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
                 p.SinYm <= endYm &&
+                p.EfFlg == 0 &&
                 itemCds.Contains(p.ItemCd));
 
             var joinQuery = (
                 from sinKouiDetail in sinKouiDetails
+                join sinKoui in sinKouis on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
                 join sinKouiCount in sinKouiCounts on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
@@ -1489,7 +2181,7 @@ namespace CalculateService.Ika.DB.Finder
         /// <returns>算定回数</returns>
         public double SanteiCount(
             int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, 
-            List<string> itemCds, int hokenKbn, List<int> santeiKbns = null, List<int> hokenKbns = null)
+            List<string> itemCds, int hokenKbn, List<int> santeiKbns = null, List<int> hokenKbns = null, int hokenId = 0)
         {
             int startYm = startDate / 100;
             int endYm = endDate / 100;
@@ -1516,7 +2208,16 @@ namespace CalculateService.Ika.DB.Finder
                 //o.HokenKbn != 4 &&
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 //o.SanteiKbn == SanteiKbnConst.Santei
-                checkSanteiKbn.Contains(o.SanteiKbn)
+                checkSanteiKbn.Contains(o.SanteiKbn) &&
+                o.EfFlg == 0
+            );
+            var sinKouis = _tenantDataContext.SinKouis.FindListQueryableNoTrack(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinYm >= startYm &&
+                o.SinYm <= endYm &&
+                (hokenId == 0 || o.HokenId == hokenId) &&                
+                o.EfFlg == 0
             );
             var sinKouiCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack(o =>
                 o.HpId == hpId &&
@@ -1533,7 +2234,8 @@ namespace CalculateService.Ika.DB.Finder
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
                 p.SinYm <= endYm &&
-                itemCds.Contains(p.ItemCd)
+                itemCds.Contains(p.ItemCd) &&
+                p.EfFlg == 0
                 );
 
             var joinQuery = (
@@ -1541,6 +2243,9 @@ namespace CalculateService.Ika.DB.Finder
                 join sinKouiCount in sinKouiCounts on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinKoui in sinKouis on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
                 join sinRpInf in sinRpInfs on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
                     new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
@@ -1607,6 +2312,7 @@ namespace CalculateService.Ika.DB.Finder
                 o.PtId == ptId &&
                 o.SinYm >= startYm &&
                 o.SinYm <= endYm &&
+                o.EfFlg == 0 &&
                 pHokenKbn.Contains(o.HokenKbn)  &&
                 //o.SanteiKbn == santeiKbn
                 pSanteiKbn.Contains(o.SanteiKbn)
@@ -1625,7 +2331,8 @@ namespace CalculateService.Ika.DB.Finder
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
-                p.SinYm <= endYm 
+                p.SinYm <= endYm &&
+                p.EfFlg == 0
                 );
             var tenMsts = _tenantDataContext.TenMsts.FindListQueryableNoTrack(p =>
                 p.HpId == hpId &&
@@ -1712,6 +2419,7 @@ namespace CalculateService.Ika.DB.Finder
                 o.PtId == ptId &&
                 o.SinYm >= startYm &&
                 o.SinYm <= endYm &&
+                o.EfFlg == 0 &&
                 pHokenKbn.Contains(o.HokenKbn) &&
                 //o.SanteiKbn == santeiKbn
                 pSanteiKbn.Contains(o.SanteiKbn)
@@ -1730,7 +2438,8 @@ namespace CalculateService.Ika.DB.Finder
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
-                p.SinYm <= endYm
+                p.SinYm <= endYm &&
+                p.EfFlg == 0
                 );
             var tenMsts = _tenantDataContext.TenMsts.FindListQueryableNoTrack(p =>
                 p.HpId == hpId &&
@@ -1815,7 +2524,7 @@ namespace CalculateService.Ika.DB.Finder
         /// 指定の項目が算定されている最近の日付
         /// 算定がない場合は0
         /// </returns>
-        public int FindLastSanteiDate(int hpId, long ptId, int baseDate, int sinDate, long raiinNo, List<string> itemCds, int hokenKbn, int santeiKbn = SanteiKbnConst.Santei, List<int> hokenKbns = null)
+        public int FindLastSanteiDate(int hpId, long ptId, int baseDate, int sinDate, long raiinNo, List<string> itemCds, int hokenKbn, int santeiKbn = SanteiKbnConst.Santei, List<int> hokenKbns = null, int hokenId = 0)
         {            
             int baseYm = baseDate / 100;
 
@@ -1834,7 +2543,15 @@ namespace CalculateService.Ika.DB.Finder
                 //o.HokenKbn != 4 &&
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 //o.SanteiKbn == santeiKbn
-                checkSanteiKbn.Contains(o.SanteiKbn)
+                checkSanteiKbn.Contains(o.SanteiKbn) &&
+                o.EfFlg == 0
+            );
+            var sinKouis = _tenantDataContext.SinKouis.FindListQueryableNoTrack(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinYm <= baseYm &&
+                (hokenId == 0 || o.HokenId == hokenId) &&
+                o.EfFlg == 0
             );
             var sinKouiCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack(o =>
                 o.HpId == hpId &&
@@ -1848,7 +2565,8 @@ namespace CalculateService.Ika.DB.Finder
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinYm <= baseDate / 100 &&
-                itemCds.Contains(p.ItemCd)
+                itemCds.Contains(p.ItemCd) &&
+                p.EfFlg == 0
                 );
 
             var joinQuery = (
@@ -1856,6 +2574,9 @@ namespace CalculateService.Ika.DB.Finder
                 join sinKouiCount in sinKouiCounts on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinkoui in sinKouis on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinkoui.HpId, sinkoui.PtId, sinkoui.SinYm, sinkoui.RpNo, sinkoui.SeqNo }
                 join sinRpInf in sinRpInfs on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
                     new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
@@ -1931,6 +2652,7 @@ namespace CalculateService.Ika.DB.Finder
                 o.HpId == hpId &&
                 o.PtId == ptId &&
                 o.SinYm <= baseYm &&
+                o.EfFlg == 0 &&
                 //o.HokenKbn != 4 && // 自費以外
                 checkHokenKbn.Contains(hokenKbn) &&
                 //o.SanteiKbn == santeiKbn
@@ -1946,6 +2668,7 @@ namespace CalculateService.Ika.DB.Finder
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinYm <= baseYm &&
+                p.EfFlg == 0 &&
                 itemCds.Contains(p.ItemCd)
                 );
 
@@ -2017,6 +2740,7 @@ namespace CalculateService.Ika.DB.Finder
                 o.PtId == ptId &&
                 o.SinYm >= startYm &&
                 o.SinYm <= endYm &&
+                o.EfFlg == 0 &&
                 //o.HokenKbn != 4 &&
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 //santeiKbnls.Contains(o.SanteiKbn)
@@ -2036,6 +2760,7 @@ namespace CalculateService.Ika.DB.Finder
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
                 p.SinYm <= endYm &&
+                p.EfFlg == 0 &&
                 itemCds.Contains(p.ItemCd)
                 );
 
@@ -2114,6 +2839,7 @@ namespace CalculateService.Ika.DB.Finder
                     o.PtId == ptId &&
                     o.SinYm >= startYm &&
                     o.SinYm <= endYm &&
+                    o.EfFlg == 0 &&
                     checkHokenKbn.Contains(o.HokenKbn)
                 );
                 var sinKouiCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack(o =>
@@ -2127,6 +2853,7 @@ namespace CalculateService.Ika.DB.Finder
                     p.PtId == ptId &&
                     p.SinYm >= startYm &&
                     p.SinYm <= endYm &&
+                    p.EfFlg == 0 &&
                     (itemCds.FindAll(q => q.StartsWith("J")).Contains(p.ItemCd) ||
                      itemCds.FindAll(q => q.StartsWith("Z")).Contains(p.ItemCd))
                     );
@@ -2194,6 +2921,7 @@ namespace CalculateService.Ika.DB.Finder
                 o.PtId == ptId &&
                 o.SinYm >= startYm &&
                 o.SinYm <= endYm &&
+                o.EfFlg == 0 &&
                 //o.HokenKbn != 4 &&
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 checkSanteiKbn.Contains(o.SanteiKbn)
@@ -2203,6 +2931,7 @@ namespace CalculateService.Ika.DB.Finder
                 o.PtId == ptId &&
                 o.SinYm >= startYm &&
                 o.SinYm <= endYm &&
+                o.EfFlg == 0 &&
                 (hokenId > 0 ? o.HokenId == hokenId : true)
             );
             var sinKouiCounts = _tenantDataContext.SinKouiCounts.FindListQueryableNoTrack(o =>
@@ -2217,7 +2946,8 @@ namespace CalculateService.Ika.DB.Finder
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
                 p.SinYm <= endYm &&
-                p.ItemCd == itemCd
+                p.ItemCd == itemCd &&
+                p.EfFlg == 0
                 );
 
             var joinQuery = (
