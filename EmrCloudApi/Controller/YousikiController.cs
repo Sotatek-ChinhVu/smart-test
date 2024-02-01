@@ -193,6 +193,50 @@ public class YousikiController : AuthorizeControllerBase
                 byomeiRehabilitationItem.IsDeleted
             ));
             }
+
+            foreach (var hospitalizationStatusListRequestItem in item.HospitalizationStatusListRequestItems)
+            {
+                var valueModifierCode = "";
+
+                foreach (var value in hospitalizationStatusListRequestItem.PrefixSuffixRequests)
+                {
+                    valueModifierCode = valueModifierCode + value.Code;
+                }
+
+                result.Add(new Yousiki1InfDetailModel(
+                    hospitalizationStatusListRequestItem.InjuryNameLast.PtId,
+                    hospitalizationStatusListRequestItem.InjuryNameLast.SinYm,
+                    hospitalizationStatusListRequestItem.InjuryNameLast.DataType,
+                    hospitalizationStatusListRequestItem.InjuryNameLast.SeqNo,
+                    hospitalizationStatusListRequestItem.InjuryNameLast.CodeNo,
+                    hospitalizationStatusListRequestItem.InjuryNameLast.RowNo,
+                    hospitalizationStatusListRequestItem.InjuryNameLast.Payload,
+                    hospitalizationStatusListRequestItem.FullByomeiRequest,
+                    hospitalizationStatusListRequestItem.InjuryNameLast.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    hospitalizationStatusListRequestItem.InjuryNameCode.PtId,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.SinYm,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.DataType,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.SeqNo,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.CodeNo,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.RowNo,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.Payload,
+                    hospitalizationStatusListRequestItem.ByomeiCdRequest,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    hospitalizationStatusListRequestItem.ModifierCode.PtId,
+                    hospitalizationStatusListRequestItem.ModifierCode.SinYm,
+                    hospitalizationStatusListRequestItem.ModifierCode.DataType,
+                    hospitalizationStatusListRequestItem.ModifierCode.SeqNo,
+                    hospitalizationStatusListRequestItem.ModifierCode.CodeNo,
+                    hospitalizationStatusListRequestItem.ModifierCode.RowNo,
+                    hospitalizationStatusListRequestItem.ModifierCode.Payload,
+                    valueModifierCode,
+                    hospitalizationStatusListRequestItem.ModifierCode.IsDeleted)
+                    );
+            }
         }
 
         return result;
@@ -201,6 +245,52 @@ public class YousikiController : AuthorizeControllerBase
     private List<Yousiki1InfDetailModel> ConvertTabAtHomeModelToYousiki1InfDetail(AtHomeModelRequest items)
     {
         List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items.HospitalizationStatusList)
+        {
+            foreach (var hospitalizationStatusListRequestItem in item.HospitalizationStatusListRequestItems)
+            {
+                var valueModifierCode = "";
+
+                foreach (var value in hospitalizationStatusListRequestItem.PrefixSuffixRequests)
+                {
+                    valueModifierCode = valueModifierCode + value.Code;
+                }
+                result.Add(new Yousiki1InfDetailModel(
+                hospitalizationStatusListRequestItem.InjuryNameLast.PtId,
+                hospitalizationStatusListRequestItem.InjuryNameLast.SinYm,
+                hospitalizationStatusListRequestItem.InjuryNameLast.DataType,
+                hospitalizationStatusListRequestItem.InjuryNameLast.SeqNo,
+                hospitalizationStatusListRequestItem.InjuryNameLast.CodeNo,
+                hospitalizationStatusListRequestItem.InjuryNameLast.RowNo,
+                hospitalizationStatusListRequestItem.InjuryNameLast.Payload,
+                hospitalizationStatusListRequestItem.FullByomeiRequest,
+                hospitalizationStatusListRequestItem.InjuryNameLast.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    hospitalizationStatusListRequestItem.InjuryNameCode.PtId,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.SinYm,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.DataType,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.SeqNo,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.CodeNo,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.RowNo,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.Payload,
+                    hospitalizationStatusListRequestItem.ByomeiCdRequest,
+                    hospitalizationStatusListRequestItem.InjuryNameCode.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    hospitalizationStatusListRequestItem.ModifierCode.PtId,
+                    hospitalizationStatusListRequestItem.ModifierCode.SinYm,
+                    hospitalizationStatusListRequestItem.ModifierCode.DataType,
+                    hospitalizationStatusListRequestItem.ModifierCode.SeqNo,
+                    hospitalizationStatusListRequestItem.ModifierCode.CodeNo,
+                    hospitalizationStatusListRequestItem.ModifierCode.RowNo,
+                    hospitalizationStatusListRequestItem.ModifierCode.Payload,
+                    valueModifierCode,
+                    hospitalizationStatusListRequestItem.ModifierCode.IsDeleted)
+                    );
+            }
+        }
 
         foreach (var item in items.StatusVisitList)
         {
@@ -410,6 +500,50 @@ public class YousikiController : AuthorizeControllerBase
                 item.Value,
                 item.IsDeleted
             ));
+        }
+
+        foreach (var item in items.HospitalizationStatusListRequestItems)
+        {
+            var valueModifierCode = "";
+
+            foreach (var value in item.PrefixSuffixRequests)
+            {
+                valueModifierCode = valueModifierCode + value.Code;
+            }
+
+            result.Add(new Yousiki1InfDetailModel(
+                item.InjuryNameLast.PtId,
+                item.InjuryNameLast.SinYm,
+                item.InjuryNameLast.DataType,
+                item.InjuryNameLast.SeqNo,
+                item.InjuryNameLast.CodeNo,
+                item.InjuryNameLast.RowNo,
+                item.InjuryNameLast.Payload,
+                item.FullByomeiRequest,
+                item.InjuryNameLast.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                item.InjuryNameCode.PtId,
+                item.InjuryNameCode.SinYm,
+                item.InjuryNameCode.DataType,
+                item.InjuryNameCode.SeqNo,
+                item.InjuryNameCode.CodeNo,
+                item.InjuryNameCode.RowNo,
+                item.InjuryNameCode.Payload,
+                item.ByomeiCdRequest,
+                item.InjuryNameCode.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                item.ModifierCode.PtId,
+                item.ModifierCode.SinYm,
+                item.ModifierCode.DataType,
+                item.ModifierCode.SeqNo,
+                item.ModifierCode.CodeNo,
+                item.ModifierCode.RowNo,
+                item.ModifierCode.Payload,
+                valueModifierCode,
+                item.ModifierCode.IsDeleted)
+                );
         }
 
         return result;

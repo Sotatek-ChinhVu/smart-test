@@ -1,6 +1,4 @@
-﻿using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
-
-namespace EmrCloudApi.Requests.Yousiki.RequestItem
+﻿namespace EmrCloudApi.Requests.Yousiki.RequestItem
 {
     public class LivingHabitModelRequest
     {

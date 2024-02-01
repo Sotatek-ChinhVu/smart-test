@@ -2,10 +2,6 @@
 {
     public class StatusVisitModelRequest
     {
-        /*public UpdateYosiki1InfDetailRequestItem SinDate { get; set; } = new();
-
-        public UpdateYosiki1InfDetailRequestItem MedicalInstitution { get; set; } = new();*/
-
         public long PtId { get; set; }
 
         public int SinYm { get; set; }

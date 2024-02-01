@@ -1,6 +1,4 @@
-﻿using Domain.Models.Yousiki.CommonModel.CommonOutputModel;
-
-namespace EmrCloudApi.Requests.Yousiki.RequestItem
+﻿namespace EmrCloudApi.Requests.Yousiki.RequestItem
 {
     public class AtHomeModelRequest
     {
@@ -15,5 +13,9 @@ namespace EmrCloudApi.Requests.Yousiki.RequestItem
         public List<StatusShortTermAdmissionModelRequest> StatusShortTermAdmissionList { get; set; } = new();
 
         public List<CommonForm1ModelRequest> StatusHomeVisitList { get; set; } = new();
+
+        public List<CommonForm1ModelRequest> FinalExaminationInf { get; set; } = new();
+
+        public List<CommonForm1ModelRequest> FinalExaminationInf2 { get; set; } = new();
     }
 }
