@@ -609,7 +609,7 @@ namespace CalculateService.Futan.ViewModels
             KaikeiDetail.ReceSbt = wrkReceSbt;
 
             //総医療費
-            KaikeiDetail.TotalIryohi = KaikeiDetail.Tensu * PtHoken.EnTen;
+            KaikeiDetail.TotalIryohi = (int)Math.Truncate(KaikeiDetail.Tensu * PtHoken.EnTen);
 
             if (PtHoken.FutanKbn == 0)
             {
@@ -3098,7 +3098,8 @@ namespace CalculateService.Futan.ViewModels
             {
                 case 1: //労災
                 case 2: //労災アフターケア
-                    KaikeiDetail.RousaiIFutan = RaiinTensu.RousaiIFutan * PtHoken.EnTen;
+                    KaikeiDetail.RousaiITensu = RaiinTensu.RousaiITensu;
+                    KaikeiDetail.RousaiIFutan = (int)Math.Truncate(RaiinTensu.RousaiITensu * PtHoken.EnTen);
                     KaikeiDetail.RousaiRoFutan = RaiinTensu.RousaiRoFutan;
                     return KaikeiDetail.RousaiIFutan + KaikeiDetail.RousaiRoFutan;
                 case 3: //自賠
@@ -3114,7 +3115,7 @@ namespace CalculateService.Futan.ViewModels
                     if (_systemConfigProvider.GetJibaiJunkyo() == 0)
                     {
                         KaikeiDetail.JibaiKenpoTensu = RaiinTensu.JibaiKenpoTensu;
-                        KaikeiDetail.JibaiKenpoFutan = RaiinTensu.JibaiKenpoTensu * PtHoken.EnTen;
+                        KaikeiDetail.JibaiKenpoFutan = (int)Math.Truncate(RaiinTensu.JibaiKenpoTensu * PtHoken.EnTen);
                         return KaikeiDetail.JibaiKenpoFutan + KaikeiDetail.JibaiDFutan;
                     }
                     //労災準拠
@@ -3126,7 +3127,7 @@ namespace CalculateService.Futan.ViewModels
                         //Ａ（イ×単価×加算率）
                         KaikeiDetail.JibaiAFutan = CIUtil.RoundInt(KaikeiDetail.JibaiITensu * PtHoken.EnTen * _systemConfigProvider.GetJibaiRousaiRate(), 0);
                         //Ｂ（ロ×単価）
-                        KaikeiDetail.JibaiBFutan = KaikeiDetail.JibaiRoTensu * PtHoken.EnTen;
+                        KaikeiDetail.JibaiBFutan = (int)Math.Truncate(KaikeiDetail.JibaiRoTensu * PtHoken.EnTen);
                         //Ｃ（ハ×加算率）
                         KaikeiDetail.JibaiCFutan = CIUtil.RoundInt(KaikeiDetail.JibaiHaFutan * _systemConfigProvider.GetJibaiRousaiRate(), 0);
                     }
