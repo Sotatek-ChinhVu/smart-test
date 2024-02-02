@@ -673,13 +673,13 @@ namespace CalculateService.ReceFutan.Models
             switch (kohiNo)
             {
                 case 1:
-                    return Kohi1Priority ?? "".PadLeft(7, '9');
+                    return Kohi1Priority.PadLeft(7, '9');
                 case 2:
-                    return Kohi2Priority ?? "".PadLeft(7, '9');
+                    return Kohi2Priority.PadLeft(7, '9');
                 case 3:
-                    return Kohi3Priority ?? "".PadLeft(7, '9');
+                    return Kohi3Priority.PadLeft(7, '9');
                 case 4:
-                    return Kohi4Priority ?? "".PadLeft(7, '9');
+                    return Kohi4Priority.PadLeft(7, '9');
                 default:
                     return "".PadLeft(7, '9');
             }
@@ -810,6 +810,18 @@ namespace CalculateService.ReceFutan.Models
                 return
                     AdjustKid == 0 ? IchibuFutan + Kohi1Futan + Kohi2Futan + Kohi3Futan + Kohi4Futan : 0;
             }
+        }
+
+        /// <summary>
+        /// マル長（保険あり）
+        /// </summary>
+        public bool IsChokiHoken
+        {
+            get =>
+                Kohi1Houbetu == "102" ||
+                Kohi2Houbetu == "102" ||
+                Kohi3Houbetu == "102" ||
+                Kohi4Houbetu == "102";
         }
     }
 

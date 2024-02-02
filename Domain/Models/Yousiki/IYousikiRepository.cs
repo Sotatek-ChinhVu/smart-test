@@ -10,7 +10,7 @@ public interface IYousikiRepository : IRepositoryBase
 
     List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, List<long> ptIdList);
 
-    List<VisitingInfModel> GetVisitingInfs(int hpId, long ptId, int sinYm);
+    (List<VisitingInfModel> visitingInfList, Dictionary<int, string> allGrpDictionary) GetVisitingInfs(int hpId, long ptId, int sinYm);
 
     bool IsYousikiExist(int hpId, int sinYm, long ptId);
 

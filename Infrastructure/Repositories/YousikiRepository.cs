@@ -204,7 +204,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
     /// <param name="ptId"></param>
     /// <param name="sinYm"></param>
     /// <returns></returns>
-    public List<VisitingInfModel> GetVisitingInfs(int hpId, long ptId, int sinYm)
+    public (List<VisitingInfModel> visitingInfList, Dictionary<int, string> allGrpDictionary) GetVisitingInfs(int hpId, long ptId, int sinYm)
     {
         int startDate = sinYm * 100 + 01;
         int endDate = sinYm * 100 + 31;
@@ -250,6 +250,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                           raiinInf.SyosaisinKbn,
                           uketukesbt.KbnName ?? string.Empty,
                           ptCmt.Text ?? string.Empty,
+                          ka.YousikiKaCd ?? string.Empty,
                           new()
                       ))
                       .ToList();
@@ -273,6 +274,8 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                              })
                              .ToList();
 
+        var raiinKbnMsts = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId).ToList();
+        Dictionary<int, string> allGrpDictionary = new();
         foreach (var model in result)
         {
             List<RaiinListInfModel> raiinList = new();
@@ -281,29 +284,38 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                            && ((model.Status != RaiinState.Reservation ? item.RaiinListInf.RaiinNo == model.RaiinNo : item.RaiinListInf.RaiinNo == 0)
                                                                 || (item.RaiinListInf.RaiinNo == 0 && item.RaiinListInf.RaiinListKbn == RaiinListKbnConstants.FILE_KBN)))
                                             .OrderBy(item => item.RaiinListDetail.SortNo)
-                                            .Select(item => item.RaiinListInf)
+                                            .Select(item => new { item.RaiinListInf, item.RaiinListDetail })
                                             .ToList();
 
             foreach (var item in raiinListInf)
             {
-                if (raiinList.Any(r => r.GrpId == item.GrpId))
+                var raiinListInfItem = item.RaiinListInf;
+                var raiinListInfDetailItem = item.RaiinListDetail;
+                if (raiinList.Any(r => r.GrpId == raiinListInfItem.GrpId))
                 {
                     continue;
                 }
-                var isContainsFile = raiinListInf.Any(x => x.GrpId == item.GrpId && x.KbnCd == item.KbnCd && item.RaiinListKbn == RaiinListKbnConstants.FILE_KBN);
+                var isContainsFile = raiinListInf.Select(x => x.RaiinListInf).Any(x => x.GrpId == raiinListInfItem.GrpId && x.KbnCd == raiinListInfItem.KbnCd && raiinListInfItem.RaiinListKbn == RaiinListKbnConstants.FILE_KBN);
                 var raiinListInfModel = new RaiinListInfModel(
-                                            item.PtId,
-                                            item.SinDate,
-                                            item.RaiinNo,
-                                            item.GrpId,
-                                            item.KbnCd,
+                                            raiinListInfItem.PtId,
+                                            raiinListInfItem.SinDate,
+                                            raiinListInfItem.RaiinNo,
+                                            raiinListInfItem.GrpId,
+                                            raiinKbnMsts.FirstOrDefault(x => x.GrpCd == raiinListInfItem.GrpId)?.GrpName ?? string.Empty,
+                                            raiinListInfItem.KbnCd,
+                                            raiinListInfDetailItem.KbnName ?? string.Empty,
+                                            raiinListInfDetailItem.ColorCd ?? string.Empty,
                                             isContainsFile);
                 raiinList.Add(raiinListInfModel);
+                if (!allGrpDictionary.ContainsKey(raiinListInfModel.GrpId))
+                {
+                    allGrpDictionary.Add(raiinListInfModel.GrpId, raiinListInfModel.GrpName);
+                }
             }
 
             model.UpdateRaiinListInfList(raiinList);
         }
-        return result;
+        return (result, allGrpDictionary);
     }
 
     /// <summary>
