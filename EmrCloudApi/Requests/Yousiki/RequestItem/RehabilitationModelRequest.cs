@@ -2,6 +2,8 @@
 {
     public class RehabilitationModelRequest
     {
+        public List<UpdateYosiki1InfDetailRequestItem> UpdateYosiki1InfDetailRequestItems { get; set; } = new();
+
         public List<OutpatientConsultationModelRequest> OutpatientConsultationList { get; set; } = new();
 
         public List<CommonForm1ModelRequest> ByomeiRehabilitationList { get; set; } = new();

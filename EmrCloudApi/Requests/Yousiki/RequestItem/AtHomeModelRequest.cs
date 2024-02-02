@@ -2,6 +2,8 @@
 {
     public class AtHomeModelRequest
     {
+        public List<UpdateYosiki1InfDetailRequestItem> UpdateYosiki1InfDetailRequestItems { get; set; } = new();
+
         public List<StatusVisitModelRequest> StatusVisitList { get; set; } = new();
 
         public List<StatusVisitModelRequest> StatusVisitNursingList { get; set; } = new();

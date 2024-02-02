@@ -2,6 +2,8 @@
 {
     public class LivingHabitModelRequest
     {
+        public List<UpdateYosiki1InfDetailRequestItem> UpdateYosiki1InfDetailRequestItems { get; set; } = new();
+
         public List<OutpatientConsultationInfModelRequest> OutpatientConsultationInfList { get; set; } = new();
 
         public List<StrokeHistoryModelRequest> StrokeHistoryList { get; set; } = new();
