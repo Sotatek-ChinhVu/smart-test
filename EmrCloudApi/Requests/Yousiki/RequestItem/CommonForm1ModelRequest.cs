@@ -10,10 +10,6 @@
 
         public List<UpdateYosiki1InfDetailRequestItem> CommonForm1ModelRequestItems { get; set; } = new();
 
-        public List<PatientSitutationListRequestItem> PatientSitutationListRequestItems { get; set; } = new();
-
-        public List<BarthelIndexListRequest> BarthelIndexListRequestIItems { get; set; } = new();
-
-        public List<StatusNurtritionListRequest> StatusNurtritionListRequestIItems { get; set; } = new();
+        
     }
 }

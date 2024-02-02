@@ -369,6 +369,94 @@ public class YousikiController : AuthorizeControllerBase
     {
         List<Yousiki1InfDetailModel> result = new();
 
+        foreach (var finalExaminationInfRequestItem in items.FinalExaminationInf)
+        {
+            var valueModifierCode = "";
+
+            foreach (var value in finalExaminationInfRequestItem.PrefixSuffixRequests)
+            {
+                valueModifierCode = valueModifierCode + value.Code;
+            }
+
+            result.Add(new Yousiki1InfDetailModel(
+                finalExaminationInfRequestItem.InjuryNameLast.PtId,
+                finalExaminationInfRequestItem.InjuryNameLast.SinYm,
+                finalExaminationInfRequestItem.InjuryNameLast.DataType,
+                finalExaminationInfRequestItem.InjuryNameLast.SeqNo,
+                finalExaminationInfRequestItem.InjuryNameLast.CodeNo,
+                finalExaminationInfRequestItem.InjuryNameLast.RowNo,
+                finalExaminationInfRequestItem.InjuryNameLast.Payload,
+                finalExaminationInfRequestItem.FullByomeiRequest,
+                finalExaminationInfRequestItem.InjuryNameLast.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                finalExaminationInfRequestItem.InjuryNameCode.PtId,
+                finalExaminationInfRequestItem.InjuryNameCode.SinYm,
+                finalExaminationInfRequestItem.InjuryNameCode.DataType,
+                finalExaminationInfRequestItem.InjuryNameCode.SeqNo,
+                finalExaminationInfRequestItem.InjuryNameCode.CodeNo,
+                finalExaminationInfRequestItem.InjuryNameCode.RowNo,
+                finalExaminationInfRequestItem.InjuryNameCode.Payload,
+                finalExaminationInfRequestItem.ByomeiCdRequest,
+                finalExaminationInfRequestItem.InjuryNameCode.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                finalExaminationInfRequestItem.ModifierCode.PtId,
+                finalExaminationInfRequestItem.ModifierCode.SinYm,
+                finalExaminationInfRequestItem.ModifierCode.DataType,
+                finalExaminationInfRequestItem.ModifierCode.SeqNo,
+                finalExaminationInfRequestItem.ModifierCode.CodeNo,
+                finalExaminationInfRequestItem.ModifierCode.RowNo,
+                finalExaminationInfRequestItem.ModifierCode.Payload,
+                valueModifierCode,
+                finalExaminationInfRequestItem.ModifierCode.IsDeleted)
+                );
+        }
+
+        foreach (var finalExaminationInfRequestItem in items.FinalExaminationInf2)
+        {
+            var valueModifierCode = "";
+
+            foreach (var value in finalExaminationInfRequestItem.PrefixSuffixRequests)
+            {
+                valueModifierCode = valueModifierCode + value.Code;
+            }
+
+            result.Add(new Yousiki1InfDetailModel(
+                finalExaminationInfRequestItem.InjuryNameLast.PtId,
+                finalExaminationInfRequestItem.InjuryNameLast.SinYm,
+                finalExaminationInfRequestItem.InjuryNameLast.DataType,
+                finalExaminationInfRequestItem.InjuryNameLast.SeqNo,
+                finalExaminationInfRequestItem.InjuryNameLast.CodeNo,
+                finalExaminationInfRequestItem.InjuryNameLast.RowNo,
+                finalExaminationInfRequestItem.InjuryNameLast.Payload,
+                finalExaminationInfRequestItem.FullByomeiRequest,
+                finalExaminationInfRequestItem.InjuryNameLast.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                finalExaminationInfRequestItem.InjuryNameCode.PtId,
+                finalExaminationInfRequestItem.InjuryNameCode.SinYm,
+                finalExaminationInfRequestItem.InjuryNameCode.DataType,
+                finalExaminationInfRequestItem.InjuryNameCode.SeqNo,
+                finalExaminationInfRequestItem.InjuryNameCode.CodeNo,
+                finalExaminationInfRequestItem.InjuryNameCode.RowNo,
+                finalExaminationInfRequestItem.InjuryNameCode.Payload,
+                finalExaminationInfRequestItem.ByomeiCdRequest,
+                finalExaminationInfRequestItem.InjuryNameCode.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                finalExaminationInfRequestItem.ModifierCode.PtId,
+                finalExaminationInfRequestItem.ModifierCode.SinYm,
+                finalExaminationInfRequestItem.ModifierCode.DataType,
+                finalExaminationInfRequestItem.ModifierCode.SeqNo,
+                finalExaminationInfRequestItem.ModifierCode.CodeNo,
+                finalExaminationInfRequestItem.ModifierCode.RowNo,
+                finalExaminationInfRequestItem.ModifierCode.Payload,
+                valueModifierCode,
+                finalExaminationInfRequestItem.ModifierCode.IsDeleted)
+                );
+        }
+
         foreach (var item in items.HospitalizationStatusList)
         {
 
@@ -634,31 +722,6 @@ public class YousikiController : AuthorizeControllerBase
                 item.Value,
                 item.IsDeleted
             ));
-        }
-
-        return result;
-    }
-
-    private int ReplaceSinYm(string sinYmDisplay)
-    {
-        var sinYmString = sinYmDisplay.Replace("/", "");
-        return int.Parse(sinYmString);
-    }
-
-    private List<Yousiki1InfDetailModel> ConvertModelToYousiki1InfDetail(List<UpdateYosiki1InfDetailRequestItem> items)
-    {
-        List<Yousiki1InfDetailModel> result = new();
-
-        foreach (var item in items)
-        {
-            result.Add(new Yousiki1InfDetailModel(
-                item.PtId,
-                item.SinYm,
-                item.DataType,
-                item.SeqNo,
-                item.CodeNo,
-                item.RowNo,
-                item.Payload, item.Value));
         }
 
         return result;
