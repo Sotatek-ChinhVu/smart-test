@@ -2,6 +2,6 @@
 {
     public class OutpatientConsultationModelRequest
     {
-        public List<UpdateYosiki1InfDetailRequestItem> OutpatientConsultationModel { get; set; } = new();
+        public List<UpdateYousiki1InfDetailRequestItem> OutpatientConsultationModel { get; set; } = new();
     }
 }

@@ -2,7 +2,7 @@
 {
     public class CommonForm1ModelRequest
     {
-        public List<UpdateYosiki1InfDetailRequestItem> CommonForm1ModelRequestItems { get; set; } = new();
+        public List<UpdateYousiki1InfDetailRequestItem> CommonForm1ModelRequestItems { get; set; } = new();
 
         public List<HospitalizationStatusListRequestItem> DiagnosticInjuryListRequestItems { get; set; } = new();
 

@@ -2,13 +2,13 @@
 {
     public class HospitalizationStatusListRequestItem
     {
-        public List<UpdateYosiki1InfDetailRequestItem> UpdateYosiki1InfDetailRequestItem { get; set; } = new();
+        public List<UpdateYousiki1InfDetailRequestItem> UpdateYosiki1InfDetailRequestItem { get; set; } = new();
 
-        public UpdateYosiki1InfDetailRequestItem InjuryNameLast { get; set; } = new();
+        public UpdateYousiki1InfDetailRequestItem InjuryNameLast { get; set; } = new();
 
-        public UpdateYosiki1InfDetailRequestItem InjuryNameCode {  get; set; } = new(); 
+        public UpdateYousiki1InfDetailRequestItem InjuryNameCode {  get; set; } = new(); 
 
-        public UpdateYosiki1InfDetailRequestItem ModifierCode { get; set; } = new();
+        public UpdateYousiki1InfDetailRequestItem ModifierCode { get; set; } = new();
 
         public string ByomeiCdRequest { get; set; } = string.Empty;
 
