@@ -2,11 +2,6 @@
 {
     public class StatusShortTermAdmissionModelRequest
     {
-        /*public UpdateYosiki1InfDetailRequestItem AdmissionDate { get; set; } = new();
-
-        public UpdateYosiki1InfDetailRequestItem DischargeDate { get; set; } = new();
-
-        public UpdateYosiki1InfDetailRequestItem Service { get; set; } = new();*/
 
         public long PtId { get; set; }
 

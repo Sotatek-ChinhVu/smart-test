@@ -2,7 +2,6 @@
 {
     public class AcuteAorticDissectionHistoryModelRequest
     {
-        //public UpdateYosiki1InfDetailRequestItem OnsetDate { get; set; } = new();
         public long PtId { get; set; }
 
         public int SinYm { get; set; }

@@ -135,11 +135,12 @@ public class CommonForm1Model
         CodeNo = yousiki1InfDetails[0].CodeNo;
         SortNo = yousiki1InfDetails[0].RowNo;
         GridType = listType;
+
         foreach (var item in yousiki1InfDetails)
         {
             if (listType == ByomeiListType.None)
             {
-                if (item.Value.AsInteger() == PayLoadValueSelect)
+                if (item.Payload == PayLoadValueSelect)
                 {
                     ValueSelect = item;
                     if (ValueSelect.Value.AsInteger() == 1)

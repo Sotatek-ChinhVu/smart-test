@@ -2,13 +2,6 @@
 {
     public class OutpatientConsultationInfModelRequest
     {
-        /*public UpdateYosiki1InfDetailRequestItem ConsultationDate { get; set; } = new();
-
-        public UpdateYosiki1InfDetailRequestItem FirstVisit { get; set; } = new();
-
-        public UpdateYosiki1InfDetailRequestItem AppearanceReferral { get; set; } = new();
-
-        public UpdateYosiki1InfDetailRequestItem DepartmentCode { get; set; } = new();*/
         public long PtId { get; set; }
 
         public int SinYm { get; set; }

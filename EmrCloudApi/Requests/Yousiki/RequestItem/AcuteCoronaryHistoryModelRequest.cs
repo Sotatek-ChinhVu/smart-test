@@ -1,13 +1,7 @@
-﻿using Domain.Models.Yousiki;
-
-namespace EmrCloudApi.Requests.Yousiki.RequestItem
+﻿namespace EmrCloudApi.Requests.Yousiki.RequestItem
 {
     public class AcuteCoronaryHistoryModelRequest
     {
-        /*public UpdateYosiki1InfDetailRequestItem Type { get; set; } = new();
-
-        public UpdateYosiki1InfDetailRequestItem OnsetDate { get; set; } = new();*/
-
         public long PtId { get; set; }
 
         public int SinYm { get; set; }

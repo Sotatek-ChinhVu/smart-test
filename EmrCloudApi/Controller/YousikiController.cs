@@ -159,7 +159,7 @@ public class YousikiController : AuthorizeControllerBase
     {
         List<Yousiki1InfDetailModel> result = new();
 
-        foreach (var item in items.UpdateYosiki1InfDetailRequestItems)
+        foreach (var item in items.UpdateYousiki1InfDetailRequestItems)
         {
             result.Add(new Yousiki1InfDetailModel(
                 item.PtId,
@@ -177,15 +177,15 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var item in items.ValueSelectObjectRequest)
         {
             result.Add(new Yousiki1InfDetailModel(
-                item.UpdateYosiki1InfDetailRequestItem.PtId,
-                item.UpdateYosiki1InfDetailRequestItem.SinYm,
-                item.UpdateYosiki1InfDetailRequestItem.DataType,
-                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
-                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
-                item.UpdateYosiki1InfDetailRequestItem.RowNo,
-                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.UpdateYousiki1InfDetailRequestItem.PtId,
+                item.UpdateYousiki1InfDetailRequestItem.SinYm,
+                item.UpdateYousiki1InfDetailRequestItem.DataType,
+                item.UpdateYousiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYousiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYousiki1InfDetailRequestItem.RowNo,
+                item.UpdateYousiki1InfDetailRequestItem.Payload,
                 item.ValueSelect.ToString(),
-                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
+                item.UpdateYousiki1InfDetailRequestItem.IsDeleted
             ));
         }
 
@@ -403,15 +403,15 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var item in items.ValueSelectObjectRequest)
         {
             result.Add(new Yousiki1InfDetailModel(
-                item.UpdateYosiki1InfDetailRequestItem.PtId,
-                item.UpdateYosiki1InfDetailRequestItem.SinYm,
-                item.UpdateYosiki1InfDetailRequestItem.DataType,
-                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
-                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
-                item.UpdateYosiki1InfDetailRequestItem.RowNo,
-                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.UpdateYousiki1InfDetailRequestItem.PtId,
+                item.UpdateYousiki1InfDetailRequestItem.SinYm,
+                item.UpdateYousiki1InfDetailRequestItem.DataType,
+                item.UpdateYousiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYousiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYousiki1InfDetailRequestItem.RowNo,
+                item.UpdateYousiki1InfDetailRequestItem.Payload,
                 item.ValueSelect.ToString(),
-                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
+                item.UpdateYousiki1InfDetailRequestItem.IsDeleted
             ));
         }
 
@@ -713,15 +713,15 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var item in items.ValueSelectObjectRequest)
         {
             result.Add(new Yousiki1InfDetailModel(
-                item.UpdateYosiki1InfDetailRequestItem.PtId,
-                item.UpdateYosiki1InfDetailRequestItem.SinYm,
-                item.UpdateYosiki1InfDetailRequestItem.DataType,
-                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
-                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
-                item.UpdateYosiki1InfDetailRequestItem.RowNo,
-                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.UpdateYousiki1InfDetailRequestItem.PtId,
+                item.UpdateYousiki1InfDetailRequestItem.SinYm,
+                item.UpdateYousiki1InfDetailRequestItem.DataType,
+                item.UpdateYousiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYousiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYousiki1InfDetailRequestItem.RowNo,
+                item.UpdateYousiki1InfDetailRequestItem.Payload,
                 item.ValueSelect.ToString(),
-                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
+                item.UpdateYousiki1InfDetailRequestItem.IsDeleted
             ));
         }
 
@@ -795,15 +795,15 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var item in items.ValueSelectObjectRequest)
         {
             result.Add(new Yousiki1InfDetailModel(
-                item.UpdateYosiki1InfDetailRequestItem.PtId,
-                item.UpdateYosiki1InfDetailRequestItem.SinYm,
-                item.UpdateYosiki1InfDetailRequestItem.DataType,
-                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
-                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
-                item.UpdateYosiki1InfDetailRequestItem.RowNo,
-                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.UpdateYousiki1InfDetailRequestItem.PtId,
+                item.UpdateYousiki1InfDetailRequestItem.SinYm,
+                item.UpdateYousiki1InfDetailRequestItem.DataType,
+                item.UpdateYousiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYousiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYousiki1InfDetailRequestItem.RowNo,
+                item.UpdateYousiki1InfDetailRequestItem.Payload,
                 item.ValueSelect.ToString(),
-                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
+                item.UpdateYousiki1InfDetailRequestItem.IsDeleted
             ));
         }
 

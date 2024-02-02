@@ -2,7 +2,7 @@
 {
     public class RehabilitationModelRequest
     {
-        public List<UpdateYousiki1InfDetailRequestItem> UpdateYosiki1InfDetailRequestItems { get; set; } = new();
+        public List<UpdateYousiki1InfDetailRequestItem> UpdateYousiki1InfDetailRequestItems { get; set; } = new();
 
         public List<OutpatientConsultationModelRequest> OutpatientConsultationList { get; set; } = new();
 
