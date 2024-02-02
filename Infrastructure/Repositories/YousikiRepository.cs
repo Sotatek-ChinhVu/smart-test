@@ -105,7 +105,16 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                 continue;
             }
 
-            Dictionary<int, int> statusDic = orderGroup.ToDictionary(x => x.DataType, x => x.Status);
+            Dictionary<int, int> statusDic = new();
+
+            foreach (var item in orderGroup)
+            {
+                if (!statusDic.ContainsKey(item.DataType))
+                {
+                    statusDic.Add(item.DataType, item.Status);
+                }
+            }
+
             yousiki.ChangeStatusDic(statusDic);
             compoundedResultList.Add(yousiki);
         }
