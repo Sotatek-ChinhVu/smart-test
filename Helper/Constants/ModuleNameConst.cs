@@ -5,5 +5,6 @@
         public const string EmrCalculate = "EmrCalculateApi";
         public const string EmrCalculateIka = "EmrCalculateApi.Ika";
         public const string EmrCalculateReceipt = "EmrCalculateApi.Receipt";
+        public const string EmrCalculateEFFile = "Emr.Calculate.EFFile";
     }
 }

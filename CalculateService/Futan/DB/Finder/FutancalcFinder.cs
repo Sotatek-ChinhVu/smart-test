@@ -15,9 +15,10 @@ namespace CalculateService.Futan.DB.Finder
     {
         private List<KogakuLimitModel>? _kogakuLimitModels;
         private readonly TenantDataContext _tenantDataContext;
-        public FutancalcFinder(TenantDataContext tenantDataContext)
+        public FutancalcFinder(TenantDataContext tenantDataContext, List<KogakuLimitModel>? kogakuLimits = null)
         {
             _tenantDataContext = tenantDataContext;
+            _kogakuLimitModels = kogakuLimits;
         }
 
         /// <summary>

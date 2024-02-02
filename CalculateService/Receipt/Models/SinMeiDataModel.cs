@@ -10,6 +10,7 @@ namespace CalculateService.Receipt.Models
 
         private long _ptId;
         private string _recId;
+        private string _kouiRecId;
         private int _sinId;
         private string _futanKbn;
         private string _itemCd;
@@ -21,6 +22,7 @@ namespace CalculateService.Receipt.Models
         private double _kingaku;
         private double _totalTen;
         private double _totalKingaku;
+        private double _meisaiTen;
         private int _count;
         private int _unitCd;
         private string _unitName;
@@ -89,6 +91,15 @@ namespace CalculateService.Receipt.Models
         private string _syukeiSaki;
 
         private int _entenKbn;
+        private int _efFlg;
+        private int _ipnFlg;
+
+        private string _itemCdKbn;
+        private int _itemCdKbnNo;
+        private int _itemCdEdaNo;
+        private int _itemCdKouNo;
+        private string _kokuji1;
+        private string _kokuji2;
 
         ISystemConfigProvider _systemConfigProvider;
         IEmrLogger _emrLogger;
@@ -115,6 +126,12 @@ namespace CalculateService.Receipt.Models
         {
             get { return _recId; }
             set { _recId = value; }
+        }
+
+        public string KouiRecId
+        {
+            get { return _kouiRecId; }
+            set { _kouiRecId = value; }
         }
 
         /// <summary>
@@ -229,17 +246,17 @@ namespace CalculateService.Receipt.Models
         }
         public string SuryoDsp
         {
-            get 
+            get
             {
                 string ret = "";
 
-                if(string.IsNullOrEmpty(UnitName) == false)
+                if (string.IsNullOrEmpty(UnitName) == false)
                 {
                     ret = Suryo.ToString();
                 }
-                return ret; 
+                return ret;
             }
-            
+
         }
         /// <summary>
         /// 点数
@@ -938,7 +955,7 @@ namespace CalculateService.Receipt.Models
             {
                 int ret = 0;
 
-                switch(KazeiKbn)
+                switch (KazeiKbn)
                 {
                     case 0: ret = 2; break;
                     case 1: ret = 0; break;
@@ -982,23 +999,23 @@ namespace CalculateService.Receipt.Models
             {
                 string ret = "";
 
-                switch(RecId)
+                switch (RecId)
                 {
                     case "SI":
-                            // SIレコード
-                            ret = GetSIRecord();
+                        // SIレコード
+                        ret = GetSIRecord();
                         break;
                     case "IY":
-                            // IYレコード
-                            ret = GetIYRecord();
+                        // IYレコード
+                        ret = GetIYRecord();
                         break;
                     case "TO":
-                            // TOレコード
-                            ret = GetTORecord();
+                        // TOレコード
+                        ret = GetTORecord();
                         break;
                     case "CO":
-                            // COレコード
-                            ret = GetCORecord();
+                        // COレコード
+                        ret = GetCORecord();
                         break;
                 }
 
@@ -1110,7 +1127,7 @@ namespace CalculateService.Receipt.Models
             {
                 ret += ",";
             }
-             // 診療行為コード
+            // 診療行為コード
             ret += "," + ItemCd;
 
             // 数量
@@ -1234,7 +1251,7 @@ namespace CalculateService.Receipt.Models
             {
                 if (CIUtil.IsUntilJISKanjiLevel2(commentData, ref refText, ref badText) == false)
                 {
-                    _emrLogger.WriteLogMsg( this, "GetCORecord",
+                    _emrLogger.WriteLogMsg(this, "GetCORecord",
                         string.Format("CommentData is include bad charcter PtId:{0} Comment:{1} badCharcters:{1}",
                             _ptId, commentData, badText));
 
@@ -1285,7 +1302,7 @@ namespace CalculateService.Receipt.Models
                                 // フリーコメントで、空、または、スペースのみの場合は、記録しない
                             }
                             else
-                            { 
+                            {
                                 // コメント情報
                                 if (ret != "")
                                 {
@@ -1350,7 +1367,7 @@ namespace CalculateService.Receipt.Models
 
             // 診療行為コード
             ret += "," + ItemCd;
-            
+
             return ret;
         }
 
@@ -1404,7 +1421,7 @@ namespace CalculateService.Receipt.Models
             string retTen = "";
 
             if (LastRowKbn == 1)
-            {                
+            {
                 retTen += CIUtil.ToStringIgnoreZero(Math.Abs(Ten));
             }
             return retTen;
@@ -1456,11 +1473,11 @@ namespace CalculateService.Receipt.Models
 
             //if(LastRowKbn == 1)
             //{
-                retCount = Count.ToString();
+            retCount = Count.ToString();
             //}
             return retCount;
         }
-        
+
         /// <summary>
         /// コメント情報を取得
         /// </summary>
@@ -1569,7 +1586,7 @@ namespace CalculateService.Receipt.Models
             {
                 int ret = 0;
 
-                if(new int[] { 1, 99 }.Contains(SinId))
+                if (new int[] { 1, 99 }.Contains(SinId))
                 {
                     ret = SinId;
                 }
@@ -1655,7 +1672,7 @@ namespace CalculateService.Receipt.Models
         ///     （削）9: 歯科特定薬剤
         ///     ※レセプト電算マスターの項目「剤型」を収容する。
         public int DrugKbn { get; set; } = 0;
-        
+
         /// <summary>
         /// SIN_KOUI.RP_NO
         /// </summary>
@@ -1671,7 +1688,7 @@ namespace CalculateService.Receipt.Models
             {
                 bool ret = false;
 
-                if(string.IsNullOrEmpty(OdrItemCd) || 
+                if (string.IsNullOrEmpty(OdrItemCd) ||
                     (OdrItemCd.StartsWith("8") && OdrItemCd.Length == 9))
                 {
                     ret = true;
@@ -1681,5 +1698,97 @@ namespace CalculateService.Receipt.Models
             }
         }
 
+        /// <summary>
+        /// 解釈番号(EFファイル用)
+        /// </summary>
+        public string KaisyakuNo
+        {
+            get
+            {
+                string ret = string.Empty;
+
+                if (string.IsNullOrEmpty(ItemCdKbn) == false)
+                {
+                    ret = $"{ItemCdKbn}{ItemCdKbnNo.ToString().PadLeft(3, '0')}";
+                    if (ItemCdEdaNo > 0)
+                    {
+                        ret += "-" + ItemCdEdaNo;
+                    }
+                }
+
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// 明細点数
+        /// </summary>
+        public double MeisaiTen
+        {
+            get { return _meisaiTen; }
+            set { _meisaiTen = value; }
+        }
+
+        /// <summary>
+        /// EF対象フラグ
+        /// </summary>
+        public int EfFlg
+        {
+            get { return _efFlg; }
+            set { _efFlg = value; }
+        }
+
+        /// <summary>
+        /// 一般名処方フラグ
+        /// </summary>
+        public int IpnFlg
+        {
+            get { return _ipnFlg; }
+            set { _ipnFlg = value; }
+        }
+
+        public int FmtKbn { get; set; }
+
+        /// <summary>
+        /// リフィル処方
+        /// </summary>
+        public double Refill { get; set; } = 0;
+
+        public string Kokuji1
+        {
+            get { return _kokuji1; }
+            set { _kokuji1 = value; }
+        }
+
+        public string Kokuji2
+        {
+            get { return _kokuji2; }
+            set { _kokuji2 = value; }
+        }
+
+        /// <summary>
+        /// コード区分
+        /// </summary>
+        public string ItemCdKbn
+        {
+            get { return _itemCdKbn; }
+            set { _itemCdKbn = value; }
+        }
+        /// <summary>
+        /// コード区分番号
+        /// </summary>
+        public int ItemCdKbnNo
+        {
+            get { return _itemCdKbnNo; }
+            set { _itemCdKbnNo = value; }
+        }
+        /// <summary>
+        /// コード区分枝番
+        /// </summary>
+        public int ItemCdEdaNo
+        {
+            get { return _itemCdEdaNo; }
+            set { _itemCdEdaNo = value; }
+        }
     }
 }

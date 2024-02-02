@@ -10,13 +10,13 @@ namespace CalculateService.ReceFutan.Models
             string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, string kohi1Priority,
             string kohi2Priority, string kohi3Priority, string kohi4Priority, int honkeKbn, int kogakuKbn,
             int kogakuTekiyoKbn, int isTokurei, int isTasukai, /*int isNotKogakuTotal,*/ int isChoki, int kogakuLimit, int totalKogakuLimit,
-            int genmenKbn, int hokenRate, int ptRate, int enTen, int kohi1Limit, int kohi1OtherFutan, int kohi2Limit,
+            int genmenKbn, int hokenRate, int ptRate, double enTen, int kohi1Limit, int kohi1OtherFutan, int kohi2Limit,
             int kohi2OtherFutan, int kohi3Limit, int kohi3OtherFutan, int kohi4Limit, int kohi4OtherFutan,
             int tensu, int totalIryohi, int hokenFutan, int kogakuFutan, int kohi1Futan,
             int kohi2Futan, int kohi3Futan, int kohi4Futan, int ichibuFutan, int genmenGaku, int hokenFutan10en,
             int kogakuFutan10en, int kohi1Futan10en, int kohi2Futan10en, int kohi3Futan10en, int kohi4Futan10en,
             int ichibuFutan10en, int genmenGaku10en, int ptFutan, int kogakuOverKbn, string receSbt,
-            int rousaiIFutan, int rousaiRoFutan, int jibaiITensu, int jibaiRoTensu,
+            int rousaiITensu, int rousaiIFutan, int rousaiRoFutan, int jibaiITensu, int jibaiRoTensu,
             int jibaiHaFutan, int jibaiNiFutan, int jibaiHoSindan, int jibaiHoSindanCount,
             int jibaiHeMeisai, int jibaiHeMeisaiCount, int jibaiAFutan,
             int jibaiBFutan, int jibaiCFutan, int jibaiDFutan, int jibaiKenpoTensu, int jibaiKenpoFutan,
@@ -86,6 +86,7 @@ namespace CalculateService.ReceFutan.Models
             PtFutan = ptFutan;
             KogakuOverKbn = kogakuOverKbn;
             ReceSbt = receSbt;
+            RousaiITensu = rousaiITensu;
             RousaiIFutan = rousaiIFutan;
             RousaiRoFutan = rousaiRoFutan;
             JibaiITensu = jibaiITensu;
@@ -309,7 +310,7 @@ namespace CalculateService.ReceFutan.Models
         /// 点数単価
         /// 
         /// </summary>
-        public int EnTen;
+        public double EnTen;
 
         /// <summary>
         /// 公１負担限度額
@@ -496,6 +497,12 @@ namespace CalculateService.ReceFutan.Models
         public string ReceSbt;
 
         /// <summary>
+        /// 労災イ点数
+        /// 
+        /// </summary>
+        public int RousaiITensu;
+
+        /// <summary>
         /// 労災イ点負担額
         /// 
         /// </summary>
@@ -673,13 +680,13 @@ namespace CalculateService.ReceFutan.Models
             switch (kohiNo)
             {
                 case 1:
-                    return Kohi1Priority ?? "".PadLeft(7, '9');
+                    return Kohi1Priority.PadLeft(7, '9');
                 case 2:
-                    return Kohi2Priority ?? "".PadLeft(7, '9');
+                    return Kohi2Priority.PadLeft(7, '9');
                 case 3:
-                    return Kohi3Priority ?? "".PadLeft(7, '9');
+                    return Kohi3Priority.PadLeft(7, '9');
                 case 4:
-                    return Kohi4Priority ?? "".PadLeft(7, '9');
+                    return Kohi4Priority.PadLeft(7, '9');
                 default:
                     return "".PadLeft(7, '9');
             }
@@ -810,6 +817,18 @@ namespace CalculateService.ReceFutan.Models
                 return
                     AdjustKid == 0 ? IchibuFutan + Kohi1Futan + Kohi2Futan + Kohi3Futan + Kohi4Futan : 0;
             }
+        }
+
+        /// <summary>
+        /// マル長（保険あり）
+        /// </summary>
+        public bool IsChokiHoken
+        {
+            get =>
+                Kohi1Houbetu == "102" ||
+                Kohi2Houbetu == "102" ||
+                Kohi3Houbetu == "102" ||
+                Kohi4Houbetu == "102";
         }
     }
 
