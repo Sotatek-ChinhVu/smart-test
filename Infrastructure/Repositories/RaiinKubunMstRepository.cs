@@ -506,29 +506,32 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (existingEntity is null)
+                    if (kbnInfDto.KbnCd > 0)
                     {
-                        // Insert
-                        TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                        if (existingEntity is null)
                         {
-                            HpId = hpId,
-                            PtId = raiinInf.PtId,
-                            SinDate = raiinInf.SinDate,
-                            RaiinNo = raiinInf.RaiinNo,
-                            GrpId = kbnInfDto.GrpId,
-                            KbnCd = kbnInfDto.KbnCd,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            CreateId = userId
-                        });
-                    }
-                    else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
-                    {
-                        // Update
-                        existingEntity.KbnCd = kbnInfDto.KbnCd;
-                        existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        existingEntity.UpdateId = userId;
+                            // Insert
+                            TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                            {
+                                HpId = hpId,
+                                PtId = raiinInf.PtId,
+                                SinDate = raiinInf.SinDate,
+                                RaiinNo = raiinInf.RaiinNo,
+                                GrpId = kbnInfDto.GrpId,
+                                KbnCd = kbnInfDto.KbnCd,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                CreateId = userId
+                            });
+                        }
+                        else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                        {
+                            // Update
+                            existingEntity.KbnCd = kbnInfDto.KbnCd;
+                            existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            existingEntity.UpdateId = userId;
+                        }
                     }
                 }
             }
