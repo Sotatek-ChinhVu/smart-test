@@ -400,6 +400,21 @@ public class YousikiController : AuthorizeControllerBase
     {
         List<Yousiki1InfDetailModel> result = new();
 
+        foreach (var item in items.UpdateYousiki1InfDetailRequestItems)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
         foreach (var item in items.ValueSelectObjectRequest)
         {
             result.Add(new Yousiki1InfDetailModel(
@@ -722,6 +737,21 @@ public class YousikiController : AuthorizeControllerBase
                 item.UpdateYousiki1InfDetailRequestItem.Payload,
                 item.ValueSelect.ToString(),
                 item.UpdateYousiki1InfDetailRequestItem.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.UpdateYousiki1InfDetailRequestItems)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
             ));
         }
 
