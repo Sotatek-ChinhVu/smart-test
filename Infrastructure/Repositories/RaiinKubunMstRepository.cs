@@ -485,6 +485,7 @@ namespace Infrastructure.Repositories
 
         private void SaveRaiinKbnInfs(int hpId, int userId, RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
         {
+            kbnInfDtos = kbnInfDtos.Where(i => i.KbnCd > 0);
             var existingEntities = TrackingDataContext.RaiinKbnInfs
                 .Where(x => x.HpId == hpId
                     && x.PtId == raiinInf.PtId
