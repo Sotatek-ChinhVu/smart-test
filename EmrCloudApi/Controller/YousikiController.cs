@@ -158,6 +158,37 @@ public class YousikiController : AuthorizeControllerBase
     private List<Yousiki1InfDetailModel> ConvertTabRehabilitationModelToYousiki1InfDetail(RehabilitationModelRequest items, UpdateYosikiInfRequestItem yosikiInfRequestItem)
     {
         List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items.UpdateYosiki1InfDetailRequestItems)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.PtId,
+                item.SinYm,
+                item.DataType,
+                item.SeqNo,
+                item.CodeNo,
+                item.RowNo,
+                item.Payload,
+                item.Value,
+                item.IsDeleted
+            ));
+        }
+
+        foreach (var item in items.ValueSelectObjectRequest)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.UpdateYosiki1InfDetailRequestItem.PtId,
+                item.UpdateYosiki1InfDetailRequestItem.SinYm,
+                item.UpdateYosiki1InfDetailRequestItem.DataType,
+                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYosiki1InfDetailRequestItem.RowNo,
+                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.ValueSelect.ToString(),
+                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
+            ));
+        }
+
         var barthelIndexValue = "";
         foreach (var item in items.BarthelIndexLists)
         {
@@ -368,6 +399,21 @@ public class YousikiController : AuthorizeControllerBase
     private List<Yousiki1InfDetailModel> ConvertTabAtHomeModelToYousiki1InfDetail(AtHomeModelRequest items, UpdateYosikiInfRequestItem yosikiInfRequestItem)
     {
         List<Yousiki1InfDetailModel> result = new();
+
+        foreach (var item in items.ValueSelectObjectRequest)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.UpdateYosiki1InfDetailRequestItem.PtId,
+                item.UpdateYosiki1InfDetailRequestItem.SinYm,
+                item.UpdateYosiki1InfDetailRequestItem.DataType,
+                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYosiki1InfDetailRequestItem.RowNo,
+                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.ValueSelect.ToString(),
+                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
+            ));
+        }
 
         foreach (var finalExaminationInfRequestItem in items.FinalExaminationInf)
         {
@@ -664,6 +710,21 @@ public class YousikiController : AuthorizeControllerBase
     {
         List<Yousiki1InfDetailModel> result = new();
 
+        foreach (var item in items.ValueSelectObjectRequest)
+        {
+            result.Add(new Yousiki1InfDetailModel(
+                item.UpdateYosiki1InfDetailRequestItem.PtId,
+                item.UpdateYosiki1InfDetailRequestItem.SinYm,
+                item.UpdateYosiki1InfDetailRequestItem.DataType,
+                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYosiki1InfDetailRequestItem.RowNo,
+                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.ValueSelect.ToString(),
+                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
+            ));
+        }
+
         foreach (var item in items.OutpatientConsultationInfList)
         {
             result.Add(new Yousiki1InfDetailModel(
@@ -731,20 +792,20 @@ public class YousikiController : AuthorizeControllerBase
     {
         List<Yousiki1InfDetailModel> result = new();
 
-        /*foreach (var item in items.ValueSelectObjectRequest)
+        foreach (var item in items.ValueSelectObjectRequest)
         {
             result.Add(new Yousiki1InfDetailModel(
                 item.UpdateYosiki1InfDetailRequestItem.PtId,
-                item.SinYm,
-                item.DataType,
-                item.SeqNo,
-                item.CodeNo,
-                item.RowNo,
-                item.Payload,
-                item.Value,
-                item.IsDeleted
+                item.UpdateYosiki1InfDetailRequestItem.SinYm,
+                item.UpdateYosiki1InfDetailRequestItem.DataType,
+                item.UpdateYosiki1InfDetailRequestItem.SeqNo,
+                item.UpdateYosiki1InfDetailRequestItem.CodeNo,
+                item.UpdateYosiki1InfDetailRequestItem.RowNo,
+                item.UpdateYosiki1InfDetailRequestItem.Payload,
+                item.ValueSelect.ToString(),
+                item.UpdateYosiki1InfDetailRequestItem.IsDeleted
             ));
-        }*/
+        }
 
         foreach (var item in items.CommonForm1ModelRequestItems)
         {
