@@ -560,7 +560,7 @@ namespace CalculateService.ReceFutan.Models
         /// 点数単価
         /// 
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get { return KaikeiDetail.EnTen; }
             set
@@ -997,6 +997,20 @@ namespace CalculateService.ReceFutan.Models
             {
                 if (KaikeiDetail.Jitunisu == value) return;
                 KaikeiDetail.Jitunisu = value;
+            }
+        }
+
+        /// <summary>
+        /// 労災イ点数
+        /// 
+        /// </summary>
+        public int RousaiITensu
+        {
+            get { return KaikeiDetail.RousaiITensu; }
+            set
+            {
+                if (KaikeiDetail.RousaiITensu == value) return;
+                KaikeiDetail.RousaiITensu = value;
             }
         }
 

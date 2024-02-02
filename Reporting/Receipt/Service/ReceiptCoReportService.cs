@@ -1452,14 +1452,14 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                 tmpRaiinNos.Add(kaikeiDtl.RaiinNo);
                 tmpSyokeiGaku_I = kaikeiDtl.RousaiIFutan;
                 tmpSyokeiGaku_RO = kaikeiDtl.RousaiRoFutan;
-                tmpSyokei = kaikeiDtl.RousaiIFutan / receInf.HokenMst.EnTen;
+                tmpSyokei = kaikeiDtl.RousaiITensu;
             }
             else
             {
                 tmpRaiinNos.Add(kaikeiDtl.RaiinNo);
                 tmpSyokeiGaku_I += kaikeiDtl.RousaiIFutan;
                 tmpSyokeiGaku_RO += kaikeiDtl.RousaiRoFutan;
-                tmpSyokei += kaikeiDtl.RousaiIFutan / receInf.HokenMst.EnTen;
+                tmpSyokei += kaikeiDtl.RousaiITensu;
             }
         }
 
@@ -1481,7 +1481,7 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         if (rousaiReceiptModel != null)
         {
             rousaiReceiptModel.JituNissu = receInf.HokenNissu;
-            rousaiReceiptModel.Syokei = receInf.RousaiIFutan / (receInf.HokenMst.EnTen == 0 ? 1 : receInf.HokenMst.EnTen);
+            rousaiReceiptModel.Syokei = receInf.RousaiITensu;
             rousaiReceiptModel.SyokeiGaku_I = receInf.RousaiIFutan;
             rousaiReceiptModel.SyokeiGaku_RO = receInf.RousaiRoFutan;
 

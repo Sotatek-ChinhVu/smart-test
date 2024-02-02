@@ -334,7 +334,7 @@ namespace Reporting.Receipt.Models
         /// <summary>
         /// 円点レート
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get
             {
