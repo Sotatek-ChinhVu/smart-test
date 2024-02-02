@@ -11,5 +11,7 @@
         public List<AcuteCoronaryHistoryModelRequest> AcuteCoronaryHistoryList { get; set; } = new();
 
         public List<AcuteAorticDissectionHistoryModelRequest> AcuteAorticHistoryList { get; set; } = new();
+
+        public Dictionary<UpdateYosiki1InfDetailRequestItem, int> ValueSelectObjectRequest { get; set; } = new();
     }
 }

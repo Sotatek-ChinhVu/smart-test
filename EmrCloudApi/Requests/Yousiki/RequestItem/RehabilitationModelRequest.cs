@@ -11,5 +11,7 @@
         public List<BarthelIndexListRequest> BarthelIndexLists { get; set; } = new();
 
         public List<FimListRequest> FimLists {  get; set; } = new();
+
+        public Dictionary<UpdateYosiki1InfDetailRequestItem, int> ValueSelectObjectRequest { get; set; } = new();
     }
 }

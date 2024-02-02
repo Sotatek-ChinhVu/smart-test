@@ -9,6 +9,8 @@ public class CommonForm1Model
 
     public int ValueSelect { get; set; }
 
+    public Yousiki1InfDetailModel ValueSelectObject { get; set; }
+
     public int PayLoadInjuryName { get; set; } = 9;
 
     public Yousiki1InfDetailModel InjuryNameLast { get; set; }
@@ -142,6 +144,7 @@ public class CommonForm1Model
                 if (item.Value.AsInteger() == PayLoadValueSelect)
                 {
                     ValueSelect = item.Value.AsInteger();
+                    ValueSelectObject = item;
                     if (ValueSelect == 1)
                     {
                         IsEnableICD10Code = true;

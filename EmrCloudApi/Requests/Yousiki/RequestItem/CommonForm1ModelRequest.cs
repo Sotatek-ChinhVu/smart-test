@@ -9,5 +9,7 @@
         public List<HospitalizationStatusListRequestItem> HospitalizationStatusInf { get; set; } = new();
 
         public List<HospitalizationStatusListRequestItem> FinalExaminationInf { get; set; } = new();
+
+        public Dictionary<UpdateYosiki1InfDetailRequestItem, int> ValueSelectObjectRequest {  get; set; } = new();
     }
 }

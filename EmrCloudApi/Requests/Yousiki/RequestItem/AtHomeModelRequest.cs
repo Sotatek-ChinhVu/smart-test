@@ -25,5 +25,7 @@
         public List<BarthelIndexListRequest> BarthelIndexListRequestItems { get; set; } = new();
 
         public List<StatusNurtritionListRequest> StatusNurtritionListRequestIItems { get; set; } = new();
+
+        public Dictionary<UpdateYosiki1InfDetailRequestItem, int> ValueSelectObjectRequest { get; set; } = new();
     }
 }
