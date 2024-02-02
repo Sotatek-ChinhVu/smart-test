@@ -15,6 +15,7 @@ public class VisitingInfDto
         SyosaisinKbn = model.SyosaisinKbn;
         UketukeSbtName = model.UketukeSbtName;
         PtComment = model.PtComment;
+        YousikiKaCd = model.YousikiKaCd;
         RaiinListInfList = model.RaiinListInfList.Select(item => new RaiinListInfDto(item)).ToList();
     }
 
@@ -35,6 +36,8 @@ public class VisitingInfDto
     public string UketukeSbtName { get; private set; }
 
     public string PtComment { get; private set; }
+
+    public string YousikiKaCd { get; private set; }
 
     public List<RaiinListInfDto> RaiinListInfList { get; private set; }
 }

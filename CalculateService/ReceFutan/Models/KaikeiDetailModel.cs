@@ -72,6 +72,14 @@ namespace CalculateService.ReceFutan.Models
         }
 
         /// <summary>
+        /// 診療年月
+        /// </summary>
+        public int SinYm
+        {
+            get => KaikeiDetail.SinDate / 100;
+        }
+
+        /// <summary>
         /// 来院番号
         /// 
         /// </summary>

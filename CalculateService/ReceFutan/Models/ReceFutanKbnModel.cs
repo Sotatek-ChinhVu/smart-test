@@ -176,6 +176,32 @@ namespace CalculateService.ReceFutan.Models
         /// </summary>
         public bool IsKohi4;
 
+        /// <summary>
+        /// 公費有無
+        /// </summary>
+        public bool IsKohi(int kohiNo)
+        {
+            switch (kohiNo)
+            {
+                case 1: return IsKohi1;
+                case 2: return IsKohi2;
+                case 3: return IsKohi3;
+                case 4: return IsKohi4;
+            }
+            return false;
+
+        }
+
+        public void SetIsKohi(int kohiNo, bool value)
+        {
+            switch (kohiNo)
+            {
+                case 1: IsKohi1 = value; break;
+                case 2: IsKohi2 = value; break;
+                case 3: IsKohi3 = value; break;
+                case 4: IsKohi4 = value; break;
+            }
+        }
     }
 
 }
