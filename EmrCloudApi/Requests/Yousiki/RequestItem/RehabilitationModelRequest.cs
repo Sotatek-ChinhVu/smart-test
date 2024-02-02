@@ -12,6 +12,6 @@
 
         public List<FimListRequest> FimLists {  get; set; } = new();
 
-        public Dictionary<UpdateYosiki1InfDetailRequestItem, int> ValueSelectObjectRequest { get; set; } = new();
+        public List<Dictionary<UpdateYosiki1InfDetailRequestItem, int>> ValueSelectObjectRequest { get; set; } = new();
     }
 }
