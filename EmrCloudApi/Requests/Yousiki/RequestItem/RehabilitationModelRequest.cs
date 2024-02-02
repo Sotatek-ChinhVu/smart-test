@@ -5,5 +5,9 @@
         public List<OutpatientConsultationModelRequest> OutpatientConsultationList { get; set; } = new();
 
         public List<CommonForm1ModelRequest> ByomeiRehabilitationList { get; set; } = new();
+
+        public List<BarthelIndexListRequest> BarthelIndexLists { get; set; } = new();
+
+        public List<FimListRequest> FimLists {  get; set; } = new();
     }
 }

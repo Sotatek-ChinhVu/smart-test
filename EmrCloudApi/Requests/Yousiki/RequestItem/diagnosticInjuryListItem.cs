@@ -2,6 +2,8 @@
 {
     public class HospitalizationStatusListRequestItem
     {
+        public UpdateYosiki1InfDetailRequestItem UpdateYosiki1InfDetailRequestItem { get; set; } = new();
+
         public UpdateYosiki1InfDetailRequestItem InjuryNameLast { get; set; } = new();
 
         public UpdateYosiki1InfDetailRequestItem InjuryNameCode {  get; set; } = new(); 

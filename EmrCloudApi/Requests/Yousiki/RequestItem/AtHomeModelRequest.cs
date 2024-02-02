@@ -8,14 +8,20 @@
 
         public List<StatusEmergencyConsultationModelRequest> StatusEmergencyConsultationList { get; set; } = new();
 
-        public List<CommonForm1ModelRequest> HospitalizationStatusList { get; set; } = new();
+        public List<HospitalizationStatusListRequestItem> HospitalizationStatusList { get; set; } = new();
 
         public List<StatusShortTermAdmissionModelRequest> StatusShortTermAdmissionList { get; set; } = new();
 
-        public List<CommonForm1ModelRequest> StatusHomeVisitList { get; set; } = new();
+        public List<HospitalizationStatusListRequestItem> StatusHomeVisitList { get; set; } = new();
 
-        public List<CommonForm1ModelRequest> FinalExaminationInf { get; set; } = new();
+        public List<HospitalizationStatusListRequestItem> FinalExaminationInf { get; set; } = new();
 
-        public List<CommonForm1ModelRequest> FinalExaminationInf2 { get; set; } = new();
+        public List<HospitalizationStatusListRequestItem> FinalExaminationInf2 { get; set; } = new();
+
+        public List<PatientSitutationListRequestItem> PatientSitutationListRequestItems { get; set; } = new();
+
+        public List<BarthelIndexListRequest> BarthelIndexListRequestIItems { get; set; } = new();
+
+        public List<StatusNurtritionListRequest> StatusNurtritionListRequestIItems { get; set; } = new();
     }
 }

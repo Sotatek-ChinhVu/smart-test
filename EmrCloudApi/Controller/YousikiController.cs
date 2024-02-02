@@ -1,27 +1,27 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.Yousiki;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Yousiki;
 using EmrCloudApi.Requests.Yousiki;
+using EmrCloudApi.Requests.Yousiki.RequestItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Yousiki;
 using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Mvc;
-using UseCase.Core.Sync;
-using UseCase.Yousiki.AddYousiki;
-using UseCase.Yousiki.GetVisitingInfs;
-using UseCase.Yousiki.GetYousiki1InfDetails;
-using UseCase.Yousiki.GetHistoryYousiki;
-using UseCase.Yousiki.GetKacodeYousikiMstDict;
-using UseCase.Yousiki.GetYousiki1InfModel;
-using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
-using UseCase.Yousiki.DeleteYousikiInf;
-using UseCase.Yousiki.CreateYuIchiFile;
 using Helper.Messaging;
-using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
+using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
+using UseCase.Core.Sync;
+using UseCase.Yousiki.AddYousiki;
+using UseCase.Yousiki.CreateYuIchiFile;
+using UseCase.Yousiki.DeleteYousikiInf;
+using UseCase.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.GetKacodeYousikiMstDict;
+using UseCase.Yousiki.GetVisitingInfs;
+using UseCase.Yousiki.GetYousiki1InfDetails;
+using UseCase.Yousiki.GetYousiki1InfModel;
+using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.UpdateYosiki;
-using Domain.Models.Yousiki;
-using EmrCloudApi.Requests.Yousiki.RequestItem;
+using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
 
@@ -144,7 +144,7 @@ public class YousikiController : AuthorizeControllerBase
         totalRequest.AddRange(livingHabitModelRequests);
         var atHomeModelRequests = ConvertTabAtHomeModelToYousiki1InfDetail(request.AtHomeModelRequest);
         totalRequest.AddRange(atHomeModelRequests);
-        var rehabilitationModelRequests = ConvertTabRehabilitationModelToYousiki1InfDetail(request.RehabilitationModelRequest);
+        var rehabilitationModelRequests = ConvertTabRehabilitationModelToYousiki1InfDetail(request.RehabilitationModelRequest, request.Yousiki1InfModel);
         totalRequest.AddRange(rehabilitationModelRequests);
 
 
@@ -155,9 +155,44 @@ public class YousikiController : AuthorizeControllerBase
         return new ActionResult<Response<UpdateYosikiResponse>>(presenter.Result);
     }
 
-    private List<Yousiki1InfDetailModel> ConvertTabRehabilitationModelToYousiki1InfDetail(RehabilitationModelRequest items)
+    private List<Yousiki1InfDetailModel> ConvertTabRehabilitationModelToYousiki1InfDetail(RehabilitationModelRequest items, UpdateYosikiInfRequestItem yosikiInfRequestItem)
     {
         List<Yousiki1InfDetailModel> result = new();
+        var barthelIndexValue = "";
+        foreach (var item in items.BarthelIndexLists)
+        {
+            barthelIndexValue = barthelIndexValue + item.StatusValue;
+        }
+
+        result.Add(new Yousiki1InfDetailModel(
+            yosikiInfRequestItem.PtId,
+            yosikiInfRequestItem.SinYm,
+            3,
+            yosikiInfRequestItem.SeqNo,
+            "RPADL01",
+            0,
+            1,
+            barthelIndexValue
+            )
+            );
+
+        var fimListValue = "";
+        foreach (var item in items.FimLists)
+        {
+            fimListValue = fimListValue + item.StatusValue;
+        }
+
+        result.Add(new Yousiki1InfDetailModel(
+            yosikiInfRequestItem.PtId,
+            yosikiInfRequestItem.SinYm,
+            3,
+            yosikiInfRequestItem.SeqNo,
+            "RPADL01",
+            0,
+            2,
+            fimListValue
+            )
+            );
 
         foreach (var item in items.OutpatientConsultationList)
         {
@@ -174,7 +209,7 @@ public class YousikiController : AuthorizeControllerBase
                 outpatientConsultationModel.Value,
                 outpatientConsultationModel.IsDeleted
             ));
-            } 
+            }
         }
 
         foreach (var item in items.ByomeiRehabilitationList)
@@ -194,7 +229,51 @@ public class YousikiController : AuthorizeControllerBase
             ));
             }
 
-            foreach (var hospitalizationStatusListRequestItem in item.HospitalizationStatusListRequestItems)
+            foreach (var diagnosticInjuryListRequestItem in item.DiagnosticInjuryListRequestItems)
+            {
+                var valueModifierCode = "";
+
+                foreach (var value in diagnosticInjuryListRequestItem.PrefixSuffixRequests)
+                {
+                    valueModifierCode = valueModifierCode + value.Code;
+                }
+
+                result.Add(new Yousiki1InfDetailModel(
+                    diagnosticInjuryListRequestItem.InjuryNameLast.PtId,
+                    diagnosticInjuryListRequestItem.InjuryNameLast.SinYm,
+                    diagnosticInjuryListRequestItem.InjuryNameLast.DataType,
+                    diagnosticInjuryListRequestItem.InjuryNameLast.SeqNo,
+                    diagnosticInjuryListRequestItem.InjuryNameLast.CodeNo,
+                    diagnosticInjuryListRequestItem.InjuryNameLast.RowNo,
+                    diagnosticInjuryListRequestItem.InjuryNameLast.Payload,
+                    diagnosticInjuryListRequestItem.FullByomeiRequest,
+                    diagnosticInjuryListRequestItem.InjuryNameLast.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    diagnosticInjuryListRequestItem.InjuryNameCode.PtId,
+                    diagnosticInjuryListRequestItem.InjuryNameCode.SinYm,
+                    diagnosticInjuryListRequestItem.InjuryNameCode.DataType,
+                    diagnosticInjuryListRequestItem.InjuryNameCode.SeqNo,
+                    diagnosticInjuryListRequestItem.InjuryNameCode.CodeNo,
+                    diagnosticInjuryListRequestItem.InjuryNameCode.RowNo,
+                    diagnosticInjuryListRequestItem.InjuryNameCode.Payload,
+                    diagnosticInjuryListRequestItem.ByomeiCdRequest,
+                    diagnosticInjuryListRequestItem.InjuryNameCode.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    diagnosticInjuryListRequestItem.ModifierCode.PtId,
+                    diagnosticInjuryListRequestItem.ModifierCode.SinYm,
+                    diagnosticInjuryListRequestItem.ModifierCode.DataType,
+                    diagnosticInjuryListRequestItem.ModifierCode.SeqNo,
+                    diagnosticInjuryListRequestItem.ModifierCode.CodeNo,
+                    diagnosticInjuryListRequestItem.ModifierCode.RowNo,
+                    diagnosticInjuryListRequestItem.ModifierCode.Payload,
+                    valueModifierCode,
+                    diagnosticInjuryListRequestItem.ModifierCode.IsDeleted)
+                    );
+            }
+
+            foreach (var hospitalizationStatusListRequestItem in item.HospitalizationStatusInf)
             {
                 var valueModifierCode = "";
 
@@ -237,6 +316,50 @@ public class YousikiController : AuthorizeControllerBase
                     hospitalizationStatusListRequestItem.ModifierCode.IsDeleted)
                     );
             }
+
+            foreach (var finalExaminationInfRequestItem in item.FinalExaminationInf)
+            {
+                var valueModifierCode = "";
+
+                foreach (var value in finalExaminationInfRequestItem.PrefixSuffixRequests)
+                {
+                    valueModifierCode = valueModifierCode + value.Code;
+                }
+
+                result.Add(new Yousiki1InfDetailModel(
+                    finalExaminationInfRequestItem.InjuryNameLast.PtId,
+                    finalExaminationInfRequestItem.InjuryNameLast.SinYm,
+                    finalExaminationInfRequestItem.InjuryNameLast.DataType,
+                    finalExaminationInfRequestItem.InjuryNameLast.SeqNo,
+                    finalExaminationInfRequestItem.InjuryNameLast.CodeNo,
+                    finalExaminationInfRequestItem.InjuryNameLast.RowNo,
+                    finalExaminationInfRequestItem.InjuryNameLast.Payload,
+                    finalExaminationInfRequestItem.FullByomeiRequest,
+                    finalExaminationInfRequestItem.InjuryNameLast.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    finalExaminationInfRequestItem.InjuryNameCode.PtId,
+                    finalExaminationInfRequestItem.InjuryNameCode.SinYm,
+                    finalExaminationInfRequestItem.InjuryNameCode.DataType,
+                    finalExaminationInfRequestItem.InjuryNameCode.SeqNo,
+                    finalExaminationInfRequestItem.InjuryNameCode.CodeNo,
+                    finalExaminationInfRequestItem.InjuryNameCode.RowNo,
+                    finalExaminationInfRequestItem.InjuryNameCode.Payload,
+                    finalExaminationInfRequestItem.ByomeiCdRequest,
+                    finalExaminationInfRequestItem.InjuryNameCode.IsDeleted));
+
+                result.Add(new Yousiki1InfDetailModel(
+                    finalExaminationInfRequestItem.ModifierCode.PtId,
+                    finalExaminationInfRequestItem.ModifierCode.SinYm,
+                    finalExaminationInfRequestItem.ModifierCode.DataType,
+                    finalExaminationInfRequestItem.ModifierCode.SeqNo,
+                    finalExaminationInfRequestItem.ModifierCode.CodeNo,
+                    finalExaminationInfRequestItem.ModifierCode.RowNo,
+                    finalExaminationInfRequestItem.ModifierCode.Payload,
+                    valueModifierCode,
+                    finalExaminationInfRequestItem.ModifierCode.IsDeleted)
+                    );
+            }
         }
 
         return result;
@@ -248,48 +371,47 @@ public class YousikiController : AuthorizeControllerBase
 
         foreach (var item in items.HospitalizationStatusList)
         {
-            foreach (var hospitalizationStatusListRequestItem in item.HospitalizationStatusListRequestItems)
+
+            var valueModifierCode = "";
+
+            foreach (var value in item.PrefixSuffixRequests)
             {
-                var valueModifierCode = "";
-
-                foreach (var value in hospitalizationStatusListRequestItem.PrefixSuffixRequests)
-                {
-                    valueModifierCode = valueModifierCode + value.Code;
-                }
-                result.Add(new Yousiki1InfDetailModel(
-                hospitalizationStatusListRequestItem.InjuryNameLast.PtId,
-                hospitalizationStatusListRequestItem.InjuryNameLast.SinYm,
-                hospitalizationStatusListRequestItem.InjuryNameLast.DataType,
-                hospitalizationStatusListRequestItem.InjuryNameLast.SeqNo,
-                hospitalizationStatusListRequestItem.InjuryNameLast.CodeNo,
-                hospitalizationStatusListRequestItem.InjuryNameLast.RowNo,
-                hospitalizationStatusListRequestItem.InjuryNameLast.Payload,
-                hospitalizationStatusListRequestItem.FullByomeiRequest,
-                hospitalizationStatusListRequestItem.InjuryNameLast.IsDeleted));
-
-                result.Add(new Yousiki1InfDetailModel(
-                    hospitalizationStatusListRequestItem.InjuryNameCode.PtId,
-                    hospitalizationStatusListRequestItem.InjuryNameCode.SinYm,
-                    hospitalizationStatusListRequestItem.InjuryNameCode.DataType,
-                    hospitalizationStatusListRequestItem.InjuryNameCode.SeqNo,
-                    hospitalizationStatusListRequestItem.InjuryNameCode.CodeNo,
-                    hospitalizationStatusListRequestItem.InjuryNameCode.RowNo,
-                    hospitalizationStatusListRequestItem.InjuryNameCode.Payload,
-                    hospitalizationStatusListRequestItem.ByomeiCdRequest,
-                    hospitalizationStatusListRequestItem.InjuryNameCode.IsDeleted));
-
-                result.Add(new Yousiki1InfDetailModel(
-                    hospitalizationStatusListRequestItem.ModifierCode.PtId,
-                    hospitalizationStatusListRequestItem.ModifierCode.SinYm,
-                    hospitalizationStatusListRequestItem.ModifierCode.DataType,
-                    hospitalizationStatusListRequestItem.ModifierCode.SeqNo,
-                    hospitalizationStatusListRequestItem.ModifierCode.CodeNo,
-                    hospitalizationStatusListRequestItem.ModifierCode.RowNo,
-                    hospitalizationStatusListRequestItem.ModifierCode.Payload,
-                    valueModifierCode,
-                    hospitalizationStatusListRequestItem.ModifierCode.IsDeleted)
-                    );
+                valueModifierCode = valueModifierCode + value.Code;
             }
+
+            result.Add(new Yousiki1InfDetailModel(
+            item.InjuryNameLast.PtId,
+            item.InjuryNameLast.SinYm,
+            item.InjuryNameLast.DataType,
+            item.InjuryNameLast.SeqNo,
+            item.InjuryNameLast.CodeNo,
+            item.InjuryNameLast.RowNo,
+            item.InjuryNameLast.Payload,
+            item.FullByomeiRequest,
+            item.InjuryNameLast.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                item.InjuryNameCode.PtId,
+                item.InjuryNameCode.SinYm,
+                item.InjuryNameCode.DataType,
+                item.InjuryNameCode.SeqNo,
+                item.InjuryNameCode.CodeNo,
+                item.InjuryNameCode.RowNo,
+                item.InjuryNameCode.Payload,
+                item.ByomeiCdRequest,
+                item.InjuryNameCode.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                item.ModifierCode.PtId,
+                item.ModifierCode.SinYm,
+                item.ModifierCode.DataType,
+                item.ModifierCode.SeqNo,
+                item.ModifierCode.CodeNo,
+                item.ModifierCode.RowNo,
+                item.ModifierCode.Payload,
+                valueModifierCode,
+                item.ModifierCode.IsDeleted)
+                );
         }
 
         foreach (var item in items.StatusVisitList)
@@ -337,24 +459,6 @@ public class YousikiController : AuthorizeControllerBase
             ));
         }
 
-        foreach (var item in items.HospitalizationStatusList)
-        {
-            foreach (var atHomeModelRequestItems in item.CommonForm1ModelRequestItems)
-            {
-                result.Add(new Yousiki1InfDetailModel(
-                    atHomeModelRequestItems.PtId,
-                    atHomeModelRequestItems.SinYm,
-                    atHomeModelRequestItems.DataType,
-                    atHomeModelRequestItems.SeqNo,
-                    atHomeModelRequestItems.CodeNo,
-                    atHomeModelRequestItems.RowNo,
-                    atHomeModelRequestItems.Payload,
-                    atHomeModelRequestItems.Value,
-                    atHomeModelRequestItems.IsDeleted
-                ));
-            }
-        }
-
         foreach (var item in items.StatusShortTermAdmissionList)
         {
             result.Add(new Yousiki1InfDetailModel(
@@ -372,20 +476,46 @@ public class YousikiController : AuthorizeControllerBase
 
         foreach (var item in items.StatusHomeVisitList)
         {
-            foreach (var atHomeModelRequestItems in item.CommonForm1ModelRequestItems)
+            var valueModifierCode = "";
+
+            foreach (var value in item.PrefixSuffixRequests)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                atHomeModelRequestItems.PtId,
-                atHomeModelRequestItems.SinYm,
-                atHomeModelRequestItems.DataType,
-                atHomeModelRequestItems.SeqNo,
-                atHomeModelRequestItems.CodeNo,
-                atHomeModelRequestItems.RowNo,
-                atHomeModelRequestItems.Payload,
-                atHomeModelRequestItems.Value,
-                atHomeModelRequestItems.IsDeleted
-            ));
+                valueModifierCode = valueModifierCode + value.Code;
             }
+
+            result.Add(new Yousiki1InfDetailModel(
+            item.InjuryNameLast.PtId,
+            item.InjuryNameLast.SinYm,
+            item.InjuryNameLast.DataType,
+            item.InjuryNameLast.SeqNo,
+            item.InjuryNameLast.CodeNo,
+            item.InjuryNameLast.RowNo,
+            item.InjuryNameLast.Payload,
+            item.FullByomeiRequest,
+            item.InjuryNameLast.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                item.InjuryNameCode.PtId,
+                item.InjuryNameCode.SinYm,
+                item.InjuryNameCode.DataType,
+                item.InjuryNameCode.SeqNo,
+                item.InjuryNameCode.CodeNo,
+                item.InjuryNameCode.RowNo,
+                item.InjuryNameCode.Payload,
+                item.ByomeiCdRequest,
+                item.InjuryNameCode.IsDeleted));
+
+            result.Add(new Yousiki1InfDetailModel(
+                item.ModifierCode.PtId,
+                item.ModifierCode.SinYm,
+                item.ModifierCode.DataType,
+                item.ModifierCode.SeqNo,
+                item.ModifierCode.CodeNo,
+                item.ModifierCode.RowNo,
+                item.ModifierCode.Payload,
+                valueModifierCode,
+                item.ModifierCode.IsDeleted)
+                );
         }
 
         return result;
@@ -502,7 +632,7 @@ public class YousikiController : AuthorizeControllerBase
             ));
         }
 
-        foreach (var item in items.HospitalizationStatusListRequestItems)
+        foreach (var item in items.DiagnosticInjuryListRequestItems)
         {
             var valueModifierCode = "";
 
