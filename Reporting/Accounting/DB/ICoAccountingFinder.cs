@@ -141,4 +141,6 @@ public interface ICoAccountingFinder : IRepositoryBase
     List<CoAccountDueListModel> GetAccountDueList(int hpId, long ptId);
 
     List<PtGrpNameMstModel> GetPtGrpNameMstModels(int hpId);
+
+    bool ExistCalculateRequest(int hpId, long ptId, int startDate, int endDate);
 }

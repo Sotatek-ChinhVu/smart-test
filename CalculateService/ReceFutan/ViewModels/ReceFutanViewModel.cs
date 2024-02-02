@@ -35,9 +35,9 @@ namespace CalculateService.ReceFutan.ViewModels
         public List<ReceInfPreEditModel> ReceInfPreEdits { get; private set; } = new List<ReceInfPreEditModel>();
         public List<ReceFutanKbnModel> ReceFutanKbns { get; private set; } = new List<ReceFutanKbnModel>();
         public List<ReceInfJdModel> ReceInfJds { get; private set; } = new List<ReceInfJdModel>();
-        public PtHokenInfModel PtHoken { get; private set; }
-        public PtInfModel PtInf { get; private set; }
-        public List<PtKohiModel> PtKohis { get; private set; }
+        public PtHokenInfModel PtHoken { get; set; }
+        public PtInfModel PtInf { get; set; }
+        public List<PtKohiModel> PtKohis { get; set; }
         public int HpPrefCd;
 
         public struct SystemConfs
@@ -62,13 +62,14 @@ namespace CalculateService.ReceFutan.ViewModels
         private readonly IEmrLogger _emrLogger;
         private readonly IMessenger? _messenger;
 
-        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
+        public ReceFutanViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger,
+            List<TokkiMstModel>? tokkiMstModels = null, List<KogakuLimitModel>? kogakuLimits = null)
         {
             _systemConfigProvider = systemConfigProvider;
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
             _emrLogger = emrLogger;
 
-            _receFutanFinder = new ReceFutanFinder(_tenantDataContext);
+            _receFutanFinder = new ReceFutanFinder(_tenantDataContext, tokkiMstModels, kogakuLimits);
             _kaikeiFinder = new KaikeiFinder(_tenantDataContext);
             _sinKouiFinder = new SinKouiFinder(_tenantDataContext);
             _saveFutancalCommandHandler = new SaveFutancalCommandHandler(_tenantDataContext, emrLogger);
@@ -429,13 +430,15 @@ namespace CalculateService.ReceFutan.ViewModels
                 if (receInf == null)
                 {
                     //社保生保+生保単独等の異なる保険IDのレセを1つにまとめる
-                    if (k.SeihoId > 0)
+                    if (k.IsNoHoken)
                     {
                         receInf = ReceInfs.Find(
                             r =>
                                 r.PtId == k.PtId && r.SinYm == k.SinYm &&
-                                (r.Kohi1Id == k.SeihoId || r.Kohi2Id == k.SeihoId || r.Kohi3Id == k.SeihoId || r.Kohi4Id == k.SeihoId) &&
-                                r.HokenId2 == 0
+                                r.HokenKbn == HokenKbn.Syaho &&
+                                new int[] { 0, k.HokenId }.Contains(r.HokenId2) &&
+                                !r.IsNoHoken &&
+                                (new int[] { k.Kohi1Id, k.Kohi2Id, k.Kohi3Id, k.Kohi4Id }.Contains(r.SeihoId) || r.SeihoId == 0)
                         );
                     }
                     if (receInf == null)
@@ -515,6 +518,7 @@ namespace CalculateService.ReceFutan.ViewModels
                     for (int kCnt = 1; kCnt <= 4; kCnt++)
                     {
                         if (k.GetKohiId(kCnt) == 0) break;
+                        if (receInf.Kohi0Id != 0 && k.GetHoubetu(kCnt) == KohiHoubetu.Choki) continue;
 
                         bool isSetKohi = false;
 
@@ -1159,6 +1163,19 @@ namespace CalculateService.ReceFutan.ViewModels
                     isTokki = true;
                 }
 
+                if (!isTokki)
+                {
+                    //マル長限度額より高額療養費限度額の方が低い場合
+                    isTokki = SumKaikeiPids.Any(k =>
+                        k.HpId == receInf.HpId &&
+                        k.PtId == receInf.PtId &&
+                        k.SinYm == receInf.SinYm &&
+                        k.HokenId == receInf.HokenId &&
+                        k.IsChokiHoken &&
+                        k.TotalIryohi - k.HokenFutan > chokiLimit
+                    );
+                }
+
                 if (isTokki || SystemConf.ChokiTokki == 1)
                 {
                     switch (ptChoki.HokenEdaNo)
@@ -1437,31 +1454,32 @@ namespace CalculateService.ReceFutan.ViewModels
                 }
 
                 //公２以降は異点数の場合に公１分を除くオプション設定
-                int difTensu = (receInf.HokenReceTensu ?? 0) - kohi1Tensu;
-                if (receInf.HokenReceTensu == retTensu && difTensu > 0)
+                if (receInf.HokenReceTensu == retTensu)
                 {
                     if ((ptKohi.ReceTenKisai == 1 && receInf.HokenKbn == HokenKbn.Syaho) ||
                         (ptKohi.ReceTenKisai == 2 && receInf.HokenKbn == HokenKbn.Kokho) ||
                         (ptKohi.ReceTenKisai == 3))
                     {
-                        retTensu = difTensu;
-
-                        //負担区分に反映
-                        List<ReceFutanKbnModel> receFutanKbns = ReceFutanKbns.Where(
-                            r => r.PtId == receInf.PtId &&
-                            r.SinYm == receInf.SinYm &&
-                            r.HokenId == receInf.HokenId &&
-                            (r.IsKohi1 || (ptKohi1.HokenSbtKbn == HokenSbtKbn.Choki && r.IsKohi2))
-                        ).ToList();
-
-                        foreach (var r in receFutanKbns)
+                        for (int i = 1; i <= kohiNo - 1; i++)
                         {
-                            if (kohiNo == 2) r.IsKohi2 = false;
-                            if (kohiNo == 3) r.IsKohi3 = false;
-                            if (kohiNo == 4) r.IsKohi4 = false;
+                            List<ReceFutanKbnModel> receFutanKbns = ReceFutanKbns.Where(
+                                r => r.PtId == receInf.PtId &&
+                                r.SinYm == receInf.SinYm &&
+                                r.HokenId == receInf.HokenId &&
+                                r.IsKohi(i) &&
+                                r.IsKohi(kohiNo)
+                            ).ToList();
+
+                            if (retTensu - receInf.GetKohiReceTensu(i) > 0)
+                            {
+                                foreach (var r in receFutanKbns)
+                                {
+                                    r.SetIsKohi(kohiNo, false);
+                                }
+                                retTensu -= receInf.GetKohiReceTensu(i);
+                            }
                         }
                     }
-
                 }
 
                 return retTensu;
@@ -1586,7 +1604,7 @@ namespace CalculateService.ReceFutan.ViewModels
                         receInf.Kohi1Id == ptChoki.HokenId ? receInf.Kohi1Futan :
                         receInf.Kohi2Id == ptChoki.HokenId ? receInf.Kohi2Futan :
                         receInf.Kohi3Id == ptChoki.HokenId ? receInf.Kohi3Futan :
-                        receInf.Kohi4Futan;
+                        receInf.Kohi4Id == ptChoki.HokenId ? receInf.Kohi4Futan : 0;
                 }
             }
 
@@ -1908,7 +1926,18 @@ namespace CalculateService.ReceFutan.ViewModels
                 if (receInf.Kohi3ReceKyufu != null) receInf.Kohi3ReceKyufu = CIUtil.RoundInt((int)receInf.Kohi3ReceKyufu /*+ adjustFutan(3)*/, 1);
                 if (receInf.Kohi4ReceKyufu != null) receInf.Kohi4ReceKyufu = CIUtil.RoundInt((int)receInf.Kohi4ReceKyufu /*+ adjustFutan(4)*/, 1);
 
-                if (receInf.HokenReceFutan != null) receInf.HokenReceFutan = CIUtil.RoundInt((int)receInf.HokenReceFutan + adjustHokenReceFutan, 1);
+                if (receInf.HokenReceFutan != null)
+                {
+                    int wrkReceFutan = CIUtil.RoundInt((int)receInf.HokenReceFutan + adjustHokenReceFutan, 1);
+                    if (wrkReceFutan < receInf.TotalKogakuLimit && receInf.ChokiKbn != 2)
+                    {
+                        receInf.HokenReceFutan = CIUtil.RoundInt((int)receInf.HokenReceFutan, 1);
+                    }
+                    else
+                    {
+                        receInf.HokenReceFutan = wrkReceFutan;
+                    }
+                }
                 if (receInf.Kohi1ReceFutan != null) receInf.Kohi1ReceFutan = CIUtil.RoundInt((int)receInf.Kohi1ReceFutan, 1);
                 if (receInf.Kohi2ReceFutan != null) receInf.Kohi2ReceFutan = CIUtil.RoundInt((int)receInf.Kohi2ReceFutan, 1);
                 if (receInf.Kohi3ReceFutan != null) receInf.Kohi3ReceFutan = CIUtil.RoundInt((int)receInf.Kohi3ReceFutan, 1);
@@ -2053,8 +2082,8 @@ namespace CalculateService.ReceFutan.ViewModels
                             receInf.IsKokuhoKumiai && !ptKohi.ExceptHokensya;
                         break;
                     case 5:
-                        retKisai = receInf.HokenKbn == HokenKbn.Kokho ||
-                            receInf.IsKokuhoKumiai && ptKohi.ExceptHokensya;
+                        retKisai = receInf.HokenKbn == HokenKbn.Kokho &&
+                            !(receInf.IsKokuhoKumiai && !ptKohi.ExceptHokensya);
                         break;
                     default:
                         retKisai = true;
