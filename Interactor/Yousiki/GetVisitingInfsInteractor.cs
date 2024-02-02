@@ -17,7 +17,7 @@ public class GetVisitingInfsInteractor : IGetVisitingInfsInputPort
         try
         {
             var result = _yousikiRepository.GetVisitingInfs(inputData.HpId, inputData.PtId, inputData.SinYm);
-            return new GetVisitingInfsOutputData(result, GetVisitingInfsStatus.Successed);
+            return new GetVisitingInfsOutputData(result.allGrpDictionary, result.visitingInfList, GetVisitingInfsStatus.Successed);
         }
         finally
         {
