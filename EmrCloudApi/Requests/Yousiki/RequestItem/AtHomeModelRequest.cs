@@ -20,7 +20,7 @@
 
         public List<PatientSitutationListRequestItem> PatientSitutationListRequestItems { get; set; } = new();
 
-        public List<BarthelIndexListRequest> BarthelIndexListRequestIItems { get; set; } = new();
+        public List<BarthelIndexListRequest> BarthelIndexListRequestItems { get; set; } = new();
 
         public List<StatusNurtritionListRequest> StatusNurtritionListRequestIItems { get; set; } = new();
     }

@@ -142,7 +142,7 @@ public class YousikiController : AuthorizeControllerBase
         totalRequest.AddRange(commonModelRequests);
         var livingHabitModelRequests = ConvertTabLivingHabitModelToYousiki1InfDetail(request.LivingHabitModelRequest);
         totalRequest.AddRange(livingHabitModelRequests);
-        var atHomeModelRequests = ConvertTabAtHomeModelToYousiki1InfDetail(request.AtHomeModelRequest);
+        var atHomeModelRequests = ConvertTabAtHomeModelToYousiki1InfDetail(request.AtHomeModelRequest, request.Yousiki1InfModel);
         totalRequest.AddRange(atHomeModelRequests);
         var rehabilitationModelRequests = ConvertTabRehabilitationModelToYousiki1InfDetail(request.RehabilitationModelRequest, request.Yousiki1InfModel);
         totalRequest.AddRange(rehabilitationModelRequests);
@@ -365,7 +365,7 @@ public class YousikiController : AuthorizeControllerBase
         return result;
     }
 
-    private List<Yousiki1InfDetailModel> ConvertTabAtHomeModelToYousiki1InfDetail(AtHomeModelRequest items)
+    private List<Yousiki1InfDetailModel> ConvertTabAtHomeModelToYousiki1InfDetail(AtHomeModelRequest items, UpdateYosikiInfRequestItem yosikiInfRequestItem)
     {
         List<Yousiki1InfDetailModel> result = new();
 
@@ -517,6 +517,57 @@ public class YousikiController : AuthorizeControllerBase
                 item.ModifierCode.IsDeleted)
                 );
         }
+
+        var patientSitutationListValue = "";
+
+        foreach (var patientSitutation in items.PatientSitutationListRequestItems)
+        {
+            patientSitutationListValue = patientSitutationListValue + patientSitutation.SituationValue;
+        }
+
+        result.Add(new Yousiki1InfDetailModel(
+            yosikiInfRequestItem.PtId,
+            yosikiInfRequestItem.SinYm,
+            2,
+            yosikiInfRequestItem.SeqNo,
+            "HPS0001",
+            0,
+            1,
+            patientSitutationListValue));
+
+        var barthelIndexListRequestItemsValue = "";
+
+        foreach (var barthelIndexListRequestItem in items.BarthelIndexListRequestItems)
+        {
+            barthelIndexListRequestItemsValue = barthelIndexListRequestItemsValue + barthelIndexListRequestItem.StatusValue;
+        }
+
+        result.Add(new Yousiki1InfDetailModel(
+            yosikiInfRequestItem.PtId,
+            yosikiInfRequestItem.SinYm,
+            2,
+            yosikiInfRequestItem.SeqNo,
+            "HPS0002",
+            0,
+            1,
+            patientSitutationListValue));
+
+        var statusNurtritionListValue = "";
+
+        foreach (var statusNurtritionList in items.StatusNurtritionListRequestIItems)
+        {
+            statusNurtritionListValue = statusNurtritionListValue + statusNurtritionList.PointValue;
+        }
+
+        result.Add(new Yousiki1InfDetailModel(
+            yosikiInfRequestItem.PtId,
+            yosikiInfRequestItem.SinYm,
+            2,
+            yosikiInfRequestItem.SeqNo,
+            "HPS0006",
+            0,
+            3,
+            patientSitutationListValue));
 
         return result;
     }
