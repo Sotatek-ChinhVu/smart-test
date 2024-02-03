@@ -726,19 +726,19 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         return true;
     }
 
-    public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, Dictionary<int, int> dataTypes, bool isTemporarySave)
+    public void UpdateYosiki(int hpId, int userId, List<Yousiki1InfDetailModel> yousiki1InfDetailModels, Yousiki1InfModel yousiki1InfModel, List<CategoryModel> categoryModels, bool isTemporarySave)
     {
         UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, 0, isTemporarySave ? 1 : 2);
 
-        foreach (var dataType in dataTypes)
+        foreach (var categoryModel in categoryModels)
         {
-            if (dataType.Value == 1)
+            if (categoryModel.IsDeleted == 1)
             {
 
-                DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key);
+                DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
             }
 
-            UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, dataType.Key, isTemporarySave ? 1 : 2);
+            UpdateDateTimeYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType, isTemporarySave ? 1 : 2);
         }
 
         foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)

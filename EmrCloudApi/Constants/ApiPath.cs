@@ -568,6 +568,6 @@
         public const string GetKacodeYousikiMstDict = "GetKacodeYousikiMstDict";
         public const string GetByomeisInMonth = "GetByomeisInMonth";
         public const string CreateYuIchiFile = "CreateYuIchiFile";
-        public const string UpdateYosiki = "UpdateYosiki";
+        public const string UpdateYousiki = "UpdateYousiki";
     }
 }

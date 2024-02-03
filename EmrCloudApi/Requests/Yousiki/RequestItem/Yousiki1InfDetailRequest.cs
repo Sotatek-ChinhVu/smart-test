@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Yousiki.RequestItem
 {
-    public class AcuteAorticDissectionHistoryModelRequest
+    public class Yousiki1InfDetailRequest
     {
         public long PtId { get; set; }
 
