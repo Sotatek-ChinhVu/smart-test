@@ -2910,6 +2910,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.UnConfirmed || receStatus.StatusKbn == (int)ReceCheckStatusEnum.TempComfirmed)
                 {
                     receStatus.StatusKbn = (int)ReceCheckStatusEnum.SystemPending;
+                    receStatus.IsPrechecked = 0;
                 }
             }
             else
@@ -3021,6 +3022,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.UnConfirmed || receStatus.StatusKbn == (int)ReceCheckStatusEnum.TempComfirmed)
                 {
                     receStatus.StatusKbn = (int)ReceCheckStatusEnum.SystemPending;
+                    receStatus.IsPrechecked = 0;
                 }
             }
             else
