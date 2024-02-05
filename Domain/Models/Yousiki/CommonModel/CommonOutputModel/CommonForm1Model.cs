@@ -152,7 +152,7 @@ public class CommonForm1Model
                 {
                     InjuryNameLast = item;
                 }
-                else if (item.Value.AsInteger() == PayLoadICD10Code)
+                else if (item.Payload == PayLoadICD10Code)
                 {
                     Icd10 = item;
                 }
