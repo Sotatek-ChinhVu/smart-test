@@ -2,7 +2,6 @@
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Yousiki;
 using EmrCloudApi.Requests.Yousiki;
-using EmrCloudApi.Requests.Yousiki.RequestItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Yousiki;
 using EmrCloudApi.Services;
@@ -153,6 +152,10 @@ public class YousikiController : AuthorizeControllerBase
         List<Yousiki1InfDetailModel> result = new();
         List<CategoryModel> categories = new();
 
+        string prefixString;
+        string suffixString;
+        string fullByomei;
+
         foreach (var categorie in request.Yousiki1Inf.CategoryRequests)
         {
             categories.Add(new CategoryModel(categorie.DataType, categorie.IsDeleted));
@@ -178,11 +181,25 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.CommonRequest.DiagnosticInjurys)
         {
             var valueModifierDiagnosticInjurys = "";
+            prefixString = "";
+            suffixString = "";
+            fullByomei = "";
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList)
             {
                 valueModifierDiagnosticInjurys = valueModifierDiagnosticInjurys + value.Code;
+
+                if (value.Code.StartsWith('8'))
+                {
+                    suffixString = suffixString + value.Name;
+                }
+                else
+                {
+                    prefixString = prefixString + value.Name;
+                }
             }
+
+            fullByomei = prefixString + yousiki1InfDetailRequest.Byomei + suffixString;
 
             result.Add(new Yousiki1InfDetailModel(
                    yousiki1InfDetailRequest.ValueSelect.PtId,
@@ -204,7 +221,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
                    yousiki1InfDetailRequest.InjuryNameLast.RowNo,
                    yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   yousiki1InfDetailRequest.FullByomei,
+                   fullByomei,
                    yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
                    ));
 
@@ -371,11 +388,25 @@ public class YousikiController : AuthorizeControllerBase
 
         var byomeiInfCommon = request.Yousiki1Inf.TabYousikiRequest.CommonRequest.HospitalizationStatusInf.ByomeiInf;
         var valueModifier = "";
+        prefixString = "";
+        suffixString = "";
+        fullByomei = "";
 
         foreach (var value in byomeiInfCommon.PrefixSuffixList)
         {
             valueModifier = valueModifier + value.Code;
+
+            if (value.Code.StartsWith('8'))
+            {
+                suffixString = suffixString + value.Name;
+            }
+            else
+            {
+                prefixString = prefixString + value.Name;
+            }
         }
+
+        fullByomei = prefixString + byomeiInfCommon.Byomei + suffixString;
 
         result.Add(new Yousiki1InfDetailModel(
                byomeiInfCommon.ValueSelect.PtId,
@@ -397,7 +428,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommon.InjuryNameLast.CodeNo,
                byomeiInfCommon.InjuryNameLast.RowNo,
                byomeiInfCommon.InjuryNameLast.Payload,
-               byomeiInfCommon.FullByomei,
+               fullByomei,
                byomeiInfCommon.InjuryNameLast.IsDeleted
                ));
 
@@ -533,8 +564,6 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommon.MaximumNumberDate.IsDeleted
                ));
 
-        //
-
         var duringMonthMedicineInfFinalExaminationInf = request.Yousiki1Inf.TabYousikiRequest.CommonRequest.FinalExaminationInf.DuringMonthMedicineInfModel;
 
         result.Add(new Yousiki1InfDetailModel(
@@ -565,11 +594,25 @@ public class YousikiController : AuthorizeControllerBase
 
         var byomeiInfCommonFinalExaminationInf = request.Yousiki1Inf.TabYousikiRequest.CommonRequest.FinalExaminationInf.ByomeiInf;
         var valueModifierFinalExaminationInf = "";
+        prefixString = "";
+        suffixString = "";
+        fullByomei = "";
 
         foreach (var value in byomeiInfCommonFinalExaminationInf.PrefixSuffixList)
         {
             valueModifierFinalExaminationInf = valueModifierFinalExaminationInf + value.Code;
+
+            if (value.Code.StartsWith('8'))
+            {
+                suffixString = suffixString + value.Name;
+            }
+            else
+            {
+                prefixString = prefixString + value.Name;
+            }
         }
+
+        fullByomei = prefixString + byomeiInfCommonFinalExaminationInf.Byomei + suffixString;
 
         result.Add(new Yousiki1InfDetailModel(
                byomeiInfCommonFinalExaminationInf.ValueSelect.PtId,
@@ -591,7 +634,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.InjuryNameLast.CodeNo,
                byomeiInfCommonFinalExaminationInf.InjuryNameLast.RowNo,
                byomeiInfCommonFinalExaminationInf.InjuryNameLast.Payload,
-               byomeiInfCommonFinalExaminationInf.FullByomei,
+               fullByomei,
                byomeiInfCommonFinalExaminationInf.InjuryNameLast.IsDeleted
                ));
 
@@ -1084,11 +1127,26 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.HospitalizationStatus)
         {
             var valueModifierHospitalizationStatus = "";
+            prefixString = "";
+            suffixString = "";
+            fullByomei = "";
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList)
             {
                 valueModifierHospitalizationStatus = valueModifierHospitalizationStatus + value.Code;
+
+                if (value.Code.StartsWith('8'))
+                {
+                    suffixString = suffixString + value.Name;
+                }
+                else
+                {
+                    prefixString = prefixString + value.Name;
+                }
+
             }
+
+            fullByomei = prefixString + yousiki1InfDetailRequest.Byomei + suffixString;
 
             result.Add(new Yousiki1InfDetailModel(
                    yousiki1InfDetailRequest.ValueSelect.PtId,
@@ -1110,7 +1168,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
                    yousiki1InfDetailRequest.InjuryNameLast.RowNo,
                    yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   yousiki1InfDetailRequest.FullByomei,
+                   fullByomei,
                    yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
                    ));
 
@@ -1250,11 +1308,26 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.StatusHomeVisits)
         {
             var valueModifierStatusHomeVisits = "";
+            prefixString = "";
+            suffixString = "";
+            fullByomei = "";
+
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList)
             {
                 valueModifierStatusHomeVisits = valueModifierStatusHomeVisits + value.Code;
+
+                if (value.Code.StartsWith('8'))
+                {
+                    suffixString = suffixString + value.Name;
+                }
+                else
+                {
+                    prefixString = prefixString + value.Name;
+                }
             }
+
+            fullByomei = prefixString + yousiki1InfDetailRequest.Byomei + suffixString;
 
             result.Add(new Yousiki1InfDetailModel(
                    yousiki1InfDetailRequest.ValueSelect.PtId,
@@ -1276,7 +1349,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
                    yousiki1InfDetailRequest.InjuryNameLast.RowNo,
                    yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   yousiki1InfDetailRequest.FullByomei,
+                   fullByomei,
                    yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
                    ));
 
@@ -1415,11 +1488,25 @@ public class YousikiController : AuthorizeControllerBase
 
         var finalExaminationInf = request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.FinalExaminationInf;
         var valueModifierFinalExaminationInfAtHome = "";
+        prefixString = "";
+        suffixString = "";
+        fullByomei = "";
 
         foreach (var value in finalExaminationInf.PrefixSuffixList)
         {
             valueModifierFinalExaminationInfAtHome = valueModifierFinalExaminationInfAtHome + value.Code;
+
+            if (value.Code.StartsWith('8'))
+            {
+                suffixString = suffixString + value.Name;
+            }
+            else
+            {
+                prefixString = prefixString + value.Name;
+            }
         }
+
+        fullByomei = prefixString + finalExaminationInf.Byomei + suffixString;
 
         result.Add(new Yousiki1InfDetailModel(
                finalExaminationInf.ValueSelect.PtId,
@@ -1441,7 +1528,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.InjuryNameLast.CodeNo,
                finalExaminationInf.InjuryNameLast.RowNo,
                finalExaminationInf.InjuryNameLast.Payload,
-               finalExaminationInf.FullByomei,
+               fullByomei,
                finalExaminationInf.InjuryNameLast.IsDeleted
                ));
 
@@ -1579,11 +1666,25 @@ public class YousikiController : AuthorizeControllerBase
 
         var finalExaminationInf2 = request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.FinalExaminationInf2;
         var valueModifierFinalExaminationInf2 = "";
+        prefixString = "";
+        suffixString = "";
+        fullByomei = "";
 
-        foreach (var value in finalExaminationInf.PrefixSuffixList)
+        foreach (var value in finalExaminationInf2.PrefixSuffixList)
         {
             valueModifierFinalExaminationInf2 = valueModifierFinalExaminationInf2 + value.Code;
+
+            if (value.Code.StartsWith('8'))
+            {
+                suffixString = suffixString + value.Name;
+            }
+            else
+            {
+                prefixString = prefixString + value.Name;
+            }
         }
+
+        fullByomei = prefixString + finalExaminationInf2.Byomei + suffixString;
 
         result.Add(new Yousiki1InfDetailModel(
                finalExaminationInf2.ValueSelect.PtId,
@@ -1605,7 +1706,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.InjuryNameLast.CodeNo,
                finalExaminationInf2.InjuryNameLast.RowNo,
                finalExaminationInf2.InjuryNameLast.Payload,
-               finalExaminationInf2.FullByomei,
+               fullByomei,
                finalExaminationInf2.InjuryNameLast.IsDeleted
                ));
 
@@ -1813,11 +1914,25 @@ public class YousikiController : AuthorizeControllerBase
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.RehabilitationRequest.ByomeiRehabilitations)
         {
             var valueModifierByomeiRehabilitations = "";
+            prefixString = "";
+            suffixString = "";
+            fullByomei = "";
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList)
             {
                 valueModifierByomeiRehabilitations = valueModifierByomeiRehabilitations + value.Code;
+
+                if (value.Code.StartsWith('8'))
+                {
+                    suffixString = suffixString + value.Name;
+                }
+                else
+                {
+                    prefixString = prefixString + value.Name;
+                }
             }
+
+            fullByomei = prefixString + yousiki1InfDetailRequest.Byomei + suffixString;
 
             result.Add(new Yousiki1InfDetailModel(
                    yousiki1InfDetailRequest.ValueSelect.PtId,
@@ -1839,7 +1954,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
                    yousiki1InfDetailRequest.InjuryNameLast.RowNo,
                    yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   yousiki1InfDetailRequest.FullByomei,
+                   fullByomei,
                    yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
                    ));
 

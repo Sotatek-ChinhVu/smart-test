@@ -78,8 +78,6 @@ namespace EmrCloudApi.Requests.Yousiki.RequestItem
 
         public string Byomei { get; set; } = string.Empty;
 
-        public string FullByomei {  get; set; } = string.Empty;
-
         public List<PrefixSuffixRequest> PrefixSuffixList { get; set; } = new();
     }
 }
