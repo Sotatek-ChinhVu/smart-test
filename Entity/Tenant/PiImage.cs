@@ -8,28 +8,19 @@ namespace Entity.Tenant
     public class PiImage : EmrCloneable<PiImage>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 包装剤形区分
         /// 0:剤形 1:包装
         /// </summary>
-        
-        [Column("image_type", Order = 2)]
+
+        [Column("image_type")]
         public int ImageType { get; set; }
 
         /// <summary>
         /// 項目コード
         /// 
         /// </summary>
-        
-        [Column("item_cd", Order = 3)]
+
+        [Column("item_cd")]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -85,6 +76,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("update_machine")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }
