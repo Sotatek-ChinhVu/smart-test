@@ -416,30 +416,18 @@ namespace Interactor.SuperAdmin
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
                         var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
+                        var sqlRenameTableName = QueryConstant.RenameTableNames;
+                        var sqlRenameFieldName = QueryConstant.RenameFieldNames;
                         byte[] salt = _userRepository.GenerateSalt();
                         byte[] hashPassword = _userRepository.CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
                         var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId, "", hashPassword, salt);
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
-                        command.CommandText = sqlGrant + sqlInsertUser + sqlInsertUserPermission;
+                        command.CommandText = sqlGrant + sqlRenameTableName + sqlRenameFieldName + sqlInsertUser + sqlInsertUserPermission;
                         command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
                         _CreateAuditLog(tenantId);
                         _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
-                    }
-                }
-
-                //Rename table_name and field_name of database
-                using (var connection = new NpgsqlConnection(connectionString))
-                {
-                    connection.Open();
-                    using (var command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-                        var sqlRenameTableName = QueryConstant.RenameTableNames;
-                        var sqlRenameFieldName = QueryConstant.RenameFieldNames;
-                        command.CommandText = sqlRenameTableName + sqlRenameFieldName;
-                        command.ExecuteNonQuery();
                     }
                 }
             }

@@ -6237,7 +6237,6 @@ CREATE TABLE "USER_MST" (
     "SNAME" character varying(20) NOT NULL,
     "DR_NAME" character varying(40) NULL,
     "LOGIN_ID" character varying(20) NOT NULL,
-    "LOGIN_PASS" character varying(20) NOT NULL,
     "MAYAKU_LICENSE_NO" character varying(20) NULL,
     "START_DATE" integer NOT NULL,
     "END_DATE" integer NOT NULL,
