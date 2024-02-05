@@ -1081,7 +1081,7 @@ public class YousikiController : AuthorizeControllerBase
             patientSitutationListValue
             ));
 
-        foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.HospitalizationStatuss)
+        foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.HospitalizationStatus)
         {
             var valueModifierHospitalizationStatus = "";
 

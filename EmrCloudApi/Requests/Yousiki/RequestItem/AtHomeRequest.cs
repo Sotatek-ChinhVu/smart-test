@@ -18,7 +18,7 @@
 
         public List<StatusNurtritionRequest> StatusNurtritions { get; set; } = new();
 
-        public List<CommonForm1Request> HospitalizationStatuss { get; set; } = new();
+        public List<CommonForm1Request> HospitalizationStatus { get; set; } = new();
 
         public List<CommonForm1Request> StatusHomeVisits { get; set; } = new();
 
