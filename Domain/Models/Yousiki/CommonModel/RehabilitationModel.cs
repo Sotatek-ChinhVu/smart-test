@@ -4,13 +4,13 @@ namespace Domain.Models.Yousiki.CommonModel;
 
 public class RehabilitationModel
 {
-    public RehabilitationModel(List<Yousiki1InfDetailModel> yousiki1InfDetailList, List<OutpatientConsultationModel> outpatientConsultationList, List<CommonForm1Model> byomeiRehabilitationList, List<PatientStatusModel> barthelIndexList, List<PatientStatusModel> fIMList)
+    public RehabilitationModel(List<Yousiki1InfDetailModel> yousiki1InfDetailList, List<OutpatientConsultationModel> outpatientConsultationList, List<CommonForm1Model> byomeiRehabilitationList, List<PatientStatusModel> barthelIndexList, List<PatientStatusModel> fimList)
     {
         Yousiki1InfDetailList = yousiki1InfDetailList;
         OutpatientConsultationList = outpatientConsultationList;
         ByomeiRehabilitationList = byomeiRehabilitationList;
         BarthelIndexList = barthelIndexList;
-        FIMList = fIMList;
+        FimList = fimList;
     }
 
     public List<Yousiki1InfDetailModel> Yousiki1InfDetailList { get; private set; }
@@ -21,5 +21,5 @@ public class RehabilitationModel
 
     public List<PatientStatusModel> BarthelIndexList { get; private set; }
 
-    public List<PatientStatusModel> FIMList { get; private set; }
+    public List<PatientStatusModel> FimList { get; private set; }
 }

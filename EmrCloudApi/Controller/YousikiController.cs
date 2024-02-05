@@ -1995,7 +1995,7 @@ public class YousikiController : AuthorizeControllerBase
         );
 
         var fimListValue = "";
-        foreach (var item in request.Yousiki1Inf.TabYousikiRequest.RehabilitationRequest.FIMs)
+        foreach (var item in request.Yousiki1Inf.TabYousikiRequest.RehabilitationRequest.Fims)
         {
             fimListValue = fimListValue + item.StatusValue;
         }
