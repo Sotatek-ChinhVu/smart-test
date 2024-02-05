@@ -155,7 +155,7 @@ public class YousikiController : AuthorizeControllerBase
 
         foreach (var categorie in request.Yousiki1Inf.CategoryRequests)
         {
-            categories.Add(new CategoryModel(categorie.DataType, categorie.DataType));
+            categories.Add(new CategoryModel(categorie.DataType, categorie.IsDeleted));
         }
 
         //ConvertTabCommon
