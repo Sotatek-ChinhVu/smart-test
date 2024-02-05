@@ -22,7 +22,7 @@ namespace Interactor.MstItem
                     return new GetDosageDrugListOutputData(new List<DosageDrugModel>(), GetDosageDrugListStatus.InputDataNull);
                 }
 
-                var datas = _inputItemRepository.GetDosages(inputData.YjCds);
+                var datas = _inputItemRepository.GetDosages(inputData.HpId, inputData.YjCds);
                 if (!(datas?.Count > 0))
                 {
                     return new GetDosageDrugListOutputData(new List<DosageDrugModel>(), GetDosageDrugListStatus.NoData);

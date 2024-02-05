@@ -92,7 +92,7 @@ namespace Infrastructure.Repositories
 
             var rs = joinQuery.FirstOrDefault();
             var yjCd = rs?.m28DrugMst?.YjCd;
-            var drugInf = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.YjCd == yjCd);
+            var drugInf = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.HpId == hpId && i.YjCd == yjCd);
             if (rs != null)
             {
                 return new DrugInforModel(rs.tenItem != null ? (rs.tenItem.Name ?? string.Empty) : string.Empty,

@@ -2943,7 +2943,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
                         string yjCd = tenMst?.YjCd ?? string.Empty;
 
-                        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(d => d.YjCd == yjCd);
+                        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(d => d.HpId == hpId && d.YjCd == yjCd);
                         var dosageDosages = NoTrackingDataContext.DosageDosages.Where(item => dosageDrug != null && dosageDrug.DoeiCd == item.DoeiCd).ToList();
 
                         var dosagetModel = dosageDrug == null ? new DosageDrugModel() : new DosageDrugModel(

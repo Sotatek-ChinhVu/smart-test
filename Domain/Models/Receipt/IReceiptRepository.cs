@@ -33,13 +33,13 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCheckErrModel> GetReceCheckErrList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList);
 
-    List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
+    List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int hpId, int sinYm);
 
     bool CheckExisReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
 
     List<SokatuMstModel> GetSokatuMstModels(int hpId, int SeikyuYm);
 
-    bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
+    bool CheckExistSyoukiKbn(int hpId, int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
     bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
 

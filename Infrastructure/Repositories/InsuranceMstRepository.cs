@@ -42,7 +42,7 @@ namespace Infrastructure.Repositories
                                 .ThenBy(e => e.SortNo)
                                 .ThenByDescending(e => e.StartDate);
 
-            IQueryable<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts;
+            IQueryable<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId);
 
             List<HokenMstModel> allHokenMst = (from hoken in allHokenMstEntity
                                                join rou in roudouMsts on hoken.PrefNo.ToString() equals rou.RoudouCd into rouList

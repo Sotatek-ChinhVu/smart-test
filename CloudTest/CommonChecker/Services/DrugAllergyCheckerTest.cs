@@ -74,7 +74,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -152,7 +152,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -188,7 +188,7 @@ namespace CloudUnitTest.CommonChecker.Services
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -307,7 +307,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -422,7 +422,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {
@@ -559,7 +559,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {
@@ -686,7 +686,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {

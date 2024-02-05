@@ -4,5 +4,11 @@ namespace UseCase.User.GetListFunctionPermission
 {
     public class GetListFunctionPermissionInputData : IInputData<GetListFunctionPermissionOutputData>
     {
+        public GetListFunctionPermissionInputData(int hpId)
+        {
+            HpId = hpId;
+        }
+
+        public int HpId { get; private set; }
     }
 }

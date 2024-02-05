@@ -49,11 +49,11 @@ namespace Domain.Models.MstItem
 
         bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds);
 
-        List<DosageDrugModel> GetDosages(List<string> yjCds);
+        List<DosageDrugModel> GetDosages(int hpId, List<string> yjCds);
 
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();
 
-        (List<OtcItemModel>, int) SearchOTCModels(string searchValue, int pageIndex, int pageSize);
+        (List<OtcItemModel>, int) SearchOTCModels(int hpId, string searchValue, int pageIndex, int pageSize);
 
         List<SearchSupplementModel> GetListSupplement(string searchValue);
 

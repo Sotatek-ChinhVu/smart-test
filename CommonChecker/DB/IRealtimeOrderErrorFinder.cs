@@ -2,25 +2,25 @@
 
 namespace CommonChecker.DB
 {
-    public interface IRealtimeOrderErrorFinder :IRepositoryBase
+    public interface IRealtimeOrderErrorFinder : IRepositoryBase
     {
-        bool IsNoMasterData();
+        bool IsNoMasterData(int hpId);
 
         string FindItemName(string yjCd, int sinday);
 
         Dictionary<string, string> FindItemNameDic(List<string> yjCdList, int sinday);
 
-        string FindComponentName(string conponentCode);
+        string FindComponentName(int hpId, string conponentCode);
 
-        Dictionary<string, string> FindComponentNameDic(List<string> conponentCodeList);
+        Dictionary<string, string> FindComponentNameDic(int hpId, List<string> conponentCodeList);
 
-        string FindAnalogueName(string analogueCode);
+        string FindAnalogueName(int hpId, string analogueCode);
 
-        Dictionary<string, string> FindAnalogueNameDic(List<string> analogueCodeList);
+        Dictionary<string, string> FindAnalogueNameDic(int hpId, List<string> analogueCodeList);
 
-        string FindDrvalrgyName(string drvalrgyCode);
+        string FindDrvalrgyName(int hpId, string drvalrgyCode);
 
-        Dictionary<string, string> FindDrvalrgyNameDic(List<string> drvalrgyCodeList);
+        Dictionary<string, string> FindDrvalrgyNameDic(int hpId, List<string> drvalrgyCodeList);
 
         string FindItemNameByItemCode(string itemCd, int sinday);
 
@@ -62,12 +62,12 @@ namespace CommonChecker.DB
 
         Dictionary<string, string> GetSupplementComponentInfoDic(List<string> seibunCdList);
 
-        string FindClassName(string classCd);
+        string FindClassName(int hpId, string classCd);
 
         string FindIppanNameByIppanCode(string ippanCode);
 
-        string GetUsageDosage(string yjCd);
+        string GetUsageDosage(int hpId, string yjCd);
 
-        Dictionary<string, string> GetUsageDosageDic(List<string> yjCdList);
+        Dictionary<string, string> GetUsageDosageDic(int hpId, List<string> yjCdList);
     }
 }

@@ -108,7 +108,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetDosageDrugList)]
         public ActionResult<Response<GetDosageDrugListResponse>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
         {
-            var input = new GetDosageDrugListInputData(request.YjCds);
+            var input = new GetDosageDrugListInputData(HpId, request.YjCds);
             var output = _bus.Handle(input);
 
             var presenter = new GetDosageDrugListPresenter();
@@ -132,7 +132,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SearchOTC)]
         public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
         {
-            var input = new SearchOTCInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var input = new SearchOTCInputData(HpId, request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var presenter = new SearchOTCPresenter();

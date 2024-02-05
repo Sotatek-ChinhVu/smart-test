@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "pi_inf_detail")]
     public class PiInfDetail : EmrCloneable<PiInfDetail>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 添付文書ID
         /// 
         /// </summary>
-        
+
         [Column("pi_id", Order = 1)]
         [MaxLength(6)]
         public string PiId { get; set; } = string.Empty;

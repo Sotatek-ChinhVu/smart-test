@@ -42,9 +42,9 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     private readonly List<int> usageInjects = new List<int>() { 31, 32, 33, 34 };
     private readonly List<int> inspections = new List<int>() { 60, 61, 62, 63, 64 };
 
-    public List<DosageDrugModel> GetDosages(List<string> yjCds)
+    public List<DosageDrugModel> GetDosages(int hpId, List<string> yjCds)
     {
-        var listDosageDrugs = NoTrackingDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd)).ToList();
+        var listDosageDrugs = NoTrackingDataContext.DosageDrugs.Where(d => d.HpId == hpId && yjCds.Contains(d.YjCd)).ToList();
         var listDoeiCd = listDosageDrugs.Select(item => item.DoeiCd).ToList();
         var listDosageDosages = NoTrackingDataContext.DosageDosages.Where(item => listDoeiCd.Contains(item.DoeiCd)).ToList();
         return listDosageDrugs == null ? new List<DosageDrugModel>() : listDosageDrugs.Select(
@@ -61,13 +61,13 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
                )).ToList();
     }
 
-    public (List<OtcItemModel>, int) SearchOTCModels(string searchValue, int pageIndex, int pageSize)
+    public (List<OtcItemModel>, int) SearchOTCModels(int hpId, string searchValue, int pageIndex, int pageSize)
     {
         searchValue = searchValue.Trim();
         var OtcFormCodes = NoTrackingDataContext.M38OtcFormCode.AsQueryable();
         var OtcMakerCodes = NoTrackingDataContext.M38OtcMakerCode.AsQueryable();
         var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
-        var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
+        var UsageCodes = NoTrackingDataContext.M56UsageCode.Where(item => item.HpId == hpId);
         var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
         var query = from main in OtcMains.AsEnumerable()
                     join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft

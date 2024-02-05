@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
                      && item.StartDate <= sinDate && item.EndDate >= sinDate && item.ItemCd == itemCd
                      );
 
-            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.AsQueryable();
+            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.Where(item => item.HpId == hpId);
             var queryM28DrugMsts = NoTrackingDataContext.M28DrugMst.AsQueryable();
             //Join
             var joinQueryDrugInf = from m28DrugMst in queryM28DrugMsts
@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
                                    select new { m28DrugMst, tenItem };
             var drugInf = joinQueryDrugInf.FirstOrDefault();
             var yjCd = drugInf?.m28DrugMst?.YjCd;
-            var drugInfo = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.YjCd == yjCd);
+            var drugInfo = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.HpId == hpId && i.YjCd == yjCd);
             yjCode = drugInfo?.YjCd ?? drugInf?.tenItem?.YjCd;
             drugName = drugInf?.tenItem != null ? drugInf?.tenItem?.Name ?? string.Empty : string.Empty;
             // create drug item
@@ -41,12 +41,12 @@ namespace Infrastructure.Repositories
             DrugMenuItemModel rootMenu = new DrugMenuItemModel("医薬品情報", "", 0, 0, 0, "", 0, yjCode);
             drugMenuItems.Add(rootMenu);
 
-            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.AsQueryable(); //PI_INF_DETAIL
+            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.Where(item => item.HpId == hpId); //PI_INF_DETAIL
 
             var piProductInfCollections = queryDrugInfs.Where(pi => pi.YjCd == yjCode).AsQueryable();
 
             //Kikaku
-            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 1);
+            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 1);
             if (kikakuCollection.Count > 0)
             {
                 foreach (var kikakuItem in kikakuCollection)
@@ -60,7 +60,7 @@ namespace Infrastructure.Repositories
             }
 
             //Tenpu
-            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 2);
+            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 2);
 
             bool siyoFlag = false;
             var currentMenu = new DrugMenuItemModel();
@@ -93,24 +93,24 @@ namespace Infrastructure.Repositories
             return drugMenuItems;
         }
 
-        public DrugDetailModel GetDataDrugSeletedTree(int selectedIndexOfMenuLevel, int level, string drugName, string itemCd, string yjCode)
+        public DrugDetailModel GetDataDrugSeletedTree(int hpId, int selectedIndexOfMenuLevel, int level, string drugName, string itemCd, string yjCode)
         {
-            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.AsQueryable();
-            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.AsQueryable();
+            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.Where(item => item.HpId == hpId);
+            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.Where(item => item.HpId == hpId);
             var piProductInfCollections = queryDrugInfs.Where(pi => pi.YjCd == yjCode).AsQueryable();
-            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 1);
-            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 2);
-            return GetDetail(selectedIndexOfMenuLevel, level, drugName, itemCd, yjCode, piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
+            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 1);
+            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 2);
+            return GetDetail(hpId, selectedIndexOfMenuLevel, level, drugName, itemCd, yjCode, piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
         }
 
-        private DrugDetailModel GetDetail(int selectedIndex, int level, string drugName, string itemCd, string yjCode, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
+        private DrugDetailModel GetDetail(int hpId, int selectedIndex, int level, string drugName, string itemCd, string yjCode, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
         {
             if (level == 0)
             {
                 if (selectedIndex == 0)
                 {
                     // Show Product Infor
-                    var piInfCollection = NoTrackingDataContext.PiInfs.AsQueryable();
+                    var piInfCollection = NoTrackingDataContext.PiInfs.Where(item => item.HpId == hpId);
                     var joinQuery = from piInf in piInfCollection
                                     join piProduct in piProductInfCollections
                                     on piInf.PiId equals piProduct.PiId
@@ -163,7 +163,7 @@ namespace Infrastructure.Repositories
             else if (level > 0 && selectedIndex >= 0)
             {
                 // Show Product Infor
-                var piInfCollection = NoTrackingDataContext.PiInfs.AsQueryable();
+                var piInfCollection = NoTrackingDataContext.PiInfs.Where(item => item.HpId == hpId);
                 var joinQuery = from piInf in piInfCollection
                                 join piProduct in piProductInfCollections
                                 on piInf.PiId equals piProduct.PiId
@@ -376,9 +376,9 @@ namespace Infrastructure.Repositories
         }
 
 
-        private List<DrugMenuItemModel> GetKikakuCollectionOrTenpuCollection(string diCode, IQueryable<PiInfDetail> piInfDetailCollection, IQueryable<PiProductInf> piProductInfCollections, int IsKikakuOrTenpu)
+        private List<DrugMenuItemModel> GetKikakuCollectionOrTenpuCollection(int hpId, string diCode, IQueryable<PiInfDetail> piInfDetailCollection, IQueryable<PiProductInf> piProductInfCollections, int IsKikakuOrTenpu)
         {
-            var minPiProductInfCollection = NoTrackingDataContext.PiProductInfs.Where(pi => pi.YjCd == diCode)
+            var minPiProductInfCollection = NoTrackingDataContext.PiProductInfs.Where(pi => pi.HpId == hpId && pi.YjCd == diCode)
                 .GroupBy(pi => pi.YjCd)
                 .Select(pi => new { YjCd = pi.Key, PiId = pi.Min(m => m.PiId) });
 

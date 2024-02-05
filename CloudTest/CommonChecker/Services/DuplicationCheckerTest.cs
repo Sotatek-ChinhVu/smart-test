@@ -68,7 +68,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -147,7 +147,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -261,7 +261,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -398,7 +398,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -613,7 +613,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_007_HandleCheckOrder_TestCurrentListOrder_Is_Null()
     {
-        
+
         var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                 RealtimeCheckerType.Duplication, null, 20230101, 1231);
 
@@ -630,7 +630,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -668,7 +668,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -747,7 +747,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -826,7 +826,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(duplicationChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act

@@ -1401,13 +1401,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm)
+    public List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int hpId, int sinYm)
     {
-        var finalKey = GetCacheKey() + CacheKeyConstant.SyoukiKbnMst;
+        var finalKey = GetCacheKey() + CacheKeyConstant.SyoukiKbnMst + hpId;
         IEnumerable<SyoukiKbnMst> syoukiKbnMstList;
         if (!_cache.KeyExists(finalKey))
         {
-            syoukiKbnMstList = ReloadCache(finalKey);
+            syoukiKbnMstList = ReloadCache(hpId, finalKey);
         }
         else
         {
@@ -1421,9 +1421,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     }
 
     #region [cache SyoukiKbnMst]
-    private IEnumerable<SyoukiKbnMst> ReloadCache(string key)
+    private IEnumerable<SyoukiKbnMst> ReloadCache(int hpId, string key)
     {
-        var syoukiKbnMstList = NoTrackingDataContext.SyoukiKbnMsts.ToList();
+        var syoukiKbnMstList = NoTrackingDataContext.SyoukiKbnMsts.Where(item => item.HpId == hpId).ToList();
         var json = JsonSerializer.Serialize(syoukiKbnMstList);
         _cache.StringSet(key, json);
 
@@ -1524,9 +1524,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    public bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList)
+    public bool CheckExistSyoukiKbn(int hpId, int sinYm, List<SyoukiKbnMstModel> syoukiKbnList)
     {
         var countSyoukiKbn = NoTrackingDataContext.SyoukiKbnMsts.AsEnumerable().Count(entity => entity.StartYm <= sinYm
+                                                                                                && entity.HpId == hpId
                                                                                                 && entity.EndYm >= sinYm
                                                                                                 && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
         return countSyoukiKbn == syoukiKbnList.GroupBy(item => new { item.SyoukiKbn, item.StartYm }).Count();

@@ -81,7 +81,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _masterDataCacheService);
     }
 
-    private void InitTenMstCache(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
+    private void InitTenMstCache(int hpId, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
     {
         List<string> itemCodeList = new List<string>();
 
@@ -94,7 +94,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
         }
-        _masterDataCacheService.InitCache(itemCodeList.Distinct().ToList(), _sinday, _ptID);
+        _masterDataCacheService.InitCache(hpId, itemCodeList.Distinct().ToList(), _sinday, _ptID);
     }
 
     public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
@@ -107,7 +107,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
 
-        InitTenMstCache(currentListOdr, listCheckingOrder);
+        InitTenMstCache(hpId, currentListOdr, listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -170,7 +170,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new();
 
-        InitTenMstCache(new List<OrdInfoModel>(), listCheckingOrder);
+        InitTenMstCache(hpId, new List<OrdInfoModel>(), listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -539,7 +539,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _ptID = ptId;
         _sinday = sinday;
 
-        GetItemCdError(listErrorInfo);
+        GetItemCdError(hpId, listErrorInfo);
 
         List<ErrorInfoModel> listErrorInfoModel = new();
         listErrorInfo.ForEach((errorInfo) =>
@@ -550,7 +550,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     List<DrugAllergyResultModel>? drugAllergyInfo = errorInfo.ErrorInfo as List<DrugAllergyResultModel>;
                     if (drugAllergyInfo != null)
                     {
-                        listErrorInfoModel.AddRange(ProcessDataForDrugAllergy(drugAllergyInfo));
+                        listErrorInfoModel.AddRange(ProcessDataForDrugAllergy(hpId, drugAllergyInfo));
                     }
                     break;
                 case RealtimeCheckerType.FoodAllergy:
@@ -609,7 +609,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     List<DuplicationResultModel>? duplicationErrorInfo = errorInfo.ErrorInfo as List<DuplicationResultModel>;
                     if (duplicationErrorInfo != null)
                     {
-                        listErrorInfoModel.AddRange(ProcessDataForDuplication(duplicationErrorInfo));
+                        listErrorInfoModel.AddRange(ProcessDataForDuplication(hpId, duplicationErrorInfo));
                     }
                     break;
             }
@@ -618,7 +618,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listErrorInfoModel;
     }
 
-    public void GetItemCdError(List<UnitCheckInfoModel> listErrorInfo)
+    public void GetItemCdError(int hpId, List<UnitCheckInfoModel> listErrorInfo)
     {
         List<string> itemNameList = new();
         List<string> componentNameList = new();
@@ -740,9 +740,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         itemNameByItemCodeList = itemNameByItemCodeList.Distinct().ToList();
 
         _itemNameDictionary = itemNameList.Any() ? _realtimeOrderErrorFinder.FindItemNameDic(itemNameList, _sinday) : new();
-        _componentNameDictionary = componentNameList.Any() ? _realtimeOrderErrorFinder.FindComponentNameDic(componentNameList) : new();
-        _analogueNameDictionary = analogueNameList.Any() ? _realtimeOrderErrorFinder.FindAnalogueNameDic(analogueNameList) : new();
-        _drvalrgyNameDictionary = drvalrgyNameList.Any() ? _realtimeOrderErrorFinder.FindDrvalrgyNameDic(drvalrgyNameList) : new();
+        _componentNameDictionary = componentNameList.Any() ? _realtimeOrderErrorFinder.FindComponentNameDic(hpId, componentNameList) : new();
+        _analogueNameDictionary = analogueNameList.Any() ? _realtimeOrderErrorFinder.FindAnalogueNameDic(hpId, analogueNameList) : new();
+        _drvalrgyNameDictionary = drvalrgyNameList.Any() ? _realtimeOrderErrorFinder.FindDrvalrgyNameDic(hpId, drvalrgyNameList) : new();
         _foodNameDictionary = foodNameList.Any() ? _realtimeOrderErrorFinder.FindFoodNameDic(foodNameList) : new();
         _diseaseNameDictionary = diseaseNameList.Any() ? _realtimeOrderErrorFinder.FindDiseaseNameDic(diseaseNameList) : new();
         _kinkiCommentDictionary = kinkiCommentList.Any() ? _realtimeOrderErrorFinder.FindKinkiCommentDic(kinkiCommentList) : new();
@@ -751,16 +751,16 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _oTCComponentInfoDictionary = oTCComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetOTCComponentInfoDic(oTCComponentInfoList) : new();
         _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(supplementComponentInfoList) : new();
         _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(suppleItemNameList) : new();
-        _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(usageDosageList) : new();
+        _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(hpId, usageDosageList) : new();
         _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(itemNameByItemCodeList, _sinday) : new();
     }
 
     #endregion
 
     #region ProcessDataForDrugAllergy
-    public List<ErrorInfoModel> ProcessDataForDrugAllergy(List<DrugAllergyResultModel> allergyInfo)
+    public List<ErrorInfoModel> ProcessDataForDrugAllergy(int hpId, List<DrugAllergyResultModel> allergyInfo)
     {
-        if (_realtimeOrderErrorFinder.IsNoMasterData())
+        if (_realtimeOrderErrorFinder.IsNoMasterData(hpId))
         {
             return ProcessDataForDrugAllergyWithNoMasterData(allergyInfo);
         }
@@ -829,7 +829,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                                 break;
                             case 2:
                                 string componentName2 = _componentNameDictionary.ContainsKey(item.SeibunCd) ? _componentNameDictionary[item.SeibunCd] : string.Empty;
-                                string allergyComponentName2 = _realtimeOrderErrorFinder.FindComponentName(item.AllergySeibunCd);
+                                string allergyComponentName2 = _realtimeOrderErrorFinder.FindComponentName(hpId, item.AllergySeibunCd);
                                 comment.Append(string.Format(_commentLevel2Template, itemName, componentName2, allergyItemName, allergyComponentName2, componentName2) + Environment.NewLine + Environment.NewLine);
                                 break;
                             case 3:
@@ -1453,7 +1453,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDuplication
-    public List<ErrorInfoModel> ProcessDataForDuplication(List<DuplicationResultModel> listDuplicationError)
+    public List<ErrorInfoModel> ProcessDataForDuplication(int hpId, List<DuplicationResultModel> listDuplicationError)
     {
         List<ErrorInfoModel> result = new();
         foreach (DuplicationResultModel duplicationError in listDuplicationError)
@@ -1500,22 +1500,22 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 switch (duplicationError.Level)
                 {
                     case 1:
-                        string componentName1 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.SeibunCd);
+                        string componentName1 = _realtimeOrderErrorFinder.FindComponentName(hpId, duplicationError.SeibunCd);
                         comment.Append(string.Format(_duplicatedComponentTemplate, itemName, duplicatedItemName, componentName1) + Environment.NewLine + Environment.NewLine);
                         break;
                     case 2:
-                        string componentName2 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.SeibunCd);
-                        string allergyComponentName2 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.AllergySeibunCd);
+                        string componentName2 = _realtimeOrderErrorFinder.FindComponentName(hpId, duplicationError.SeibunCd);
+                        string allergyComponentName2 = _realtimeOrderErrorFinder.FindComponentName(hpId, duplicationError.AllergySeibunCd);
                         comment.Append(string.Format(_proDrupTemplate, itemName, componentName2, duplicatedItemName, allergyComponentName2, componentName2) + Environment.NewLine + Environment.NewLine);
                         break;
                     case 3:
-                        string componentName3 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.SeibunCd);
-                        string allergyComponentName3 = _realtimeOrderErrorFinder.FindComponentName(duplicationError.AllergySeibunCd);
-                        string analogueName = _realtimeOrderErrorFinder.FindAnalogueName(duplicationError.Tag);
+                        string componentName3 = _realtimeOrderErrorFinder.FindComponentName(hpId, duplicationError.SeibunCd);
+                        string allergyComponentName3 = _realtimeOrderErrorFinder.FindComponentName(hpId, duplicationError.AllergySeibunCd);
+                        string analogueName = _realtimeOrderErrorFinder.FindAnalogueName(hpId, duplicationError.Tag);
                         comment.Append(string.Format(_sameComponentTemplate, itemName, componentName3, duplicatedItemName, allergyComponentName3, analogueName) + Environment.NewLine + Environment.NewLine);
                         break;
                     case 4:
-                        string className = _realtimeOrderErrorFinder.FindClassName(duplicationError.Tag);
+                        string className = _realtimeOrderErrorFinder.FindClassName(hpId, duplicationError.Tag);
                         comment.Append(string.Format(_duplicatedClassTemplate, itemName, duplicatedItemName, className) + Environment.NewLine + Environment.NewLine);
                         break;
                 }

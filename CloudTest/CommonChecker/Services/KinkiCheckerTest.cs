@@ -136,7 +136,7 @@ public class KinkiCheckerTest : BaseUT
         };
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -209,7 +209,7 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(systemConf.HpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -294,13 +294,13 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(systemConf.HpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try
         {
             /// Act
-             var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
+            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
 
             //// Assert
             Assert.True(result.IsError == true);

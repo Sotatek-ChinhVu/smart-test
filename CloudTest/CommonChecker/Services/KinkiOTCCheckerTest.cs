@@ -39,7 +39,7 @@ public class KinkiOTCCheckerTest : BaseUT
         kinkiOTCChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(kinkiOTCChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiOTCChecker.InitFinder(tenantNoTracking, cache);
 
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
@@ -131,7 +131,7 @@ public class KinkiOTCCheckerTest : BaseUT
 
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
         kinkiOTCChecker.HpID = 999;
         kinkiOTCChecker.PtID = 1231;
         kinkiOTCChecker.Sinday = 20230404;
@@ -233,7 +233,7 @@ public class KinkiOTCCheckerTest : BaseUT
 
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
         kinkiOTCChecker.HpID = 999;
         kinkiOTCChecker.PtID = 1231;
         kinkiOTCChecker.Sinday = 20230404;
@@ -313,7 +313,7 @@ public class KinkiOTCCheckerTest : BaseUT
 
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
         kinkiOTCChecker.HpID = 999;
         kinkiOTCChecker.PtID = 1231;
         kinkiOTCChecker.Sinday = 20230404;
