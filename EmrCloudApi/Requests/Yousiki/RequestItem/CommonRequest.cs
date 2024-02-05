@@ -2,7 +2,7 @@
 {
     public class CommonRequest
     {
-        public List<Yousiki1InfDetailRequest> Yousiki1InfDetails { get; set; } = new();
+        public List<Yousiki1InfDetailRequest>? Yousiki1InfDetails { get; set; } 
 
         public List<CommonForm1Request> DiagnosticInjurys { get; set; } = new();
 

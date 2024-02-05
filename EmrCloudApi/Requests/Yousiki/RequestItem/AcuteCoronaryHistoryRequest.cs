@@ -2,9 +2,9 @@
 {
     public class AcuteCoronaryHistoryRequest
     {
-        public Yousiki1InfDetailRequest Type { get; set; } = new();
+        public Yousiki1InfDetailRequest? Type { get; set; } 
 
-        public Yousiki1InfDetailRequest OnsetDate { get; set; } = new();
+        public Yousiki1InfDetailRequest? OnsetDate { get; set; }
 
         public int SortNo { get; set; }
 

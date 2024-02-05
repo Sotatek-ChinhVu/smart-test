@@ -2,7 +2,7 @@
 {
     public class AcuteAorticDissectionHistoryRequest
     {
-        public Yousiki1InfDetailRequest OnsetDate { get; set; } = new();
+        public Yousiki1InfDetailRequest? OnsetDate { get; set; } 
 
         public bool IsDeleted { get; set; }
     }

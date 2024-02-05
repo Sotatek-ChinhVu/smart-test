@@ -2,11 +2,11 @@
 {
     public class StatusShortTermAdmissionRequest
     {
-        public Yousiki1InfDetailRequest AdmissionDate { get; set; } = new();
+        public Yousiki1InfDetailRequest? AdmissionDate { get; set; } 
 
-        public Yousiki1InfDetailRequest DischargeDate { get; set; } = new();
+        public Yousiki1InfDetailRequest? DischargeDate { get; set; } 
 
-        public Yousiki1InfDetailRequest Service { get; set; } = new();
+        public Yousiki1InfDetailRequest? Service { get; set; } 
 
         public bool IsDeleted { get; private set; }
     }

@@ -2,13 +2,13 @@
 {
     public class OutpatientConsultationRequest
     {
-        public Yousiki1InfDetailRequest ConsultationDate { get; set; } = new();
+        public Yousiki1InfDetailRequest? ConsultationDate { get; set; } 
 
-        public Yousiki1InfDetailRequest FirstVisit { get; set; } = new();
+        public Yousiki1InfDetailRequest? FirstVisit { get; set; } 
 
-        public Yousiki1InfDetailRequest Referral { get; set; } = new();
+        public Yousiki1InfDetailRequest? Referral { get; set; }
 
-        public Yousiki1InfDetailRequest DepartmentCode { get; set; } = new();
+        public Yousiki1InfDetailRequest? DepartmentCode { get; set; } 
 
         public int RowNo { get; set; }
 
