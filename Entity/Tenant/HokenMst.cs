@@ -200,7 +200,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "en_ten")]
         [CustomAttribute.DefaultValue(10)]
-        public int EnTen { get; set; }
+        public double EnTen { get; set; }
 
         /// <summary>
         /// 請求年月フラグ			

@@ -2,7 +2,7 @@
 {
     public class HokenMasterModel
     {
-        public HokenMasterModel(int hpId, int hokenNo, int hokenEdaNo, int startDate, int endDate, int prefNo, string houbetu, string hokenName, string hokenNameCd, string hokenSname, int hokenSbtKbn, int hokenKohiKbn, int isLimitList, int isLimitListSum, int checkDigit, int jyukyuCheckDigit, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int isTokusyuNoCheck, int ageStart, int ageEnd, int isOtherPrefValid, int enTen, int futanKbn, int futanRate, int kaiLimitFutan, int dayLimitFutan, int dayLimitCount, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int futanYusen, int receSeikyuKbn, int receKisai, int receKisai2, int receTenKisai, int receFutanHide, int receFutanRound, int receZeroKisai, int receSpKbn, string roudou)
+        public HokenMasterModel(int hpId, int hokenNo, int hokenEdaNo, int startDate, int endDate, int prefNo, string houbetu, string hokenName, string hokenNameCd, string hokenSname, int hokenSbtKbn, int hokenKohiKbn, int isLimitList, int isLimitListSum, int checkDigit, int jyukyuCheckDigit, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int isTokusyuNoCheck, int ageStart, int ageEnd, int isOtherPrefValid, double enTen, int futanKbn, int futanRate, int kaiLimitFutan, int dayLimitFutan, int dayLimitCount, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int futanYusen, int receSeikyuKbn, int receKisai, int receKisai2, int receTenKisai, int receFutanHide, int receFutanRound, int receZeroKisai, int receSpKbn, string roudou)
         {
             HpId = hpId;
             HokenNo = hokenNo;
@@ -280,7 +280,7 @@
             get; private set;
         }
 
-        public int EnTen
+        public double EnTen
         {
             get; private set;
         }
