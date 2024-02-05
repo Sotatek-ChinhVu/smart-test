@@ -743,6 +743,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
 
         foreach (var yousiki1InfDetailModel in yousiki1InfDetailModels)
         {
+            if (yousiki1InfDetailModel.Equals(null))
+            {
+                continue;
+            }
+
             if (yousiki1InfDetailModel.IsDeleted == 1)
             {
                 var yousiki1InfDetail = TrackingDataContext.Yousiki1InfDetails.FirstOrDefault(x => x.HpId == hpId && x.PtId == yousiki1InfDetailModel.PtId && x.SinYm == yousiki1InfDetailModel.SinYm && x.DataType == yousiki1InfDetailModel.DataType && x.SeqNo == yousiki1InfDetailModel.SeqNo && x.CodeNo == yousiki1InfDetailModel.CodeNo && x.RowNo == yousiki1InfDetailModel.RowNo && x.Payload == yousiki1InfDetailModel.Payload);
