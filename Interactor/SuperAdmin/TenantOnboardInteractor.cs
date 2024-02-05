@@ -416,6 +416,9 @@ namespace Interactor.SuperAdmin
                         command.Connection = connection;
                         _CreateTable(command, listMigration, tenantId);
                         var sqlGrant = $"GRANT All ON ALL TABLES IN SCHEMA public TO \"{dbName}\";";
+                        command.CommandText = sqlGrant;
+                        command.ExecuteNonQuery();
+                        _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
                         var sqlRenameTableName = QueryConstant.RenameTableNames;
                         var sqlRenameFieldName = QueryConstant.RenameFieldNames;
                         byte[] salt = _userRepository.GenerateSalt();
@@ -427,7 +430,6 @@ namespace Interactor.SuperAdmin
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
                         _CreateAuditLog(tenantId);
-                        _CreateDataMaster(host, dbName, model.UserConnect, model.PasswordConnect);
                     }
                 }
             }
