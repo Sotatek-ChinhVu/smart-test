@@ -1909,11 +1909,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0)
     {
         Dictionary<string, string> result = new();
-        var tokkiMstList = NoTrackingDataContext.TokkiMsts.Where(item => item.HpId == hpId
-                                                                   && ((item.StartDate == 0 && item.EndDate == 0) ||
-                                                                       (item.StartDate <= sinDate && sinDate <= item.EndDate)))
-                                                    .OrderBy(x => x.TokkiCd)
-                                                    .ToList();
+        var tokkiMstList = NoTrackingDataContext.TokkiMsts.Where(item => (item.StartDate == 0 && item.EndDate == 0) ||
+                                                                         (item.StartDate <= sinDate && sinDate <= item.EndDate))
+                                                          .OrderBy(x => x.TokkiCd)
+                                                          .ToList();
         foreach (var item in tokkiMstList)
         {
             result.Add(item.TokkiCd, item.TokkiName ?? string.Empty);
@@ -3823,8 +3822,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         if (hpInf != null)
         {
             result = NoTrackingDataContext.SokatuMsts.Where(
-              x => x.HpId == hpId &&
-                x.PrefNo == hpInf.PrefNo &&
+              x => x.PrefNo == hpInf.PrefNo &&
                 x.StartYm <= SeikyuYm &&
                 x.EndYm >= SeikyuYm)
               .OrderBy(x => x.SortNo)

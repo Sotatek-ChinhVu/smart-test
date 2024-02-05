@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                                 m34DrugInfoMain,
                                 TekiouByomei = listtekiouByomeis.FirstOrDefault()
                             };
-            
+
             // piczai pichou
             string pathServerDefault = _configuration["PathImageDrugFolder"] ?? string.Empty;
 
@@ -389,10 +389,10 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.SinrekiFilterMsts.Count(item => item.HpId == hpId && grpCdList.Contains(item.GrpCd)) == grpCdList.Count;
         }
 
-        public bool CheckExistKouiKbn(int hpId, List<int> kouiKbnIdList)
+        public bool CheckExistKouiKbn(List<int> kouiKbnIdList)
         {
             kouiKbnIdList = kouiKbnIdList.Distinct().ToList();
-            return NoTrackingDataContext.KouiKbnMsts.Count(item => item.HpId == hpId && kouiKbnIdList.Contains(item.KouiKbnId)) == kouiKbnIdList.Count;
+            return NoTrackingDataContext.KouiKbnMsts.Count(item => kouiKbnIdList.Contains(item.KouiKbnId)) == kouiKbnIdList.Count;
         }
 
         public bool CheckExistSinrekiFilterMstKoui(int hpId, List<long> kouiSeqNoList)
@@ -476,10 +476,9 @@ namespace Infrastructure.Repositories
                 .ToList();
         }
 
-        public List<KouiKbnMstModel> GetKouiKbnMstList(int hpId)
+        public List<KouiKbnMstModel> GetKouiKbnMstList()
         {
-            var result = NoTrackingDataContext.KouiKbnMsts.Where(item => item.HpId == hpId)
-                                                          .Select(item => new KouiKbnMstModel(
+            var result = NoTrackingDataContext.KouiKbnMsts.Select(item => new KouiKbnMstModel(
                                                                               item.KouiKbnId,
                                                                               item.KouiKbn1,
                                                                               item.KouiKbn2,

@@ -20,14 +20,13 @@ namespace Infrastructure.Repositories
         public (InsuranceMstModel insurance, int prefNo) GetDataInsuranceMst(int hpId, long ptId, int sinDate)
         {
             // data combobox 1 toki
-            var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
-                    .OrderBy(entity => entity.HpId)
-                    .ThenBy(entity => entity.TokkiCd)
-                    .Select(x => new TokkiMstModel(
-                                    x.TokkiCd,
-                                    x.TokkiName ?? string.Empty
-                        ))
-                    .ToList();
+            var TokkiMsts = NoTrackingDataContext.TokkiMsts.Where(entity => entity.StartDate <= sinDate && entity.EndDate >= sinDate)
+                                                           .OrderBy(entity => entity.TokkiCd)
+                                                           .Select(x => new TokkiMstModel(
+                                                                           x.TokkiCd,
+                                                                           x.TokkiName ?? string.Empty
+                                                               ))
+                                                           .ToList();
 
             int prefNo = 0;
             var hpInf = NoTrackingDataContext.HpInfs.Where(x => x.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();

@@ -149,6 +149,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<IpnNameMst>().HasKey(e => new { e.IpnNameCd, e.StartDate, e.SeqNo });
             modelBuilder.Entity<IpnMinYakkaMst>().HasKey(e => new { e.Id, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.StartDate, e.IpnNameCd, e.SeqNo });
+            modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExcludeItem>().HasKey(e => new { e.StartDate, e.ItemCd });
             modelBuilder.Entity<KouiKbnMst>().HasKey(e => new { e.KouiKbnId });
             modelBuilder.Entity<RaiinListKoui>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
@@ -298,7 +299,14 @@ namespace PostgreDataContext
             modelBuilder.Entity<TodoKbnMst>().HasKey(e => new { e.HpId, e.TodoKbnNo });
             modelBuilder.Entity<TokkiMst>().HasKey(e => new { e.TokkiCd });
             modelBuilder.Entity<UserPermission>().HasKey(e => new { e.HpId, e.UserId, e.FunctionCd });
+            modelBuilder.Entity<WrkSinKoui>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo, e.SeqNo });
+            modelBuilder.Entity<WrkSinKouiDetail>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo, e.SeqNo, e.RowNo });
+            modelBuilder.Entity<WrkSinKouiDetailDel>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo, e.SeqNo, e.RowNo, e.ItemSeqNo });
+            modelBuilder.Entity<WrkSinRpInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo });
             modelBuilder.Entity<YohoInfMst>().HasKey(e => new { e.HpId, e.ItemCd });
+            modelBuilder.Entity<YoyakuOdrInf>().HasKey(e => new { e.HpId, e.PtId, e.YoyakuKarteNo, e.RpNo, e.RpEdaNo });
+            modelBuilder.Entity<YoyakuOdrInfDetail>().HasKey(e => new { e.HpId, e.PtId, e.YoyakuKarteNo, e.RpNo, e.RpEdaNo, e.RowNo });
+            modelBuilder.Entity<YoyakuSbtMst>().HasKey(e => new { e.HpId, e.YoyakuSbt });
             modelBuilder.Entity<BackupReq>().HasKey(e => new { e.Id });
             modelBuilder.Entity<CalcStatus>().HasKey(e => new { e.CalcId });
             modelBuilder.Entity<CmtKbnMst>().HasKey(e => new { e.Id });
@@ -550,7 +558,13 @@ namespace PostgreDataContext
 
         public DbSet<OdrInfDetail> OdrInfDetails { get; set; } = default!;
 
+        public DbSet<YoyakuOdrInf> YoyakuOdrInfs { get; set; } = default!;
+
+        public DbSet<YoyakuOdrInfDetail> YoyakuOdrInfDetails { get; set; } = default!;
+
         public DbSet<RaiinKbnYayoku> RaiinKbnYayokus { get; set; } = default!;
+
+        public DbSet<YoyakuSbtMst> YoyakuSbtMsts { get; set; } = default!;
 
         public DbSet<TenMst> TenMsts { get; set; } = default!;
 
@@ -601,6 +615,14 @@ namespace PostgreDataContext
         public DbSet<SinRpInf> SinRpInfs { get; set; } = default!;
 
         public DbSet<SinRpNoInf> SinRpNoInfs { get; set; } = default!;
+
+        public DbSet<WrkSinKoui> WrkSinKouis { get; set; } = default!;
+
+        public DbSet<WrkSinKouiDetail> WrkSinKouiDetails { get; set; } = default!;
+
+        public DbSet<WrkSinKouiDetailDel> WrkSinKouiDetailDels { get; set; } = default!;
+
+        public DbSet<WrkSinRpInf> WrkSinRpInfs { get; set; } = default!;
 
         public DbSet<OdrInfCmt> OdrInfCmts { get; set; } = default!;
 

@@ -148,9 +148,9 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         return tenMstModel;
     }
 
-    public List<PiImage> GetProductImages(int hpId, string itemCd)
+    public List<PiImage> GetProductImages(string itemCd)
     {
-        var images = NoTrackingDataContext.PiImages.Where(p => p.HpId == hpId && p.ItemCd == itemCd).ToList();
+        var images = NoTrackingDataContext.PiImages.Where(p => p.ItemCd == itemCd).ToList();
         return images;
     }
 

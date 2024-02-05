@@ -484,9 +484,7 @@ namespace CalculateService.ReceFutan.DB.Finder
         {
             if (_tokkiMstModels == null)
             {
-                var tokkiMsts = _tenantDataContext.TokkiMsts.FindListNoTrack(t =>
-                    t.HpId == hpId
-                ).ToList();
+                var tokkiMsts = _tenantDataContext.TokkiMsts.FindListNoTrack();
 
                 _tokkiMstModels = tokkiMsts.Select(t => new TokkiMstModel(t)).ToList();
             }
@@ -515,9 +513,7 @@ namespace CalculateService.ReceFutan.DB.Finder
         {
             if (_kogakuLimitModels == null)
             {
-                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack(k =>
-                    k.HpId == hpId
-                ).ToList();
+                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack();
 
                 _kogakuLimitModels = kogakuLimits.Select(k => new KogakuLimitModel(k)).ToList();
             }
