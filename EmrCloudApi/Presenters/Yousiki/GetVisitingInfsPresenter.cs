@@ -12,7 +12,7 @@ public class GetVisitingInfsPresenter : IGetVisitingInfsOutputPort
 
     public void Complete(GetVisitingInfsOutputData output)
     {
-        Result.Data = new GetVisitingInfsResponse(output.VisitingInfList.Select(item => new VisitingInfDto(item)).ToList());
+        Result.Data = new GetVisitingInfsResponse(output.AllGrpDictionary, output.VisitingInfList.Select(item => new VisitingInfDto(item)).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

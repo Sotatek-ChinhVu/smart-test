@@ -1,4 +1,6 @@
-﻿namespace CalculateService.Utils
+﻿using Helper.Common;
+
+namespace CalculateService.Utils
 {
     class CalcUtils
     {
@@ -69,6 +71,21 @@
             }
 
             return results;
+        }
+
+        public static string DoubleToAlignmentString(double value, int seisu, int syosu)
+        {
+            string ret = string.Empty;
+            string format = CIUtil.StringOfChar("0", seisu - (value < 0 ? 1 : 0));
+
+            if (syosu > 0)
+            {
+                format += "." + CIUtil.StringOfChar("0", syosu);
+            }
+
+            ret = value.ToString(format);
+
+            return ret;
         }
     }
 }

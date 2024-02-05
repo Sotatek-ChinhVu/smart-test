@@ -52,5 +52,9 @@ namespace CalculateService.Receipt.Constants
         /// レセ電アフターケア
         /// </summary>
         public static int RecedenAfter = 22;
+        /// <summary>
+        /// EFファイル
+        /// </summary>
+        public static int EFFile = 101;
     }
 }
