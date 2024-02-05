@@ -2,7 +2,7 @@
 {
     public class AtHomeRequest
     {
-        public List<Yousiki1InfDetailRequest>? Yousiki1InfDetails { get; set; }
+        public List<Yousiki1InfDetailRequest> Yousiki1InfDetails { get; set; } = new();
 
         public List<StatusVisitRequest> StatusVisits { get; set; } = new();
 
