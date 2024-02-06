@@ -171,28 +171,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                          .ToList());
     }
 
-    public List<Yousiki1InfDetailModel> GetYousiki1InfDetailsByCodeNo(int hpId, int sinYm, long ptId, int dataType, int seqNo, string codeNo)
-    {
-        var result = NoTrackingDataContext.Yousiki1InfDetails.Where(item => item.SinYm == sinYm
-                                                                            && item.PtId == ptId
-                                                                            && item.DataType == dataType
-                                                                            && item.SeqNo == seqNo
-                                                                            && item.HpId == hpId
-                                                                            && item.CodeNo == codeNo)
-                                                             .OrderBy(x => x.RowNo)
-                                                             .Select(item => new Yousiki1InfDetailModel(
-                                                                                 item.PtId,
-                                                                                 item.SinYm,
-                                                                                 item.DataType,
-                                                                                 item.SeqNo,
-                                                                                 item.CodeNo ?? string.Empty,
-                                                                                 item.RowNo,
-                                                                                 item.Payload,
-                                                                                 item.Value ?? string.Empty))
-                                                             .ToList();
-        return result;
-    }
-
     /// <summary>
     /// Get Yousiki1InfDetail list
     /// </summary>
