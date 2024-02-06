@@ -4,10 +4,10 @@ namespace EmrCloudApi.Responses.Yousiki;
 
 public class GetYousiki1InfDetailsResponse
 {
-    public GetYousiki1InfDetailsResponse(List<Yousiki1InfDetailDto> yousiki1InfDetailList)
+    public GetYousiki1InfDetailsResponse(Yousiki1InfDto yousiki1Inf)
     {
-        Yousiki1InfDetailList = yousiki1InfDetailList;
+        Yousiki1Inf = yousiki1Inf;
     }
 
-    public List<Yousiki1InfDetailDto> Yousiki1InfDetailList { get; private set; }
+    public Yousiki1InfDto Yousiki1Inf { get; private set; }
 }

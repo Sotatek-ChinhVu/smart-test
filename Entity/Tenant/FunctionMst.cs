@@ -9,11 +9,14 @@ namespace Entity.Tenant
     [Index(nameof(FunctionCd), Name = "function_mst_pkey")]
     public class FunctionMst : EmrCloneable<FunctionMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 機能コード
         /// 
         /// </summary>
-        
+
         [Column("function_cd", Order = 1)]
         [MaxLength(8)]
         public string FunctionCd { get; set; } = string.Empty;

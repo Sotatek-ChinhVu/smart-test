@@ -539,7 +539,7 @@ namespace Interactor.MedicalExamination
                     break;
                 case "2":
                     //アレルギー 
-                    summaryInfItem = GetDrugInfo(ptId, sinDate);
+                    summaryInfItem = GetDrugInfo(hpId, ptId, sinDate);
                     break;
                 case "3":
                     // 病歴
@@ -662,14 +662,14 @@ namespace Interactor.MedicalExamination
             return summaryInfItem;
         }
 
-        private SummaryInfItem GetDrugInfo(long ptId, int sinDate)
+        private SummaryInfItem GetDrugInfo(int hpId, long ptId, int sinDate)
         {
             int grpItemCd = 2;
             string headerName = "◆アレルギー";
             StringBuilder headerInf = new StringBuilder();
 
             var taskAlgryElse = Task<List<PtAlrgyElseModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryElseRepository.GetAlrgyElseList(ptId, sinDate));
-            var taskAlgryFood = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryFoodRepository.GetAlrgyFoodList(ptId, sinDate));
+            var taskAlgryFood = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryFoodRepository.GetAlrgyFoodList(hpId, ptId, sinDate));
             var taskAlgryDrug = Task<List<PtAlrgyDrugModel>>.Factory.StartNew(() => _importantNoteDrugInfAlgryDrugRepository.GetAlrgyDrugList(ptId, sinDate));
             Task.WaitAll(taskAlgryElse, taskAlgryFood, taskAlgryDrug);
 

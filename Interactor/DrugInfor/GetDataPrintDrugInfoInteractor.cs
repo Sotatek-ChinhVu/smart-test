@@ -24,10 +24,10 @@ public class GetDataPrintDrugInfoInteractor : IGetDataPrintDrugInfoInputPort
                     htmlData = _getCommonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                     break;
                 case TypeHTMLObject.ShowKanjaMuke:
-                    htmlData = _getCommonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                    htmlData = _getCommonDrugInf.ShowKanjaMuke(inputData.HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                     break;
                 case TypeHTMLObject.ShowMdbByomei:
-                    htmlData = _getCommonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                    htmlData = _getCommonDrugInf.ShowMdbByomei(inputData.HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                     break;
             }
             return new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, (int)inputData.Type);

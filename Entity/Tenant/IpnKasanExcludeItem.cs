@@ -5,24 +5,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entity.Tenant
 {
     [Table(name: "ipn_kasan_exclude_item")]
-    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof(ItemCd), Name = "ipn_kasan_exclude_item_idx01")]
+    [Index(nameof(StartDate), nameof(EndDate), nameof(ItemCd), Name = "ipn_kasan_exclude_item_idx01")]
     public class IpnKasanExcludeItem : EmrCloneable<IpnKasanExcludeItem>
     {
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
         /// <summary>
         /// 診療行為コード
         /// 
         /// </summary>
 
-        [Column("item_cd", Order = 2)]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -31,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("start_date", Order = 3)]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 

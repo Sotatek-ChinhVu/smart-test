@@ -1,3 +1,4 @@
+using Entity.Tenant;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,10 +12,13 @@ namespace Entity.Tenant
     [Table(name: "byomei_mst_aftercare")]
     public class ByomeiMstAftercare : EmrCloneable<ByomeiMstAftercare>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 傷病名コード
         /// </summary>
-        
+
         [Column(name: "byomei_cd", Order = 1)]
         [MaxLength(2)]
         public string ByomeiCd { get; set; } = string.Empty;

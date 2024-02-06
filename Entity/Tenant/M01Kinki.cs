@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m01_kinki")]
     public class M01Kinki : EmrCloneable<M01Kinki>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// Aコード
         /// YJコードの上位7,8,9,12桁
         /// </summary>
-        
+
         [Column("a_cd", Order = 1)]
         [MaxLength(12)]
         public string ACd { get; set; } = string.Empty;

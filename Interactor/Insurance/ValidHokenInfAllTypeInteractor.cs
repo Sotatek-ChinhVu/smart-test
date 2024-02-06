@@ -25,7 +25,7 @@ namespace Interactor.Insurance
             try
             {
                 // Get HokenMst
-                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.HpId, inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo ,inputData.SinDate);
+                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.HpId, inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo, inputData.SinDate);
 
                 string houbetuNo = string.Empty;
                 string hokensyaNoSearch = string.Empty;
@@ -39,7 +39,7 @@ namespace Interactor.Insurance
                         break;
                     case 1:
                     case 2:
-                        if(inputData.HokenKbn == 1 && inputData.SelectedHokenInfHoubetu == HokenConstant.HOUBETU_NASHI)
+                        if (inputData.HokenKbn == 1 && inputData.SelectedHokenInfHoubetu == HokenConstant.HOUBETU_NASHI)
                         {
                             IsValidHokenNashi(ref validateDetails, inputData.HpId, inputData.SinDate, inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate);
                         }
@@ -449,7 +449,7 @@ namespace Interactor.Insurance
             return true;
         }
 
-        private void IsValidHokenInf(ref List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> validateDetails, bool selectedHokenInf, bool selectedHokenInfIsAddNew, int hokenKbn, string selectedHokenInfHoubetu, int hpId, int sinDate, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsJihi, string hokenSyaNo, int hokenNo, bool isHaveSelectedHokenMst, string houbetu, string sHokenMstHoubetsuNumber, int sHokenMstHokenNumber, int sHokenMstCheckDegit, int ptBirthday, int sHokenMstAgeStart, int sHokenMstAgeEnd, string kigo, string bango, int hokenMstIsKigoNa, int honkeKbn, int startDate, int endDate, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfconfirmDate, int selectedHokenMstStartDate, int selectedHokenMstEndDate, string selectedHokenMstDisplayText,bool hokenInfIsNoHoken, int hokenInfConfirmDate,bool selectedHokenInfIsAddHokenCheck,int selectedHokenInfHokenChecksCount)
+        private void IsValidHokenInf(ref List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> validateDetails, bool selectedHokenInf, bool selectedHokenInfIsAddNew, int hokenKbn, string selectedHokenInfHoubetu, int hpId, int sinDate, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsJihi, string hokenSyaNo, int hokenNo, bool isHaveSelectedHokenMst, string houbetu, string sHokenMstHoubetsuNumber, int sHokenMstHokenNumber, int sHokenMstCheckDegit, int ptBirthday, int sHokenMstAgeStart, int sHokenMstAgeEnd, string kigo, string bango, int hokenMstIsKigoNa, int honkeKbn, int startDate, int endDate, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfconfirmDate, int selectedHokenMstStartDate, int selectedHokenMstEndDate, string selectedHokenMstDisplayText, bool hokenInfIsNoHoken, int hokenInfConfirmDate, bool selectedHokenInfIsAddHokenCheck, int selectedHokenInfHokenChecksCount)
         {
             var message = "";
             if (!selectedHokenInf)
@@ -573,7 +573,7 @@ namespace Interactor.Insurance
 
         private void IsValidHokenDetail(ref List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> validateDetails, int hpId, int sinDate, string tokki1Value, string tokki2Value, string tokki3Value, string tokki4Value, string tokki5Value)
         {
-            var tokkiMstBinding = _patientInforRepository.GetListTokki(hpId, sinDate);
+            var tokkiMstBinding = _patientInforRepository.GetListTokki(sinDate);
             var message = "";
             bool _isValidLengthTokki(string tokkiValue)
             {
@@ -882,7 +882,7 @@ namespace Interactor.Insurance
             return true;
         }
 
-        public string IsValidConfirmDateHoken(int sinDate, bool isExpirated, bool hokenInfIsJihi, bool hokenInfIsNoHoken, bool hokenInfIsExpirated, int hokenInfConfirmDate, bool selectedHokenInfIsAddNew, bool selectedHokenInfIsAddHokenCheck,int selectedHokenInfHokenChecksCount)
+        public string IsValidConfirmDateHoken(int sinDate, bool isExpirated, bool hokenInfIsJihi, bool hokenInfIsNoHoken, bool hokenInfIsExpirated, int hokenInfConfirmDate, bool selectedHokenInfIsAddNew, bool selectedHokenInfIsAddHokenCheck, int selectedHokenInfHokenChecksCount)
         {
             var checkComfirmDateHoken = "";
             if (isExpirated)

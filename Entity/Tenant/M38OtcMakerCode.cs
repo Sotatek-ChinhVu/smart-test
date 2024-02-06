@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m38_otc_maker_code")]
     public class M38OtcMakerCode : EmrCloneable<M38OtcMakerCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 会社コード
         /// 数字4桁
         /// </summary>
-        
+
         [Column("maker_cd", Order = 1)]
         public string MakerCd { get; set; } = string.Empty;
 
