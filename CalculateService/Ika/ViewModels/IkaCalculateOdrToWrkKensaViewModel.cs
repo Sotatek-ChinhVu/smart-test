@@ -212,9 +212,9 @@ namespace CalculateService.Ika.ViewModels
                             {
 
                                 if ((string.IsNullOrEmpty(filteredOdrDtl[i].TyuCd) == false && filteredOdrDtl[i].TyuCd != "0") ||
-                                    (zeroOverWrite == false && filteredOdrDtl[i].ItemCd != ItemCdConst.KensaTeigen))
+                                    zeroOverWrite == false)
                                 {
-                                    // TYU_CD=0の上書きをしない場合で検査逓減以外の場合
+                                    // TYU_CD=0の上書きをしない場合
                                     // または、TYU_CD != 0の場合
                                     // これ以降の項目に反映するため、TYU_CDを記憶する
                                     // ※先頭S項目の場合は、この前の項目にも反映
@@ -225,30 +225,30 @@ namespace CalculateService.Ika.ViewModels
                                 {
 
                                     if ((string.IsNullOrEmpty(filteredOdrDtl[i].TyuCd) == false && filteredOdrDtl[i].TyuCd != "0") ||
-                                        (zeroOverWrite == false && filteredOdrDtl[i].ItemCd != ItemCdConst.KensaTeigen))
+                                        zeroOverWrite == false)
                                     {
                                         // TYU_CD != 0 の場合
-                                        // または、TYU_CD=0の上書きをしない場合で検査逓減以外の場合
+                                        // または、TYU_CD=0の上書きをしない場合
                                         // この項目より上にある項目のTYU_CDを、この項目のTYU_CDで上書きする
                                         firstSItem = false;
                                         for (int j = i - 1; j >= 0; j--)
                                         {
                                             if (filteredOdrDtl[j].IsSItem == false ||
-                                                ((zeroOverWrite || filteredOdrDtl[i].ItemCd == ItemCdConst.KensaTeigen) &&
+                                                (zeroOverWrite &&
                                                     filteredOdrDtl[j].IsKihonKoumoku == false &&
                                                     (filteredOdrDtl[j].TyuCd == "0" || string.IsNullOrEmpty(filteredOdrDtl[j].TyuCd))))
                                             {
-                                                // S項目以外、またはTYU_CD=0を上書き可能な場合、または検査逓減の場合
+                                                // S項目以外、またはTYU_CD=0を上書き可能な場合
                                                 filteredOdrDtl[j].TyuCd = tyuCD + "D";
                                             }
                                         }
                                     }
                                 }
-                                else if((zeroOverWrite || filteredOdrDtl[i].ItemCd == ItemCdConst.KensaTeigen) &&
+                                else if (zeroOverWrite &&
                                     filteredOdrDtl[i].IsKihonKoumoku == false &&
                                     (string.IsNullOrEmpty(filteredOdrDtl[i].TyuCd) || filteredOdrDtl[i].TyuCd == "0"))
                                 {
-                                    // TYU_CD=0を上書きする場合または検査逓減の場合で、
+                                    // TYU_CD=0を上書きする場合で、
                                     // 基本項目ではない、TYU_CD=0の項目の場合
                                     // 直前のS項目のTYU_CDで上書き
                                     filteredOdrDtl[i].TyuCd = tyuCD + "D";
@@ -256,11 +256,11 @@ namespace CalculateService.Ika.ViewModels
                             }
                             else
                             {
-                                if (firstSItem == false && (tyuCD != "0" || (zeroOverWrite == false && filteredOdrDtl[i].ItemCd != ItemCdConst.KensaTeigen)))
+                                if (firstSItem == false && (tyuCD != "0" || zeroOverWrite == false))
                                 {
                                     // 最初のS項目を処理済みで、
                                     // 　TYU_CDが0ではない
-                                    // 　または、TYU_CD=0を上書きしない場合で検査逓減以外の場合
+                                    // 　または、TYU_CD=0を上書きしない場合
                                     filteredOdrDtl[i].TyuCd = tyuCD + "D";
                                 }
                                 else
@@ -384,7 +384,7 @@ namespace CalculateService.Ika.ViewModels
                                             // コメント項目以外
 
                                             // 算定回数チェック
-                                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
+                                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
                                             {
                                                 // 算定回数マスタのチェックにより算定不可
                                                 _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
@@ -518,7 +518,7 @@ namespace CalculateService.Ika.ViewModels
                     if (hokenPid >= 0)
                     {
                         // 算定回数チェック
-                        if (_common.CheckSanteiKaisu(ItemCdConst.KensaBV, santeiKbn, hokenId, 1) == 2)
+                        if (_common.CheckSanteiKaisu(ItemCdConst.KensaBV, santeiKbn, 1) == 2)
                         {
                             // 算定回数マスタのチェックにより算定不可
                         }
@@ -718,7 +718,7 @@ namespace CalculateService.Ika.ViewModels
 
                                 }
                                 // 算定回数チェック
-                                else if (_common.CheckSanteiKaisu(KensaHandanConst.KensaHandanList[i].santeiItem, santeiKbn, hokenId, 1) == 2)
+                                else if (_common.CheckSanteiKaisu(KensaHandanConst.KensaHandanList[i].santeiItem, santeiKbn, 1) == 2)
                                 {
                                     // 算定回数マスタのチェックにより算定不可
                                 }
@@ -995,7 +995,7 @@ namespace CalculateService.Ika.ViewModels
                                 {
                                     foreach (OdrDtlTenModel odrDtl in marumels[k].odrDtls)
                                     {
-                                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0) != 2 &&
+                                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0) != 2 &&
                                             _common.CheckAge(odrDtl) != 2)
                                         {
                                             _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
@@ -1130,7 +1130,7 @@ namespace CalculateService.Ika.ViewModels
                         {
                             foreach (OdrDtlTenModel odrDtl in marumels[k].odrDtls)
                             {
-                                if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0) != 2 &&
+                                if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0) != 2 &&
                                     _common.CheckAge(odrDtl) != 2)
                                 {
                                     _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
@@ -1205,13 +1205,12 @@ namespace CalculateService.Ika.ViewModels
 
                     // 対象項目を算定
                     double totalTen = _common.Sin.GetNaibunpituTotalCost();
-                    HashSet<string> addAgeKasans = new HashSet<string>();
 
                     while (minIndex >= 0)
                     {
                         foreach (OdrDtlTenModel odrDtl in odrDtls)
                         {
-                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0) == 2 ||
+                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0) == 2 ||
                                 _common.CheckAge(odrDtl) == 2)
                             {
                                 // 算定回数または年齢上限を超える
@@ -1228,22 +1227,9 @@ namespace CalculateService.Ika.ViewModels
                                 _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                 // 年齢加算自動算定
-                                string kasanCd = _common.Wrk.GetAgeKasanCd(odrDtl);
-
-                                if (kasanCd != "")
-                                {
-                                    if (_common.CheckSanteiKaisu(kasanCd, odrDtl.SanteiKbn, odrDtl.HokenId, 1) != 2)
-                                    {
-                                        if (odrDtls.Any(p =>
-                                             p.RpNo == odrDtl.RpNo &&
-                                             p.RpEdaNo == odrDtl.RpEdaNo &&
-                                             p.ItemCd == kasanCd) == false)
-                                        {
-                                            addAgeKasans.Add(kasanCd);
-                                        }
-                                    }                                    
-                                }                            
+                                _common.AppendNewWrkSinKouiDetailAgeKasan(odrDtl, _common.Odr.FilterOdrDetailByRpNo(odrDtl.RpNo, odrDtl.RpEdaNo));
                             }
+
                         }
 
                         // オーダーから削除
@@ -1252,12 +1238,6 @@ namespace CalculateService.Ika.ViewModels
                         (odrDtls, minIndex, itemCnt) =
                             _common.Odr.FilterOdrDetailRangeByHokatuKensa(
                                 HokatuKensaConst.NaibunpituFuka, _common.Odr.HokenPidList[i].hokenPid, _common.Odr.HokenPidList[i].santeiKbn);
-                    }
-
-                    foreach(string kasanCd in addAgeKasans)
-                    {
-                        _common.Wrk.AppendNewWrkSinKouiDetail(kasanCd);
-
                     }
                 }
             }

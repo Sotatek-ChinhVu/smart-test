@@ -791,26 +791,7 @@ namespace CalculateService.Ika.Models
                 //RaisePropertyChanged(() => IsDeleted);
             }
         }
-        public int EfFlg
-        {
-            get { return WrkSinKouiDetail.EfFlg; }
-            set
-            {
-                if (WrkSinKouiDetail.EfFlg == value) return;
-                WrkSinKouiDetail.EfFlg = value;
-                //RaisePropertyChanged(() => EfFlg);
-            }
-        }
-        public int IpnFlg
-        {
-            get { return WrkSinKouiDetail.IpnFlg; }
-            set
-            {
-                if (WrkSinKouiDetail.IpnFlg == value) return;
-                WrkSinKouiDetail.IpnFlg = value;
-                //RaisePropertyChanged(() => IpnFlg);
-            }
-        }
+
         /// <summary>
         /// 自動発生コメントのベースになった項目の診療行為コード
         /// </summary>
@@ -989,7 +970,7 @@ namespace CalculateService.Ika.Models
 
                 if (TenMst != null)
                 {
-                    if (TenMst.MasterSbt != "Y" && TenMst.MasterSbt != "T" && TenMst.MasterSbt != "U" && TenMst.ItemCd.Length == 9 && TenMst.BuiKbn == 0)
+                    if (TenMst.MasterSbt != "Y" && TenMst.MasterSbt != "T" && TenMst.ItemCd.Length == 9 && TenMst.BuiKbn == 0)
                     {
                         if (new int[] { 1, 2, 4, 10, 11 }.Contains(TenId))
                         {

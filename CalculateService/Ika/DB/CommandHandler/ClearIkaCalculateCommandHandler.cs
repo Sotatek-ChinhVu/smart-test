@@ -183,7 +183,7 @@ namespace CalculateService.Ika.DB.CommandHandler
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.SinYm == sinYm &&
-                    p.IsDeleted == 1 && p.EfFlg == 0
+                    p.IsDeleted == 1
                 );
 
                 //診療行為
@@ -191,7 +191,7 @@ namespace CalculateService.Ika.DB.CommandHandler
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.SinYm == sinYm &&
-                    p.IsDeleted == 1 && p.EfFlg == 0
+                    p.IsDeleted == 1
                 );
 
                 //診療行為詳細
@@ -199,7 +199,7 @@ namespace CalculateService.Ika.DB.CommandHandler
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.SinYm == sinYm &&
-                    p.IsDeleted == 1 && p.EfFlg == 0
+                    p.IsDeleted == 1
                 );
 
             }
@@ -232,8 +232,7 @@ namespace CalculateService.Ika.DB.CommandHandler
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.SinYm == sinYm &&
-                    p.IsDeleted == 1 &&
-                    p.EfFlg == 0
+                    p.IsDeleted == 1 
                 );
 
                 //診療行為
@@ -241,8 +240,7 @@ namespace CalculateService.Ika.DB.CommandHandler
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.SinYm == sinYm &&
-                    p.IsDeleted == 1 &&
-                    p.EfFlg == 0
+                    p.IsDeleted == 1
                 );
 
                 //診療行為詳細
@@ -250,8 +248,7 @@ namespace CalculateService.Ika.DB.CommandHandler
                     p.HpId == hpId &&
                     p.PtId == ptId &&
                     p.SinYm == sinYm &&
-                    p.IsDeleted == 1 &&
-                    p.EfFlg == 0
+                    p.IsDeleted == 1
                 );
 
             }

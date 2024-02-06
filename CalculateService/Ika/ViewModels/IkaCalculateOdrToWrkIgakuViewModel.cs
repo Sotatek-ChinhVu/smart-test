@@ -450,7 +450,7 @@ namespace CalculateService.Ika.ViewModels
                                 // コメント項目以外
 
                                 // 算定回数チェック
-                                if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
+                                if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
                                 {
                                     // 算定回数マスタのチェックにより算定不可
                                     _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
@@ -641,7 +641,7 @@ namespace CalculateService.Ika.ViewModels
 
                 if (ret)
                 {
-                    if (_common.Mst.GetSyouniCounseling() == 0)
+                    if (_systemConfigProvider.GetSyouniCounselingCheck() == 0)
                     {
                         int syokaiDate = _common.GetSyokaiDate(_common.sinDate, ItemCdConst.IgakuSyouniCounseling1);
 
@@ -1089,12 +1089,7 @@ namespace CalculateService.Ika.ViewModels
                         itemCd = ItemCdConst.IgakuSyouniKakaritukeSyosinNyuSinya;
                     }
                 }
-                else if (new double[] { 
-                            SyosaiConst.Saisin, 
-                            SyosaiConst.SaisinDenwa, 
-                            SyosaiConst.SaisinDenwaTokurei, 
-                            SyosaiConst.SaisinJouhou 
-                        }.Contains(_common.syosai))
+                else if (new double[] { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.SaisinJouhou }.Contains(_common.syosai))
                 {
                     // 再診
                     if (_common.jikan == JikanConst.JikanGai)
@@ -1190,7 +1185,7 @@ namespace CalculateService.Ika.ViewModels
                 //見つかったら、そのまま算定する
                 if (santei)
                 {
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSyouniKakaritukeKokin, odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSyouniKakaritukeKokin, odrDtls.First().SanteiKbn, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.IgakuSyouniKakaritukeKokin, isDeleted: DeleteStatus.DeleteFlag);
@@ -1446,7 +1441,7 @@ namespace CalculateService.Ika.ViewModels
 
                 if (santei)
                 {
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuKansenKojo, 0, 0, 0, 0, minIndex < 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuKansenKojo, 0, 0, 0, minIndex < 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -1521,7 +1516,7 @@ namespace CalculateService.Ika.ViewModels
             {
                 if (santei)
                 {
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuRenkeiKyoka, 0, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuRenkeiKyoka, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -1595,7 +1590,7 @@ namespace CalculateService.Ika.ViewModels
             {
                 if (santei)
                 {
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSurveillance, 0, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSurveillance, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -1923,7 +1918,7 @@ namespace CalculateService.Ika.ViewModels
                 //見つかったら、そのまま算定する
                 if (santei)
                 {
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSyouniGairaiKokin, odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSyouniGairaiKokin, odrDtls.First().SanteiKbn, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.IgakuSyouniGairaiKokin, isDeleted: DeleteStatus.DeleteFlag);
@@ -2043,11 +2038,7 @@ namespace CalculateService.Ika.ViewModels
                     }
                 }
                 //else if (new double[] { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa}.Contains(_common.syosai))
-                else if (new double[] { 
-                    SyosaiConst.Saisin, 
-                    SyosaiConst.SaisinDenwa, 
-                    SyosaiConst.SaisinDenwaTokurei, 
-                    SyosaiConst.SaisinJouhou }.Contains(_common.syosai))
+                else if (new double[] { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.SaisinJouhou }.Contains(_common.syosai))
                 {
                     // 再診
                     if (_common.jikan == JikanConst.JikanGai)
@@ -2194,13 +2185,7 @@ namespace CalculateService.Ika.ViewModels
             string santeiJyokenMessage = "";
 
             //算定条件チェック
-            if (new List<double> { 
-                    SyosaiConst.Syosin, 
-                    SyosaiConst.Syosin2, 
-                    SyosaiConst.SyosinCorona, 
-                    SyosaiConst.SyosinJouhou, 
-                    SyosaiConst.Syosin2Jouhou 
-                }.Contains(_common.syosai))
+            if (new List<double> { SyosaiConst.Syosin, SyosaiConst.Syosin2, SyosaiConst.SyosinCorona, SyosaiConst.SyosinJouhou, SyosaiConst.Syosin2Jouhou }.Contains(_common.syosai))
             {
                 // 初診時不可
                 santeiJyoken = false;
@@ -2209,15 +2194,8 @@ namespace CalculateService.Ika.ViewModels
                 santeiJyokenMessage = "初診時の";
             }
             else if (_common.ExistWrkOrSinKouiDetailByItemCd(
-                new List<string> { 
-                    ItemCdConst.Syosin, 
-                    ItemCdConst.Syosin2, 
-                    ItemCdConst.Syosin2Rousai, 
-                    ItemCdConst.SyosinCorona, 
-                    ItemCdConst.SyosinTokurei, 
-                    ItemCdConst.SyosinJouhou, 
-                    ItemCdConst.Syosin2Jouhou 
-                }, false))
+                new List<string> { ItemCdConst.Syosin, ItemCdConst.Syosin2, ItemCdConst.Syosin2Rousai, ItemCdConst.SyosinCorona,
+                    ItemCdConst.SyosinJouhou, ItemCdConst.Syosin2Jouhou }, false))
             {
                 // 初診時不可
                 santeiJyoken = false;
@@ -2265,9 +2243,9 @@ namespace CalculateService.Ika.ViewModels
                 }
                 else
                 {
-                    if (_common.CheckSanteiNintiTiiki(ItemCdConst.IgakuNintiTiikiHoukatu1, "認知症地域包括診療料", odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0))
+                    if (_common.CheckSanteiNintiTiiki(ItemCdConst.IgakuNintiTiikiHoukatu1, "認知症地域包括診療料", odrDtls.First().SanteiKbn, 0))
                     {
-                        if (_common.CheckSanteiKaisu(ItemCdConst.IgakuNintiTiikiHoukatu1, odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0) == 2)
+                        if (_common.CheckSanteiKaisu(ItemCdConst.IgakuNintiTiikiHoukatu1, odrDtls.First().SanteiKbn, 0) == 2)
                         {
                             // 算定回数マスタのチェックにより算定不可
                             _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.IgakuNintiTiikiHoukatu1, isDeleted: DeleteStatus.DeleteFlag);
@@ -2316,9 +2294,9 @@ namespace CalculateService.Ika.ViewModels
                     }
                     else
                     {
-                        if (_common.CheckSanteiNintiTiiki(ItemCdConst.IgakuNintiTiikiHoukatu2, "認知症地域包括診療料", odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0))
+                        if (_common.CheckSanteiNintiTiiki(ItemCdConst.IgakuNintiTiikiHoukatu2, "認知症地域包括診療料", odrDtls.First().SanteiKbn, 0))
                         {
-                            if (_common.CheckSanteiKaisu(ItemCdConst.IgakuNintiTiikiHoukatu2, odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0) == 2)
+                            if (_common.CheckSanteiKaisu(ItemCdConst.IgakuNintiTiikiHoukatu2, odrDtls.First().SanteiKbn, 0) == 2)
                             {
                                 // 算定回数マスタのチェックにより算定不可
                                 _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.IgakuNintiTiikiHoukatu2, isDeleted: DeleteStatus.DeleteFlag);
@@ -2646,13 +2624,7 @@ namespace CalculateService.Ika.ViewModels
             string santeiJyokenMessage = "";
 
             //算定条件チェック
-            if (new List<double> { 
-                    SyosaiConst.Syosin, 
-                    SyosaiConst.Syosin2, 
-                    SyosaiConst.SyosinCorona, 
-                    SyosaiConst.SyosinJouhou, 
-                    SyosaiConst.Syosin2Jouhou 
-                }.Contains(_common.syosai))
+            if (new List<double> { SyosaiConst.Syosin, SyosaiConst.Syosin2, SyosaiConst.SyosinCorona, SyosaiConst.SyosinJouhou, SyosaiConst.Syosin2Jouhou }.Contains(_common.syosai))
             {
                 // 初診時不可
                 santeiJyoken = false;
@@ -2661,15 +2633,8 @@ namespace CalculateService.Ika.ViewModels
                 santeiJyokenMessage = "初診時の";
             }
             else if (_common.ExistWrkOrSinKouiDetailByItemCd(
-                new List<string> { 
-                    ItemCdConst.Syosin, 
-                    ItemCdConst.Syosin2, 
-                    ItemCdConst.Syosin2Rousai, 
-                    ItemCdConst.SyosinCorona, 
-                    ItemCdConst.SyosinTokurei,
-                    ItemCdConst.SyosinJouhou, 
-                    ItemCdConst.Syosin2Jouhou 
-                }, false))
+                new List<string> { ItemCdConst.Syosin, ItemCdConst.Syosin2, ItemCdConst.Syosin2Rousai, ItemCdConst.SyosinCorona,
+                    ItemCdConst.SyosinJouhou, ItemCdConst.Syosin2Jouhou }, false))
             {
                 // 初診時不可
                 santeiJyoken = false;
@@ -2717,7 +2682,7 @@ namespace CalculateService.Ika.ViewModels
                 else
                 {
 
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuTiikiHoukatu1, odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuTiikiHoukatu1, odrDtls.First().SanteiKbn, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.IgakuTiikiHoukatu1, isDeleted: DeleteStatus.DeleteFlag);
@@ -2762,7 +2727,7 @@ namespace CalculateService.Ika.ViewModels
                     }
                     else
                     {
-                        if (_common.CheckSanteiKaisu(ItemCdConst.IgakuTiikiHoukatu2, odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0) == 2)
+                        if (_common.CheckSanteiKaisu(ItemCdConst.IgakuTiikiHoukatu2, odrDtls.First().SanteiKbn, 0) == 2)
                         {
                             // 算定回数マスタのチェックにより算定不可
                             _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.IgakuTiikiHoukatu2, isDeleted: DeleteStatus.DeleteFlag);
@@ -3048,7 +3013,7 @@ namespace CalculateService.Ika.ViewModels
             //見つからなかった場合、自動発生
             if (odrDtls == null || odrDtls.Count <= 0)
             {
-                if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSaisinRyoyo, 0, 0, 1) == 2)
+                if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSaisinRyoyo, 0, 1) == 2)
                 {
                     // 算定回数マスタのチェックにより算定不可
                 }
@@ -3208,16 +3173,8 @@ namespace CalculateService.Ika.ViewModels
                     {
                         ret = false;
                     }
-                    else if (new List<int> { 
-                                SyosaiConst.SaisinDenwa, 
-                                SyosaiConst.SaisinDenwa2, 
-                                SyosaiConst.SyosinCorona,
-                                SyosaiConst.SyosinJouhou, 
-                                SyosaiConst.Syosin2Jouhou, 
-                                SyosaiConst.SaisinJouhou, 
-                                SyosaiConst.Saisin2Jouhou, 
-                                SyosaiConst.SaisinDenwaTokurei 
-                            }.Contains((int)_common.syosai))
+                    else if (new List<int> { SyosaiConst.SaisinDenwa, SyosaiConst.SaisinDenwa2, SyosaiConst.SyosinCorona,
+                    SyosaiConst.SyosinJouhou, SyosaiConst.Syosin2Jouhou, SyosaiConst.SaisinJouhou, SyosaiConst.Saisin2Jouhou }.Contains((int)_common.syosai))
                     {
                         // 電話、通信機器等を用いている場合、自動算定しない
                         ret = false;
@@ -3294,7 +3251,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェックする
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuKansenKojo, 0, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuKansenKojo, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -3352,7 +3309,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェック
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuRenkeiKyoka, 0, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuRenkeiKyoka, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -3408,7 +3365,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェック
-                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSurveillance, 0, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.IgakuSurveillance, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -3439,12 +3396,7 @@ namespace CalculateService.Ika.ViewModels
                 int santeiKbn = -1;
 
                 //算定条件チェック 
-                if (new double[] { 
-                        SyosaiConst.Syosin, 
-                        SyosaiConst.SyosinJouhou, 
-                        SyosaiConst.Saisin, 
-                        SyosaiConst.SaisinJouhou 
-                    }.Contains(_common.syosai) == false)
+                if (new double[] { SyosaiConst.Syosin, SyosaiConst.SyosinJouhou, SyosaiConst.Saisin, SyosaiConst.SaisinJouhou }.Contains(_common.syosai) == false)
                 {
                     // 当日、初診・再診のオーダーがない場合は算定不可 ※明記されていないが、小児かかりつけ診療料と合わせる
                     santeiJyoken = false;
@@ -3468,7 +3420,7 @@ namespace CalculateService.Ika.ViewModels
                     {
                         foreach (OdrDtlTenModel odrDtl in odrDtls)
                         {
-                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0) == 2)
+                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtls.First().SanteiKbn, 0) == 2)
                             {
                                 // 算定回数マスタのチェックにより算定不可
                                 _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl.ItemCd, isDeleted: DeleteStatus.DeleteFlag);
@@ -3583,7 +3535,7 @@ namespace CalculateService.Ika.ViewModels
                         if (santei)
                         {
                             // 算定回数チェック
-                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
+                            if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
                             {
                                 // 算定回数マスタのチェックにより算定不可
                             }

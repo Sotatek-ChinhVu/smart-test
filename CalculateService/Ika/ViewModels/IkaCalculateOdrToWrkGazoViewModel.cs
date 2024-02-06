@@ -201,7 +201,7 @@ namespace CalculateService.Ika.ViewModels
                                         //firstSinryoKoui = false;
 
                                         // 算定回数チェック
-                                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
+                                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
                                         {
                                             // 算定回数マスタのチェックにより算定不可
                                             _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
@@ -459,20 +459,13 @@ namespace CalculateService.Ika.ViewModels
                         }
                         else if (filteredOdrDtl[j].IsFilm)
                         {
-                            // フィルムが来たら、撮影料、または診断料をセット済みの場合は抜ける
-                            if (satueiSet || sindanSet)
-                            {
-                                break;
-                            }
+                            // フィルムが来たら抜ける
+                            break;
                         }
                         else if(filteredOdrDtl[j].IsSatuei || filteredOdrDtl[j].IsSindan)
                         {
                             // 基本項目が出てきたら抜ける
                             //break;
-                            if (filteredOdrDtl[j].IsSatueiSindanGosei)
-                            {
-                                break;
-                            }
                         }
                     }
 
@@ -858,32 +851,25 @@ namespace CalculateService.Ika.ViewModels
                 // その他
                 foreach (OdrDtlTenModel odrDtl in xlay.sonota)
                 {
-                    // その他は算定回数チェックを行う
-                    if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0) == 2)
+                    _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                    
+                    if (odrDtl.ItemCd == ItemCdConst.GazoDensibaitaiHozon)
                     {
+                        // 電子媒体保存撮影
+                        string cmtOpt = "";
+                        cmtOpt = CIUtil.ToWide(odrDtl.Suryo.ToString());
+                        string itemName = _common.GetCommentStr(odrDtl.ItemCd, ref cmtOpt);
+
+                        _common.Wrk.wrkSinKouiDetails.Last().CmtOpt = cmtOpt;
+                        _common.Wrk.wrkSinKouiDetails.Last().Suryo = 1;
+                        _common.Wrk.wrkSinKouiDetails.Last().ItemName = itemName;
                     }
-                    else
-                    {
-                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
-                        if (odrDtl.ItemCd == ItemCdConst.GazoDensibaitaiHozon)
-                        {
-                            // 電子媒体保存撮影
-                            string cmtOpt = "";
-                            cmtOpt = CIUtil.ToWide(odrDtl.Suryo.ToString());
-                            string itemName = _common.GetCommentStr(odrDtl.ItemCd, ref cmtOpt);
+                    // 年齢加算自動算定
+                    _common.AppendNewWrkSinKouiDetailAgeKasan(odrDtl, xlay.sonota);
 
-                            _common.Wrk.wrkSinKouiDetails.Last().CmtOpt = cmtOpt;
-                            _common.Wrk.wrkSinKouiDetails.Last().Suryo = 1;
-                            _common.Wrk.wrkSinKouiDetails.Last().ItemName = itemName;
-                        }
-
-                        // 年齢加算自動算定
-                        _common.AppendNewWrkSinKouiDetailAgeKasan(odrDtl, xlay.sonota);
-
-                        // コメント自動追加
-                        _common.Wrk.AppendNewWrkSinKouiDetailComment(odrDtl, filteredOdrDtl);
-                    }
+                    // コメント自動追加
+                    _common.Wrk.AppendNewWrkSinKouiDetailComment(odrDtl, filteredOdrDtl);
                 }
 
                 // フィルム
@@ -1081,7 +1067,7 @@ namespace CalculateService.Ika.ViewModels
 
             void _addSyokaiComment(int cdkbnno)
             {
-                if (_common.sinDate >= 20201001 && _common.sinDate <= 20220930)
+                if (_common.sinDate >= 20201001)
                 {
                     string commentCd = "";
                     if (cdkbnno == 200)
@@ -1160,7 +1146,7 @@ namespace CalculateService.Ika.ViewModels
 
             void _addSyokaiCommentThisRaiin(int cdkbnno)
             {
-                if (_common.sinDate >= 20201001 && _common.sinDate <= 20220930)
+                if (_common.sinDate >= 20201001)
                 {
                     string commentCd = "";
 

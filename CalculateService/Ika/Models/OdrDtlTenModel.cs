@@ -2534,18 +2534,6 @@ namespace CalculateService.Ika.Models
         {
             get { return CdKbn == "E" && CdKbnno == 2 && KizamiId != 1; }
         }
-        /// <summary>
-        /// 撮影料と診断料の合成項目の場合、trueを返す 
-        /// </summary>
-        public bool IsSatueiSindanGosei
-        {
-            get {
-                return IsSatuei &&
-                    new int[] { 5, 9 }.Contains(CdKouno) &&
-                    Kokuji2 == "3" &&
-                    Name.Contains("（診断・撮影）");
-                }
-        }
         //-------------------------------------------------------------------------
 
         /// <summary>
@@ -2820,7 +2808,7 @@ namespace CalculateService.Ika.Models
             {
                 bool ret = false;
 
-                if (MasterSbt != "Y" && MasterSbt != "T" && MasterSbt != "U" && (ItemCd.Length == 9 || ItemCd.StartsWith("R")) && BuiKbn == 0)
+                if (MasterSbt != "Y" && MasterSbt != "T" && (ItemCd.Length == 9 || ItemCd.StartsWith("R")) && BuiKbn == 0)
                 {
                     if (new int[] { 1, 2, 4, 10, 11 }.Contains(TenId))
                     {
@@ -2871,7 +2859,6 @@ namespace CalculateService.Ika.Models
                 bool ret = false;
                 if (ItemCd.StartsWith("Z") == false && CdKbn == "H" &&
                     (Kokuji1 == "1" || Kokuji1 == "3") &&
-                    (Kokuji2 != "7" && Kokuji2 != "9") &&
                     (
                         (CdKbnno == 0 && CdEdano == 0) ||
                         (CdKbnno == 1 && CdEdano == 0) ||
