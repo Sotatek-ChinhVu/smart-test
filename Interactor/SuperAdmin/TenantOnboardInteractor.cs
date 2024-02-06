@@ -431,7 +431,7 @@ namespace Interactor.SuperAdmin
                         command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
-                       _CreateAuditLog(tenantId);
+                        _CreateAuditLog(tenantId);
                     }
                 }
             }
