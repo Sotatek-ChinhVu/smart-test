@@ -103,7 +103,8 @@ namespace Infrastructure.Repositories
             var queryHokenInf = (from inf in hokenInfQuery
                                  join hkMaster in hokenMasterFinal on new { inf.HokenNo, inf.HokenEdaNo } equals new { hkMaster.HokenNo, hkMaster.HokenEdaNo } into hkMtObject
                                  from hkObj in hkMtObject.DefaultIfEmpty()
-                                 join roudou in NoTrackingDataContext.RoudouMsts on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
+                                 join roudou in NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId)
+                                 on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
                                  from rou in rouObject.DefaultIfEmpty()
                                  select new
                                  {
@@ -272,7 +273,8 @@ namespace Infrastructure.Repositories
             var queryKohi = (from kohi in kohiQuery
                              join hkMaster in hokenMasterKohiFinal on new { kohi.HokenNo, kohi.HokenEdaNo, kohi.PrefNo } equals new { hkMaster.HokenNo, hkMaster.HokenEdaNo, hkMaster.PrefNo } into hkMtObject
                              from hkObj in hkMtObject.DefaultIfEmpty()
-                             join roudou in NoTrackingDataContext.RoudouMsts on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
+                             join roudou in NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId)
+                             on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
                              from rou in rouObject.DefaultIfEmpty()
                              select new
                              {
@@ -1423,24 +1425,24 @@ namespace Infrastructure.Repositories
                                  x.IsDeleted == DeleteStatus.None);
         }
 
-        public List<KohiPriorityModel> GetKohiPriorityList()
+        public List<KohiPriorityModel> GetKohiPriorityList(int hpId)
         {
             var key = GetCacheKey() + CacheKeyConstant.KohiPriority;
             IEnumerable<KohiPriorityModel> kohiPriorityList;
-            if (!_cache.KeyExists(key))
+            if (!_cache.KeyExists(key + hpId))
             {
-                kohiPriorityList = ReloadCache_KohiPriority(key);
+                kohiPriorityList = ReloadCache_KohiPriority(key, hpId);
             }
             else
             {
-                kohiPriorityList = ReadCache_KohiPriority(key);
+                kohiPriorityList = ReadCache_KohiPriority(key + hpId);
             }
             return kohiPriorityList.ToList();
         }
         #region [set cache kohiPriority]
-        private IEnumerable<KohiPriorityModel> ReloadCache_KohiPriority(string key)
+        private IEnumerable<KohiPriorityModel> ReloadCache_KohiPriority(string key, int hpId)
         {
-            var data = NoTrackingDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
+            var data = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId).Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
 
             var json = JsonSerializer.Serialize(data);
             _cache.StringSet(key, json);

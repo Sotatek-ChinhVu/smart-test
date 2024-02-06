@@ -17,7 +17,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                (List<OtcItemModel> otcItemList, int total) = _inputItemRepository.SearchOTCModels(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
+                (List<OtcItemModel> otcItemList, int total) = _inputItemRepository.SearchOTCModels(inputData.HpId, inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
 
                 if (otcItemList == null || total <= 0)
                 {

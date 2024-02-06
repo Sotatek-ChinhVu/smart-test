@@ -122,7 +122,7 @@ namespace Reporting.Sijisen.DB
                     (p.EndDate >= sinDate || p.EndDate == 0) &&
                     p.IsDeleted == DeleteStatus.None
                 );
-            var foodAlrgyKbns = NoTrackingDataContext.M12FoodAlrgyKbn;
+            var foodAlrgyKbns = NoTrackingDataContext.M12FoodAlrgyKbn.Where(m => m.HpId == hpId);
 
             var join = (
 

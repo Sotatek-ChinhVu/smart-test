@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m34_property_code")]
     public class M34PropertyCode : EmrCloneable<M34PropertyCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 属性コード
         /// 
         /// </summary>
-        
+
         [Column("property_cd", Order = 1)]
         public int PropertyCd { get; set; }
 

@@ -12,7 +12,7 @@ using Infrastructure.Interfaces;
 
 namespace CalculateService.Ika.DB.Finder
 {
-    public class OdrInfFinder 
+    public class OdrInfFinder
     {
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
@@ -48,7 +48,7 @@ namespace CalculateService.Ika.DB.Finder
                 (o.SanteiKbn == SanteiKbnConst.Santei || o.SanteiKbn == SanteiKbnConst.Jihi) &&
                 o.IsDeleted == DeleteTypes.None);
             var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.FindListQueryableNoTrack(o =>
-                o.HpId == hpId );
+                o.HpId == hpId);
             var raiinInfs = _tenantDataContext.RaiinInfs.FindListQueryableNoTrack(r =>
                 r.HpId == hpId &&
                 r.PtId == ptId &&
@@ -86,7 +86,8 @@ namespace CalculateService.Ika.DB.Finder
 
             List<OdrInfModel> results = new List<OdrInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new OdrInfModel(entity.OdrInf, entity.PtHokenPattern, entity.RaiinInf));
             });
 
@@ -100,7 +101,7 @@ namespace CalculateService.Ika.DB.Finder
             var odrInfs = _tenantDataContext.OdrInfs.FindListQueryableNoTrack(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
-                o.SinDate == sinDate &&                
+                o.SinDate == sinDate &&
                 //(o.SanteiKbn == SanteiKbnConst.Santei || o.SanteiKbn == SanteiKbnConst.Jihi) &&
                 o.IsDeleted == DeleteStatus.None);
             var odrInfDetails = _tenantDataContext.OdrInfDetails.FindListQueryableNoTrack(o =>
@@ -120,7 +121,6 @@ namespace CalculateService.Ika.DB.Finder
             var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.FindListQueryableNoTrack(o =>
                 o.HpId == hpId);
             var ipnKasanMsts = _tenantDataContext.IpnKasanMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.EndDate >= sinDate &&
                 i.IsDeleted == DeleteStatus.None);
@@ -144,25 +144,24 @@ namespace CalculateService.Ika.DB.Finder
             //        HpId = A.Key.hpId,
             //        IpnNameCd = A.Key.ipnNameCd
             //    }
-                
+
             //    );
             var ipnMinYakkaMstsSub1 = _tenantDataContext.IpnMinYakkaMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.IsDeleted == DeleteStatus.None);
             var ipnMinYakkaMstsSub2 = (
                 from ipnMinYakka in ipnMinYakkaMstsSub1
-                group ipnMinYakka by new { hpId = ipnMinYakka.HpId, ipnNameCd = ipnMinYakka.IpnNameCd } into A
+                group ipnMinYakka by new { hpId, ipnNameCd = ipnMinYakka.IpnNameCd } into A
                 select new { HpId = A.Key.hpId, IpnNameCd = A.Key.ipnNameCd, StartDate = A.Max(a => a.StartDate) }
                 );
             var ipnMinYakkaMsts = (
                 from ipnMinS1 in ipnMinYakkaMstsSub1
                 join ipnMinS2 in ipnMinYakkaMstsSub2 on
-                    new { ipnMinS1.HpId, ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
-                    new { ipnMinS2.HpId, ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
+                    new { ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
+                    new { ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
                 select new
                 {
-                    ipnMinS1.HpId,
+                    hpId,
                     ipnMinS1.IpnNameCd,
                     ipnMinS1.Yakka,
                     ipnMinS1.StartDate
@@ -171,11 +170,11 @@ namespace CalculateService.Ika.DB.Finder
 
             var joinQuery = (
                 from odrInf in odrInfs
-                //where
-                //    odrInf.HpId == hpId &&
-                //    odrInf.PtId == ptId &&
-                //    odrInf.SinDate == sinDate &&
-                //    odrInf.IsDeleted == DeleteStatus.None
+                    //where
+                    //    odrInf.HpId == hpId &&
+                    //    odrInf.PtId == ptId &&
+                    //    odrInf.SinDate == sinDate &&
+                    //    odrInf.IsDeleted == DeleteStatus.None
                 join odrInfDetail in odrInfDetails on
                     new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
@@ -194,21 +193,21 @@ namespace CalculateService.Ika.DB.Finder
                     new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd } equals
                     new { cmtKbnMst.HpId, ItemCd = cmtKbnMst.ItemCd } into oJoin2
                 from oj2 in oJoin2.DefaultIfEmpty()
-                //join tenMst2 in tenMsts2 on
-                //    new { oj == null ? "": oj.HpId, ItemCd = oj == null ? "": oj.SanteiItemCd } equals
-                //    new { tenMst2.HpId, ItemCd = tenMst2.ItemCd } into oJoin2
-                //from oj2 in oJoin2.DefaultIfEmpty()
+                    //join tenMst2 in tenMsts2 on
+                    //    new { oj == null ? "": oj.HpId, ItemCd = oj == null ? "": oj.SanteiItemCd } equals
+                    //    new { tenMst2.HpId, ItemCd = tenMst2.ItemCd } into oJoin2
+                    //from oj2 in oJoin2.DefaultIfEmpty()
                 join ipnKasanMst in ipnKasanMsts on
-                    new { HpId = (oj == null ? 0 : oj.HpId), IpnNameCd = (oj == null ? string.Empty : oj.IpnNameCd) } equals
-                    new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin3
+                    new { IpnNameCd = (oj == null ? string.Empty : oj.IpnNameCd) } equals
+                    new { ipnKasanMst.IpnNameCd } into oJoin3
                 from oj3 in oJoin3.DefaultIfEmpty()
                 join ipnMinYakkaMst in ipnMinYakkaMsts on
-                    new { HpId = (oj == null ? 0 : oj.HpId), IpnNameCd = (oj == null ? string.Empty : oj.IpnNameCd) } equals
-                    new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin4
+                    new { IpnNameCd = (oj == null ? string.Empty : oj.IpnNameCd) } equals
+                    new { ipnMinYakkaMst.IpnNameCd } into oJoin4
                 from oj4 in oJoin4.DefaultIfEmpty()
-                //join yakkaSyusaiMst in yakkaSyusaiMsts on
-                //    new { oj.HpId, oj.ItemCd } equals
-                //    new { yakkaSyusaiMst.HpId, yakkaSyusaiMst.ItemCd } into oJoin5
+                    //join yakkaSyusaiMst in yakkaSyusaiMsts on
+                    //    new { oj.HpId, oj.ItemCd } equals
+                    //    new { yakkaSyusaiMst.HpId, yakkaSyusaiMst.ItemCd } into oJoin5
                 orderby
                     odrInf.RaiinNo, odrInf.OdrKouiKbn, odrInf.SortNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo, odrInfDetail.RowNo
                 select new
@@ -246,7 +245,7 @@ namespace CalculateService.Ika.DB.Finder
                 data =>
                     new OdrDtlTenModel(
                         data.odrInfDetail,
-                        data.tenMst == null ? null : new TenMstModel(data.tenMst),   
+                        data.tenMst == null ? null : new TenMstModel(data.tenMst),
                         data.cmtKbnMst,
                         "",
                         //new TenMstModel(data.tenMst),
@@ -268,14 +267,15 @@ namespace CalculateService.Ika.DB.Finder
                         //data.raiinInf
                         data.sinStartTime,
                         data.minYakka
-                        //data.kbn,
-                        //data.junSenpatu
+                    //data.kbn,
+                    //data.junSenpatu
                     )
                 )
                 .ToList();
             List<OdrDtlTenModel> results = new List<OdrDtlTenModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 //if ((entity.TenMst == null && entity.ItemCd != null && entity.ItemCd != "") ||
                 //    (entity.SanteiItemCd != entity.ItemCd && entity.ItemCd != null && entity.ItemCd != "" && entity.SanteiItemCd != "9999999999"))
                 if ((entity.TenMst == null && string.IsNullOrEmpty(entity.ItemCd) == false) ||
@@ -290,7 +290,7 @@ namespace CalculateService.Ika.DB.Finder
                     .ThenBy(p => p.ItemCd)
                     .ThenByDescending(p => p.StartDate);
 
-                    var cmtEntities = _tenantDataContext.CmtKbnMsts.FindListQueryableNoTrack(p=>
+                    var cmtEntities = _tenantDataContext.CmtKbnMsts.FindListQueryableNoTrack(p =>
                          p.HpId == hpId &&
                         p.StartDate <= sinDate &&
                         (p.EndDate >= sinDate || p.EndDate == 12341234) &&
@@ -298,7 +298,7 @@ namespace CalculateService.Ika.DB.Finder
                     .OrderBy(p => p.HpId)
                     .ThenBy(p => p.ItemCd)
                     .ThenByDescending(p => p.StartDate);
-                    
+
                     if (entity.TenMst == null || entity.TenMst != null && entity.TenMst.SanteigaiKbn != 1)
                     {
                         results.Add(
@@ -306,7 +306,7 @@ namespace CalculateService.Ika.DB.Finder
                                 entity.OdrInfDetail,
                                 tenEntities.FirstOrDefault() == null ? entity.TenMst : new TenMstModel(tenEntities.FirstOrDefault()),
                                 cmtEntities.FirstOrDefault() == null ? entity.CmtKbnMst : cmtEntities.FirstOrDefault(),
-                                entity.ItemCd.StartsWith("IGE") || (entity.TenMst != null && entity.TenMst.SanteiItemCd == ItemCdConst.KensaIge) ? 
+                                entity.ItemCd.StartsWith("IGE") || (entity.TenMst != null && entity.TenMst.SanteiItemCd == ItemCdConst.KensaIge) ?
                                     (entity.TenMst.ReceName != "" ? entity.TenMst.ReceName.Trim() : entity.ItemName.Trim()) : "",
                                 //entity.PtHokenPattern, 
                                 entity.HokenKbn,
@@ -332,7 +332,7 @@ namespace CalculateService.Ika.DB.Finder
                     }
                 }
                 else if ((entity.TenMst != null && entity.TenMst.SanteigaiKbn != 1) ||
-                        (string.IsNullOrEmpty(entity.ItemCd)) 
+                        (string.IsNullOrEmpty(entity.ItemCd))
                         )
                 {
                     results.Add(
@@ -363,7 +363,7 @@ namespace CalculateService.Ika.DB.Finder
                                 //entity.JunSenpatu
                                 ));
 
-                    if(string.IsNullOrEmpty(results.Last().ItemCd) == false &&
+                    if (string.IsNullOrEmpty(results.Last().ItemCd) == false &&
                         results.Last().ItemCd.Length == 9 &&
                         results.Last().ItemCd.StartsWith("Z"))
                     {
@@ -377,7 +377,7 @@ namespace CalculateService.Ika.DB.Finder
                         .ThenBy(p => p.ItemCd)
                         .ThenByDescending(p => p.StartDate);
 
-                        if(tenEntities.FirstOrDefault() != null)
+                        if (tenEntities.FirstOrDefault() != null)
                         {
                             results.Last().Z_MasterSbt = tenEntities.First().MasterSbt;
                             results.Last().Z_TenId = tenEntities.First().TenId;
@@ -389,7 +389,7 @@ namespace CalculateService.Ika.DB.Finder
 
             return results;
         }
-        public (List<OdrInfModel> , List<OdrDtlTenModel>) FindOdrInfDetailDatas(int hpId, long ptId, int sinDate, long excludeRaiinNo = 0)
+        public (List<OdrInfModel>, List<OdrDtlTenModel>) FindOdrInfDetailDatas(int hpId, long ptId, int sinDate, long excludeRaiinNo = 0)
         {
             const string conFncName = nameof(FindOdrInfDetailDatas);
 
@@ -434,7 +434,6 @@ namespace CalculateService.Ika.DB.Finder
             //var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.FindListQueryableNoTrack(o =>
             //    o.HpId == hpId);
             var ipnKasanMsts = _tenantDataContext.IpnKasanMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.EndDate >= sinDate &&
                 i.IsDeleted == DeleteStatus.None);
@@ -446,22 +445,21 @@ namespace CalculateService.Ika.DB.Finder
             //    r.IsDeleted == DeleteStatus.None);
 
             var ipnMinYakkaMstsSub1 = _tenantDataContext.IpnMinYakkaMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.IsDeleted == DeleteStatus.None);
             var ipnMinYakkaMstsSub2 = (
                 from ipnMinYakka in ipnMinYakkaMstsSub1
-                group ipnMinYakka by new { hpId = ipnMinYakka.HpId, ipnNameCd = ipnMinYakka.IpnNameCd } into A
-                select new { HpId = A.Key.hpId, IpnNameCd = A.Key.ipnNameCd, StartDate = A.Max(a => a.StartDate) }
+                group ipnMinYakka by new { ipnNameCd = ipnMinYakka.IpnNameCd } into A
+                select new { IpnNameCd = A.Key.ipnNameCd, StartDate = A.Max(a => a.StartDate) }
                 );
             var ipnMinYakkaMsts = (
                 from ipnMinS1 in ipnMinYakkaMstsSub1
                 join ipnMinS2 in ipnMinYakkaMstsSub2 on
-                    new { ipnMinS1.HpId, ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
-                    new { ipnMinS2.HpId, ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
+                    new { ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
+                    new { ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
                 select new
                 {
-                    ipnMinS1.HpId,
+                    hpId,
                     ipnMinS1.IpnNameCd,
                     ipnMinS1.Yakka,
                     ipnMinS1.StartDate
@@ -488,12 +486,12 @@ namespace CalculateService.Ika.DB.Finder
                     new { cmtKbnMst.HpId, ItemCd = cmtKbnMst.ItemCd } into oJoin2
                 from oj2 in oJoin2.DefaultIfEmpty()
                 join ipnKasanMst in ipnKasanMsts on
-                    new { odrInfDetail.HpId, IpnNameCd=odrInfDetail.IpnCd } equals
-                    new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin5
+                    new { IpnNameCd = odrInfDetail.IpnCd } equals
+                    new { ipnKasanMst.IpnNameCd } into oJoin5
                 from oj5 in oJoin5.DefaultIfEmpty()
                 join ipnMinYakkaMst in ipnMinYakkaMsts on
-                    new { odrInfDetail.HpId, IpnNameCd=odrInfDetail.IpnCd } equals
-                    new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin6
+                    new { IpnNameCd = odrInfDetail.IpnCd } equals
+                    new { ipnMinYakkaMst.IpnNameCd } into oJoin6
                 from oj6 in oJoin6.DefaultIfEmpty()
                 orderby
                     odrInf.RaiinNo, odrInf.OdrKouiKbn, odrInf.SortNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo, odrInfDetail.RowNo
@@ -597,7 +595,7 @@ namespace CalculateService.Ika.DB.Finder
 
                     //if ((entity.TenMst == null && entity.ItemCd != null && entity.ItemCd != "") ||
                     //    (entity.SanteiItemCd != entity.ItemCd && entity.ItemCd != null && entity.ItemCd != "" && entity.SanteiItemCd != "9999999999"))
-                    if (entity.TenMst == null && string.IsNullOrEmpty(entity.ItemCd) == false && entity.ItemCd.StartsWith("KN")==false)
+                    if (entity.TenMst == null && string.IsNullOrEmpty(entity.ItemCd) == false && entity.ItemCd.StartsWith("KN") == false)
                     {
                         var tenMstStartDates = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
                             t.HpId == hpId &&
@@ -613,8 +611,8 @@ namespace CalculateService.Ika.DB.Finder
                         var ipnMinYakkaMstList = (
                             from ipnMinS1 in ipnMinYakkaMstsSub1
                             join ipnMinS2 in ipnMinYakkaMstsSub2 on
-                                new { ipnMinS1.HpId, ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
-                                new { ipnMinS2.HpId, ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
+                                new { ipnMinS1.IpnNameCd, ipnMinS1.StartDate } equals
+                                new { ipnMinS2.IpnNameCd, ipnMinS2.StartDate }
                             select ipnMinS1
                         );
 
@@ -624,12 +622,12 @@ namespace CalculateService.Ika.DB.Finder
                                     new { tenMst.HpId, tenMst.ItemCd, tenMst.StartDate } equals
                                     new { tenStart.HpId, tenStart.ItemCd, tenStart.StartDate }
                                 join ipnKasanMst in ipnKasanMsts on
-                                    new { tenMst.HpId, tenMst.IpnNameCd } equals
-                                    new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin3
+                                    new { tenMst.IpnNameCd } equals
+                                    new { ipnKasanMst.IpnNameCd } into oJoin3
                                 from oj3 in oJoin3.DefaultIfEmpty()
                                 join ipnMinYakkaMst in ipnMinYakkaMstList on
-                                    new { tenMst.HpId, tenMst.IpnNameCd } equals
-                                    new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin4
+                                    new { tenMst.IpnNameCd } equals
+                                    new { ipnMinYakkaMst.IpnNameCd } into oJoin4
                                 from oj4 in oJoin4.DefaultIfEmpty()
                                 select new TenDataModel()
                                 {
@@ -641,7 +639,7 @@ namespace CalculateService.Ika.DB.Finder
                         .ThenBy(p => p.tenMst.ItemCd)
                         .ThenByDescending(p => p.tenMst.StartDate);
 
-                        var cmtKbnMstStartDates = _tenantDataContext.CmtKbnMsts.FindListQueryableNoTrack(t=>
+                        var cmtKbnMstStartDates = _tenantDataContext.CmtKbnMsts.FindListQueryableNoTrack(t =>
                             t.HpId == hpId &&
                             t.StartDate <= sinDate &&
                             t.ItemCd == entity.ItemCd
@@ -699,7 +697,8 @@ namespace CalculateService.Ika.DB.Finder
                                     ));
                         }
 
-                    } else
+                    }
+                    else
                     if ((entity.TenMst == null && string.IsNullOrEmpty(entity.ItemCd) == false) ||
                         (entity.SanteiItemCd != entity.ItemCd && string.IsNullOrEmpty(entity.ItemCd) == false && entity.SanteiItemCd != ItemCdConst.NoSantei && !entity.ItemCd.StartsWith("Z")))
                     {
@@ -866,7 +865,8 @@ namespace CalculateService.Ika.DB.Finder
 
             List<OdrInfCmtModel> results = new List<OdrInfCmtModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new OdrInfCmtModel(entity.OdrInfCmt));
             });
 
@@ -926,7 +926,7 @@ namespace CalculateService.Ika.DB.Finder
 
             var joinQuery = (
                 from j in joinTemp
-                group j by new {j.raiinNo} into A
+                group j by new { j.raiinNo } into A
                 select new
                 {
                     raiinNo = A.Key.raiinNo,
@@ -936,7 +936,7 @@ namespace CalculateService.Ika.DB.Finder
             .ToList();
             //_emrLogger.WriteLogMsg( this, conFncName, joinQuery.AsString());
             bool ret = false;
-            if(joinQuery.Any(p=>p.count > 5))
+            if (joinQuery.Any(p => p.count > 5))
             {
                 ret = true;
             }
@@ -991,14 +991,18 @@ namespace CalculateService.Ika.DB.Finder
                     odrInf.SanteiKbn == SanteiKbnConst.Santei &&
                     !(new int[] { 3, 4 }.Contains(tenMst.KouseisinKbn) && (odrInf.SyohoSbt == 1 || (odrInf.SyohoSbt == 0 && odrInf.DaysCnt <= _systemConfigProvider.GetSyohoRinjiDays()))) &&
                     odrInf.IsDeleted == DeleteStatus.None //&&
-                    //((tenMst.KouseisinKbn == 1 || tenMst.KouseisinKbn == 2) ||
-                    //  ((tenMst.KouseisinKbn == 3 || tenMst.KouseisinKbn == 4) &&
-                    //    (odrInf.SyohoSbt == 2 || (odrInf.SyohoSbt == 0 && odrInf.DaysCnt > _systemConfigProvider.GetSyohoRinjiDays()))
-                    //  )
-                    //)
-                //group new { odrInfDetail, tenMst } by new { odrInfDetail.RaiinNo, ipnCd7 = CIUtil.Copy(tenMst.IpnNameCd, 1, 7) } into A
-                group new { odrInfDetail, tenMst } by new { odrInfDetail.RaiinNo, ipnCd7 = 
-                    (string.IsNullOrEmpty(tenMst.IpnNameCd) == false && tenMst.IpnNameCd.Length >= 7 ? tenMst.IpnNameCd.Substring(0, 7) : "") } into A
+                                                          //((tenMst.KouseisinKbn == 1 || tenMst.KouseisinKbn == 2) ||
+                                                          //  ((tenMst.KouseisinKbn == 3 || tenMst.KouseisinKbn == 4) &&
+                                                          //    (odrInf.SyohoSbt == 2 || (odrInf.SyohoSbt == 0 && odrInf.DaysCnt > _systemConfigProvider.GetSyohoRinjiDays()))
+                                                          //  )
+                                                          //)
+                                                          //group new { odrInfDetail, tenMst } by new { odrInfDetail.RaiinNo, ipnCd7 = CIUtil.Copy(tenMst.IpnNameCd, 1, 7) } into A
+                group new { odrInfDetail, tenMst } by new
+                {
+                    odrInfDetail.RaiinNo,
+                    ipnCd7 =
+                    (string.IsNullOrEmpty(tenMst.IpnNameCd) == false && tenMst.IpnNameCd.Length >= 7 ? tenMst.IpnNameCd.Substring(0, 7) : "")
+                } into A
                 select new
                 {
                     //sum = A.Sum(p => p.odrInfDetail.RaiinNo)
@@ -1012,7 +1016,7 @@ namespace CalculateService.Ika.DB.Finder
             //_emrLogger.WriteLogMsg( this, conFncName, joinQuery.AsString());
             //return joinQuery.Any(p => p.count > 3);
             bool ret = false;
-            
+
             if (joinQuery.Any(p => p.count > 3))
             {
                 ret = true;
@@ -1039,7 +1043,7 @@ namespace CalculateService.Ika.DB.Finder
             int sinYm = sinDate / 100 * 100;
 
             List<int> hokenKbns = new List<int>();
-            switch(hokenSyu)
+            switch (hokenSyu)
             {
                 case 0:
                     hokenKbns = new List<int> { 1, 2 };
@@ -1091,7 +1095,7 @@ namespace CalculateService.Ika.DB.Finder
                     odrInf.SinDate >= sinYm + 1 &&
                     odrInf.SinDate <= sinYm + 31 && // 厳密には31日のない月もあるが、当月チェックとしては31固定で構わない
                     (inout >= 0 ? odrInf.InoutKbn == inout : true) &&
-                    odrInf.SanteiKbn == SanteiKbnConst.Santei && 
+                    odrInf.SanteiKbn == SanteiKbnConst.Santei &&
                     odrInf.OdrKouiKbn >= OdrKouiKbnConst.Naifuku &&
                     odrInf.OdrKouiKbn <= OdrKouiKbnConst.Gaiyo &&
                     odrInf.IsDeleted == DeleteStatus.None
@@ -1113,7 +1117,8 @@ namespace CalculateService.Ika.DB.Finder
 
             List<OdrInfModel> results = new List<OdrInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new OdrInfModel(entity.OdrInf, entity.PtHokenPattern, entity.RaiinInf));
             });
 
@@ -1204,7 +1209,8 @@ namespace CalculateService.Ika.DB.Finder
 
             List<OdrInfModel> results = new List<OdrInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new OdrInfModel(entity.OdrInf, entity.PtHokenPattern, entity.RaiinInf));
             });
 
@@ -1213,80 +1219,80 @@ namespace CalculateService.Ika.DB.Finder
         }
         //public List<TodayHokenOdrInfModel> GetOdrInfs(long PtId, long raiinNo, int sinDate)
         //{
-            //List<OdrInf> AllOdrInfs = _tenantDataContext.OdrInfs
-            //    .FindListQueryable(odr => odr.PtId == PtId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10)
-            //    .OrderBy(odr => odr.OdrKouiKbn)
-            //    .ThenBy(odr => odr.RpNo)
-            //    .ThenBy(odr => odr.RpEdaNo)
-            //    .ThenBy(odr => odr.SortNo)
-            //    .ToList();
+        //List<OdrInf> AllOdrInfs = _tenantDataContext.OdrInfs
+        //    .FindListQueryable(odr => odr.PtId == PtId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10)
+        //    .OrderBy(odr => odr.OdrKouiKbn)
+        //    .ThenBy(odr => odr.RpNo)
+        //    .ThenBy(odr => odr.RpEdaNo)
+        //    .ThenBy(odr => odr.SortNo)
+        //    .ToList();
 
-            //List<OdrInfDetail> AllOdrInfDetails = _tenantDataContext.OdrInfDetails
-            //    .FindListQueryable(odrDetail => odrDetail.PtId == PtId && odrDetail.RaiinNo == raiinNo && odrDetail.SinDate == sinDate)
-            //    .OrderBy(odrDetail => odrDetail.RpNo)
-            //    .ThenBy(odrDetail => odrDetail.RpEdaNo)
-            //    .ThenBy(odrDetail => odrDetail.RowNo)
-            //    .ToList();
+        //List<OdrInfDetail> AllOdrInfDetails = _tenantDataContext.OdrInfDetails
+        //    .FindListQueryable(odrDetail => odrDetail.PtId == PtId && odrDetail.RaiinNo == raiinNo && odrDetail.SinDate == sinDate)
+        //    .OrderBy(odrDetail => odrDetail.RpNo)
+        //    .ThenBy(odrDetail => odrDetail.RpEdaNo)
+        //    .ThenBy(odrDetail => odrDetail.RowNo)
+        //    .ToList();
 
-            //// Find By Hoken
-            //var hokenOdrInfs = AllOdrInfs
-            //    .GroupBy(odr => odr.HokenPid)
-            //    .Select(grp => grp.FirstOrDefault())
-            //    .ToList();
-            //List<TodayHokenOdrInfModel> result = new List<TodayHokenOdrInfModel>();
+        //// Find By Hoken
+        //var hokenOdrInfs = AllOdrInfs
+        //    .GroupBy(odr => odr.HokenPid)
+        //    .Select(grp => grp.FirstOrDefault())
+        //    .ToList();
+        //List<TodayHokenOdrInfModel> result = new List<TodayHokenOdrInfModel>();
 
-            //foreach (OdrInf hokenOdrInf in hokenOdrInfs)
-            //{
-            //    // Find By Group
-            //    List<TodayGroupOdrInfModel> groupOdrInfModels = new List<TodayGroupOdrInfModel>();
-            //    var groupOdrInfs = AllOdrInfs.Where(odr => odr.HokenPid == hokenOdrInf.HokenPid)
-            //        .GroupBy(odr => new
-            //        {
-            //            odr.HokenPid,
-            //            odr.GroupKoui,
-            //            odr.InoutKbn,
-            //            odr.SyohoSbt,
-            //            odr.SikyuKbn,
-            //            odr.TosekiKbn,
-            //            odr.SanteiKbn
-            //        })
-            //        .Select(grp => grp.FirstOrDefault())
-            //        .ToList();
+        //foreach (OdrInf hokenOdrInf in hokenOdrInfs)
+        //{
+        //    // Find By Group
+        //    List<TodayGroupOdrInfModel> groupOdrInfModels = new List<TodayGroupOdrInfModel>();
+        //    var groupOdrInfs = AllOdrInfs.Where(odr => odr.HokenPid == hokenOdrInf.HokenPid)
+        //        .GroupBy(odr => new
+        //        {
+        //            odr.HokenPid,
+        //            odr.GroupKoui,
+        //            odr.InoutKbn,
+        //            odr.SyohoSbt,
+        //            odr.SikyuKbn,
+        //            odr.TosekiKbn,
+        //            odr.SanteiKbn
+        //        })
+        //        .Select(grp => grp.FirstOrDefault())
+        //        .ToList();
 
-            //    foreach (OdrInf groupOdrInf in groupOdrInfs)
-            //    {
-            //        // Find By RP
-            //        List<TodayOdrInfModel> rpOdrInfModels = new List<TodayOdrInfModel>();
-            //        var rpOdrInfs = AllOdrInfs.Where(odrInf => odrInf.HokenPid == hokenOdrInf.HokenPid
-            //                                && odrInf.GroupKoui == groupOdrInf.GroupKoui
-            //                                && odrInf.InoutKbn == groupOdrInf.InoutKbn
-            //                                && odrInf.SyohoSbt == groupOdrInf.SyohoSbt
-            //                                && odrInf.SikyuKbn == groupOdrInf.SikyuKbn
-            //                                && odrInf.TosekiKbn == groupOdrInf.TosekiKbn
-            //                                && odrInf.SanteiKbn == groupOdrInf.SanteiKbn)
-            //                            .ToList();
+        //    foreach (OdrInf groupOdrInf in groupOdrInfs)
+        //    {
+        //        // Find By RP
+        //        List<TodayOdrInfModel> rpOdrInfModels = new List<TodayOdrInfModel>();
+        //        var rpOdrInfs = AllOdrInfs.Where(odrInf => odrInf.HokenPid == hokenOdrInf.HokenPid
+        //                                && odrInf.GroupKoui == groupOdrInf.GroupKoui
+        //                                && odrInf.InoutKbn == groupOdrInf.InoutKbn
+        //                                && odrInf.SyohoSbt == groupOdrInf.SyohoSbt
+        //                                && odrInf.SikyuKbn == groupOdrInf.SikyuKbn
+        //                                && odrInf.TosekiKbn == groupOdrInf.TosekiKbn
+        //                                && odrInf.SanteiKbn == groupOdrInf.SanteiKbn)
+        //                            .ToList();
 
-            //        foreach (OdrInf rpOdrInf in rpOdrInfs)
-            //        {
-            //            // Find OdrInfDetail
-            //            var odrInfDetails = AllOdrInfDetails
-            //                .Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
-            //                .ToList(); ;
-            //            rpOdrInfModels.Add(new TodayOdrInfModel(rpOdrInf, odrInfDetails));
-            //        }
+        //        foreach (OdrInf rpOdrInf in rpOdrInfs)
+        //        {
+        //            // Find OdrInfDetail
+        //            var odrInfDetails = AllOdrInfDetails
+        //                .Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
+        //                .ToList(); ;
+        //            rpOdrInfModels.Add(new TodayOdrInfModel(rpOdrInf, odrInfDetails));
+        //        }
 
-            //        TodayGroupOdrInfModel groupOdrInfModel = new TodayGroupOdrInfModel(rpOdrInfModels);
-            //        groupOdrInfModels.Add(groupOdrInfModel);
-            //    }
+        //        TodayGroupOdrInfModel groupOdrInfModel = new TodayGroupOdrInfModel(rpOdrInfModels);
+        //        groupOdrInfModels.Add(groupOdrInfModel);
+        //    }
 
-            //    TodayHokenOdrInfModel todayHokenOdrInfModel = new TodayHokenOdrInfModel(groupOdrInfModels);
+        //    TodayHokenOdrInfModel todayHokenOdrInfModel = new TodayHokenOdrInfModel(groupOdrInfModels);
 
-            //    result.Add(todayHokenOdrInfModel);
-            //}
-
-            //return result;
+        //    result.Add(todayHokenOdrInfModel);
         //}
-        
+
+        //return result;
+        //}
+
         public ReceptionModel GetRaiinInfByRaiinNo(long ptId, int sindate, long raiinNo)
         {
             RaiinInf raiinInf = null;
@@ -1342,7 +1348,7 @@ namespace CalculateService.Ika.DB.Finder
             );
 
             int result = 0;
-            if(joinQuery != null && joinQuery.Any())
+            if (joinQuery != null && joinQuery.Any())
             {
                 result = joinQuery.First().SinDate;
             }
@@ -1408,7 +1414,7 @@ namespace CalculateService.Ika.DB.Finder
 
             List<int> result = new List<int>();
 
-            joinQuery?.ForEach(p=>
+            joinQuery?.ForEach(p =>
                 {
                     result.Add(p.SinDate);
                 }

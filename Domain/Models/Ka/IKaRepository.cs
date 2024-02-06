@@ -8,7 +8,7 @@ public interface IKaRepository : IRepositoryBase
 
     List<KaMstModel> GetList(int isDeleted);
 
-    List<KaCodeMstModel> GetListKacode();
+    List<KaCodeMstModel> GetListKacode(int hpId);
 
     bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels);
 
@@ -16,7 +16,7 @@ public interface IKaRepository : IRepositoryBase
 
     bool CheckKaId(List<int> kaIds);
 
-    List<KaCodeMstModel> GetKacodeMstYossi();
+    List<KaCodeMstModel> GetKacodeMstYossi(int hpId);
 
-    List<KacodeYousikiMstModel> GetKacodeYousikiMst();
+    List<KacodeYousikiMstModel> GetKacodeYousikiMst(int hpId);
 }

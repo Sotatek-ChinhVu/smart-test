@@ -7,6 +7,10 @@ namespace Entity.Tenant
     [Table(name: "pi_product_inf")]
     public class PiProductInf : EmrCloneable<PiProductInf>
     {
+
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 添付文書
         /// N ○ 添付文書ＩＤ

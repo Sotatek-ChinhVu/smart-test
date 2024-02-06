@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m14_age_check")]
     public class M14AgeCheck : EmrCloneable<M14AgeCheck>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// YJコード
         /// 
         /// </summary>
-        
+
         [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;

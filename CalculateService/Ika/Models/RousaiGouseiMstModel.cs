@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CalculateService.Ika.Models
 {
-    public class RousaiGoseiMstModel 
+    public class RousaiGoseiMstModel
     {
         public RousaiGoseiMst RousaiGoseiMst { get; } = null;
 
@@ -16,14 +16,15 @@ namespace CalculateService.Ika.Models
             RousaiGoseiMst = rousaiGoseiMst;
         }
 
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        public int HpId
-        {
-            get { return RousaiGoseiMst.HpId; }
-        }
+        //Removed HpId
+        ///// <summary>
+        ///// 医療機関識別ID
+        ///// 
+        ///// </summary>
+        //public int HpId
+        //{
+        //    get { return RousaiGoseiMst.HpId; }
+        //}
 
         /// <summary>
         /// 合成グループ
