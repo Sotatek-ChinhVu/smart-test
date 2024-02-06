@@ -576,7 +576,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m10Day = new M10DayLimit();
-                        m10Day.HpId = 1;
+                        m10Day.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1643,7 +1643,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m01Kinki = new M01Kinki();
-                        m01Kinki.HpId = 1;
+                        m01Kinki.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
