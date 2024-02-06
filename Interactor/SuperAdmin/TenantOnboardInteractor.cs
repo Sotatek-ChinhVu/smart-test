@@ -430,7 +430,7 @@ namespace Interactor.SuperAdmin
                         command.Parameters.AddWithValue("salt", salt);
                         command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
-                        //_CreateTrigger(command, listMigration, tenantId);
+                        // _CreateTrigger(command, listMigration, tenantId);
                         _CreateAuditLog(tenantId);
                     }
                 }
