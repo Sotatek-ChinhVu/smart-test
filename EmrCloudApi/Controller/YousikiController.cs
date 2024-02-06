@@ -59,13 +59,13 @@ public class YousikiController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetYousiki1InfDetailsByCodeNo)]
-    public ActionResult<Response<GetYousiki1InfDetailsResponse>> GetYousiki1InfDetailsByCodeNo([FromQuery] GetYousiki1InfDetailsByCodeNoRequest request)
+    public ActionResult<Response<GetYousiki1InfDetailsByCodeNoResponse>> GetYousiki1InfDetailsByCodeNo([FromQuery] GetYousiki1InfDetailsByCodeNoRequest request)
     {
         var input = new GetYousiki1InfDetailsByCodeNoInputData(HpId, request.SinYm, request.PtId, request.DataType, request.SeqNo, request.CodeNo);
         var output = _bus.Handle(input);
         var presenter = new GetYousiki1InfDetailsByCodeNoPresenter();
         presenter.Complete(output);
-        return new ActionResult<Response<GetYousiki1InfDetailsResponse>>(presenter.Result);
+        return new ActionResult<Response<GetYousiki1InfDetailsByCodeNoResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetVisitingInfs)]

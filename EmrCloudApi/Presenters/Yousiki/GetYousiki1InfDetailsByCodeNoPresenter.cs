@@ -8,11 +8,11 @@ namespace EmrCloudApi.Presenters.Yousiki
 {
     public class GetYousiki1InfDetailsByCodeNoPresenter
     {
-        public Response<GetYousiki1InfDetailsResponse> Result { get; private set; } = new();
+        public Response<GetYousiki1InfDetailsByCodeNoResponse> Result { get; private set; } = new();
 
         public void Complete(GetYousiki1InfDetailsByCodeNoOutputData output)
         {
-            Result.Data = new GetYousiki1InfDetailsResponse(output.Yousiki1InfDetailList.Select(item => new Yousiki1InfDetailDto(item)).ToList());
+            Result.Data = new GetYousiki1InfDetailsByCodeNoResponse(output.Yousiki1InfDetailList.Select(item => new Yousiki1InfDetailDto(item)).ToList());
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }
