@@ -451,6 +451,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
             modelBuilder.Entity<UserMst>().HasIndex(u => new { u.UserId }).HasFilter($"\"is_deleted\" = 0").IsUnique();
         }
+        
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
 

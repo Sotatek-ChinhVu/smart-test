@@ -1552,6 +1552,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_031_TEST_GetUsageDosage()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1615,9 +1616,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.GetUsageDosage(yjCd1);
-                var result2 = realtimcheckerfinder.GetUsageDosage(yjCd2);
-                var result3 = realtimcheckerfinder.GetUsageDosage(yjCd3);
+                var result1 = realtimcheckerfinder.GetUsageDosage(hpId, yjCd1);
+                var result2 = realtimcheckerfinder.GetUsageDosage(hpId, yjCd2);
+                var result3 = realtimcheckerfinder.GetUsageDosage(hpId,yjCd3);
 
                 // Assert
                 Assert.AreEqual("Test1", result1);
@@ -1635,6 +1636,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_032_TEST_GetUsageDosageDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1699,7 +1701,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.GetUsageDosageDic(yjCds);
+                var result = realtimcheckerfinder.GetUsageDosageDic(hpId, yjCds);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);

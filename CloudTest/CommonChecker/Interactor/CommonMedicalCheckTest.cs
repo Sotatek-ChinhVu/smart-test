@@ -1021,7 +1021,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetUsageDosageDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetUsageDosageDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
@@ -1056,7 +1056,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetUsageDosageDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetUsageDosageDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
@@ -4251,7 +4251,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                         { "1235", "ItemName Mock 2" }
                                                                       });
 
-            mock.Setup(finder => finder.GetUsageDosageDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetUsageDosageDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> input) => new Dictionary<string, string> {
                                                                         { "333444", "ItemName Mock 1" },
                                                                         { "444555", "ItemName Mock 2" }

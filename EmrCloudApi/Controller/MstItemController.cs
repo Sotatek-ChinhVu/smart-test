@@ -108,7 +108,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetDosageDrugList)]
         public ActionResult<Response<GetDosageDrugListResponse>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
         {
-            var input = new GetDosageDrugListInputData(request.YjCds);
+            var input = new GetDosageDrugListInputData(HpId, request.YjCds);
             var output = _bus.Handle(input);
 
             var presenter = new GetDosageDrugListPresenter();

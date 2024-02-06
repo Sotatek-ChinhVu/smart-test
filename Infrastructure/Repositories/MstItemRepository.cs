@@ -42,11 +42,11 @@ public class MstItemRepository : RepositoryBase, IMstItemRepository
     private readonly List<int> usageInjects = new List<int>() { 31, 32, 33, 34 };
     private readonly List<int> inspections = new List<int>() { 60, 61, 62, 63, 64 };
 
-    public List<DosageDrugModel> GetDosages(List<string> yjCds)
+    public List<DosageDrugModel> GetDosages(int hpId, List<string> yjCds)
     {
         var listDosageDrugs = NoTrackingDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd)).ToList();
         var listDoeiCd = listDosageDrugs.Select(item => item.DoeiCd).ToList();
-        var listDosageDosages = NoTrackingDataContext.DosageDosages.Where(item => listDoeiCd.Contains(item.DoeiCd)).ToList();
+        var listDosageDosages = NoTrackingDataContext.DosageDosages.Where(item => item.HpId == hpId && listDoeiCd.Contains(item.DoeiCd)).ToList();
         return listDosageDrugs == null ? new List<DosageDrugModel>() : listDosageDrugs.Select(
                 r => new DosageDrugModel(
                         r.YjCd,

@@ -751,7 +751,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _oTCComponentInfoDictionary = oTCComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetOTCComponentInfoDic(hpId, oTCComponentInfoList) : new();
         _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(hpId, supplementComponentInfoList) : new();
         _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(hpId, suppleItemNameList) : new();
-        _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(usageDosageList) : new();
+        _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(hpId, usageDosageList) : new();
         _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(itemNameByItemCodeList, _sinday) : new();
     }
 

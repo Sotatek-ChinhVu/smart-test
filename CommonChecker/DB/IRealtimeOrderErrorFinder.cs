@@ -66,8 +66,8 @@ namespace CommonChecker.DB
 
         string FindIppanNameByIppanCode(string ippanCode);
 
-        string GetUsageDosage(string yjCd);
+        string GetUsageDosage(int hpId, string yjCd);
 
-        Dictionary<string, string> GetUsageDosageDic(List<string> yjCdList);
+        Dictionary<string, string> GetUsageDosageDic(int hpId, List<string> yjCdList);
     }
 }

@@ -329,11 +329,11 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string GetUsageDosage(string yjCd)
+        public string GetUsageDosage(int hpId, string yjCd)
         {
             var dosageInfo =
                   (from dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.YjCd == yjCd)
-                   join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => !string.IsNullOrEmpty(d.UsageDosage))
+                   join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => d.HpId == hpId && !string.IsNullOrEmpty(d.UsageDosage))
                    on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
                    select new
                    {
@@ -343,13 +343,13 @@ namespace CommonChecker.DB
             return dosageInfo != null ? dosageInfo.UsageDosage : string.Empty;
         }
 
-        public Dictionary<string, string> GetUsageDosageDic(List<string> yjCdList)
+        public Dictionary<string, string> GetUsageDosageDic(int hpId, List<string> yjCdList)
         {
             yjCdList = yjCdList.Distinct().ToList();
             Dictionary<string, string> result = new();
             var dosageInfoList =
                   (from dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => yjCdList.Contains(d.YjCd))
-                   join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => !string.IsNullOrEmpty(d.UsageDosage))
+                   join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d =>  d.HpId == hpId && !string.IsNullOrEmpty(d.UsageDosage))
                    on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
                    select new
                    {
