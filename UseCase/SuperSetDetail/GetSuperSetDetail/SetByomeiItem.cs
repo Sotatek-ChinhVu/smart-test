@@ -5,12 +5,13 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
 {
     public class SetByomeiItem
     {
-        public SetByomeiItem(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList, string icd10, string icd102013, string icd1012013, string icd1022013)
+        public SetByomeiItem(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string displayByomei, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList, string icd10, string icd102013, string icd1012013, string icd1022013)
         {
             Id = id;
             IsSyobyoKbn = isSyobyoKbn;
             SikkanKbn = sikkanKbn;
             NanByoCd = nanByoCd;
+            DisplayByomei = displayByomei;
             FullByomei = fullByomei;
             IsSuspected = isSuspected;
             IsDspRece = isDspRece;
@@ -31,6 +32,8 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
         public int SikkanKbn { get; private set; }
 
         public int NanByoCd { get; private set; }
+
+        public string DisplayByomei { get; private set; }
 
         public string FullByomei { get; private set; }
 

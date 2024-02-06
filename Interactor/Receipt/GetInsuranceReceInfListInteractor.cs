@@ -30,6 +30,7 @@ public class GetInsuranceReceInfListInteractor : IGetInsuranceReceInfListInputPo
         finally
         {
             _receiptRepository.ReleaseResource();
+            _insuranceRepository.ReleaseResource();
         }
     }
 

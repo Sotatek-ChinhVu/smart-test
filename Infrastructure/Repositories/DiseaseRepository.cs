@@ -5,10 +5,10 @@ using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using System.ComponentModel;
+using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
 {
@@ -549,6 +549,174 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public List<PtDiseaseModel> GetByomeisInMonth(int hpId, long ptId, int sinYearMonth)
+        {
+            List<PtDiseaseModel> result = new();
+            int firstDateOfThisMonth = sinYearMonth * 100 + 1;
+            int endDateOfThisMonth = sinYearMonth * 100 + 31;
+            var ptByomeis = NoTrackingDataContext.PtByomeis.Where(x => x.HpId == hpId &&
+                                                                       x.PtId == ptId &&
+                                                                       x.IsDeleted == 0 &&
+                                                                       x.StartDate <= endDateOfThisMonth &&
+                                                                       (x.TenkiKbn == TenkiKbnConst.Continued || x.TenkiDate >= firstDateOfThisMonth));
+            var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
+                                                                 .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.SikkanCd, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
+
+            var ptByomeiModels = new List<PtDiseaseModel>();
+
+            foreach (var ptByomei in ptByomeis)
+            {
+                var byomeiMst = byomeiMstQuery.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd);
+
+                string byomeiName = string.Empty;
+                string icd10 = string.Empty;
+                string icd102013 = string.Empty;
+                string icd1012013 = string.Empty;
+                string icd1022013 = string.Empty;
+
+                if (ptByomei.ByomeiCd != null && ptByomei.ByomeiCd.Equals(FREE_WORD))
+                {
+                    byomeiName = ptByomei.Byomei ?? string.Empty;
+                }
+                else
+                {
+                    if (byomeiMst != null)
+                    {
+                        byomeiName = byomeiMst.Sbyomei ?? string.Empty;
+
+                        icd10 = byomeiMst.Icd101 ?? string.Empty;
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd102))
+                        {
+                            icd10 += "/" + byomeiMst.Icd102;
+                        }
+                        icd102013 = byomeiMst.Icd1012013 ?? string.Empty;
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd1022013))
+                        {
+                            icd102013 += "/" + byomeiMst.Icd1022013;
+                        }
+
+                        icd1012013 = byomeiMst.Icd1012013 ?? string.Empty;
+                        icd1022013 = byomeiMst.Icd1022013 ?? string.Empty;
+                    }
+                }
+
+                var ptDiseaseModel = new PtDiseaseModel(
+                        ptByomei.HpId,
+                        ptByomei.PtId,
+                        ptByomei.SeqNo,
+                        ptByomei.ByomeiCd ?? string.Empty,
+                        ptByomei.SortNo,
+                        SyusyokuCdToList(ptByomei),
+                        ptByomei.Byomei ?? string.Empty,
+                        ptByomei.StartDate,
+                        ptByomei.TenkiKbn,
+                        ptByomei.TenkiDate,
+                        ptByomei.SyubyoKbn,
+                        ptByomei.SikkanKbn,
+                        ptByomei.NanByoCd,
+                        ptByomei.IsNodspRece,
+                        ptByomei.IsNodspKarte,
+                        ptByomei.IsDeleted,
+                        ptByomei.Id,
+                        ptByomei.IsImportant,
+                        0,
+                        icd10,
+                        icd102013,
+                        icd1012013,
+                        icd1022013,
+                        ptByomei.HokenPid,
+                        ptByomei.HosokuCmt ?? string.Empty,
+                        ptByomei.TogetuByomei,
+                        0
+                        );
+                ptByomeiModels.Add(ptDiseaseModel);
+            }
+
+            var SyusyokuCdList = ptByomeis.Select(item => item.SyusyokuCd1)
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd2))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd3))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd4))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd5))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd6))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd7))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd8))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd9))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd10))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd11))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd12))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd13))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd14))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd15))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd16))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd17))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd18))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd19))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd20))
+                                 .Union(ptByomeis.Select(item => item.SyusyokuCd21))
+                                 .Distinct().ToList();
+
+            var byomeiMstList = (from ptByomei in ptByomeis
+                                 join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
+                                 select ptByomeiMst).ToList();
+
+            var byomeiMstForSyusyokuList = byomeiMstQuery.Where(item => SyusyokuCdList.Contains(item.ByomeiCd)).ToList();
+
+            foreach (var ptByomeiModel in ptByomeiModels)
+            {
+                try
+                {
+                    if (ptByomeiModel.IsFreeWord)
+                    {
+                        ptByomeiModel.Byomei = ptByomeiModel.FullByomei;
+                        continue;
+                    }
+
+                    var byomeiMst = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomeiModel.ByomeiCd);
+
+                    if (byomeiMst != null)
+                    {
+                        ptByomeiModel.Byomei = byomeiMst.Sbyomei;
+                        ptByomeiModel.Icd10 = byomeiMst.Icd101;
+                        ptByomeiModel.ChangeSikkanCd(byomeiMst.SikkanCd);
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd102))
+                        {
+                            ptByomeiModel.Icd10 += "/" + byomeiMst.Icd102;
+                        }
+                        ptByomeiModel.Icd102013 = byomeiMst.Icd1012013;
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd1022013))
+                        {
+                            ptByomeiModel.Icd102013 += "/" + byomeiMst.Icd1022013;
+                        }
+
+                        ptByomeiModel.Icd1012013 = byomeiMst.Icd1012013;
+                        ptByomeiModel.Icd1022013 = byomeiMst.Icd1022013;
+                    }
+                    else
+                    {
+                        ptByomeiModel.Icd1012013 = string.Empty;
+                        ptByomeiModel.Icd1022013 = string.Empty;
+                    }
+
+                    var ptByomei = ptByomeis.Where(x => x.ByomeiCd == ptByomeiModel.ByomeiCd).First();
+
+                    for (int i = 1; i <= 21; i++)
+                    {
+                        string byoCd = ptByomei.GetMemberValue("SyusyokuCd" + i).AsString();
+                        if (string.IsNullOrEmpty(byoCd))
+                        {
+                            break;
+                        }
+                    }
+                }
+                finally
+                {
+                    result.Add(ptByomeiModel);
+                }
+            }
+
+            return result;
+        }
+
         public List<PtDiseaseModel> GetByomeiInThisMonth(int hpId, int sinYm, long ptId, int hokenId)
         {
             int firstDateOfThisMonth = sinYm * 100 + 1;
@@ -938,11 +1106,12 @@ namespace Infrastructure.Repositories
         {
             var result = new Dictionary<string, string>();
 
-            foreach (var item in byomeiCds)
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId && byomeiCds.Contains(item.ByomeiCd)).ToList();
+            foreach (var byomeiCd in byomeiCds)
             {
-                if (!string.IsNullOrEmpty(item))
+                if (!string.IsNullOrEmpty(byomeiCd))
                 {
-                    var byomei = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(x => x.HpId == hpId && x.ByomeiCd == item);
+                    var byomei = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == byomeiCd);
                     if (byomei != null && !result.ContainsKey(byomei.ByomeiCd))
                     {
                         result.Add(byomei.ByomeiCd, byomei.Sbyomei ?? string.Empty);

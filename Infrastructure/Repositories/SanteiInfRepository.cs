@@ -62,7 +62,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         // Get Last order 前回日
         var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
                                                                                         && item.PtId == ptId
-                                                                                        && item.SinDate < sinDate)
+                                                                                        && item.SinDate <= sinDate)
                                                                                         .Select(item => new
                                                                                         {
                                                                                             item.HpId,
@@ -77,7 +77,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
         var odrInfQuery = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
                                                                                 && item.PtId == ptId
-                                                                                && item.SinDate < sinDate
+                                                                                && item.SinDate <= sinDate
                                                                                 && item.IsDeleted == 0)
                                                                                 .Select(item => new
                                                                                 {
@@ -99,9 +99,8 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                  select new
                                  {
                                      ItemCd = g.Key,
-                                     SinDate = g.Max(x => x.SinDate)
+                                     SinDate = g.Where(o => o.SinDate < sinDate).Select(x => x.SinDate).OrderByDescending(x => x).FirstOrDefault()
                                  };
-
         Dictionary<string, int> dicLastOrderDate = new();
         foreach (var lastOdr in odrInfLastOdrQuery.ToList())
         {

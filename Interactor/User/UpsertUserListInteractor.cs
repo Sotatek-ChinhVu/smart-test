@@ -30,7 +30,7 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInputNoData);
                 }
                 var datas = inputData.UpsertUserList.Select(u => new UserMstModel(
-                        u.HpId,
+                        1,
                         u.Id,
                         u.UserId,
                         u.JobCd,

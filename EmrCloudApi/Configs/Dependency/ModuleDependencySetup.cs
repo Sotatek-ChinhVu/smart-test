@@ -187,8 +187,8 @@ using Reporting.AccountingCardList.DB;
 using Reporting.AccountingCardList.Service;
 using Reporting.Byomei.DB;
 using Reporting.Byomei.Service;
-using Reporting.Calculate.Implementation;
-using Reporting.Calculate.Interface;
+using CalculateService.Implementation;
+using CalculateService.Interface;
 using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
 using Reporting.CommonMasters.Config;
@@ -793,30 +793,6 @@ using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
-using UseCase.SuperSetDetail.GetConversion;
-using UseCase.SuperSetDetail.SaveConversion;
-using UseCase.KensaHistory.GetListKensaCmtMst.GetKensaInfDetailByIraiCd;
-using Reporting.KensaHistory.DB;
-using Reporting.KensaHistory.Service;
-using UseCase.Reception.GetNextUketukeNoBySetting;
-using UseCase.PatientInfor.UpdateVisitTimesManagementNeedSave;
-using UseCase.MainMenu.GetOdrSetName;
-using UseCase.MainMenu.SaveOdrSet;
-using UseCase.Lock.CheckIsExistedOQLockInfo;
-using UseCase.SetMst.GetListSetGenerationMst;
-using Interactor.MedicalExamination.KensaIraiCommon;
-using UseCase.MstItem.CheckJihiSbtExistsInTenMst;
-using UseCase.SmartKartePort.UpdatePort;
-using Interactor.SmartKartePort;
-using Domain.Models.SmartKartePort;
-using UseCase.SmartKartePort.GetPort;
-using UseCase.SetKbnMst.GetSetKbnMstListByGenerationId;
-using UseCase.DrugInfor.GetSinrekiFilterMstList;
-using UseCase.DrugInfor.SaveSinrekiFilterMstList;
-using UseCase.DrugInfor.GetContentDrugUsageHistory;
-using Interactor.LastDayInformation;
-using UseCase.LastDayInformation.GetLastDayInfoList;
-using UseCase.LastDayInformation.SaveSettingLastDayInfoList;
 using Infrastructure.Repositoriesp;
 using Domain.Models.ReleasenoteRead;
 using Interactor.ReleasenoteRead;
@@ -826,7 +802,22 @@ using Domain.Models.Cacche;
 using Interactor.Cache;
 using UseCase.Cache.RemoveAllCache;
 using UseCase.Cache.RemoveCache;
+using UseCase.User.UpdateHashPassword;
 using UseCase.Diseases.IsHokenInfInUsed;
+using Domain.Models.Yousiki;
+using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
+using Interactor.Yousiki;
+using UseCase.Yousiki.GetYousiki1InfDetails;
+using UseCase.Yousiki.GetVisitingInfs;
+using UseCase.Yousiki.AddYousiki;
+using UseCase.Yousiki.GetHistoryYousiki;
+using UseCase.Yousiki.DeleteYousikiInf;
+using UseCase.Yousiki.GetYousiki1InfModel;
+using UseCase.Yousiki.GetKacodeYousikiMstDict;
+using UseCase.Yousiki.GetByomeisInMonth;
+using UseCase.Yousiki.CreateYuIchiFile;
+using UseCase.Yousiki.UpdateYosiki;
+using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -864,8 +855,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             //Cache data
-            services.AddScoped<IUserInfoService, UserInfoService>();
-            services.AddScoped<IKaService, KaService>();
+            services.AddTransient<IUserInfoService, UserInfoService>();
+            services.AddTransient<IKaService, KaService>();
+            services.AddTransient<IReturnYousikiTabService, ReturnYousikiTabService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();
@@ -1127,7 +1119,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IP46WelfareSeikyu99CoReportService, P46WelfareSeikyu99CoReportService>();
             services.AddTransient<ICoNameLabelFinder, CoNameLabelFinder>();
             //call Calculate API
-            services.AddTransient<ICalculateService, CalculateService>();
+            services.AddTransient<ICalculateService, EmrCloudApi.Services.CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
             #endregion Reporting
         }
@@ -1244,6 +1236,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKensaIraiCommon, KensaIraiCommon>();
             services.AddTransient<IReleasenoteReadRepository, ReleasenoteReadRepository>();
             services.AddTransient<IRemoveCacheRepository, CacheRepository>();
+            services.AddTransient<IYousikiRepository, YousikiRepository>();
             ///services.AddTransient<ISystemStartDbRepository, SystemStartDbRepository>();
         }
 
@@ -1269,6 +1262,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SigninRefreshTokenInputData, SigInRefreshTokenInteractor>();
             busBuilder.RegisterUseCase<RefreshTokenByUserInputData, RefreshTokenByUserInteractor>();
             busBuilder.RegisterUseCase<GetUserInfoInputData, GetUserInfoInteractor>();
+            busBuilder.RegisterUseCase<UpdateHashPasswordInputData, UpdateHashPasswordInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
@@ -1561,6 +1555,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTreeByomeiSetInputData, GetTreeByomeiSetInteractor>();
             busBuilder.RegisterUseCase<GetListByomeiSetGenerationMstInputData, GetListByomeiSetGenerationMstInteractor>();
             busBuilder.RegisterUseCase<IsHokenInfInUsedInputData, IsHokenInfInUsedInteractor>();
+            busBuilder.RegisterUseCase<GetByomeisInMonthInputData, GetByomeisInMonthInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -1757,6 +1752,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckExistsReceInfInputData, CheckExistsReceInfInteractor>();
             busBuilder.RegisterUseCase<CheckExistSyobyoKeikaInputData, CheckExistSyobyoKeikaInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfReceipt, GetListRaiinInfInteractorOfReceipt>();
+            busBuilder.RegisterUseCase<GetHistoryYousikiInputData, GetHistoryYousikiInteractor>();
+            busBuilder.RegisterUseCase<GetYousiki1InfModelInputData, GetYousiki1InfModelInteractor>();
+            busBuilder.RegisterUseCase<GetKacodeYousikiMstDictInputData, GetKacodeYousikiMstDictInteractor>();
+            busBuilder.RegisterUseCase<UpdateYosikiInputData, UpdateYosikiInteractor>();
+            busBuilder.RegisterUseCase<GetYousiki1InfDetailsByCodeNoInputData, GetYousiki1InfDetailsByCodeNoInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
@@ -1922,6 +1922,14 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSinrekiFilterMstListInputData, GetSinrekiFilterMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSinrekiFilterMstListInputData, SaveSinrekiFilterMstListInteractor>();
             busBuilder.RegisterUseCase<GetContentDrugUsageHistoryInputData, GetContentDrugUsageHistoryInteractor>();
+
+            //Yousiki
+            busBuilder.RegisterUseCase<GetYousiki1InfModelWithCommonInfInputData, GetYousiki1InfModelWithCommonInfInteractor>();
+            busBuilder.RegisterUseCase<GetYousiki1InfDetailsInputData, GetYousiki1InfDetailsInteractor>();
+            busBuilder.RegisterUseCase<GetVisitingInfsInputData, GetVisitingInfsInteractor>();
+            busBuilder.RegisterUseCase<AddYousikiInputData, AddYousikiInteractor>();
+            busBuilder.RegisterUseCase<DeleteYousikiInfInputData, DeleteYousikiInfInteractor>();
+            busBuilder.RegisterUseCase<CreateYuIchiFileInputData, CreateYuIchiFileInteractor>();
 
             //SystemStartDb 
             ///busBuilder.RegisterUseCase<SystemStartDbInputData, SystemStartDbInteractor>();

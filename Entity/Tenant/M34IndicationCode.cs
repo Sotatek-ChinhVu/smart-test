@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M34_INDICATION_CODE")]
+    [Table(name: "m34_indication_code")]
     public class M34IndicationCode : EmrCloneable<M34IndicationCode>
     {
         /// <summary>
@@ -12,14 +12,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         
-        [Column("KONO_CD", Order = 1)]
+        [Column("kono_cd", Order = 1)]
         public string KonoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 効能効果（詳しい説明）
         /// 
         /// </summary>
-        [Column("KONO_DETAIL_CMT")]
+        [Column("kono_detail_cmt")]
         [MaxLength(200)]
         public string? KonoDetailCmt { get; set; } = string.Empty;
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 効能効果（簡単な説明）
         /// 
         /// </summary>
-        [Column("KONO_SIMPLE_CMT")]
+        [Column("kono_simple_cmt")]
         [MaxLength(200)]
         public string? KonoSimpleCmt { get; set; } = string.Empty;
 
