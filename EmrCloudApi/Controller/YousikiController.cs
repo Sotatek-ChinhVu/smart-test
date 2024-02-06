@@ -198,6 +198,7 @@ public class YousikiController : AuthorizeControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
+            var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList ?? new())
             {
@@ -230,13 +231,12 @@ public class YousikiController : AuthorizeControllerBase
                                    yousiki1InfDetailRequest.ValueSelect.RowNo,
                                    yousiki1InfDetailRequest.ValueSelect.Payload,
                                    yousiki1InfDetailRequest.ValueSelect.Value,
-                                   yousiki1InfDetailRequest.ValueSelect.IsDeleted
+                                   isDeleted
                                    ));
             }
 
             codeNo = "CD00001";
             var rowNo = yousiki1InfDetailRequest.SortNo;
-            var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
             if (!string.IsNullOrEmpty(fullByomei))
             {
@@ -382,7 +382,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommon.ValueSelect.RowNo,
                byomeiInfCommon.ValueSelect.Payload,
                byomeiInfCommon.ValueSelect.Value,
-               byomeiInfCommon.ValueSelect.IsDeleted
+               byomeiInfCommon.IsDeleted ? 1 : 0
                ));
         }
 
@@ -412,7 +412,7 @@ public class YousikiController : AuthorizeControllerBase
                            byomeiInfCommon.Icd10.RowNo,
                            byomeiInfCommon.Icd10.Payload,
                            byomeiInfCommon.Icd10.Value,
-                           byomeiInfCommon.Icd10.IsDeleted
+                           byomeiInfCommon.IsDeleted ? 1 : 0
                            ));
         }
 
@@ -457,7 +457,7 @@ public class YousikiController : AuthorizeControllerBase
                            byomeiInfCommon.DateOfHospitalization.RowNo,
                            byomeiInfCommon.DateOfHospitalization.Payload,
                            byomeiInfCommon.DateOfHospitalization.Value,
-                           byomeiInfCommon.DateOfHospitalization.IsDeleted
+                           byomeiInfCommon.IsDeleted ? 1 : 0
                            ));
         }
 
@@ -472,7 +472,7 @@ public class YousikiController : AuthorizeControllerBase
                            byomeiInfCommon.DischargeDate.RowNo,
                            byomeiInfCommon.DischargeDate.Payload,
                            byomeiInfCommon.DischargeDate.Value,
-                           byomeiInfCommon.DischargeDate.IsDeleted
+                           byomeiInfCommon.IsDeleted ? 1 : 0
                            ));
         }
 
@@ -487,7 +487,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommon.Destination.RowNo,
                byomeiInfCommon.Destination.Payload,
                byomeiInfCommon.Destination.Value,
-               byomeiInfCommon.Destination.IsDeleted
+               byomeiInfCommon.IsDeleted ? 1 : 0
                ));
         }
 
@@ -502,7 +502,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommon.HouseCallDate.RowNo,
                byomeiInfCommon.HouseCallDate.Payload,
                byomeiInfCommon.HouseCallDate.Value,
-               byomeiInfCommon.HouseCallDate.IsDeleted
+               byomeiInfCommon.IsDeleted ? 1 : 0
                ));
         }
 
@@ -517,7 +517,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommon.MedicalInstitution.RowNo,
                byomeiInfCommon.MedicalInstitution.Payload,
                byomeiInfCommon.MedicalInstitution.Value,
-               byomeiInfCommon.MedicalInstitution.IsDeleted
+               byomeiInfCommon.IsDeleted ? 1 : 0
                ));
         }
 
@@ -532,7 +532,7 @@ public class YousikiController : AuthorizeControllerBase
                            byomeiInfCommon.StartDate.RowNo,
                            byomeiInfCommon.StartDate.Payload,
                            byomeiInfCommon.StartDate.Value,
-                           byomeiInfCommon.StartDate.IsDeleted
+                           byomeiInfCommon.IsDeleted ? 1 : 0
                            ));
         }
 
@@ -547,7 +547,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommon.OnsetDate.RowNo,
                byomeiInfCommon.OnsetDate.Payload,
                byomeiInfCommon.OnsetDate.Value,
-               byomeiInfCommon.OnsetDate.IsDeleted
+               byomeiInfCommon.IsDeleted ? 1 : 0
                ));
         }
 
@@ -562,7 +562,7 @@ public class YousikiController : AuthorizeControllerBase
                            byomeiInfCommon.MaximumNumberDate.RowNo,
                            byomeiInfCommon.MaximumNumberDate.Payload,
                            byomeiInfCommon.MaximumNumberDate.Value,
-                           byomeiInfCommon.MaximumNumberDate.IsDeleted
+                           byomeiInfCommon.IsDeleted ? 1 : 0
                            ));
         }
 
@@ -633,7 +633,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.ValueSelect.RowNo,
                byomeiInfCommonFinalExaminationInf.ValueSelect.Payload,
                byomeiInfCommonFinalExaminationInf.ValueSelect.Value,
-               byomeiInfCommonFinalExaminationInf.ValueSelect.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -663,7 +663,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.Icd10.RowNo,
                byomeiInfCommonFinalExaminationInf.Icd10.Payload,
                byomeiInfCommonFinalExaminationInf.Icd10.Value,
-               byomeiInfCommonFinalExaminationInf.Icd10.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -708,7 +708,7 @@ public class YousikiController : AuthorizeControllerBase
                            byomeiInfCommonFinalExaminationInf.DateOfHospitalization.RowNo,
                            byomeiInfCommonFinalExaminationInf.DateOfHospitalization.Payload,
                            byomeiInfCommonFinalExaminationInf.DateOfHospitalization.Value,
-                           byomeiInfCommonFinalExaminationInf.DateOfHospitalization.IsDeleted
+                           byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                            ));
         }
 
@@ -723,7 +723,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.DischargeDate.RowNo,
                byomeiInfCommonFinalExaminationInf.DischargeDate.Payload,
                byomeiInfCommonFinalExaminationInf.DischargeDate.Value,
-               byomeiInfCommonFinalExaminationInf.DischargeDate.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -738,7 +738,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.Destination.RowNo,
                byomeiInfCommonFinalExaminationInf.Destination.Payload,
                byomeiInfCommonFinalExaminationInf.Destination.Value,
-               byomeiInfCommonFinalExaminationInf.Destination.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -753,7 +753,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.HouseCallDate.RowNo,
                byomeiInfCommonFinalExaminationInf.HouseCallDate.Payload,
                byomeiInfCommonFinalExaminationInf.HouseCallDate.Value,
-               byomeiInfCommonFinalExaminationInf.HouseCallDate.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -768,7 +768,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.MedicalInstitution.RowNo,
                byomeiInfCommonFinalExaminationInf.MedicalInstitution.Payload,
                byomeiInfCommonFinalExaminationInf.MedicalInstitution.Value,
-               byomeiInfCommonFinalExaminationInf.MedicalInstitution.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -783,7 +783,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.StartDate.RowNo,
                byomeiInfCommonFinalExaminationInf.StartDate.Payload,
                byomeiInfCommonFinalExaminationInf.StartDate.Value,
-               byomeiInfCommonFinalExaminationInf.StartDate.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -798,7 +798,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.OnsetDate.RowNo,
                byomeiInfCommonFinalExaminationInf.OnsetDate.Payload,
                byomeiInfCommonFinalExaminationInf.OnsetDate.Value,
-               byomeiInfCommonFinalExaminationInf.OnsetDate.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -813,7 +813,7 @@ public class YousikiController : AuthorizeControllerBase
                byomeiInfCommonFinalExaminationInf.MaximumNumberDate.RowNo,
                byomeiInfCommonFinalExaminationInf.MaximumNumberDate.Payload,
                byomeiInfCommonFinalExaminationInf.MaximumNumberDate.Value,
-               byomeiInfCommonFinalExaminationInf.MaximumNumberDate.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
         #endregion
@@ -848,7 +848,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.ConsultationDate.RowNo,
                    yousiki1InfDetailRequest.ConsultationDate.Payload,
                    yousiki1InfDetailRequest.ConsultationDate.Value,
-                   yousiki1InfDetailRequest.ConsultationDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -863,7 +863,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.FirstVisit.RowNo,
                    yousiki1InfDetailRequest.FirstVisit.Payload,
                    yousiki1InfDetailRequest.FirstVisit.Value,
-                   yousiki1InfDetailRequest.FirstVisit.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -878,7 +878,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.AppearanceReferral.RowNo,
                    yousiki1InfDetailRequest.AppearanceReferral.Payload,
                    yousiki1InfDetailRequest.AppearanceReferral.Value,
-                   yousiki1InfDetailRequest.AppearanceReferral.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -893,7 +893,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DepartmentCode.RowNo,
                    yousiki1InfDetailRequest.DepartmentCode.Payload,
                    yousiki1InfDetailRequest.DepartmentCode.Value,
-                   yousiki1InfDetailRequest.DepartmentCode.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -911,7 +911,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Type.RowNo,
                    yousiki1InfDetailRequest.Type.Payload,
                    yousiki1InfDetailRequest.Type.Value,
-                   yousiki1InfDetailRequest.Type.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -926,7 +926,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OnsetDate.RowNo,
                    yousiki1InfDetailRequest.OnsetDate.Payload,
                    yousiki1InfDetailRequest.OnsetDate.Value,
-                   yousiki1InfDetailRequest.OnsetDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -944,7 +944,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Type.RowNo,
                    yousiki1InfDetailRequest.Type.Payload,
                    yousiki1InfDetailRequest.Type.Value,
-                   yousiki1InfDetailRequest.Type.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -959,7 +959,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OnsetDate.RowNo,
                    yousiki1InfDetailRequest.OnsetDate.Payload,
                    yousiki1InfDetailRequest.OnsetDate.Value,
-                   yousiki1InfDetailRequest.OnsetDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -977,7 +977,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OnsetDate.RowNo,
                    yousiki1InfDetailRequest.OnsetDate.Payload,
                    yousiki1InfDetailRequest.OnsetDate.Value,
-                   yousiki1InfDetailRequest.OnsetDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -1016,7 +1016,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.SinDate.RowNo,
                    yousiki1InfDetailRequest.SinDate.Payload,
                    yousiki1InfDetailRequest.SinDate.Value,
-                   yousiki1InfDetailRequest.SinDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1031,7 +1031,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MedicalInstitution.RowNo,
                    yousiki1InfDetailRequest.MedicalInstitution.Payload,
                    yousiki1InfDetailRequest.MedicalInstitution.Value,
-                   yousiki1InfDetailRequest.MedicalInstitution.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -1049,7 +1049,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.SinDate.RowNo,
                    yousiki1InfDetailRequest.SinDate.Payload,
                    yousiki1InfDetailRequest.SinDate.Value,
-                   yousiki1InfDetailRequest.SinDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1064,7 +1064,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MedicalInstitution.RowNo,
                    yousiki1InfDetailRequest.MedicalInstitution.Payload,
                    yousiki1InfDetailRequest.MedicalInstitution.Value,
-                   yousiki1InfDetailRequest.MedicalInstitution.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -1082,7 +1082,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.EmergencyConsultationDay.RowNo,
                    yousiki1InfDetailRequest.EmergencyConsultationDay.Payload,
                    yousiki1InfDetailRequest.EmergencyConsultationDay.Value,
-                   yousiki1InfDetailRequest.EmergencyConsultationDay.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1097,7 +1097,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Destination.RowNo,
                    yousiki1InfDetailRequest.Destination.Payload,
                    yousiki1InfDetailRequest.Destination.Value,
-                   yousiki1InfDetailRequest.Destination.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1112,7 +1112,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.ConsultationRoute.RowNo,
                    yousiki1InfDetailRequest.ConsultationRoute.Payload,
                    yousiki1InfDetailRequest.ConsultationRoute.Value,
-                   yousiki1InfDetailRequest.ConsultationRoute.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1127,7 +1127,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OutCome.RowNo,
                    yousiki1InfDetailRequest.OutCome.Payload,
                    yousiki1InfDetailRequest.OutCome.Value,
-                   yousiki1InfDetailRequest.OutCome.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -1145,7 +1145,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.AdmissionDate.RowNo,
                    yousiki1InfDetailRequest.AdmissionDate.Payload,
                    yousiki1InfDetailRequest.AdmissionDate.Value,
-                   yousiki1InfDetailRequest.AdmissionDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1160,7 +1160,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DischargeDate.RowNo,
                    yousiki1InfDetailRequest.DischargeDate.Payload,
                    yousiki1InfDetailRequest.DischargeDate.Value,
-                   yousiki1InfDetailRequest.DischargeDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1175,7 +1175,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Service.RowNo,
                    yousiki1InfDetailRequest.Service.Payload,
                    yousiki1InfDetailRequest.Service.Value,
-                   yousiki1InfDetailRequest.Service.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -1313,7 +1313,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DateOfHospitalization.RowNo,
                    yousiki1InfDetailRequest.DateOfHospitalization.Payload,
                    yousiki1InfDetailRequest.DateOfHospitalization.Value,
-                   yousiki1InfDetailRequest.DateOfHospitalization.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1328,7 +1328,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DischargeDate.RowNo,
                    yousiki1InfDetailRequest.DischargeDate.Payload,
                    yousiki1InfDetailRequest.DischargeDate.Value,
-                   yousiki1InfDetailRequest.DischargeDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1343,7 +1343,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Destination.RowNo,
                    yousiki1InfDetailRequest.Destination.Payload,
                    yousiki1InfDetailRequest.Destination.Value,
-                   yousiki1InfDetailRequest.Destination.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1358,7 +1358,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.HouseCallDate.RowNo,
                    yousiki1InfDetailRequest.HouseCallDate.Payload,
                    yousiki1InfDetailRequest.HouseCallDate.Value,
-                   yousiki1InfDetailRequest.HouseCallDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1373,7 +1373,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MedicalInstitution.RowNo,
                    yousiki1InfDetailRequest.MedicalInstitution.Payload,
                    yousiki1InfDetailRequest.MedicalInstitution.Value,
-                   yousiki1InfDetailRequest.MedicalInstitution.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1388,7 +1388,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.StartDate.RowNo,
                    yousiki1InfDetailRequest.StartDate.Payload,
                    yousiki1InfDetailRequest.StartDate.Value,
-                   yousiki1InfDetailRequest.StartDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1403,7 +1403,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OnsetDate.RowNo,
                    yousiki1InfDetailRequest.OnsetDate.Payload,
                    yousiki1InfDetailRequest.OnsetDate.Value,
-                   yousiki1InfDetailRequest.OnsetDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1418,7 +1418,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MaximumNumberDate.RowNo,
                    yousiki1InfDetailRequest.MaximumNumberDate.Payload,
                    yousiki1InfDetailRequest.MaximumNumberDate.Value,
-                   yousiki1InfDetailRequest.MaximumNumberDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -1476,7 +1476,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.ValueSelect.RowNo,
                    yousiki1InfDetailRequest.ValueSelect.Payload,
                    yousiki1InfDetailRequest.ValueSelect.Value,
-                   yousiki1InfDetailRequest.ValueSelect.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1496,7 +1496,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Icd10.RowNo,
                    yousiki1InfDetailRequest.Icd10.Payload,
                    yousiki1InfDetailRequest.Icd10.Value,
-                   yousiki1InfDetailRequest.Icd10.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1521,7 +1521,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DateOfHospitalization.RowNo,
                    yousiki1InfDetailRequest.DateOfHospitalization.Payload,
                    yousiki1InfDetailRequest.DateOfHospitalization.Value,
-                   yousiki1InfDetailRequest.DateOfHospitalization.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1536,7 +1536,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DischargeDate.RowNo,
                    yousiki1InfDetailRequest.DischargeDate.Payload,
                    yousiki1InfDetailRequest.DischargeDate.Value,
-                   yousiki1InfDetailRequest.DischargeDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1551,7 +1551,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Destination.RowNo,
                    yousiki1InfDetailRequest.Destination.Payload,
                    yousiki1InfDetailRequest.Destination.Value,
-                   yousiki1InfDetailRequest.Destination.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1566,7 +1566,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.HouseCallDate.RowNo,
                    yousiki1InfDetailRequest.HouseCallDate.Payload,
                    yousiki1InfDetailRequest.HouseCallDate.Value,
-                   yousiki1InfDetailRequest.HouseCallDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1581,7 +1581,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MedicalInstitution.RowNo,
                    yousiki1InfDetailRequest.MedicalInstitution.Payload,
                    yousiki1InfDetailRequest.MedicalInstitution.Value,
-                   yousiki1InfDetailRequest.MedicalInstitution.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1596,7 +1596,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.StartDate.RowNo,
                    yousiki1InfDetailRequest.StartDate.Payload,
                    yousiki1InfDetailRequest.StartDate.Value,
-                   yousiki1InfDetailRequest.StartDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1611,7 +1611,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OnsetDate.RowNo,
                    yousiki1InfDetailRequest.OnsetDate.Payload,
                    yousiki1InfDetailRequest.OnsetDate.Value,
-                   yousiki1InfDetailRequest.OnsetDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -1626,7 +1626,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MaximumNumberDate.RowNo,
                    yousiki1InfDetailRequest.MaximumNumberDate.Payload,
                    yousiki1InfDetailRequest.MaximumNumberDate.Value,
-                   yousiki1InfDetailRequest.MaximumNumberDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
@@ -1664,7 +1664,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.ValueSelect.RowNo,
                finalExaminationInf.ValueSelect.Payload,
                finalExaminationInf.ValueSelect.Value,
-               finalExaminationInf.ValueSelect.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1694,7 +1694,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.Icd10.RowNo,
                finalExaminationInf.Icd10.Payload,
                finalExaminationInf.Icd10.Value,
-               finalExaminationInf.Icd10.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1739,7 +1739,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.DateOfHospitalization.RowNo,
                finalExaminationInf.DateOfHospitalization.Payload,
                finalExaminationInf.DateOfHospitalization.Value,
-               finalExaminationInf.DateOfHospitalization.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1754,7 +1754,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.DischargeDate.RowNo,
                finalExaminationInf.DischargeDate.Payload,
                finalExaminationInf.DischargeDate.Value,
-               finalExaminationInf.DischargeDate.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1769,7 +1769,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.Destination.RowNo,
                finalExaminationInf.Destination.Payload,
                finalExaminationInf.Destination.Value,
-               finalExaminationInf.Destination.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1784,7 +1784,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.HouseCallDate.RowNo,
                finalExaminationInf.HouseCallDate.Payload,
                finalExaminationInf.HouseCallDate.Value,
-               finalExaminationInf.HouseCallDate.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1799,7 +1799,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.MedicalInstitution.RowNo,
                finalExaminationInf.MedicalInstitution.Payload,
                finalExaminationInf.MedicalInstitution.Value,
-               finalExaminationInf.MedicalInstitution.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1814,7 +1814,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.StartDate.RowNo,
                finalExaminationInf.StartDate.Payload,
                finalExaminationInf.StartDate.Value,
-               finalExaminationInf.StartDate.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1829,7 +1829,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.OnsetDate.RowNo,
                finalExaminationInf.OnsetDate.Payload,
                finalExaminationInf.OnsetDate.Value,
-               finalExaminationInf.OnsetDate.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1844,7 +1844,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf.MaximumNumberDate.RowNo,
                finalExaminationInf.MaximumNumberDate.Payload,
                finalExaminationInf.MaximumNumberDate.Value,
-               finalExaminationInf.MaximumNumberDate.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1881,7 +1881,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.ValueSelect.RowNo,
                finalExaminationInf2.ValueSelect.Payload,
                finalExaminationInf2.ValueSelect.Value,
-               finalExaminationInf2.ValueSelect.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1911,7 +1911,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.Icd10.RowNo,
                finalExaminationInf2.Icd10.Payload,
                finalExaminationInf2.Icd10.Value,
-               finalExaminationInf2.Icd10.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1956,7 +1956,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.DateOfHospitalization.RowNo,
                finalExaminationInf2.DateOfHospitalization.Payload,
                finalExaminationInf2.DateOfHospitalization.Value,
-               finalExaminationInf2.DateOfHospitalization.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1971,7 +1971,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.DischargeDate.RowNo,
                finalExaminationInf2.DischargeDate.Payload,
                finalExaminationInf2.DischargeDate.Value,
-               finalExaminationInf2.DischargeDate.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1986,7 +1986,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.Destination.RowNo,
                finalExaminationInf2.Destination.Payload,
                finalExaminationInf2.Destination.Value,
-               finalExaminationInf2.Destination.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -2001,7 +2001,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.HouseCallDate.RowNo,
                finalExaminationInf2.HouseCallDate.Payload,
                finalExaminationInf2.HouseCallDate.Value,
-               finalExaminationInf2.HouseCallDate.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -2016,7 +2016,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.MedicalInstitution.RowNo,
                finalExaminationInf2.MedicalInstitution.Payload,
                finalExaminationInf2.MedicalInstitution.Value,
-               finalExaminationInf2.MedicalInstitution.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -2031,7 +2031,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.StartDate.RowNo,
                finalExaminationInf2.StartDate.Payload,
                finalExaminationInf2.StartDate.Value,
-               finalExaminationInf2.StartDate.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -2046,7 +2046,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.OnsetDate.RowNo,
                finalExaminationInf2.OnsetDate.Payload,
                finalExaminationInf2.OnsetDate.Value,
-               finalExaminationInf2.OnsetDate.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -2061,7 +2061,7 @@ public class YousikiController : AuthorizeControllerBase
                finalExaminationInf2.MaximumNumberDate.RowNo,
                finalExaminationInf2.MaximumNumberDate.Payload,
                finalExaminationInf2.MaximumNumberDate.Value,
-               finalExaminationInf2.MaximumNumberDate.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
         #endregion
@@ -2114,7 +2114,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.FirstVisit.RowNo,
                    yousiki1InfDetailRequest.FirstVisit.Payload,
                    yousiki1InfDetailRequest.FirstVisit.Value,
-                   yousiki1InfDetailRequest.FirstVisit.IsDeleted
+                   yousiki1InfDetailRequest.FirstVisit.IsDeleted 
                    ));
             }
 
@@ -2129,7 +2129,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Referral.RowNo,
                    yousiki1InfDetailRequest.Referral.Payload,
                    yousiki1InfDetailRequest.Referral.Value,
-                   yousiki1InfDetailRequest.Referral.IsDeleted
+                   yousiki1InfDetailRequest.Referral.IsDeleted 
                    ));
             }
 
@@ -2201,7 +2201,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.ValueSelect.RowNo,
                    yousiki1InfDetailRequest.ValueSelect.Payload,
                    yousiki1InfDetailRequest.ValueSelect.Value,
-                   yousiki1InfDetailRequest.ValueSelect.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2221,7 +2221,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Icd10.RowNo,
                    yousiki1InfDetailRequest.Icd10.Payload,
                    yousiki1InfDetailRequest.Icd10.Value,
-                   yousiki1InfDetailRequest.Icd10.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2246,7 +2246,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DateOfHospitalization.RowNo,
                    yousiki1InfDetailRequest.DateOfHospitalization.Payload,
                    yousiki1InfDetailRequest.DateOfHospitalization.Value,
-                   yousiki1InfDetailRequest.DateOfHospitalization.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2261,7 +2261,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.DischargeDate.RowNo,
                    yousiki1InfDetailRequest.DischargeDate.Payload,
                    yousiki1InfDetailRequest.DischargeDate.Value,
-                   yousiki1InfDetailRequest.DischargeDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2276,7 +2276,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Destination.RowNo,
                    yousiki1InfDetailRequest.Destination.Payload,
                    yousiki1InfDetailRequest.Destination.Value,
-                   yousiki1InfDetailRequest.Destination.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2291,7 +2291,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.HouseCallDate.RowNo,
                    yousiki1InfDetailRequest.HouseCallDate.Payload,
                    yousiki1InfDetailRequest.HouseCallDate.Value,
-                   yousiki1InfDetailRequest.HouseCallDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2306,7 +2306,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MedicalInstitution.RowNo,
                    yousiki1InfDetailRequest.MedicalInstitution.Payload,
                    yousiki1InfDetailRequest.MedicalInstitution.Value,
-                   yousiki1InfDetailRequest.MedicalInstitution.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2321,7 +2321,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.StartDate.RowNo,
                    yousiki1InfDetailRequest.StartDate.Payload,
                    yousiki1InfDetailRequest.StartDate.Value,
-                   yousiki1InfDetailRequest.StartDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2336,7 +2336,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OnsetDate.RowNo,
                    yousiki1InfDetailRequest.OnsetDate.Payload,
                    yousiki1InfDetailRequest.OnsetDate.Value,
-                   yousiki1InfDetailRequest.OnsetDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
 
@@ -2351,7 +2351,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.MaximumNumberDate.RowNo,
                    yousiki1InfDetailRequest.MaximumNumberDate.Payload,
                    yousiki1InfDetailRequest.MaximumNumberDate.Value,
-                   yousiki1InfDetailRequest.MaximumNumberDate.IsDeleted
+                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                    ));
             }
         }
