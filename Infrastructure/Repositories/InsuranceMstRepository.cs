@@ -105,10 +105,10 @@ namespace Infrastructure.Repositories
 
 
             // data combobox Kantoku
-            IOrderedQueryable<KantokuMst> kantokuMsts = NoTrackingDataContext.KantokuMsts.OrderBy(entity => entity.RoudouCd).ThenBy(entity => entity.KantokuCd);
+            IOrderedQueryable<KantokuMst> kantokuMsts = NoTrackingDataContext.KantokuMsts.Where(k => k.HpId == hpId).OrderBy(entity => entity.RoudouCd).ThenBy(entity => entity.KantokuCd);
 
             // data combobox ByomeiMstAftercares
-            var byomeiMstAftercares = NoTrackingDataContext.ByomeiMstAftercares.OrderBy(entity => entity.ByomeiCd)
+            var byomeiMstAftercares = NoTrackingDataContext.ByomeiMstAftercares.Where(b => b.HpId == hpId).OrderBy(entity => entity.ByomeiCd)
                                          .Select(x => new ByomeiMstAftercareModel(
                                                 x.ByomeiCd,
                                                 x.Byomei
@@ -1025,7 +1025,7 @@ namespace Infrastructure.Repositories
 
             var rousaiRoudouCdList = hokenList.Select(item => item.RousaiRoudouCd).ToList();
             var rousaiKantokuCdList = hokenList.Select(item => item.RousaiKantokuCd).ToList();
-            var kantokuMstList = NoTrackingDataContext.KantokuMsts.Where(item => rousaiRoudouCdList.Contains(item.RoudouCd)
+            var kantokuMstList = NoTrackingDataContext.KantokuMsts.Where(item => item.HpId == hpId && rousaiRoudouCdList.Contains(item.RoudouCd)
                                                                          && rousaiKantokuCdList.Contains(item.KantokuCd))
                                                           .Select(item => new KantokuMstModel(
                                                                   item.RoudouCd,

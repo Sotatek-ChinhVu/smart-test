@@ -831,7 +831,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetKohiPriorityList)]
         public ActionResult<Response<GetKohiPriorityListResponse>> GetKohiPriorityList()
         {
-            var input = new GetKohiPriorityListInputData();
+            var input = new GetKohiPriorityListInputData(HpId);
             var output = _bus.Handle(input);
             var presenter = new GetKohiPriorityListPresenter();
             presenter.Complete(output);

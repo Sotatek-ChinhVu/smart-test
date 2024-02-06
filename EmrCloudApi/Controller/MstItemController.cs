@@ -120,7 +120,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetFoodAlrgy)]
         public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy()
         {
-            var input = new GetFoodAlrgyInputData();
+            var input = new GetFoodAlrgyInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new FoodAlrgyMasterDataPresenter();
@@ -128,11 +128,11 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
         }
-
+        
         [HttpPost(ApiPath.SearchOTC)]
         public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
         {
-            var input = new SearchOTCInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var input = new SearchOTCInputData(HpId, request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var presenter = new SearchOTCPresenter();
@@ -144,7 +144,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SearchSupplement)]
         public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
         {
-            var input = new SearchSupplementInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var input = new SearchSupplementInputData(HpId, request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var presenter = new SearchSupplementPresenter();
@@ -152,7 +152,7 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
         }
-
+        
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
@@ -649,7 +649,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDrugAction)]
         public ActionResult<Response<GetDrugActionResponse>> GetDrugAction([FromQuery] GetDrugActionRequest request)
         {
-            var input = new GetDrugActionInputData(request.YjCd);
+            var input = new GetDrugActionInputData(HpId, request.YjCd);
             var output = _bus.Handle(input);
             var presenter = new GetDrugActionPresenter();
             presenter.Complete(output);
@@ -669,7 +669,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDefaultPrecautions)]
         public ActionResult<Response<GetDefaultPrecautionsResponse>> GetDefaultPrecautions([FromQuery] GetDefaultPrecautionsRequest request)
         {
-            var input = new GetDefaultPrecautionsInputData(request.YjCd);
+            var input = new GetDefaultPrecautionsInputData(HpId, request.YjCd);
             var output = _bus.Handle(input);
             var presenter = new GetDefaultPrecautionsPresenter();
             presenter.Complete(output);

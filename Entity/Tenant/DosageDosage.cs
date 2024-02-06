@@ -7,10 +7,13 @@ namespace Entity.Tenant
     [Table(name: "m46_dosage_dosage")]
     public class DosageDosage : EmrCloneable<DosageDosage>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// ＤＯＥＩコード
         /// </summary>
-        
+
         [Column("doei_cd", Order = 1)]
         public string DoeiCd { get; set; } = string.Empty;
 

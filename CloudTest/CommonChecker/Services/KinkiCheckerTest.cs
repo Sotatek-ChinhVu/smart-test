@@ -136,7 +136,7 @@ public class KinkiCheckerTest : BaseUT
         };
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -158,6 +158,7 @@ public class KinkiCheckerTest : BaseUT
     [Test]
     public void CheckKinkiChecker_003_CheckKinki_TestRemoveDuplicate()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -209,7 +210,7 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -231,6 +232,7 @@ public class KinkiCheckerTest : BaseUT
     [Test]
     public void CheckKinkiChecker_004_CheckKinki_TestDefault_Error()
     {
+        int hpId = 1;
         //setup
         var currentOdrInfoDetailModels = new List<OrdInfoDetailModel>()
         {
@@ -294,7 +296,7 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try

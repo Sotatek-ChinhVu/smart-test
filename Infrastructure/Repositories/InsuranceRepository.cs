@@ -1423,24 +1423,24 @@ namespace Infrastructure.Repositories
                                  x.IsDeleted == DeleteStatus.None);
         }
 
-        public List<KohiPriorityModel> GetKohiPriorityList()
+        public List<KohiPriorityModel> GetKohiPriorityList(int hpId)
         {
             var key = GetCacheKey() + CacheKeyConstant.KohiPriority;
             IEnumerable<KohiPriorityModel> kohiPriorityList;
-            if (!_cache.KeyExists(key))
+            if (!_cache.KeyExists(key + hpId))
             {
-                kohiPriorityList = ReloadCache_KohiPriority(key);
+                kohiPriorityList = ReloadCache_KohiPriority(key, hpId);
             }
             else
             {
-                kohiPriorityList = ReadCache_KohiPriority(key);
+                kohiPriorityList = ReadCache_KohiPriority(key + hpId);
             }
             return kohiPriorityList.ToList();
         }
         #region [set cache kohiPriority]
-        private IEnumerable<KohiPriorityModel> ReloadCache_KohiPriority(string key)
+        private IEnumerable<KohiPriorityModel> ReloadCache_KohiPriority(string key, int hpId)
         {
-            var data = NoTrackingDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
+            var data = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId).Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
 
             var json = JsonSerializer.Serialize(data);
             _cache.StringSet(key, json);

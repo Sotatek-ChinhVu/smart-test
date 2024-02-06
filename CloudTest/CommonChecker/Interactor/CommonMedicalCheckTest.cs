@@ -6,6 +6,7 @@ using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Models.Family;
+using Entity.Tenant;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using Moq;
 using UseCase.Family;
@@ -19,6 +20,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_001_GetItemCdError_DrugAllergy()
         {
+            int hpId = 1;
             //Setup Data Test
             var listDrugAllergyResult = new List<DrugAllergyResultModel>()
             {
@@ -67,7 +69,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
            .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._componentNameDictionary["UT7777"], Is.EqualTo("MockedValueFor_UT7777"));
@@ -83,7 +85,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_002_GetItemCdError_DrugAllergy_DrugAllergyInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -101,7 +103,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._componentNameDictionary.Count == 0);
@@ -116,6 +118,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_003_GetItemCdError_FoodAllergy()
         {
+            int hpId = 1;
             //Setup Data Test
             var foodAllergyInfo = new List<FoodAllergyResultModel>()
             {
@@ -150,10 +153,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindFoodNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindFoodNameDic(hpId, It.IsAny<List<string>>()))
            .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["YJ999777"], Is.EqualTo("MockedValueFor_YJ999777"));
@@ -164,7 +167,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_004_GetItemCdError_FoodAllergy_FoodAllergyInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -184,10 +187,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindFoodNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindFoodNameDic(hpId, It.IsAny<List<string>>()))
            .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.True(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -198,6 +201,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_005_GetItemCdError_Age()
         {
             //Setup Data Test
+            int hpId = 1;
             var ageResults = new List<AgeResultModel>()
             {
                 new AgeResultModel()
@@ -220,7 +224,6 @@ namespace CloudUnitTest.CommonChecker.Interactor
                     ErrorInfo = ageResults
                 }
             };
-
             var mock = new Mock<IRealtimeOrderErrorFinder>();
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -229,7 +232,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["YJ999777"], Is.EqualTo("MockedValueFor_YJ999777"));
@@ -239,7 +242,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_006_GetItemCdError_Age_AgeErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -260,7 +263,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -269,6 +272,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_007_GetItemCdError_Disease()
         {
+            int hpId = 1;
             //Setup Data Test
             var diseaseResults = new List<DiseaseResultModel>()
             {
@@ -299,11 +303,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindDiseaseNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindDiseaseNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["YJ999777"], Is.EqualTo("MockedValueFor_YJ999777"));
@@ -314,7 +318,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_008_GetItemCdError_Disease_DiseaseErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -334,11 +338,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindDiseaseNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindDiseaseNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -348,6 +352,8 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_009_GetItemCdError_Kinki()
         {
+            int hpId = 1;
+
             //Setup Data Test
             var kinkiResults = new List<KinkiResultModel>()
             {
@@ -380,26 +386,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["A12345"], Is.EqualTo("MockedValueFor_A12345"));
@@ -416,7 +422,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_010_GetItemCdError_Kinki_KinkiErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -436,26 +442,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.True(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -471,6 +477,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_011_GetItemCdError_KinkiTain()
         {
+            int hpId = 1;
             //Setup Data Test
             var kinkiResults = new List<KinkiResultModel>()
             {
@@ -503,26 +510,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["A12345"], Is.EqualTo("MockedValueFor_A12345"));
@@ -539,7 +546,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_012_GetItemCdError_KinkiTain_KinkiErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -559,26 +566,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.True(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -594,6 +601,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_013_GetItemCdError_KinkiOTC()
         {
+            int hpId = 1;
             //Setup Data Test
             var kinkiResults = new List<KinkiResultModel>()
             {
@@ -626,26 +634,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["A12345"], Is.EqualTo("MockedValueFor_A12345"));
@@ -662,7 +670,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_014_GetItemCdError_KinkiOTC_KinkiErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -682,26 +690,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.True(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -717,6 +725,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_015_GetItemCdError_KinkiSupplement()
         {
+            int hpId = 1;
             //Setup Data Test
             var kinkiResults = new List<KinkiResultModel>()
             {
@@ -749,26 +758,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["A12345"], Is.EqualTo("MockedValueFor_A12345"));
@@ -785,7 +794,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_016_GetItemCdError_KinkiSupplement_KinkiErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -805,26 +814,26 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindOTCItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindOTCItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetOTCComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetOTCComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.True(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -840,6 +849,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_017_GetItemCdError_KinkiUser()
         {
+            int hpId = 1;
             //Setup Data Test
             var kinkiResults = new List<KinkiResultModel>()
             {
@@ -870,7 +880,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["YJ888889"], Is.EqualTo("MockedValueFor_YJ888889"));
@@ -881,7 +891,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_018_GetItemCdError_KinkiUser_KinkiUserErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -902,7 +912,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.True(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -912,6 +922,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_019_GetItemCdError_Day()
         {
+            int hpId = 1;
             //Setup Data Test
             var kinkiResults = new List<DayLimitResultModel>()
             {
@@ -941,7 +952,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["YJ888889"], Is.EqualTo("MockedValueFor_YJ888889"));
@@ -951,7 +962,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_020_GetItemCdError_Day_DayLimitErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            var hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -972,7 +983,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.True(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -981,6 +992,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_021_GetItemCdError_Dosage()
         {
+            int hpId = 1;
             //Setup Data Test
             var dosageResults = new List<DosageResultModel>()
             {
@@ -1013,7 +1025,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary["YJ888889"], Is.EqualTo("MockedValueFor_YJ888889"));
@@ -1024,7 +1036,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_022_GetItemCdError_Dosage_DosageErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -1048,7 +1060,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameDictionary.Count == 0);
@@ -1058,6 +1070,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_023_GetItemCdError_Duplication()
         {
+            int hpId = 1;
             //Setup Data Test
             var duplicationResults = new List<DuplicationResultModel>()
             {
@@ -1088,7 +1101,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameByItemCodeDictionary["8310000001"], Is.EqualTo("MockedValueFor_8310000001"));
@@ -1099,7 +1112,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_024_GetItemCdError_Duplication_DuplicationErrorInfo_IsNull()
         {
             //Setup Data Test
-
+            int hpId = 1;
             var listErrorInfo = new List<UnitCheckInfoModel>()
             {
                 new UnitCheckInfoModel()
@@ -1120,7 +1133,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
-            commonMedicalCheck.GetItemCdError(listErrorInfo);
+            commonMedicalCheck.GetItemCdError(hpId, listErrorInfo);
 
             // Assert
             Assert.That(commonMedicalCheck._itemNameByItemCodeDictionary.Count == 0);
@@ -1773,6 +1786,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_038_ProcessDataForAge_()
         {
+            int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
 
             // Arrange
@@ -1791,7 +1805,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForAge(ages);
+            var result = commonMedicalCheck.ProcessDataForAge(hpId, ages);
 
             // Assert
             Assert.NotNull(result);
@@ -1813,6 +1827,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_039_ProcessDataForAge_LevelInfo_IsNotNull()
         {
+            int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
 
             // Arrange
@@ -1841,7 +1856,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             commonMedicalCheck._itemNameDictionary = new Dictionary<string, string> { { "Yj888888", "Item Name Test 1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForAge(ages);
+            var result = commonMedicalCheck.ProcessDataForAge(hpId, ages);
 
             // Assert
             Assert.NotNull(result);
@@ -1860,10 +1875,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
             Assert.That(errorInfo.ListLevelInfo.First().Title, Is.EqualTo("原則禁忌が望ましい"));
             Assert.That(errorInfo.ListLevelInfo.First().Comment, Is.EqualTo("\r\nWorkingMechanism Test 1\r\n\r\n\r\nWorkingMechanism Test 2\r\n\r\n"));
         }
-
+        
         [Test]
         public void TC_040_ProcessDataForDisease_LevelInfo_IsNotNull()
         {
+            int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
 
             // Arrange
@@ -1912,7 +1928,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             commonMedicalCheck._diseaseNameDictionary = new Dictionary<string, string> { { "Byo999999", "Byotai Name Test 1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDisease(diseaseInfo);
+            var result = commonMedicalCheck.ProcessDataForDisease(hpId, diseaseInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -3887,7 +3903,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                               { "93112346", "Item Mock 2" }
                                                                                              });
 
-            mock.Setup(finder => finder.FindFoodNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindFoodNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => new Dictionary<string, string> {
                                                                                    { "3", "Food Name Mock 1" },
                                                                                    { "4", "Food Name Mock 2" }
@@ -3991,7 +4007,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                               { "93112346", "Item Mock 2" }
                                                                                              });
 
-            mock.Setup(finder => finder.FindDiseaseNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindDiseaseNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => new Dictionary<string, string> {
                                                                                               { "33333", "Byotai Mock 1" },
                                                                                               { "44444", "Byotai Mock 2" }
@@ -4057,28 +4073,28 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindClassName(It.IsAny<string>()))
             .Returns((string input) => ("ClassName_Mocked_Test"));
 
-            mock.Setup(finder => finder.FindSuppleItemNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> input) => new Dictionary<string, string>
                                                                        {
                                                                         { "33333", "Byotai Mock 1" },
                                                                         { "44444", "Byotai Mock 2" }
                                                                        });
 
-            mock.Setup(finder => finder.FindKinkiCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKinkiCommentDic(1, It.IsAny<List<string>>()))
             .Returns((List<string> input) => new Dictionary<string, string>
                                                                        {
                                                                         { "C1234", "Comment Mock 1" },
                                                                         { "C1235", "Comment Mock 2" }
                                                                        });
 
-            mock.Setup(finder => finder.FindKijyoCommentDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindKijyoCommentDic(1, It.IsAny<List<string>>()))
             .Returns((List<string> input) => new Dictionary<string, string>
                                                                        {
                                                                         { "S1234", "Kijyo Mock 1" },
                                                                         { "S1235", "Kijyo Mock 2" }
                                                                        });
 
-            mock.Setup(finder => finder.GetSupplementComponentInfoDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.GetSupplementComponentInfoDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> input) => new Dictionary<string, string>
                                                                        {
                                                                         { "33333", "Supplement Mock 1" },

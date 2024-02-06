@@ -24,10 +24,10 @@ namespace Infrastructure.Repositories
                                                                 && item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
 
             ////Join
-            var joinQuery = from m28DrugMst in NoTrackingDataContext.M28DrugMst
+            var joinQuery = from m28DrugMst in NoTrackingDataContext.M28DrugMst.Where(m => m.HpId == hpId)
                             join tenItem in queryItems
                             on m28DrugMst.KikinCd equals tenItem.ItemCd
-                            join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains
+                            join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains.Where(m => m.HpId == hpId)
                             on m28DrugMst.YjCd equals m34DrugInfoMain.YjCd
                             join tekiouByomei in NoTrackingDataContext.TekiouByomeiMsts
                                on tenItem.ItemCd equals tekiouByomei.ItemCd into listtekiouByomeis

@@ -153,7 +153,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         var images = NoTrackingDataContext.PiImages.Where(p => p.HpId == hpId && p.ItemCd == itemCd).ToList();
         return images;
     }
-
+    
     /// <summary>
     /// Get common data for function GetDrugInfo to speed up performance
     /// </summary>
@@ -172,14 +172,14 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         List<TenMst> tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd))
                                                                .Distinct()
                                                                .ToList();
-
+        
         var yjCdList = tenMstList.Select(item => item.YjCd).Distinct().ToList();
-        List<M34DrugInfoMain> m34DrugInfoMainList = NoTrackingDataContext.M34DrugInfoMains.Where(item => yjCdList.Contains(item.YjCd)).Distinct().ToList();
+        List<M34DrugInfoMain> m34DrugInfoMainList = NoTrackingDataContext.M34DrugInfoMains.Where(item => item.HpId == hpId && yjCdList.Contains(item.YjCd)).Distinct().ToList();
 
         var konoCodes = m34DrugInfoMainList.Select(item => item.KonoCd).Distinct().ToList();
-        List<M34IndicationCode> m34IndicationCodeList = NoTrackingDataContext.M34IndicationCodes.Where(item => konoCodes.Contains(item.KonoCd)).ToList();
-        List<M34Precaution> m34PrecautionList = NoTrackingDataContext.M34Precautions.Where(item => yjCdList.Contains(item.YjCd)).ToList();
-        List<M34PrecautionCode> m34PrecautionCodeList = NoTrackingDataContext.M34PrecautionCodes.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
+        List<M34IndicationCode> m34IndicationCodeList = NoTrackingDataContext.M34IndicationCodes.Where(item => item.HpId == hpId && konoCodes.Contains(item.KonoCd)).ToList();
+        List<M34Precaution> m34PrecautionList = NoTrackingDataContext.M34Precautions.Where(item => item.HpId == hpId && yjCdList.Contains(item.YjCd)).ToList();
+        List<M34PrecautionCode> m34PrecautionCodeList = NoTrackingDataContext.M34PrecautionCodes.Where(pr => pr.HpId == hpId && ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
                                                                                                                || (pr.AgeMax >= age && pr.AgeMin <= age)
                                                                                                                || (pr.AgeMax <= 0 && pr.AgeMin <= age))
                                                                                                              && (pr.SexCd == null

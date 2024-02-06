@@ -10,7 +10,6 @@ using CalculateService.Interface;
 using CalculateService.Receipt.Models;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
-
 namespace CalculateService.Receipt.DB.Finder
 {
     public class ReceMasterFinder
@@ -98,7 +97,7 @@ namespace CalculateService.Receipt.DB.Finder
                 p.IsDeleted == DeleteStatus.None
             );
 
-            var KaYousikis = _tenantDataContext.KacodeReceYousikis.FindListQueryableNoTrack();
+            var KaYousikis = _tenantDataContext.KacodeReceYousikis.FindListQueryableNoTrack(h => h.HpId == hpId);
 
             var join =
                 (

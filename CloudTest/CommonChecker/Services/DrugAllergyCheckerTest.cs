@@ -15,6 +15,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_001_CheckingError_WhenDrugsWithTheSameEffectOfAllergies()
         {
+            int hpId = 999;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -74,7 +75,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -97,6 +98,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_002_CheckingError_WhenNoAllergyMedicineInSpecialNote()
         {
+            int hpId = 999;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -152,7 +154,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -188,7 +190,7 @@ namespace CloudUnitTest.CommonChecker.Services
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -214,6 +216,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_004_CheckingError_IsDuplicatedItemCode()
         {
+            int hpId = 999;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -307,7 +310,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -330,6 +333,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_005_CheckingError_IsDuplicatedItemCode()
         {
+            int hpId = 999;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -422,7 +426,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {
@@ -468,6 +472,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_007_CheckingError_Test_ListDuplicatedItemCode()
         {
+            int hpId = 999;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -559,7 +564,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId,new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {
@@ -589,6 +594,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_008_CheckingError_Test_IsDuplicatedComponentChecked_Is_True()
         {
+            int hpId = 999;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -686,7 +692,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {

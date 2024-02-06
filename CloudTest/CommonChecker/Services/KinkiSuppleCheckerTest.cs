@@ -370,6 +370,7 @@ public class KinkiSuppleCheckerTest : BaseUT
     [Test]
     public void KinkiSuppleChecker_006_Test_ErrorSupple_SettingLevel_Is_1()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -427,7 +428,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
 
         try

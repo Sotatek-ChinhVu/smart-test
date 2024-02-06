@@ -167,7 +167,7 @@ namespace CalculateService.Futan.DB.Finder
             var expHokNos = _tenantDataContext.ExceptHokensyas.FindListQueryableNoTrack(e =>
                 e.HokensyaNo == hokensyaNo
             );
-            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack();
+            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack(h => h.HpId == hpId);
 
             var joinQuery = (
                 from ptKohi in ptKohis

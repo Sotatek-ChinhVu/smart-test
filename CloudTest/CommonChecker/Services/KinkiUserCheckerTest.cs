@@ -19,6 +19,7 @@ public class KinkiUserCheckerTest : BaseUT
     [Test]
     public void Test_001_KinkiUserCheckerTest_WhenCurrentOrderCodeConstantAcdAndCheckingOrderCodeConstantBcd()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
@@ -56,7 +57,7 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
@@ -160,6 +161,7 @@ public class KinkiUserCheckerTest : BaseUT
     [Test]
     public void Test_002_KinkiUserCheckerTest_WhenCurrentOrderCodeConstantBcdAndCheckingOrderCodeConstantAcd()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
@@ -279,7 +281,7 @@ public class KinkiUserCheckerTest : BaseUT
                                                 RealtimeCheckerType.KinkiUser, odrInfoModel, 20230101, 1231);
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -301,6 +303,7 @@ public class KinkiUserCheckerTest : BaseUT
     [Test]
     public void Test_003_KinkiUserCheckerTest_WhenSettingLevelIsFalse()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -340,7 +343,7 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
@@ -467,7 +470,7 @@ public class KinkiUserCheckerTest : BaseUT
         };
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
         try
         {
@@ -515,6 +518,7 @@ public class KinkiUserCheckerTest : BaseUT
     /// </summary>
     public void Test_006_KinkiUserCheckerTest_SettingLevel_0()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
@@ -553,7 +557,7 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
@@ -659,6 +663,7 @@ public class KinkiUserCheckerTest : BaseUT
     /// </summary>
     public void Test_007_KinkiUserCheckerTest_SettingLevel_5()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
@@ -697,7 +702,7 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
@@ -805,6 +810,7 @@ public class KinkiUserCheckerTest : BaseUT
     [Test]
     public void Test_008_KinkiUserCheckerTest_AYjCd_Differrent_BYjCd()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("K08", "K08");
@@ -842,7 +848,7 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "6404K08", "6111K08" }, 20230505, 1231);
+        cache.InitCache(hpId,new List<string>() { "6404K08", "6111K08" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
@@ -949,6 +955,7 @@ public class KinkiUserCheckerTest : BaseUT
     [Test]
     public void Test_009_KinkiUserCheckerTest_SettingLevel_Less_Than_0()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
@@ -987,7 +994,7 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
@@ -1093,6 +1100,7 @@ public class KinkiUserCheckerTest : BaseUT
     /// </summary>
     public void Test_009_KinkiUserCheckerTest_SettingLevel_Is_6()
     {
+        int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
@@ -1131,7 +1139,7 @@ public class KinkiUserCheckerTest : BaseUT
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(hpId,new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiUserChecker.InitFinder(tenantNoTracking, cache);
 
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()

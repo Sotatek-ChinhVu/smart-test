@@ -4,12 +4,13 @@ namespace UseCase.DrugDetailData.ShowMdbByomei
 {
     public class ShowMdbByomeiInputData : IInputData<ShowMdbByomeiOutputData>
     {
-        public ShowMdbByomeiInputData(string itemCd, int level, string drugName, string yJCode)
+        public ShowMdbByomeiInputData(int hpId, string itemCd, int level, string drugName, string yJCode)
         {
             ItemCd = itemCd;
             Level = level;
             DrugName = drugName;
             YJCode = yJCode;
+            HpId = hpId;
         }
 
         public string ItemCd { get; private set; }
@@ -19,5 +20,7 @@ namespace UseCase.DrugDetailData.ShowMdbByomei
         public string DrugName { get; private set; }
 
         public string YJCode { get; private set; }
+
+        public int HpId { get; private set; }
     }
 }

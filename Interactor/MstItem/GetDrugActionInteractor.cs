@@ -16,7 +16,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                var result = _mstItemRepository.GetDrugAction(inputData.YjCd);
+                var result = _mstItemRepository.GetDrugAction(inputData.HpId, inputData.YjCd);
 
                 return new GetDrugActionOutputData(result, GetDrugActionStatus.Successed);
             }

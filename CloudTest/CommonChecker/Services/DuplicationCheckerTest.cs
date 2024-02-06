@@ -15,6 +15,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_001_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderIsNullOrEmpty()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -68,7 +69,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -89,6 +90,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_002_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedItemCode()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -147,7 +149,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -168,6 +170,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_003_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
     {
+        int hpId = 999;
         //Setup
         var currentOrdInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -261,7 +264,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -282,6 +285,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_004_HandleCheckOrder_CheckDuplicationWhenCurrentListOrderAndAddedListOrderIsDuplicatedIppanCode()
     {
+        int hpId = 999;
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //Setup CheckDupicatedSetting
@@ -398,7 +402,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -613,7 +617,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_007_HandleCheckOrder_TestCurrentListOrder_Is_Null()
     {
-        
+        int hpId = 999;
         var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                 RealtimeCheckerType.Duplication, null, 20230101, 1231);
 
@@ -630,7 +634,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -651,7 +655,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_008_HandleCheckOrder_TestCurrentListOrder_Coun_Is_0()
     {
-
+        int hpId = 999;
         var unitCheckerResult = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                 RealtimeCheckerType.Duplication, null, 20230101, 1231);
 
@@ -668,7 +672,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -689,6 +693,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_009_HandleCheckOrder_Test_OdrKouiKbn_Less_Than_21()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -747,7 +752,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -768,6 +773,7 @@ public class DuplicationCheckerTest : BaseUT
     [Test]
     public void DuplicationCheck_010_HandleCheckOrder_Test_OdrKouiKbn_More_Than_23()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -826,7 +832,7 @@ public class DuplicationCheckerTest : BaseUT
         duplicationChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
         duplicationChecker.InitFinder(tenantNoTracking, cache);
 
         // Act

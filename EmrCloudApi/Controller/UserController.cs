@@ -127,7 +127,7 @@ public class UserController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListFunctionPermission)]
     public ActionResult<Response<GetListFunctionPermissionResponse>> GetListFunctionPermission()
     {
-        var input = new GetListFunctionPermissionInputData();
+        var input = new GetListFunctionPermissionInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetListFunctionPermissionPresenter();
         presenter.Complete(output);

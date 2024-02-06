@@ -9,6 +9,10 @@ namespace Entity.Tenant
     [Index(nameof(KikinCd), nameof(YjCd), nameof(FoodKbn), nameof(TenpuLevel), Name = "m12_food_alrgy_idx01")]
     public class M12FoodAlrgy : EmrCloneable<M12FoodAlrgy>
     {
+
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 基金コード
         /// 

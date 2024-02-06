@@ -54,7 +54,7 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails;
         var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.DrugKbn > 0);
         var yakkaSyusaiMsts = NoTrackingDataContext.YakkaSyusaiMsts;
-        var drugUnitConvs = NoTrackingDataContext.DrugUnitConvs;
+        var drugUnitConvs = NoTrackingDataContext.DrugUnitConvs.Where(d => d.HpId == hpId);
 
         var odrDrugJoinQuery = (
             from odrInf in odrInfs

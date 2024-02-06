@@ -11,10 +11,10 @@ namespace CommonChecker.DB
 
         }
 
-        public string FindAgeComment(string commentCode)
+        public string FindAgeComment(int hpId, string commentCode)
         {
             string ageComment = string.Empty;
-            var ageCommentInfo = NoTrackingDataContext.M14CmtCode.FirstOrDefault(i => i.AttentionCmtCd == commentCode);
+            var ageCommentInfo = NoTrackingDataContext.M14CmtCode.FirstOrDefault(i => i.HpId == hpId && i.AttentionCmtCd == commentCode);
             if (ageCommentInfo != null)
             {
                 ageComment = ageCommentInfo.AttentionCmt ?? string.Empty;
@@ -79,10 +79,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindDiseaseComment(string commentCode)
+        public string FindDiseaseComment(int hpId, string commentCode)
         {
             string diseaseComment = string.Empty;
-            var diseaseCommentInfo = NoTrackingDataContext.M42ContraCmt.FirstOrDefault(i => i.CmtCd == commentCode);
+            var diseaseCommentInfo = NoTrackingDataContext.M42ContraCmt.FirstOrDefault(i => i.HpId == hpId && i.CmtCd == commentCode);
             if (diseaseCommentInfo != null)
             {
                 diseaseComment = diseaseCommentInfo.Cmt ?? string.Empty;
@@ -90,10 +90,10 @@ namespace CommonChecker.DB
             return diseaseComment;
         }
 
-        public string FindDiseaseName(string byotaiCd)
+        public string FindDiseaseName(int hpId, string byotaiCd)
         {
             string diseaseName = string.Empty;
-            var diseaseInfo = NoTrackingDataContext.M42ContraindiDisCon.FirstOrDefault(i => i.ByotaiCd == byotaiCd);
+            var diseaseInfo = NoTrackingDataContext.M42ContraindiDisCon.FirstOrDefault(i => i.HpId == hpId && i.ByotaiCd == byotaiCd);
             if (diseaseInfo != null)
             {
                 diseaseName = diseaseInfo.Byomei ?? string.Empty;
@@ -101,11 +101,11 @@ namespace CommonChecker.DB
             return diseaseName;
         }
 
-        public Dictionary<string, string> FindDiseaseNameDic(List<string> byotaiCdList)
+        public Dictionary<string, string> FindDiseaseNameDic(int hpId, List<string> byotaiCdList)
         {
             byotaiCdList = byotaiCdList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var diseaseInfoList = NoTrackingDataContext.M42ContraindiDisCon.Where(item => byotaiCdList.Contains(item.ByotaiCd)).ToList();
+            var diseaseInfoList = NoTrackingDataContext.M42ContraindiDisCon.Where(item => item.HpId == hpId && byotaiCdList.Contains(item.ByotaiCd)).ToList();
             foreach (var byotaiCd in byotaiCdList)
             {
                 result.Add(byotaiCd, diseaseInfoList.FirstOrDefault(item => item.ByotaiCd == byotaiCd)?.Byomei ?? string.Empty);
@@ -136,10 +136,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindFoodName(string foodCode)
+        public string FindFoodName(int hpId, string foodCode)
         {
             string foodName = string.Empty;
-            var foodInfo = NoTrackingDataContext.M12FoodAlrgyKbn.FirstOrDefault(i => i.FoodKbn == foodCode);
+            var foodInfo = NoTrackingDataContext.M12FoodAlrgyKbn.FirstOrDefault(i => i.FoodKbn == foodCode && i.HpId == hpId);
             if (foodInfo != null)
             {
                 foodName = foodInfo.FoodName ?? string.Empty;
@@ -147,11 +147,11 @@ namespace CommonChecker.DB
             return foodName;
         }
 
-        public Dictionary<string, string> FindFoodNameDic(List<string> foodCodeList)
+        public Dictionary<string, string> FindFoodNameDic(int hpId, List<string> foodCodeList)
         {
             foodCodeList = foodCodeList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var foodInfoList = NoTrackingDataContext.M12FoodAlrgyKbn.Where(i => foodCodeList.Contains(i.FoodKbn)).ToList();
+            var foodInfoList = NoTrackingDataContext.M12FoodAlrgyKbn.Where(i => i.HpId == hpId && foodCodeList.Contains(i.FoodKbn)).ToList();
             foreach (var foodKbn in foodCodeList)
             {
                 result.Add(foodKbn, foodInfoList.FirstOrDefault(item => item.FoodKbn == foodKbn)?.FoodName ?? string.Empty);
@@ -201,10 +201,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindKijyoComment(string commentCode)
+        public string FindKijyoComment(int hpId, string commentCode)
         {
             string kijyoComment = string.Empty;
-            var kijyoCommentInfo = NoTrackingDataContext.M01KijyoCmt.FirstOrDefault(i => i.CmtCd == commentCode);
+            var kijyoCommentInfo = NoTrackingDataContext.M01KijyoCmt.FirstOrDefault(i => i.HpId == hpId && i.CmtCd == commentCode);
             if (kijyoCommentInfo != null)
             {
                 kijyoComment = kijyoCommentInfo.Cmt ?? string.Empty;
@@ -212,11 +212,11 @@ namespace CommonChecker.DB
             return kijyoComment;
         }
 
-        public Dictionary<string, string> FindKijyoCommentDic(List<string> commentCodeList)
+        public Dictionary<string, string> FindKijyoCommentDic(int hpId, List<string> commentCodeList)
         {
             commentCodeList = commentCodeList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var kijyoCommentInfo = NoTrackingDataContext.M01KijyoCmt.Where(i => commentCodeList.Contains(i.CmtCd)).ToList();
+            var kijyoCommentInfo = NoTrackingDataContext.M01KijyoCmt.Where(i => i.HpId == hpId && commentCodeList.Contains(i.CmtCd)).ToList();
             foreach (var cmtCd in commentCodeList)
             {
                 result.Add(cmtCd, kijyoCommentInfo.FirstOrDefault(item => item.CmtCd == cmtCd)?.Cmt ?? string.Empty);
@@ -224,10 +224,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindKinkiComment(string commentCode)
+        public string FindKinkiComment(int hpId, string commentCode)
         {
             string kinkiComment = string.Empty;
-            var kinkiCommentInfo = NoTrackingDataContext.M01KinkiCmt.FirstOrDefault(i => i.CmtCd == commentCode);
+            var kinkiCommentInfo = NoTrackingDataContext.M01KinkiCmt.FirstOrDefault(i => i.HpId == hpId && i.CmtCd == commentCode);
             if (kinkiCommentInfo != null)
             {
                 kinkiComment = kinkiCommentInfo.Cmt ?? string.Empty;
@@ -235,11 +235,11 @@ namespace CommonChecker.DB
             return kinkiComment;
         }
 
-        public Dictionary<string, string> FindKinkiCommentDic(List<string> commentCodeList)
+        public Dictionary<string, string> FindKinkiCommentDic(int hpId, List<string> commentCodeList)
         {
             commentCodeList = commentCodeList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var kinkiCommentInfo = NoTrackingDataContext.M01KinkiCmt.Where(item => commentCodeList.Contains(item.CmtCd)).ToList();
+            var kinkiCommentInfo = NoTrackingDataContext.M01KinkiCmt.Where(item => item.HpId == hpId && commentCodeList.Contains(item.CmtCd)).ToList();
             foreach (var cmtCd in commentCodeList)
             {
                 result.Add(cmtCd, kinkiCommentInfo.FirstOrDefault(item => item.CmtCd == cmtCd)?.Cmt ?? string.Empty);
@@ -247,10 +247,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindOTCItemName(int serialNum)
+        public string FindOTCItemName(int hpId, int serialNum)
         {
             string oTCITemName = string.Empty;
-            var oTCITemNameInfo = NoTrackingDataContext.M38OtcMain.FirstOrDefault(i => i.SerialNum == serialNum);
+            var oTCITemNameInfo = NoTrackingDataContext.M38OtcMain.FirstOrDefault(i => i.HpId == hpId && i.SerialNum == serialNum);
             if (oTCITemNameInfo != null)
             {
                 oTCITemName = oTCITemNameInfo.TradeName ?? string.Empty;
@@ -258,11 +258,11 @@ namespace CommonChecker.DB
             return oTCITemName;
         }
 
-        public Dictionary<string, string> FindOTCItemNameDic(List<string> serialNumList)
+        public Dictionary<string, string> FindOTCItemNameDic(int hpId, List<string> serialNumList)
         {
             serialNumList = serialNumList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var oTCITemNameInfoList = NoTrackingDataContext.M38OtcMain.Where(i => serialNumList.Contains(i.SerialNum.ToString())).ToList();
+            var oTCITemNameInfoList = NoTrackingDataContext.M38OtcMain.Where(i => i.HpId == hpId && serialNumList.Contains(i.SerialNum.ToString())).ToList();
             foreach (var serialNum in serialNumList)
             {
                 result.Add(serialNum, oTCITemNameInfoList.FirstOrDefault(item => item.SerialNum.ToString() == serialNum)?.TradeName ?? string.Empty);
@@ -270,10 +270,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindSuppleItemName(string seibunCd)
+        public string FindSuppleItemName(int hpId, string seibunCd)
         {
             string suppleItemName = string.Empty;
-            var suppleItemNameInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
+            var suppleItemNameInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.HpId == hpId && i.SeibunCd == seibunCd);
             if (suppleItemNameInfo != null)
             {
                 suppleItemName = suppleItemNameInfo.Seibun ?? string.Empty;
@@ -281,11 +281,11 @@ namespace CommonChecker.DB
             return suppleItemName;
         }
 
-        public Dictionary<string, string> FindSuppleItemNameDic(List<string> seibunCdList)
+        public Dictionary<string, string> FindSuppleItemNameDic(int hpId, List<string> seibunCdList)
         {
             seibunCdList = seibunCdList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var suppleItemNameInfoList = NoTrackingDataContext.M41SuppleIngres.Where(i => seibunCdList.Contains(i.SeibunCd)).ToList();
+            var suppleItemNameInfoList = NoTrackingDataContext.M41SuppleIngres.Where(i => i.HpId == hpId && seibunCdList.Contains(i.SeibunCd)).ToList();
             foreach (var seibunCd in seibunCdList)
             {
                 result.Add(seibunCd, suppleItemNameInfoList.FirstOrDefault(item => item.SeibunCd == seibunCd)?.Seibun ?? string.Empty);
@@ -293,17 +293,17 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string GetOTCComponentInfo(string seibunCd)
+        public string GetOTCComponentInfo(int hpId, string seibunCd)
         {
-            var otcComponentInfo = NoTrackingDataContext.M38IngCode.FirstOrDefault(i => i.SeibunCd == seibunCd);
+            var otcComponentInfo = NoTrackingDataContext.M38IngCode.FirstOrDefault(i => i.SeibunCd == seibunCd && i.HpId == hpId);
             return otcComponentInfo != null ? otcComponentInfo.Seibun ?? string.Empty : string.Empty;
         }
 
-        public Dictionary<string, string> GetOTCComponentInfoDic(List<string> seibunCdList)
+        public Dictionary<string, string> GetOTCComponentInfoDic(int hpId, List<string> seibunCdList)
         {
             seibunCdList = seibunCdList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var otcComponentInfoList = NoTrackingDataContext.M38IngCode.Where(i => seibunCdList.Contains(i.SeibunCd)).ToList();
+            var otcComponentInfoList = NoTrackingDataContext.M38IngCode.Where(i => i.HpId == hpId && seibunCdList.Contains(i.SeibunCd)).ToList();
             foreach (var seibunCd in seibunCdList)
             {
                 result.Add(seibunCd, otcComponentInfoList.FirstOrDefault(item => item.SeibunCd == seibunCd)?.Seibun ?? string.Empty);
@@ -311,17 +311,17 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string GetSupplementComponentInfo(string seibunCd)
+        public string GetSupplementComponentInfo(int hpId, string seibunCd)
         {
-            var supplementComponentInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
+            var supplementComponentInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.HpId == hpId && i.SeibunCd == seibunCd);
             return supplementComponentInfo != null ? supplementComponentInfo.Seibun ?? string.Empty : string.Empty;
         }
 
-        public Dictionary<string, string> GetSupplementComponentInfoDic(List<string> seibunCdList)
+        public Dictionary<string, string> GetSupplementComponentInfoDic(int hpId, List<string> seibunCdList)
         {
             seibunCdList = seibunCdList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var supplementComponentInfo = NoTrackingDataContext.M41SuppleIngres.Where(item => seibunCdList.Contains(item.SeibunCd)).ToList();
+            var supplementComponentInfo = NoTrackingDataContext.M41SuppleIngres.Where(item => item.HpId == hpId && seibunCdList.Contains(item.SeibunCd)).ToList();
             foreach (var seibunCd in seibunCdList)
             {
                 result.Add(seibunCd, supplementComponentInfo.FirstOrDefault(item => item.SeibunCd == seibunCd)?.Seibun ?? string.Empty);

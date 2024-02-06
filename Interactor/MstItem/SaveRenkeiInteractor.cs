@@ -49,7 +49,7 @@ public class SaveRenkeiInteractor : ISaveRenkeiInputPort
     {
         var renkeiMstModelList = _mstItemRepository.GetRenkeiMstModels(inputData.HpId);
         var renkeiTemplateMstModelList = _mstItemRepository.GetRenkeiTemplateMstModels(inputData.HpId);
-        var eventMstModelList = _mstItemRepository.GetEventMstModelList();
+        var eventMstModelList = _mstItemRepository.GetEventMstModelList(inputData.HpId);
         foreach (var tab in inputData.RenkeiTabList)
         {
             if (tab.renkeiSbt < 0 || tab.renkeiSbt > 1)

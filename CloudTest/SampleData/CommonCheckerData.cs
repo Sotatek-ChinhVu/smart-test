@@ -576,6 +576,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m10Day = new M10DayLimit();
+                        m10Day.HpId = 1;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -634,6 +635,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m42 = new M42ContraindiDisCon();
+                        m42.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -694,6 +696,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m42 = new M42ContraindiDrugMainEx();
+                        m42.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1237,6 +1240,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m12FoodAlrgy = new M12FoodAlrgy();
+                        m12FoodAlrgy.HpId = 1;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1392,6 +1396,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m38Ingredient = new M38Ingredients();
+                        m38Ingredient.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1539,6 +1544,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m41SuppleIndexdef = new M41SuppleIndexdef();
+                        m41SuppleIndexdef.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1589,6 +1595,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m41SuppleIndexcode = new M41SuppleIndexcode();
+                        m41SuppleIndexcode.HpId = 999;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1636,6 +1643,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m01Kinki = new M01Kinki();
+                        m01Kinki.HpId = 1;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -1789,6 +1797,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m14 = new M14AgeCheck();
+                        m14.HpId = 1;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;

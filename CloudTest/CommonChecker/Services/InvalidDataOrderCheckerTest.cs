@@ -266,6 +266,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckInvalidDataOrder_008_HandleCheckOrder_Test_ItemCd_Is_Con_Refill()
         {
+            int hpId = 999;
             //Setup
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
@@ -315,7 +316,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var cache = new MasterDataCacheService(TenantProvider);
 
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
 
             try
@@ -344,6 +345,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckInvalidDataOrder_009_HandleCheckOrder_Test_ItemCd_Is_Con_Refill()
         {
+            int hpId = 999;
             //Setup
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
@@ -393,7 +395,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var cache = new MasterDataCacheService(TenantProvider);
 
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
 
             try
@@ -423,6 +425,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckInvalidDataOrder_010_HandleCheckOrder_Test_RefillSetting()
         {
+            int hpId = 999;
             //Setup
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
@@ -472,7 +475,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var cache = new MasterDataCacheService(TenantProvider);
 
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
             invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
 
             try

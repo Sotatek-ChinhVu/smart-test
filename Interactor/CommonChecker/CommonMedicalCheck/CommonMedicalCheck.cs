@@ -81,7 +81,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         unitChecker.InitFinder(_tenantProvider.GetNoTrackingDataContext(), _masterDataCacheService);
     }
 
-    private void InitTenMstCache(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
+    private void InitTenMstCache(int hpId, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
     {
         List<string> itemCodeList = new List<string>();
 
@@ -94,7 +94,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             itemCodeList.AddRange(order.OdrInfDetailModelsIgnoreEmpty.Select(i => i.ItemCd).ToList());
         }
-        _masterDataCacheService.InitCache(itemCodeList.Distinct().ToList(), _sinday, _ptID);
+        _masterDataCacheService.InitCache(hpId, itemCodeList.Distinct().ToList(), _sinday, _ptID);
     }
 
     public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb, RealTimeCheckerCondition realTimeCheckerCondition)
@@ -107,7 +107,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
 
-        InitTenMstCache(currentListOdr, listCheckingOrder);
+        InitTenMstCache(hpId, currentListOdr, listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -170,7 +170,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
         List<OrdInfoModel> tempCurrentListOdr = new();
 
-        InitTenMstCache(new List<OrdInfoModel>(), listCheckingOrder);
+        InitTenMstCache(hpId, new List<OrdInfoModel>(), listCheckingOrder);
 
         listCheckingOrder.ForEach((order) =>
         {
@@ -539,7 +539,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _ptID = ptId;
         _sinday = sinday;
 
-        GetItemCdError(listErrorInfo);
+        GetItemCdError(hpId, listErrorInfo);
 
         List<ErrorInfoModel> listErrorInfoModel = new();
         listErrorInfo.ForEach((errorInfo) =>
@@ -564,14 +564,14 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                     List<AgeResultModel>? ageErrorInfo = errorInfo.ErrorInfo as List<AgeResultModel>;
                     if (ageErrorInfo != null)
                     {
-                        listErrorInfoModel.AddRange(ProcessDataForAge(ageErrorInfo));
+                        listErrorInfoModel.AddRange(ProcessDataForAge(hpId, ageErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Disease:
                     List<DiseaseResultModel>? diseaseErrorInfo = errorInfo.ErrorInfo as List<DiseaseResultModel>;
                     if (diseaseErrorInfo != null)
                     {
-                        listErrorInfoModel.AddRange(ProcessDataForDisease(diseaseErrorInfo));
+                        listErrorInfoModel.AddRange(ProcessDataForDisease(hpId, diseaseErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Kinki:
@@ -618,7 +618,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listErrorInfoModel;
     }
 
-    public void GetItemCdError(List<UnitCheckInfoModel> listErrorInfo)
+    public void GetItemCdError(int hpId, List<UnitCheckInfoModel> listErrorInfo)
     {
         List<string> itemNameList = new();
         List<string> componentNameList = new();
@@ -743,14 +743,14 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         _componentNameDictionary = componentNameList.Any() ? _realtimeOrderErrorFinder.FindComponentNameDic(componentNameList) : new();
         _analogueNameDictionary = analogueNameList.Any() ? _realtimeOrderErrorFinder.FindAnalogueNameDic(analogueNameList) : new();
         _drvalrgyNameDictionary = drvalrgyNameList.Any() ? _realtimeOrderErrorFinder.FindDrvalrgyNameDic(drvalrgyNameList) : new();
-        _foodNameDictionary = foodNameList.Any() ? _realtimeOrderErrorFinder.FindFoodNameDic(foodNameList) : new();
-        _diseaseNameDictionary = diseaseNameList.Any() ? _realtimeOrderErrorFinder.FindDiseaseNameDic(diseaseNameList) : new();
-        _kinkiCommentDictionary = kinkiCommentList.Any() ? _realtimeOrderErrorFinder.FindKinkiCommentDic(kinkiCommentList) : new();
-        _kijyoCommentDictionary = kijyoCommentList.Any() ? _realtimeOrderErrorFinder.FindKijyoCommentDic(kijyoCommentList) : new();
-        _oTCItemNameDictionary = oTCItemNameList.Any() ? _realtimeOrderErrorFinder.FindOTCItemNameDic(oTCItemNameList) : new();
-        _oTCComponentInfoDictionary = oTCComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetOTCComponentInfoDic(oTCComponentInfoList) : new();
-        _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(supplementComponentInfoList) : new();
-        _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(suppleItemNameList) : new();
+        _foodNameDictionary = foodNameList.Any() ? _realtimeOrderErrorFinder.FindFoodNameDic(hpId, foodNameList) : new();
+        _diseaseNameDictionary = diseaseNameList.Any() ? _realtimeOrderErrorFinder.FindDiseaseNameDic(hpId, diseaseNameList) : new();
+        _kinkiCommentDictionary = kinkiCommentList.Any() ? _realtimeOrderErrorFinder.FindKinkiCommentDic(hpId,kinkiCommentList) : new();
+        _kijyoCommentDictionary = kijyoCommentList.Any() ? _realtimeOrderErrorFinder.FindKijyoCommentDic(hpId, kijyoCommentList) : new();
+        _oTCItemNameDictionary = oTCItemNameList.Any() ? _realtimeOrderErrorFinder.FindOTCItemNameDic(hpId, oTCItemNameList) : new(); 
+        _oTCComponentInfoDictionary = oTCComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetOTCComponentInfoDic(hpId, oTCComponentInfoList) : new();
+        _supplementComponentInfoDictionary = supplementComponentInfoList.Any() ? _realtimeOrderErrorFinder.GetSupplementComponentInfoDic(hpId, supplementComponentInfoList) : new();
+        _suppleItemNameDictionary = suppleItemNameList.Any() ? _realtimeOrderErrorFinder.FindSuppleItemNameDic(hpId, suppleItemNameList) : new();
         _usageDosageDictionary = usageDosageList.Any() ? _realtimeOrderErrorFinder.GetUsageDosageDic(usageDosageList) : new();
         _itemNameByItemCodeDictionary = itemNameByItemCodeList.Any() ? _realtimeOrderErrorFinder.FindItemNameByItemCodeDic(itemNameByItemCodeList, _sinday) : new();
     }
@@ -958,7 +958,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForAge
-    public List<ErrorInfoModel> ProcessDataForAge(List<AgeResultModel> ages)
+    public List<ErrorInfoModel> ProcessDataForAge(int hpId, List<AgeResultModel> ages)
     {
         List<ErrorInfoModel> result = new List<ErrorInfoModel>();
         var errorGroup = (from a in ages
@@ -989,7 +989,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             foreach (var item in tempData)
             {
                 int level = item.TenpuLevel.AsInteger();
-                string attention = _realtimeOrderErrorFinder.FindAgeComment(item.AttentionCmtCd);
+                string attention = _realtimeOrderErrorFinder.FindAgeComment(hpId, item.AttentionCmtCd);
                 LevelInfoModel? levelInfo = _listLevelInfo.FirstOrDefault(c => c.Level == level);
                 if (levelInfo == null)
                 {
@@ -1025,7 +1025,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     #endregion
 
     #region ProcessDataForDisease
-    public List<ErrorInfoModel> ProcessDataForDisease(List<DiseaseResultModel> diseaseInfo)
+    public List<ErrorInfoModel> ProcessDataForDisease(int hpId, List<DiseaseResultModel> diseaseInfo)
     {
         string DiseaseTypeName(int DiseaseType)
         {
@@ -1091,9 +1091,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 levelInfoModel.Title = LevelConfig.DiseaseSource[level][2];
                 StringBuilder commentStringBuilder = new();
                 commentStringBuilder.Append(levelInfoModel.Comment);
-                commentStringBuilder.Append(_realtimeOrderErrorFinder.FindDiseaseComment(item.CmtCd));
+                commentStringBuilder.Append(_realtimeOrderErrorFinder.FindDiseaseComment(hpId, item.CmtCd));
                 commentStringBuilder.Append(Environment.NewLine);
-                commentStringBuilder.Append(_realtimeOrderErrorFinder.FindDiseaseComment(item.KijyoCd));
+                commentStringBuilder.Append(_realtimeOrderErrorFinder.FindDiseaseComment(hpId, item.KijyoCd));
                 commentStringBuilder.Append(Environment.NewLine);
                 commentStringBuilder.Append(Environment.NewLine);
                 levelInfoModel.Comment = commentStringBuilder.ToString();

@@ -6,11 +6,15 @@ namespace Entity.Tenant
     [Table(name: "drug_unit_conv")]
     public class DrugUnitConv : EmrCloneable<DrugUnitConv>
     {
+        
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 項目コード
         /// 
         /// </summary>
-        
+
         [Column("item_cd", Order = 1)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;

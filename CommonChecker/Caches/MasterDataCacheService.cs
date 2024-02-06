@@ -31,14 +31,14 @@ namespace CommonChecker.Caches
             _systemConfig = new SystemConfig(tenantProvider.GetNoTrackingDataContext());
         }
 
-        public void InitCache(List<string> itemCodeList, int sinday, long ptId)
+        public void InitCache(int hpId, List<string> itemCodeList, int sinday, long ptId)
         {
             _sinday = sinday;
             _ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId && p.IsDelete == 0);
-            AddCacheList(itemCodeList);
+            AddCacheList(hpId, itemCodeList);
         }
 
-        private void AddCacheList(List<string> itemCodeList)
+        private void AddCacheList(int hpId, List<string> itemCodeList)
         {
             if (itemCodeList == null || itemCodeList.Count == 0)
             {
@@ -88,29 +88,29 @@ namespace CommonChecker.Caches
 
             _dosageDrugList.AddRange(dosageDrugListTemp);
             _dosageMstList.AddRange(NoTrackingDataContext.DosageMsts.Where(d => d.IsDeleted == 0 && itemCodeList.Contains(d.ItemCd)).ToList());
-            _dosageDosageList.AddRange(NoTrackingDataContext.DosageDosages.Where(d => string.IsNullOrEmpty(d.KyugenCd) && 
+            _dosageDosageList.AddRange(NoTrackingDataContext.DosageDosages.Where(d => d.HpId == hpId && string.IsNullOrEmpty(d.KyugenCd) && 
                                                                                       d.DosageCheckFlg == "1" &&
                                                                                       doeiCdList.Contains(d.DoeiCd)).ToList());
             #endregion
         }
 
-        public List<DosageDrug> GetDosageDrugList(List<string> itemCodeList)
+        public List<DosageDrug> GetDosageDrugList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             return _dosageDrugList;
         }
         
-        public List<DosageMst> GetDosageMstList(List<string> itemCodeList)
+        public List<DosageMst> GetDosageMstList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             return _dosageMstList;
         }
         
-        public List<DosageDosage> GetDosageDosageList(List<string> itemCodeList)
+        public List<DosageDosage> GetDosageDosageList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             return _dosageDosageList;
         }
@@ -120,7 +120,7 @@ namespace CommonChecker.Caches
             return _systemConfig;
         }
 
-        private void AddCacheIfNeed(List<string> itemCodeList)
+        private void AddCacheIfNeed(int hpId, List<string> itemCodeList)
         {
             List<string> itemCodeListNotCache = itemCodeList.Where(i => !_itemCodeCacheList.Contains(i)).ToList();
             if (itemCodeListNotCache == null || 
@@ -128,53 +128,53 @@ namespace CommonChecker.Caches
             {
                 return;
             }
-            AddCacheList(itemCodeListNotCache);
+            AddCacheList(hpId, itemCodeListNotCache);
         }
 
-        public TenMst? GetTenMst(string itemCode)
+        public TenMst? GetTenMst(int hpId, string itemCode)
         {
-            AddCacheIfNeed(new List<string>() { itemCode });
+            AddCacheIfNeed(hpId, new List<string>() { itemCode });
 
             return _tenMstCacheList.FirstOrDefault(t => itemCode == t.ItemCd);
         }
 
-        public List<TenMst> GetTenMstList(List<string> itemCodeList)
+        public List<TenMst> GetTenMstList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             return _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).ToList();
         }
 
-        public List<M56ExIngrdtMain> GetM56ExIngrdtMainList(List<string> itemCodeList)
+        public List<M56ExIngrdtMain> GetM56ExIngrdtMainList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             var yjCdList = _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).Select(t => t.YjCd).ToList();
 
             return _m56ExIngrdtMainList.Where(t => yjCdList.Contains(t.YjCd)).ToList();
         }
 
-        public List<M56YjDrugClass> GetM56YjDrugClassList(List<string> itemCodeList)
+        public List<M56YjDrugClass> GetM56YjDrugClassList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             var yjCdList = _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).Select(t => t.YjCd).ToList();
 
             return _m56YjDrugClassList.Where(t => yjCdList.Contains(t.YjCd)).ToList();
         }
 
-        public List<M56ExEdIngredients> GetM56ExEdIngredientList(List<string> itemCodeList)
+        public List<M56ExEdIngredients> GetM56ExEdIngredientList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             var yjCdList = _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).Select(t => t.YjCd).ToList();
 
             return _m56ExEdIngredientList.Where(t => yjCdList.Contains(t.YjCd)).ToList();
         }
 
-        public List<M56ProdrugCd> GetM56ProdrugCdList(List<string> itemCodeList)
+        public List<M56ProdrugCd> GetM56ProdrugCdList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             var yjCdList = _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).Select(t => t.YjCd).ToList();
             var componentList = _m56ExEdIngredientList.Where(t => yjCdList.Contains(t.YjCd)).ToList();
@@ -183,18 +183,18 @@ namespace CommonChecker.Caches
             return _m56ProdrugCdList.Where(m => seibunCdList.Contains(m.SeibunCd)).ToList();
         }
 
-        public List<M56DrugClass> GetM56DrugClassList(List<string> itemCodeList)
+        public List<M56DrugClass> GetM56DrugClassList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
-            var classCdList = GetM56YjDrugClassList(itemCodeList).Select(y => y.ClassCd).Distinct().ToList();
+            var classCdList = GetM56YjDrugClassList(hpId, itemCodeList).Select(y => y.ClassCd).Distinct().ToList();
 
             return _m56DrugClassList.Where(d => classCdList.Contains(d.ClassCd)).ToList();
         }
 
-        public List<M56ExAnalogue> GetM56ExAnalogueList(List<string> itemCodeList)
+        public List<M56ExAnalogue> GetM56ExAnalogueList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             var yjCdList = _tenMstCacheList.Where(t => itemCodeList.Contains(t.ItemCd)).Select(t => t.YjCd).ToList();
             var componentList = _m56ExEdIngredientList.Where(t => yjCdList.Contains(t.YjCd)).ToList();
@@ -203,9 +203,9 @@ namespace CommonChecker.Caches
             return _m56ExAnalogueList.Where(m => seibunCdList.Contains(m.SeibunCd)).ToList();
         }
 
-        public List<KinkiMst> GetKinkiMstList(List<string> itemCodeList)
+        public List<KinkiMst> GetKinkiMstList(int hpId, List<string> itemCodeList)
         {
-            AddCacheIfNeed(itemCodeList);
+            AddCacheIfNeed(hpId, itemCodeList);
 
             return _kinkiMstList;
         }
