@@ -264,7 +264,7 @@ namespace CalculateService.Ika.ViewModels
                 _common.Wrk.wrkSinRpInfs.FindAll(p => 
                     p.RaiinNo == _common.raiinNo && 
                     p.HokenKbn == _common.hokenKbn &&
-                    p.IsDeleted == 0);
+                    (p.IsDeleted == 0 || p.EfFlg == 1));
 
             #region local method 領収証に表示する算定項目があるかチェックする関数
             bool _existDspMeisai()
@@ -310,7 +310,7 @@ namespace CalculateService.Ika.ViewModels
                 _common.Wrk.wrkSinRpInfs.FindAll(p =>
                     p.RaiinNo == _common.raiinNo &&
                     p.HokenKbn == _common.hokenKbn &&
-                    p.IsDeleted == 0);
+                    (p.IsDeleted == 0 || p.EfFlg == 1));
             }
             else if(_existDspMeisai() == false)
             {
@@ -323,7 +323,7 @@ namespace CalculateService.Ika.ViewModels
                 _common.Wrk.wrkSinRpInfs.FindAll(p =>
                     p.RaiinNo == _common.raiinNo &&
                     p.HokenKbn == _common.hokenKbn &&
-                    p.IsDeleted == 0);
+                    (p.IsDeleted == 0 || p.EfFlg == 1));
             }
 
             // 消費税項目の保険PID,ID
@@ -345,8 +345,8 @@ namespace CalculateService.Ika.ViewModels
                 List<WrkSinKouiModel> wrkSinKouis = 
                     _common.Wrk.wrkSinKouis.FindAll(p => 
                         p.RaiinNo == _common.raiinNo && 
-                        p.RpNo == wrkSinRp.RpNo && 
-                        p.IsDeleted == 0);
+                        p.RpNo == wrkSinRp.RpNo &&
+                        (p.IsDeleted == 0 || p.EfFlg == 1));
 
                 // 合計点数
                 double totalTen = 0;
@@ -482,11 +482,11 @@ namespace CalculateService.Ika.ViewModels
                             // 自費算定分の金額 = 行為の合計点数 - 自費項目の合計金額（課税・非課税）
                             if (_common.Sin.SinKouis.Last().EntenKbn == 0)
                             {
-                                jihiSanteiTotal += _common.Sin.SinKouis.Last().Ten * 10;
+                                jihiSanteiTotal += _common.Sin.SinKouis.Last().TotalTen * 10;
                             }
                             else
                             {
-                                jihiSanteiTotal += _common.Sin.SinKouis.Last().Ten;
+                                jihiSanteiTotal += _common.Sin.SinKouis.Last().TotalTen;
                             }
 
                             if (_common.Mst.GetJihisanteiKazei() == 1)
@@ -515,6 +515,36 @@ namespace CalculateService.Ika.ViewModels
                 foreach(SinKouiModel sinKoui in _common.Sin.SinKouis.FindAll(p=>p.KeyNo == sinRpInf.KeyNo))
                 {
                     // Rpの行為
+
+                    // EF用データを準備
+                    if (sinKoui.EfDone == false)
+                    {
+                        sinKoui.EfTen = sinKoui.Ten;
+                        sinKoui.EfTotalTen = sinKoui.TotalTen;
+                        sinKoui.EfTenCount = sinKoui.TenCount;
+                        sinKoui.EfDone = true;
+                    }
+
+                    if ((sinKoui.EfFlg == 1) || sinKoui.InoutKbn == 1)
+                    {
+                        // EF項目または院外処方
+                        sinKoui.Ten = 0;
+                        sinKoui.TotalTen = 0;
+                    }
+
+                    foreach (SinKouiDetailModel sinDtl in _common.Sin.SinKouiDetails.FindAll(p => p.KeyNo == sinRpInf.KeyNo && p.SeqNo == sinKoui.SeqNo))
+                    {
+                        if ((sinDtl.EfDone == false) && !(sinDtl.FmtKbn == 1  && sinDtl.EfTen > 0))
+                        {
+                            sinDtl.EfTen = sinDtl.Ten;
+                            sinDtl.EfDone = true;
+                        }
+
+                        if (sinDtl.EfFlg == 1 || sinDtl.TenZero)
+                        {
+                            sinDtl.Ten = 0;
+                        }
+                    }
 
                     // 行為の詳細データを取得
                     sinKoui.DetailData = _common.Sin.GetDetailData(sinKoui);
@@ -906,6 +936,34 @@ namespace CalculateService.Ika.ViewModels
 
             }
 
+            //foreach (SinRpInfModel sinRpInf in _common.Sin.SinRpInfs.FindAll(p=>p.UpdateState == UpdateStateConst.Add))
+            //{
+            //    foreach(SinKouiModel sinKoui in _common.Sin.SinKouis.FindAll(p => p.KeyNo == sinRpInf.KeyNo))
+            //    {
+            //        sinKoui.EfTen = sinKoui.Ten;
+            //        sinKoui.EfTotalTen = sinKoui.TotalTen;
+            //        sinKoui.EfTenCount = sinKoui.TenCount;
+
+            //        if (sinKoui.EfFlg == 1)
+            //        {
+            //            sinKoui.Ten = 0;
+            //            sinKoui.TotalTen = 0;
+            //        }
+
+            //        foreach (SinKouiDetailModel sinDtl in _common.Sin.SinKouiDetails.FindAll(p => p.KeyNo == sinRpInf.KeyNo))
+            //        {
+            //            if (!(sinDtl.FmtKbn == 1 && sinDtl.EfTen > 0))
+            //            {
+            //                sinDtl.EfTen = sinDtl.Ten;
+            //            }
+
+            //            if (sinDtl.EfFlg == 1)
+            //            {
+            //                sinDtl.Ten = 0;
+            //            }
+            //        }
+            //    }
+            //}
             // Update削除
             //_common.Sin.SinRpInfs.RemoveAll(p => p.UpdateState == UpdateStateConst.Update);
             //_common.Sin.SinKouis.RemoveAll(p => p.UpdateState == UpdateStateConst.Update);
@@ -957,14 +1015,14 @@ namespace CalculateService.Ika.ViewModels
             // 点滴点数調整項目を含むかどうか
             bool tentekiTenAdj = false;
 
-            // 詳細
+            // 詳細(EF_FLG=1のレコードも取得しておく)
             IEnumerable<WrkSinKouiDetailModel> wrkSinDtls =
                 _common.Wrk.wrkSinKouiDetails.FindAll(p =>
                     p.RaiinNo == _common.raiinNo &&
                     p.HokenKbn == _common.hokenKbn &&
                     p.RpNo == wrkSinKoui.RpNo &&
                     p.SeqNo == wrkSinKoui.SeqNo && 
-                    p.IsDeleted == 0);
+                    (p.IsDeleted == 0 || p.EfFlg == 1));
             if (!(wrkSinKoui.CdKbn == "E" && wrkSinDtls.Any(p=>p.CdKbnno > 0 && p.CdKbnno < 100)))
             {
                 // エックス線診断料は並び変えない
@@ -1033,11 +1091,17 @@ namespace CalculateService.Ika.ViewModels
                         if ((wrkSinKoui.HokatuKensa > 0) && sinDtl.FmtKbn == 1)
                         {
                             // 検査包括の場合、FMT_KBN=1は点数計算しない
+                            sinDtl.EfTen = sinDtl.Ten;
                             sinDtl.Ten = 0;
                         }
-                        else if (wrkSinKoui.InoutKbn == 1 && wrkSinRpInf.SanteiKbn != SanteiKbnConst.Jihi)
+                        //else if (wrkSinKoui.InoutKbn == 1 && wrkSinRpInf.SanteiKbn != SanteiKbnConst.Jihi)
+                        //{
+                        //    // 院外処方の場合、点数計算しない
+                        //    sinDtl.Ten = 0;
+                        //}
+                        else if (wrkSinKoui.InoutKbn == 1 && wrkSinRpInf.SanteiKbn == SanteiKbnConst.Jihi)
                         {
-                            // 院外処方の場合、点数計算しない
+                            // 院外処方で自費算定の場合は、点数計算しない（消費税額があがるため）
                             sinDtl.Ten = 0;
                         }
                         else
@@ -1070,7 +1134,7 @@ namespace CalculateService.Ika.ViewModels
                             }
                         }
 
-                        if (wrkSinKoui.HokatuKensa == HokatuKensaConst.NaibunpituFuka)
+                        if (wrkSinDtl.TenMst != null && wrkSinDtl.TenMst.HokatuKensa == HokatuKensaConst.NaibunpituFuka)
                         {
                             //// 内分泌負荷試験(HOKATU_KENSA = 8)の場合、月トータルで計算する必要がある
                             //if (naibunpitu <= 0)
@@ -1489,7 +1553,7 @@ namespace CalculateService.Ika.ViewModels
                         };
 
                     if (
-                        (new string[] { "Y", "T" }.Contains(sinDtl.TenMst.MasterSbt) ||
+                        (new string[] { "Y", "T", "U" }.Contains(sinDtl.TenMst.MasterSbt) ||
                         (sinDtl.OdrItemCd.StartsWith("Z") && 
                          sinDtl.TenMst.MasterSbt == "S" && 
                          !kingakuSyukeiCd.Contains(syukeisaki))) && 
@@ -1549,7 +1613,7 @@ namespace CalculateService.Ika.ViewModels
                 else if (sinDtl.TenMst.TenId == 10)
                 {
                     // 10: 除算金額（金額を10で除す。） ※ベントナイト用
-                    if (new string[] { "Y", "T" }.Contains(sinDtl.TenMst.MasterSbt))
+                    if (new string[] { "Y", "T", "U" }.Contains(sinDtl.TenMst.MasterSbt))
                     {
                         ret = (double)((decimal)(sinDtl.Suryo * sinDtl.ItemTen)) / 10 / 10;
                     }
@@ -1563,7 +1627,7 @@ namespace CalculateService.Ika.ViewModels
                 else if (sinDtl.TenMst.TenId == 11)
                 {
                     // 11: 乗算金額（金額を10で乗ずる。） ※ステミラック注用
-                    if (new string[] { "Y", "T" }.Contains(sinDtl.TenMst.MasterSbt))
+                    if (new string[] { "Y", "T", "U" }.Contains(sinDtl.TenMst.MasterSbt))
                     {
                         ret = (double)((decimal)(sinDtl.Suryo * sinDtl.ItemTen)) * 10 / 10;
                     }
@@ -1660,9 +1724,9 @@ namespace CalculateService.Ika.ViewModels
                         {
                             // 手術の減算の場合、加算項目は足さない
                         }
-                        else if(sinDtlKasan.IsSisiKasanSyujyutu && sinDtlKasan.SinKouiKbn == 50 && sinDtls[i].MasterSbt == "R")
+                        else if(sinDtlKasan.IsSisiKasanSyujyutu && sinDtlKasan.SinKouiKbn == 50 && sinDtls[i].TenMst.CdKbn == "E" && sinDtls[i].MasterSbt == "R")
                         {
-                            // 四肢加算（手術）の場合、R（労災マスタの項目）は対象外とする
+                            // 四肢加算（手術）の場合、手術のR（労災マスタの項目）は対象外とする
                         }
                         else
                         { 
@@ -1724,7 +1788,7 @@ namespace CalculateService.Ika.ViewModels
                             syoteiTen += sinDtls[i].Ten;
                         }
                     }
-                    else if (sinDtls[i].MasterSbt == "Y" || sinDtls[i].MasterSbt == "T")
+                    else if (new string[] { "Y", "T", "U" }.Contains(sinDtls[i].MasterSbt))
                     {
                         // 薬剤、特材が間にあったら抜ける
                         break;
@@ -1786,7 +1850,7 @@ namespace CalculateService.Ika.ViewModels
                         syoteiTen += sinDtls[i].Ten;
                     }
                 }
-                else if (sinDtls[i].MasterSbt == "Y" || sinDtls[i].MasterSbt == "T")
+                else if (new string[] { "Y", "T", "U" }.Contains(sinDtls[i].MasterSbt))
                 {
                     // 薬剤、特材が間にあったら抜ける
                     break;
