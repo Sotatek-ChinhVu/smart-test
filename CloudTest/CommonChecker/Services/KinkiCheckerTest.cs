@@ -210,7 +210,7 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(systemConf.HpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -296,13 +296,13 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(systemConf.HpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try
         {
             /// Act
-             var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
+            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
 
             //// Assert
             Assert.True(result.IsError == true);

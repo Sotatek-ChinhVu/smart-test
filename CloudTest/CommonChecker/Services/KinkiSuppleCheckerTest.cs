@@ -428,7 +428,7 @@ public class KinkiSuppleCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "936DIS003" }, 20230505, 1231);
+        cache.InitCache(kinkiSuppleChecker.HpID, new List<string>() { "936DIS003" }, 20230505, 1231);
         kinkiSuppleChecker.InitFinder(tenantNoTracking, cache);
 
         try

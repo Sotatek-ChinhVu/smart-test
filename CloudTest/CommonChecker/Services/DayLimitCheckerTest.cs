@@ -49,7 +49,7 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(tenantNoTracking, cache);
 
         tenantTracking.TenMsts.AddRange(tenMsts);
@@ -102,7 +102,7 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId,new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(tenantNoTracking, cache);
         // Act
         var result = dayLimitChecker.HandleCheckOrderList(unitCheckerForOrderListResult);
@@ -139,7 +139,7 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(tenantNoTracking, cache);
 
         // Act
@@ -305,7 +305,7 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(tenantNoTracking, cache);
         try
         {
@@ -358,7 +358,7 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -592,7 +592,7 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(tenantNoTracking, cache);
 
         tenantTracking.TenMsts.AddRange(tenMsts);
@@ -670,7 +670,7 @@ public class DayLimitCheckerTest : BaseUT
         dayLimitChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dayLimitChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dayLimitChecker.InitFinder(tenantNoTracking, cache);
 
         tenantTracking.TenMsts.AddRange(tenMsts);

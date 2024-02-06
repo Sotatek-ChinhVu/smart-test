@@ -45,8 +45,8 @@ namespace CloudUnitTest.CommonChecker.Services
             var result = invalidDataOrderChecker.HandleCheckOrder(unitCheckerForOrderListResult);
 
             Assert.True(
-                result.IsError == true && 
-                result.CheckerType == RealtimeCheckerType.InvaliData && 
+                result.IsError == true &&
+                result.CheckerType == RealtimeCheckerType.InvaliData &&
                 result.ErrorInfo != null &&
                 result.PtId == 111 &&
                 result.Sinday == 20230101
@@ -316,7 +316,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var cache = new MasterDataCacheService(TenantProvider);
 
-            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(systemGenerationConf.HpId, new List<string>() { "620160501" }, 20230101, 1231);
             invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
 
             try
@@ -395,7 +395,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var cache = new MasterDataCacheService(TenantProvider);
 
-            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(systemGenerationConf.HpId, new List<string>() { "620160501" }, 20230101, 1231);
             invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
 
             try
@@ -475,7 +475,7 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var cache = new MasterDataCacheService(TenantProvider);
 
-            cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(systemGenerationConf.HpId, new List<string>() { "620160501" }, 20230101, 1231);
             invalidDataOrderChecker.InitFinder(tenantNoTracking, cache);
 
             try

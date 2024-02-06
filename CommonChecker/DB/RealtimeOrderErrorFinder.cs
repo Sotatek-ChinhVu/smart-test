@@ -22,10 +22,10 @@ namespace CommonChecker.DB
             return ageComment;
         }
 
-        public string FindAnalogueName(string analogueCode)
+        public string FindAnalogueName(int hpId, string analogueCode)
         {
             string analogueName = string.Empty;
-            var analogueInfo = NoTrackingDataContext.M56AnalogueCd.FirstOrDefault(i => i.AnalogueCd == analogueCode);
+            var analogueInfo = NoTrackingDataContext.M56AnalogueCd.FirstOrDefault(i => i.HpId == hpId && i.AnalogueCd == analogueCode);
             if (analogueInfo != null)
             {
                 analogueName = analogueInfo.AnalogueName ?? string.Empty;
@@ -33,11 +33,11 @@ namespace CommonChecker.DB
             return analogueName;
         }
 
-        public Dictionary<string, string> FindAnalogueNameDic(List<string> analogueCodeList)
+        public Dictionary<string, string> FindAnalogueNameDic(int hpId, List<string> analogueCodeList)
         {
             analogueCodeList = analogueCodeList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var analogueInfoList = NoTrackingDataContext.M56AnalogueCd.Where(item => analogueCodeList.Contains(item.AnalogueCd)).ToList();
+            var analogueInfoList = NoTrackingDataContext.M56AnalogueCd.Where(item => item.HpId == hpId && analogueCodeList.Contains(item.AnalogueCd)).ToList();
             foreach (var analogueCd in analogueCodeList)
             {
                 result.Add(analogueCd, analogueInfoList.FirstOrDefault(item => item.AnalogueCd == analogueCd)?.AnalogueName ?? string.Empty);
@@ -45,10 +45,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindClassName(string classCd)
+        public string FindClassName(int hpId, string classCd)
         {
             string className = string.Empty;
-            var classInfo = NoTrackingDataContext.M56DrugClass.FirstOrDefault(i => i.ClassCd == classCd);
+            var classInfo = NoTrackingDataContext.M56DrugClass.FirstOrDefault(i => i.HpId == hpId && i.ClassCd == classCd);
             if (classInfo != null)
             {
                 className = classInfo.ClassName ?? string.Empty;
@@ -56,10 +56,10 @@ namespace CommonChecker.DB
             return className;
         }
 
-        public string FindComponentName(string conponentCode)
+        public string FindComponentName(int hpId, string conponentCode)
         {
             string componentName = string.Empty;
-            var componentInfo = NoTrackingDataContext.M56ExIngCode.FirstOrDefault(i => i.SeibunCd == conponentCode && i.SeibunIndexCd == "000");
+            var componentInfo = NoTrackingDataContext.M56ExIngCode.FirstOrDefault(i => i.HpId == hpId && i.SeibunCd == conponentCode && i.SeibunIndexCd == "000");
             if (componentInfo != null)
             {
                 componentName = componentInfo.SeibunName ?? string.Empty;
@@ -67,10 +67,10 @@ namespace CommonChecker.DB
             return componentName;
         }
 
-        public Dictionary<string, string> FindComponentNameDic(List<string> conponentCodeList)
+        public Dictionary<string, string> FindComponentNameDic(int hpId, List<string> conponentCodeList)
         {
             conponentCodeList = conponentCodeList.Distinct().ToList();
-            var componentInfoList = NoTrackingDataContext.M56ExIngCode.Where(item => conponentCodeList.Contains(item.SeibunCd) && item.SeibunIndexCd == "000").ToList();
+            var componentInfoList = NoTrackingDataContext.M56ExIngCode.Where(item => item.HpId == hpId && conponentCodeList.Contains(item.SeibunCd) && item.SeibunIndexCd == "000").ToList();
             Dictionary<string, string> result = new();
             foreach (var seibunCd in conponentCodeList)
             {
@@ -113,10 +113,10 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public string FindDrvalrgyName(string drvalrgyCode)
+        public string FindDrvalrgyName(int hpId, string drvalrgyCode)
         {
             string drvalrgyName = string.Empty;
-            var drvalrgyInfo = NoTrackingDataContext.M56DrvalrgyCode.FirstOrDefault(i => i.DrvalrgyCd == drvalrgyCode);
+            var drvalrgyInfo = NoTrackingDataContext.M56DrvalrgyCode.FirstOrDefault(i => i.HpId == hpId && i.DrvalrgyCd == drvalrgyCode);
             if (drvalrgyInfo != null)
             {
                 drvalrgyName = drvalrgyInfo.DrvalrgyName ?? string.Empty;
@@ -124,11 +124,11 @@ namespace CommonChecker.DB
             return drvalrgyName;
         }
 
-        public Dictionary<string, string> FindDrvalrgyNameDic(List<string> drvalrgyCodeList)
+        public Dictionary<string, string> FindDrvalrgyNameDic(int hpId, List<string> drvalrgyCodeList)
         {
             drvalrgyCodeList = drvalrgyCodeList.Distinct().ToList();
             Dictionary<string, string> result = new();
-            var drvalrgyInfoList = NoTrackingDataContext.M56DrvalrgyCode.Where(item => drvalrgyCodeList.Contains(item.DrvalrgyCd)).ToList();
+            var drvalrgyInfoList = NoTrackingDataContext.M56DrvalrgyCode.Where(item => item.HpId == hpId && drvalrgyCodeList.Contains(item.DrvalrgyCd)).ToList();
             foreach (var drvalrgyCd in drvalrgyCodeList)
             {
                 result.Add(drvalrgyCd, drvalrgyInfoList.FirstOrDefault(item => item.DrvalrgyCd == drvalrgyCd)?.DrvalrgyName ?? string.Empty);
@@ -332,7 +332,7 @@ namespace CommonChecker.DB
         public string GetUsageDosage(int hpId, string yjCd)
         {
             var dosageInfo =
-                  (from dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.YjCd == yjCd)
+                  (from dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.HpId == hpId && d.YjCd == yjCd)
                    join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => d.HpId == hpId && !string.IsNullOrEmpty(d.UsageDosage))
                    on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
                    select new
@@ -348,8 +348,8 @@ namespace CommonChecker.DB
             yjCdList = yjCdList.Distinct().ToList();
             Dictionary<string, string> result = new();
             var dosageInfoList =
-                  (from dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => yjCdList.Contains(d.YjCd))
-                   join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d =>  d.HpId == hpId && !string.IsNullOrEmpty(d.UsageDosage))
+                  (from dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.HpId == hpId && yjCdList.Contains(d.YjCd))
+                   join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => d.HpId == hpId && !string.IsNullOrEmpty(d.UsageDosage))
                    on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
                    select new
                    {
@@ -365,9 +365,9 @@ namespace CommonChecker.DB
             return result;
         }
 
-        public bool IsNoMasterData()
+        public bool IsNoMasterData(int hpId)
         {
-            return NoTrackingDataContext.M56ExEdIngredients.Count() == 0;
+            return NoTrackingDataContext.M56ExEdIngredients.Count(item => item.HpId == hpId) == 0;
         }
 
         public void ReleaseResource()

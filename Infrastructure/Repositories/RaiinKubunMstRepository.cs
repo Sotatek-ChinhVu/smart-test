@@ -290,7 +290,7 @@ namespace Infrastructure.Repositories
         {
             var result = new List<(int, int, int, int)>();
             var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None);
-            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == hpId);
+            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts;
             var query = from raiinKouiKbn in raiinKouiKbns
                         join kouiKbnMst in kouiKbnMsts
                         on raiinKouiKbn.KouiKbnId equals kouiKbnMst.KouiKbnId

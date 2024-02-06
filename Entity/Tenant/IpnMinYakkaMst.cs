@@ -5,30 +5,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entity.Tenant
 {
     [Table(name: "ipn_min_yakka_mst")]
-    [Index(nameof(HpId), nameof(IpnNameCd), nameof(StartDate), Name = "ipn_min_yakka_mst_idx01")]
-    [Index(nameof(HpId), nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "ipn_min_yakka_mst_idx02")]
+    [Index(nameof(IpnNameCd), nameof(StartDate), Name = "ipn_min_yakka_mst_idx01")]
+    [Index(nameof(StartDate), nameof(EndDate), nameof(IpnNameCd), Name = "ipn_min_yakka_mst_idx02")]
     [Serializable]
     public class IpnMinYakkaMst : EmrCloneable<IpnMinYakkaMst>
     {
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("id", Order = 1)]
+        [Column("id")]
         public int Id { get; set; }
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 2)]
-        public int HpId { get; set; }
 
         /// <summary>
         /// 一般名コード
         /// 
         /// </summary>
 
-        [Column("ipn_name_cd", Order = 3)]
+        [Column("ipn_name_cd")]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
 
@@ -60,7 +52,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("seq_no", Order = 4)]
+        [Column("seq_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 

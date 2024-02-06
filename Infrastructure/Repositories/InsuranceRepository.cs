@@ -103,7 +103,8 @@ namespace Infrastructure.Repositories
             var queryHokenInf = (from inf in hokenInfQuery
                                  join hkMaster in hokenMasterFinal on new { inf.HokenNo, inf.HokenEdaNo } equals new { hkMaster.HokenNo, hkMaster.HokenEdaNo } into hkMtObject
                                  from hkObj in hkMtObject.DefaultIfEmpty()
-                                 join roudou in NoTrackingDataContext.RoudouMsts on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
+                                 join roudou in NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId)
+                                 on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
                                  from rou in rouObject.DefaultIfEmpty()
                                  select new
                                  {
@@ -272,7 +273,8 @@ namespace Infrastructure.Repositories
             var queryKohi = (from kohi in kohiQuery
                              join hkMaster in hokenMasterKohiFinal on new { kohi.HokenNo, kohi.HokenEdaNo, kohi.PrefNo } equals new { hkMaster.HokenNo, hkMaster.HokenEdaNo, hkMaster.PrefNo } into hkMtObject
                              from hkObj in hkMtObject.DefaultIfEmpty()
-                             join roudou in NoTrackingDataContext.RoudouMsts on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
+                             join roudou in NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId)
+                             on hkObj.PrefNo.ToString() equals roudou.RoudouCd into rouObject
                              from rou in rouObject.DefaultIfEmpty()
                              select new
                              {

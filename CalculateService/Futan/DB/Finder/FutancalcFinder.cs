@@ -366,9 +366,7 @@ namespace CalculateService.Futan.DB.Finder
         {
             if (_kogakuLimitModels == null)
             {
-                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack(k =>
-                    k.HpId == hpId
-                ).ToList();
+                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack();
 
                 _kogakuLimitModels = kogakuLimits.Select(k => new KogakuLimitModel(k)).ToList();
             }

@@ -22,7 +22,7 @@ namespace CommonChecker.Caches
         private readonly List<DosageMst> _dosageMstList = new List<DosageMst>();
         private readonly List<DosageDosage> _dosageDosageList = new List<DosageDosage>();
         private readonly SystemConfig _systemConfig;
-        
+
         private PtInf? _ptInf;
         private int _sinday;
 
@@ -53,21 +53,21 @@ namespace CommonChecker.Caches
             var yjCodeList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
 
             #region Cache for duplication
-            var componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => yjCodeList.Contains(i.YjCd)).ToList();
+            var componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpId && yjCodeList.Contains(i.YjCd)).ToList();
             var seibunCdList = componentList.Select(s => s.SeibunCd).ToList();
 
             _m56ExEdIngredientList.AddRange(componentList);
-            _m56ExIngrdtMainList.AddRange(NoTrackingDataContext.M56ExIngrdtMain.Where(i => yjCodeList.Contains(i.YjCd)).ToList());
+            _m56ExIngrdtMainList.AddRange(NoTrackingDataContext.M56ExIngrdtMain.Where(i => i.HpId == hpId && yjCodeList.Contains(i.YjCd)).ToList());
 
-            var yjDrugList = NoTrackingDataContext.M56YjDrugClass.Where(i => yjCodeList.Contains(i.YjCd)).ToList();
+            var yjDrugList = NoTrackingDataContext.M56YjDrugClass.Where(i => i.HpId == hpId && yjCodeList.Contains(i.YjCd)).ToList();
 
             _m56YjDrugClassList.AddRange(yjDrugList);
-            _m56ProdrugCdList.AddRange(NoTrackingDataContext.M56ProdrugCd.Where(m => seibunCdList.Contains(m.SeibunCd)).ToList());
-            _m56ExAnalogueList.AddRange(NoTrackingDataContext.M56ExAnalogue.Where(m => seibunCdList.Contains(m.SeibunCd)).ToList());
+            _m56ProdrugCdList.AddRange(NoTrackingDataContext.M56ProdrugCd.Where(m => m.HpId == hpId && seibunCdList.Contains(m.SeibunCd)).ToList());
+            _m56ExAnalogueList.AddRange(NoTrackingDataContext.M56ExAnalogue.Where(m => m.HpId == hpId && seibunCdList.Contains(m.SeibunCd)).ToList());
 
             var classCdList = yjDrugList.Select(y => y.ClassCd).Distinct().ToList();
 
-            _m56DrugClassList.AddRange(NoTrackingDataContext.M56DrugClass.Where(d => classCdList.Contains(d.ClassCd)).ToList());
+            _m56DrugClassList.AddRange(NoTrackingDataContext.M56DrugClass.Where(d => d.HpId == hpId && classCdList.Contains(d.ClassCd)).ToList());
             #endregion
 
             #region Cache for kinki
@@ -83,7 +83,7 @@ namespace CommonChecker.Caches
             #region Cache for Dosage
 
             //on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
-            var dosageDrugListTemp = NoTrackingDataContext.DosageDrugs.Where(d => yjCodeList.Contains(d.YjCd) && d.RikikaUnit != null).ToList();
+            var dosageDrugListTemp = NoTrackingDataContext.DosageDrugs.Where(d => d.HpId == hpId && yjCodeList.Contains(d.YjCd) && d.RikikaUnit != null).ToList();
             var doeiCdList = dosageDrugListTemp.Select(d => d.DoeiCd).ToList();
 
             _dosageDrugList.AddRange(dosageDrugListTemp);
@@ -123,7 +123,7 @@ namespace CommonChecker.Caches
         private void AddCacheIfNeed(int hpId, List<string> itemCodeList)
         {
             List<string> itemCodeListNotCache = itemCodeList.Where(i => !_itemCodeCacheList.Contains(i)).ToList();
-            if (itemCodeListNotCache == null || 
+            if (itemCodeListNotCache == null ||
                 itemCodeListNotCache.Count == 0)
             {
                 return;

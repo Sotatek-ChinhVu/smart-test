@@ -129,13 +129,12 @@ namespace Reporting.Statistics.Sta3001.DB
                 }
                 );
 
-            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(p => p.HpId == hpId && p.IpnName != null);
+            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(p => p.IpnName != null);
 
             //最新世代の一般名を取得する
-            var maxIpnNames = ipnNameMsts.GroupBy(x => new { x.HpId, x.IpnNameCd })
+            var maxIpnNames = ipnNameMsts.GroupBy(x => new { x.IpnNameCd })
                 .Select(x => new
                 {
-                    x.Key.HpId,
                     x.Key.IpnNameCd,
                     StartDate = x.Max(d => d.StartDate)
                 }
@@ -144,11 +143,11 @@ namespace Reporting.Statistics.Sta3001.DB
             var latestIpnNames = (
                 from ipnNameMst in ipnNameMsts
                 join maxIpnName in maxIpnNames on
-                    new { ipnNameMst.HpId, ipnNameMst.IpnNameCd, ipnNameMst.StartDate } equals
-                    new { maxIpnName.HpId, maxIpnName.IpnNameCd, maxIpnName.StartDate }
+                    new { ipnNameMst.IpnNameCd, ipnNameMst.StartDate } equals
+                    new { maxIpnName.IpnNameCd, maxIpnName.StartDate }
                 select new
                 {
-                    HpId = ipnNameMst.HpId == null ? 0 : ipnNameMst.HpId,
+                    HpId = hpId,
                     IpnNameCd = ipnNameMst.IpnNameCd == null ? string.Empty : ipnNameMst.IpnNameCd,
                     IpnName = ipnNameMst.IpnName == null ? string.Empty : ipnNameMst.IpnName
                 }

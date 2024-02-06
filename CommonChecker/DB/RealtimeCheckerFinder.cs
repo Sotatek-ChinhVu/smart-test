@@ -98,7 +98,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .OrderByDescending(k => k.IraiDate).FirstOrDefault() ?? new KensaInfDetail();
         }
 
-        public PhysicalAverage GetCommonBodyInfo(int birthDay, int sinday)
+        public PhysicalAverage GetCommonBodyInfo(int hpId, int birthDay, int sinday)
         {
             int ageY = 0;
             int ageM = 0;
@@ -110,6 +110,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .Where
                 (
                     p =>
+                    p.HpId <= hpId &&
                     p.JissiYear <= sinYear &&
                     p.AgeYear <= ageY &&
                     p.AgeMonth <= ageM &&
@@ -141,7 +142,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         {
             bool IsNoMasterData()
             {
-                return NoTrackingDataContext.M56ExEdIngredients.Count() == 0;
+                return NoTrackingDataContext.M56ExEdIngredients.Count(item => item.HpId == hpID) == 0;
             }
 
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
@@ -159,12 +160,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                 // Get the largest EndDate TenMsts including expired items
                 var listDrugAllergyAsPatientInfo =
-                    (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) 
-                                                                                           && i.StartDate <= sinDate 
+                    (from drugMst in (from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
+                                                                                           && i.StartDate <= sinDate
                                                                                            && i.IsDeleted == DeleteTypes.None).ToList()
-                                       group item by item.ItemCd into grp
-                                       select grp.OrderByDescending(c => c.EndDate).FirstOrDefault())
-                     join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
+                                      group item by item.ItemCd into grp
+                                      select grp.OrderByDescending(c => c.EndDate).FirstOrDefault())
+                     join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpID && i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
                      on drugMst.YjCd equals componentInfo.YjCd
                      select new
                      {
@@ -239,9 +240,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             var listCheckingDrugInfo =
                 (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
-                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.ProdrugCheck != null && i.ProdrugCheck == string.Empty && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
+                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpID && i.ProdrugCheck != null && i.ProdrugCheck == string.Empty && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugPro in NoTrackingDataContext.M56ProdrugCd
+                 join drugPro in NoTrackingDataContext.M56ProdrugCd.Where(item => item.HpId == hpID)
                  on componentInfo.SeibunCd equals drugPro.SeibunCd
                  select new
                  {
@@ -260,9 +261,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                                                            && i.IsDeleted == DeleteTypes.None).ToList()
                                   group item by item.ItemCd into grp
                                   select grp.OrderByDescending(c => c.EndDate).FirstOrDefault())
-                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.ProdrugCheck != null && i.ProdrugCheck != string.Empty && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
+                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpID && i.ProdrugCheck != null && i.ProdrugCheck != string.Empty && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugPro in NoTrackingDataContext.M56ProdrugCd
+                 join drugPro in NoTrackingDataContext.M56ProdrugCd.Where(item => item.HpId == hpID)
                  on componentInfo.SeibunCd equals drugPro.SeibunCd
                  select new
                  {
@@ -312,9 +313,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var onlyItemCd = listItemCode.Select(x => x.ItemCd).Distinct().ToList();
             var listCheckingDrugInfo =
                 (from drugMst in NoTrackingDataContext.TenMsts.Where(i => onlyItemCd.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
-                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.AnalogueCheck == "1")
+                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpID && i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugAnalogue in NoTrackingDataContext.M56ExAnalogue
+                 join drugAnalogue in NoTrackingDataContext.M56ExAnalogue.Where(item => item.HpId == hpID)
                  on componentInfo.SeibunCd equals drugAnalogue.SeibunCd
                  select new
                  {
@@ -331,11 +332,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 (from drugMst in from item in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd)
                                                                                            && i.StartDate <= sinDate
                                                                                            && i.IsDeleted == DeleteTypes.None).ToList()
-                                   group item by item.ItemCd into grp
-                                   select grp.OrderByDescending(c => c.EndDate).FirstOrDefault()
-                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.AnalogueCheck == "1")
+                                 group item by item.ItemCd into grp
+                                 select grp.OrderByDescending(c => c.EndDate).FirstOrDefault()
+                 join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.HpId == hpID && i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugAnalogue in NoTrackingDataContext.M56ExAnalogue
+                 join drugAnalogue in NoTrackingDataContext.M56ExAnalogue.Where(item => item.HpId == hpID)
                  on componentInfo.SeibunCd equals drugAnalogue.SeibunCd
                  select new
                  {
@@ -385,9 +386,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var itemCdCheckingDrugInfoList = listItemCode.Select(x => x.ItemCd).Distinct().ToList();
             var listCheckingDrugInfo =
                  (from drugMst in NoTrackingDataContext.TenMsts.Where(i => itemCdCheckingDrugInfoList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsQueryable()
-                  join componentInfo in NoTrackingDataContext.M56AlrgyDerivatives
+                  join componentInfo in NoTrackingDataContext.M56AlrgyDerivatives.Where(item => item.HpId == hpID)
                   on drugMst.YjCd equals componentInfo.YjCd
-                  join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode
+                  join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode.Where(item => item.HpId == hpID)
                   on componentInfo.DrvalrgyCd equals drvalrgyCode.DrvalrgyCd
                   select new
                   {
@@ -404,9 +405,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                                                            && i.IsDeleted == DeleteTypes.None).ToList()
                                   group item by item.ItemCd into grp
                                   select grp.OrderByDescending(c => c.EndDate).FirstOrDefault()
-                  join componentInfo in NoTrackingDataContext.M56AlrgyDerivatives
+                  join componentInfo in NoTrackingDataContext.M56AlrgyDerivatives.Where(item => item.HpId == hpID)
                   on drugMst.YjCd equals componentInfo.YjCd
-                  join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode
+                  join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode.Where(item => item.HpId == hpID)
                   on componentInfo.DrvalrgyCd equals drvalrgyCode.DrvalrgyCd
                   select new
                   {
@@ -1905,7 +1906,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             if (currentWeight <= -1)
             {
                 // Get new data from SpecialNote but have no WeightInfo
-                weight = GetCommonWeight(patientInfo.Birthday, sinday, sex);
+                weight = GetCommonWeight(hpId, patientInfo.Birthday, sinday, sex);
             }
             else if (currentWeight == 0)
             {
@@ -1921,7 +1922,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             if (currentHeight <= -1)
             {
                 // Get new data from SpecialNote but have no HeightInfo
-                height = GetCommonHeight(patientInfo.Birthday, sinday, sex);
+                height = GetCommonHeight(hpId, patientInfo.Birthday, sinday, sex);
             }
             else if (currentHeight == 0)
             {
@@ -2741,9 +2742,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public double GetCommonWeight(int birdthDay, int sinday, int sex)
+        public double GetCommonWeight(int hpId, int birdthDay, int sinday, int sex)
         {
-            PhysicalAverage commonBodyInfo = GetCommonBodyInfo(birdthDay, sinday);
+            PhysicalAverage commonBodyInfo = GetCommonBodyInfo(hpId, birdthDay, sinday);
             double weight = 0;
             if (commonBodyInfo != null)
             {
@@ -2759,9 +2760,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return weight;
         }
 
-        public double GetCommonHeight(int birdthDay, int sinday, int sex)
+        public double GetCommonHeight(int hpId, int birdthDay, int sinday, int sex)
         {
-            PhysicalAverage commonBodyInfo = GetCommonBodyInfo(birdthDay, sinday);
+            PhysicalAverage commonBodyInfo = GetCommonBodyInfo(hpId, birdthDay, sinday);
             double height = 0;
             if (commonBodyInfo != null)
             {
@@ -2802,7 +2803,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 }
             }
 
-            return GetCommonWeight(birdthDay, sinday, sex);
+            return GetCommonWeight(hpId, birdthDay, sinday, sex);
         }
 
         public double GetPatientHeight(int hpId, long ptID, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels)
@@ -2816,7 +2817,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 return value.AsDouble();
             }
 
-            return GetCommonHeight(birdthDay, sinday, sex);
+            return GetCommonHeight(hpId, birdthDay, sinday, sex);
         }
 
         public double GetBodySize(double weight, double height, double age)

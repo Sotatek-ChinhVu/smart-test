@@ -6,10 +6,10 @@ namespace UseCase.MstItem.SearchOTC
     {
         public SearchOTCInputData(int hpId, string searchValue, int pageIndex, int pageSize)
         {
+            HpId = hpId;
             SearchValue = searchValue;
             PageIndex = pageIndex;
             PageSize = pageSize;
-            HpId = hpId;
         }
 
         public string SearchValue { get; set; }

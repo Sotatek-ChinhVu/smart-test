@@ -11,13 +11,13 @@ namespace UseCase.MstItem.GetDosageDrugList
     {
         public GetDosageDrugListInputData(int hpId, List<string> yjCds)
         {
-            YjCds = yjCds;
             HpId = hpId;
+            YjCds = yjCds;
         }
 
-        public List<string> YjCds { get; private set; }
-
         public int HpId { get; private set; }
+
+        public List<string> YjCds { get; private set; }
 
         public List<string> ToList()
         {

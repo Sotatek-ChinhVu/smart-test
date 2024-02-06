@@ -52,7 +52,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
 
-            mock.Setup(finder => finder.FindComponentNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindComponentNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             mock.Setup(finder => finder.FindItemNameByItemCodeDic(It.IsAny<List<string>>(), It.IsAny<int>()))
@@ -62,10 +62,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
             mock.Setup(finder => finder.FindItemNameDic(It.IsAny<List<string>>(), It.IsAny<int>()))
             .Returns((List<string> inputList, int sinday) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindAnalogueNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindAnalogueNameDic(hpId, It.IsAny<List<string>>()))
            .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
-            mock.Setup(finder => finder.FindDrvalrgyNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindDrvalrgyNameDic(hpId, It.IsAny<List<string>>()))
            .Returns((List<string> inputList) => inputList.ToDictionary(item => item, item => $"MockedValueFor_{item}"));
 
             // Act
@@ -200,8 +200,8 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_005_GetItemCdError_Age()
         {
-            //Setup Data Test
             int hpId = 1;
+            //Setup Data Test
             var ageResults = new List<AgeResultModel>()
             {
                 new AgeResultModel()
@@ -1270,6 +1270,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_028_ProcessDataForDrugAllergy_Level_1()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -1296,12 +1297,12 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(false);
 
             commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" } };
             // Act
-            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(hpId, allergyInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -1320,6 +1321,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         [Test]
         public void TC_029_ProcessDataForDrugAllergy_Level_2()
         {
+            int hpId = 1;
             var mock = new Mock<IRealtimeOrderErrorFinder>();
 
             // Arrange
@@ -1347,15 +1349,15 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(false);
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
             .Returns((string stringInput) => $"MockedComponentName");
 
             commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" } };
             // Act
-            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(hpId, allergyInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -1375,6 +1377,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_030_ProcessDataForDrugAllergy_Level_3()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -1403,17 +1406,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(false);
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
             .Returns((string stringInput) => $"MockedComponentName");
 
             commonMedicalCheck._componentNameDictionary = new Dictionary<string, string> { { "77777", "Name Test 1" }, { "888888", "Component_Mocked_Test_2" } };
             commonMedicalCheck._analogueNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(hpId, allergyInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -1433,6 +1436,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_031_ProcessDataForDrugAllergy_Level_4()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -1470,16 +1474,16 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(false);
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
             .Returns((string stringInput) => $"MockedComponentName");
 
             commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(hpId, allergyInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -1502,6 +1506,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_032_ProcessDataForDrugAllergy_YjCd_Equal_AllergyYjCd()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -1519,16 +1524,16 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(false);
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
             .Returns((string stringInput) => $"MockedComponentName");
 
             commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(hpId, allergyInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -1548,6 +1553,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_033_ProcessDataForDrugAllergy_Level_OutOfRange_0_To_4()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -1576,16 +1582,16 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(false);
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
             .Returns((string stringInput) => $"MockedComponentName");
 
             commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(hpId, allergyInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -1602,6 +1608,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_034_ProcessDataForDrugAllergy_IsNoMasterData_IsTrue()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -1616,10 +1623,10 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 }
             };
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(true);
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
             .Returns((string stringInput) => $"MockedComponentName");
 
             commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
@@ -1627,7 +1634,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name Test" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDrugAllergy(allergyInfo);
+            var result = commonMedicalCheck.ProcessDataForDrugAllergy(hpId, allergyInfo);
 
             // Assert
             Assert.NotNull(result);
@@ -1649,16 +1656,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_035_ProcessDataForFoodAllergy_Test_AllergyInfo_IsEmpty_List()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
 
             var allergyInfo = new List<FoodAllergyResultModel>();
 
-            mock.Setup(finder => finder.IsNoMasterData())
+            mock.Setup(finder => finder.IsNoMasterData(hpId))
                 .Returns(false);
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
             .Returns((string stringInput) => $"MockedComponentName");
 
             commonMedicalCheck._drvalrgyNameDictionary = new Dictionary<string, string> { { "Tag9999", "Mocked_Tag_Name_1" } };
@@ -2337,6 +2345,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_049_ProcessDataForDuplication_IsIppanCdDuplicated_IsFalse_IsComponentDuplicated_IsFalse()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2363,7 +2372,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+            var result = commonMedicalCheck.ProcessDataForDuplication(hpId, listDuplicationError);
 
             // Assert
             Assert.NotNull(result);
@@ -2386,6 +2395,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_050_ProcessDataForDuplication_IsComponentDuplicated_IsFalse_IsIppanCdDuplicated_IsTrue()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2412,7 +2422,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+            var result = commonMedicalCheck.ProcessDataForDuplication(hpId, listDuplicationError);
 
             // Assert
             Assert.NotNull(result);
@@ -2438,6 +2448,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_051_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_0()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2466,7 +2477,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+            var result = commonMedicalCheck.ProcessDataForDuplication(hpId, listDuplicationError);
 
             // Assert
             Assert.NotNull(result);
@@ -2492,6 +2503,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_052_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_1()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2519,11 +2531,11 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
 
-            mock.Setup(finder => finder.FindComponentName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindComponentName(hpId, It.IsAny<string>()))
            .Returns((string stringInput) => "ComponentName1_Mocked_Test");
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+            var result = commonMedicalCheck.ProcessDataForDuplication(hpId, listDuplicationError);
 
             // Assert
             Assert.NotNull(result);
@@ -2549,6 +2561,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_053_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_2()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2580,13 +2593,13 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
 
-            mock.Setup(finder => finder.FindComponentName("S1234"))
+            mock.Setup(finder => finder.FindComponentName(hpId, "S1234"))
            .Returns((string stringInput) => "ComponentName2_Mocked_Test");
 
-            mock.Setup(finder => finder.FindComponentName("A1234"))
+            mock.Setup(finder => finder.FindComponentName(hpId, "A1234"))
            .Returns((string stringInput) => "AllergyComponentName2_Mocked_Test");
             // Act
-            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+            var result = commonMedicalCheck.ProcessDataForDuplication(hpId, listDuplicationError);
 
             // Assert
             Assert.NotNull(result);
@@ -2612,6 +2625,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_054_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_3()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2644,17 +2658,17 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
 
-            mock.Setup(finder => finder.FindComponentName("S1234"))
+            mock.Setup(finder => finder.FindComponentName(hpId, "S1234"))
            .Returns((string stringInput) => "ComponentName2_Mocked_Test");
 
-            mock.Setup(finder => finder.FindComponentName("A1234"))
+            mock.Setup(finder => finder.FindComponentName(hpId, "A1234"))
            .Returns((string stringInput) => "AllergyComponentName2_Mocked_Test");
 
-            mock.Setup(finder => finder.FindAnalogueName("T1234"))
+            mock.Setup(finder => finder.FindAnalogueName(hpId, "T1234"))
            .Returns((string stringInput) => "AnalogueName_Mocked_Test");
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+            var result = commonMedicalCheck.ProcessDataForDuplication(hpId, listDuplicationError);
 
             // Assert
             Assert.NotNull(result);
@@ -2682,6 +2696,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_055_ProcessDataForDuplication_IsComponentDuplicated_IsTrue_IsIppanCdDuplicated_IsFalse_Level_3()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2714,20 +2729,20 @@ namespace CloudUnitTest.CommonChecker.Interactor
 
             commonMedicalCheck._itemNameByItemCodeDictionary = new Dictionary<string, string> { { "UT1234", "Item Name_By_Code Test 1" } };
 
-            mock.Setup(finder => finder.FindComponentName("S1234"))
+            mock.Setup(finder => finder.FindComponentName(hpId, "S1234"))
            .Returns((string stringInput) => "ComponentName2_Mocked_Test");
 
-            mock.Setup(finder => finder.FindComponentName("A1234"))
+            mock.Setup(finder => finder.FindComponentName(hpId, "A1234"))
            .Returns((string stringInput) => "AllergyComponentName2_Mocked_Test");
 
-            mock.Setup(finder => finder.FindAnalogueName("T1234"))
+            mock.Setup(finder => finder.FindAnalogueName(hpId, "T1234"))
            .Returns((string stringInput) => "AnalogueName_Mocked_Test");
 
-            mock.Setup(finder => finder.FindClassName("T1234"))
+            mock.Setup(finder => finder.FindClassName(hpId, "T1234"))
            .Returns((string stringInput) => "ClassName_Mocked_Test");
 
             // Act
-            var result = commonMedicalCheck.ProcessDataForDuplication(listDuplicationError);
+            var result = commonMedicalCheck.ProcessDataForDuplication(hpId, listDuplicationError);
 
             // Assert
             Assert.NotNull(result);
@@ -2883,6 +2898,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_057_ProcessDataForKinki_KinkiSupplement()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -2916,7 +2932,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                             { "S1235", "SeibunName_Mocked_Test_2" },
                                                                                           };
 
-            mock.Setup(finder => finder.FindClassName("T1234"))
+            mock.Setup(finder => finder.FindClassName(hpId, "T1234"))
            .Returns((string stringInput) => "ClassName_Mocked_Test");
 
             var checkingType = RealtimeCheckerType.KinkiSupplement;
@@ -3024,6 +3040,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_059_ProcessDataForKinki_KinkiOTC()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -3083,7 +3100,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 {"Sa1235", "SayokijyoContent_Test_2" },
             };
 
-            mock.Setup(finder => finder.FindClassName("T1234"))
+            mock.Setup(finder => finder.FindClassName(hpId, "T1234"))
            .Returns((string stringInput) => "ClassName_Mocked_Test");
 
             var checkingType = RealtimeCheckerType.KinkiTain;
@@ -3117,6 +3134,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_060_ProcessDataForKinki_CheckingType_Default()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -3176,7 +3194,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 {"Sa1235", "SayokijyoContent_Test_2" },
             };
 
-            mock.Setup(finder => finder.FindClassName("T1234"))
+            mock.Setup(finder => finder.FindClassName(hpId, "T1234"))
            .Returns((string stringInput) => "ClassName_Mocked_Test");
 
             var checkingType = RealtimeCheckerType.KinkiUser;
@@ -3207,6 +3225,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_061_ProcessDataForKinki_CheckingType_IndexWord_Equal_SeibunName()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -3268,7 +3287,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 {"Sa1235", "SayokijyoContent_Test_2" },
             };
 
-            mock.Setup(finder => finder.FindClassName("T1234"))
+            mock.Setup(finder => finder.FindClassName(hpId, "T1234"))
            .Returns((string stringInput) => "ClassName_Mocked_Test");
 
             var checkingType = RealtimeCheckerType.KinkiUser;
@@ -3302,6 +3321,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_062_ProcessDataForKinki_CheckingType_IsNeedToReplace_True()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -3370,7 +3390,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 {"S1234",  "OtcComponentInfo_Mocked_Test_1"},
                 {"S1235",  "OtcComponentInfo_Mocked_Test_2"},
             };
-            mock.Setup(finder => finder.FindClassName("T1234"))
+            mock.Setup(finder => finder.FindClassName(hpId, "T1234"))
            .Returns((string stringInput) => "ClassName_Mocked_Test");
 
             var checkingType = RealtimeCheckerType.KinkiOTC;
@@ -3401,6 +3421,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
         public void TC_063_ProcessDataForKinki_CheckingType_IsNeedToReplace_Test_CommentContent()
         {
             var mock = new Mock<IRealtimeOrderErrorFinder>();
+            int hpId = 1;
 
             // Arrange
             var commonMedicalCheck = new CommonMedicalCheck(TenantProvider, mock.Object);
@@ -3488,7 +3509,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                 {"S1235",  "OtcComponentInfo_Mocked_Test_2"},
                 {"S1236",  "OtcComponentInfo_Mocked_Test_2"},
             };
-            mock.Setup(finder => finder.FindClassName("T1234"))
+            mock.Setup(finder => finder.FindClassName(hpId, "T1234"))
            .Returns((string stringInput) => "ClassName_Mocked_Test");
 
             var checkingType = RealtimeCheckerType.KinkiSupplement;
@@ -3848,7 +3869,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                                               { "93112346", "Item Mock 2" }
                                                                                              });
 
-            mock.Setup(finder => finder.FindComponentNameDic(It.IsAny<List<string>>()))
+            mock.Setup(finder => finder.FindComponentNameDic(hpId, It.IsAny<List<string>>()))
             .Returns((List<string> inputList) => new Dictionary<string, string> {
                                                                                    { "123", "Sebun Mock 1" },
                                                                                    { "124", "Sebun Mock 2" }
@@ -4070,7 +4091,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                         { "1235", "ItemName Mock 2" }
                                                                       });
 
-            mock.Setup(finder => finder.FindClassName(It.IsAny<string>()))
+            mock.Setup(finder => finder.FindClassName(hpId, It.IsAny<string>()))
             .Returns((string input) => ("ClassName_Mocked_Test"));
 
             mock.Setup(finder => finder.FindSuppleItemNameDic(hpId, It.IsAny<List<string>>()))
@@ -4256,7 +4277,7 @@ namespace CloudUnitTest.CommonChecker.Interactor
                                                                         { "333444", "ItemName Mock 1" },
                                                                         { "444555", "ItemName Mock 2" }
                                                                       });
-            
+
             // Act
             var result = commonMedicalCheck.GetErrorDetails(hpId, ptId, sinDay, listErrorInfo);
 

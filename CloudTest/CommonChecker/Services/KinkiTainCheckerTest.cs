@@ -198,7 +198,7 @@ public class KinkiTainCheckerTest : BaseUT
         kinkiTainChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "6220816T3" }, 20230505, ptId);
+        cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
         kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -214,7 +214,7 @@ public class KinkiTainCheckerTest : BaseUT
             systemConf.Val = temp;
             tenantTracking.TenMsts.RemoveRange(tenMsts);
             tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
-            if(m01 == null)
+            if (m01 == null)
             {
                 tenantTracking.M01Kinki.RemoveRange(m01Kinki);
             }
@@ -352,7 +352,7 @@ public class KinkiTainCheckerTest : BaseUT
         kinkiTainChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "6220816T3" }, 20230505, ptId);
+        cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
         kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -484,7 +484,7 @@ public class KinkiTainCheckerTest : BaseUT
         kinkiTainChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(hpId, new List<string>() { "6220816T3" }, 20230505, ptId);
+        cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
         kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try

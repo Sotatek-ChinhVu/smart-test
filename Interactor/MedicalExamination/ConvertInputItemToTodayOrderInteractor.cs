@@ -29,7 +29,7 @@ namespace Interactor.MedicalExamination
                     return new ConvertInputItemToTodayOrdOutputData(ConvertInputItemToTodayOrdStatus.InvalidDetailInfs, new());
                 }
 
-                var result = _todayOdrRepository.ConvertInputItemToTodayOdr(inputData.HpId, inputData.SinDate, inputData.DetailInfs);
+                var result = _todayOdrRepository.ConvertInputItemToTodayOdr(inputData.SinDate, inputData.DetailInfs);
 
                 return new ConvertInputItemToTodayOrdOutputData(ConvertInputItemToTodayOrdStatus.Successed, result);
             }

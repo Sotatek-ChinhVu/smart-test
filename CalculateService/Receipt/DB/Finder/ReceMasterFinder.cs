@@ -45,10 +45,11 @@ namespace CalculateService.Receipt.DB.Finder
         /// <param name="sinDate"></param>
         /// <param name="Unit"></param>
         /// <returns></returns>
-        public UnitMstModel FindUnitMst(int sinDate, string Unit)
+        public UnitMstModel FindUnitMst(int hpId, int sinDate, string Unit)
         {
             return new UnitMstModel(
                 _tenantDataContext.UnitMsts.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate &&
                     p.UnitName == Unit)

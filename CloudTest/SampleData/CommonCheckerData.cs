@@ -2121,7 +2121,7 @@ namespace CloudUnitTest.SampleData
             return ptFamilies;
         }
 
-        public static List<M56ExEdIngredients> Read_M56_EX_ED_INGREDIENTS()
+        public static List<M56ExEdIngredients> Read_M56_EX_ED_INGREDIENTS(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2138,6 +2138,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56ExEd = new M56ExEdIngredients();
+                        m56ExEd.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2190,7 +2191,7 @@ namespace CloudUnitTest.SampleData
             return m56ExEdIngredients;
         }
 
-        public static List<M56ProdrugCd> READ_M56_PRODRUG_CD()
+        public static List<M56ProdrugCd> READ_M56_PRODRUG_CD(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2207,6 +2208,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56Prodrug = new M56ProdrugCd();
+                        m56Prodrug.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2237,7 +2239,7 @@ namespace CloudUnitTest.SampleData
             return m56Prodrugs;
         }
 
-        public static List<M56ExIngrdtMain> READ_M56_EX_INGRDT_MAIN()
+        public static List<M56ExIngrdtMain> READ_M56_EX_INGRDT_MAIN(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2254,6 +2256,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56ExIngrdtMain = new M56ExIngrdtMain();
+                        m56ExIngrdtMain.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2299,7 +2302,7 @@ namespace CloudUnitTest.SampleData
             return m56ExIngrdtMains;
         }
 
-        public static List<M56YjDrugClass> READ_M56_YJ_DRUG_CLASS()
+        public static List<M56YjDrugClass> READ_M56_YJ_DRUG_CLASS(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2316,6 +2319,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56YjDrugClass = new M56YjDrugClass();
+                        m56YjDrugClass.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2346,7 +2350,7 @@ namespace CloudUnitTest.SampleData
             return m56YjDrugs;
         }
 
-        public static List<M56DrugClass> READ_M56_DRUG_CLASS()
+        public static List<M56DrugClass> READ_M56_DRUG_CLASS(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2363,6 +2367,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56Drug = new M56DrugClass();
+                        m56Drug.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2396,7 +2401,7 @@ namespace CloudUnitTest.SampleData
             return m56Drugs;
         }
 
-        public static List<M56ExAnalogue> READ_M56_EX_ANALOGUE()
+        public static List<M56ExAnalogue> READ_M56_EX_ANALOGUE(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2413,6 +2418,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56 = new M56ExAnalogue();
+                        m56.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2443,7 +2449,7 @@ namespace CloudUnitTest.SampleData
             return m56s;
         }
 
-        public static List<M56AlrgyDerivatives> READ_M56_ALRGY_DERIVATIVES()
+        public static List<M56AlrgyDerivatives> READ_M56_ALRGY_DERIVATIVES(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2460,6 +2466,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56 = new M56AlrgyDerivatives();
+                        m56.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2493,7 +2500,7 @@ namespace CloudUnitTest.SampleData
             return m56s;
         }
 
-        public static List<M56DrvalrgyCode> READ_M56_DRVALRGY_CODE()
+        public static List<M56DrvalrgyCode> READ_M56_DRVALRGY_CODE(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2510,6 +2517,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var m56 = new M56DrvalrgyCode();
+                        m56.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;
@@ -2630,7 +2638,7 @@ namespace CloudUnitTest.SampleData
             return dosageMsts;
         }
 
-        public static List<DosageDrug> READ_M46_DOSAGE_DRUG()
+        public static List<DosageDrug> READ_M46_DOSAGE_DRUG(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2647,6 +2655,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var dosageDrug = new DosageDrug();
+                        dosageDrug.HpId = hpId;
                         foreach (var c in r.Elements<Cell>())
                         {
                             text = c.CellValue?.Text ?? string.Empty;

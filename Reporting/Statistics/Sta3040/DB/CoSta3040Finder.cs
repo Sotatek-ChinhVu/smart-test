@@ -52,7 +52,7 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
                                                                && x.SinDate <= printConf.ToYm * 100 + 31);
 
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails;
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.DrugKbn > 0);
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.DrugKbn > 0 && x.HpId == hpId);
         var yakkaSyusaiMsts = NoTrackingDataContext.YakkaSyusaiMsts;
         var drugUnitConvs = NoTrackingDataContext.DrugUnitConvs.Where(d => d.HpId == hpId);
 
@@ -71,8 +71,8 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
                 new { odrInfDetail.HpId, odrInfDetail.ItemCd } equals
                 new { tenMst.HpId, tenMst.ItemCd }
             join yakkaSyusaiMst in yakkaSyusaiMsts on
-                new { tenMst.HpId, tenMst.ItemCd, tenMst.YakkaCd } equals
-                new { yakkaSyusaiMst.HpId, yakkaSyusaiMst.ItemCd, yakkaSyusaiMst.YakkaCd } into yakkaSyusaiJoins
+                new { tenMst.ItemCd, tenMst.YakkaCd } equals
+                new { yakkaSyusaiMst.ItemCd, yakkaSyusaiMst.YakkaCd } into yakkaSyusaiJoins
             from yakkaSyusaiJoin in yakkaSyusaiJoins.DefaultIfEmpty()
             join drugUnitConv in drugUnitConvs on
                 new { tenMst.ItemCd } equals

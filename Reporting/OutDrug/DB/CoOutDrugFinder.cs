@@ -777,9 +777,9 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
         return NoTrackingDataContext.SingleDoseMsts.Any(s => s.HpId == hpId && s.UnitName == unitName);
     }
 
-    public CoDosageDrugModel GetDosageDrugModel(string yjCode)
+    public CoDosageDrugModel GetDosageDrugModel(int hpId, string yjCode)
     {
-        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(item => item.YjCd == yjCode);
+        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(item => item.HpId == hpId && item.YjCd == yjCode);
         return new CoDosageDrugModel(dosageDrug ?? new());
 
     }

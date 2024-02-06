@@ -33,7 +33,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 17,
                     StartDate = 20070401,
                     EndDate = 20141231,
@@ -49,7 +48,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 18,
                     StartDate = 20070401,
                     EndDate = 20141231,
@@ -65,7 +63,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 19,
                     StartDate = 20070401,
                     EndDate = 20141231,
@@ -81,7 +78,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 26,
                     StartDate = 20150101,
                     EndDate = 99999999,
@@ -97,7 +93,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 27,
                     StartDate = 20150101,
                     EndDate = 99999999,
@@ -113,7 +108,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 28,
                     StartDate = 20150101,
                     EndDate = 99999999,
@@ -129,7 +123,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 29,
                     StartDate = 20150101,
                     EndDate = 99999999,
@@ -145,7 +138,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 30,
                     StartDate = 20150101,
                     EndDate = 99999999,
@@ -162,7 +154,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 0,
                     StartDate = 0,
                     EndDate = 20170731,
@@ -176,7 +167,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 0,
                     StartDate = 20170801,
                     EndDate = 20180731,
@@ -190,7 +180,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 0,
                     StartDate = 20180801,
                     EndDate = 99999999,
@@ -206,7 +195,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 3,
                     StartDate = 0,
                     EndDate = 20170731,
@@ -220,7 +208,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 3,
                     StartDate = 20170801,
                     EndDate = 20180731,
@@ -236,7 +223,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 4,
                     StartDate = 0,
                     EndDate = 99999999,
@@ -252,7 +238,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 5,
                     StartDate = 0,
                     EndDate = 99999999,
@@ -268,7 +253,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 26,
                     StartDate = 20180801,
                     EndDate = 99999999,
@@ -284,7 +268,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 27,
                     StartDate = 20180801,
                     EndDate = 99999999,
@@ -300,7 +283,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 28,
                     StartDate = 20180801,
                     EndDate = 99999999,
@@ -316,7 +298,6 @@ namespace CalculateUnitTest
             (
                 new KogakuLimit()
                 {
-                    HpId = 1,
                     KogakuKbn = 41,
                     StartDate = 20221001,
                     EndDate = 99999999,

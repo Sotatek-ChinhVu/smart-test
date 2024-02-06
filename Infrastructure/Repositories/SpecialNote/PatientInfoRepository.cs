@@ -273,8 +273,8 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<GcStdInfModel> GetStdPoint(int hpId, int sex)
         {
-            var list = NoTrackingDataContext.GcStdMsts.Where(item => item.HpId == hpId && (sex == 0 || item.Sex == sex)).AsEnumerable()
-                .Select(item => new GcStdInfModel(item.HpId, item.StdKbn, item.Sex, item.Point, item.SdM25, item.SdM20, item.SdM10, item.SdAvg, item.SdP10, item.SdP20, item.SdP25, item.Per03, item.Per10, item.Per25, item.Per50, item.Per75, item.Per90, item.Per97)).ToList();
+            var list = NoTrackingDataContext.GcStdMsts.Where(item => sex == 0 || item.Sex == sex).AsEnumerable()
+                .Select(item => new GcStdInfModel(hpId, item.StdKbn, item.Sex, item.Point, item.SdM25, item.SdM20, item.SdM10, item.SdAvg, item.SdP10, item.SdP20, item.SdP25, item.Per03, item.Per10, item.Per25, item.Per50, item.Per75, item.Per90, item.Per97)).ToList();
             return list;
         }
 

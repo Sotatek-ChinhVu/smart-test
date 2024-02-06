@@ -6,11 +6,11 @@ namespace UseCase.DrugDetailData.ShowMdbByomei
     {
         public ShowMdbByomeiInputData(int hpId, string itemCd, int level, string drugName, string yJCode)
         {
+            HpId = hpId;
             ItemCd = itemCd;
             Level = level;
             DrugName = drugName;
             YJCode = yJCode;
-            HpId = hpId;
         }
 
         public string ItemCd { get; private set; }
