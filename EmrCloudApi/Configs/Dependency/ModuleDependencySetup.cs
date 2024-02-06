@@ -816,7 +816,6 @@ using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetByomeisInMonth;
 using UseCase.Yousiki.CreateYuIchiFile;
-using Interactor.Yousiki.UpdateYosiki;
 using UseCase.Yousiki.UpdateYosiki;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -857,6 +856,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Cache data
             services.AddTransient<IUserInfoService, UserInfoService>();
             services.AddTransient<IKaService, KaService>();
+            services.AddTransient<IReturnYousikiTabService, ReturnYousikiTabService>();
 
             //Init follow transient so no need change transient
             services.AddScoped<IMasterDataCacheService, MasterDataCacheService>();

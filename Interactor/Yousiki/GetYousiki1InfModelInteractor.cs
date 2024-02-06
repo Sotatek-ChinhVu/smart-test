@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Yousiki;
+using Infrastructure.Interfaces;
 using UseCase.Yousiki.GetYousiki1InfModel;
 
 namespace Interactor.Yousiki

@@ -6,7 +6,7 @@ public interface IYousikiRepository : IRepositoryBase
 {
     List<Yousiki1InfModel> GetYousiki1InfModelWithCommonInf(int hpId, int sinYm, long ptNum, int dataType, int status = -1);
 
-    List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, long ptId, int dataType, int seqNo);
+    Yousiki1InfModel GetYousiki1InfDetails(int hpId, int sinYm, long ptId, int dataType, int seqNo);
 
     List<Yousiki1InfDetailModel> GetYousiki1InfDetails(int hpId, int sinYm, List<long> ptIdList);
 

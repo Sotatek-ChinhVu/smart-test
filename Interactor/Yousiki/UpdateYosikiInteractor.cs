@@ -6,17 +6,15 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using UseCase.Yousiki.UpdateYosiki;
 
-namespace Interactor.Yousiki.UpdateYosiki
+namespace Interactor.Yousiki
 {
     public class UpdateYosikiInteractor : RepositoryBase, IUpdateYosikiInputPort
     {
-        private readonly ITenantProvider _tenantProvider;
         private readonly IYousikiRepository _yousikiRepository;
 
         public UpdateYosikiInteractor(IYousikiRepository yousikiRepository, ITenantProvider tenantProvider) : base(tenantProvider)
         {
             _yousikiRepository = yousikiRepository;
-            _tenantProvider = tenantProvider;
         }
         public UpdateYosikiOutputData Handle(UpdateYosikiInputData inputData)
         {
@@ -97,7 +95,7 @@ namespace Interactor.Yousiki.UpdateYosiki
 
             if (smokingTypeModel.Value.AsInteger() > 0)
             {
-                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || (!smokingNumberOfDayModel.Value.Equals("000") && smokingNumberOfDayModel.Value.AsInteger() <= 0))
+                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || !smokingNumberOfDayModel.Value.Equals("000") && smokingNumberOfDayModel.Value.AsInteger() <= 0)
                 {
                     string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 喫煙歴 - 1日の喫煙本数");
                     result.Add(false, message);
