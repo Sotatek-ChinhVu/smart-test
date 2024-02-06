@@ -136,11 +136,8 @@ public class YousikiController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpdateYousiki)]
     public ActionResult<Response<UpdateYosikiResponse>> UpdateYosiki([FromBody] UpdateYosikiRequest request)
     {
-
-        var a = ConvertRequestToYousiki1InfDetailModel(request);
         List<Yousiki1InfDetailModel> yousiki1InfDetails = ConvertRequestToYousiki1InfDetailModel(request).Item1.Where(x => x.PtId != 0).ToList();
         List<CategoryModel> categories = ConvertRequestToYousiki1InfDetailModel(request).Item2;
-
 
         var input = new UpdateYosikiInputData(HpId, UserId, new Yousiki1InfModel(HpId, request.Yousiki1Inf.PtId, request.Yousiki1Inf.SinYm, request.Yousiki1Inf.DataType, request.Yousiki1Inf.SeqNo, request.Yousiki1Inf.IsDeleted, request.Yousiki1Inf.Status), yousiki1InfDetails, categories, request.IsTemporarySave);
         var output = _bus.Handle(input);
@@ -222,183 +219,85 @@ public class YousikiController : AuthorizeControllerBase
                                    ));
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameLast != null)
+            string codeNo = "CD00001";
+            var ptId = request.Yousiki1Inf.PtId;
+            var sinYm = request.Yousiki1Inf.SinYm;
+            var seqNo = request.Yousiki1Inf.SeqNo;
+            var rowNo = yousiki1InfDetailRequest.SortNo;
+            var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
+
+            if (!string.IsNullOrEmpty(fullByomei))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameLast.PtId,
-                   yousiki1InfDetailRequest.InjuryNameLast.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameLast.DataType,
-                   yousiki1InfDetailRequest.InjuryNameLast.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   fullByomei,
-                   yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(9, fullByomei);
             }
 
             if (yousiki1InfDetailRequest.Icd10 != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.Icd10.PtId,
-                   yousiki1InfDetailRequest.Icd10.SinYm,
-                   yousiki1InfDetailRequest.Icd10.DataType,
-                   yousiki1InfDetailRequest.Icd10.SeqNo,
-                   yousiki1InfDetailRequest.Icd10.CodeNo,
-                   yousiki1InfDetailRequest.Icd10.RowNo,
-                   yousiki1InfDetailRequest.Icd10.Payload,
-                   yousiki1InfDetailRequest.Icd10.Value,
-                   yousiki1InfDetailRequest.Icd10.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.Icd10.Payload, yousiki1InfDetailRequest.Icd10.Value);
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameCode != null)
+            if (!string.IsNullOrEmpty(yousiki1InfDetailRequest.ByomeiCd))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameCode.PtId,
-                   yousiki1InfDetailRequest.InjuryNameCode.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameCode.DataType,
-                   yousiki1InfDetailRequest.InjuryNameCode.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.Payload,
-                   yousiki1InfDetailRequest.ByomeiCd,
-                   yousiki1InfDetailRequest.InjuryNameCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(3, yousiki1InfDetailRequest.ByomeiCd);
             }
 
-            if (yousiki1InfDetailRequest.ModifierCode != null)
+            if (!string.IsNullOrEmpty(yousiki1InfDetailRequest.ByomeiCd))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.ModifierCode.PtId,
-                   yousiki1InfDetailRequest.ModifierCode.SinYm,
-                   yousiki1InfDetailRequest.ModifierCode.DataType,
-                   yousiki1InfDetailRequest.ModifierCode.SeqNo,
-                   yousiki1InfDetailRequest.ModifierCode.CodeNo,
-                   yousiki1InfDetailRequest.ModifierCode.RowNo,
-                   yousiki1InfDetailRequest.ModifierCode.Payload,
-                   valueModifierDiagnosticInjurys,
-                   yousiki1InfDetailRequest.ModifierCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(4, valueModifierDiagnosticInjurys);
             }
 
             if (yousiki1InfDetailRequest.DateOfHospitalization != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.DateOfHospitalization.PtId,
-                   yousiki1InfDetailRequest.DateOfHospitalization.SinYm,
-                   yousiki1InfDetailRequest.DateOfHospitalization.DataType,
-                   yousiki1InfDetailRequest.DateOfHospitalization.SeqNo,
-                   yousiki1InfDetailRequest.DateOfHospitalization.CodeNo,
-                   yousiki1InfDetailRequest.DateOfHospitalization.RowNo,
-                   yousiki1InfDetailRequest.DateOfHospitalization.Payload,
-                   yousiki1InfDetailRequest.DateOfHospitalization.Value,
-                   yousiki1InfDetailRequest.DateOfHospitalization.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.DateOfHospitalization.Payload, yousiki1InfDetailRequest.DateOfHospitalization.Value);
             }
 
             if (yousiki1InfDetailRequest.DischargeDate != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.DischargeDate.PtId,
-                   yousiki1InfDetailRequest.DischargeDate.SinYm,
-                   yousiki1InfDetailRequest.DischargeDate.DataType,
-                   yousiki1InfDetailRequest.DischargeDate.SeqNo,
-                   yousiki1InfDetailRequest.DischargeDate.CodeNo,
-                   yousiki1InfDetailRequest.DischargeDate.RowNo,
-                   yousiki1InfDetailRequest.DischargeDate.Payload,
-                   yousiki1InfDetailRequest.DischargeDate.Value,
-                   yousiki1InfDetailRequest.DischargeDate.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.DischargeDate.Payload, yousiki1InfDetailRequest.DischargeDate.Value);
             }
 
             if (yousiki1InfDetailRequest.Destination != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.Destination.PtId,
-                   yousiki1InfDetailRequest.Destination.SinYm,
-                   yousiki1InfDetailRequest.Destination.DataType,
-                   yousiki1InfDetailRequest.Destination.SeqNo,
-                   yousiki1InfDetailRequest.Destination.CodeNo,
-                   yousiki1InfDetailRequest.Destination.RowNo,
-                   yousiki1InfDetailRequest.Destination.Payload,
-                   yousiki1InfDetailRequest.Destination.Value,
-                   yousiki1InfDetailRequest.Destination.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.Destination.Payload, yousiki1InfDetailRequest.Destination.Value);
             }
 
             if (yousiki1InfDetailRequest.HouseCallDate != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.HouseCallDate.PtId,
-                   yousiki1InfDetailRequest.HouseCallDate.SinYm,
-                   yousiki1InfDetailRequest.HouseCallDate.DataType,
-                   yousiki1InfDetailRequest.HouseCallDate.SeqNo,
-                   yousiki1InfDetailRequest.HouseCallDate.CodeNo,
-                   yousiki1InfDetailRequest.HouseCallDate.RowNo,
-                   yousiki1InfDetailRequest.HouseCallDate.Payload,
-                   yousiki1InfDetailRequest.HouseCallDate.Value,
-                   yousiki1InfDetailRequest.HouseCallDate.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.HouseCallDate.Payload, yousiki1InfDetailRequest.HouseCallDate.Value);
             }
 
             if (yousiki1InfDetailRequest.MedicalInstitution != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.MedicalInstitution.PtId,
-                   yousiki1InfDetailRequest.MedicalInstitution.SinYm,
-                   yousiki1InfDetailRequest.MedicalInstitution.DataType,
-                   yousiki1InfDetailRequest.MedicalInstitution.SeqNo,
-                   yousiki1InfDetailRequest.MedicalInstitution.CodeNo,
-                   yousiki1InfDetailRequest.MedicalInstitution.RowNo,
-                   yousiki1InfDetailRequest.MedicalInstitution.Payload,
-                   yousiki1InfDetailRequest.MedicalInstitution.Value,
-                   yousiki1InfDetailRequest.MedicalInstitution.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.MedicalInstitution.Payload, yousiki1InfDetailRequest.MedicalInstitution.Value);
             }
 
             if (yousiki1InfDetailRequest.StartDate != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                                   yousiki1InfDetailRequest.StartDate.PtId,
-                                   yousiki1InfDetailRequest.StartDate.SinYm,
-                                   yousiki1InfDetailRequest.StartDate.DataType,
-                                   yousiki1InfDetailRequest.StartDate.SeqNo,
-                                   yousiki1InfDetailRequest.StartDate.CodeNo,
-                                   yousiki1InfDetailRequest.StartDate.RowNo,
-                                   yousiki1InfDetailRequest.StartDate.Payload,
-                                   yousiki1InfDetailRequest.StartDate.Value,
-                                   yousiki1InfDetailRequest.StartDate.IsDeleted
-                                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.StartDate.Payload, yousiki1InfDetailRequest.StartDate.Value);
             }
 
             if (yousiki1InfDetailRequest.OnsetDate != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.OnsetDate.PtId,
-                   yousiki1InfDetailRequest.OnsetDate.SinYm,
-                   yousiki1InfDetailRequest.OnsetDate.DataType,
-                   yousiki1InfDetailRequest.OnsetDate.SeqNo,
-                   yousiki1InfDetailRequest.OnsetDate.CodeNo,
-                   yousiki1InfDetailRequest.OnsetDate.RowNo,
-                   yousiki1InfDetailRequest.OnsetDate.Payload,
-                   yousiki1InfDetailRequest.OnsetDate.Value,
-                   yousiki1InfDetailRequest.OnsetDate.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.OnsetDate.Payload, yousiki1InfDetailRequest.OnsetDate.Value);
             }
 
             if (yousiki1InfDetailRequest.MaximumNumberDate != null)
             {
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.MaximumNumberDate.Payload, yousiki1InfDetailRequest.MaximumNumberDate.Value);
+            }
+
+            void SetYousiki1InfDetailModel(int payload, string value)
+            {
                 result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.MaximumNumberDate.PtId,
-                   yousiki1InfDetailRequest.MaximumNumberDate.SinYm,
-                   yousiki1InfDetailRequest.MaximumNumberDate.DataType,
-                   yousiki1InfDetailRequest.MaximumNumberDate.SeqNo,
-                   yousiki1InfDetailRequest.MaximumNumberDate.CodeNo,
-                   yousiki1InfDetailRequest.MaximumNumberDate.RowNo,
-                   yousiki1InfDetailRequest.MaximumNumberDate.Payload,
-                   yousiki1InfDetailRequest.MaximumNumberDate.Value,
-                   yousiki1InfDetailRequest.MaximumNumberDate.IsDeleted
+                   ptId,
+                   sinYm,
+                   0,
+                   seqNo,
+                   codeNo,
+                   rowNo,
+                   payload,
+                   value,
+                   isDeleted
                    ));
             }
         }
@@ -1037,7 +936,7 @@ public class YousikiController : AuthorizeControllerBase
 
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.LivingHabitRequest.AcuteCoronaryHistorys)
         {
-            if (yousiki1InfDetailRequest.Type != null) 
+            if (yousiki1InfDetailRequest.Type != null)
             {
                 result.Add(new Yousiki1InfDetailModel(
                    yousiki1InfDetailRequest.Type.PtId,
@@ -2495,7 +2394,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.OnsetDate.IsDeleted
                    ));
             }
-             
+
             if (yousiki1InfDetailRequest.MaximumNumberDate != null)
             {
                 result.Add(new Yousiki1InfDetailModel(

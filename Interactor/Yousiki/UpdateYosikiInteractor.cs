@@ -23,9 +23,9 @@ namespace Interactor.Yousiki
                 if (!inputData.IsTemporarySave)
                 {
                     var validate = ValidationData(inputData.HpId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf);
-                    if (!validate.First().Key)
+                    if (!validate.FirstOrDefault().Key && validate.Count != 0)
                     {
-                        return new UpdateYosikiOutputData(UpdateYosikiStatus.Failed, validate.First().Value);
+                        return new UpdateYosikiOutputData(UpdateYosikiStatus.Failed, validate.FirstOrDefault().Value);
                     }
                 }
 
