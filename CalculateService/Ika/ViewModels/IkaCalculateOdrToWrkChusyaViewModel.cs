@@ -228,7 +228,7 @@ namespace CalculateService.Ika.ViewModels
                                     // コメント項目以外
 
                                     // 算定回数チェック
-                                    if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
+                                    if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
                                     {
                                         // 算定回数マスタのチェックにより算定不可
                                         _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);

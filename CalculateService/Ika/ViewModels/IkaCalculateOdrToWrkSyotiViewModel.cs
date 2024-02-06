@@ -214,7 +214,7 @@ namespace CalculateService.Ika.ViewModels
                                     }
 
                                     // 算定回数チェック
-                                    if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
+                                    if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
                                     {
                                         // 算定回数マスタのチェックにより算定不可
                                         _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: 1);                                    
@@ -229,7 +229,8 @@ namespace CalculateService.Ika.ViewModels
                                         // 詳細追加
                                         _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                                         if (odrDtl.TenMst != null && 
-                                            (odrDtl.TenMst.IsSyotiJikangaiTarget))
+                                            ((odrDtl.TenMst.IsSyotiJikangaiTarget) ||
+                                             (new string[] { ItemCdConst.SyotiRosaiSisiKasan, ItemCdConst.SyotiRosaiSisiKasan2}.Contains(odrDtl.ItemCd))))
                                         {
                                             // 
                                             if (!(new List<int> { 5, 6 }.Contains(odrDtl.TenId)))
