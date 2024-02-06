@@ -136,7 +136,7 @@ public class KinkiCheckerTest : BaseUT
         };
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -158,6 +158,7 @@ public class KinkiCheckerTest : BaseUT
     [Test]
     public void CheckKinkiChecker_003_CheckKinki_TestRemoveDuplicate()
     {
+        int hpId = 1;
         //setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -201,7 +202,7 @@ public class KinkiCheckerTest : BaseUT
         }
         systemConf.Val = temp;
 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
         var tenMsts = CommonCheckerData.ReadTenMst("KINKI3", "");
         tenantTracking.TenMsts.AddRange(tenMsts);
@@ -209,7 +210,7 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(systemConf.HpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -231,6 +232,7 @@ public class KinkiCheckerTest : BaseUT
     [Test]
     public void CheckKinkiChecker_004_CheckKinki_TestDefault_Error()
     {
+        int hpId = 1;
         //setup
         var currentOdrInfoDetailModels = new List<OrdInfoDetailModel>()
         {
@@ -286,7 +288,7 @@ public class KinkiCheckerTest : BaseUT
         }
         systemConf.Val = temp;
 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
         var tenMsts = CommonCheckerData.ReadTenMst("KINKI3", "");
         tenantTracking.TenMsts.AddRange(tenMsts);
@@ -294,13 +296,13 @@ public class KinkiCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "61UTKINKI3" }, 20230101, 1231);
+        cache.InitCache(systemConf.HpId, new List<string>() { "61UTKINKI3" }, 20230101, 1231);
         kinkiChecker.InitFinder(tenantNoTracking, cache);
 
         try
         {
             /// Act
-             var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
+            var result = kinkiChecker.HandleCheckOrder(unitCheckerForOrderListResult);
 
             //// Assert
             Assert.True(result.IsError == true);

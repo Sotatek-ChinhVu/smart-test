@@ -1164,6 +1164,7 @@ namespace CloudUnitTest.SampleData
                     foreach (var r in sheetData.Elements<Row>().Skip(1))
                     {
                         var roudou = new RoudouMst();
+                        roudou.HpId = 1;
                         roudou.CreateDate = DateTime.UtcNow;
                         roudou.UpdateDate = DateTime.UtcNow;
                         foreach (var c in r.Elements<Cell>())

@@ -1,5 +1,3 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -7,11 +5,14 @@ namespace Entity.Tenant
     [Table(name: "physical_average")]
     public class PhysicalAverage : EmrCloneable<PhysicalAverage>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 実施年度
         /// 
         /// </summary>
-        
+
         [Column("jissi_year", Order = 1)]
         public int JissiYear { get; set; }
 
@@ -19,7 +20,7 @@ namespace Entity.Tenant
         /// 年齢
         /// 
         /// </summary>
-        
+
         [Column("age_year", Order = 2)]
         public int AgeYear { get; set; }
 
@@ -27,7 +28,7 @@ namespace Entity.Tenant
         /// 月齢
         /// 
         /// </summary>
-        
+
         [Column("age_month", Order = 3)]
         public int AgeMonth { get; set; }
 
@@ -35,7 +36,7 @@ namespace Entity.Tenant
         /// 日齢
         /// 
         /// </summary>
-        
+
         [Column("age_day", Order = 4)]
         public int AgeDay { get; set; }
 

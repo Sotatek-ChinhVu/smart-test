@@ -49,13 +49,13 @@ namespace Domain.Models.MstItem
 
         bool IsUsingKensa(int hpId, string kensaItemCd, List<string> itemCds);
 
-        List<DosageDrugModel> GetDosages(List<string> yjCds);
+        List<DosageDrugModel> GetDosages(int hpId, List<string> yjCds);
 
-        List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();
+        List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData(int hpId);
 
-        (List<OtcItemModel>, int) SearchOTCModels(string searchValue, int pageIndex, int pageSize);
+        (List<OtcItemModel>, int) SearchOTCModels(int hpId, string searchValue, int pageIndex, int pageSize);
 
-        List<SearchSupplementModel> GetListSupplement(string searchValue);
+        List<SearchSupplementModel> GetListSupplement(int hpId, string searchValue);
 
         (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, bool isDeleted, List<int> kouiKbns, List<int> drugKbns, string masterSBT);
 
@@ -127,7 +127,7 @@ namespace Domain.Models.MstItem
 
         string GetTenMstName(int hpId, string santeiItemCd);
 
-        List<M10DayLimitModel> GetM10DayLimitModels(string yjCdItem);
+        List<M10DayLimitModel> GetM10DayLimitModels(int hpId, string yjCdItem);
 
         List<IpnMinYakkaMstModel> GetIpnMinYakkaMstModels(int hpId, string IpnNameCd);
 
@@ -177,9 +177,9 @@ namespace Domain.Models.MstItem
 
         (List<KensaMstModel>, int) GetListKensaMst(int hpId, string keyWord, int pageIndex, int pageSize);
 
-        string GetDrugAction(string yjCd);
+        string GetDrugAction(int hpId, string yjCd);
 
-        string GetPrecautions(string yjCd);
+        string GetPrecautions(int hpId, string yjCd);
 
         bool UpdateCmtCheckMst(int userId, int hpId, List<ItemCmtModel> listData);
 
@@ -210,7 +210,7 @@ namespace Domain.Models.MstItem
 
         List<RenkeiTemplateMstModel> GetRenkeiTemplateMstModels(int hpId);
 
-        List<EventMstModel> GetEventMstModelList();
+        List<EventMstModel> GetEventMstModelList(int hpId);
 
         bool SaveRenkei(int hpId, int userId, List<(int renkeiSbt, List<RenkeiConfModel> renkeiConfList)> renkeiTabList);
 

@@ -24,7 +24,7 @@ public interface ISystemConfRepository : IRepositoryBase
     List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, List<int> menuGrp);
 
     //Key: RoudouCd, Value: RoudouName
-    Dictionary<string, string> GetRoudouMst();
+    Dictionary<string, string> GetRoudouMst(int hpId);
 
     List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, List<int> menuGrp);
 

@@ -16,7 +16,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                var foodAlrgyMasterData = GetFoodAlrgyMasterData();
+                var foodAlrgyMasterData = GetFoodAlrgyMasterData(inputData.HpId);
                 return new GetFoodAlrgyOutputData(foodAlrgyMasterData, GetFoodAlrgyStatus.Successed);
             }
             finally
@@ -24,9 +24,9 @@ namespace Interactor.MstItem
                 _mstItemRepository.ReleaseResource();
             }
         }
-        private List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
+        private List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData(int hpId)
         {
-            return _mstItemRepository.GetFoodAlrgyMasterData(); 
+            return _mstItemRepository.GetFoodAlrgyMasterData(hpId); 
         }
     }
 }

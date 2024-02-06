@@ -1003,7 +1003,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             }
         );
 
-        var kohiPriorities = NoTrackingDataContext.KohiPriorities;
+        var kohiPriorities = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId);
         var ptKohis = NoTrackingDataContext.PtKohis.Where(p =>
             p.HpId == hpId &&
             p.PtId == ptId &&

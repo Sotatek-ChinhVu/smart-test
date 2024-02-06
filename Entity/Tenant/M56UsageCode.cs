@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m56_usage_code")]
     public class M56UsageCode : EmrCloneable<M56UsageCode>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 用法コード
         /// 
         /// </summary>
-        
+
         [Column("yoho_cd", Order = 1)]
         public string YohoCd { get; set; } = string.Empty;
 

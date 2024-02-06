@@ -12,11 +12,14 @@ namespace Entity.Tenant
 
     public class M34PrecautionCode : EmrCloneable<M34PrecautionCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 注意事項コード
         /// 
         /// </summary>
-        
+
         [Column("precaution_cd", Order = 1)]
         public string PrecautionCd { get; set; } = string.Empty;
 

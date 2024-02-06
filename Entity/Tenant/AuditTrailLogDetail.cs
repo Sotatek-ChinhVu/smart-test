@@ -24,4 +24,5 @@ namespace Entity.Tenant
         public string? Hosoku { get; set; } = string.Empty;
 
     }
+    
 }

@@ -18,7 +18,7 @@ namespace Domain.Models.OrdInfs
 
         bool CheckExistOrder(int hpId, long ptId, long raiinNo, int sinDate, long rpNo, long rpEdaNo);
 
-        bool CheckIsGetYakkaPrice(int hpId, TenItemModel tenMst, int sinDate);
+        bool CheckIsGetYakkaPrice(TenItemModel tenMst, int sinDate);
 
         IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted);
 

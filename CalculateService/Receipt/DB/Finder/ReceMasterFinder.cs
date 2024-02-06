@@ -10,7 +10,6 @@ using CalculateService.Interface;
 using CalculateService.Receipt.Models;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
-
 namespace CalculateService.Receipt.DB.Finder
 {
     public class ReceMasterFinder
@@ -46,10 +45,11 @@ namespace CalculateService.Receipt.DB.Finder
         /// <param name="sinDate"></param>
         /// <param name="Unit"></param>
         /// <returns></returns>
-        public UnitMstModel FindUnitMst(int sinDate, string Unit)
+        public UnitMstModel FindUnitMst(int hpId, int sinDate, string Unit)
         {
             return new UnitMstModel(
                 _tenantDataContext.UnitMsts.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate &&
                     p.UnitName == Unit)
@@ -98,7 +98,7 @@ namespace CalculateService.Receipt.DB.Finder
                 p.IsDeleted == DeleteStatus.None
             );
 
-            var KaYousikis = _tenantDataContext.KacodeReceYousikis.FindListQueryableNoTrack();
+            var KaYousikis = _tenantDataContext.KacodeReceYousikis.FindListQueryableNoTrack(h => h.HpId == hpId);
 
             var join =
                 (

@@ -90,7 +90,7 @@ public class SaveSinrekiFilterMstListInteractor : ISaveSinrekiFilterMstListInput
         {
             return SaveSinrekiFilterMstListStatus.InvalidItemCd;
         }
-        else if (!_drugInforRepository.CheckExistKouiKbn(inputData.HpId, kouiKbnIdList))
+        else if (!_drugInforRepository.CheckExistKouiKbn(kouiKbnIdList))
         {
             return SaveSinrekiFilterMstListStatus.InvalidSinrekiFilterMstKouiKbnId;
         }
