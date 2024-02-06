@@ -20,6 +20,9 @@ using UseCase.Yousiki.GetYousiki1InfDetails;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.UpdateYosiki;
+using Domain.Models.Yousiki;
+using EmrCloudApi.Requests.Yousiki.RequestItem;
+using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
@@ -52,6 +55,16 @@ public class YousikiController : AuthorizeControllerBase
         var input = new GetYousiki1InfDetailsInputData(HpId, request.SinYm, request.PtId, request.DataType, request.SeqNo);
         var output = _bus.Handle(input);
         var presenter = new GetYousiki1InfDetailsPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetYousiki1InfDetailsResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetYousiki1InfDetailsByCodeNo)]
+    public ActionResult<Response<GetYousiki1InfDetailsResponse>> GetYousiki1InfDetailsByCodeNo([FromQuery] GetYousiki1InfDetailsByCodeNoRequest request)
+    {
+        var input = new GetYousiki1InfDetailsByCodeNoInputData(HpId, request.SinYm, request.PtId, request.DataType, request.SeqNo, request.CodeNo);
+        var output = _bus.Handle(input);
+        var presenter = new GetYousiki1InfDetailsByCodeNoPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetYousiki1InfDetailsResponse>>(presenter.Result);
     }
