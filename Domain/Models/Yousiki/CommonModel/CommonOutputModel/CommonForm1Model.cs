@@ -7,7 +7,7 @@ public class CommonForm1Model
 {
     public int PayLoadValueSelect { get; set; } = 1;
 
-    public int ValueSelect { get; set; }
+    public Yousiki1InfDetailModel ValueSelect { get; set; }
 
     public int PayLoadInjuryName { get; set; } = 9;
 
@@ -135,14 +135,15 @@ public class CommonForm1Model
         CodeNo = yousiki1InfDetails[0].CodeNo;
         SortNo = yousiki1InfDetails[0].RowNo;
         GridType = listType;
+
         foreach (var item in yousiki1InfDetails)
         {
             if (listType == ByomeiListType.None)
             {
-                if (item.Value.AsInteger() == PayLoadValueSelect)
+                if (item.Payload == PayLoadValueSelect)
                 {
-                    ValueSelect = item.Value.AsInteger();
-                    if (ValueSelect == 1)
+                    ValueSelect = item;
+                    if (ValueSelect.Value.AsInteger() == 1)
                     {
                         IsEnableICD10Code = true;
                     }

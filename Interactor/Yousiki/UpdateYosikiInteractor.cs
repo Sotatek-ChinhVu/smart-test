@@ -23,13 +23,13 @@ namespace Interactor.Yousiki
                 if (!inputData.IsTemporarySave)
                 {
                     var validate = ValidationData(inputData.HpId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf);
-                    if (!validate.First().Key)
+                    if (!validate.FirstOrDefault().Key && validate.Count != 0)
                     {
-                        return new UpdateYosikiOutputData(UpdateYosikiStatus.Failed, validate.First().Value);
+                        return new UpdateYosikiOutputData(UpdateYosikiStatus.Failed, validate.FirstOrDefault().Value);
                     }
                 }
 
-                _yousikiRepository.UpdateYosiki(inputData.HpId, inputData.UserId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf, inputData.DataTypes, inputData.IsTemporarySave);
+                _yousikiRepository.UpdateYosiki(inputData.HpId, inputData.UserId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf, inputData.CategoryModels, inputData.IsTemporarySave);
 
                 return new UpdateYosikiOutputData(UpdateYosikiStatus.Successed, "");
             }
