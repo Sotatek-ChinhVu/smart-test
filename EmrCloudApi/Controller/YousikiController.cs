@@ -168,6 +168,7 @@ public class YousikiController : AuthorizeControllerBase
         string prefixString;
         string suffixString;
         string fullByomei;
+        string codeNo = "";
 
         foreach (var categorie in request.Yousiki1Inf.CategoryRequests)
         {
@@ -233,7 +234,7 @@ public class YousikiController : AuthorizeControllerBase
                                    ));
             }
 
-            string codeNo = "CD00001";
+            codeNo = "CD00001";
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
@@ -430,7 +431,7 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (!string.IsNullOrEmpty(valueModifier))
+        if (!string.IsNullOrEmpty(byomeiInfCommon.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
                ptId,
@@ -666,49 +667,34 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (byomeiInfCommonFinalExaminationInf.InjuryNameCode != null)
+        if (!string.IsNullOrEmpty(byomeiInfCommonFinalExaminationInf.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.PtId,
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.SinYm,
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.DataType,
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.SeqNo,
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.CodeNo,
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.RowNo,
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.Payload,
+               ptId,
+               sinYm,
+               0,
+               seqNo,
+               "CDF0001",
+               byomeiInfCommonFinalExaminationInf.SortNo,
+               4,
                byomeiInfCommonFinalExaminationInf.ByomeiCd,
-               byomeiInfCommonFinalExaminationInf.InjuryNameCode.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
-        if (byomeiInfCommonFinalExaminationInf.ModifierCode != null)
+        if (!string.IsNullOrEmpty(byomeiInfCommonFinalExaminationInf.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
-               byomeiInfCommonFinalExaminationInf.ModifierCode.PtId,
-               byomeiInfCommonFinalExaminationInf.ModifierCode.SinYm,
-               byomeiInfCommonFinalExaminationInf.ModifierCode.DataType,
-               byomeiInfCommonFinalExaminationInf.ModifierCode.SeqNo,
-               byomeiInfCommonFinalExaminationInf.ModifierCode.CodeNo,
-               byomeiInfCommonFinalExaminationInf.ModifierCode.RowNo,
-               byomeiInfCommonFinalExaminationInf.ModifierCode.Payload,
+               ptId,
+               sinYm,
+               0,
+               seqNo,
+               "CDF0001",
+               byomeiInfCommonFinalExaminationInf.SortNo,
+               5,
                valueModifierFinalExaminationInf,
-               byomeiInfCommonFinalExaminationInf.ModifierCode.IsDeleted
+               byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                ));
-        }
-
-        if (byomeiInfCommonFinalExaminationInf.ModifierCode != null)
-        {
-            result.Add(new Yousiki1InfDetailModel(
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.PtId,
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.SinYm,
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.DataType,
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.SeqNo,
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.CodeNo,
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.RowNo,
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.Payload,
-                           valueModifierFinalExaminationInf,
-                           byomeiInfCommonFinalExaminationInf.ModifierCode.IsDeleted
-                           ));
         }
 
         if (byomeiInfCommonFinalExaminationInf.DateOfHospitalization != null)
@@ -834,7 +820,7 @@ public class YousikiController : AuthorizeControllerBase
 
         //ConvertTabLivingHabit
         #region 
-        foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.LivingHabitRequest.Yousiki1InfDetails)
+        foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.LivingHabitRequest.Yousiki1InfDetails ?? new())
         {
             result.Add(new Yousiki1InfDetailModel(
                    yousiki1InfDetailRequest.PtId,
@@ -1255,6 +1241,25 @@ public class YousikiController : AuthorizeControllerBase
             suffixString = "";
             fullByomei = "";
 
+            codeNo = "HCH0001";
+            var rowNo = yousiki1InfDetailRequest.SortNo;
+            var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
+
+            void SetYousiki1InfDetailModel(int payload, string value)
+            {
+                result.Add(new Yousiki1InfDetailModel(
+                   ptId,
+                   sinYm,
+                   0,
+                   seqNo,
+                   codeNo,
+                   rowNo,
+                   payload,
+                   value,
+                   isDeleted
+                   ));
+            }
+
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList ?? new())
             {
                 valueModifierHospitalizationStatus = valueModifierHospitalizationStatus + value.Code;
@@ -1274,77 +1279,27 @@ public class YousikiController : AuthorizeControllerBase
 
             if (yousiki1InfDetailRequest.ValueSelect != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.ValueSelect.PtId,
-                   yousiki1InfDetailRequest.ValueSelect.SinYm,
-                   yousiki1InfDetailRequest.ValueSelect.DataType,
-                   yousiki1InfDetailRequest.ValueSelect.SeqNo,
-                   yousiki1InfDetailRequest.ValueSelect.CodeNo,
-                   yousiki1InfDetailRequest.ValueSelect.RowNo,
-                   yousiki1InfDetailRequest.ValueSelect.Payload,
-                   yousiki1InfDetailRequest.ValueSelect.Value,
-                   yousiki1InfDetailRequest.ValueSelect.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.ValueSelect.Payload, yousiki1InfDetailRequest.ValueSelect.Value);
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameLast != null)
+            if (!string.IsNullOrEmpty(fullByomei))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameLast.PtId,
-                   yousiki1InfDetailRequest.InjuryNameLast.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameLast.DataType,
-                   yousiki1InfDetailRequest.InjuryNameLast.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   fullByomei,
-                   yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(9, fullByomei);
             }
 
             if (yousiki1InfDetailRequest.Icd10 != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.Icd10.PtId,
-                   yousiki1InfDetailRequest.Icd10.SinYm,
-                   yousiki1InfDetailRequest.Icd10.DataType,
-                   yousiki1InfDetailRequest.Icd10.SeqNo,
-                   yousiki1InfDetailRequest.Icd10.CodeNo,
-                   yousiki1InfDetailRequest.Icd10.RowNo,
-                   yousiki1InfDetailRequest.Icd10.Payload,
-                   yousiki1InfDetailRequest.Icd10.Value,
-                   yousiki1InfDetailRequest.Icd10.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(yousiki1InfDetailRequest.Icd10.Payload, yousiki1InfDetailRequest.Icd10.Value);
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameCode != null)
+            if (!string.IsNullOrEmpty(yousiki1InfDetailRequest.ByomeiCd))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameCode.PtId,
-                   yousiki1InfDetailRequest.InjuryNameCode.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameCode.DataType,
-                   yousiki1InfDetailRequest.InjuryNameCode.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.Payload,
-                   yousiki1InfDetailRequest.ByomeiCd,
-                   yousiki1InfDetailRequest.InjuryNameCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(5, yousiki1InfDetailRequest.ByomeiCd);
             }
 
             if (yousiki1InfDetailRequest.ModifierCode != null)
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.ModifierCode.PtId,
-                   yousiki1InfDetailRequest.ModifierCode.SinYm,
-                   yousiki1InfDetailRequest.ModifierCode.DataType,
-                   yousiki1InfDetailRequest.ModifierCode.SeqNo,
-                   yousiki1InfDetailRequest.ModifierCode.CodeNo,
-                   yousiki1InfDetailRequest.ModifierCode.RowNo,
-                   yousiki1InfDetailRequest.ModifierCode.Payload,
-                   valueModifierHospitalizationStatus,
-                   yousiki1InfDetailRequest.ModifierCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(6, valueModifierHospitalizationStatus);
             }
 
             if (yousiki1InfDetailRequest.DateOfHospitalization != null)
@@ -1475,6 +1430,24 @@ public class YousikiController : AuthorizeControllerBase
             suffixString = "";
             fullByomei = "";
 
+            codeNo = "HCHC001";
+            var rowNo = yousiki1InfDetailRequest.SortNo;
+            var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
+
+            void SetYousiki1InfDetailModel(int payload, string value)
+            {
+                result.Add(new Yousiki1InfDetailModel(
+                   ptId,
+                   sinYm,
+                   0,
+                   seqNo,
+                   codeNo,
+                   rowNo,
+                   payload,
+                   value,
+                   isDeleted
+                   ));
+            }
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList ?? new())
             {
@@ -1507,19 +1480,9 @@ public class YousikiController : AuthorizeControllerBase
                    ));
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameLast != null)
+            if (!string.IsNullOrEmpty(fullByomei))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameLast.PtId,
-                   yousiki1InfDetailRequest.InjuryNameLast.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameLast.DataType,
-                   yousiki1InfDetailRequest.InjuryNameLast.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   fullByomei,
-                   yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(9, fullByomei);
             }
 
             if (yousiki1InfDetailRequest.Icd10 != null)
@@ -1537,34 +1500,14 @@ public class YousikiController : AuthorizeControllerBase
                    ));
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameCode != null)
+            if (!string.IsNullOrEmpty(yousiki1InfDetailRequest.ByomeiCd))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameCode.PtId,
-                   yousiki1InfDetailRequest.InjuryNameCode.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameCode.DataType,
-                   yousiki1InfDetailRequest.InjuryNameCode.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.Payload,
-                   yousiki1InfDetailRequest.ByomeiCd,
-                   yousiki1InfDetailRequest.InjuryNameCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(4, yousiki1InfDetailRequest.ByomeiCd);
             }
 
-            if (yousiki1InfDetailRequest.ModifierCode != null)
+            if (!string.IsNullOrEmpty(yousiki1InfDetailRequest.ByomeiCd))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.ModifierCode.PtId,
-                   yousiki1InfDetailRequest.ModifierCode.SinYm,
-                   yousiki1InfDetailRequest.ModifierCode.DataType,
-                   yousiki1InfDetailRequest.ModifierCode.SeqNo,
-                   yousiki1InfDetailRequest.ModifierCode.CodeNo,
-                   yousiki1InfDetailRequest.ModifierCode.RowNo,
-                   yousiki1InfDetailRequest.ModifierCode.Payload,
-                   valueModifierStatusHomeVisits,
-                   yousiki1InfDetailRequest.ModifierCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(5, valueModifierStatusHomeVisits);
             }
 
             if (yousiki1InfDetailRequest.DateOfHospitalization != null)
@@ -1725,18 +1668,18 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (finalExaminationInf.InjuryNameLast != null)
+        if (!string.IsNullOrEmpty(fullByomei))
         {
             result.Add(new Yousiki1InfDetailModel(
-               finalExaminationInf.InjuryNameLast.PtId,
-               finalExaminationInf.InjuryNameLast.SinYm,
-               finalExaminationInf.InjuryNameLast.DataType,
-               finalExaminationInf.InjuryNameLast.SeqNo,
-               finalExaminationInf.InjuryNameLast.CodeNo,
-               finalExaminationInf.InjuryNameLast.RowNo,
-               finalExaminationInf.InjuryNameLast.Payload,
+               ptId,
+               sinYm,
+               2,
+               seqNo,
+               "HCVD001",
+               finalExaminationInf.SortNo,
+               9,
                fullByomei,
-               finalExaminationInf.InjuryNameLast.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1755,33 +1698,33 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (finalExaminationInf.InjuryNameCode != null)
+        if (!string.IsNullOrEmpty(finalExaminationInf.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
-               finalExaminationInf.InjuryNameCode.PtId,
-               finalExaminationInf.InjuryNameCode.SinYm,
-               finalExaminationInf.InjuryNameCode.DataType,
-               finalExaminationInf.InjuryNameCode.SeqNo,
-               finalExaminationInf.InjuryNameCode.CodeNo,
-               finalExaminationInf.InjuryNameCode.RowNo,
-               finalExaminationInf.InjuryNameCode.Payload,
+               ptId,
+               sinYm,
+               2,
+               seqNo,
+               "HCVD001",
+               finalExaminationInf.SortNo,
+               3,
                finalExaminationInf.ByomeiCd,
-               finalExaminationInf.InjuryNameCode.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
-        if (finalExaminationInf.ModifierCode != null)
+        if (!string.IsNullOrEmpty(finalExaminationInf.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
-               finalExaminationInf.ModifierCode.PtId,
-               finalExaminationInf.ModifierCode.SinYm,
-               finalExaminationInf.ModifierCode.DataType,
-               finalExaminationInf.ModifierCode.SeqNo,
-               finalExaminationInf.ModifierCode.CodeNo,
-               finalExaminationInf.ModifierCode.RowNo,
-               finalExaminationInf.ModifierCode.Payload,
+               ptId,
+               sinYm,
+               2,
+               seqNo,
+               "HCVD001",
+               finalExaminationInf.SortNo,
+               4,
                valueModifierFinalExaminationInfAtHome,
-               finalExaminationInf.ModifierCode.IsDeleted
+               finalExaminationInf.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1942,18 +1885,18 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (finalExaminationInf2.InjuryNameLast != null)
+        if (!string.IsNullOrEmpty(fullByomei))
         {
             result.Add(new Yousiki1InfDetailModel(
-               finalExaminationInf2.InjuryNameLast.PtId,
-               finalExaminationInf2.InjuryNameLast.SinYm,
-               finalExaminationInf2.InjuryNameLast.DataType,
-               finalExaminationInf2.InjuryNameLast.SeqNo,
-               finalExaminationInf2.InjuryNameLast.CodeNo,
-               finalExaminationInf2.InjuryNameLast.RowNo,
-               finalExaminationInf2.InjuryNameLast.Payload,
+               ptId,
+               sinYm,
+               2,
+               seqNo,
+               "HPCD001",
+               finalExaminationInf2.SortNo,
+               9,
                fullByomei,
-               finalExaminationInf2.InjuryNameLast.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -1972,33 +1915,33 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (finalExaminationInf2.InjuryNameCode != null)
+        if (!string.IsNullOrEmpty(finalExaminationInf2.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
-               finalExaminationInf2.InjuryNameCode.PtId,
-               finalExaminationInf2.InjuryNameCode.SinYm,
-               finalExaminationInf2.InjuryNameCode.DataType,
-               finalExaminationInf2.InjuryNameCode.SeqNo,
-               finalExaminationInf2.InjuryNameCode.CodeNo,
-               finalExaminationInf2.InjuryNameCode.RowNo,
-               finalExaminationInf2.InjuryNameCode.Payload,
+               ptId,
+               sinYm,
+               2,
+               seqNo,
+               "HPCD001",
+               finalExaminationInf2.SortNo,
+               2,
                finalExaminationInf2.ByomeiCd,
-               finalExaminationInf2.InjuryNameCode.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
-        if (finalExaminationInf2.ModifierCode != null)
+        if (!string.IsNullOrEmpty(finalExaminationInf2.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
-               finalExaminationInf2.ModifierCode.PtId,
-               finalExaminationInf2.ModifierCode.SinYm,
-               finalExaminationInf2.ModifierCode.DataType,
-               finalExaminationInf2.ModifierCode.SeqNo,
-               finalExaminationInf2.ModifierCode.CodeNo,
-               finalExaminationInf2.ModifierCode.RowNo,
-               finalExaminationInf2.ModifierCode.Payload,
+               ptId,
+               sinYm,
+               2,
+               seqNo,
+               "HPCD001",
+               finalExaminationInf2.SortNo,
+               4,
                valueModifierFinalExaminationInf2,
-               finalExaminationInf2.ModifierCode.IsDeleted
+               finalExaminationInf2.IsDeleted ? 1 : 0
                ));
         }
 
@@ -2127,7 +2070,9 @@ public class YousikiController : AuthorizeControllerBase
         #region
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.RehabilitationRequest.Yousiki1InfDetails)
         {
-            result.Add(new Yousiki1InfDetailModel(
+            if (yousiki1InfDetailRequest != null)
+            {
+                result.Add(new Yousiki1InfDetailModel(
                    yousiki1InfDetailRequest.PtId,
                    yousiki1InfDetailRequest.SinYm,
                    yousiki1InfDetailRequest.DataType,
@@ -2138,6 +2083,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Value,
                    yousiki1InfDetailRequest.IsDeleted
                    ));
+            }
         }
 
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.RehabilitationRequest.OutpatientConsultations)
@@ -2209,6 +2155,24 @@ public class YousikiController : AuthorizeControllerBase
             prefixString = "";
             suffixString = "";
             fullByomei = "";
+            codeNo = "RCD0001";
+            var rowNo = yousiki1InfDetailRequest.SortNo;
+            var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
+
+            void SetYousiki1InfDetailModel(int payload, string value)
+            {
+                result.Add(new Yousiki1InfDetailModel(
+                   ptId,
+                   sinYm,
+                   0,
+                   seqNo,
+                   codeNo,
+                   rowNo,
+                   payload,
+                   value,
+                   isDeleted
+                   ));
+            }
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList ?? new())
             {
@@ -2241,19 +2205,9 @@ public class YousikiController : AuthorizeControllerBase
                    ));
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameLast != null)
+            if (!string.IsNullOrEmpty(fullByomei))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameLast.PtId,
-                   yousiki1InfDetailRequest.InjuryNameLast.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameLast.DataType,
-                   yousiki1InfDetailRequest.InjuryNameLast.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameLast.Payload,
-                   fullByomei,
-                   yousiki1InfDetailRequest.InjuryNameLast.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(9, fullByomei);
             }
 
             if (yousiki1InfDetailRequest.Icd10 != null)
@@ -2271,34 +2225,14 @@ public class YousikiController : AuthorizeControllerBase
                    ));
             }
 
-            if (yousiki1InfDetailRequest.InjuryNameCode != null)
+            if (!string.IsNullOrEmpty(yousiki1InfDetailRequest.ByomeiCd))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.InjuryNameCode.PtId,
-                   yousiki1InfDetailRequest.InjuryNameCode.SinYm,
-                   yousiki1InfDetailRequest.InjuryNameCode.DataType,
-                   yousiki1InfDetailRequest.InjuryNameCode.SeqNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.CodeNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.RowNo,
-                   yousiki1InfDetailRequest.InjuryNameCode.Payload,
-                   yousiki1InfDetailRequest.ByomeiCd,
-                   yousiki1InfDetailRequest.InjuryNameCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(5, yousiki1InfDetailRequest.ByomeiCd);
             }
 
-            if (yousiki1InfDetailRequest.ModifierCode != null)
+            if (!string.IsNullOrEmpty(yousiki1InfDetailRequest.ByomeiCd))
             {
-                result.Add(new Yousiki1InfDetailModel(
-                   yousiki1InfDetailRequest.ModifierCode.PtId,
-                   yousiki1InfDetailRequest.ModifierCode.SinYm,
-                   yousiki1InfDetailRequest.ModifierCode.DataType,
-                   yousiki1InfDetailRequest.ModifierCode.SeqNo,
-                   yousiki1InfDetailRequest.ModifierCode.CodeNo,
-                   yousiki1InfDetailRequest.ModifierCode.RowNo,
-                   yousiki1InfDetailRequest.ModifierCode.Payload,
-                   valueModifierByomeiRehabilitations,
-                   yousiki1InfDetailRequest.ModifierCode.IsDeleted
-                   ));
+                SetYousiki1InfDetailModel(6, valueModifierByomeiRehabilitations);
             }
 
             if (yousiki1InfDetailRequest.DateOfHospitalization != null)
