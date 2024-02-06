@@ -17,12 +17,10 @@ using UseCase.Yousiki.GetHistoryYousiki;
 using UseCase.Yousiki.GetKacodeYousikiMstDict;
 using UseCase.Yousiki.GetVisitingInfs;
 using UseCase.Yousiki.GetYousiki1InfDetails;
+using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using UseCase.Yousiki.GetYousiki1InfModel;
 using UseCase.Yousiki.GetYousiki1InfModelWithCommonInf;
 using UseCase.Yousiki.UpdateYosiki;
-using Domain.Models.Yousiki;
-using EmrCloudApi.Requests.Yousiki.RequestItem;
-using UseCase.Yousiki.GetYousiki1InfDetailsByCodeNo;
 using CreateYuIchiFileStatus = Helper.Messaging.Data.CreateYuIchiFileStatus;
 
 namespace EmrCloudApi.Controller;
@@ -164,6 +162,9 @@ public class YousikiController : AuthorizeControllerBase
         List<Yousiki1InfDetailModel> result = new();
         List<CategoryModel> categories = new();
 
+        var ptId = request.Yousiki1Inf.PtId;
+        var sinYm = request.Yousiki1Inf.SinYm;
+        var seqNo = request.Yousiki1Inf.SeqNo;
         string prefixString;
         string suffixString;
         string fullByomei;
@@ -233,9 +234,6 @@ public class YousikiController : AuthorizeControllerBase
             }
 
             string codeNo = "CD00001";
-            var ptId = request.Yousiki1Inf.PtId;
-            var sinYm = request.Yousiki1Inf.SinYm;
-            var seqNo = request.Yousiki1Inf.SeqNo;
             var rowNo = yousiki1InfDetailRequest.SortNo;
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
@@ -350,6 +348,7 @@ public class YousikiController : AuthorizeControllerBase
         }
 
         var byomeiInfCommon = request.Yousiki1Inf.TabYousikiRequest.CommonRequest.HospitalizationStatusInf.ByomeiInf;
+
         var valueModifier = "";
         prefixString = "";
         suffixString = "";
@@ -386,18 +385,18 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (byomeiInfCommon.InjuryNameLast != null)
+        if (!string.IsNullOrEmpty(fullByomei))
         {
             result.Add(new Yousiki1InfDetailModel(
-                           byomeiInfCommon.InjuryNameLast.PtId,
-                           byomeiInfCommon.InjuryNameLast.SinYm,
-                           byomeiInfCommon.InjuryNameLast.DataType,
-                           byomeiInfCommon.InjuryNameLast.SeqNo,
-                           byomeiInfCommon.InjuryNameLast.CodeNo,
-                           byomeiInfCommon.InjuryNameLast.RowNo,
-                           byomeiInfCommon.InjuryNameLast.Payload,
+                           ptId,
+                           sinYm,
+                           0,
+                           seqNo,
+                           "CH00001",
+                           byomeiInfCommon.SortNo,
+                           9,
                            fullByomei,
-                           byomeiInfCommon.InjuryNameLast.IsDeleted
+                           byomeiInfCommon.IsDeleted ? 1 : 0
                            ));
         }
 
@@ -416,33 +415,33 @@ public class YousikiController : AuthorizeControllerBase
                            ));
         }
 
-        if (byomeiInfCommon.InjuryNameCode != null)
+        if (!string.IsNullOrEmpty(byomeiInfCommon.ByomeiCd))
         {
             result.Add(new Yousiki1InfDetailModel(
-               byomeiInfCommon.InjuryNameCode.PtId,
-               byomeiInfCommon.InjuryNameCode.SinYm,
-               byomeiInfCommon.InjuryNameCode.DataType,
-               byomeiInfCommon.InjuryNameCode.SeqNo,
-               byomeiInfCommon.InjuryNameCode.CodeNo,
-               byomeiInfCommon.InjuryNameCode.RowNo,
-               byomeiInfCommon.InjuryNameCode.Payload,
+               ptId,
+               sinYm,
+               0,
+               seqNo,
+               "CDF0001",
+               byomeiInfCommon.SortNo,
+               4,
                byomeiInfCommon.ByomeiCd,
-               byomeiInfCommon.InjuryNameCode.IsDeleted
+               byomeiInfCommon.IsDeleted ? 1 : 0
                ));
         }
 
-        if (byomeiInfCommon.ModifierCode != null)
+        if (!string.IsNullOrEmpty(valueModifier))
         {
             result.Add(new Yousiki1InfDetailModel(
-               byomeiInfCommon.ModifierCode.PtId,
-               byomeiInfCommon.ModifierCode.SinYm,
-               byomeiInfCommon.ModifierCode.DataType,
-               byomeiInfCommon.ModifierCode.SeqNo,
-               byomeiInfCommon.ModifierCode.CodeNo,
-               byomeiInfCommon.ModifierCode.RowNo,
-               byomeiInfCommon.ModifierCode.Payload,
+               ptId,
+               sinYm,
+               0,
+               seqNo,
+               "CDF0001",
+               byomeiInfCommon.SortNo,
+               5,
                valueModifier,
-               byomeiInfCommon.ModifierCode.IsDeleted
+               byomeiInfCommon.IsDeleted ? 1 : 0
                ));
         }
 
@@ -566,7 +565,6 @@ public class YousikiController : AuthorizeControllerBase
                            ));
         }
 
-
         var duringMonthMedicineInfFinalExaminationInf = request.Yousiki1Inf.TabYousikiRequest.CommonRequest.FinalExaminationInf.DuringMonthMedicineInfModel;
 
         if (duringMonthMedicineInfFinalExaminationInf != null)
@@ -638,18 +636,18 @@ public class YousikiController : AuthorizeControllerBase
                ));
         }
 
-        if (byomeiInfCommonFinalExaminationInf.InjuryNameLast != null)
+        if (!string.IsNullOrEmpty(fullByomei))
         {
             result.Add(new Yousiki1InfDetailModel(
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.PtId,
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.SinYm,
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.DataType,
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.SeqNo,
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.CodeNo,
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.RowNo,
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.Payload,
+                           ptId,
+                           sinYm,
+                           0,
+                           seqNo,
+                           "CDF0001",
+                           byomeiInfCommonFinalExaminationInf.SortNo,
+                           9,
                            fullByomei,
-                           byomeiInfCommonFinalExaminationInf.InjuryNameLast.IsDeleted
+                           byomeiInfCommonFinalExaminationInf.IsDeleted ? 1 : 0
                            ));
         }
 
