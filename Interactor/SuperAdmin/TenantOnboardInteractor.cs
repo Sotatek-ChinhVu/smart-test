@@ -423,9 +423,11 @@ namespace Interactor.SuperAdmin
                         var sqlRenameFieldName = QueryConstant.RenameFieldNames;
                         byte[] salt = _userRepository.GenerateSalt();
                         byte[] hashPassword = _userRepository.CreateHash(Encoding.UTF8.GetBytes(model.Password ?? string.Empty), salt);
-                        var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId, "", hashPassword, salt);
+                        var sqlInsertUser = string.Format(QueryConstant.SqlUser, model.AdminId);
                         var sqlInsertUserPermission = QueryConstant.SqlUserPermission;
                         command.CommandText = sqlGrant + sqlRenameTableName + sqlRenameFieldName + sqlInsertUser + sqlInsertUserPermission;
+                        command.Parameters.AddWithValue("hashPassword", hashPassword);
+                        command.Parameters.AddWithValue("salt", salt);
                         command.ExecuteNonQuery();
                         _CreateFunction(command, listMigration, tenantId);
                         _CreateTrigger(command, listMigration, tenantId);
