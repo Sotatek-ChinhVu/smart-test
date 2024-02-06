@@ -223,7 +223,6 @@ namespace CalculateService.Ika.ViewModels
             {
                 ItemCdConst.Syosin,
                 ItemCdConst.SyosinCorona,
-                ItemCdConst.SyosinTokurei,
                 ItemCdConst.SyosinJouhou,
                 ItemCdConst.IgakuSyouniGairaiSyosinKofuAri,
                 ItemCdConst.IgakuSyouniGairaiSyosinKofuNasi,
@@ -288,7 +287,6 @@ namespace CalculateService.Ika.ViewModels
             if (_arg.calcMode != CalcModeConst.Trial)
             {
                 _odrCommon = new IkaCalculateCommonOdrDataViewModel(_arg.odrInfFinder, _arg.masterFinder, _mstCommon, _arg.hpId, _arg.ptId, _arg.sinDate, _systemConfigProvider, _emrLogger);
-
                 // 検査重複オーダー削除
                 //DelKensa();
 
@@ -714,64 +712,7 @@ namespace CalculateService.Ika.ViewModels
                 }
             }
         }
-        public int hokenPid
-        {
-            get
-            {
-                int ret = 0;
-                if(Odr.OdrInfls.Any(p=>p.RaiinNo == raiinNo && p.HokenSyu == hokenKbn))
-                {
-                    ret = Odr.OdrInfls.Find(p => p.RaiinNo == raiinNo && p.HokenSyu == hokenKbn).HokenPid;
-                }
-                return ret;
-            }
-        }
-        public int hokenId
-        {
-            get
-            {
-                int ret = 0;
-                if (Odr.OdrInfls.Any(p => p.RaiinNo == raiinNo && p.HokenSyu == hokenKbn))
-                {
-                    ret = Odr.OdrInfls.Find(p => p.RaiinNo == raiinNo && p.HokenSyu == hokenKbn).HokenId;
-                }
-                return ret;
-            }            
-        }
-        /// <summary>
-        /// オーダーで使用されている保険PID、初再診優先
-        /// </summary>
-        public int mainHokenPid
-        {
-            get
-            {
-                int ret = 0;
-                ret = syosaiPid;
-                if(ret == 0)
-                {
-                    ret = hokenPid;
-                }
 
-                return ret;
-            }
-        }
-        /// <summary>
-        /// オーダーで使用されている保険ID、初再診優先
-        /// </summary>
-        public int mainHokenId
-        {
-            get
-            {
-                int ret = 0;
-                ret = syosaiHokenId;
-                if (ret == 0)
-                {
-                    ret = hokenId;
-                }
-
-                return ret;
-            }
-        }
         /// <summary>
         /// 初再診項目の算定区分
         /// </summary>
@@ -1387,21 +1328,21 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="startDate">チェック開始日</param>
         /// <param name="endDate">チェック終了日</param>
         /// <returns>ture: 算定されている</returns>
-        public bool CheckSanteiTerm(List<string> itemCds, int startDate, int endDate, int hokenId = 0)
+        public bool CheckSanteiTerm(List<string> itemCds, int startDate, int endDate)
         {
             if (startDate <= sinDate && sinDate <= endDate)
             {
                 // 診療日を含む期間の場合、診療日分はリストから取得する
                 if (calcMode != CalcModeConst.Trial)
                 {
-                    if (Wrk.ExistWrkSinKouiDetailByItemCd(itemCds, false, true, true, null, null, hokenId))
+                    if (Wrk.ExistWrkSinKouiDetailByItemCd(itemCds, false))
                     {
                         return true;
                     }
                 }
                 else
                 {
-                    if (Sin.CheckSanteiSinday(itemCds, 0, hokenId))
+                    if (Sin.CheckSanteiSinday(itemCds))
                     {
                         return true;
                     }
@@ -1416,12 +1357,12 @@ namespace CalculateService.Ika.ViewModels
             if (startDate / 100 == sinDate / 100 && endDate / 100 == sinDate / 100)
             {
                 // 指定期間が当月内の場合は、取得済みの診療データからチェック
-                return Sin.CheckSanteiTerm(itemCds, startDate, endDate, 0, hokenId);
+                return Sin.CheckSanteiTerm(itemCds, startDate, endDate);
             }
             else
             {
                 // 指定期間が当月外の場合は、
-                return _arg.santeiFinder.CheckSanteiTerm(_arg.hpId, _arg.ptId, startDate, endDate, sinDate, raiinNo, itemCds, hokenKbn, 0, hokenId);
+                return _arg.santeiFinder.CheckSanteiTerm(_arg.hpId, _arg.ptId, startDate, endDate, sinDate, raiinNo, itemCds, hokenKbn);
             }
         }
 
@@ -1682,7 +1623,7 @@ namespace CalculateService.Ika.ViewModels
         ///     1:上限を超える（注意）
         ///     2:上限を超える（警告）
         /// </returns>
-        public int CheckSanteiKaisu(string itemCd, int santeiKbn, int hokenId, int isAuto, double konkaiSuryo = 0, bool nolog = false)
+        public int CheckSanteiKaisu(string itemCd, int santeiKbn, int isAuto, double konkaiSuryo = 0, bool nolog = false)
         {
             const string conFncName = nameof(CheckSanteiKaisu);
 
@@ -1707,8 +1648,6 @@ namespace CalculateService.Ika.ViewModels
                 // チェック終了日
                 int endDate = sinDate;
 
-                int hokenIdTmp = 0;
-
                 List<int> checkHokenKbnTmp = new List<int>();
                 checkHokenKbnTmp.AddRange(checkHokenKbn);
 
@@ -1720,9 +1659,6 @@ namespace CalculateService.Ika.ViewModels
                 {
                     // 労災のみ対象の場合、健保は抜く
                     checkHokenKbnTmp.RemoveAll(p => new int[] { 0 }.Contains(p));
-                    
-                    // 保険番号を指定する
-                    hokenIdTmp = hokenId;
                 }
 
                 List<int> checkSanteiKbnTmp = new List<int>();
@@ -1786,31 +1722,31 @@ namespace CalculateService.Ika.ViewModels
                         sTerm = "初診時";
                         break;
                     case 997:   //初診から1カ月（休日除く）
-                        //if (Wrk.wrkSinKouiDetails.Any(p =>
-                        //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
-                        //{
-                        //    // 初診関連項目を算定している場合、算定不可
-                        //    endDate = 99999999;
-                        //}
-                        //else
-                        //{
-                            // 直近の初診日から１か月後を取得する（休日除く）
-                            endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp, hokenIdTmp);
-                            endDate = MonthsAfterExcludeHoliday(endDate, 1);
+                                //if (Wrk.wrkSinKouiDetails.Any(p =>
+                                //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
+                                //{
+                                //    // 初診関連項目を算定している場合、算定不可
+                                //    endDate = 99999999;
+                                //}
+                                //else
+                                //{
+                                // 直近の初診日から１か月後を取得する（休日除く）
+                        endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp);
+                        endDate = MonthsAfterExcludeHoliday(endDate, 1);
                         //}
                         break;
                     case 998:   //初診から1カ月
-                        //if (calcMode != CalcModeConst.Trial && Wrk.wrkSinKouiDetails.Any(p =>
-                        //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
-                        //{
-                        //    // 初診関連項目を算定している場合、算定不可
-                        //    endDate = 99999999;
-                        //}
-                        //else
-                        //{
-                            // 直近の初診日から１か月後を取得する
-                            endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp, hokenIdTmp);
-                            endDate = MonthsAfter(endDate, 1);
+                                //if (calcMode != CalcModeConst.Trial && Wrk.wrkSinKouiDetails.Any(p =>
+                                //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
+                                //{
+                                //    // 初診関連項目を算定している場合、算定不可
+                                //    endDate = 99999999;
+                                //}
+                                //else
+                                //{
+                                // 直近の初診日から１か月後を取得する
+                        endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp);
+                        endDate = MonthsAfter(endDate, 1);
                         //}
                         break;
                     case 999:   //カスタム
@@ -1822,16 +1758,14 @@ namespace CalculateService.Ika.ViewModels
                         }
                         else if (densiSanteiKaisu.TermSbt == 3)
                         {
-                            //歴週
+                            //週
                             startDate = WeeksBefore(sinDate, densiSanteiKaisu.TermCount);
-                            endDate = GetLastDateOfWeek(sinDate);
                             sTerm = densiSanteiKaisu.TermCount.ToString() + "週";
                         }
                         else if (densiSanteiKaisu.TermSbt == 4)
                         {
-                            //歴月
+                            //月
                             startDate = MonthsBefore(sinDate, densiSanteiKaisu.TermCount - 1);
-                            endDate = GetLastDateOfMonth(sinDate);
                             sTerm = densiSanteiKaisu.TermCount.ToString() + "月";
                         }
                         else if (densiSanteiKaisu.TermSbt == 5)
@@ -1971,8 +1905,7 @@ namespace CalculateService.Ika.ViewModels
                                         startDate: startDate,
                                         endDate: endDate,
                                         santeiKbns: checkSanteiKbnTmp,
-                                        hokenKbns: checkHokenKbnTmp,
-                                        hokenId: hokenIdTmp);
+                                        hokenKbns: checkHokenKbnTmp);
                             }
                             else
                             {
@@ -1988,18 +1921,17 @@ namespace CalculateService.Ika.ViewModels
                                         itemCds: itemCds,
                                         hokenKbn: hokenKbn,
                                         santeiKbns: checkSanteiKbnTmp,
-                                        hokenKbns: checkHokenKbnTmp,
-                                        hokenId: hokenIdTmp);
+                                        hokenKbns: checkHokenKbnTmp);
                             }
 
                             if (calcMode == CalcModeConst.Trial)
                             {
                                 // 試算の場合、本日分は算定情報から取得
-                                count += Sin.GetSanteiDaysSinDay(itemCds, checkSanteiKbnTmp, checkHokenKbnTmp, hokenIdTmp).Any() ? 1 : 0;
+                                count += Sin.GetSanteiDaysSinDay(itemCds, checkSanteiKbnTmp, checkHokenKbnTmp).Any() ? 1 : 0;
                             }
                             // 今日の分を足す
                             //count += Sin.SanteiCountSinday(itemCd);
-                            count += Wrk.WrkCountSinday(itemCds, checkSanteiKbnTmp, checkHokenKbnTmp, hokenIdTmp, suryoCount);
+                            count += Wrk.WrkCountSinday(itemCds, checkSanteiKbnTmp, checkHokenKbnTmp, suryoCount);
                         }
 
                         // 今回の来院分をチェックする（今から算定する分、１回分があるので、それは省いておく）
@@ -2010,7 +1942,6 @@ namespace CalculateService.Ika.ViewModels
                                           //wrkDtl.HokenKbn == hokenKbn &&
                                           checkHokenKbnTmp.Contains(wrkDtl.HokenKbn) &&
                                           checkSanteiKbnTmp.Contains(_wrkCommon.GetSanteiKbn(wrkDtl.RaiinNo, wrkDtl.RpNo)) &&
-                                          (hokenIdTmp == 0 || Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo) == hokenIdTmp) &&
                                           wrkDtl.RaiinNo == raiinInf.RaiinNo &&
                                           itemCds.Contains(wrkDtl.ItemCd) &&
                                           wrkDtl.IsDeleted == DeleteStatus.None &&
@@ -2145,7 +2076,7 @@ namespace CalculateService.Ika.ViewModels
                    CIUtil.StrToIntDef(val, 0) > 0));
             }
 
-            if (odrDtl.SanteiKbn != SanteiKbnConst.Jihi && odrDtl.TenMst != null && odrDtl.TenMst.AgeCheck != 2)
+            if (odrDtl.TenMst != null && odrDtl.TenMst.AgeCheck != 2)
             {
                 // 下限チェック
                 if (_checkValue(odrDtl.TenMst.MinAge))
@@ -2261,7 +2192,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="baseDate">基準日</param>
         /// <param name="targetKbn">0-健保・労災両方、1-健保のみ、2-労災のみ</param>
         /// <returns>直近の算定日(YYYYMMDD)</returns>
-        public int GetSyosinDate(int baseDate, int targetKbn, List<int> checkHokenKbnTmp = null, List<int> checkSanteiKbnTmp = null, int hokenId = 0)
+        public int GetSyosinDate(int baseDate, int targetKbn, List<int> checkHokenKbnTmp = null, List<int> checkSanteiKbnTmp = null)
         {
             int retDate = 0;
             int retSinDate = 0;
@@ -2301,8 +2232,7 @@ namespace CalculateService.Ika.ViewModels
                     excludeSanteiGai: true,
                     sameHokenKbn: false,
                     hokenKbns: checkHokenKbns,
-                    santeiKbns: checkSanteiKbns,
-                    hokenId: hokenId))
+                    santeiKbns: checkSanteiKbns))
                 {
                     retSinDate = sinDate;
                 }
@@ -2320,8 +2250,7 @@ namespace CalculateService.Ika.ViewModels
                         itemCds: _syosinls,
                         hokenKbn: hokenKbn,
                         santeiKbn: 0,
-                        hokenKbns: checkHokenKbns,
-                        hokenId: hokenId);
+                        hokenKbns: checkHokenKbns);
             }
             else
             {
@@ -2335,8 +2264,7 @@ namespace CalculateService.Ika.ViewModels
                         itemCds: _syosinls,
                         hokenKbn: hokenKbn,
                         santeiKbn: 0,
-                        hokenKbns: checkHokenKbns,
-                        hokenId: hokenId);
+                        hokenKbns: checkHokenKbns);
             }
 
             if (retDate < retSinDate)
@@ -2733,11 +2661,11 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="checkItemCd"></param>
         /// <param name="ItemName"></param>
         /// <returns></returns>
-        public bool CheckSanteiNintiTiiki(string checkItemCd, string ItemName, int santeiKbn, int hokenId, int isAuto)
+        public bool CheckSanteiNintiTiiki(string checkItemCd, string ItemName, int santeiKbn, int isAuto)
         {
             bool result = true;
 
-            if (CheckSanteiKaisu(checkItemCd, santeiKbn, hokenId, isAuto) == 2)
+            if (CheckSanteiKaisu(checkItemCd, santeiKbn, isAuto) == 2)
             {
                 //算定上限を超える為、算定不可
                 result = false;
@@ -3430,13 +3358,9 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.IgakuSeikatuJyohoTusin
                 };
 
-            if (new List<double> { 
-                SyosaiConst.SaisinDenwa, 
-                SyosaiConst.SaisinDenwa2, 
-                SyosaiConst.SaisinDenwaTokurei 
-            }.Contains(syosai))
+            if (syosai == SyosaiConst.SaisinDenwa || syosai == SyosaiConst.SaisinDenwa2)
             {
-                if (Odr.ExistOdrDetailByItemCd(new List<string> { ItemCdConst.IgakuManseiCorona, ItemCdConst.IgakuManseiTokurei}))
+                if (Odr.ExistOdrDetailByItemCd(ItemCdConst.IgakuManseiCorona))
                 {
                     ret = true;
                 }
@@ -3473,7 +3397,7 @@ namespace CalculateService.Ika.ViewModels
 
             string kasanCd = Wrk.GetAgeKasanCd(odrDtl);
 
-            if (CheckSanteiKaisu(kasanCd, odrDtl.SanteiKbn, odrDtl.HokenId, 1) != 2)
+            if (CheckSanteiKaisu(kasanCd, odrDtl.SanteiKbn, 1) != 2)
             {
                 ret = Wrk.AppendNewWrkSinKouiDetailAgeKasan(odrDtl, odrDtls);
             }
@@ -3529,13 +3453,13 @@ namespace CalculateService.Ika.ViewModels
 
             if (itemCd != "")
             {
-                if (CheckSanteiKaisu(itemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 1) != 2)
+                if (CheckSanteiKaisu(itemCd, odrDtl.SanteiKbn, 1) != 2)
                 {
                     Wrk.AppendNewWrkSinKouiDetail(itemCd, 1);
                     List<TenMstModel> tenMst = Mst.GetTenMst(itemCd);
                     if (tenMst.Any())
                     {
-                        if (tenMst.First().IsSyotiJikangaiTarget) 
+                        if (tenMst.First().IsSyotiJikangaiTarget)
                         {
                             retTen = tenMst.First().Ten;
                         }

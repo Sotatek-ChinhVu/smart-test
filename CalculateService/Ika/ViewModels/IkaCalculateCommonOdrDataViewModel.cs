@@ -105,12 +105,6 @@ namespace CalculateService.Ika.ViewModels
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
-        List<string> ignoreIsDummyItems = new List<string>()
-            {
-                ItemCdConst.SyosinIryoJyohoKiban1,
-                ItemCdConst.SaisinIryoJyohoKiban3,
-            };
-
         public IkaCalculateCommonOdrDataViewModel(OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             const string conFncName = nameof(IkaCalculateCommonOdrDataViewModel);
@@ -254,8 +248,8 @@ namespace CalculateService.Ika.ViewModels
             // コンバート
             foreach (OrderInfo todayOdrInf in todayOdrInfs.FindAll(p => p.SanteiKbn == SanteiKbnConst.Santei || p.SanteiKbn == SanteiKbnConst.Jihi))
             {
-                PtHokenPatternModel ptHokenPatternModel = 
-                    ptHokenPatternModels.Where(p => p.HokenPid == todayOdrInf.HokenPid).FirstOrDefault();
+                PtHokenPatternModel ptHokenPatternModel =
+                    ptHokenPatternModels.FirstOrDefault(p => p.HokenPid == todayOdrInf.HokenPid);
 
                 if (ptHokenPatternModel == null)
                 {
@@ -291,20 +285,6 @@ namespace CalculateService.Ika.ViewModels
 
                     foreach (OrderDetailInfo todayOdrInfDtl in todayOdrInf.DetailInfoList)
                     {
-                        bool _getIsDummy(string AitemCd, bool AisDummy)
-                        {
-                            bool ret = AisDummy;
-
-                            if (ret == true)
-                            {
-                                if (ignoreIsDummyItems.Contains(AitemCd))
-                                {
-                                    ret = false;
-                                }
-                            }
-
-                            return ret;
-                        }
                         OdrInfDetailDataModel odrInfDtlData =
                             new OdrInfDetailDataModel(
                                 hpId: todayOdrInfDtl.HpId,
@@ -318,19 +298,19 @@ namespace CalculateService.Ika.ViewModels
                                 itemName: todayOdrInfDtl.ItemName,
                                 suryo: todayOdrInfDtl.Suryo,
                                 unitName: todayOdrInfDtl.UnitName,
-                                unitSBT: todayOdrInfDtl.UnitSBT,
+                                unitSBT: 0, //todayOdrInfDtl.UnitSBT,
                                 termVal: todayOdrInfDtl.TermVal,
-                                kohatuKbn: todayOdrInfDtl.KohatuKbn,
+                                kohatuKbn: 0,   //todayOdrInfDtl.KohatuKbn,
                                 syohoKbn: todayOdrInfDtl.SyohoKbn,
-                                syohoLimitKbn: todayOdrInfDtl.SyohoLimitKbn,
+                                syohoLimitKbn: 0,   //todayOdrInfDtl.SyohoLimitKbn,
                                 isNodspRece: todayOdrInfDtl.IsNodspRece,
                                 yohoKbn: todayOdrInfDtl.YohoKbn,
                                 ipnCd: todayOdrInfDtl.IpnCd,
                                 ipnName: todayOdrInfDtl.IpnName,
-                                bunkatu: todayOdrInfDtl.Bunkatu,
-                                cmtName: todayOdrInfDtl.CmtName,
+                                bunkatu: "",    //todayOdrInfDtl.Bunkatu,
+                                cmtName: "",    //todayOdrInfDtl.CmtName,
                                 cmtOpt: todayOdrInfDtl.CmtOpt,
-                                isdummy: _getIsDummy(todayOdrInfDtl.ItemCd, todayOdrInfDtl.IsDummy)
+                                isdummy: todayOdrInfDtl.IsDummy
                                 );
 
 
@@ -361,34 +341,28 @@ namespace CalculateService.Ika.ViewModels
                             ipnMinYakkaMst = _FindIpnMinYakkaMst(tenMst.IpnNameCd);
                         }
 
-                        if (tenMst != null && string.IsNullOrEmpty(tenMst.ItemCd) == false && tenMst.SanteigaiKbn == 1)
-                        {
-                            // 算定外項目は無視
-                        }
-                        else
-                        {
-                        	OdrDtlTenModel odrDtl =
-                                new OdrDtlTenModel(
-                                    odrInfDtlData, tenMst, (cmtKbn?.CmtKbnMst ?? null),
-                                    receName: receName,
-                                    hokenKbn: ptHokenPatternModel.HokenKbn, hokenPid: ptHokenPatternModel.HokenPid, hokenId: ptHokenPatternModel.HokenId, hokenSbt: ptHokenPatternModel.HokenSbtCd,
-                                    odrKouiKbn: todayOdrInf.OdrKouiKbn, santeiKbn: todayOdrInf.SanteiKbn, inoutKbn: todayOdrInf.InoutKbn,
-                                    syohoSbt: todayOdrInf.SyohoSbt, daysCnt: todayOdrInf.DaysCnt, sortNo: todayOdrInf.SortNo,
-                                    kasan1: ipnKasanMst?.Kasan1 ?? 0, kasan2: ipnKasanMst?.Kasan2 ?? 0,
-                                    sinStartTime: raiinInfModel.SinStartTime,
-                                    minYakka: ipnMinYakkaMst?.Yakka ?? 0);
-                            _odrDtlTenModels.Add(odrDtl);
+                        OdrDtlTenModel odrDtl =
+                            new OdrDtlTenModel(
+                                odrInfDtlData, tenMst, (cmtKbn?.CmtKbnMst ?? null),
+                                receName: receName,
+                                hokenKbn: ptHokenPatternModel.HokenKbn, hokenPid: ptHokenPatternModel.HokenPid, hokenId: ptHokenPatternModel.HokenId, hokenSbt: ptHokenPatternModel.HokenSbtCd,
+                                odrKouiKbn: todayOdrInf.OdrKouiKbn, santeiKbn: todayOdrInf.SanteiKbn, inoutKbn: todayOdrInf.InoutKbn,
+                                syohoSbt: todayOdrInf.SyohoSbt, daysCnt: todayOdrInf.DaysCnt, sortNo: todayOdrInf.SortNo,
+                                kasan1: ipnKasanMst?.Kasan1 ?? 0, kasan2: ipnKasanMst?.Kasan2 ?? 0,
+                                sinStartTime: raiinInfModel.SinStartTime,
+                                minYakka: ipnMinYakkaMst?.Yakka ?? 0);
+                        _odrDtlTenModels.Add(odrDtl);
 
-                            if (tenMst != null && tenMst.ItemCd != null && tenMst.ItemCd.StartsWith("Z"))
+                        if (tenMst != null && tenMst.ItemCd != null && tenMst.ItemCd.StartsWith("Z"))
+                        {
+                            var tenEntities = masterFinder.FindTenMstByItemCd(HpId, todayOdrInfDtl.SinDate, tenMst.SanteiItemCd);
+                            if (tenEntities.FirstOrDefault() != null)
                             {
-                                var tenEntities = masterFinder.FindTenMstByItemCd(HpId, todayOdrInfDtl.SinDate, tenMst.SanteiItemCd);
-                                if (tenEntities.FirstOrDefault() != null)
-                                {
-                                    _odrDtlTenModels.Last().Z_MasterSbt = tenEntities.First().MasterSbt;
-                                    _odrDtlTenModels.Last().Z_TenId = tenEntities.First().TenId;
-                                }
+                                _odrDtlTenModels.Last().Z_MasterSbt = tenEntities.First().MasterSbt;
+                                _odrDtlTenModels.Last().Z_TenId = tenEntities.First().TenId;
                             }
                         }
+
                     }
                 }
 

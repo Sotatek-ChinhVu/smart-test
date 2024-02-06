@@ -28,15 +28,15 @@ namespace CalculateService.Requests
 
         public string UnitName { get; set; } = string.Empty;
 
-        public int UnitSBT { get; set; }
+        //public int UnitSBT { get; set; }
 
         public double TermVal { get; set; }
 
-        public int KohatuKbn { get; set; }
+        //public int KohatuKbn { get; set; }
 
         public int SyohoKbn { get; set; }
 
-        public int SyohoLimitKbn { get; set; }
+        //public int SyohoLimitKbn { get; set; }
 
         public int DrugKbn { get; set; }
 
@@ -62,9 +62,9 @@ namespace CalculateService.Requests
 
         //public string ReqCd { get; set; } = string.Empty;
 
-        public string Bunkatu { get; set; } = string.Empty;
+        //public string Bunkatu { get; set; } = string.Empty;
 
-        public string CmtName { get; set; } = string.Empty;
+        //public string CmtName { get; set; } = string.Empty;
 
         public string CmtOpt { get; set; } = string.Empty;
 

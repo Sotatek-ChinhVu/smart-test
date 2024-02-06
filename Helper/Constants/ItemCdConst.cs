@@ -24,11 +24,6 @@ namespace Helper.Constants
         public const string Con_Refill = "@REFILL";
 
         /// <summary>
-        /// 処方箋使用期間
-        /// </summary>
-        public const string Con_RxLimit = "@RXLIMIT";
-
-        /// <summary>
         /// 情報通信機器
         /// </summary>
         public const string Con_Jouhou = "@JOUHOU";
@@ -48,10 +43,6 @@ namespace Helper.Constants
         /// 初診料（新型コロナウイルス感染症・診療報酬上臨時的取扱）
         /// </summary>
         public const string SyosinCorona = "111013850";
-        /// <summary>
-        /// 初診料（文書による紹介がない患者の場合）（初減）（特例）
-        /// </summary>
-        public const string SyosinTokurei = "111016150";
         /// <summary>
         /// 初診料（労災）
         /// </summary>
@@ -244,7 +235,6 @@ namespace Helper.Constants
         /// 医療情報・システム基盤整備体制充実加算２（初診）
         /// </summary>
         public const string SyosinIryoJyohoKiban2 = "111016070";
-
         #endregion
 
         #region 再診関連
@@ -300,10 +290,6 @@ namespace Helper.Constants
         /// 再診料（同一日複数科受診時の２科目）（情報通信機器
         /// </summary>
         public const string Saisin2Jouhou = "112025210";
-        /// <summary>
-        /// 電話等再診料（特例）
-        /// </summary>
-        public const string SaisinDenwaTokurei = "112026750";
         #endregion
 
         #region 再診関連-時間外加算
@@ -477,7 +463,7 @@ namespace Helper.Constants
         public const string SaisinTiikiHoukatu2 = "112017270";
 
         #endregion
-        
+
         /// <summary>
         /// 乳幼児感染予防策加算（初診料・診療報酬上臨時的取扱）
         /// </summary>
@@ -502,6 +488,7 @@ namespace Helper.Constants
         /// サーベイランス強化加算（再診）
         /// </summary>
         public const string SaisinSurveillance = "112024570";
+        #endregion
 
         public static readonly ImmutableList<string> IryoJyohoKibanList = new List<string>()
         {
@@ -518,11 +505,8 @@ namespace Helper.Constants
         public const string IgakuIryoJyohoKiban2 = "113045170";
 
         public const string IgakuIryoJyohoKiban3 = "113045270";
-        /// <summary>
-        /// 医療情報・システム基盤整備体制充実加算３（再診）（経過措置）
-        /// </summary>
+
         public const string SaisinIryoJyohoKiban3 = "112026570";
-        #endregion
 
         /// <summary>
         /// オンライン診療料
@@ -759,7 +743,7 @@ namespace Helper.Constants
         /// 乳幼児感染予防策加算（小児科外来診療料等・診療報酬上臨時的取扱）
         /// </summary>
         public const string IgakuNyuyojiKansen = "113033270";
-        
+
         /// <summary>
         /// 小児科外来診療料取消し
         /// </summary>
@@ -1036,7 +1020,7 @@ namespace Helper.Constants
         /// </summary>
         public const string IgakuJyudoZensoku2_6 = "113008170";
         #endregion
-    
+
         /// <summary>
         /// 皮膚科特定疾患療養指導料（Ⅰ）
         /// </summary>
@@ -1367,36 +1351,12 @@ namespace Helper.Constants
         /// 慢性疾患の診療（新型コロナウイルス感染症・診療報酬上臨時的取扱） 
         /// </summary>
         public const string IgakuManseiCorona = "113032850";
-        /// <summary>
-        /// 慢性疾患等の診療（特例）
-        /// </summary>
-        public const string IgakuManseiTokurei = "113045650";
         #endregion
 
         /// <summary>
         /// 院内トリアージ実施料（診療報酬上臨時的取扱）
         /// </summary>
         public const string IgakuTriageRinsyo = "113032950";
-        /// <summary>
-        /// 院内トリアージ実施料（特例）
-        /// </summary>
-        public const string IgakuTriageTokurei = "113045350";
-        /// <summary>
-        /// 特定疾患療養管理料（１００床未満の病院）（特例）
-        /// </summary>
-        public const string IgakuTokusituTokurei_100 = "113045450";
-        /// <summary>
-        /// 特定疾患療養管理料（１００床未満・療養指導）（特例）
-        /// </summary>
-        public const string IgakuTokusituTokurei_100Sido = "113045550";
-        /// <summary>
-        /// 特定疾患療養管理料（１００床未満・罹患後症状持続）（特例）
-        /// </summary>
-        public const string IgakuTokusituTokurei_100rakan = "113045950"; 
-        /// <summary>
-        /// 救急医療管理加算１（入院調整）（特例）
-        /// </summary>
-        public const string IgakuKyukyuIryoCyosei = "113045850";
         /// <summary>
         /// 医科外来等感染症対策実施加算（医学管理等）
         /// </summary>
@@ -1409,24 +1369,6 @@ namespace Helper.Constants
         /// 二類感染症患者入院診療加算（電話等診療・臨取）（重点措置）
         /// </summary>
         public const string Igaku2RuiKansenJyuten = "113044350";
-
-        /// <summary>
-        /// 特定疾患療養管理料（１００床未満の病院）（特例）（１０月以降）
-        /// </summary>
-        public const string IgakuTokusituTokurei2310 = "113046250";
-        /// <summary>
-        /// 夜間・早朝等加算（特例）（１０月以降）
-        /// </summary>
-        public const string IgakuYasouTokurei2310 = "113046650";
-        /// <summary>
-        /// 看護配置加算（１日につき）（特例）（１０月以降）
-        /// </summary>
-        public const string IgakuKangoTokurei2310 = "113046750";
-        /// <summary>
-        /// 療養情報提供加算（特例）（１０月以降）
-        /// </summary>
-        public const string IgakuRyoyoJyohoTokurei2310 = "113046350";
-
         #endregion
 
         #region 薬剤情報提供料
@@ -1529,24 +1471,8 @@ namespace Helper.Constants
         /// 在宅患者訪問看護･指導料(緩和、褥瘡、人工肛門ケア等専門看護師
         /// </summary>
         public const string ZaiHoumonKangoKanwa = "114020110";
-        /// <summary>
-        /// 在宅患者訪問看護・指導料（保健師等・週３日目まで）（特例）
-        /// </summary>
-        public const string ZaiHoumonKangoHoken_3Tokurei = "114056850";
-        /// <summary>
-        /// 在宅患者訪問看護・指導料（保健師等・週４日目以降）（特例）
-        /// </summary>
-        public const string ZaiHoumonKangoHoken4_Tokurei = "114056950";
-        /// <summary>
-        /// 在宅患者訪問看護・指導料（准看護師・週３日目まで）（特例）
-        /// </summary>
-        public const string ZaiHoumonKangoJyunkan_3Tokurei = "114057050";
-        /// <summary>
-        /// 在宅患者訪問看護・指導料（准看護師・週４日目以降）（特例）
-        /// </summary>
-        public const string ZaiHoumonKangoJyunkan4_Tokurei = "114057150";
-        #endregion
 
+        #endregion
         #region 在宅関連-在がん医総
         /// <summary>
         /// 在がん医総（在支診等）（処方箋あり）
@@ -2457,14 +2383,6 @@ namespace Helper.Constants
         /// 一般名処方加算２（処方箋料）
         /// </summary>
         public const string TouyakuIpnName2 = "120003570";
-        ///<summary>
-        /// 一般名処方加算１（処方箋料）（経過措置）
-        /// </summary>
-        public const string TouyakuIpnName1Keika = "120005470";
-        ///<summary>
-        /// 一般名処方加算２（処方箋料）（経過措置）
-        /// </summary>
-        public const string TouyakuIpnName2Keika = "120005570";
         /// <summary>
         /// 一般名処方加算取消し
         /// </summary>
@@ -2491,19 +2409,6 @@ namespace Helper.Constants
         /// 外来後発医薬品使用体制加算３
         /// </summary>
         public const string TouyakuGairaiKohatu3 = "120004170";
-        /// <summary>
-        /// 外来後発医薬品使用体制加算１（経過措置）
-        /// </summary>
-        public const string TouyakuGairaiKohatu1Keika = "120005170";
-        /// <summary>
-        /// 外来後発医薬品使用体制加算２（経過措置）
-        /// </summary>
-        public const string TouyakuGairaiKohatu2Keika = "120005270";
-        /// <summary>
-        /// 外来後発医薬品使用体制加算３（経過措置）
-        /// </summary>
-        public const string TouyakuGairaiKohatu3Keika = "120005370";
-
         #endregion
 
         #region 投薬関連-特定疾患処方管理加算
@@ -2670,19 +2575,6 @@ namespace Helper.Constants
         /// </summary>
         public const string SonotaSurveillance = "180072770";
 
-        /// <summary>
-        /// 長時間精神科訪問看護・指導加算（緊急）（特例）
-        /// </summary>
-        public const string SonotaCyojikanSeisinkaHoumonKangoKinkyu = "180070350";
-        /// <summary>
-        /// 長時間精神科訪問看護・指導加算（特例）
-        /// </summary>
-        public const string SonotaCyojikanSeisinkaHoumonKangoTokurei = "180070450";
-        /// <summary>
-        /// 精神疾患の精神療法（特例）
-        /// </summary>
-        public const string SonotaSeisinSikkanTokurei = "180070750";
-
         #region 救急医療管理加算１（診療報酬上臨時的取扱）
         /// <summary>
         /// 救急医療管理加算１（診療報酬上臨時的取扱）（外来診療）
@@ -2712,36 +2604,7 @@ namespace Helper.Constants
         /// 小児加算（救急医療管理加算・臨時的取扱）（外来診療・往診等）
         /// </summary>
         public const string SonotaKyukyuIryoKanriKasanRinjiSyoniKasan = "180066270";
-        /// <summary>
-        /// 救急医療管理加算１（緊急の往診等）（特例）
-        /// </summary>
-        public const string SonotaKyukyuIryoKanriKasanKinkyuOusinTokurei = "180070050";
-        /// <summary>
-        /// 救急医療管理加算１（施設内療養・緊急の往診等）（特例）
-        /// </summary>
-        public const string SonotaKyukyuIryoKanriKasanSisetunaiTokurei = "180070150";
-        /// <summary>        
-        /// 救急医療管理加算１（オンライン）（特例）
-        /// </summary>
-        public const string SonotaKyukyuIryoKanriKasanOnlineTokurei = "180070250";
-        /// <summary>
-        /// 乳幼児加算（外来診療・往診等）（特例）
-        /// </summary>
-        public const string SonotaKyukyuIryoKanriKasanTokureiNyuyojiKasan = "180070570";
-        /// <summary>
-        /// 小児加算（外来診療・往診等）（特例）
-        /// </summary>
-        public const string SonotaKyukyuIryoKanriKasanTokureiSyoniKasan = "180070670";
         #endregion
-
-        /// <summary>
-        /// 院内トリアージ実施料（在宅）（緊急往診等）（特例）（１０月以降）
-        /// </summary>
-        public const string SonotaTriajiZaitakuTokurei2310 = "180070850";
-        /// <summary>
-        /// 院内トリアージ実施料（オンライン）（特例）（１０月以降）
-        /// </summary>
-        public const string SonotaTriajiOnlineTokurei2310 = "180070950";
 
         #endregion
 
@@ -3241,6 +3104,7 @@ namespace Helper.Constants
 
         public const string Comment853Pattern = "853";
         public const string Comment880Pattern = "880";
+
         /// <summary>
         /// 単純撮影（撮影部位）胸部（肩を除く）
         /// </summary>
@@ -3335,26 +3199,6 @@ namespace Helper.Constants
                 ItemCdConst.Cyanpics0_5,
                 ItemCdConst.Cyanpics1
             };
-
-        public const string LagevrioCap200 = "628785401";
-        public const string PaxlovidPack300 = "622937701";
-        public const string PaxlovidPack600 = "622937801";
-        public const string XocovaTablets125 = "628785801";
-        public const string VekluryInjection100 = "622871401";
-
-        /// <summary>
-        /// 新型コロナ 抗ウイルス剤
-        /// </summary>
-        public static List<string> SARSCov2AntiViralDrugs =
-            new List<string>
-            {
-                ItemCdConst.LagevrioCap200,
-                ItemCdConst.PaxlovidPack300,
-                ItemCdConst.PaxlovidPack600,
-                ItemCdConst.XocovaTablets125,
-                ItemCdConst.VekluryInjection100
-            };
-
         /// <summary>
         /// 同日再診チェック項目
         /// </summary>
@@ -3362,14 +3206,12 @@ namespace Helper.Constants
                     {
                         ItemCdConst.Syosin,
                         ItemCdConst.SyosinCorona,
-                        ItemCdConst.SyosinTokurei,
                         ItemCdConst.SyosinJouhou,
                         ItemCdConst.Saisin,
                         ItemCdConst.SaisinDenwa,
                         ItemCdConst.SaisinDojitu,
                         ItemCdConst.SaisinDenwaDojitu,
                         ItemCdConst.SaisinDenwaKeizoku,
-                        ItemCdConst.SaisinDenwaTokurei,
                         ItemCdConst.ZaiHoumon1_1Dou,
                         ItemCdConst.ZaiHoumon1_1DouIgai,
                         ItemCdConst.ZaiHoumon1_2Dou,

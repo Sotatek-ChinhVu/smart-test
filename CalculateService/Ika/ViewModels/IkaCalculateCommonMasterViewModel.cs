@@ -545,35 +545,6 @@ namespace CalculateService.Ika.ViewModels
             return GetSystemGenerationConfVal(8001, 2);
         }
 
-        /// <summary>
-        /// 小児カウンセリング初回算定チェック
-        /// 0-する、1-しない
-        /// </summary>
-        /// <returns></returns>
-        public int GetSyouniCounseling()
-        {
-            return GetSystemGenerationConfVal(3005, 0);
-        }
-
-        /// <summary>
-        /// 向精神薬多剤投与自動判定
-        /// 0-しない、1-する（既定値）
-        /// </summary>
-        /// <returns></returns>
-        public int GetKouiseiTazaiAuto()
-        {
-            return GetSystemGenerationConfVal(3006, 0, 1);
-        }
-
-        /// <summary>
-        /// 向精神薬多剤投与臨時投薬
-        /// 0-日数判断（抗うつ薬及び、抗精神病薬が臨時処方の場合に種類数に含めない）、1-すべて
-        /// </summary>
-        /// <returns></returns>
-        public int GetKouseiTazaiRinji()
-        {
-            return GetSystemGenerationConfVal(3006, 1, 0);
-        }
         #endregion
 
         #region 電子点数表関連
@@ -989,7 +960,7 @@ namespace CalculateService.Ika.ViewModels
 
             if (RecedenCmtSelects != null && RecedenCmtSelects.Any(p => p.ItemCd == ItemCd && p.CmtSbt == cmtSbt))
             {
-                result = RecedenCmtSelects.FindAll(p => p.ItemCd == ItemCd && p.CmtSbt == cmtSbt).OrderBy(p => p.SortNo).FirstOrDefault();
+                result = RecedenCmtSelects.Find(p => p.ItemCd == ItemCd && p.CmtSbt == cmtSbt);
             }
 
             return result;
@@ -1006,19 +977,6 @@ namespace CalculateService.Ika.ViewModels
 
             return result;
         }
-
-        public RecedenCmtSelectModel FindRecedenCmtSelectsByItemCdCommentCd(string ItemCd, string CommentCd)
-        {
-            RecedenCmtSelectModel result = null;
-
-            if (RecedenCmtSelects != null && RecedenCmtSelects.Any(p => p.ItemCd == ItemCd && p.CommentCd == CommentCd))
-            {
-                result = RecedenCmtSelects.FindAll(p => p.ItemCd == ItemCd && p.CommentCd == CommentCd).FirstOrDefault(); ;
-            }
-
-            return result;
-        }
-
         public bool RecedenCmtSelectExistByItemCd(string ItemCd)
         {
             return (RecedenCmtSelects != null && RecedenCmtSelects.Any(p => p.ItemCd == ItemCd));
@@ -1050,7 +1008,7 @@ namespace CalculateService.Ika.ViewModels
             List<KouiHoukatuMstModel> masters =
                 _kouiHoukatuMsts.FindAll(p =>
                     p.HpId == _hpId &&
-                    (string.IsNullOrEmpty(itemCd)?true: p.ItemCd == itemCd) &&
+                    (string.IsNullOrEmpty(itemCd) ? true : p.ItemCd == itemCd) &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate &&
                     (p.TargetKbn == 0 || p.TargetKbn == (isRosai ? 2 : 1)) &&
@@ -1064,7 +1022,7 @@ namespace CalculateService.Ika.ViewModels
 
             foreach (KouiHoukatuMstModel master in masters)
             {
-                    results.Add(master);
+                results.Add(master);
             }
             return results;
         }

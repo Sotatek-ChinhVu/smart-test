@@ -37,7 +37,6 @@ namespace CalculateService.Ika.ViewModels
                 ItemCdConst.SyosinNinpuYakanToku,
                 ItemCdConst.SyosinNinpuKyujituToku,
                 ItemCdConst.SyosinNinpuSinyaToku,
-                ItemCdConst.SyosinNyu,
                 ItemCdConst.SyosinNyuJikangai,
                 ItemCdConst.SyosinNyuKyujitu,
                 ItemCdConst.SyosinNyuSinya,
@@ -145,16 +144,7 @@ namespace CalculateService.Ika.ViewModels
                 ItemCdConst.SyosinSyouniNyuSinya,
                 ItemCdConst.SaisinSyouniNyuSinya,
                 ItemCdConst.SyosinSyouniGairaiSinya,
-                ItemCdConst.SaisinSyouniGairaiSinya,
-
-                ItemCdConst.SaisinNinpu,
-                ItemCdConst.SaisinNinpuJikangai,
-                ItemCdConst.SaisinNinpuJikangaiToku,
-                ItemCdConst.SaisinNinpuKyujitu,
-                ItemCdConst.SaisinNinpuKyujituToku,
-                ItemCdConst.SaisinNinpuSinya,
-                ItemCdConst.SaisinNinpuSinyaToku,
-                ItemCdConst.SaisinNinpuYakanToku
+                ItemCdConst.SaisinSyouniGairaiSinya
             };
         /// <summary>
         /// 再診の時間外加算項目リスト
@@ -339,18 +329,14 @@ namespace CalculateService.Ika.ViewModels
                 {
                     _common.syosai = SyosaiConst.SyosinCorona;
                 }
-                if (_common.syosai != SyosaiConst.Jihi &&
-                    CheckSaisinTokurei(ref coronaPid, ref coronaHokenKbn, ref coronaHokenId, ref coronaSanteiKbn))
-                {
-                    _common.syosai = SyosaiConst.SaisinDenwaTokurei;
-                }
+
                 if (_common.syosai != SyosaiConst.Jihi && !_common.IsRosai && _common.Odr.ExistOdrDetailByItemCd(ItemCdConst.Con_Jouhou))
                 {
                     //情報通信機器のダミーがあれば情報通信機器項目に置き換える
                     _common.syosai = JouhouSyosaiKbn;
                 }
-                
-                if ( new List<double>{ SyosaiConst.SyosinCorona , SyosaiConst.SaisinDenwaTokurei}.Contains(_common.syosai) )
+
+                if (_common.syosai == SyosaiConst.SyosinCorona)
                 {
                     // コロナ初診の場合、オーダーされた項目の設定を採用
                     _common.syosaiPid = coronaPid;
@@ -377,13 +363,7 @@ namespace CalculateService.Ika.ViewModels
                 _common.jikan = odrDtlTenModel[0].Suryo;
             }
 
-            if (new List<double> { 
-                    SyosaiConst.Syosin, 
-                    SyosaiConst.Syosin2, 
-                    SyosaiConst.SyosinCorona, 
-                    SyosaiConst.SyosinJouhou, 
-                    SyosaiConst.Syosin2Jouhou 
-                }.Contains(_common.syosai))
+            if (new List<double> { SyosaiConst.Syosin, SyosaiConst.Syosin2, SyosaiConst.SyosinCorona, SyosaiConst.SyosinJouhou, SyosaiConst.Syosin2Jouhou }.Contains(_common.syosai))
             {
                 // 初診計算ロジック
                 CalculateSyosin();
@@ -396,15 +376,7 @@ namespace CalculateService.Ika.ViewModels
 
             }
             //else if (new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.Saisin2, SyosaiConst.SaisinDenwa2 }.Contains(_common.syosai))
-            else if (new List<double> { 
-                        SyosaiConst.Saisin, 
-                        SyosaiConst.SaisinDenwa, 
-                        SyosaiConst.Saisin2, 
-                        SyosaiConst.SaisinDenwa2, 
-                        SyosaiConst.SaisinJouhou, 
-                        SyosaiConst.Saisin2Jouhou, 
-                        SyosaiConst.SaisinDenwaTokurei 
-                    }.Contains(_common.syosai))
+            else if (new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.Saisin2, SyosaiConst.SaisinDenwa2, SyosaiConst.SaisinJouhou, SyosaiConst.Saisin2Jouhou }.Contains(_common.syosai))
             {
                 // 再診計算ロジック
                 CalculateSaisin();
@@ -461,14 +433,6 @@ namespace CalculateService.Ika.ViewModels
             _common.Wrk.CommitWrkSinRpInf();
         }
 
-        List<string> SyosinCoronaItems =
-            new List<string>
-            {
-                ItemCdConst.SyosinCorona, 
-                ItemCdConst.SyosinTokurei
-            };
-
-
         /// <summary>
         /// 初診料（新型コロナウイルス感染症・診療報酬上臨時的取扱）がオーダーされているかどうかチェックする
         /// オーダーされている場合、ここで削除する
@@ -478,7 +442,7 @@ namespace CalculateService.Ika.ViewModels
         {
             bool ret = false;
 
-            if (_common.Odr.ExistOdrDetailByItemCd(SyosinCoronaItems))
+            if (_common.Odr.ExistOdrDetailByItemCd(ItemCdConst.SyosinCorona))
             {
                 if (_common.IsRosai == false)
                 {
@@ -489,14 +453,14 @@ namespace CalculateService.Ika.ViewModels
                 int minIndex = 0;
                 int itemCnt = 0;
 
-                (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(SyosinCoronaItems);
+                (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(ItemCdConst.SyosinCorona);
 
                 // オーダーから削除
                 while (minIndex >= 0)
                 {
                     foreach(OdrDtlTenModel odrDtl in odrDtls)
                     {
-                        if(SyosinCoronaItems.Contains(odrDtl.ItemCd))
+                        if(odrDtl.ItemCd == ItemCdConst.SyosinCorona)
                         {
                             pid = odrDtl.HokenPid;
                             hokenKbn = odrDtl.HokenKbn;
@@ -507,56 +471,13 @@ namespace CalculateService.Ika.ViewModels
                         }
                     }
                     _common.Odr.odrDtlls.RemoveRange(minIndex, itemCnt);
-                    (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(SyosinCoronaItems);
+                    (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(ItemCdConst.SyosinCorona);
                 }
             }
 
             return ret;
         }
-        /// <summary>
-        /// 電話等再診料（特例）がオーダーされているかどうかチェックする
-        /// オーダーされている場合、ここで削除する
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckSaisinTokurei(ref int pid, ref int hokenKbn, ref int hokenId, ref int santeiKbn)
-        {
-            bool ret = false;
 
-            if (_common.Odr.ExistOdrDetailByItemCd(ItemCdConst.SaisinDenwaTokurei))
-            {
-                if (_common.IsRosai == false)
-                {
-                    ret = true;
-                }
-
-                List<OdrDtlTenModel> odrDtls;
-                int minIndex = 0;
-                int itemCnt = 0;
-
-                (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(ItemCdConst.SaisinDenwaTokurei);
-
-                // オーダーから削除
-                while (minIndex >= 0)
-                {
-                    foreach (OdrDtlTenModel odrDtl in odrDtls)
-                    {
-                        if (odrDtl.ItemCd == ItemCdConst.SaisinDenwaTokurei)
-                        {
-                            pid = odrDtl.HokenPid;
-                            hokenKbn = odrDtl.HokenKbn;
-                            hokenId = odrDtl.HokenId;
-                            santeiKbn = odrDtl.SanteiKbn;
-
-                            break;
-                        }
-                    }
-                    _common.Odr.odrDtlls.RemoveRange(minIndex, itemCnt);
-                    (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(ItemCdConst.SaisinDenwaTokurei);
-                }
-            }
-
-            return ret;
-        }
         /// <summary>
         /// 情報通信機器に置き換えた初再診区分
         /// </summary>
@@ -672,17 +593,8 @@ namespace CalculateService.Ika.ViewModels
                 case SyosaiConst.Syosin2:     //初診２科目
                     itemCd = ChoiceItemCdKenpoRosai(ItemCdConst.Syosin2, ItemCdConst.Syosin2Rousai);
                     break;
-                case SyosaiConst.SyosinCorona:
-                    if (_common.sinDate >= 20230508)
-                    {
-                        // 初診料（文書による紹介がない患者の場合）（初減）（特例）
-                        itemCd = ItemCdConst.SyosinTokurei;
-                    }
-                    else
-                    {
-                        // 初診料（新型コロナウイルス感染症・診療報酬上臨時的取扱）
-                        itemCd = ItemCdConst.SyosinCorona;
-                    }
+                case SyosaiConst.SyosinCorona:  // 初診料（新型コロナウイルス感染症・診療報酬上臨時的取扱）
+                    itemCd = ItemCdConst.SyosinCorona;
                     break;
                 case SyosaiConst.SyosinJouhou:  // 初診料（情報通信機器を用いた場合）
                     itemCd = ItemCdConst.SyosinJouhou;
@@ -1227,7 +1139,7 @@ namespace CalculateService.Ika.ViewModels
             {
                 bool santeiJoken = true;
 
-                if (_common.CheckSanteiKaisu(ItemCdConst.SyosinKansenKojo, 0, 0, 0) == 2)
+                if (_common.CheckSanteiKaisu(ItemCdConst.SyosinKansenKojo, 0, 0) == 2)
                 {
                     // 算定回数マスタのチェックにより算定不可
                     santeiJoken = false;
@@ -1299,7 +1211,7 @@ namespace CalculateService.Ika.ViewModels
             {
                 bool santeiJoken = true;
 
-                if (_common.CheckSanteiKaisu(ItemCdConst.SyosinRenkeiKyoka, 0, 0, 0) == 2)
+                if (_common.CheckSanteiKaisu(ItemCdConst.SyosinRenkeiKyoka, 0, 0) == 2)
                 {
                     // 算定回数マスタのチェックにより算定不可
                     santeiJoken = false;
@@ -1371,7 +1283,7 @@ namespace CalculateService.Ika.ViewModels
             {
                 bool santeiJoken = true;
 
-                if (_common.CheckSanteiKaisu(ItemCdConst.SyosinSurveillance, 0, 0, 0) == 2)
+                if (_common.CheckSanteiKaisu(ItemCdConst.SyosinSurveillance, 0, 0) == 2)
                 {
                     // 算定回数マスタのチェックにより算定不可
                     santeiJoken = false;
@@ -1471,7 +1383,7 @@ namespace CalculateService.Ika.ViewModels
                     foreach (OdrDtlTenModel odrDtl in odrDtls)
                     {
                         // 算定回数チェック
-                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
+                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
                         {
                             // 算定回数マスタのチェックにより算定不可
                         }
@@ -1580,7 +1492,7 @@ namespace CalculateService.Ika.ViewModels
                     foreach (OdrDtlTenModel odrDtl in odrDtls)
                     {
                         // 算定回数チェック
-                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
+                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
                         {
                             // 算定回数マスタのチェックにより算定不可
                         }
@@ -1651,7 +1563,7 @@ namespace CalculateService.Ika.ViewModels
                         }
                         else if (((odrDtl.TyuCd == "1201" && odrDtl.TyuSeq != "0") || odrDtl.GairaiKanriKbn == 2) &&
                             //_common.syosai != SyosaiConst.Saisin && _common.syosai != SyosaiConst.SaisinDenwa &
-                            _common.syosai != SyosaiConst.Saisin && _common.syosai != SyosaiConst.SaisinJouhou && _common.syosai != SyosaiConst.SaisinDenwa & _common.syosai != SyosaiConst.SaisinDenwaTokurei &&
+                            _common.syosai != SyosaiConst.Saisin && _common.syosai != SyosaiConst.SaisinJouhou && _common.syosai != SyosaiConst.SaisinDenwa &
                             _common.Odr.ExistOdrDetailByTyuCd("1201", "0") == false)
                         {
                             // 再診 or 電話再診がないのに再診に紐づく加算をオーダーしている場合、算定不可
@@ -1659,7 +1571,7 @@ namespace CalculateService.Ika.ViewModels
                         }
                         // 算定回数チェック
                         //else if ((odrDtl.TenMst == null || odrDtl.TenMst.SinKouiKbn > 12 || (odrDtl.TenMst.CdKbn == "A" && odrDtl.TenMst.CdKbnno >= 3)) &&
-                        else if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
+                        else if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
                         {
                             // 算定回数マスタのチェックにより算定不可
                             _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: 1);
@@ -1946,8 +1858,7 @@ namespace CalculateService.Ika.ViewModels
                         SyosaiConst.SaisinDenwa,
                         SyosaiConst.SaisinDenwa2,
                         SyosaiConst.SaisinJouhou,
-                        SyosaiConst.Saisin2Jouhou,
-                        SyosaiConst.SaisinDenwaTokurei}.Contains(_common.syosai))
+                        SyosaiConst.Saisin2Jouhou}.Contains(_common.syosai))
                     {
                         // 電話再診又は情報通信機器を用いた場合は算定不可
                     }
@@ -2017,8 +1928,7 @@ namespace CalculateService.Ika.ViewModels
                         SyosaiConst.SaisinDenwa,
                         SyosaiConst.SaisinDenwa2,
                         SyosaiConst.SaisinJouhou,
-                        SyosaiConst.Saisin2Jouhou,
-                        SyosaiConst.SaisinDenwaTokurei}.Contains(_common.syosai))
+                        SyosaiConst.Saisin2Jouhou }.Contains(_common.syosai))
                     {
                         // 電話再診又は情報通信機器を用いた場合は算定不可
                     }
@@ -2045,7 +1955,7 @@ namespace CalculateService.Ika.ViewModels
 
                 bool santeiJoken = true;
 
-                if (_common.CheckSanteiKaisu(ItemCdConst.SaisinKansenKojo, 0, 0, 0) == 2)
+                if (_common.CheckSanteiKaisu(ItemCdConst.SaisinKansenKojo, 0, 0) == 2)
                 {
                     // 算定回数マスタのチェックにより算定不可
                     santeiJoken = false;
@@ -2094,8 +2004,7 @@ namespace CalculateService.Ika.ViewModels
                         SyosaiConst.SaisinDenwa,
                         SyosaiConst.SaisinDenwa2,
                         SyosaiConst.Saisin2,
-                        SyosaiConst.Saisin2Jouhou,
-                        SyosaiConst.SaisinDenwaTokurei}.Contains(_common.syosai))
+                        SyosaiConst.Saisin2Jouhou}.Contains(_common.syosai))
                     {
                         // 電話再診又は２科目の場合は算定不可
                     }
@@ -2122,7 +2031,7 @@ namespace CalculateService.Ika.ViewModels
 
                 bool santeiJoken = true;
 
-                if (_common.CheckSanteiKaisu(ItemCdConst.SaisinRenkeiKyoka, 0, 0, 0) == 2)
+                if (_common.CheckSanteiKaisu(ItemCdConst.SaisinRenkeiKyoka, 0, 0) == 2)
                 {
                     // 算定回数マスタのチェックにより算定不可
                     santeiJoken = false;
@@ -2171,8 +2080,7 @@ namespace CalculateService.Ika.ViewModels
                         SyosaiConst.SaisinDenwa,
                         SyosaiConst.SaisinDenwa2,
                         SyosaiConst.Saisin2,
-                        SyosaiConst.Saisin2Jouhou,
-                        SyosaiConst.SaisinDenwaTokurei}.Contains(_common.syosai))
+                        SyosaiConst.Saisin2Jouhou}.Contains(_common.syosai))
                     {
                         // 電話再診又は２科目の場合は算定不可
                     }
@@ -2199,7 +2107,7 @@ namespace CalculateService.Ika.ViewModels
 
                 bool santeiJoken = true;
 
-                if (_common.CheckSanteiKaisu(ItemCdConst.SaisinSurveillance, 0, 0, 0) == 2)
+                if (_common.CheckSanteiKaisu(ItemCdConst.SaisinSurveillance, 0, 0) == 2)
                 {
                     // 算定回数マスタのチェックにより算定不可
                     santeiJoken = false;
@@ -2248,8 +2156,7 @@ namespace CalculateService.Ika.ViewModels
                         SyosaiConst.SaisinDenwa,
                         SyosaiConst.SaisinDenwa2,
                         SyosaiConst.Saisin2,
-                        SyosaiConst.Saisin2Jouhou,
-                        SyosaiConst.SaisinDenwaTokurei}.Contains(_common.syosai))
+                        SyosaiConst.Saisin2Jouhou}.Contains(_common.syosai))
                     {
                         // 電話再診又は２科目の場合は算定不可
                     }
@@ -2278,8 +2185,6 @@ namespace CalculateService.Ika.ViewModels
                 {
                     // 二類感染症患者入院診療加算（電話等再診料・診療報酬上臨時的取扱）
                     ItemCdConst.Saisin2RuiKansen,
-                    // 医療情報・システム基盤整備体制充実加算３（再診）（経過措置）
-                    ItemCdConst.SaisinIryoJyohoKiban3,
                 };
 
             List<OdrDtlTenModel> odrDtls;
@@ -2300,15 +2205,7 @@ namespace CalculateService.Ika.ViewModels
                 {
                     foreach (OdrDtlTenModel odrDtl in odrDtls)
                     {
-                        // 算定回数チェック
-                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
-                        {
-                            // 算定回数マスタのチェックにより算定不可
-                        }
-                        else
-                        {
-                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
-                        }
+                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                     }
                     //オーダーから削除
                     while (minIndex >= 0)
@@ -2329,43 +2226,31 @@ namespace CalculateService.Ika.ViewModels
                 {
                     new List<string>
                     {
-                        // 認知症地域包括診療加算１
                         ItemCdConst.SaisinNintiTiikiHoukatu1
                     },
                     new List<string>
                     {
-                        // 認知症地域包括診療加算２
                         ItemCdConst.SaisinNintiTiikiHoukatu2
                     },
                     new List<string>
                     {
-                        // 地域包括診療加算２
                         ItemCdConst.SaisinTiikiHoukatu2
                     },
                     new List<string>
                     {
-                        // 認知症地域包括診療加算２
                         ItemCdConst.SaisinNintiTiikiHoukatu2
                     },
                     new List<string>
                     {
-                        // 乳幼児感染予防策加算（初診料・診療報酬上臨時的取扱）
                         ItemCdConst.SaisinNyuyojiKansen,
                     },
                     new List<string>
                     {
-                        // 医科外来等感染症対策実施加算（再診料・外来診療料）
                         ItemCdConst.SaisinKansenTaisaku,
                     },
                     new List<string>
                     {
-                        // 二類感染症患者入院診療加算（電話等再診料・診療報酬上臨時的取扱）
                         ItemCdConst.Saisin2RuiKansen,
-                    },
-                    new List<string>
-                    {
-                        // 医療情報・システム基盤整備体制充実加算３（再診）（経過措置）
-                        ItemCdConst.SaisinIryoJyohoKiban3,
                     }
                 };
 
@@ -2387,15 +2272,7 @@ namespace CalculateService.Ika.ViewModels
 
                     foreach (OdrDtlTenModel odrDtl in odrDtls)
                     {
-                        // 算定回数チェック
-                        if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
-                        {
-                            // 算定回数マスタのチェックにより算定不可
-                        }
-                        else
-                        {
-                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
-                        }
+                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                     }
                     //オーダーから削除
                     while (minIndex >= 0)
@@ -2418,14 +2295,12 @@ namespace CalculateService.Ika.ViewModels
                     {
                         ItemCdConst.Syosin,
                         ItemCdConst.SyosinCorona,
-                        ItemCdConst.SyosinTokurei,
                         ItemCdConst.SyosinJouhou,
                         ItemCdConst.Saisin,
                         ItemCdConst.SaisinDenwa,
                         ItemCdConst.SaisinDojitu,
                         ItemCdConst.SaisinDenwaDojitu,
                         ItemCdConst.SaisinDenwaKeizoku,
-                        ItemCdConst.SaisinDenwaTokurei,
                         ItemCdConst.SaisinJouhou,
                         ItemCdConst.SaisinJouhouDojitu,
                         ItemCdConst.ZaiHoumon1_1Dou,
@@ -2490,9 +2365,6 @@ namespace CalculateService.Ika.ViewModels
                 case SyosaiConst.Saisin2Jouhou:     //再診料（同一日複数科受診時の２科目）（情報通信機器）
                     itemCd = ItemCdConst.Saisin2Jouhou;
                     break;
-                case SyosaiConst.SaisinDenwaTokurei:    // 電話等再診料（特例）
-                    itemCd = ItemCdConst.SaisinDenwaTokurei;
-                    break;
 
             }
 
@@ -2507,11 +2379,7 @@ namespace CalculateService.Ika.ViewModels
                 }
 
                 //if (_common.syosai == SyosaiConst.Saisin2 || _common.syosai == SyosaiConst.SaisinDenwa2)
-                if (new List<double> { 
-                        SyosaiConst.Saisin2, 
-                        SyosaiConst.SaisinDenwa2, 
-                        SyosaiConst.Saisin2Jouhou 
-                    }.Contains(_common.syosai))
+                if (new List<double> { SyosaiConst.Saisin2, SyosaiConst.SaisinDenwa2, SyosaiConst.Saisin2Jouhou }.Contains(_common.syosai))
                 {
                     //2科目の場合は診療科名を追加する
                     if (_common.sinDate >= 20200401)
@@ -2524,10 +2392,7 @@ namespace CalculateService.Ika.ViewModels
                     }
                 }
 
-                if (new List<double> { 
-                        SyosaiConst.SaisinJouhou, 
-                        SyosaiConst.Saisin2Jouhou 
-                    }.Contains(_common.syosai))
+                if (new List<double> { SyosaiConst.SaisinJouhou, SyosaiConst.Saisin2Jouhou }.Contains(_common.syosai))
                 {
                     //情報通信機器の場合はコメントを追加する
                     _common.Wrk.AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentOnlineSinryoSaisin, "", autoAdd: 1);
@@ -2596,12 +2461,7 @@ namespace CalculateService.Ika.ViewModels
                 if (minIndex >= 0)
                 {
                     //if (new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa }.Contains(_common.syosai))
-                    if (new List<double> { 
-                            SyosaiConst.Saisin, 
-                            SyosaiConst.SaisinDenwa, 
-                            SyosaiConst.SaisinJouhou, 
-                            SyosaiConst.SaisinDenwaTokurei 
-                        }.Contains(_common.syosai))
+                    if (new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.SaisinJouhou }.Contains(_common.syosai))
                     {
                         foreach (OdrDtlTenModel odrDtl in odrDtls)
                         {
@@ -2624,12 +2484,7 @@ namespace CalculateService.Ika.ViewModels
 
                 if (!bSanteiKasan &&
                     //(new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa }.Contains(_common.syosai)))
-                    new List<double> { 
-                        SyosaiConst.Saisin, 
-                        SyosaiConst.SaisinDenwa, 
-                        SyosaiConst.SaisinJouhou, 
-                        SyosaiConst.SaisinDenwaTokurei 
-                    }.Contains(_common.syosai))
+                    new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.SaisinJouhou }.Contains(_common.syosai))
                 {
                     string itemCd = ChoiceItemCdNyuNinpu("", ItemCdConst.SaisinNyu, ItemCdConst.SaisinNinpu);
 
@@ -2652,11 +2507,7 @@ namespace CalculateService.Ika.ViewModels
 
             //再診２科目の場合は算定不可
             //if (_common.syosai == SyosaiConst.Saisin2 || _common.syosai == SyosaiConst.SaisinDenwa2)
-            if (new List<double> { 
-                    SyosaiConst.Saisin2, 
-                    SyosaiConst.SaisinDenwa2, 
-                    SyosaiConst.Saisin2Jouhou 
-                }.Contains(_common.syosai))
+            if (new List<double> { SyosaiConst.Saisin2, SyosaiConst.SaisinDenwa2, SyosaiConst.Saisin2Jouhou }.Contains(_common.syosai))
             {
                 return;
             }
@@ -2727,11 +2578,7 @@ namespace CalculateService.Ika.ViewModels
 
             //再診２科目の場合は算定不可
             //if (!(_common.syosai == SyosaiConst.Saisin2 || _common.syosai == SyosaiConst.SaisinDenwa2))
-            if (!new List<double> { 
-                    SyosaiConst.Saisin2, 
-                    SyosaiConst.SaisinDenwa2, 
-                    SyosaiConst.Saisin2Jouhou 
-                }.Contains(_common.syosai))
+            if (!new List<double> { SyosaiConst.Saisin2, SyosaiConst.SaisinDenwa2, SyosaiConst.Saisin2Jouhou }.Contains(_common.syosai))
             {
                 //手オーダーされている加算項目を探す
                 (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(ItemCdConst.MeisaiHakko);
@@ -2794,7 +2641,7 @@ namespace CalculateService.Ika.ViewModels
                 if (minIndex >= 0)
                 {
                     // 算定回数上限チェック
-                    if (_common.CheckSanteiNintiTiiki(ItemCdConst.SaisinNintiTiikiHoukatu1, "認知症地域包括診療加算", odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0))
+                    if (_common.CheckSanteiNintiTiiki(ItemCdConst.SaisinNintiTiikiHoukatu1, "認知症地域包括診療加算", odrDtls.First().SanteiKbn, 0))
                     {
                         // ここでは、初再診と同じ保険組合せのものだけ処理する
                         //if (odrDtls.First().HokenPid != _common.syosaiPid)
@@ -2821,7 +2668,7 @@ namespace CalculateService.Ika.ViewModels
                     if (minIndex >= 0)
                     {
                         // 算定回数上限チェック
-                        if (_common.CheckSanteiNintiTiiki(ItemCdConst.SaisinNintiTiikiHoukatu2, "認知症地域包括診療加算", odrDtls.First().SanteiKbn, odrDtls.First().HokenId, 0))
+                        if (_common.CheckSanteiNintiTiiki(ItemCdConst.SaisinNintiTiikiHoukatu2, "認知症地域包括診療加算", odrDtls.First().SanteiKbn, 0))
                         {
                             // ここでは、初再診と同じ保険組合せのものだけ処理する
                             //if (odrDtls.First().HokenPid != _common.syosaiPid)
@@ -2981,12 +2828,7 @@ namespace CalculateService.Ika.ViewModels
                     }
                 }
                 //else if (!(new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa }.Contains(_common.syosai)))
-                else if (!new List<double> { 
-                            SyosaiConst.Saisin, 
-                            SyosaiConst.SaisinDenwa, 
-                            SyosaiConst.SaisinJouhou, 
-                            SyosaiConst.SaisinDenwaTokurei 
-                        }.Contains(_common.syosai))
+                else if (!new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.SaisinJouhou }.Contains(_common.syosai))
                 {
                     foreach (OdrDtlTenModel odrDtl in odrDtls)
                     {
@@ -3053,7 +2895,7 @@ namespace CalculateService.Ika.ViewModels
             }
 
             //if ((new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa }.Contains(_common.syosai)))
-            if (new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.SaisinJouhou, SyosaiConst.SaisinDenwaTokurei }.Contains(_common.syosai))
+            if (new List<double> { SyosaiConst.Saisin, SyosaiConst.SaisinDenwa, SyosaiConst.SaisinJouhou }.Contains(_common.syosai))
             {
                 if (!bSanteiKasan)
                 {
