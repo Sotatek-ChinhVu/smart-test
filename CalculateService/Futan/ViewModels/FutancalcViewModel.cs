@@ -62,7 +62,7 @@ namespace CalculateService.Futan.ViewModels
             ///     2:社保/公費負担額を含まない　国保/公費負担額を含む
             ///     3:公費負担額を含まない
             /// </summary>
-            public int ChokiFutan { get; set; }
+            public int ChokiFutan { get; private set; }
 
             /// <summary>
             /// マル長計算オプション
@@ -75,7 +75,7 @@ namespace CalculateService.Futan.ViewModels
             ///     公１が5000円上限、マル長10000円で、1日目にマル長上限に達して公1上限未満だった場合に、
             ///     2日目以降に公1上限まで患者負担させるかどうか（月単位の場合は公1上限まで患者負担させる）
             /// </remarks>
-            public int ChokiDateRange { get; set; }
+            public int ChokiDateRange { get; private set; }
 
             /// <summary>
             /// 高額療養費の窓口負担まるめ設定
@@ -83,7 +83,7 @@ namespace CalculateService.Futan.ViewModels
             ///     1:10円単位(四捨五入)
             ///     2:10円単位(切り捨て)
             /// </summary>
-            public int RoundKogakuPtFutan { get; set; }
+            public int RoundKogakuPtFutan { get; private set; }
 
             public SystemConfs(int chokiFutan, int chokiDateRange, int roundKogakuPtFutan)
             {
@@ -92,18 +92,18 @@ namespace CalculateService.Futan.ViewModels
                 RoundKogakuPtFutan = roundKogakuPtFutan;
             }
         }
-        public SystemConfs SystemConf;
+        public readonly SystemConfs SystemConf;
 
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
-        public FutancalcViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public FutancalcViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, List<KogakuLimitModel>? kogakuLimits = null)
         {
             _systemConfigProvider = systemConfigProvider;
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
             _emrLogger = emrLogger;
 
-            _futancalcFinder = new FutancalcFinder(_tenantDataContext);
+            _futancalcFinder = new FutancalcFinder(_tenantDataContext, kogakuLimits);
             _odrInfFinder = new OdrInfFinder(_tenantDataContext);
             _raiinInfFinder = new RaiinInfFinder(_tenantDataContext, _systemConfigProvider);
             _saveFutancalCommandHandler = new SaveFutancalCommandHandler(_tenantDataContext, emrLogger);
@@ -609,7 +609,7 @@ namespace CalculateService.Futan.ViewModels
             KaikeiDetail.ReceSbt = wrkReceSbt;
 
             //総医療費
-            KaikeiDetail.TotalIryohi = KaikeiDetail.Tensu * PtHoken.EnTen;
+            KaikeiDetail.TotalIryohi = (int)Math.Truncate(KaikeiDetail.Tensu * PtHoken.EnTen);
 
             if (PtHoken.FutanKbn == 0)
             {
@@ -3098,7 +3098,8 @@ namespace CalculateService.Futan.ViewModels
             {
                 case 1: //労災
                 case 2: //労災アフターケア
-                    KaikeiDetail.RousaiIFutan = RaiinTensu.RousaiIFutan * PtHoken.EnTen;
+                    KaikeiDetail.RousaiITensu = RaiinTensu.RousaiITensu;
+                    KaikeiDetail.RousaiIFutan = (int)Math.Truncate(RaiinTensu.RousaiITensu * PtHoken.EnTen);
                     KaikeiDetail.RousaiRoFutan = RaiinTensu.RousaiRoFutan;
                     return KaikeiDetail.RousaiIFutan + KaikeiDetail.RousaiRoFutan;
                 case 3: //自賠
@@ -3114,7 +3115,7 @@ namespace CalculateService.Futan.ViewModels
                     if (_systemConfigProvider.GetJibaiJunkyo() == 0)
                     {
                         KaikeiDetail.JibaiKenpoTensu = RaiinTensu.JibaiKenpoTensu;
-                        KaikeiDetail.JibaiKenpoFutan = RaiinTensu.JibaiKenpoTensu * PtHoken.EnTen;
+                        KaikeiDetail.JibaiKenpoFutan = (int)Math.Truncate(RaiinTensu.JibaiKenpoTensu * PtHoken.EnTen);
                         return KaikeiDetail.JibaiKenpoFutan + KaikeiDetail.JibaiDFutan;
                     }
                     //労災準拠
@@ -3126,7 +3127,7 @@ namespace CalculateService.Futan.ViewModels
                         //Ａ（イ×単価×加算率）
                         KaikeiDetail.JibaiAFutan = CIUtil.RoundInt(KaikeiDetail.JibaiITensu * PtHoken.EnTen * _systemConfigProvider.GetJibaiRousaiRate(), 0);
                         //Ｂ（ロ×単価）
-                        KaikeiDetail.JibaiBFutan = KaikeiDetail.JibaiRoTensu * PtHoken.EnTen;
+                        KaikeiDetail.JibaiBFutan = (int)Math.Truncate(KaikeiDetail.JibaiRoTensu * PtHoken.EnTen);
                         //Ｃ（ハ×加算率）
                         KaikeiDetail.JibaiCFutan = CIUtil.RoundInt(KaikeiDetail.JibaiHaFutan * _systemConfigProvider.GetJibaiRousaiRate(), 0);
                     }

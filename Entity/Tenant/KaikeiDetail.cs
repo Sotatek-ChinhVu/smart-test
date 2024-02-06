@@ -295,7 +295,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("en_ten")]
         [CustomAttribute.DefaultValue(0)]
-        public int EnTen { get; set; }
+        public double EnTen { get; set; }
 
         /// <summary>
         /// 保険負担率
@@ -570,6 +570,14 @@ namespace Entity.Tenant
         [Column("jitunisu")]
         [CustomAttribute.DefaultValue(0)]
         public int Jitunisu { get; set; }
+
+        /// <summary>
+        /// 労災イ点数
+        /// 
+        /// </summary>
+        [Column("rousai_i_tensu")]
+        [CustomAttribute.DefaultValue(0)]
+        public int RousaiITensu { get; set; }
 
         /// <summary>
         /// 労災イ点負担額

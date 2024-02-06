@@ -6,7 +6,7 @@ public class CoKaikeiInfListModel
 {
     public CoKaikeiInfListModel(
         int hpId, long ptId, long ptNum, string ptName, string ptKanaName, int sex, int birthDay, string postCd, string address1, string address2, string tel1, string tel2, string renrakuTel,
-        int seikyuGaku, int nyukinGaku, int misyu, int tensu, int totalIryohi, int ptFutan, int adjustFutan, int adjustRound,
+        int seikyuGaku, int nyukinGaku, int nyukinAdjust, int misyu, int tensu, int totalIryohi, int ptFutan, int adjustFutan, int adjustRound,
         int totalPtFutan, int jihiFutan, int jihiOuttax, int jihiTax,
         int jihiFutanFree, int jihiFutanOuttaxNr, int jihiFutanOuttaxGen, int jihiFutanTaxNr, int jihiFutanTaxGen,
         int jihiOuttaxNr, int jihiOuttaxGen, int jihiTaxNr, int jihiTaxGen,
@@ -27,6 +27,7 @@ public class CoKaikeiInfListModel
         RenrakuTel = renrakuTel;
         SeikyuGaku = seikyuGaku;
         NyukinGaku = nyukinGaku;
+        NyukinAdjust = nyukinAdjust;
         Misyu = misyu;
         Tensu = tensu;
         TotalIryohi = totalIryohi;
@@ -152,6 +153,10 @@ public class CoKaikeiInfListModel
     /// 入金額
     /// </summary>
     public int NyukinGaku { get; set; }
+    /// <summary>
+    /// 入金調整額
+    /// </summary>
+    public int NyukinAdjust { get; set; }
     /// <summary>
     /// 未収額
     /// </summary>

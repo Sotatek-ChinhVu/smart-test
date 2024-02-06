@@ -368,7 +368,7 @@ namespace CalculateService.Receipt.ViewModels
 
                             string roudouKyokuCd = "";
                             string kantokuSyoCd = "";
-                            int enten = 0;
+                            double enten = 0;
                             int totalKingaku = 0;
                             int receiptCount = 0;
                             int receiptNo = 0;
@@ -458,7 +458,7 @@ namespace CalculateService.Receipt.ViewModels
                         else if (mode == 3)
                         {
                             // アフターケア
-                            int enten = 0;
+                            double enten = 0;
                             int totalKingaku = 0;
                             int receiptCount = 0;
 
@@ -533,7 +533,7 @@ namespace CalculateService.Receipt.ViewModels
             return retls;
 
             #region Local Method
-            string GetRSRecord(int Amode, string ARoudouKyokuCd, string AKantokuSyoCd, string ArousaiHpCd, string Aaddress, string AkaisetuName, int AEnTen, int ATotalKingaku, int AReceiptCount, int AMultiVolume)
+            string GetRSRecord(int Amode, string ARoudouKyokuCd, string AKantokuSyoCd, string ArousaiHpCd, string Aaddress, string AkaisetuName, double AEnTen, int ATotalKingaku, int AReceiptCount, int AMultiVolume)
             {
                 string rsRecord = "";
                 // レコード識別情報
@@ -581,7 +581,7 @@ namespace CalculateService.Receipt.ViewModels
                 return rsRecord;
             }
 
-            string GetASRecord(int Amode, string ArousaiHpCd, string Aaddress, string AkaisetuName, int AEnTen, int ATotalKingaku, int AReceiptCount)
+            string GetASRecord(int Amode, string ArousaiHpCd, string Aaddress, string AkaisetuName, double AEnTen, int ATotalKingaku, int AReceiptCount)
             {
                 string rsRecord = "";
                 // レコード識別情報
@@ -837,7 +837,7 @@ namespace CalculateService.Receipt.ViewModels
                 if (rousaiReceiptModel != null)
                 {
                     rousaiReceiptModel.JituNissu = receInf.HokenNissu;
-                    rousaiReceiptModel.Syokei = receInf.RousaiIFutan / receInf.HokenMst.EnTen;
+                    rousaiReceiptModel.Syokei = receInf.RousaiITensu;
                     rousaiReceiptModel.SyokeiGaku_I = receInf.RousaiIFutan;
                     rousaiReceiptModel.SyokeiGaku_RO = receInf.RousaiRoFutan;
 
@@ -1134,14 +1134,14 @@ namespace CalculateService.Receipt.ViewModels
                     tmpRaiinNos.Add(kaikeiDtl.RaiinNo);
                     tmpSyokeiGaku_I = kaikeiDtl.RousaiIFutan;
                     tmpSyokeiGaku_RO = kaikeiDtl.RousaiRoFutan;
-                    tmpSyokei = kaikeiDtl.RousaiIFutan / receInf.HokenMst.EnTen;
+                    tmpSyokei = kaikeiDtl.RousaiITensu;
                 }
                 else
                 {
                     tmpRaiinNos.Add(kaikeiDtl.RaiinNo);
                     tmpSyokeiGaku_I += kaikeiDtl.RousaiIFutan;
                     tmpSyokeiGaku_RO += kaikeiDtl.RousaiRoFutan;
-                    tmpSyokei += kaikeiDtl.RousaiIFutan / receInf.HokenMst.EnTen;
+                    tmpSyokei += kaikeiDtl.RousaiITensu;
                 }
             }
 

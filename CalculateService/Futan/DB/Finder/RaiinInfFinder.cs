@@ -970,7 +970,7 @@ namespace CalculateService.Futan.DB.Finder
                 case 1: //労災
                 case 2: //労災アフターケア
                     //労災イ点負担額
-                    raiinTensu.RousaiIFutan = raiinTensu.Tensu;
+                    raiinTensu.RousaiITensu = raiinTensu.Tensu;
 
                     //労災ロ円負担額
                     raiinTensu.RousaiRoFutan = (int)sinJoin.Where(x =>

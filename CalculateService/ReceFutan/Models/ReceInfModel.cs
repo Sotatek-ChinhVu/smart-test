@@ -523,7 +523,7 @@ namespace CalculateService.ReceFutan.Models
         /// 点数単価
         /// 
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get { return ReceInf.EnTen; }
             set
@@ -1734,6 +1734,20 @@ namespace CalculateService.ReceFutan.Models
         }
 
         /// <summary>
+        /// 労災イ点数
+        /// 
+        /// </summary>
+        public int RousaiITensu
+        {
+            get { return ReceInf.RousaiITensu; }
+            set
+            {
+                if (ReceInf.RousaiITensu == value) return;
+                ReceInf.RousaiITensu = value;
+            }
+        }
+
+        /// <summary>
         /// 労災イ点負担額
         /// 
         /// </summary>
@@ -2230,13 +2244,13 @@ namespace CalculateService.ReceFutan.Models
             switch (kohiNo)
             {
                 case 1:
-                    return Kohi1Priority ?? "".PadLeft(7, '9');
+                    return Kohi1Priority.PadLeft(7, '9');
                 case 2:
-                    return Kohi2Priority ?? "".PadLeft(7, '9');
+                    return Kohi2Priority.PadLeft(7, '9');
                 case 3:
-                    return Kohi3Priority ?? "".PadLeft(7, '9');
+                    return Kohi3Priority.PadLeft(7, '9');
                 case 4:
-                    return Kohi4Priority ?? "".PadLeft(7, '9');
+                    return Kohi4Priority.PadLeft(7, '9');
                 default:
                     return "".PadLeft(7, '9');
             }
@@ -3290,6 +3304,19 @@ namespace CalculateService.ReceFutan.Models
                     (Kohi3HokenSbtKbn == HokenSbtKbn.Bunten ? Kohi3ReceFutan ?? Kohi3IchibuSotogaku * 2 : 0) +
                     (Kohi4HokenSbtKbn == HokenSbtKbn.Bunten ? Kohi4ReceFutan ?? Kohi4IchibuSotogaku * 2 : 0);
             }
+        }
+
+        /// <summary>
+        /// 生保 保険ID
+        /// </summary>
+        public int SeihoId
+        {
+            get =>
+                new string[] { "12", "25" }.Contains(Kohi1Houbetu) ? Kohi1Id :
+                new string[] { "12", "25" }.Contains(Kohi2Houbetu) ? Kohi2Id :
+                new string[] { "12", "25" }.Contains(Kohi3Houbetu) ? Kohi3Id :
+                new string[] { "12", "25" }.Contains(Kohi4Houbetu) ? Kohi4Id :
+                0;
         }
         #endregion
     }

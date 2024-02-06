@@ -2,7 +2,7 @@
 
 public class VisitingInfModel
 {
-    public VisitingInfModel(int sinDate, string uketukeTime, long raiinNo, int status, string kaName, string doctorName, int syosaisinKbn, string uketukeSbtName, string ptComment, List<RaiinListInfModel> raiinListInfList)
+    public VisitingInfModel(int sinDate, string uketukeTime, long raiinNo, int status, string kaName, string doctorName, int syosaisinKbn, string uketukeSbtName, string ptComment, string yousikiKaCd, List<RaiinListInfModel> raiinListInfList)
     {
         SinDate = sinDate;
         UketukeTime = uketukeTime;
@@ -13,6 +13,7 @@ public class VisitingInfModel
         SyosaisinKbn = syosaisinKbn;
         UketukeSbtName = uketukeSbtName;
         PtComment = ptComment.Replace(Environment.NewLine, " ・ ");
+        YousikiKaCd = yousikiKaCd;
         RaiinListInfList = raiinListInfList;
     }
 
@@ -39,6 +40,8 @@ public class VisitingInfModel
     public string UketukeSbtName { get; private set; }
 
     public string PtComment { get; private set; }
+
+    public string YousikiKaCd { get; private set; }
 
     public List<RaiinListInfModel> RaiinListInfList { get; private set; }
 }
