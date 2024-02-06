@@ -202,7 +202,7 @@ public class KinkiCheckerTest : BaseUT
         }
         systemConf.Val = temp;
 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
         var tenMsts = CommonCheckerData.ReadTenMst("KINKI3", "");
         tenantTracking.TenMsts.AddRange(tenMsts);
@@ -288,7 +288,7 @@ public class KinkiCheckerTest : BaseUT
         }
         systemConf.Val = temp;
 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
         var tenMsts = CommonCheckerData.ReadTenMst("KINKI3", "");
         tenantTracking.TenMsts.AddRange(tenMsts);

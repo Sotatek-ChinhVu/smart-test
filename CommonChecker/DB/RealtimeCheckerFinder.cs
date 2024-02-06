@@ -1558,6 +1558,20 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         continue;
                     }
+                    var check1 = 
+                        NoTrackingDataContext.M01Kinki
+                        .Where
+                        (
+                            k =>
+                            k.HpId == hpID &&
+                            ((
+                                k.ACd == addedOrderSubYjCode.YjCd7 
+                            )
+                            &&
+                            (
+                                k.BCd == currentOrderSubYjCode.YjCd7 
+                            ))
+                        ).ToList();
 
                     var checkedResult =
                         NoTrackingDataContext.M01Kinki
@@ -1565,7 +1579,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         (
                             k =>
                             k.HpId == hpID &&
-                            ((
+                            (((
                                 k.ACd == addedOrderSubYjCode.YjCd7 ||
                                 k.ACd == addedOrderSubYjCode.YjCd8 ||
                                 k.ACd == addedOrderSubYjCode.YjCd9 ||
@@ -1593,7 +1607,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                 k.BCd == addedOrderSubYjCode.YjCd8 ||
                                 k.BCd == addedOrderSubYjCode.YjCd9 ||
                                 k.BCd == addedOrderSubYjCode.YjCd12
-                            ))
+                            )))
                         )
                         .Select
                         (

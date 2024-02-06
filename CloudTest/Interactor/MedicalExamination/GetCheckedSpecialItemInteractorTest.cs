@@ -566,7 +566,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         #region Data Example
         var tenMstItems = new List<TenItemModel>();
         var tenMst1 = new TenItemModel(
-            1,
+            hpId,
             "111014210",
             "0",
             "AA",
@@ -577,7 +577,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         tenMstItems.Add(tenMst1);
 
         var tenMst2 = new TenItemModel(
-            1,
+            hpId,
             "113003510",
             "0",
             "B3",
@@ -589,14 +589,14 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
-            1,
+            hpId,
             "111014210",
             20221111
             );
         odrDetails.Add(odrDetail1);
 
         var odrDetail2 = new OrdInfDetailModel(
-            1,
+            hpId,
             "113003510",
             20221111
             );
@@ -610,7 +610,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var densiSanteiKaisuModel1 = new DensiSanteiKaisuModel(
                 1,
-                1,
+                hpId,
                 "111014210",
                 997,
                 10,
@@ -628,7 +628,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var densiSanteiKaisuModel2 = new DensiSanteiKaisuModel(
                1,
-               1,
+               hpId,
                "113003510",
                998,
                10,
@@ -649,7 +649,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var itemGrpMsts = new List<ItemGrpMstModel>();
 
         var itemGrpMst1 = new ItemGrpMstModel(
-                1,
+                hpId,
                 1,
                 1,
                 20220101,
@@ -659,7 +659,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
             );
 
         var itemGrpMst2 = new ItemGrpMstModel(
-                1,
+                hpId,
                 1,
                 2,
                 20220101,

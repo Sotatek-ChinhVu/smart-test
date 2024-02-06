@@ -90,6 +90,10 @@ public class DiseaseCheckerTest : BaseUT
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+        int hpId = 999;
+        long ptId = 1231;
+        int sinDate = 20230505;
+
         //DiseaseLevelSetting
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
@@ -116,18 +120,14 @@ public class DiseaseCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var tenMsts = CommonCheckerData.ReadTenMst("DIS002", "DIS002");
-        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS002");
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS002");
+        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS002");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS002");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
         tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
         tenantTracking.PtByomeis.AddRange(ptByomei);
         tenantTracking.SaveChanges();
-
-        int hpId = 999;
-        long ptId = 1231;
-        int sinDate = 20230505;
         var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("936DIS002", "id1"),
@@ -194,8 +194,8 @@ public class DiseaseCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var tenMsts = CommonCheckerData.ReadTenMst("DIS003", "DIS003");
-        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS003");
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS003");
+        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS003");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS003");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
@@ -303,8 +303,8 @@ public class DiseaseCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var tenMsts = CommonCheckerData.ReadTenMst("DIS005", "DIS005");
-        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS005");
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS005");
+        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS005");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS005");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
@@ -391,8 +391,8 @@ public class DiseaseCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var tenMsts = CommonCheckerData.ReadTenMst("DIS006", "DIS006");
-        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS006");
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS006");
+        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS006");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS006");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
@@ -449,7 +449,7 @@ public class DiseaseCheckerTest : BaseUT
     [Test]
     public void CheckDiseaseChecker_007_CheckOrderList_With_CheckedResultForHistoryDisease_Any()
     {
-        int hpId = 999;
+        int hpId = 1;
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -465,7 +465,7 @@ public class DiseaseCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -479,8 +479,8 @@ public class DiseaseCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var tenMsts = CommonCheckerData.ReadTenMst("DIS007", "DIS007");
-        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS007");
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS007");
+        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS007");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS007");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         var ptKioReki = CommonCheckerData.ReadPtKioReki();
         tenantTracking.TenMsts.AddRange(tenMsts);
@@ -540,7 +540,7 @@ public class DiseaseCheckerTest : BaseUT
     [Test]
     public void CheckDiseaseChecker_008_CheckOrderList_With_CheckedResultForFamilyDisease_Any()
     {
-        int hpId = 999;
+        int hpId = 1;
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -556,7 +556,7 @@ public class DiseaseCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -570,8 +570,8 @@ public class DiseaseCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var tenMsts = CommonCheckerData.ReadTenMst("DIS008", "DIS008");
-        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("DIS008");
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS008");
+        var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS008");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS008");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         var ptFamilyReki = CommonCheckerData.ReadPtFamilyReki();
         var ptFamilies = CommonCheckerData.ReadPtFamily();

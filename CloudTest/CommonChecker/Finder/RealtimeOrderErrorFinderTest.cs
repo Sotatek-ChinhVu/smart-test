@@ -128,7 +128,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_004_TEST_FindAnalogueNameDic()
         {
-
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var testAnalogueCd1 = "UT7777";
@@ -138,16 +138,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56AnalogueCd()
                 {
+                    HpId = hpId,
                     AnalogueCd = testAnalogueCd1,
                     AnalogueName = null,
                 },
                 new M56AnalogueCd()
                 {
+                    HpId = hpId,
                     AnalogueCd = testAnalogueCd2,
                     AnalogueName = "Analogue-Name-Test1",
                 },
                 new M56AnalogueCd()
                 {
+                    HpId = hpId,
                     AnalogueCd = testAnalogueCd3,
                     AnalogueName = "Analogue-Name-Test2",
                 },
@@ -163,7 +166,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindAnalogueNameDic(1, analogueCodeLists);
+                var result = realtimcheckerfinder.FindAnalogueNameDic(hpId, analogueCodeLists);
 
                 // Assert
                 Assert.AreEqual(2, result.Count);

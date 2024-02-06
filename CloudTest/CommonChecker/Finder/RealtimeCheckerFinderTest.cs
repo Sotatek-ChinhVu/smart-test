@@ -408,19 +408,18 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_008_CheckSameComponent()
         {
-
-            //Setup Data Test
-            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
-            tenantTracking.PtInfs.AddRange(ptInfs);
-            tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
-            tenantTracking.SaveChanges();
-
             //Setup Param
             int hpId = 1;
             long ptId = 1231;
             int sinDay = 20230101;
+
+            //Setup Data Test
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+            var ptInfs = CommonCheckerData.ReadPtInf();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
+            tenantTracking.PtInfs.AddRange(ptInfs);
+            tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
+            tenantTracking.SaveChanges();
 
             var itemCodeModelList = new List<ItemCodeModel>()
                 {
@@ -455,21 +454,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230505;
+            int settingLevel = 5;
+            bool dataDb = true;
+
             var tenMsts = CommonCheckerData.ReadTenMst("TC009", "TC009");
-            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("TC009");
-            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("TC009");
+            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "TC009");
+            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "TC009");
             var ptByomei = CommonCheckerData.ReadPtByomei();
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
             tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
             tenantTracking.PtByomeis.AddRange(ptByomei);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230505;
-            int settingLevel = 5;
-            bool dataDb = true;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("936TC009", "id1"),
@@ -508,21 +507,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 999;
+            long ptId = 1231;
+            int sinDate = 20230505;
+            int settingLevel = 5;
+            bool dataDb = false;
+
             var tenMsts = CommonCheckerData.ReadTenMst("TC010", "TC010");
-            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon("TC010");
-            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("TC010");
+            var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "TC010");
+            var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "TC010");
             var ptByomei = CommonCheckerData.ReadPtByomei();
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
             tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
             tenantTracking.PtByomeis.AddRange(ptByomei);
             tenantTracking.SaveChanges();
-
-            int hpId = 999;
-            long ptId = 1231;
-            int sinDate = 20230505;
-            int settingLevel = 5;
-            bool dataDb = false;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("936TC010", "id1"),
@@ -1023,36 +1022,38 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_020_CheckContraindicationForHistoryDisease_Test_DataDb_True()
         {
-            //Setup
-            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-
-            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
-            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
-            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230101;
             int level = 5;
             bool isDataDb = true;
-            var listItemCode = new List<ItemCodeModel>()
-        {
-            new ItemCodeModel("937", "id1"),
-        };
 
-            // Arrange
-            var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
-            var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+            //Setup
+            var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
 
             try
             {
+                tenantTracking.PtKioRekis.AddRange(ptKioRekis);
+                tenantTracking.TenMsts.AddRange(tenMsts);
+                tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
+                tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
+                tenantTracking.SaveChanges();
+                var listItemCode = new List<ItemCodeModel>()
+                {
+                    new ItemCodeModel("937", "id1"),
+                };
+
+                // Arrange
+                var cache = new MasterDataCacheService(TenantProvider);
+                cache.InitCache(hpId, new List<string>() { "937" }, sinDate, ptId);
+                var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
+
+
                 //Act
                 var result = realTimeCheckerFinder.CheckContraindicationForHistoryDisease(hpId, ptId, level, sinDate, listItemCode, new(), isDataDb);
 
@@ -1076,21 +1077,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
-            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
-            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230101;
             int level = 5;
             bool isDataDb = false;
+
+            var ptKioRekis = CommonCheckerData.ReadPtKioReki();
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
+            tenantTracking.PtKioRekis.AddRange(ptKioRekis);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M42ContraindiDrugMainEx.AddRange(m42Contraindis);
+            tenantTracking.M42ContraindiDisCon.AddRange(m42ContraindiDisCons);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("937", "id1"),
@@ -1131,10 +1132,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 1;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int level = 5;
+            bool isDataDb = true;
+
             var ptKioRekis = CommonCheckerData.ReadPtKioReki();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
             var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki();
             var ptFamilies = CommonCheckerData.ReadPtFamily();
             tenantTracking.PtKioRekis.AddRange(ptKioRekis);
@@ -1144,12 +1151,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.PtFamilys.AddRange(ptFamilies);
             tenantTracking.PtFamilyRekis.AddRange(ptFamilyRekis);
             tenantTracking.SaveChanges();
-
-            int hpId = 1;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int level = 5;
-            bool isDataDb = true;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("937", "id1"),
@@ -1188,10 +1189,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
+            int hpId = 1;
+            long ptId = 1231;
+            int sinDate = 20230101;
+            int level = 5;
+            bool isDataDb = false;
+
             var ptKioRekis = CommonCheckerData.ReadPtKioReki();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx("");
-            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon("");
+            var m42Contraindis = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "");
+            var m42ContraindiDisCons = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "");
             var ptFamilyRekis = CommonCheckerData.ReadPtFamilyReki();
             var ptFamilies = CommonCheckerData.ReadPtFamily();
             tenantTracking.PtKioRekis.AddRange(ptKioRekis);
@@ -1201,12 +1208,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.PtFamilys.AddRange(ptFamilies);
             tenantTracking.PtFamilyRekis.AddRange(ptFamilyRekis);
             tenantTracking.SaveChanges();
-
-            int hpId = 1;
-            long ptId = 1231;
-            int sinDate = 20230101;
-            int level = 5;
-            bool isDataDb = false;
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("937", "id1"),
@@ -1255,16 +1256,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 2;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1304,16 +1305,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 3;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1353,16 +1354,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1402,16 +1403,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT777777", "id1"),
@@ -1450,16 +1451,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
-
             int hpId = 1;
             long ptId = 1231;
             int sinDate = 20230505;
             int settingLevel = 4;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var listItemCode = new List<ItemCodeModel>()
         {
             new ItemCodeModel("UT2714", "id1"),
@@ -1585,18 +1586,19 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 4;
             var sinDay = 20230101;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
         {
             new("UT2714", "id1")
@@ -1628,18 +1630,19 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 0;
             var sinDay = 20230101;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
         {
             new("UT2714", "id1")
@@ -1671,19 +1674,20 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 4;
             var sinDay = 20230101;
             var isDataDb = false;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
             {
             new("UT2714", "id1")
@@ -1719,19 +1723,20 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
             ///Setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-            var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var ptId = 1231;
-            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
-            tenantTracking.TenMsts.AddRange(tenMsts);
-            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-            tenantTracking.M01Kinki.AddRange(m01Kinkis);
-            tenantTracking.SaveChanges();
 
             var hpId = 1;
             var settingLevel = 4;
             var sinDay = 20230101;
             var isDataDb = false;
+
+            var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            var ptId = 1231;
+            var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
+            tenantTracking.TenMsts.AddRange(tenMsts);
+            tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
+            tenantTracking.M01Kinki.AddRange(m01Kinkis);
+            tenantTracking.SaveChanges();
             var addedItemCodes = new List<ItemCodeModel>()
             {
             new("UT777777", "id1")
@@ -1861,11 +1866,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2713", "Id2"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -1920,11 +1925,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2713", "Id2"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -1979,11 +1984,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2713", "Id2"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -2039,11 +2044,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT777777", "id1"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -2096,11 +2101,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2714", "Id1"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -2156,11 +2161,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
-            var m38 = CommonCheckerData.ReadM38Ingredients("");
+            var ptOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
+            var m38 = CommonCheckerData.ReadM38Ingredients(hpId, "");
             var tenMst = CommonCheckerData.ReadTenMst("", "");
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var m01 = CommonCheckerData.ReadM01Kinki();
+            var m01 = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMst);
             tenantTracking.PtOtcDrug.AddRange(ptOtcDrugs);
             tenantTracking.M38Ingredients.AddRange(m38);
@@ -2218,11 +2223,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2277,11 +2282,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2337,11 +2342,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2398,11 +2403,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT777777", "id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2458,11 +2463,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2521,11 +2526,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             new ItemCodeModel("UT2719", "Id1"),
             };
 
-            var ptSupples = CommonCheckerData.ReadPtSupple();
+            var ptSupples = CommonCheckerData.ReadPtSupple(hpId);
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
-            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef();
-            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode();
-            var m01Kinkis = CommonCheckerData.ReadM01Kinki();
+            var m41SuppleIndexdefs = CommonCheckerData.ReadM41SuppleIndexdef(hpId);
+            var m41SuppleIndexcodes = CommonCheckerData.ReadM41SuppleIndexcode(hpId);
+            var m01Kinkis = CommonCheckerData.ReadM01Kinki(hpId);
             tenantTracking.TenMsts.AddRange(tenMsts);
             tenantTracking.PtSupples.AddRange(ptSupples);
             tenantTracking.M41SuppleIndexdefs.AddRange(m41SuppleIndexdefs);
@@ -2591,7 +2596,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.SaveChanges();
 
-            var hpId = 999;
+            var hpId = 1;
             long ptId = 1231;
             var sinday = 20230101;
             var minCheck = false;
@@ -6841,7 +6846,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -7281,11 +7286,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20260101;
+            var usingDay = 9.0;
+
             var m10DayLimits = new List<M10DayLimit>()
             {
                 new M10DayLimit()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     YjCd = "UT271026",
                     SeqNo = 1,
                     LimitDay = 2,
@@ -7303,11 +7313,6 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20260101;
-            var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
@@ -7344,11 +7349,16 @@ namespace CloudUnitTest.CommonChecker.Finder
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230102;
+            var usingDay = 9.0;
+
             var m10DayLimits = new List<M10DayLimit>()
             {
                 new M10DayLimit()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     YjCd = "UT271026",
                     SeqNo = 1,
                     LimitDay = 2,
@@ -7366,11 +7376,6 @@ namespace CloudUnitTest.CommonChecker.Finder
                 new ItemCodeModel("UT2719" , "id1"),
                 new ItemCodeModel("UT2720" , "id2"),
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230102;
-            var usingDay = 9.0;
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
@@ -7756,24 +7761,27 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_103_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_0()
         {
-            int hpId = 1;
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
 
             var m56 = new List<M56ExIngrdtMain>()
             {
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271023",
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271024",
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271025",
                  }
             };
@@ -7788,13 +7796,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(tenMsts.FirstOrDefault()?.HpId ?? 1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
                 // Act
-                var result = realtimeCheckerFinder.GetDrugTypeInfo(tenMsts.FirstOrDefault()?.HpId ?? 1, haigouSetting, itemCodes);
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -7810,28 +7818,31 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_104_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_1_And_HaigouFlg_NotEqual_1()
         {
-            int hpId = 1;
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
 
             var m56 = new List<M56ExIngrdtMain>()
             {
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271023",
                      HaigouFlg = "",
                      YuekiFlg = "1"
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271024",
                      HaigouFlg = "1",
                      YuekiFlg = "1"
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271025",
                      YuekiFlg = "1"
                  }
@@ -7847,13 +7858,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(tenMsts.FirstOrDefault()?.HpId ?? 1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
                 // Act
-                var result = realtimeCheckerFinder.GetDrugTypeInfo(tenMsts.FirstOrDefault()?.HpId ?? 1, haigouSetting, itemCodes);
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
                 Assert.AreEqual(2, result.Count);
@@ -7869,28 +7880,31 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_105_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_1_And_YuekiFlg_NotEqual_1()
         {
-            int hpId = 1;
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
 
             var m56 = new List<M56ExIngrdtMain>()
             {
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271023",
                      YuekiFlg = "1",
                      HaigouFlg = "1",
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271024",
                      YuekiFlg = "",
                      HaigouFlg = "1",
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271025",
                      HaigouFlg = "1",
                  }
@@ -7906,13 +7920,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(tenMsts.FirstOrDefault()?.HpId ?? 1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
                 // Act
-                var result = realtimeCheckerFinder.GetDrugTypeInfo(tenMsts.FirstOrDefault()?.HpId ?? 1, haigouSetting, itemCodes);
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
                 Assert.AreEqual(2, result.Count);
@@ -7928,28 +7942,31 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_106_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_2_And_HaigouFlg_NotEqual_1()
         {
-            int hpId = 1;
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
 
             var m56 = new List<M56ExIngrdtMain>()
             {
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271023",
                      HaigouFlg = "1",
                      KanpoFlg = "1"
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271024",
                      HaigouFlg = "",
                      KanpoFlg = "1"
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271025",
                      HaigouFlg = "2",
                      KanpoFlg = "1"
@@ -7966,13 +7983,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(tenMsts.FirstOrDefault()?.HpId ?? 1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
                 // Act
-                var result = realtimeCheckerFinder.GetDrugTypeInfo(tenMsts.FirstOrDefault()?.HpId ?? 1, haigouSetting, itemCodes);
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
                 Assert.AreEqual(2, result.Count);
@@ -7988,28 +8005,31 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_107_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_2_And_KanpoFlg_NotEqual_1()
         {
-            int hpId = 1;
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
 
             var m56 = new List<M56ExIngrdtMain>()
             {
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271023",
                      KanpoFlg = "1",
                      HaigouFlg = "1"
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271024",
                      KanpoFlg = "",
                      HaigouFlg = "1"
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      KanpoFlg = "3",
                      YjCd = "UT271025",
                      HaigouFlg = "1"
@@ -8026,13 +8046,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(tenMsts.FirstOrDefault()?.HpId ?? 1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
                 // Act
-                var result = realtimeCheckerFinder.GetDrugTypeInfo(tenMsts.FirstOrDefault()?.HpId ?? 1, haigouSetting, itemCodes);
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
                 Assert.AreEqual(2, result.Count);
@@ -8048,16 +8068,17 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_108_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_3_And_HaigouFlg_NotEqual_1()
         {
-            int hpId = 1;
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
 
             var m56 = new List<M56ExIngrdtMain>()
             {
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271023",
                      HaigouFlg = "1",
                      YuekiFlg = "1",
@@ -8065,6 +8086,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271024",
                      HaigouFlg = "",
                      YuekiFlg = "1",
@@ -8072,6 +8094,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      HaigouFlg = "3",
                      YjCd = "UT271025",
                      YuekiFlg = "1",
@@ -8089,13 +8112,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(tenMsts.FirstOrDefault()?.HpId ?? 1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
                 // Act
-                var result = realtimeCheckerFinder.GetDrugTypeInfo(tenMsts.FirstOrDefault()?.HpId ?? 1, haigouSetting, itemCodes);
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
                 Assert.AreEqual(2, result.Count);
@@ -8111,16 +8134,17 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_109_TEST_GetDrugTypeInfo_Test_HaigouSetting_Is_3_And_YuekiFlg_And_KanpoFlg_NotEqual_1()
         {
-            int hpId = 1;
             //setup
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
+            int hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
 
             var m56 = new List<M56ExIngrdtMain>()
             {
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271023",
                      KanpoFlg = "1",
                      YuekiFlg = "2",
@@ -8128,6 +8152,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271024",
                      HaigouFlg = "1",
                      YuekiFlg = "2",
@@ -8135,6 +8160,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                  },
                  new M56ExIngrdtMain()
                  {
+                     HpId = hpId,
                      YjCd = "UT271025",
                      KanpoFlg = "2",
                      YuekiFlg = "1",
@@ -8152,13 +8178,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             var itemCodes = new List<string>() { "UT2716", "UT2717", "UT2718" };
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(tenMsts.FirstOrDefault()?.HpId ?? 1, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
+            cache.InitCache(hpId, new List<string>() { "UT2716", "UT2717", "UT2718" }, 20230101, 0);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
             {
                 // Act
-                var result = realtimeCheckerFinder.GetDrugTypeInfo(tenMsts.FirstOrDefault()?.HpId ?? 1, haigouSetting, itemCodes);
+                var result = realtimeCheckerFinder.GetDrugTypeInfo(hpId, haigouSetting, itemCodes);
 
                 // Assert
                 Assert.AreEqual(1, result.Count);
@@ -9037,7 +9063,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9136,7 +9162,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9236,7 +9262,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9337,7 +9363,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9438,7 +9464,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9527,11 +9553,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             var ptInfs = CommonCheckerData.ReadPtInf();
             var tenMsts = CommonCheckerData.ReadTenMst("", "");
 
+            var hpId = 999;
+            long ptId = 1231;
+            var sinday = 20230101;
+            var minCheck = true;
+            var ratioSetting = 9.9;
+            var currentHeight = -1;
+            var currenWeight = 10;
+
             var dosageDosage = new List<DosageDosage>()
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9558,6 +9592,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = "UT271026",
                     DoeiCd = "UT9898",
                     DgurKbn = "",
@@ -9589,14 +9624,6 @@ namespace CloudUnitTest.CommonChecker.Finder
                     UsageQuantity = 1
                 }
             };
-
-            var hpId = 999;
-            long ptId = 1231;
-            var sinday = 20230101;
-            var minCheck = true;
-            var ratioSetting = 9.9;
-            var currentHeight = -1;
-            var currenWeight = 10;
             var cache = new MasterDataCacheService(TenantProvider);
             cache.InitCache(hpId, new List<string>() { "UT2720" }, sinday, ptId);
             var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
@@ -9639,7 +9666,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -9943,7 +9970,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10770,7 +10797,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -10982,7 +11009,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11088,7 +11115,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11194,7 +11221,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11301,7 +11328,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11410,7 +11437,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11519,7 +11546,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11629,7 +11656,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11740,7 +11767,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11850,7 +11877,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -11962,7 +11989,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -12073,7 +12100,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -12184,7 +12211,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -12295,7 +12322,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",
@@ -12406,7 +12433,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
-                    HpId = 1,
+                    HpId = hpId,
                     DoeiCd = "UT9898",
                     DoeiSeqNo = 999999,
                     KonokokaCd = "",

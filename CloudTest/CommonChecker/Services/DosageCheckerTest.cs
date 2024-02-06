@@ -15,7 +15,6 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_001_ReturnsEmptyList_WhenFollowSettingValue()
     {
-        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -88,7 +87,7 @@ public class DosageCheckerTest : BaseUT
 
         tenantTracking.SaveChanges();
         var dosageChecker = new DosageChecker<OrdInfoModel, OrdInfoDetailModel>();
-        dosageChecker.HpID = 999;
+        dosageChecker.HpID = 1;
         dosageChecker.PtID = 1231;
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
@@ -120,7 +119,7 @@ public class DosageCheckerTest : BaseUT
         tenantTracking.PtInfs.AddRange(ptInfs);
         tenantTracking.SaveChanges();
 
-        var hpId = 999;
+        var hpId = 1;
         long ptId = 1231;
         var sinday = 20230101;
         var minCheck = false;
@@ -167,7 +166,7 @@ public class DosageCheckerTest : BaseUT
         tenantTracking.PtInfs.AddRange(ptInfs);
         tenantTracking.SaveChanges();
 
-        var hpId = 999;
+        var hpId = 1;
         long ptId = 1231;
         var sinday = 20230101;
         var minCheck = false;
@@ -216,7 +215,7 @@ public class DosageCheckerTest : BaseUT
         tenantTracking.PtInfs.AddRange(ptInfs);
         tenantTracking.SaveChanges();
 
-        var hpId = 999;
+        var hpId = 1;
         long ptId = 1231;
         var sinday = 20230101;
         var minCheck = false;

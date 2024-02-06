@@ -358,7 +358,7 @@ public class AgeCheckerTest : BaseUT
 
         var tenMsts = CommonCheckerData.ReadTenMst("AGE008", "AGE008");
         var m14 = CommonCheckerData.ReadM14AgeCheck();
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS003");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS003");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M14AgeCheck.AddRange(m14);

@@ -106,11 +106,11 @@ public class KinkiOTCCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
-        var prOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+        var prOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
         tenantTracking.PtOtcDrug.AddRange(prOtcDrugs);
-        var m38Ingredients = CommonCheckerData.ReadM38Ingredients("");
+        var m38Ingredients = CommonCheckerData.ReadM38Ingredients(hpId, "");
         tenantTracking.M38Ingredients.AddRange(m38Ingredients);
         tenantTracking.SaveChanges();
 
@@ -133,8 +133,8 @@ public class KinkiOTCCheckerTest : BaseUT
 
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(999, new List<string>() { "620160501" }, 20230101, 1231);
-        kinkiOTCChecker.HpID = 999;
+        cache.InitCache(hpId, new List<string>() { "620160501" }, 20230101, 1231);
+        kinkiOTCChecker.HpID = hpId;
         kinkiOTCChecker.PtID = 1231;
         kinkiOTCChecker.Sinday = 20230404;
         kinkiOTCChecker.InitFinder(tenantNoTracking, cache);
@@ -209,11 +209,11 @@ public class KinkiOTCCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
-        var prOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+        var prOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
         tenantTracking.PtOtcDrug.AddRange(prOtcDrugs);
-        var m38Ingredients = CommonCheckerData.ReadM38Ingredients("");
+        var m38Ingredients = CommonCheckerData.ReadM38Ingredients(hpId, "");
         tenantTracking.M38Ingredients.AddRange(m38Ingredients);
         tenantTracking.SaveChanges();
 
@@ -290,11 +290,11 @@ public class KinkiOTCCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var m01Kinki = CommonCheckerData.ReadM01Kinki();
+        var m01Kinki = CommonCheckerData.ReadM01Kinki(hpId);
         tenantTracking.M01Kinki.AddRange(m01Kinki);
-        var prOtcDrugs = CommonCheckerData.ReadPtOtcDrug();
+        var prOtcDrugs = CommonCheckerData.ReadPtOtcDrug(hpId);
         tenantTracking.PtOtcDrug.AddRange(prOtcDrugs);
-        var m38Ingredients = CommonCheckerData.ReadM38Ingredients("");
+        var m38Ingredients = CommonCheckerData.ReadM38Ingredients(hpId, "");
         tenantTracking.M38Ingredients.AddRange(m38Ingredients);
         tenantTracking.SaveChanges();
 
