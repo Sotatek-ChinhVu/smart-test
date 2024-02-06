@@ -24,7 +24,8 @@ public class GetYousiki1InfModelWithCommonInfInteractor : IGetYousiki1InfModelWi
                 var yousikiInfDetailItemList = yousikiInfDetailList.Where(item => item.PtId == yousikiInf.PtId && item.SeqNo == yousikiInf.SeqNo).ToList();
                 yousikiInf.ChangeYousiki1InfDetailList(yousikiInfDetailItemList);
             }
-            return new GetYousiki1InfModelWithCommonInfOutputData(yousikiInfList, GetYousiki1InfModelWithCommonInfStatus.Successed);
+            var kacodeYousikiMstDict = _yousikiRepository.GetKacodeYousikiMstDict(inputData.HpId);
+            return new GetYousiki1InfModelWithCommonInfOutputData(yousikiInfList, kacodeYousikiMstDict, GetYousiki1InfModelWithCommonInfStatus.Successed);
         }
         finally
         {
