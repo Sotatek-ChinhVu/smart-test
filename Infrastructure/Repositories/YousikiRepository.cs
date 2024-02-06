@@ -734,7 +734,6 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         {
             if (categoryModel.IsDeleted == 1)
             {
-
                 DeleteYousikiInf(hpId, userId, yousiki1InfModel.SinYm, yousiki1InfModel.PtId, categoryModel.DataType);
             }
 
@@ -765,7 +764,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                 }
                 else
                 {
-                    var yousiki1InfDetailNew = ConvertToModel(yousiki1InfDetailModel);
+                    var yousiki1InfDetailNew = ConvertToModel(hpId, yousiki1InfDetailModel);
                     TrackingDataContext.Yousiki1InfDetails.Add(yousiki1InfDetailNew);
                 }
             }
@@ -774,10 +773,11 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
         TrackingDataContext.SaveChanges();
     }
 
-    private Yousiki1InfDetail ConvertToModel(Yousiki1InfDetailModel yousiki1InfDetailModel)
+    private Yousiki1InfDetail ConvertToModel(int hpId, Yousiki1InfDetailModel yousiki1InfDetailModel)
     {
         return new Yousiki1InfDetail()
         {
+            HpId = hpId,
             PtId = yousiki1InfDetailModel.PtId,
             SinYm = yousiki1InfDetailModel.SinYm,
             DataType = yousiki1InfDetailModel.DataType,
