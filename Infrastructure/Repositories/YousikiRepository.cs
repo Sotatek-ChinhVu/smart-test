@@ -106,16 +106,18 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             }
 
             Dictionary<int, int> statusDic = new();
+            Dictionary<int, int> dataTypeSeqNoDic = new();
 
             foreach (var item in orderGroup)
             {
                 if (!statusDic.ContainsKey(item.DataType))
                 {
                     statusDic.Add(item.DataType, item.Status);
+                    dataTypeSeqNoDic.Add(item.DataType, item.SeqNo);
                 }
             }
 
-            yousiki.ChangeStatusDic(statusDic);
+            yousiki.ChangeStatusDic(statusDic, dataTypeSeqNoDic);
             compoundedResultList.Add(yousiki);
         }
 

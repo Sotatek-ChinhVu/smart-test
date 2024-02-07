@@ -4,10 +4,10 @@ namespace EmrCloudApi.Responses.Yousiki.Dto;
 
 public class Yousiki1InfGetListDto : Yousiki1InfDto
 {
-    public Yousiki1InfGetListDto(Yousiki1InfModel model, Dictionary<int, int> tabKeySeqNoDictionary) : base(model)
+    public Yousiki1InfGetListDto(Yousiki1InfModel model) : base(model)
     {
-        TabKeySeqNoDictionary = tabKeySeqNoDictionary;
+        TabKeySeqNo = model.DataTypeSeqNoDic;
     }
 
-    public Dictionary<int, int> TabKeySeqNoDictionary { get; private set; }
+    public Dictionary<int, int> TabKeySeqNo { get; private set; }
 }
