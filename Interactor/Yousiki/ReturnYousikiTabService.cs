@@ -891,13 +891,13 @@ public class ReturnYousikiTabService : IReturnYousikiTabService
         string valueFIM = "111111111111111111";
 
 
-        var detailDefault = yousikiPatientStatus.FirstOrDefault(item => item.CodeNo == CodeNo_PatientStatus && item.Payload == 1);
+        var detailDefault = yousiki1InfDetailList.FirstOrDefault(item => item.CodeNo == CodeNo_PatientStatus && item.Payload == 1);
         if (detailDefault != null)
         {
             valueBarthelIndex = detailDefault.Value;
         }
 
-        detailDefault = yousikiPatientStatus.FirstOrDefault(item => item.CodeNo == CodeNo_PatientStatus && item.Payload == 2);
+        detailDefault = yousiki1InfDetailList.FirstOrDefault(item => item.CodeNo == CodeNo_PatientStatus && item.Payload == 2);
         if (detailDefault != null)
         {
             valueFIM = detailDefault.Value;
