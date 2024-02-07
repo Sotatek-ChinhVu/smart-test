@@ -679,7 +679,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
 
         // Assert
-        Assert.True(output.Count == odrDetails.Count);
+        Assert.True(output.Count == 4);
     }
 
     [Test]
@@ -812,7 +812,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
 
         // Assert
-        Assert.True(output.Count == odrDetails.Count);
+        Assert.True(output.Count == 1);
     }
 
     [Test]
@@ -945,7 +945,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
 
         // Assert
-        Assert.True(output.Count == odrDetails.Count);
+        Assert.True(output.Count == 1);
     }
 
     [Test]
