@@ -7,7 +7,7 @@ namespace Domain.Models.Reception;
 public class ReceptionRowModel
 {
     public ReceptionRowModel(long raiinNo, long ptId, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus, int isDeleted,
-        long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime, int confirmationType,
+        long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime, int confirmationType, string infoConsFlg,
         string rsvFrameName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
         int tantoId, string drName, string tantoKanaName, int kaId, string kaName, int lastVisitDate, int firstVisitDate, string sname, string raiinRemark,
@@ -62,6 +62,7 @@ public class ReceptionRowModel
             grpId => dynamicCells.FirstOrDefault(c => c.GrpId == grpId, new DynamicCell(grpId)));
         HokenPid = hokenPid;
         ConfirmationType = confirmationType;
+        InfoConsFlg = infoConsFlg;
     }
 
     public ReceptionRowModel(long raiinNo, long ptId, int sinDate, int isDeleted)
@@ -96,6 +97,7 @@ public class ReceptionRowModel
         DrName = string.Empty;
         TantoKanaName = string.Empty;
         KaName = string.Empty;
+        InfoConsFlg = string.Empty;
     }
 
     public long PtId { get; private set; }
@@ -172,6 +174,11 @@ public class ReceptionRowModel
     public string ConfirmationResult { get; private set; }
 
     public int ConfirmationType { get; private set; }
+
+    /// <summary>
+    /// return InfoConsFlg
+    /// </summary>
+    public string InfoConsFlg { get; private set; }
     // Dynamic cells
     public Dictionary<int, DynamicCell> GrpIdToDynamicCell { get; private set; }
 
