@@ -145,7 +145,7 @@ public class KaRepository : RepositoryBase, IKaRepository
 
     public List<KaCodeMstModel> GetKacodeMstYossi(int hpId)
     {
-        var kacodeMsts = NoTrackingDataContext.KacodeMsts.AsQueryable();
+        var kacodeMsts = NoTrackingDataContext.KacodeMsts.Where(k => k.HpId == hpId).AsQueryable();
 
         var kacodeReceYousikis = NoTrackingDataContext.KacodeReceYousikis.Where(k => k.HpId == hpId).AsQueryable();
 
