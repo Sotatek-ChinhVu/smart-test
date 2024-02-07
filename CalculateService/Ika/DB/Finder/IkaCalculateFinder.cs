@@ -117,7 +117,7 @@ namespace CalculateService.Ika.DB.Finder
                 }
             );
 
-            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack();
+            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack(k => k.HpId == hpId);
             var ptKohis = _tenantDataContext.PtKohis.FindListQueryableNoTrack(p => p.HpId == hpId && p.PtId == ptId);
             //保険番号マスタの取得
             var houbetuMsts = (

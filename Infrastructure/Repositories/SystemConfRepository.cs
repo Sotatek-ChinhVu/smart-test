@@ -327,10 +327,10 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     }
 
     //Key: RoudouCd, Value: RoudouName
-    public Dictionary<string, string> GetRoudouMst()
+    public Dictionary<string, string> GetRoudouMst(int hpId)
     {
         var result = new Dictionary<string, string>();
-        List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
+        List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId).ToList();
         foreach (var item in RoudouMsts)
         {
             result.Add(item.RoudouCd, item.RoudouName ?? string.Empty);

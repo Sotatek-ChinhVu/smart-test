@@ -269,9 +269,9 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
     private IEnumerable<StaGrpModel> ReloadCacheStaGrpModel(int hpId)
     {
         var finalKey = GetCacheKey() + CacheKeyConstant.StaGrpModel + "_" + hpId;
-        var staGrpList = NoTrackingDataContext.StaGrps.Where(item => item.HpId == hpId).ToList();
+        var staGrpList = NoTrackingDataContext.StaGrps.ToList();
         var staGrpMstList = staGrpList.Select(item => item.ReportId).Distinct().ToList();
-        var starMstList = NoTrackingDataContext.StaMsts.Where(item => item.HpId == hpId && staGrpMstList.Contains(item.ReportId)).ToList();
+        var starMstList = NoTrackingDataContext.StaMsts.Where(item => staGrpMstList.Contains(item.ReportId)).ToList();
         var result = staGrpList.Select(grp => new StaGrpModel(
                                                   grp.GrpId,
                                                   grp.ReportId,
@@ -373,7 +373,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                     var allStaConfigDeleted = TrackingDataContext.StaConfs.Where(item => item.MenuId == staMenu.MenuId).ToList();
                     TrackingDataContext.StaConfs.RemoveRange(allStaConfigDeleted);
                     TrackingDataContext.SaveChanges();
-                    staMenuConfigDBList = staMenuConfigDBList.Where(menu => !allStaConfigDeleted.Any(config => config.ConfId == menu.ConfId 
+                    staMenuConfigDBList = staMenuConfigDBList.Where(menu => !allStaConfigDeleted.Any(config => config.ConfId == menu.ConfId
                                                                                                                && config.MenuId == menu.MenuId))
                                                              .ToList();
                 }

@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -15,24 +10,17 @@ namespace Entity.Tenant
     public class KogakuLimit : EmrCloneable<KogakuLimit>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-        /// <summary>
         /// 年齢区分
         /// </summary>
-        
-        [Column("age_kbn", Order = 2)]
+
+        [Column("age_kbn")]
         [CustomAttribute.DefaultValue(0)]
         public int AgeKbn { get; set; }
         /// <summary>
         /// 高額療養費区分
         /// </summary>
-        
-        [Column("kogaku_kbn", Order = 3)]
+
+        [Column("kogaku_kbn")]
         public int KogakuKbn { get; set; }
         /// <summary>
         /// 所得区分
@@ -43,8 +31,8 @@ namespace Entity.Tenant
         /// <summary>
         /// 開始日
         /// </summary>
-        
-        [Column("start_date", Order = 4)]
+
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
         /// <summary>
@@ -103,6 +91,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("update_machine")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

@@ -16,14 +16,15 @@ namespace CalculateService.Ika.Models
             IpnMinYakkaMst = ipnMinYakkaMst;
         }
 
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        public int HpId
-        {
-            get { return IpnMinYakkaMst.HpId; }
-        }
+        // Removed HpId
+        ///// <summary>
+        ///// 医療機関識別ID
+        ///// 
+        ///// </summary>
+        //public int HpId
+        //{
+        //    get { return IpnMinYakkaMst.HpId; }
+        //}
 
         /// <summary>
         /// 一般名コード

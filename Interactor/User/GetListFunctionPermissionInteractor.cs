@@ -16,7 +16,7 @@ namespace Interactor.User
         {
             try
             {
-                var data = _userRepository.GetListFunctionPermission();
+                var data = _userRepository.GetListFunctionPermission(input.HpId);
                 if (data.Any())
                     return new GetListFunctionPermissionOutputData(GetListFunctionPermissionStatus.Successful, data);
                 else

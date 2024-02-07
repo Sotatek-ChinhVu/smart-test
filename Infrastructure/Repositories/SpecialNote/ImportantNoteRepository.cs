@@ -165,7 +165,7 @@ namespace Infrastructure.Repositories.SpecialNote
             return ptAlrgyElses.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
         }
 
-        public List<PtAlrgyFoodModel> GetAlrgyFoodList(long ptId)
+        public List<PtAlrgyFoodModel> GetAlrgyFoodList(int hpId, long ptId)
         {
             List<PtAlrgyFoodModel> result;
 
@@ -179,7 +179,7 @@ namespace Infrastructure.Repositories.SpecialNote
             else
             {
                 // If not, get data from database
-                var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.ToList();
+                var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.Where(m => m.HpId == hpId).ToList();
                 var ptAlrgyFoods = NoTrackingDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).ToList();
                 result = (from ale in ptAlrgyFoods
                           join mst in aleFoodKbns on ale.AlrgyKbn equals mst.FoodKbn
@@ -203,9 +203,9 @@ namespace Infrastructure.Repositories.SpecialNote
             return result;
         }
 
-        public List<PtAlrgyFoodModel> GetAlrgyFoodList(long ptId, int sinDate)
+        public List<PtAlrgyFoodModel> GetAlrgyFoodList(int hpId, long ptId, int sinDate)
         {
-            var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.ToList();
+            var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.Where(m => m.HpId == hpId).ToList();
             var ptAlrgyFoods = NoTrackingDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).ToList();
             var query = from ale in ptAlrgyFoods
                         join mst in aleFoodKbns on ale.AlrgyKbn equals mst.FoodKbn

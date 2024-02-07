@@ -9,11 +9,14 @@ namespace Entity.Tenant
     [Index(nameof(FunctionCd), nameof(Permission), Name = "permission_mst_pkey")]
     public class PermissionMst : EmrCloneable<PermissionMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 機能コード
         /// FUNCTION_MST.FUNCTION_CD
         /// </summary>
-        
+
         [Column("function_cd", Order = 1)]
         [MaxLength(8)]
         public string FunctionCd { get; set; } = string.Empty;
@@ -24,7 +27,7 @@ namespace Entity.Tenant
         /// 1: 参照権限
         /// 99:使用不可"
         /// </summary>
-        
+
         [Column("permission", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int Permission { get; set; }
@@ -73,6 +76,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("update_machine")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

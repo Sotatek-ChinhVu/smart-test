@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m41_supple_ingre")]
     public class M41SuppleIngre : EmrCloneable<M41SuppleIngre>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// サプリメント成分コード
         /// 9Sで始まり、5桁の数字が続く
         /// </summary>
-        
+
         [Column("seibun_cd", Order = 1)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;

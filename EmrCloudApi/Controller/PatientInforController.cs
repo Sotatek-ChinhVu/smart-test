@@ -831,7 +831,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetKohiPriorityList)]
         public ActionResult<Response<GetKohiPriorityListResponse>> GetKohiPriorityList()
         {
-            var input = new GetKohiPriorityListInputData();
+            var input = new GetKohiPriorityListInputData(HpId);
             var output = _bus.Handle(input);
             var presenter = new GetKohiPriorityListPresenter();
             presenter.Complete(output);
@@ -959,7 +959,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetTokkiMstList)]
         public ActionResult<Response<GetTokkiMstListResponse>> GetTokkiMstList([FromQuery] GetTokkiMstListRequest request)
         {
-            var input = new GetTokkiMstListInputData(HpId, request.SeikyuYm);
+            var input = new GetTokkiMstListInputData(request.SeikyuYm);
             var output = _bus.Handle(input);
             var presenter = new GetTokkiMstListPresenter();
             presenter.Complete(output);

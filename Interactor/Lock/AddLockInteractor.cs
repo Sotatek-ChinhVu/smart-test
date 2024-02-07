@@ -35,7 +35,7 @@ namespace Interactor.Lock
                 {
                     string userName = _userRepository.GetByUserId(userId)?.Name ?? string.Empty;
                     var lockInfList = _lockRepository.GetLock(hpId, functionCode, ptId, sinDate, raiinNo, userId);
-                    var functionName = _lockRepository.GetFunctionNameLock(functionCode);
+                    var functionName = _lockRepository.GetFunctionNameLock(inputData.HpId, functionCode);
                     return new AddLockOutputData(AddLockStatus.Existed, lockInfList.FirstOrDefault() ?? new LockModel(functionCode, userId, userName, functionName), new());
                 }
             }

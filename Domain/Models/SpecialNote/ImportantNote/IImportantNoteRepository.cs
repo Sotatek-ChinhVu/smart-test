@@ -12,9 +12,9 @@ namespace Domain.Models.SpecialNote.ImportantNote
 
         List<PtAlrgyElseModel> GetAlrgyElseList(long ptId, int sinDate);
 
-        List<PtAlrgyFoodModel> GetAlrgyFoodList(long ptId);
+        List<PtAlrgyFoodModel> GetAlrgyFoodList(int hpId, long ptId);
 
-        List<PtAlrgyFoodModel> GetAlrgyFoodList(long ptId, int sinDate);
+        List<PtAlrgyFoodModel> GetAlrgyFoodList(int hpId, long ptId, int sinDate);
 
         List<PtOtcDrugModel> GetOtcDrugList(long ptId);
 

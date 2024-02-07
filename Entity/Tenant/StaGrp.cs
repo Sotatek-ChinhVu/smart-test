@@ -7,26 +7,18 @@ namespace Entity.Tenant
     public class StaGrp : EmrCloneable<StaGrp>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// グループID
         /// 1:日報 2:月報 3:その他
         /// </summary>
-        
-        [Column("grp_id", Order = 2)]
+
+        [Column("grp_id")]
         public int GrpId { get; set; }
 
         /// <summary>
         /// 帳票ID
         /// </summary>
-        
-        [Column("report_id", Order = 3)]
+
+        [Column("report_id")]
         public int ReportId { get; set; }
 
         /// <summary>

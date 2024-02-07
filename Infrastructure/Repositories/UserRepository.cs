@@ -391,7 +391,7 @@ namespace Infrastructure.Repositories
                     join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpID && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
-                    join functionMst in NoTrackingDataContext.FunctionMsts
+                    join functionMst in NoTrackingDataContext.FunctionMsts.Where(f => f.HpId == hpID)
                     on lockInf.FunctionCd equals functionMst.FunctionCd
                     where (lockMst.FunctionCdA != lockMst.FunctionCdB) || (lockMst.FunctionCdA == lockMst.FunctionCdB && lockInf.UserId != currentUserID)
                     orderby lockMst.LockLevel, lockMst.LockRange
@@ -521,8 +521,8 @@ namespace Infrastructure.Repositories
                                                                         u.IsDeleted != 1 &&
                                                                         u.ManagerKbn <= managerKbn);
             var listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId);
-            var listFuncMst = NoTrackingDataContext.FunctionMsts.Where(u => u != null);
-            var listPerMst = NoTrackingDataContext.PermissionMsts.Where(u => u != null);
+            var listFuncMst = NoTrackingDataContext.FunctionMsts.Where(u => u != null && u.HpId == hpId);
+            var listPerMst = NoTrackingDataContext.PermissionMsts.Where(u => u != null && u.HpId == hpId);
 
             var functionMstQuery = from funcMst in listFuncMst
                                    join perMst in listPerMst on funcMst.FunctionCd equals perMst.FunctionCd into listPermission
@@ -732,10 +732,10 @@ namespace Infrastructure.Repositories
             return renkeiMst != null && renkeiMst.IsInvalid == 0;
         }
 
-        public List<FunctionMstModel> GetListFunctionPermission()
+        public List<FunctionMstModel> GetListFunctionPermission(int hpId)
         {
-            IQueryable<FunctionMst> listFuncMst = NoTrackingDataContext.FunctionMsts;
-            IQueryable<PermissionMst> listPerMst = NoTrackingDataContext.PermissionMsts;
+            IQueryable<FunctionMst> listFuncMst = NoTrackingDataContext.FunctionMsts.Where(f => f.HpId == hpId);
+            IQueryable<PermissionMst> listPerMst = NoTrackingDataContext.PermissionMsts.Where(item => item.HpId == hpId);
             var functionMstQuery = (from funcMst in listFuncMst
                                     join perMst in listPerMst on funcMst.FunctionCd equals perMst.FunctionCd into listPermission
                                     select new

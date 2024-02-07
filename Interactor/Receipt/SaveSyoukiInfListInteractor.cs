@@ -90,7 +90,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
             return SaveSyoukiInfListStatus.Failed;
         }
         var listSyoukiKbn = inputData.SyoukiInfList.Select(item => new SyoukiKbnMstModel(item.SyoukiKbn, item.SyoukiKbnStartYm)).ToList();
-        if (listSyoukiKbn.Any() && !_receiptRepository.CheckExistSyoukiKbn(inputData.SinYm, listSyoukiKbn))
+        if (listSyoukiKbn.Any() && !_receiptRepository.CheckExistSyoukiKbn(inputData.HpId, inputData.SinYm, listSyoukiKbn))
         {
             return SaveSyoukiInfListStatus.InvalidSyoukiKbn;
         }
