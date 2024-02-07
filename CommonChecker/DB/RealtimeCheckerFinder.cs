@@ -1658,7 +1658,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             }
 
             var listSubOTCCode = NoTrackingDataContext.M38Ingredients
-                .Where(m => listSerialNum.Contains(m.SerialNum))
+                .Where(m => m.HpId == hpID && listSerialNum.Contains(m.SerialNum))
                 .Select(m => new
                 {
                     m.SerialNum,
