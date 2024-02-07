@@ -27,7 +27,7 @@ namespace PostgreDataContext
         ///        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
         ///    }
         ///}
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AccountingFormMst>().HasKey(a => new { a.HpId, a.FormNo });
@@ -40,7 +40,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<BuiOdrItemMst>().HasKey(b => new { b.HpId, b.ItemCd });
             modelBuilder.Entity<BuiOdrMst>().HasKey(b => new { b.HpId, b.BuiId });
             modelBuilder.Entity<ByomeiMst>().HasKey(b => new { b.HpId, b.ByomeiCd });
-            modelBuilder.Entity<ByomeiMstAftercare>().HasKey(b => new { b.ByomeiCd, b.Byomei, b.StartDate });
+            modelBuilder.Entity<ByomeiMstAftercare>().HasKey(b => new { b.HpId, b.ByomeiCd, b.Byomei, b.StartDate });
             modelBuilder.Entity<ByomeiSetGenerationMst>().HasKey(b => new { b.HpId, b.GenerationId });
             modelBuilder.Entity<ByomeiSetMst>().HasKey(b => new { b.HpId, b.GenerationId, b.SeqNo });
             modelBuilder.Entity<CalcLog>().HasKey(b => new { b.HpId, b.PtId, b.RaiinNo, b.SeqNo });
@@ -60,17 +60,17 @@ namespace PostgreDataContext
             modelBuilder.Entity<DocCategoryMst>().HasKey(e => new { e.HpId, e.CategoryCd });
             modelBuilder.Entity<DocCommentDetail>().HasKey(e => new { e.CategoryId, e.EdaNo });
             modelBuilder.Entity<DocInf>().HasKey(e => new { e.HpId, e.PtId, e.SinDate, e.RaiinNo, e.SeqNo });
-            modelBuilder.Entity<DosageDosage>().HasKey(e => new { e.DoeiCd, e.DoeiSeqNo });
-            modelBuilder.Entity<DosageDrug>().HasKey(e => new { e.DoeiCd, e.YjCd });
+            modelBuilder.Entity<DosageDosage>().HasKey(e => new { e.HpId, e.DoeiCd, e.DoeiSeqNo });
+            modelBuilder.Entity<DosageDrug>().HasKey(e => new { e.HpId, e.DoeiCd, e.YjCd });
             modelBuilder.Entity<DosageMst>().HasKey(e => new { e.Id, e.HpId, e.ItemCd, e.SeqNo });
             modelBuilder.Entity<DrugDayLimit>().HasKey(e => new { e.Id, e.HpId, e.ItemCd, e.SeqNo });
             modelBuilder.Entity<DrugInf>().HasKey(e => new { e.InfKbn, e.HpId, e.ItemCd, e.SeqNo });
-            modelBuilder.Entity<DrugUnitConv>().HasKey(e => new { e.ItemCd, e.StartDate });
+            modelBuilder.Entity<DrugUnitConv>().HasKey(e => new { e.HpId, e.ItemCd, e.StartDate });
             modelBuilder.Entity<ExceptHokensya>().HasKey(e => new { e.Id, e.HpId, e.PrefNo, e.HokenNo, e.HokenEdaNo, e.StartDate });
             modelBuilder.Entity<FilingAutoImp>().HasKey(e => new { e.SeqNo, e.HpId });
             modelBuilder.Entity<FilingCategoryMst>().HasKey(e => new { e.CategoryCd, e.HpId });
             modelBuilder.Entity<FilingInf>().HasKey(e => new { e.HpId, e.FileId });
-            modelBuilder.Entity<GcStdMst>().HasKey(e => new { e.HpId, e.StdKbn, e.Sex, e.Point });
+            modelBuilder.Entity<GcStdMst>().HasKey(e => new { e.StdKbn, e.Sex, e.Point });
             modelBuilder.Entity<PtByomei>().HasKey(table => new { table.HpId, table.PtId, table.Id });
             modelBuilder.Entity<OdrInf>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.Id });
             modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
@@ -123,7 +123,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinListDetail>().HasKey(r => new { r.HpId, r.GrpId, r.KbnCd });
             modelBuilder.Entity<RaiinListMst>().HasKey(r => new { r.HpId, r.GrpId });
             modelBuilder.Entity<RoudouMst>().HasKey(r => new { r.RoudouCd });
-            modelBuilder.Entity<KantokuMst>().HasKey(r => new { r.RoudouCd, r.KantokuCd });
+            modelBuilder.Entity<KantokuMst>().HasKey(r => new { r.HpId, r.RoudouCd, r.KantokuCd });
             modelBuilder.Entity<HokenMst>().HasKey(r => new { r.HpId, r.PrefNo, r.HokenNo, r.HokenEdaNo, r.StartDate });
             modelBuilder.Entity<HokensyaMst>().HasKey(r => new { r.HpId, r.HokensyaNo });
             modelBuilder.Entity<UserConf>().HasKey(e => new { e.HpId, e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo });
@@ -132,26 +132,22 @@ namespace PostgreDataContext
             modelBuilder.Entity<KarteFilterMst>().HasKey(e => new { e.HpId, e.UserId, e.FilterId });
             modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.UserId, e.TableName, e.ColumnName });
             modelBuilder.Entity<JsonSetting>().HasKey(e => new { e.UserId, e.Key });
-            modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.HpId, e.YakkaCd, e.ItemCd, e.StartDate });
+            modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.YakkaCd, e.ItemCd, e.StartDate });
             modelBuilder.Entity<SetOdrInf>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.Id });
             modelBuilder.Entity<SetOdrInfDetail>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.RowNo });
             modelBuilder.Entity<SetKarteInf>().HasKey(e => new { e.HpId, e.SetCd, e.KarteKbn, e.SeqNo });
             modelBuilder.Entity<SetByomei>().HasKey(e => new { e.Id, e.HpId, e.SetCd, e.SeqNo });
-            modelBuilder.Entity<PiProductInf>().HasKey(e => new { e.PiIdFull, e.PiId, e.Branch, e.Jpn });
-            modelBuilder.Entity<M28DrugMst>().HasKey(e => new { e.YjCd });
-            modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.YjCd });
+            modelBuilder.Entity<PiProductInf>().HasKey(e => new { e.HpId, e.PiIdFull, e.PiId, e.Branch, e.Jpn });
+            modelBuilder.Entity<M28DrugMst>().HasKey(e => new { e.HpId, e.YjCd });
             modelBuilder.Entity<PathConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo, e.SeqNo });
-            modelBuilder.Entity<PiInfDetail>().HasKey(e => new { e.PiId, e.Branch, e.Jpn, e.SeqNo });
-            modelBuilder.Entity<M34FormCode>().HasKey(e => new { e.FormCd });
-            modelBuilder.Entity<M34IndicationCode>().HasKey(e => new { e.KonoCd });
-            modelBuilder.Entity<M34ArCode>().HasKey(e => new { e.FukusayoCd });
+            modelBuilder.Entity<PiInfDetail>().HasKey(e => new { e.HpId, e.PiId, e.Branch, e.Jpn, e.SeqNo });
             modelBuilder.Entity<SystemGenerationConf>().HasKey(e => new { e.HpId, e.GrpEdaNo, e.GrpCd, e.Id });
-            modelBuilder.Entity<IpnNameMst>().HasKey(e => new { e.HpId, e.IpnNameCd, e.StartDate, e.SeqNo });
-            modelBuilder.Entity<IpnMinYakkaMst>().HasKey(e => new { e.HpId, e.Id, e.IpnNameCd, e.SeqNo });
-            modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
-            modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
-            modelBuilder.Entity<IpnKasanExcludeItem>().HasKey(e => new { e.HpId, e.StartDate, e.ItemCd });
-            modelBuilder.Entity<KouiKbnMst>().HasKey(e => new { e.HpId, e.KouiKbnId });
+            modelBuilder.Entity<IpnNameMst>().HasKey(e => new { e.IpnNameCd, e.StartDate, e.SeqNo });
+            modelBuilder.Entity<IpnMinYakkaMst>().HasKey(e => new { e.Id, e.IpnNameCd, e.SeqNo });
+            modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.StartDate, e.IpnNameCd, e.SeqNo });
+            modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.StartDate, e.IpnNameCd, e.SeqNo });
+            modelBuilder.Entity<IpnKasanExcludeItem>().HasKey(e => new { e.StartDate, e.ItemCd });
+            modelBuilder.Entity<KouiKbnMst>().HasKey(e => new { e.KouiKbnId });
             modelBuilder.Entity<RaiinListKoui>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
             modelBuilder.Entity<RaiinListItem>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
             modelBuilder.Entity<KarteInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo, e.KarteKbn });
@@ -189,38 +185,38 @@ namespace PostgreDataContext
             modelBuilder.Entity<KensaIraiLog>().HasKey(e => new { e.HpId, e.CenterCd, e.CreateDate });
             modelBuilder.Entity<KensaStdMst>().HasKey(e => new { e.HpId, e.KensaItemCd, e.StartDate });
             modelBuilder.Entity<KinkiMst>().HasKey(e => new { e.HpId, e.Id, e.ACd, e.SeqNo });
-            modelBuilder.Entity<KogakuLimit>().HasKey(e => new { e.HpId, e.AgeKbn, e.KogakuKbn, e.StartDate });
-            modelBuilder.Entity<KohiPriority>().HasKey(e => new { e.PrefNo, e.Houbetu, e.PriorityNo });
+            modelBuilder.Entity<KogakuLimit>().HasKey(e => new {e.AgeKbn, e.KogakuKbn, e.StartDate });
+            modelBuilder.Entity<KohiPriority>().HasKey(e => new { e.PrefNo, e.Houbetu, e.PriorityNo, e.HpId });
             modelBuilder.Entity<LimitCntListInf>().HasKey(e => new { e.HpId, e.PtId, e.KohiId, e.SinDate, e.SeqNo });
             modelBuilder.Entity<ListSetGenerationMst>().HasKey(e => new { e.HpId, e.GenerationId });
             modelBuilder.Entity<ListSetMst>().HasKey(e => new { e.HpId, e.GenerationId, e.SetId });
             modelBuilder.Entity<LockMst>().HasKey(e => new { e.FunctionCdA, e.FunctionCdB });
-            modelBuilder.Entity<M01Kinki>().HasKey(e => new { e.ACd, e.BCd, e.CmtCd, e.SayokijyoCd });
-            modelBuilder.Entity<M10DayLimit>().HasKey(e => new { e.YjCd, e.SeqNo });
-            modelBuilder.Entity<M12FoodAlrgy>().HasKey(e => new { e.YjCd, e.FoodKbn, e.TenpuLevel });
-            modelBuilder.Entity<M14AgeCheck>().HasKey(e => new { e.YjCd, e.AttentionCmtCd });
-            modelBuilder.Entity<M34ArDiscon>().HasKey(e => new { e.YjCd, e.SeqNo });
-            modelBuilder.Entity<M34InteractionPat>().HasKey(e => new { e.YjCd, e.SeqNo });
-            modelBuilder.Entity<M34Precaution>().HasKey(e => new { e.YjCd, e.SeqNo });
-            modelBuilder.Entity<M34PrecautionCode>().HasKey(e => new { e.PrecautionCd, e.ExtendCd });
-            modelBuilder.Entity<M38Ingredients>().HasKey(e => new { e.SeibunCd, e.SerialNum, e.Sbt });
-            modelBuilder.Entity<M41SuppleIndexcode>().HasKey(e => new { e.SeibunCd, e.IndexCd });
-            modelBuilder.Entity<M42ContraindiDisBc>().HasKey(e => new { e.ByotaiCd, e.ByotaiClassCd });
-            modelBuilder.Entity<M42ContraindiDrugMainEx>().HasKey(e => new { e.YjCd, e.TenpuLevel, e.ByotaiCd, e.CmtCd });
-            modelBuilder.Entity<M56AlrgyDerivatives>().HasKey(e => new { e.SeibunCd, e.DrvalrgyCd, e.YjCd });
-            modelBuilder.Entity<M56ExAnalogue>().HasKey(e => new { e.SeibunCd, e.SeqNo });
-            modelBuilder.Entity<M56ExEdIngredients>().HasKey(e => new { e.YjCd, e.SeqNo });
-            modelBuilder.Entity<M56ExIngCode>().HasKey(e => new { e.SeibunCd, e.SeibunIndexCd });
-            modelBuilder.Entity<M56ProdrugCd>().HasKey(e => new { e.SeqNo, e.SeibunCd });
-            modelBuilder.Entity<M56YjDrugClass>().HasKey(e => new { e.YjCd, e.ClassCd });
+            modelBuilder.Entity<M01Kinki>().HasKey(e => new { e.HpId, e.ACd, e.BCd, e.CmtCd, e.SayokijyoCd });
+            modelBuilder.Entity<M10DayLimit>().HasKey(e => new { e.HpId, e.YjCd, e.SeqNo });
+            modelBuilder.Entity<M12FoodAlrgy>().HasKey(e => new { e.HpId, e.YjCd, e.FoodKbn, e.TenpuLevel });
+            modelBuilder.Entity<M14AgeCheck>().HasKey(e => new { e.HpId, e.YjCd, e.AttentionCmtCd });
+            modelBuilder.Entity<M34ArDiscon>().HasKey(e => new { e.HpId, e.YjCd, e.SeqNo });
+            modelBuilder.Entity<M34InteractionPat>().HasKey(e => new { e.HpId, e.YjCd, e.SeqNo });
+            modelBuilder.Entity<M34Precaution>().HasKey(e => new { e.HpId, e.YjCd, e.SeqNo });
+            modelBuilder.Entity<M34PrecautionCode>().HasKey(e => new { e.HpId, e.PrecautionCd, e.ExtendCd });
+            modelBuilder.Entity<M38Ingredients>().HasKey(e => new { e.HpId, e.SeibunCd, e.SerialNum, e.Sbt });
+            modelBuilder.Entity<M41SuppleIndexcode>().HasKey(e => new { e.HpId, e.SeibunCd, e.IndexCd });
+            modelBuilder.Entity<M42ContraindiDisBc>().HasKey(e => new { e.HpId, e.ByotaiCd, e.ByotaiClassCd });
+            modelBuilder.Entity<M42ContraindiDrugMainEx>().HasKey(e => new { e.HpId, e.YjCd, e.TenpuLevel, e.ByotaiCd, e.CmtCd });
+            modelBuilder.Entity<M56AlrgyDerivatives>().HasKey(e => new { e.HpId, e.SeibunCd, e.DrvalrgyCd, e.YjCd });
+            modelBuilder.Entity<M56ExAnalogue>().HasKey(e => new { e.HpId, e.SeibunCd, e.SeqNo });
+            modelBuilder.Entity<M56ExEdIngredients>().HasKey(e => new { e.HpId, e.YjCd, e.SeqNo });
+            modelBuilder.Entity<M56ExIngCode>().HasKey(e => new { e.HpId, e.SeibunCd, e.SeibunIndexCd });
+            modelBuilder.Entity<M56ProdrugCd>().HasKey(e => new { e.HpId, e.SeqNo, e.SeibunCd });
+            modelBuilder.Entity<M56YjDrugClass>().HasKey(e => new { e.HpId, e.YjCd, e.ClassCd });
             modelBuilder.Entity<MallRenkeiInf>().HasKey(e => new { e.HpId, e.RaiinNo });
             modelBuilder.Entity<MaterialMst>().HasKey(e => new { e.HpId, e.MaterialCd });
             modelBuilder.Entity<OdrDateDetail>().HasKey(e => new { e.HpId, e.GrpId, e.SeqNo });
             modelBuilder.Entity<OdrDateInf>().HasKey(e => new { e.HpId, e.GrpId });
             modelBuilder.Entity<OdrInfCmt>().HasKey(e => new { e.HpId, e.RaiinNo, e.RpNo, e.RpEdaNo, e.RowNo, e.EdaNo });
             modelBuilder.Entity<PaymentMethodMst>().HasKey(e => new { e.HpId, e.PaymentMethodCd });
-            modelBuilder.Entity<PermissionMst>().HasKey(e => new { e.FunctionCd, e.Permission });
-            modelBuilder.Entity<PiImage>().HasKey(e => new { e.HpId, e.ImageType, e.ItemCd });
+            modelBuilder.Entity<PermissionMst>().HasKey(e => new { e.HpId, e.FunctionCd, e.Permission });
+            modelBuilder.Entity<PiImage>().HasKey(e => new { e.ImageType, e.ItemCd });
             modelBuilder.Entity<PriorityHaihanMst>().HasKey(e => new { e.HpId, e.HaihanGrp, e.StartDate, e.UserSetting });
             modelBuilder.Entity<PtGrpItem>().HasKey(e => new { e.HpId, e.GrpId, e.GrpCode, e.SeqNo });
             modelBuilder.Entity<PtHokenScan>().HasKey(e => new { e.HpId, e.PtId, e.HokenGrp, e.HokenId, e.SeqNo });
@@ -228,7 +224,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtJibkar>().HasKey(e => new { e.HpId, e.WebId });
             modelBuilder.Entity<PtLastVisitDate>().HasKey(e => new { e.HpId, e.PtId });
             modelBuilder.Entity<PtMemo>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
-            modelBuilder.Entity<PhysicalAverage>().HasKey(e => new { e.JissiYear, e.AgeYear, e.AgeMonth, e.AgeDay });
+            modelBuilder.Entity<PhysicalAverage>().HasKey(e => new { e.HpId, e.JissiYear, e.AgeYear, e.AgeMonth, e.AgeDay });
             modelBuilder.Entity<RaiinFilterKbn>().HasKey(e => new { e.HpId, e.FilterId, e.SeqNo });
             modelBuilder.Entity<RaiinFilterState>().HasKey(e => new { e.HpId, e.FilterId, e.SeqNo });
             modelBuilder.Entity<RaiinListDoc>().HasKey(e => new { e.HpId, e.GrpId, e.KbnCd, e.SeqNo });
@@ -254,7 +250,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<RenkeiTemplateMst>().HasKey(e => new { e.HpId, e.TemplateId });
             modelBuilder.Entity<RenkeiTimingConf>().HasKey(e => new { e.HpId, e.EventCd, e.Id });
             modelBuilder.Entity<RenkeiTimingMst>().HasKey(e => new { e.HpId, e.RenkeiId, e.EventCd });
-            modelBuilder.Entity<RousaiGoseiMst>().HasKey(e => new { e.HpId, e.GoseiGrp, e.GoseiItemCd, e.ItemCd, e.SisiKbn, e.StartDate });
+            modelBuilder.Entity<RousaiGoseiMst>().HasKey(e => new { e.GoseiGrp, e.GoseiItemCd, e.ItemCd, e.SisiKbn, e.StartDate });
             modelBuilder.Entity<RsvDayComment>().HasKey(e => new { e.HpId, e.SinDate, e.SeqNo });
             modelBuilder.Entity<RsvFrameDayPtn>().HasKey(e => new { e.HpId, e.RsvFrameId, e.SinDate, e.SeqNo });
             modelBuilder.Entity<RsvFrameInf>().HasKey(e => new { e.HpId, e.RsvFrameId, e.SinDate, e.StartTime, e.Id });
@@ -279,11 +275,11 @@ namespace PostgreDataContext
             modelBuilder.Entity<SinRpNoInf>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.RaiinNo, e.RpNo });
             modelBuilder.Entity<SingleDoseMst>().HasKey(e => new { e.HpId, e.Id });
             modelBuilder.Entity<StaConf>().HasKey(e => new { e.HpId, e.MenuId, e.ConfId });
-            modelBuilder.Entity<StaGrp>().HasKey(e => new { e.HpId, e.GrpId, e.ReportId });
-            modelBuilder.Entity<StaMst>().HasKey(e => new { e.HpId, e.ReportId });
+            modelBuilder.Entity<StaGrp>().HasKey(e => new { e.GrpId, e.ReportId });
+            modelBuilder.Entity<StaMst>().HasKey(e => new { e.ReportId });
             modelBuilder.Entity<SyobyoKeika>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.HokenId, e.SeqNo });
             modelBuilder.Entity<SyoukiInf>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.HokenId, e.SeqNo });
-            modelBuilder.Entity<SyoukiKbnMst>().HasKey(e => new { e.SyoukiKbn, e.StartYm });
+            modelBuilder.Entity<SyoukiKbnMst>().HasKey(e => new { e.HpId, e.SyoukiKbn, e.StartYm });
             modelBuilder.Entity<SystemConfItem>().HasKey(e => new { e.HpId, e.MenuId, e.SeqNo });
             modelBuilder.Entity<SystemConfMenu>().HasKey(e => new { e.HpId, e.MenuId });
             modelBuilder.Entity<TagGrpMst>().HasKey(e => new { e.HpId, e.TagGrpNo });
@@ -297,63 +293,59 @@ namespace PostgreDataContext
             modelBuilder.Entity<TodoGrpMst>().HasKey(e => new { e.HpId, e.TodoGrpNo });
             modelBuilder.Entity<TodoInf>().HasKey(e => new { e.HpId, e.TodoNo, e.TodoEdaNo, e.PtId });
             modelBuilder.Entity<TodoKbnMst>().HasKey(e => new { e.HpId, e.TodoKbnNo });
-            modelBuilder.Entity<TokkiMst>().HasKey(e => new { e.HpId, e.TokkiCd });
+            modelBuilder.Entity<TokkiMst>().HasKey(e => new { e.TokkiCd });
             modelBuilder.Entity<UserPermission>().HasKey(e => new { e.HpId, e.UserId, e.FunctionCd });
             modelBuilder.Entity<WrkSinKoui>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo, e.SeqNo });
             modelBuilder.Entity<WrkSinKouiDetail>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo, e.SeqNo, e.RowNo });
             modelBuilder.Entity<WrkSinKouiDetailDel>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo, e.SeqNo, e.RowNo, e.ItemSeqNo });
             modelBuilder.Entity<WrkSinRpInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.HokenKbn, e.RpNo });
             modelBuilder.Entity<YohoInfMst>().HasKey(e => new { e.HpId, e.ItemCd });
-            modelBuilder.Entity<YoyakuOdrInf>().HasKey(e => new { e.HpId, e.PtId, e.YoyakuKarteNo, e.RpNo, e.RpEdaNo });
-            modelBuilder.Entity<YoyakuOdrInfDetail>().HasKey(e => new { e.HpId, e.PtId, e.YoyakuKarteNo, e.RpNo, e.RpEdaNo, e.RowNo });
-            modelBuilder.Entity<YoyakuSbtMst>().HasKey(e => new { e.HpId, e.YoyakuSbt });
             modelBuilder.Entity<BackupReq>().HasKey(e => new { e.Id });
             modelBuilder.Entity<CalcStatus>().HasKey(e => new { e.CalcId });
             modelBuilder.Entity<CmtKbnMst>().HasKey(e => new { e.Id });
             modelBuilder.Entity<DocComment>().HasKey(e => new { e.CategoryId });
-            modelBuilder.Entity<EventMst>().HasKey(e => new { e.EventCd });
-            modelBuilder.Entity<FunctionMst>().HasKey(e => new { e.FunctionCd });
-            modelBuilder.Entity<KacodeMst>().HasKey(e => new { e.ReceKaCd });
+            modelBuilder.Entity<EventMst>().HasKey(e => new { e.HpId, e.EventCd });
+            modelBuilder.Entity<FunctionMst>().HasKey(e => new { e.HpId, e.FunctionCd });
+            modelBuilder.Entity<KacodeMst>().HasKey(e => new {e.HpId, e.ReceKaCd });
             modelBuilder.Entity<KarteImgInf>().HasKey(e => new { e.Id });
             modelBuilder.Entity<LimitListInf>().HasKey(e => new { e.Id });
-            modelBuilder.Entity<M01KijyoCmt>().HasKey(e => new { e.CmtCd });
-            modelBuilder.Entity<M01KinkiCmt>().HasKey(e => new { e.CmtCd });
-            modelBuilder.Entity<M12FoodAlrgyKbn>().HasKey(e => new { e.FoodKbn });
-            modelBuilder.Entity<M14CmtCode>().HasKey(e => new { e.AttentionCmtCd });
-            modelBuilder.Entity<M28DrugMst>().HasKey(e => new { e.YjCd });
-            modelBuilder.Entity<M34ArCode>().HasKey(e => new { e.FukusayoCd });
-            modelBuilder.Entity<M34ArDisconCode>().HasKey(e => new { e.FukusayoCd });
-            modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.YjCd });
-            modelBuilder.Entity<M34FormCode>().HasKey(e => new { e.FormCd });
-            modelBuilder.Entity<M34IndicationCode>().HasKey(e => new { e.KonoCd });
-            modelBuilder.Entity<M34InteractionPatCode>().HasKey(e => new { e.InteractionPatCd });
-            modelBuilder.Entity<M34PropertyCode>().HasKey(e => new { e.PropertyCd });
-            modelBuilder.Entity<M34SarSymptomCode>().HasKey(e => new { e.FukusayoInitCd });
-            modelBuilder.Entity<M38ClassCode>().HasKey(e => new { e.ClassCd });
-            modelBuilder.Entity<M38IngCode>().HasKey(e => new { e.SeibunCd });
-            modelBuilder.Entity<M38MajorDivCode>().HasKey(e => new { e.MajorDivCd });
-            modelBuilder.Entity<M38OtcFormCode>().HasKey(e => new { e.FormCd });
-            modelBuilder.Entity<M38OtcMain>().HasKey(e => new { e.SerialNum });
-            modelBuilder.Entity<M38OtcMakerCode>().HasKey(e => new { e.MakerCd });
-            modelBuilder.Entity<M41SuppleIndexdef>().HasKey(e => new { e.SeibunCd });
-            modelBuilder.Entity<M41SuppleIngre>().HasKey(e => new { e.SeibunCd });
-            modelBuilder.Entity<M42ContraCmt>().HasKey(e => new { e.CmtCd });
-            modelBuilder.Entity<M42ContraindiDisClass>().HasKey(e => new { e.ByotaiClassCd });
-            modelBuilder.Entity<M42ContraindiDisCon>().HasKey(e => new { e.ByotaiCd });
-            modelBuilder.Entity<M56DrugClass>().HasKey(e => new { e.ClassCd });
-            modelBuilder.Entity<M56DrvalrgyCode>().HasKey(e => new { e.DrvalrgyCd });
-            modelBuilder.Entity<M56ExIngrdtMain>().HasKey(e => new { e.YjCd });
-            modelBuilder.Entity<M56UsageCode>().HasKey(e => new { e.YohoCd });
+            modelBuilder.Entity<M01KijyoCmt>().HasKey(e => new { e.CmtCd, e.HpId });
+            modelBuilder.Entity<M01KinkiCmt>().HasKey(e => new { e.HpId, e.CmtCd });
+            modelBuilder.Entity<M12FoodAlrgyKbn>().HasKey(e => new { e.HpId, e.FoodKbn });
+            modelBuilder.Entity<M14CmtCode>().HasKey(e => new { e.HpId, e.AttentionCmtCd });
+            modelBuilder.Entity<M34ArCode>().HasKey(e => new { e.HpId, e.FukusayoCd });
+            modelBuilder.Entity<M34ArDisconCode>().HasKey(e => new {e.HpId, e.FukusayoCd });
+            modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.HpId, e.YjCd });
+            modelBuilder.Entity<M34FormCode>().HasKey(e => new { e.HpId, e.FormCd });
+            modelBuilder.Entity<M34IndicationCode>().HasKey(e => new { e.HpId, e.KonoCd });
+            modelBuilder.Entity<M34InteractionPatCode>().HasKey(e => new { e.HpId, e.InteractionPatCd });
+            modelBuilder.Entity<M34PropertyCode>().HasKey(e => new {e.HpId, e.PropertyCd });
+            modelBuilder.Entity<M34SarSymptomCode>().HasKey(e => new { e.HpId, e.FukusayoInitCd });
+            modelBuilder.Entity<M38ClassCode>().HasKey(e => new { e.HpId, e.ClassCd });
+            modelBuilder.Entity<M38IngCode>().HasKey(e => new { e.HpId, e.SeibunCd });
+            modelBuilder.Entity<M38MajorDivCode>().HasKey(e => new { e.HpId, e.MajorDivCd });
+            modelBuilder.Entity<M38OtcFormCode>().HasKey(e => new { e.HpId, e.FormCd });
+            modelBuilder.Entity<M38OtcMain>().HasKey(e => new { e.HpId, e.SerialNum });
+            modelBuilder.Entity<M38OtcMakerCode>().HasKey(e => new { e.HpId, e.MakerCd });
+            modelBuilder.Entity<M41SuppleIndexdef>().HasKey(e => new { e.HpId, e.SeibunCd });
+            modelBuilder.Entity<M41SuppleIngre>().HasKey(e => new { e.HpId, e.SeibunCd });
+            modelBuilder.Entity<M42ContraCmt>().HasKey(e => new { e.HpId, e.CmtCd });
+            modelBuilder.Entity<M42ContraindiDisClass>().HasKey(e => new { e.HpId, e.ByotaiClassCd });
+            modelBuilder.Entity<M42ContraindiDisCon>().HasKey(e => new { e.HpId, e.ByotaiCd });
+            modelBuilder.Entity<M56DrugClass>().HasKey(e => new { e.HpId, e.ClassCd });
+            modelBuilder.Entity<M56DrvalrgyCode>().HasKey(e => new { e.HpId, e.DrvalrgyCd });
+            modelBuilder.Entity<M56ExIngrdtMain>().HasKey(e => new { e.HpId, e.YjCd });
+            modelBuilder.Entity<M56UsageCode>().HasKey(e => new { e.HpId, e.YohoCd });
             modelBuilder.Entity<MallMessageInf>().HasKey(e => new { e.Id });
             modelBuilder.Entity<OnlineConfirmation>().HasKey(e => new { e.ReceptionNo });
             modelBuilder.Entity<OnlineConfirmationHistory>().HasKey(e => new { e.ID });
-            modelBuilder.Entity<PiInf>().HasKey(e => new { e.PiId });
+            modelBuilder.Entity<PiInf>().HasKey(e => new { e.HpId, e.PiId });
             modelBuilder.Entity<PostCodeMst>().HasKey(e => new { e.Id });
             modelBuilder.Entity<PtFamilyReki>().HasKey(e => new { e.Id });
             modelBuilder.Entity<RaiinFilterMst>().HasKey(e => new { e.FilterId });
             modelBuilder.Entity<RaiinFilterSort>().HasKey(e => new { e.Id });
             modelBuilder.Entity<RenkeiReq>().HasKey(e => new { e.ReqId });
-            modelBuilder.Entity<RoudouMst>().HasKey(e => new { e.RoudouCd });
+            modelBuilder.Entity<RoudouMst>().HasKey(e => new { e.HpId, e.RoudouCd });
             modelBuilder.Entity<RsvkrtKarteImgInf>().HasKey(e => new { e.Id });
             modelBuilder.Entity<SanteiInf>().HasKey(e => new { e.Id });
             modelBuilder.Entity<SanteiInfDetail>().HasKey(e => new { e.Id });
@@ -363,7 +355,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<StaMenu>().HasKey(e => new { e.MenuId });
             modelBuilder.Entity<SummaryInf>().HasKey(e => new { e.Id });
             modelBuilder.Entity<SystemChangeLog>().HasKey(e => new { e.Id });
-            modelBuilder.Entity<UnitMst>().HasKey(e => new { e.UnitCd });
+            modelBuilder.Entity<UnitMst>().HasKey(e => new { e.HpId, e.UnitCd });
             modelBuilder.Entity<YohoSetMst>().HasKey(e => new { e.SetId });
             modelBuilder.Entity<ZDocInf>().HasKey(e => new { e.OpId });
             modelBuilder.Entity<ZFilingInf>().HasKey(e => new { e.OpId });
@@ -417,13 +409,13 @@ namespace PostgreDataContext
             modelBuilder.Entity<ZTodoInf>().HasKey(e => new { e.OpId });
             modelBuilder.Entity<ZUketukeSbtDayInf>().HasKey(e => new { e.OpId });
             modelBuilder.Entity<HpInf>().HasKey(h => new { h.HpId, h.StartDate });
-            modelBuilder.Entity<IpnKasanMst>().HasKey(i => new { i.HpId, i.StartDate, i.IpnNameCd, i.SeqNo });
-            modelBuilder.Entity<M56AnalogueCd>().HasKey(i => new { i.AnalogueCd });
+            modelBuilder.Entity<IpnKasanMst>().HasKey(i => new { i.StartDate, i.IpnNameCd, i.SeqNo });
+            modelBuilder.Entity<M56AnalogueCd>().HasKey(i => new { i.HpId, i.AnalogueCd });
             modelBuilder.Entity<PtFamily>().HasKey(p => new { p.FamilyId });
-            modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.HpId, s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
+            modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
-            modelBuilder.Entity<KacodeYousikiMst>().HasKey(s => new { s.YousikiKaCd });
-            modelBuilder.Entity<KacodeReceYousiki>().HasKey(s => new { s.ReceKaCd, s.YousikiKaCd });
+            modelBuilder.Entity<KacodeYousikiMst>().HasKey(s => new { s.HpId, s.YousikiKaCd });
+            modelBuilder.Entity<KacodeReceYousiki>().HasKey(s => new { s.HpId, s.ReceKaCd, s.YousikiKaCd });
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
             modelBuilder.Entity<KensaSet>().HasKey(s => new { s.HpId, s.SetId });
             modelBuilder.Entity<KensaSetDetail>().HasKey(s => new { s.HpId, s.SetId, s.SetEdaNo });
@@ -459,6 +451,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<SmartKarteAppSignalRPort>().HasKey(s => new { s.Id });
             modelBuilder.Entity<UserMst>().HasIndex(u => new { u.UserId }).HasFilter($"\"is_deleted\" = 0").IsUnique();
         }
+        
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
 
@@ -558,13 +551,7 @@ namespace PostgreDataContext
 
         public DbSet<OdrInfDetail> OdrInfDetails { get; set; } = default!;
 
-        public DbSet<YoyakuOdrInf> YoyakuOdrInfs { get; set; } = default!;
-
-        public DbSet<YoyakuOdrInfDetail> YoyakuOdrInfDetails { get; set; } = default!;
-
         public DbSet<RaiinKbnYayoku> RaiinKbnYayokus { get; set; } = default!;
-
-        public DbSet<YoyakuSbtMst> YoyakuSbtMsts { get; set; } = default!;
 
         public DbSet<TenMst> TenMsts { get; set; } = default!;
 
@@ -665,7 +652,7 @@ namespace PostgreDataContext
         public DbSet<IpnNameMst> IpnNameMsts { get; set; } = default!;
         public DbSet<IpnMinYakkaMst> IpnMinYakkaMsts { get; set; } = default!;
         public DbSet<IpnKasanMst> IpnKasanMsts { get; set; } = default!;
-
+        
         public DbSet<ListSetMst> ListSetMsts { get; set; } = default!;
 
         public DbSet<RousaiGoseiMst> RousaiGoseiMsts { get; set; } = default!;
@@ -805,11 +792,11 @@ namespace PostgreDataContext
         public DbSet<FilingInf> FilingInf { get; set; } = default!;
 
         public DbSet<M42ContraCmt> M42ContraCmt { get; set; } = default!;
-
+        
         public DbSet<M42ContraindiDisBc> M42ContraindiDisBc { get; set; } = default!;
-
+        
         public DbSet<M42ContraindiDisClass> M42ContraindiDisClass { get; set; } = default!;
-
+        
         public DbSet<M42ContraindiDisCon> M42ContraindiDisCon { get; set; } = default!;
 
         public DbSet<M42ContraindiDrugMainEx> M42ContraindiDrugMainEx { get; set; } = default!;

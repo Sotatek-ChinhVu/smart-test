@@ -7,11 +7,15 @@ namespace Entity.Tenant
     [Table(name: "event_mst")]
     public class EventMst : EmrCloneable<EventMst>
     {
+
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// イベントコード
         /// 
         /// </summary>
-        
+
         [Column("event_cd", Order = 1)]
         [MaxLength(11)]
         public string EventCd { get; set; } = string.Empty;

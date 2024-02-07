@@ -2,7 +2,7 @@
 using CommonChecker.DB;
 using Entity.Tenant;
 using Helper.Extension;
-using Reporting.Calculate.Extensions;
+using CalculateService.Extensions;
 
 namespace CloudUnitTest.CommonChecker.Finder
 {
@@ -13,6 +13,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         {
 
             //Setup Data Test
+            int hpId = 1;
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var testCmt1 = "UT6666";
             var testCmt2 = "UT7777";
@@ -20,11 +21,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M14CmtCode()
                 {
+                    HpId = 1,
                     AttentionCmt = null,
                     AttentionCmtCd = testCmt1,
                 },
                 new M14CmtCode()
                 {
+                    HpId = 1,
                     AttentionCmt = "COMMENT-Test",
                     AttentionCmtCd = testCmt2,
                 },
@@ -39,8 +42,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindAgeComment(testCmt1);
-                var result2 = realtimcheckerfinder.FindAgeComment(testCmt2);
+                var result1 = realtimcheckerfinder.FindAgeComment(hpId, testCmt1);
+                var result2 = realtimcheckerfinder.FindAgeComment(hpId, testCmt2);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -57,7 +60,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_002_FindAgeComment_Test_AgeCommentInfo_Is_Null()
         {
-
+            int hpId = 1;
             //Setup Data Test
             var testCmt1 = "UT6666";
             var testCmt2 = "UT7777";
@@ -66,8 +69,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
 
             // Act
-            var result1 = realtimcheckerfinder.FindAgeComment(testCmt1);
-            var result2 = realtimcheckerfinder.FindAgeComment(testCmt2);
+            var result1 = realtimcheckerfinder.FindAgeComment(hpId, testCmt1);
+            var result2 = realtimcheckerfinder.FindAgeComment(hpId, testCmt2);
 
             // Assert
             Assert.AreEqual(string.Empty, result1);
@@ -86,11 +89,13 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56AnalogueCd()
                 {
+                    HpId = 1,
                     AnalogueCd = testAnalogueCd1,
                     AnalogueName = null,
                 },
                 new M56AnalogueCd()
                 {
+                    HpId = 1,
                     AnalogueCd = testAnalogueCd2,
                     AnalogueName = "Analogue-Name-Test",
                 },
@@ -105,8 +110,8 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindAnalogueName(testAnalogueCd1);
-                var result2 = realtimcheckerfinder.FindAnalogueName(testAnalogueCd2);
+                var result1 = realtimcheckerfinder.FindAnalogueName(1, testAnalogueCd1);
+                var result2 = realtimcheckerfinder.FindAnalogueName(1, testAnalogueCd2);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -123,7 +128,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_004_TEST_FindAnalogueNameDic()
         {
-
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var testAnalogueCd1 = "UT7777";
@@ -133,16 +138,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56AnalogueCd()
                 {
+                    HpId = hpId,
                     AnalogueCd = testAnalogueCd1,
                     AnalogueName = null,
                 },
                 new M56AnalogueCd()
                 {
+                    HpId = hpId,
                     AnalogueCd = testAnalogueCd2,
                     AnalogueName = "Analogue-Name-Test1",
                 },
                 new M56AnalogueCd()
                 {
+                    HpId = hpId,
                     AnalogueCd = testAnalogueCd3,
                     AnalogueName = "Analogue-Name-Test2",
                 },
@@ -158,7 +166,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindAnalogueNameDic(analogueCodeLists);
+                var result = realtimcheckerfinder.FindAnalogueNameDic(hpId, analogueCodeLists);
 
                 // Assert
                 Assert.AreEqual(2, result.Count);
@@ -186,16 +194,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56DrugClass()
                 {
+                    HpId = 1,
                     ClassCd = classCd1,
                     ClassName = null,
                 },
                 new M56DrugClass()
                 {
+                    HpId = 1,
                     ClassCd = classCd2,
                     ClassName = "Analogue-Name-Test1",
                 },
                 new M56DrugClass()
                 {
+                    HpId = 1,
                     ClassCd = classCd3,
                     ClassName = "Analogue-Name-Test2",
                 },
@@ -209,9 +220,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindClassName(classCd1);
-                var result2 = realtimcheckerfinder.FindClassName(classCd2);
-                var result3 = realtimcheckerfinder.FindClassName(classCd4);
+                var result1 = realtimcheckerfinder.FindClassName(1, classCd1);
+                var result2 = realtimcheckerfinder.FindClassName(1, classCd2);
+                var result3 = realtimcheckerfinder.FindClassName(1, classCd4);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -238,18 +249,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56ExIngCode()
                 {
+                    HpId = 1,
                     SeibunCd = sebunCd1,
                     SeibunIndexCd = "000",
                     SeibunName = "SeibunName-Test1"
                 },
                 new M56ExIngCode()
                 {
+                    HpId = 1,
                     SeibunCd = sebunCd2,
                     SeibunIndexCd = "000",
                     SeibunName = null,
                 },
                 new M56ExIngCode()
                 {
+                    HpId = 1,
                     SeibunCd = sebunCd3,
                     SeibunIndexCd = "000",
                     SeibunName = ""
@@ -264,9 +278,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindComponentName(sebunCd1);
-                var result2 = realtimcheckerfinder.FindComponentName(sebunCd2);
-                var result3 = realtimcheckerfinder.FindComponentName(sebunCd3);
+                var result1 = realtimcheckerfinder.FindComponentName(1, sebunCd1);
+                var result2 = realtimcheckerfinder.FindComponentName(1, sebunCd2);
+                var result3 = realtimcheckerfinder.FindComponentName(1, sebunCd3);
 
                 // Assert
                 Assert.AreEqual("SeibunName-Test1", result1);
@@ -293,18 +307,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56ExIngCode()
                 {
+                    HpId = 1,
                     SeibunCd = sebunCd1,
                     SeibunIndexCd = "000",
                     SeibunName = "SeibunName-Test1"
                 },
                 new M56ExIngCode()
                 {
+                    HpId = 1,
                     SeibunCd = sebunCd2,
                     SeibunIndexCd = "000",
                     SeibunName = null,
                 },
                 new M56ExIngCode()
                 {
+                    HpId = 1,
                     SeibunCd = sebunCd3,
                     SeibunIndexCd = "000",
                     SeibunName = ""
@@ -321,7 +338,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindComponentNameDic(sebunCds);
+                var result = realtimcheckerfinder.FindComponentNameDic(1, sebunCds);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -337,6 +354,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_008_TEST_FindDiseaseComment()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cmtCd1 = "UT7777";
@@ -346,16 +364,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M42ContraCmt()
                 {
+                    HpId = 1,
                     CmtCd = cmtCd1,
                     Cmt = null,
                 },
                 new M42ContraCmt()
                 {
+                    HpId = 1,
                     CmtCd = cmtCd2,
                     Cmt = "000",
                 },
                 new M42ContraCmt()
                 {
+                    HpId = 1,
                     CmtCd = cmtCd3,
                     Cmt = "",
                 },
@@ -370,9 +391,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindDiseaseComment(cmtCd1);
-                var result2 = realtimcheckerfinder.FindDiseaseComment(cmtCd2);
-                var result3 = realtimcheckerfinder.FindDiseaseComment(cmtCd3);
+                var result1 = realtimcheckerfinder.FindDiseaseComment(hpId, cmtCd1);
+                var result2 = realtimcheckerfinder.FindDiseaseComment(hpId, cmtCd2);
+                var result3 = realtimcheckerfinder.FindDiseaseComment(hpId, cmtCd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -390,6 +411,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_009_TEST_FindDiseaseName()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT7777";
@@ -399,16 +421,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M42ContraindiDisCon()
                 {
+                    HpId = 1,
                     ByotaiCd = cd1,
                     Byomei = null,
                 },
                 new M42ContraindiDisCon()
                 {
+                    HpId = 1,
                     ByotaiCd = cd2,
                     Byomei = "000",
                 },
                 new M42ContraindiDisCon()
                 {
+                    HpId = 1,
                     ByotaiCd = cd3,
                     Byomei = "",
                 },
@@ -423,9 +448,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindDiseaseName(cd1);
-                var result2 = realtimcheckerfinder.FindDiseaseName(cd2);
-                var result3 = realtimcheckerfinder.FindDiseaseName(cd3);
+                var result1 = realtimcheckerfinder.FindDiseaseName(hpId, cd1);
+                var result2 = realtimcheckerfinder.FindDiseaseName(hpId, cd2);
+                var result3 = realtimcheckerfinder.FindDiseaseName(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -443,6 +468,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_010_TEST_FindDiseaseNameDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT7777";
@@ -452,16 +478,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M42ContraindiDisCon()
                 {
+                    HpId = 1,
                     ByotaiCd = cd1,
                     Byomei = null,
                 },
                 new M42ContraindiDisCon()
                 {
+                    HpId = 1,
                     ByotaiCd = cd2,
                     Byomei = "000",
                 },
                 new M42ContraindiDisCon()
                 {
+                    HpId = 1,
                     ByotaiCd = cd3,
                     Byomei = "",
                 },
@@ -477,7 +506,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindDiseaseNameDic(byotaiCdList);
+                var result = realtimcheckerfinder.FindDiseaseNameDic(hpId, byotaiCdList);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -501,16 +530,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56DrvalrgyCode()
                 {
+                    HpId = 1,
                     DrvalrgyCd = cd1,
                     DrvalrgyName = null,
                 },
                 new M56DrvalrgyCode()
                 {
+                    HpId = 1,
                     DrvalrgyCd = cd2,
                     DrvalrgyName = "000",
                 },
                 new M56DrvalrgyCode()
                 {
+                    HpId = 1,
                     DrvalrgyCd = cd3,
                     DrvalrgyName = "",
                 },
@@ -526,7 +558,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindDrvalrgyNameDic(drvalrgyCodeList);
+                var result = realtimcheckerfinder.FindDrvalrgyNameDic(1, drvalrgyCodeList);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -550,16 +582,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56DrvalrgyCode()
                 {
+                    HpId = 1,
                     DrvalrgyCd = cd1,
                     DrvalrgyName = null,
                 },
                 new M56DrvalrgyCode()
                 {
+                    HpId = 1,
                     DrvalrgyCd = cd2,
                     DrvalrgyName = "UNITTEST",
                 },
                 new M56DrvalrgyCode()
                 {
+                    HpId = 1,
                     DrvalrgyCd = cd3,
                     DrvalrgyName = "",
                 },
@@ -574,9 +609,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindDrvalrgyName(cd1);
-                var result2 = realtimcheckerfinder.FindDrvalrgyName(cd2);
-                var result3 = realtimcheckerfinder.FindDrvalrgyName(cd3);
+                var result1 = realtimcheckerfinder.FindDrvalrgyName(1, cd1);
+                var result2 = realtimcheckerfinder.FindDrvalrgyName(1, cd2);
+                var result3 = realtimcheckerfinder.FindDrvalrgyName(1, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -594,6 +629,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         public void TC_013_TEST_FindFoodName()
         {
             //Setup Data Test
+            int hpId = 1;
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "T7";
             var cd2 = "T8";
@@ -602,16 +638,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M12FoodAlrgyKbn()
                 {
+                    HpId = 1,
                     FoodKbn = cd1,
                     FoodName = "UNITTEST1",
                 },
                 new M12FoodAlrgyKbn()
                 {
+                    HpId = 1,
                     FoodKbn = cd2,
                     FoodName = "UNITTEST2",
                 },
                 new M12FoodAlrgyKbn()
                 {
+                    HpId = 1,
                     FoodKbn = cd3,
                     FoodName = "",
                 },
@@ -626,9 +665,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindFoodName(cd1);
-                var result2 = realtimcheckerfinder.FindFoodName(cd2);
-                var result3 = realtimcheckerfinder.FindFoodName(cd3);
+                var result1 = realtimcheckerfinder.FindFoodName(hpId, cd1);
+                var result2 = realtimcheckerfinder.FindFoodName(hpId, cd2);
+                var result3 = realtimcheckerfinder.FindFoodName(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual("UNITTEST1", result1);
@@ -645,6 +684,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_014_TEST_FindFoodNameDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "T7";
@@ -654,16 +694,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M12FoodAlrgyKbn()
                 {
+                    HpId = 1,
                     FoodKbn = cd1,
                     FoodName = "UNITTEST1",
                 },
                 new M12FoodAlrgyKbn()
                 {
+                    HpId = 1,
                     FoodKbn = cd2,
                     FoodName = "UNITTEST2",
                 },
                 new M12FoodAlrgyKbn()
                 {
+                    HpId = 1,
                     FoodKbn = cd3,
                     FoodName = "",
                 },
@@ -679,7 +722,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindFoodNameDic(codeLists);
+                var result = realtimcheckerfinder.FindFoodNameDic(hpId, codeLists);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -703,7 +746,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new IpnNameMst()
                 {
-                    HpId = 9999,
                     IpnNameCd  = cd1,
                     StartDate = 20230101,
                     SeqNo = 999,
@@ -711,7 +753,6 @@ namespace CloudUnitTest.CommonChecker.Finder
                 },
                 new IpnNameMst()
                 {
-                    HpId = 9999,
                     IpnNameCd  = cd2,
                     StartDate = 20230101,
                     SeqNo = 999,
@@ -719,7 +760,6 @@ namespace CloudUnitTest.CommonChecker.Finder
                 },
                 new IpnNameMst()
                 {
-                   HpId = 9999,
                     IpnNameCd  = cd3,
                     StartDate = 20230101,
                     SeqNo = 999,
@@ -880,20 +920,24 @@ namespace CloudUnitTest.CommonChecker.Finder
             var cd1 = "UT5555";
             var cd2 = "UT6666";
             var cd3 = "UT7777";
+            int hpId = 1;
             var m01KijyoCmts = new List<M01KijyoCmt>()
             {
                 new M01KijyoCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd1,
                     Cmt = null,
                 },
                 new M01KijyoCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd2,
                     Cmt = "UNITTEST2",
                 },
                 new M01KijyoCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd3,
                     Cmt = "",
                 },
@@ -908,9 +952,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindKijyoComment(cd1);
-                var result2 = realtimcheckerfinder.FindKijyoComment(cd2);
-                var result3 = realtimcheckerfinder.FindKijyoComment(cd3);
+                var result1 = realtimcheckerfinder.FindKijyoComment(hpId, cd1);
+                var result2 = realtimcheckerfinder.FindKijyoComment(hpId, cd2);
+                var result3 = realtimcheckerfinder.FindKijyoComment(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -932,20 +976,24 @@ namespace CloudUnitTest.CommonChecker.Finder
             var cd1 = "UT5555";
             var cd2 = "UT6666";
             var cd3 = "UT7777";
+            int hpId = 1;
             var m01KijyoCmts = new List<M01KijyoCmt>()
             {
                 new M01KijyoCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd1,
                     Cmt = null,
                 },
                 new M01KijyoCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd2,
                     Cmt = "UNITTEST2",
                 },
                 new M01KijyoCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd3,
                     Cmt = "",
                 },
@@ -961,7 +1009,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindKijyoCommentDic(commentCodes);
+                var result = realtimcheckerfinder.FindKijyoCommentDic(hpId, commentCodes);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -972,7 +1020,7 @@ namespace CloudUnitTest.CommonChecker.Finder
                 tenantTracking.SaveChanges();
             }
         }
-
+        
         [Test]
         public void TC_021_TEST_FindKinkiComment()
         {
@@ -981,20 +1029,24 @@ namespace CloudUnitTest.CommonChecker.Finder
             var cd1 = "UT5555";
             var cd2 = "UT6666";
             var cd3 = "UT7777";
+            int hpId = 1;
             var m01KinkiCmts = new List<M01KinkiCmt>()
             {
                 new M01KinkiCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd1,
                     Cmt = null,
                 },
                 new M01KinkiCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd2,
                     Cmt = "UNITTEST2",
                 },
                 new M01KinkiCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd3,
                     Cmt = "",
                 },
@@ -1009,9 +1061,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindKinkiComment(cd1);
-                var result2 = realtimcheckerfinder.FindKinkiComment(cd2);
-                var result3 = realtimcheckerfinder.FindKinkiComment(cd3);
+                var result1 = realtimcheckerfinder.FindKinkiComment(hpId, cd1);
+                var result2 = realtimcheckerfinder.FindKinkiComment(hpId, cd2);
+                var result3 = realtimcheckerfinder.FindKinkiComment(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -1033,20 +1085,24 @@ namespace CloudUnitTest.CommonChecker.Finder
             var cd1 = "UT5555";
             var cd2 = "UT6666";
             var cd3 = "UT7777";
+            int hpId = 1;
             var m01KinkiCmts = new List<M01KinkiCmt>()
             {
                 new M01KinkiCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd1,
                     Cmt = null,
                 },
                 new M01KinkiCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd2,
                     Cmt = "UNITTEST2",
                 },
                 new M01KinkiCmt()
                 {
+                    HpId = 1,
                     CmtCd = cd3,
                     Cmt = "",
                 },
@@ -1062,7 +1118,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindKinkiCommentDic(commentCodes);
+                var result = realtimcheckerfinder.FindKinkiCommentDic(hpId, commentCodes);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -1077,6 +1133,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_023_TEST_FindOTCItemName()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = 999999;
@@ -1086,16 +1143,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M38OtcMain()
                 {
+                    HpId = 1,
                     SerialNum = cd1,
                     TradeName = null,
                 },
                 new M38OtcMain()
                 {
+                    HpId = 1,
                     SerialNum = cd2,
                     TradeName = "UNITTEST2",
                 },
                 new M38OtcMain()
                 {
+                    HpId = 1,
                     SerialNum = cd3,
                     TradeName = "",
                 },
@@ -1110,9 +1170,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindOTCItemName(cd1);
-                var result2 = realtimcheckerfinder.FindOTCItemName(cd2);
-                var result3 = realtimcheckerfinder.FindOTCItemName(cd3);
+                var result1 = realtimcheckerfinder.FindOTCItemName(hpId, cd1);
+                var result2 = realtimcheckerfinder.FindOTCItemName(hpId, cd2);
+                var result3 = realtimcheckerfinder.FindOTCItemName(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -1129,6 +1189,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_024_TEST_FindOTCItemNameDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = 999999;
@@ -1138,16 +1199,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M38OtcMain()
                 {
+                    HpId = 1,
                     SerialNum = cd1,
                     TradeName = null,
                 },
                 new M38OtcMain()
                 {
+                    HpId = 1,
                     SerialNum = cd2,
                     TradeName = "UNITTEST2",
                 },
                 new M38OtcMain()
                 {
+                    HpId = 1,
                     SerialNum = cd3,
                     TradeName = "",
                 },
@@ -1163,7 +1227,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindOTCItemNameDic(commentCodes);
+                var result = realtimcheckerfinder.FindOTCItemNameDic(hpId, commentCodes);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -1178,6 +1242,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_025_TEST_FindSuppleItemName()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1187,16 +1252,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd1,
                     Seibun = null,
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd2,
                     Seibun = "UNITTEST2",
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd3,
                     Seibun = "",
                 },
@@ -1207,13 +1275,13 @@ namespace CloudUnitTest.CommonChecker.Finder
 
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
-
+            
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.FindSuppleItemName(cd1);
-                var result2 = realtimcheckerfinder.FindSuppleItemName(cd2);
-                var result3 = realtimcheckerfinder.FindSuppleItemName(cd3);
+                var result1 = realtimcheckerfinder.FindSuppleItemName(hpId, cd1);
+                var result2 = realtimcheckerfinder.FindSuppleItemName(hpId, cd2);
+                var result3 = realtimcheckerfinder.FindSuppleItemName(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -1230,6 +1298,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_026_TEST_FindKinkiCommentDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1239,16 +1308,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd1,
                     Seibun = null,
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd2,
                     Seibun = "UNITTEST2",
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd3,
                     Seibun = "",
                 },
@@ -1264,7 +1336,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindSuppleItemNameDic(commentCodes);
+                var result = realtimcheckerfinder.FindSuppleItemNameDic(hpId, commentCodes);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -1279,6 +1351,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_027_TEST_GetOTCComponentInfo()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1288,16 +1361,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M38IngCode()
                 {
+                    HpId = 1,
                     SeibunCd = cd1,
                     Seibun = null,
                 },
                 new M38IngCode()
                 {
+                    HpId = 1,
                     SeibunCd = cd2,
                     Seibun = "UNITTEST2",
                 },
                 new M38IngCode()
                 {
+                    HpId = 1,
                     SeibunCd = cd3,
                     Seibun = "",
                 },
@@ -1312,9 +1388,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.GetOTCComponentInfo(cd1);
-                var result2 = realtimcheckerfinder.GetOTCComponentInfo(cd2);
-                var result3 = realtimcheckerfinder.GetOTCComponentInfo(cd3);
+                var result1 = realtimcheckerfinder.GetOTCComponentInfo(hpId, cd1);
+                var result2 = realtimcheckerfinder.GetOTCComponentInfo(hpId, cd2);
+                var result3 = realtimcheckerfinder.GetOTCComponentInfo(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -1331,6 +1407,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_028_TEST_GetOTCComponentInfoDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1340,16 +1417,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M38IngCode()
                 {
+                    HpId = 1,
                     SeibunCd = cd1,
                     Seibun = null,
                 },
                 new M38IngCode()
                 {
+                    HpId = 1,
                     SeibunCd = cd2,
                     Seibun = "UNITTEST2",
                 },
                 new M38IngCode()
                 {
+                    HpId = 1,
                     SeibunCd = cd3,
                     Seibun = "",
                 },
@@ -1365,7 +1445,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.GetOTCComponentInfoDic(commentCodes);
+                var result = realtimcheckerfinder.GetOTCComponentInfoDic(hpId, commentCodes);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -1380,6 +1460,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_029_TEST_GetSupplementComponentInfo()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1389,16 +1470,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd1,
                     Seibun = null,
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd2,
                     Seibun = "UNITTEST2",
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd3,
                     Seibun = "",
                 },
@@ -1413,9 +1497,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.GetSupplementComponentInfo(cd1);
-                var result2 = realtimcheckerfinder.GetSupplementComponentInfo(cd2);
-                var result3 = realtimcheckerfinder.GetSupplementComponentInfo(cd3);
+                var result1 = realtimcheckerfinder.GetSupplementComponentInfo(hpId, cd1);
+                var result2 = realtimcheckerfinder.GetSupplementComponentInfo(hpId, cd2);
+                var result3 = realtimcheckerfinder.GetSupplementComponentInfo(hpId, cd3);
 
                 // Assert
                 Assert.AreEqual(string.Empty, result1);
@@ -1432,6 +1516,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_030_TEST_GetSupplementComponentInfoDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1441,16 +1526,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd1,
                     Seibun = null,
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd2,
                     Seibun = "UNITTEST2",
                 },
                 new M41SuppleIngre()
                 {
+                    HpId = 1,
                     SeibunCd = cd3,
                     Seibun = "",
                 },
@@ -1466,7 +1554,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.GetSupplementComponentInfoDic(commentCodes);
+                var result = realtimcheckerfinder.GetSupplementComponentInfoDic(hpId, commentCodes);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -1481,6 +1569,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_031_TEST_GetUsageDosage()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1494,16 +1583,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = yjCd1,
                     DoeiCd = cd1,
                 },
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = yjCd2,
                     DoeiCd = cd2,
                 },
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = yjCd3,
                     DoeiCd = cd3,
                 },
@@ -1513,18 +1605,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = cd1,
                     DoeiSeqNo = 9999,
                     UsageDosage = "Test1"
                 },
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = cd2,
                     DoeiSeqNo = 9999,
                     UsageDosage = "Test2"
                 },
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = cd3,
                     DoeiSeqNo = 9999,
                     UsageDosage = "Test3"
@@ -1541,9 +1636,9 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result1 = realtimcheckerfinder.GetUsageDosage(yjCd1);
-                var result2 = realtimcheckerfinder.GetUsageDosage(yjCd2);
-                var result3 = realtimcheckerfinder.GetUsageDosage(yjCd3);
+                var result1 = realtimcheckerfinder.GetUsageDosage(hpId, yjCd1);
+                var result2 = realtimcheckerfinder.GetUsageDosage(hpId, yjCd2);
+                var result3 = realtimcheckerfinder.GetUsageDosage(hpId, yjCd3);
 
                 // Assert
                 Assert.AreEqual("Test1", result1);
@@ -1561,6 +1656,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_032_TEST_GetUsageDosageDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var cd1 = "UT5555";
@@ -1574,16 +1670,19 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = yjCd1,
                     DoeiCd = cd1,
                 },
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = yjCd2,
                     DoeiCd = cd2,
                 },
                 new DosageDrug()
                 {
+                    HpId = hpId,
                     YjCd = yjCd3,
                     DoeiCd = cd3,
                 },
@@ -1593,18 +1692,21 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = cd1,
                     DoeiSeqNo = 9999,
                     UsageDosage = "Test1"
                 },
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = cd2,
                     DoeiSeqNo = 9999,
                     UsageDosage = "Test2"
                 },
                 new DosageDosage()
                 {
+                    HpId = 1,
                     DoeiCd = cd3,
                     DoeiSeqNo = 9999,
                     UsageDosage = "Test3"
@@ -1618,11 +1720,11 @@ namespace CloudUnitTest.CommonChecker.Finder
             // Arrange
             var realtimcheckerfinder = new RealtimeOrderErrorFinder(TenantProvider);
 
-            var yjCds = new List<string>() {yjCd1, yjCd2, yjCd3 };
+            var yjCds = new List<string>() { yjCd1, yjCd2, yjCd3 };
             try
             {
                 // Act
-                var result = realtimcheckerfinder.GetUsageDosageDic(yjCds);
+                var result = realtimcheckerfinder.GetUsageDosageDic(hpId, yjCds);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -1646,6 +1748,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new M56ExEdIngredients()
                 {
+                    HpId = 1,
                     YjCd = yjCd,
                     SeqNo = "999",
                 }
@@ -1660,7 +1763,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.IsNoMasterData();
+                var result = realtimcheckerfinder.IsNoMasterData(1);
 
                 // Assert
                 Assert.AreEqual(false, result);

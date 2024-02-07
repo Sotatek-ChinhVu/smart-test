@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m10_day_limit")]
     public class M10DayLimit : EmrCloneable<M10DayLimit>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 個別医薬品コード
         /// YJコード
         /// </summary>
-        
+
         [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;

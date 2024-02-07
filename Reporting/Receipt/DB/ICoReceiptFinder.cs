@@ -1,8 +1,8 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
 using Entity.Tenant;
-using Reporting.Calculate.Ika.Models;
-using Reporting.Calculate.Receipt.Models;
+using CalculateService.Ika.Models;
+using CalculateService.Receipt.Models;
 using Reporting.Receipt.Models;
 
 namespace Reporting.Receipt.DB
@@ -16,7 +16,7 @@ namespace Reporting.Receipt.DB
             string receSbt, bool includeTester, bool paperOnly, List<int> seikyuKbns, int tantoId, int kaId, int grpId);
 
         List<ReceInfModel> FindReceInf(int hpId,
-            Reporting.Calculate.ReceFutan.Models.ReceInfModel receInf);
+            CalculateService.ReceFutan.Models.ReceInfModel receInf);
 
         List<ReceInfModel> FindReceInfFukuoka(
            int hpId, int mode, int target, int seikyuYm, List<long> ptId, int sinYm, int hokenId,

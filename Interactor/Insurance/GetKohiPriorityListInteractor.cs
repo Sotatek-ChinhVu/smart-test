@@ -15,7 +15,7 @@ namespace Interactor.Insurance
         {
             try
             {
-                var datas = _insuranceResponsitory.GetKohiPriorityList();
+                var datas = _insuranceResponsitory.GetKohiPriorityList(inputData.HpId);
                 if(datas.Any())
                     return new GetKohiPriorityListOutputData(datas, GetKohiPriorityListStatus.Successful);
                 else

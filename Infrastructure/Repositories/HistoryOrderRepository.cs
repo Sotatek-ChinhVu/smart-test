@@ -694,17 +694,24 @@ namespace Infrastructure.Repositories
 
             int minSinDate = allOdrDetailInfList.Min(o => o.SinDate);
             int maxSinDate = allOdrDetailInfList.Max(o => o.SinDate);
-
             //Read config
             var itemCds = allOdrDetailInfList.Select(od => od.ItemCd).Distinct().ToList();
             var ipnCds = allOdrDetailInfList.Select(od => od.IpnCd).Distinct().ToList();
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= minSinDate && t.EndDate >= maxSinDate && itemCds.Contains(t.ItemCd)).ToList();
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId &&
+            ((t.StartDate <= minSinDate && t.EndDate >= minSinDate) || (t.StartDate >= minSinDate && t.EndDate <= maxSinDate) || (t.StartDate <= maxSinDate && t.EndDate >= maxSinDate))
+            && itemCds.Contains(t.ItemCd)).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
-            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
+            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
             var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
             var kensaIrai = checkKensaIrai?.Val ?? 0;
             var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
+
+            var ipnMinYakkaMstQuery = NoTrackingDataContext.IpnMinYakkaMsts.Where(u => u.IsDeleted == DeleteTypes.None && (u.StartDate <= maxSinDate || u.EndDate >= maxSinDate));
+
+            var ipnKasanExcludeQuery = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.StartDate <= maxSinDate || u.EndDate >= maxSinDate);
+
+            var ipnKasanExcludeItemQuery = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.StartDate <= maxSinDate || u.EndDate >= maxSinDate);
 
             Dictionary<long, List<OrdInfModel>> result = new Dictionary<long, List<OrdInfModel>>();
             foreach (long raiinNo in raiinNoList)
@@ -733,7 +740,8 @@ namespace Infrastructure.Repositories
                         }
                     }
 
-                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, odrInf.OdrKouiKbn, (int)kensaIrai, (int)kensaIraiCondition);
+                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, odrInf.OdrKouiKbn, (int)kensaIrai, (int)kensaIraiCondition,
+                        ipnMinYakkaMstQuery, ipnKasanExcludeQuery, ipnKasanExcludeItemQuery);
                     odrInfModelList.Add(ordInfModel);
                 }
 

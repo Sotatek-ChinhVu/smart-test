@@ -87,4 +87,5 @@ public interface ISystemConfig : IRepositoryBase
     /// VAL in (0, 1)以外はライセンスなし
     /// </summary>
     int ElectronicPrescriptionLicense();
+    int JibaiJunkyo();
 }

@@ -81,16 +81,15 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var ipnCds = allSetOrderInfDetails?.Select(detail => detail.IpnCd);
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
         var kensaMsts = NoTrackingDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
-        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
+        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
         var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sinDate && ipn.EndDate >= sinDate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
-        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
-        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
+        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate).ToList();
+        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate).ToList();
         var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
         var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
         var allIpnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(p =>
-                   p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
                    (ipnCds != null && ipnCds.Contains(p.IpnNameCd))).ToList();
@@ -340,14 +339,14 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sindate && t.EndDate >= sindate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
         var kensaMsts = NoTrackingDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
         var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sindate && ipn.EndDate >= sindate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
-        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
-        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
+        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.StartDate <= sindate && item.EndDate >= sindate).ToList();
+        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.StartDate <= sindate && item.EndDate >= sindate).ToList();
         var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
         var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
         var listUserId = allSetOdrInfs.Select(user => user.CreateId).ToList();
-        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sindate && ipn.IsDeleted == 0).ToList();
+        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.StartDate <= sindate && ipn.IsDeleted == 0).ToList();
         var yohoSetMsts = NoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
         var sinKouiKbns = allSetOdrInfDetails?.Select(od => od.SinKouiKbn).Distinct().ToList() ?? new();
         var itemCdYohos = yohoSetMsts?.Select(od => od.ItemCd ?? string.Empty);
@@ -708,11 +707,11 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             bool kensaCondition;
             if (kensaIraiCondition == 0)
             {
-                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9";
             }
             else
             {
-                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
             }
 
             if (kensaCondition && inOutKbn == 1)
@@ -1730,8 +1729,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                                                    && rowNoList.Contains(item.RowNo)
                                                                                    && rpEdaNoList.Contains(item.RpEdaNo))
                                                                      .ToList();
-        var ipnNameMstDBList = NoTrackingDataContext.IpnNameMsts.Where(item => item.HpId == hpId
-                                                                               && item.StartDate <= sinDate
+        var ipnNameMstDBList = NoTrackingDataContext.IpnNameMsts.Where(item => item.StartDate <= sinDate
                                                                                && item.EndDate >= sinDate
                                                                                && ipnNameCdList.Contains(item.IpnNameCd))
                                                                 .ToList();

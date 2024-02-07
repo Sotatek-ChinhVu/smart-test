@@ -215,7 +215,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             //ConfigType=3: No image
             if (configType != 3)
             {
-                SetupPrintImage(hpId, drug, drugInfoModel, yjCd);
+                SetupPrintImage(drug, drugInfoModel, yjCd);
             }
 
             if (selectedFormType == 1)
@@ -258,9 +258,9 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 
     }
 
-    private void SetupPrintImage(int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel, string yjCd)
+    private void SetupPrintImage(OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel, string yjCd)
     {
-        var images = _coDrugInfFinder.GetProductImages(hpId, orderInfDetailModel.ItemCd);
+        var images = _coDrugInfFinder.GetProductImages(orderInfDetailModel.ItemCd);
         string YJCode = yjCd;
         if (images == null || images.Count == 0)
         {

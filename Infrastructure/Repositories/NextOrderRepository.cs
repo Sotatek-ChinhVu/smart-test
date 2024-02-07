@@ -89,10 +89,10 @@ namespace Infrastructure.Repositories
             var sinKouiKbns = orderInfDetails.Select(od => od.SinKouiKbn);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
-            var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate) && (ipnCds != null && ipnCds.Contains(t.IpnNameCd))).ToList();
-            var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate)).ToList();
-            var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate)).ToList();
-            var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
+            var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate && ipnCds != null && ipnCds.Contains(t.IpnNameCd)).ToList();
+            var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
+            var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
+            var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
             var listYohoSets = NoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
             var itemCdYohos = listYohoSets?.Select(od => od.ItemCd ?? string.Empty);
 
@@ -184,17 +184,17 @@ namespace Infrastructure.Repositories
 
                     if (oldNextOrder != null)
                     {
-                            oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
-                            oldNextOrder.RsvDate = nextOrderModel.RsvDate;
-                            oldNextOrder.RsvName = nextOrderModel.RsvName;
-                            oldNextOrder.SortNo = nextOrderModel.SortNo;
-                            oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
-                            oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            oldNextOrder.UpdateId = userId;
-                            rsvkrtNo = oldNextOrder.RsvkrtNo;
-                            UpsertByomei(ref rsvkrtByomeiList, userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
-                            UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                            UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
+                        oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
+                        oldNextOrder.RsvDate = nextOrderModel.RsvDate;
+                        oldNextOrder.RsvName = nextOrderModel.RsvName;
+                        oldNextOrder.SortNo = nextOrderModel.SortNo;
+                        oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
+                        oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        oldNextOrder.UpdateId = userId;
+                        rsvkrtNo = oldNextOrder.RsvkrtNo;
+                        UpsertByomei(ref rsvkrtByomeiList, userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
+                        UpsertKarteInf(ref rsvkrtKarteInfList, userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                        UpsertOrderInf(ref rsvkrtOdrInfList, userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo, nextOrderModel.RsvDate);
                     }
                     else
                     {
@@ -453,7 +453,7 @@ namespace Infrastructure.Repositories
         /// <param name="rsvkrtNo"></param>
         private void UpsertKarteInf(ref List<RsvkrtKarteInf> rsvkrtKarteInfEntityList, int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
         {
-            var oldKarteInf = rsvkrtKarteInfEntityList.FirstOrDefault(o => o.RsvkrtNo == rsvkrtNo);
+            var oldKarteInf = rsvkrtKarteInfEntityList.Where(o => o.RsvkrtNo == rsvkrtNo).OrderByDescending(x => x.SeqNo).FirstOrDefault();
             if (karteInf.IsDeleted == DeleteTypes.Deleted || karteInf.IsDeleted == DeleteTypes.Confirm)
             {
                 if (oldKarteInf != null && oldKarteInf.IsDeleted == DeleteTypes.None)
@@ -801,11 +801,11 @@ namespace Infrastructure.Repositories
                 bool kensaCondition;
                 if (kensaIraiCondition == 0)
                 {
-                    kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                    kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9";
                 }
                 else
                 {
-                    kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                    kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji2 != "7" && odrInfDetail.Kokuji2 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
                 }
 
                 if (kensaCondition && inOutKbn == 1)

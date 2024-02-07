@@ -1571,7 +1571,7 @@ namespace Interactor.ReceSeikyu
                                 double santeiCount = 0;
                                 if (startDate >= 0)
                                 {
-                                    santeiCount = _receiptRepository.SanteiCount(hpId, recalculationModel.PtId, startDate, sinDate,
+                                    santeiCount = _todayOdrRepository.SanteiCount(hpId, recalculationModel.PtId, startDate, sinDate,
                                                                    sinDate, 0, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
                                 }
 

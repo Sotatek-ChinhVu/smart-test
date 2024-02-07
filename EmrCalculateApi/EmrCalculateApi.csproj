@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.20" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.26" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CalculateService\CalculateService.csproj" />
     <ProjectReference Include="..\Entity\Entity.csproj" />
     <ProjectReference Include="..\Helper\Helper.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
@@ -27,16 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Ika\Constants\" />
-    <Folder Include="Ika\DB\" />
-    <Folder Include="Ika\Models\" />
-    <Folder Include="ReceFutan\DB\" />
-    <Folder Include="ReceFutan\Models\" />
-    <Folder Include="ReceFutan\ViewModels\" />
-    <Folder Include="Receipt\DB\" />
-    <Folder Include="Receipt\Constants\" />
-    <Folder Include="Receipt\Models\" />
-    <Folder Include="Receipt\ViewModels\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 

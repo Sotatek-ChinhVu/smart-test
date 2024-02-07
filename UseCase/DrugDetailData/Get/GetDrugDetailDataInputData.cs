@@ -4,14 +4,17 @@ namespace UseCase.DrugDetailData.Get
 {
     public class GetDrugDetailDataInputData : IInputData<GetDrugDetailDataOutputData>
     {
-        public GetDrugDetailDataInputData(int selectedIndexOfMenuLelel, int level, string drugName, string itemCd, string yJCode)
+        public GetDrugDetailDataInputData(int hpId, int selectedIndexOfMenuLelel, int level, string drugName, string itemCd, string yJCode)
         {
+            HpId = hpId;
             SelectedIndexOfMenuLevel = selectedIndexOfMenuLelel;
             Level = level;
             DrugName = drugName;
             ItemCd = itemCd;
             YJCode = yJCode;
         }
+
+        public int HpId { get; private set; }
 
         public int SelectedIndexOfMenuLevel { get; private set; }
 

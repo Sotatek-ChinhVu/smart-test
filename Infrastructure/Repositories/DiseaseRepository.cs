@@ -1106,11 +1106,12 @@ namespace Infrastructure.Repositories
         {
             var result = new Dictionary<string, string>();
 
-            foreach (var item in byomeiCds)
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId && byomeiCds.Contains(item.ByomeiCd)).ToList();
+            foreach (var byomeiCd in byomeiCds)
             {
-                if (!string.IsNullOrEmpty(item))
+                if (!string.IsNullOrEmpty(byomeiCd))
                 {
-                    var byomei = NoTrackingDataContext.ByomeiMsts.FirstOrDefault(x => x.HpId == hpId && x.ByomeiCd == item);
+                    var byomei = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == byomeiCd);
                     if (byomei != null && !result.ContainsKey(byomei.ByomeiCd))
                     {
                         result.Add(byomei.ByomeiCd, byomei.Sbyomei ?? string.Empty);

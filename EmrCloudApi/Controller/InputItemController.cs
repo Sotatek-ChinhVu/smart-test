@@ -82,7 +82,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.DrugDataSelectedTree)]
         public ActionResult<Response<GetDrugDetailDataResponse>> DrugDataSelectedTree([FromQuery] GetDrugDetailDataRequest request)
         {
-            var input = new GetDrugDetailDataInputData(request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.ItemCd, request.YJCode);
+            var input = new GetDrugDetailDataInputData(HpId, request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.ItemCd, request.YJCode);
             var output = _bus.Handle(input);
 
             var presenter = new GetDrugDetailDataPresenter();
@@ -116,7 +116,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.ShowKanjaMuke)]
         public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowKanjaMuke([FromQuery] ShowKanjaMukeRequest request)
         {
-            var input = new ShowKanjaMukeInputData(request.ItemCd, request.Level, request.DrugName, request.YJCode);
+            var input = new ShowKanjaMukeInputData(HpId, request.ItemCd, request.Level, request.DrugName, request.YJCode);
             var output = _bus.Handle(input);
 
             var presenter = new ShowKanjaMukePresenter();
@@ -128,7 +128,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.ShowMdbByomei)]
         public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowMdbByomei([FromQuery] ShowMdbByomeiRequest request)
         {
-            var input = new ShowMdbByomeiInputData(request.ItemCd, request.Level, request.DrugName, request.YJCode);
+            var input = new ShowMdbByomeiInputData(HpId, request.ItemCd, request.Level, request.DrugName, request.YJCode);
             var output = _bus.Handle(input);
 
             var presenter = new ShowMdbByomeiPresenter();

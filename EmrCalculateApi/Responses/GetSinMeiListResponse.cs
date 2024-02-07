@@ -1,4 +1,4 @@
-﻿using EmrCalculateApi.Receipt.Models;
+﻿using CalculateService.Receipt.Models;
 
 namespace EmrCalculateApi.Responses
 {

@@ -22,21 +22,18 @@ namespace Infrastructure.Repositories
                      && item.StartDate <= sinDate && item.EndDate >= sinDate && item.ItemCd == itemCd
                      );
 
-            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.AsQueryable();
-            var queryM28DrugMsts = NoTrackingDataContext.M28DrugMst.AsQueryable();
+            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.Where(item => item.HpId == hpId);
+            var queryM28DrugMsts = NoTrackingDataContext.M28DrugMst.Where(m => m.HpId == hpId).AsQueryable();
             //Join
             var joinQueryDrugInf = from m28DrugMst in queryM28DrugMsts
                                    join tenItem in quetyTenMsts
                                    on m28DrugMst.KikinCd equals tenItem.ItemCd
-                                   join drugInfor in queryDrugInfs
-                                   on m28DrugMst.YjCd equals drugInfor.YjCd
-                                   select new { drugInfor, tenItem };
+                                   select new { m28DrugMst, tenItem };
             var drugInf = joinQueryDrugInf.FirstOrDefault();
-            if (drugInf != null && drugInf.drugInfor != null)
-            {
-                yjCode = drugInf.drugInfor != null ? drugInf.drugInfor.YjCd ?? string.Empty : string.Empty;
-                drugName = drugInf.tenItem != null ? drugInf.tenItem.Name ?? string.Empty : string.Empty;
-            }
+            var yjCd = drugInf?.m28DrugMst?.YjCd;
+            var drugInfo = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.HpId == hpId && i.YjCd == yjCd);
+            yjCode = drugInfo?.YjCd ?? drugInf?.tenItem?.YjCd;
+            drugName = drugInf?.tenItem != null ? drugInf?.tenItem?.Name ?? string.Empty : string.Empty;
             // create drug item
 
             List<DrugMenuItemModel> drugMenuItems = new List<DrugMenuItemModel>();
@@ -44,12 +41,12 @@ namespace Infrastructure.Repositories
             DrugMenuItemModel rootMenu = new DrugMenuItemModel("医薬品情報", "", 0, 0, 0, "", 0, yjCode);
             drugMenuItems.Add(rootMenu);
 
-            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.AsQueryable(); //PI_INF_DETAIL
+            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.Where(item => item.HpId == hpId); //PI_INF_DETAIL
 
             var piProductInfCollections = queryDrugInfs.Where(pi => pi.YjCd == yjCode).AsQueryable();
 
             //Kikaku
-            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 1);
+            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 1);
             if (kikakuCollection.Count > 0)
             {
                 foreach (var kikakuItem in kikakuCollection)
@@ -63,7 +60,7 @@ namespace Infrastructure.Repositories
             }
 
             //Tenpu
-            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 2);
+            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 2);
 
             bool siyoFlag = false;
             var currentMenu = new DrugMenuItemModel();
@@ -96,24 +93,24 @@ namespace Infrastructure.Repositories
             return drugMenuItems;
         }
 
-        public DrugDetailModel GetDataDrugSeletedTree(int selectedIndexOfMenuLevel, int level, string drugName, string itemCd, string yjCode)
+        public DrugDetailModel GetDataDrugSeletedTree(int hpId, int selectedIndexOfMenuLevel, int level, string drugName, string itemCd, string yjCode)
         {
-            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.AsQueryable();
-            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.AsQueryable();
+            var piInfDetailCollection = NoTrackingDataContext.PiInfDetails.Where(item => item.HpId == hpId);
+            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.Where(item => item.HpId == hpId);
             var piProductInfCollections = queryDrugInfs.Where(pi => pi.YjCd == yjCode).AsQueryable();
-            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 1);
-            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 2);
-            return GetDetail(selectedIndexOfMenuLevel, level, drugName, itemCd, yjCode, piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
+            var kikakuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 1);
+            var tenpuCollection = GetKikakuCollectionOrTenpuCollection(hpId, yjCode, piInfDetailCollection, piProductInfCollections, 2);
+            return GetDetail(hpId, selectedIndexOfMenuLevel, level, drugName, itemCd, yjCode, piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
         }
 
-        private DrugDetailModel GetDetail(int selectedIndex, int level, string drugName, string itemCd, string yjCode, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
+        private DrugDetailModel GetDetail(int hpId, int selectedIndex, int level, string drugName, string itemCd, string yjCode, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
         {
             if (level == 0)
             {
                 if (selectedIndex == 0)
                 {
                     // Show Product Infor
-                    var piInfCollection = NoTrackingDataContext.PiInfs.AsQueryable();
+                    var piInfCollection = NoTrackingDataContext.PiInfs.Where(item => item.HpId == hpId);
                     var joinQuery = from piInf in piInfCollection
                                     join piProduct in piProductInfCollections
                                     on piInf.PiId equals piProduct.PiId
@@ -135,22 +132,22 @@ namespace Infrastructure.Repositories
                 {
                     // show kajamuke
 
-                    var m34DrugInfMainRepo = NoTrackingDataContext.M34DrugInfoMains.Where(m => m.YjCd == yjCode).AsQueryable();
+                    var m34DrugInfMainRepo = NoTrackingDataContext.M34DrugInfoMains.Where(m => m.YjCd == yjCode && m.HpId == hpId).AsQueryable();
 
                     //YakuInf 
-                    var yakuInf = GetYakuModel(m34DrugInfMainRepo);
+                    var yakuInf = GetYakuModel(hpId, m34DrugInfMainRepo);
 
                     //FukuInf
-                    var fukuInf = GetFukuModels(m34DrugInfMainRepo);
-
+                    var fukuInf = GetFukuModels(hpId, m34DrugInfMainRepo);
+                    
                     //Syoki
-                    var syokiInf = GetSyokiModel(m34DrugInfMainRepo);
+                    var syokiInf = GetSyokiModel(hpId, m34DrugInfMainRepo);
 
                     // Sougo 
-                    var sougoInf = GetSougoModels(m34DrugInfMainRepo);
+                    var sougoInf = GetSougoModels(hpId, m34DrugInfMainRepo);
 
                     // ChuiInf
-                    var chuiInf = GetChuiModels(m34DrugInfMainRepo);
+                    var chuiInf = GetChuiModels(hpId, m34DrugInfMainRepo);
 
                     return new DrugDetailModel(0, 0, "", new SyohinModel(), new List<DrugMenuItemModel>(), new List<DrugMenuItemModel>(), 1, yakuInf ?? new YakuModel(), fukuInf, syokiInf ?? new SyokiModel(), sougoInf, chuiInf, 0, new List<TenMstByomeiModel>());
                 }
@@ -166,7 +163,7 @@ namespace Infrastructure.Repositories
             else if (level > 0 && selectedIndex >= 0)
             {
                 // Show Product Infor
-                var piInfCollection = NoTrackingDataContext.PiInfs.AsQueryable();
+                var piInfCollection = NoTrackingDataContext.PiInfs.Where(item => item.HpId == hpId);
                 var joinQuery = from piInf in piInfCollection
                                 join piProduct in piProductInfCollections
                                 on piInf.PiId equals piProduct.PiId
@@ -186,12 +183,12 @@ namespace Infrastructure.Repositories
             }
             return new DrugDetailModel();
         }
-
-        private YakuModel? GetYakuModel(IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
+        
+        private YakuModel? GetYakuModel(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
-            var m34FormCodeRepo = NoTrackingDataContext.M34FormCodes.AsQueryable();
-            var m34IndicationCodeRepo = NoTrackingDataContext.M34IndicationCodes.AsQueryable();
-            var m34ArCodeRepo = NoTrackingDataContext.M34ArCodes.AsQueryable();
+            var m34FormCodeRepo = NoTrackingDataContext.M34FormCodes.Where(m => m.HpId == hpId).AsQueryable();
+            var m34IndicationCodeRepo = NoTrackingDataContext.M34IndicationCodes.Where(m => m.HpId == hpId).AsQueryable();
+            var m34ArCodeRepo = NoTrackingDataContext.M34ArCodes.Where(m => m.HpId == hpId).AsQueryable();
 
             var yakuJoin = from drugInfoMain in m34DrugInfMainRepo
                            join formCode in m34FormCodeRepo
@@ -223,11 +220,11 @@ namespace Infrastructure.Repositories
                                                                     m.FukusayoCmt)).FirstOrDefault();
             return model;
         }
-
-        private List<FukuModel> GetFukuModels(IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
+        
+        private List<FukuModel> GetFukuModels(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
-            var m34ArDisconCodeRepo = NoTrackingDataContext.M34ArDisconCodes.AsQueryable();
-            var m34ArDisconRepo = NoTrackingDataContext.M34ArDiscons.AsQueryable();
+            var m34ArDisconCodeRepo = NoTrackingDataContext.M34ArDisconCodes.Where(m => m.HpId == hpId).AsQueryable();
+            var m34ArDisconRepo = NoTrackingDataContext.M34ArDiscons.Where(m => m.HpId == hpId).AsQueryable();
 
             var fukuJoin = from drugInfoMain in m34DrugInfMainRepo
                            join m34ArDiscon in m34ArDisconRepo
@@ -245,9 +242,9 @@ namespace Infrastructure.Repositories
             return models;
         }
 
-        private SyokiModel? GetSyokiModel(IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
+        private SyokiModel? GetSyokiModel(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
-            var m34SarSymptomRepo = NoTrackingDataContext.M34SarSymptomCodes.AsQueryable();
+            var m34SarSymptomRepo = NoTrackingDataContext.M34SarSymptomCodes.Where(m => m.HpId == hpId).AsQueryable();
             var syokiJoin = from drugInfMain in m34DrugInfMainRepo
                             join sarSumptom in m34SarSymptomRepo
                             on drugInfMain.FukusayoInitCd equals sarSumptom.FukusayoInitCd
@@ -259,11 +256,11 @@ namespace Infrastructure.Repositories
 
             return model;
         }
-
-        private List<SougoModel> GetSougoModels(IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
+        
+        private List<SougoModel> GetSougoModels(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
-            var m34InteractionPatCodeRepo = NoTrackingDataContext.M34InteractionPatCodes.AsQueryable();
-            var m34InteractionPatRepo = NoTrackingDataContext.M34InteractionPats.AsQueryable();
+            var m34InteractionPatCodeRepo = NoTrackingDataContext.M34InteractionPatCodes.Where(m => m.HpId == hpId).AsQueryable();
+            var m34InteractionPatRepo = NoTrackingDataContext.M34InteractionPats.Where(m => m.HpId == hpId).AsQueryable();
             var sougoJoin = from drugInfMain in m34DrugInfMainRepo
                             join interactionPat in m34InteractionPatRepo
                             on drugInfMain.YjCd equals interactionPat.YjCd
@@ -274,12 +271,12 @@ namespace Infrastructure.Repositories
             return models;
 
         }
-
-        private List<ChuiModel> GetChuiModels(IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
+        
+        private List<ChuiModel> GetChuiModels(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
-            var m34PrecautionRepo = NoTrackingDataContext.M34Precautions.AsQueryable();
-            var m34PrecautionCodeRepo = NoTrackingDataContext.M34PrecautionCodes.AsQueryable();
-            var m34PropertyCodeRepo = NoTrackingDataContext.M34PropertyCodes.ToList();
+            var m34PrecautionRepo = NoTrackingDataContext.M34Precautions.Where(m => m.HpId == hpId).AsQueryable();
+            var m34PrecautionCodeRepo = NoTrackingDataContext.M34PrecautionCodes.Where(m => m.HpId == hpId).AsQueryable();
+            var m34PropertyCodeRepo = NoTrackingDataContext.M34PropertyCodes.Where(m => m.HpId == hpId).ToList();
 
             var precautionAndPrecautionCodeJoin = from drugInfoMain in m34DrugInfMainRepo
                                                   join precaution in m34PrecautionRepo
@@ -379,9 +376,9 @@ namespace Infrastructure.Repositories
         }
 
 
-        private List<DrugMenuItemModel> GetKikakuCollectionOrTenpuCollection(string diCode, IQueryable<PiInfDetail> piInfDetailCollection, IQueryable<PiProductInf> piProductInfCollections, int IsKikakuOrTenpu)
+        private List<DrugMenuItemModel> GetKikakuCollectionOrTenpuCollection(int hpId, string diCode, IQueryable<PiInfDetail> piInfDetailCollection, IQueryable<PiProductInf> piProductInfCollections, int IsKikakuOrTenpu)
         {
-            var minPiProductInfCollection = NoTrackingDataContext.PiProductInfs.Where(pi => pi.YjCd == diCode)
+            var minPiProductInfCollection = NoTrackingDataContext.PiProductInfs.Where(pi => pi.HpId == hpId && pi.YjCd == diCode)
                 .GroupBy(pi => pi.YjCd)
                 .Select(pi => new { YjCd = pi.Key, PiId = pi.Min(m => m.PiId) });
 

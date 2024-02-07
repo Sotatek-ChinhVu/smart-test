@@ -121,7 +121,7 @@ public class HokenMstModel
         get { return HokenMaster.AgeEnd; }
     }
 
-    public int EnTenPrice
+    public double EnTenPrice
     {
         get { return HokenMaster.EnTen; }
     }

@@ -7,11 +7,18 @@ namespace Entity.Tenant
     public class UnitMst : EmrCloneable<UnitMst>
     {
         /// <summary>
+        /// 医療機関識別ID
+        /// </summary>
+
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
+        /// <summary>
         /// 単位コード
         /// 
         /// </summary>
-        
-        [Column("unit_cd", Order = 1)]
+
+        [Column("unit_cd")]
         public int UnitCd { get; set; }
 
         /// <summary>
