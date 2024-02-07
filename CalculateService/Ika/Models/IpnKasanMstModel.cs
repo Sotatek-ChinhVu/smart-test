@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CalculateService.Ika.Models
 {
-    public class IpnKasanMstModel 
+    public class IpnKasanMstModel
     {
         public IpnKasanMst IpnKasanMst { get; } = null;
 
@@ -16,20 +16,21 @@ namespace CalculateService.Ika.Models
             IpnKasanMst = ipnKasanMst;
         }
 
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        public int HpId
-        {
-            get { return IpnKasanMst.HpId; }
-            set
-            {
-                if (IpnKasanMst.HpId == value) return;
-                IpnKasanMst.HpId = value;
-                //RaisePropertyChanged(() => HpId);
-            }
-        }
+        // Removed HpId
+        ///// <summary>
+        ///// 医療機関識別ID
+        ///// 
+        ///// </summary>
+        //public int HpId
+        //{
+        //    get { return IpnKasanMst.HpId; }
+        //    set
+        //    {
+        //        if (IpnKasanMst.HpId == value) return;
+        //        IpnKasanMst.HpId = value;
+        //        //RaisePropertyChanged(() => HpId);
+        //    }
+        //}
 
         /// <summary>
         /// 一般名コード

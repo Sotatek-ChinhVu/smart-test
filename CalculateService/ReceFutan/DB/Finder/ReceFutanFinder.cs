@@ -3,6 +3,7 @@ using CalculateService.Extensions;
 using CalculateService.ReceFutan.Models;
 using Entity.Tenant;
 using PostgreDataContext;
+using Helper.Constants;
 
 namespace CalculateService.ReceFutan.DB.Finder
 {
@@ -11,9 +12,12 @@ namespace CalculateService.ReceFutan.DB.Finder
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8603 // Possible null reference return.
         private readonly TenantDataContext _tenantDataContext;
-        public ReceFutanFinder(TenantDataContext tenantDataContext)
+        public ReceFutanFinder(TenantDataContext tenantDataContext,
+            List<TokkiMstModel>? tokkiMstModels = null, List<KogakuLimitModel>? kogakuLimits = null)
         {
             _tenantDataContext = tenantDataContext;
+            _tokkiMstModels = tokkiMstModels;
+            _kogakuLimitModels = kogakuLimits;
         }
 
         private List<TokkiMstModel>? _tokkiMstModels;
@@ -140,6 +144,142 @@ namespace CalculateService.ReceFutan.DB.Finder
                     )
                 )
                 .ToList();
+
+            #region '同一月内に社保生保と生保単独が混在して１枚のレセにまとめる場合の、返戻月遅れ分に関する特殊処理'            
+
+            #region '当月の返戻月遅れ分の内、結合されるID分を除外する'
+            var excludeQuery = (
+                from receSeikyu in receSeikyus
+                where
+                    receSeikyu.HpId == hpId &&
+                    receSeikyu.SeikyuYm != seikyuYm &&
+                    receSeikyu.SinYm == seikyuYm
+                select new
+                {
+                    receSeikyu.PtId,
+                    receSeikyu.SinYm,
+                    receSeikyu.HokenId,
+                    receSeikyu.SeikyuKbn
+                }
+            );
+
+            //患者指定
+            if (ptIds?.Count >= 1)
+            {
+                excludeQuery = excludeQuery.Where(
+                    p => ptIds.Contains(p.PtId)
+                );
+            }
+            var excludeReces = excludeQuery.ToList();
+
+            foreach (var excludeRece in excludeReces)
+            {
+                var wrkKaikeis = (
+                    from kaikeiDetail in kaikeiDetails
+                    where
+                        kaikeiDetail.HpId == hpId &&
+                        kaikeiDetail.PtId == excludeRece.PtId &&
+                        kaikeiDetail.SinDate >= excludeRece.SinYm * 100 + 1 &&
+                        kaikeiDetail.SinDate <= excludeRece.SinYm * 100 + 99 &&
+                        kaikeiDetail.HokenKbn == HokenKbn.Syaho
+                    select new
+                    {
+                        kaikeiDetail.HokenId,
+                        kaikeiDetail.ReceSbt
+                    }
+                ).ToList();
+
+                var regRece = wrkKaikeis.Find(k => k.HokenId == excludeRece.HokenId);
+                if (regRece != null)
+                {
+                    bool isNoHoken = regRece.ReceSbt.Substring(1, 1) == "2";
+
+                    var wrkKaikei = isNoHoken ?
+                        wrkKaikeis.FindAll(k => k.ReceSbt.Substring(1, 1) != "2") :
+                        wrkKaikeis.FindAll(k => k.ReceSbt.Substring(1, 1) == "2");
+
+                    if (wrkKaikei != null && wrkKaikei.Count >= 1)
+                    {
+                        int removeId = wrkKaikei.Max(k => k.HokenId);
+                        result.RemoveAll(r => r.PtId == excludeRece.PtId && r.SinYm == excludeRece.SinYm && r.HokenId == removeId);
+
+                        //_emrLogger.WriteLogMsg(this, nameof(FindKaikeiDetail), $"SeihoSp RemoveKaikeiDetail ptId:{excludeRece.PtId} sinYm:{excludeRece.SinYm} hokenId:{removeId}");
+                    }
+                }
+            }
+            #endregion
+
+            #region '返戻月遅れ分の内、結合されるIDの不足分を追加する'
+            bool addKaikeiData = false;
+
+            var syahoReces = result.FindAll(r =>
+                r.SinYm != seikyuYm &&
+                r.HokenKbn == HokenKbn.Syaho
+            ).GroupBy(r => new { r.PtId, r.SinYm, r.HokenId, r.IsNoHoken, r.SeikyuKbn });
+
+            foreach (var syahoRece in syahoReces)
+            {
+                var joinKaikei = (
+                    from kaikeiDetail in kaikeiDetails
+                    join raiinInf in raiinInfs on
+                        new { kaikeiDetail.HpId, kaikeiDetail.PtId, kaikeiDetail.RaiinNo } equals
+                        new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
+                    where
+                        kaikeiDetail.HpId == hpId &&
+                        kaikeiDetail.PtId == syahoRece.Key.PtId &&
+                        kaikeiDetail.SinDate >= syahoRece.Key.SinYm * 100 + 1 &&
+                        kaikeiDetail.SinDate <= syahoRece.Key.SinYm * 100 + 99 &&
+                        kaikeiDetail.HokenId != syahoRece.Key.HokenId &&
+                        kaikeiDetail.HokenKbn == HokenKbn.Syaho
+                    orderby
+                        kaikeiDetail.HpId, kaikeiDetail.PtId, kaikeiDetail.SortKey
+                    select new
+                    {
+                        kaikeiDetail,
+                        syahoRece.Key.SeikyuKbn,
+                        raiinInf.KaId,
+                        raiinInf.TantoId
+                    }
+                );
+
+                var joinKaikeis = joinKaikei.AsEnumerable().Select(
+                    data =>
+                        new KaikeiDetailModel(
+                            data.kaikeiDetail,
+                            data.SeikyuKbn,
+                            data.KaId,
+                            data.TantoId
+                        )
+                    ).ToList();
+
+                var regReces = joinKaikeis.FindAll(k => k.IsNoHoken == !syahoRece.Key.IsNoHoken);
+                if (regReces != null && regReces.Count >= 1)
+                {
+                    var joinId = regReces.Max(r => r.HokenId);
+
+                    bool exists = result.Any(r =>
+                        r.PtId == syahoRece.Key.PtId &&
+                        r.SinYm == syahoRece.Key.SinYm &&
+                        r.HokenId == joinId
+                    );
+                    if (!exists)
+                    {
+                        result.AddRange(joinKaikeis.FindAll(k => k.HokenId == joinId));
+                        addKaikeiData = true;
+
+                        //_emrLogger.WriteLogMsg(this, nameof(FindKaikeiDetail), $"SeihoSp JoinKaikeiDetail - ptId:{syahoRece.Key.PtId} sinYm:{syahoRece.Key.SinYm} hokenId:{joinId}");
+                    }
+                }
+            }
+
+            if (addKaikeiData)
+            {
+                result = result.OrderBy(r => r.PtId).ThenBy(r => r.SortKey).ToList();
+            }
+            #endregion
+
+            #endregion
+
             return result;
         }
 
@@ -344,9 +484,7 @@ namespace CalculateService.ReceFutan.DB.Finder
         {
             if (_tokkiMstModels == null)
             {
-                var tokkiMsts = _tenantDataContext.TokkiMsts.FindListNoTrack(t =>
-                    t.HpId == hpId
-                ).ToList();
+                var tokkiMsts = _tenantDataContext.TokkiMsts.FindListNoTrack();
 
                 _tokkiMstModels = tokkiMsts.Select(t => new TokkiMstModel(t)).ToList();
             }
@@ -375,9 +513,7 @@ namespace CalculateService.ReceFutan.DB.Finder
         {
             if (_kogakuLimitModels == null)
             {
-                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack(k =>
-                    k.HpId == hpId
-                ).ToList();
+                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack();
 
                 _kogakuLimitModels = kogakuLimits.Select(k => new KogakuLimitModel(k)).ToList();
             }

@@ -15,9 +15,10 @@ namespace CalculateService.Futan.DB.Finder
     {
         private List<KogakuLimitModel>? _kogakuLimitModels;
         private readonly TenantDataContext _tenantDataContext;
-        public FutancalcFinder(TenantDataContext tenantDataContext)
+        public FutancalcFinder(TenantDataContext tenantDataContext, List<KogakuLimitModel>? kogakuLimits = null)
         {
             _tenantDataContext = tenantDataContext;
+            _kogakuLimitModels = kogakuLimits;
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace CalculateService.Futan.DB.Finder
             var expHokNos = _tenantDataContext.ExceptHokensyas.FindListQueryableNoTrack(e =>
                 e.HokensyaNo == hokensyaNo
             );
-            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack();
+            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack(h => h.HpId == hpId);
 
             var joinQuery = (
                 from ptKohi in ptKohis
@@ -365,9 +366,7 @@ namespace CalculateService.Futan.DB.Finder
         {
             if (_kogakuLimitModels == null)
             {
-                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack(k =>
-                    k.HpId == hpId
-                ).ToList();
+                var kogakuLimits = _tenantDataContext.KogakuLimits.FindListNoTrack();
 
                 _kogakuLimitModels = kogakuLimits.Select(k => new KogakuLimitModel(k)).ToList();
             }

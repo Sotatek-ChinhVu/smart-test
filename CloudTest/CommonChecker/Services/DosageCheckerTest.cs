@@ -87,12 +87,12 @@ public class DosageCheckerTest : BaseUT
 
         tenantTracking.SaveChanges();
         var dosageChecker = new DosageChecker<OrdInfoModel, OrdInfoDetailModel>();
-        dosageChecker.HpID = 999;
+        dosageChecker.HpID = 1;
         dosageChecker.PtID = 1231;
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -119,7 +119,7 @@ public class DosageCheckerTest : BaseUT
         tenantTracking.PtInfs.AddRange(ptInfs);
         tenantTracking.SaveChanges();
 
-        var hpId = 999;
+        var hpId = 1;
         long ptId = 1231;
         var sinday = 20230101;
         var minCheck = false;
@@ -139,7 +139,7 @@ public class DosageCheckerTest : BaseUT
             }
         };
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinday, ptId);
         var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -166,7 +166,7 @@ public class DosageCheckerTest : BaseUT
         tenantTracking.PtInfs.AddRange(ptInfs);
         tenantTracking.SaveChanges();
 
-        var hpId = 999;
+        var hpId = 1;
         long ptId = 1231;
         var sinday = 20230101;
         var minCheck = false;
@@ -188,7 +188,7 @@ public class DosageCheckerTest : BaseUT
             }
         };
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinday, ptId);
         var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -215,7 +215,7 @@ public class DosageCheckerTest : BaseUT
         tenantTracking.PtInfs.AddRange(ptInfs);
         tenantTracking.SaveChanges();
 
-        var hpId = 999;
+        var hpId = 1;
         long ptId = 1231;
         var sinday = 20230101;
         var minCheck = false;
@@ -237,7 +237,7 @@ public class DosageCheckerTest : BaseUT
             }
         };
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinday, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinday, ptId);
         var realtimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -279,6 +279,7 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_006_HandleCheckOrderList_DosageDrinkingDrugSetting_Is_False()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -356,7 +357,7 @@ public class DosageCheckerTest : BaseUT
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -383,6 +384,7 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_007_HandleCheckOrderList_DosageDrugAsOrderSetting_Is_True()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -460,7 +462,7 @@ public class DosageCheckerTest : BaseUT
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -486,6 +488,7 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_008_HandleCheckOrderList_OdrKouiKbn_Is_23()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -540,7 +543,7 @@ public class DosageCheckerTest : BaseUT
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -565,6 +568,7 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_009_HandleCheckOrderList_OdrKouiKbn_Is_28()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -619,7 +623,7 @@ public class DosageCheckerTest : BaseUT
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -645,6 +649,7 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_010_HandleCheckOrderList_Test_DosageOtherDrugSetting()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -722,7 +727,7 @@ public class DosageCheckerTest : BaseUT
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -744,6 +749,7 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_011_ReturnsEmptyList_OdrInfDetails_Is_Empty()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
         };
@@ -790,7 +796,7 @@ public class DosageCheckerTest : BaseUT
         dosageChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -811,6 +817,7 @@ public class DosageCheckerTest : BaseUT
     [Test]
     public void CheckDosageChecker_012_Test_TermLimitCheckingOnly_Is_True()
     {
+        int hpId = 999;
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
             new OrdInfoDetailModel( id: "id1",
@@ -889,7 +896,7 @@ public class DosageCheckerTest : BaseUT
         dosageChecker.TermLimitCheckingOnly = true;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(dosageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         dosageChecker.InitFinder(tenantNoTracking, cache);
 
         try

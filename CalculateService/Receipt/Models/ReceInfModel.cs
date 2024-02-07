@@ -1251,6 +1251,15 @@ namespace CalculateService.Receipt.Models
         }
 
         /// <summary>
+        /// 労災イ点数
+        /// 
+        /// </summary>
+        public int RousaiITensu
+        {
+            get { return ReceInf.RousaiITensu; }
+        }
+
+        /// <summary>
         /// 労災イ点負担額
         /// 
         /// </summary>
@@ -1573,7 +1582,7 @@ namespace CalculateService.Receipt.Models
         /// <summary>
         /// 点数単価
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get => HokenMst == null ? 0 : HokenMst.EnTen;
         }

@@ -237,7 +237,7 @@ namespace Interactor.MstItem
 
         private PrecriptionSettingTabModel LoadPrecriptionSetting(string itemCd, string yiCd, string ipnNameCd, int hpId, int sinDate)
         {
-            List<M10DayLimitModel> m10DayLimits = _mstItemRepository.GetM10DayLimitModels(yiCd);
+            List<M10DayLimitModel> m10DayLimits = _mstItemRepository.GetM10DayLimitModels(hpId, yiCd);
             List<IpnMinYakkaMstModel> ipnMinYakkaMsts = _mstItemRepository.GetIpnMinYakkaMstModels(hpId, ipnNameCd);
             List<DrugDayLimitModel> drugDayLimits = _mstItemRepository.GetDrugDayLimitModels(hpId, itemCd);
 

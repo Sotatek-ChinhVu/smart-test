@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m38_class_code")]
     public class M38ClassCode : EmrCloneable<M38ClassCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 分類コード
         /// 数字2桁
         /// </summary>
-        
+
         [Column("class_cd", Order = 1)]
         public string ClassCd { get; set; } = string.Empty;
 

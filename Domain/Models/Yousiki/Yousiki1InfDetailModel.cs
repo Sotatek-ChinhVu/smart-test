@@ -14,19 +14,8 @@ public class Yousiki1InfDetailModel
         Value = value;
     }
 
-    /// <summary>
-    /// update value
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public Yousiki1InfDetailModel ChangeValue(string value)
-    {
-        Value = value;
-        return this;
-    }
-
     public Yousiki1InfDetailModel()
-    { 
+    {
         CodeNo = string.Empty;
         Value = string.Empty;
     }
@@ -42,6 +31,17 @@ public class Yousiki1InfDetailModel
         Payload = payload;
         Value = value;
         IsDeleted = isDeleted;
+    }
+
+    /// <summary>
+    /// update value
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public Yousiki1InfDetailModel ChangeValue(string value)
+    {
+        Value = value;
+        return this;
     }
 
     public long PtId { get; private set; }

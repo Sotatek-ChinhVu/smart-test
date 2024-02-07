@@ -154,7 +154,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("cd_kbn")]
         [MaxLength(1)]
-        public string CdKbn { get; set; }
+        public string CdKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// コード表用区分－区分番号
@@ -194,7 +194,7 @@ namespace Entity.Tenant
         [Column("kokuji1")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(1)]
-        public string Kokuji1 { get; set; }
+        public string Kokuji1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 告示等識別区分（２）
@@ -209,6 +209,6 @@ namespace Entity.Tenant
         [Column("kokuji2")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(1)]
-        public string Kokuji2 { get; set; }
+        public string Kokuji2 { get; set; } = string.Empty;
     }
 }

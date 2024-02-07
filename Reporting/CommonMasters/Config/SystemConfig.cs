@@ -1962,7 +1962,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     {
         return GetSettingParam(8030, 0);
     }
-
+    public string HPCDParam => GetSettingParam(100029, 20);
     /// <summary>
     /// カルテ作成時帳票印刷
     /// </summary>

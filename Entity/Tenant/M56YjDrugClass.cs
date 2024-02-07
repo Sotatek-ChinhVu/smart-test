@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m56_yj_drug_class")]
     public class M56YjDrugClass : EmrCloneable<M56YjDrugClass>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 医薬品コード
         /// 
         /// </summary>
-        
+
         [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -20,7 +23,7 @@ namespace Entity.Tenant
         /// 系統コード
         /// 
         /// </summary>
-        
+
         [Column("class_cd", Order = 2)]
         [MaxLength(8)]
         public string ClassCd { get; set; } = string.Empty;

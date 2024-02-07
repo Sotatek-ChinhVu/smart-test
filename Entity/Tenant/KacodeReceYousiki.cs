@@ -8,6 +8,9 @@ namespace Emr.DatabaseEntity
     [Table(name: "kacode_rece_yousiki")]
     public class KacodeReceYousiki : EmrCloneable<KacodeReceYousiki>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// レセ診療科コード
         /// </summary>

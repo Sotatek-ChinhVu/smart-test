@@ -7,20 +7,11 @@ namespace Entity.Tenant
     public class StaMst : EmrCloneable<StaMst>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 帳票ID
         /// 
         /// </summary>
-        
-        [Column("report_id", Order = 2)]
+
+        [Column("report_id")]
         public int ReportId { get; set; }
 
         /// <summary>

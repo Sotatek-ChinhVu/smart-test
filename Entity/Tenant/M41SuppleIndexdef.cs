@@ -6,11 +6,14 @@ namespace Entity.Tenant
     [Table(name: "m41_supple_indexdef")]
     public class M41SuppleIndexdef : EmrCloneable<M41SuppleIndexdef>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 索引語コード
         /// Iで始まる、6桁の数字
         /// </summary>
-        
+
         [Column("seibun_cd", Order = 1)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;

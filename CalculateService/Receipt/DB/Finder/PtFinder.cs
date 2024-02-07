@@ -10,6 +10,7 @@ using CalculateService.Receipt.Models;
 using CalculateService.Constants;
 using Infrastructure.Interfaces;
 using System.Runtime.CompilerServices;
+using Infrastructure.Services;
 
 namespace CalculateService.Receipt.DB.Finder
 {
@@ -116,7 +117,7 @@ namespace CalculateService.Receipt.DB.Finder
                 }
             );
 
-            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack();
+            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack(k => k.HpId == hpId);
             var ptKohis = _tenantDataContext.PtKohis.FindListQueryableNoTrack();
             //保険番号マスタの取得
             var houbetuMsts = (
@@ -1187,6 +1188,139 @@ namespace CalculateService.Receipt.DB.Finder
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// EFファイル生成対象のレセプトデータを取得する
+        /// </summary>
+        /// <param name="hpId">医療機関識別コード</param>
+        /// <param name="sinYm">診療年月</param>
+        /// <param name="includeTeseter">テスト患者を含むかどうか</param>
+        /// <returns></returns>
+        public List<ReceInfModel> FindEFReceInf(int hpId, int sinYm, bool includeTeseter)
+        {
+            List<int> hokenKbn = new List<int> { 1, 2 };
+
+            List<int> isTester = null;
+            if (includeTeseter)
+            {
+                isTester = new List<int> { 0, 1 };
+            }
+            else
+            {
+                isTester = new List<int> { 0 };
+            }
+            var receInfs =
+                _tenantDataContext.ReceInfs.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.SinYm == sinYm &&
+                    hokenKbn.Contains(p.HokenKbn) &&
+                    isTester.Contains(p.IsTester));
+            var receStatusies =
+                _tenantDataContext.ReceStatuses.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.SinYm == sinYm &&
+                    p.IsDeleted == DeleteStatus.None);
+            var ptInfs =
+                _tenantDataContext.PtInfs.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.IsDelete == DeleteStatus.None);
+            var ptHokens =
+                _tenantDataContext.PtHokenInfs.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.IsDeleted == DeleteStatus.None
+                );
+            var receSeikyus =
+                _tenantDataContext.ReceSeikyus.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.IsDeleted == DeleteStatus.None
+                );
+            var kaikeiInfs =
+                _tenantDataContext.KaikeiInfs.FindListQueryableNoTrack(p =>
+                p.HpId == hpId
+                );
+            var raiinInfs =
+                _tenantDataContext.RaiinInfs.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.Status >= 5 &&
+                    p.IsDeleted == DeleteStatus.None
+                );
+
+            var kaikei_raiins = (
+                    from kaikeiInf in kaikeiInfs
+                    join raiinInf in raiinInfs on
+                        new { kaikeiInf.HpId, kaikeiInf.PtId, kaikeiInf.RaiinNo } equals
+                        new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
+                    group kaikeiInf by new { kaikeiInf.HpId, kaikeiInf.PtId, SinYm = kaikeiInf.SinDate / 100, kaikeiInf.HokenId } into A
+                    select new
+                    {
+                        A.Key.HpId,
+                        A.Key.PtId,
+                        A.Key.SinYm,
+                        A.Key.HokenId
+                    }
+                );
+
+            var join = (
+                from receInf in receInfs
+                join receStatus in receStatusies on
+                    new { receInf.HpId, receInf.PtId, receInf.SeikyuYm, receInf.HokenId, receInf.SinYm } equals
+                    new { receStatus.HpId, receStatus.PtId, receStatus.SeikyuYm, receStatus.HokenId, receStatus.SinYm } into receStatusJoins
+                from receStatusJoin in receStatusJoins.DefaultIfEmpty()
+                join ptInf in ptInfs on
+                    new { receInf.HpId, receInf.PtId } equals
+                    new { ptInf.HpId, ptInf.PtId } into ptInfJoins
+                from ptInfJoin in ptInfJoins //.DefaultIfEmpty()
+                join ptHoken in ptHokens on
+                    new { receInf.HpId, receInf.PtId, receInf.HokenId } equals
+                    new { ptHoken.HpId, ptHoken.PtId, ptHoken.HokenId } into ptHokenJoins
+                from ptHokenJoin in ptHokenJoins//.DefaultIfEmpty()
+                join receSeikyu in receSeikyus on
+                    new { receInf.HpId, receInf.PtId, receInf.HokenId, receInf.SinYm } equals
+                    new { receSeikyu.HpId, receSeikyu.PtId, receSeikyu.HokenId, receSeikyu.SinYm } into receSeikyuJoins
+                from receSeikyuJoin in receSeikyuJoins.DefaultIfEmpty()
+                select new
+                {
+                    receInf,
+                    ptInf = ptInfJoin,
+                    ptHokenInf = ptHokenJoin,
+                    receSeikyu = receSeikyuJoin,
+                    receStatus = receStatusJoin,
+                    IsPaperRece = receStatusJoin == null ? 0 : receStatusJoin.IsPaperRece,
+                }
+            );
+
+            var entities = join.ToList();
+
+            List<ReceInfModel> results = new List<ReceInfModel>();
+
+            List<HokenMst> hokenMsts =
+                _tenantDataContext.HokenMsts.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.PrefNo == 0
+                    ).Select(p => p).ToList();
+
+            entities?.ForEach(entity =>
+            {
+                HokenMst hokenMst = null;
+                if (hokenMsts != null && hokenMsts.Any(p =>
+                    p.HokenNo == entity.ptHokenInf.HokenNo &&
+                    p.HokenEdaNo == entity.ptHokenInf.HokenEdaNo &&
+                    p.StartDate <= entity.receInf.SinYm * 100 + 1 &&
+                    p.EndDate >= entity.receInf.SinYm * 100 + 1))
+                {
+                    hokenMst = hokenMsts.First(p =>
+                        p.HokenNo == entity.ptHokenInf.HokenNo &&
+                        p.HokenEdaNo == entity.ptHokenInf.HokenEdaNo &&
+                        p.StartDate <= entity.receInf.SinYm * 100 + 1 &&
+                        p.EndDate >= entity.receInf.SinYm * 100 + 1);
+                }
+
+                results.Add(
+                    new ReceInfModel(entity.receInf, entity.ptInf, entity.ptHokenInf, hokenMst, entity.receSeikyu, entity.receStatus, null, 0));
+            });
+
+            return results;
         }
     }
 }

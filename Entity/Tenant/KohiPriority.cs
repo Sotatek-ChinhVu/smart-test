@@ -14,10 +14,13 @@ namespace Entity.Tenant
     [Table(name: "kohi_priority")]
     public class KohiPriority : EmrCloneable<KohiPriority>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 都道府県番号
         /// </summary>
-        
+
         [Column("pref_no", Order = 1)]
         public int PrefNo { get; set; }
         /// <summary>

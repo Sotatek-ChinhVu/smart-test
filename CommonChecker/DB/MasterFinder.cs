@@ -20,7 +20,6 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         public IpnNameMstModel FindIpnNameMst(int hpId, string ipnNameCd, int sinDate)
         {
             var entity = NoTrackingDataContext.IpnNameMsts.Where(p =>
-                   p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
                    p.IpnNameCd == ipnNameCd)

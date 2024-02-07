@@ -10,18 +10,10 @@ namespace Entity.Tenant
     public class TokkiMst : EmrCloneable<TokkiMst>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// </summary>
-        
-        [Column("hp_id", Order = 1)]
-        //[Index("tokki_mst_idx01", 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 特記事項コード
         /// </summary>
-        
-        [Column(name: "tokki_cd", Order = 2)]
+
+        [Column(name: "tokki_cd")]
         //[Index("tokki_mst_idx01", 2)]
         [MaxLength(2)]
         public string TokkiCd { get; set; } = string.Empty;
