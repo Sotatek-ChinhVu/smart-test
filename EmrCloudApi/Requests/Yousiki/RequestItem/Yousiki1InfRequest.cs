@@ -17,8 +17,6 @@
 
         public List<CategoryRequest> CategoryRequests { get; set; } = new();
 
-        public Dictionary<int, int> StatusDic { get; set; } = new();
-
         public int SeqNo { get; set; }
 
         public TabYousikiRequest TabYousikiRequest { get; set; } = new();

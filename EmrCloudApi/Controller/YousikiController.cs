@@ -165,7 +165,7 @@ public class YousikiController : AuthorizeControllerBase
 
         var ptId = request.Yousiki1Inf.PtId;
         var sinYm = request.Yousiki1Inf.SinYm;
-        int seqNo = GetSeqNo(request.Yousiki1Inf.DataTypeSeqNoDic, 0, request.Yousiki1Inf.CategoryRequests[0].IsDeleted);
+        int seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(0) ? request.Yousiki1Inf.DataTypeSeqNoDic[0] : request.Yousiki1Inf.SeqNo;
         string prefixString;
         string suffixString;
         string fullByomei;
@@ -674,7 +674,7 @@ public class YousikiController : AuthorizeControllerBase
         //ConvertTabAtHome
         #region 
 
-        seqNo = GetSeqNo(request.Yousiki1Inf.DataTypeSeqNoDic, 2, request.Yousiki1Inf.CategoryRequests[2].IsDeleted);
+        seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(3) ? request.Yousiki1Inf.DataTypeSeqNoDic[3] : request.Yousiki1Inf.SeqNo;
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.Yousiki1InfDetails ?? new())
         {
             if (yousiki1InfDetailRequest != null)
