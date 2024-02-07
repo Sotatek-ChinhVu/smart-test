@@ -6,8 +6,8 @@ public class Yousiki1InfGetListDto : Yousiki1InfDto
 {
     public Yousiki1InfGetListDto(Yousiki1InfModel model) : base(model)
     {
-        TabKeySeqNo = model.DataTypeSeqNoDic;
+        DataTypeSeqNoDic = model.DataTypeSeqNoDic;
     }
 
-    public Dictionary<int, int> TabKeySeqNo { get; private set; }
+    public Dictionary<int, int> DataTypeSeqNoDic { get; private set; }
 }
