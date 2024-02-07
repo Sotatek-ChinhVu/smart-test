@@ -847,7 +847,9 @@ namespace Infrastructure.Repositories
         public byte[] CreateHash(byte[] password, byte[] salt)
         {
             using var argon2 = new Argon2id(password);
-            var preper = _configuration["Pepper"] ?? string.Empty;
+            // Todo fix get Pepper configuration on staging
+            var preper =  string.Empty;
+            //var preper = _configuration["Pepper"] ?? string.Empty;
             salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
             argon2.Salt = salt;
             argon2.DegreeOfParallelism = 8;
