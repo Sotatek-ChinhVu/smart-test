@@ -555,7 +555,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
     public void CalculationCountCheck_UnitCd_997_998()
     {
         // Arrange
-        int hpId = 1, sinDate = 20221110;
+        int hpId = 999, sinDate = 20221110;
         long raiinNo = 400201159, ptId = 54109;
         var mockMstItemRepo = new Mock<IMstItemRepository>();
         var mockTodayRepo = new Mock<ITodayOdrRepository>();
@@ -679,7 +679,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
 
         // Assert
-        Assert.True(output.Count == odrDetails.Count);
+        Assert.True(output.Count == 4);
     }
 
     [Test]
@@ -812,7 +812,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
 
         // Assert
-        Assert.True(output.Count == odrDetails.Count);
+        Assert.True(output.Count == 1);
     }
 
     [Test]
@@ -945,7 +945,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var output = interactor.CalculationCountCheck(hpId, sinDate, raiinNo, ptId, santeiTenMsts, densiSanteiKaisuModels, tenMstItems, odrDetails, itemGrpMsts, hokenIds);
 
         // Assert
-        Assert.True(output.Count == odrDetails.Count);
+        Assert.True(output.Count == 1);
     }
 
     [Test]

@@ -962,6 +962,7 @@ namespace Infrastructure.Repositories
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
                 r.raiinInf.ConfirmationType,
+                r.raiinInf.InfoConsFlg ?? string.Empty,
                 r.relatedRsvFrameMst?.RsvFrameName ?? string.Empty,
                 r.relatedUketukeSbtMst?.KbnId ?? CommonConstants.InvalidId,
                 r.raiinInf.UketukeTime ?? string.Empty,

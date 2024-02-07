@@ -250,6 +250,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="seikyuUp">請求UP情報</param>
         public void RunCalculate(int hpId, long ptId, int sinDate, int seikyuUp, string preFix)
         {
+            CalculatedCount = 0;
             const string conFncName = nameof(RunCalculate);
 
             // 電子算定回数マスタのキャッシュ
@@ -699,7 +700,7 @@ namespace CalculateService.Ika.ViewModels
                             HpId = r.HpId,
                             PtId = r.PtId,
                             SinDate = r.SinDate,
-                            CalcMode = CalcModeConst.Continuity,
+                            CalcMode = CalcModeConst.Continuity
                         }
                     )
             ).ToList();

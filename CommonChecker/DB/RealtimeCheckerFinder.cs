@@ -1558,20 +1558,6 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         continue;
                     }
-                    var check1 = 
-                        NoTrackingDataContext.M01Kinki
-                        .Where
-                        (
-                            k =>
-                            k.HpId == hpID &&
-                            ((
-                                k.ACd == addedOrderSubYjCode.YjCd7 
-                            )
-                            &&
-                            (
-                                k.BCd == currentOrderSubYjCode.YjCd7 
-                            ))
-                        ).ToList();
 
                     var checkedResult =
                         NoTrackingDataContext.M01Kinki

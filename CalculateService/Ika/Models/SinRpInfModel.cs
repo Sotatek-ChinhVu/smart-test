@@ -196,7 +196,20 @@ namespace CalculateService.Ika.Models
                 //RaisePropertyChanged(() => IsDeleted);
             }
         }
-
+        /// <summary>
+        /// EF対象フラグ
+        ///     1:EFファイル出力対象の削除項目   
+        /// </summary>
+        public int EfFlg
+        {
+            get { return SinRpInf.EfFlg; }
+            set
+            {
+                if (SinRpInf.EfFlg == value) return;
+                SinRpInf.EfFlg = value;
+                //RaisePropertyChanged(() => EfFlg);
+            }
+        }
         /// <summary>
         /// 作成日時
         /// 

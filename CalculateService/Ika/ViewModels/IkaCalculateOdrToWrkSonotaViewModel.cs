@@ -203,7 +203,7 @@ namespace CalculateService.Ika.ViewModels
                                     }
 
                                     // 算定回数チェック
-                                    if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, 0, odrDtl.Suryo) == 2)
+                                    if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
                                     {
                                         // 算定回数マスタのチェックにより算定不可
                                         _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
@@ -262,9 +262,10 @@ namespace CalculateService.Ika.ViewModels
                                             if (filteredOdrDtl.Any(p => p.ItemCd == ItemCdConst.SonotaRosaiSisiKasan) == false)
                                             {
                                                 // 四肢加算項目のオーダーはない
-
-                                                if (filteredOdrDtl.Any(p => p.BuiKbn == 3))
+                                                
+                                                if (filteredOdrDtl.Any(p => new int [] {3, 10}.Contains(p.BuiKbn)))
                                                 {
+                                                    //四肢または指
                                                     if (odrDtl.SisiKbn == 1 || odrDtl.SisiKbn == 2)
                                                     {
                                                         // 四肢が存在する場合、１．５倍を自動算定
@@ -370,9 +371,9 @@ namespace CalculateService.Ika.ViewModels
                         commentSkipFlg = (firstItem != 1);
 
                         syukeisaki = ReceSyukeisaki.SonotaYakuzai;
-                        if (_common.hokenKbn == HokenSyu.After || _common.IsJibaiRosai)
+                        if (_common.hokenKbn == HokenSyu.After)
                         {
-                            // アフターケア、自賠労災準拠の場合はその他
+                            // アフターケアの場合はその他
                             syukeisaki = ReceSyukeisaki.Sonota;
                         }
 
@@ -482,11 +483,11 @@ namespace CalculateService.Ika.ViewModels
                             //    (rosaiDensikals, checkFrom, checkTo) == false &&
                             //    _common.ExistWrkOrSinKouiDetailByItemCd(rosaiDensikals, false) == false)
                             if (_common.CheckSanteiTerm
-                                (rosaiDensikals, checkFrom, checkTo) == false)
+                                (rosaiDensikals, checkFrom, checkTo, _common.mainHokenId) == false)
                             {
                                 // 当月に、労災電子化加算もキャンセル項目も算定されていない場合
                                 _common.Wrk.AppendNewWrkSinRpInf(ReceKouiKbn.Sonota, ReceSinId.Sonota, _common.syosaiSanteiKbn);
-                                _common.Wrk.AppendNewWrkSinKoui(_common.syosaiPid, _common.syosaiHokenId, ReceSyukeisaki.Sonota, cdKbn: "R");
+                                _common.Wrk.AppendNewWrkSinKoui(_common.mainHokenPid, _common.mainHokenId, ReceSyukeisaki.Sonota, cdKbn: "R");
 
                                 _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.SonotaRosaiDensika, autoAdd: 1);
                             }
@@ -590,8 +591,16 @@ namespace CalculateService.Ika.ViewModels
                     {
                         ret = false;
                     }
-                    else if (new List<int> { SyosaiConst.SaisinDenwa, SyosaiConst.SaisinDenwa2, SyosaiConst.SyosinCorona,
-                    SyosaiConst.SyosinJouhou, SyosaiConst.Syosin2Jouhou, SyosaiConst.SaisinJouhou, SyosaiConst.Saisin2Jouhou }.Contains((int)_common.syosai))
+                    else if (new List<int> { 
+                                SyosaiConst.SaisinDenwa, 
+                                SyosaiConst.SaisinDenwa2, 
+                                SyosaiConst.SyosinCorona,
+                                SyosaiConst.SyosinJouhou, 
+                                SyosaiConst.Syosin2Jouhou, 
+                                SyosaiConst.SaisinJouhou, 
+                                SyosaiConst.Saisin2Jouhou, 
+                                SyosaiConst.SaisinDenwaTokurei 
+                            }.Contains((int)_common.syosai))
                     {
                         // 電話、通信機器等を用いている場合、自動算定しない
                         ret = false;
@@ -668,7 +677,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェックする
-                    if (_common.CheckSanteiKaisu(ItemCdConst.SonotaKansenKojo, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.SonotaKansenKojo, 0, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -725,7 +734,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェックする
-                    if (_common.CheckSanteiKaisu(ItemCdConst.SonotaRenkeiKyoka, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.SonotaRenkeiKyoka, 0, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
@@ -781,7 +790,7 @@ namespace CalculateService.Ika.ViewModels
                 if (santei)
                 {
                     //メッセージがたくさん出てしまうので、算定できるときだけチェック
-                    if (_common.CheckSanteiKaisu(ItemCdConst.SonotaSurveillance, 0, 0) == 2)
+                    if (_common.CheckSanteiKaisu(ItemCdConst.SonotaSurveillance, 0, 0, 0) == 2)
                     {
                         // 算定回数マスタのチェックにより算定不可
                         santei = false;
