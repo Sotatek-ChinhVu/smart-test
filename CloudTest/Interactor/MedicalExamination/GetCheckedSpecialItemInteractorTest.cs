@@ -697,7 +697,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         #region Data Example
         var tenMstItems = new List<TenItemModel>();
         var tenMst1 = new TenItemModel(
-            1,
+            hpId,
             "113003710",
             "0",
             "AA",
@@ -708,7 +708,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         tenMstItems.Add(tenMst1);
 
         var tenMst2 = new TenItemModel(
-            1,
+            hpId,
             "113019710",
             "0",
             "B3",
@@ -720,7 +720,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var odrDetails = new List<OrdInfDetailModel>();
         var odrDetail1 = new OrdInfDetailModel(
-            1,
+            hpId,
             "113003710",
             20221111,
             120
@@ -728,7 +728,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         odrDetails.Add(odrDetail1);
 
         var odrDetail2 = new OrdInfDetailModel(
-            1,
+            hpId,
             "113019710",
             20221111,
             120
@@ -743,7 +743,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var densiSanteiKaisuModel1 = new DensiSanteiKaisuModel(
                 1,
-                1,
+                hpId,
                 "113003710",
                 4,
                 10,
@@ -761,7 +761,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
 
         var densiSanteiKaisuModel2 = new DensiSanteiKaisuModel(
                1,
-               1,
+               hpId,
                "113019710",
                5,
                10,
@@ -782,7 +782,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
         var itemGrpMsts = new List<ItemGrpMstModel>();
 
         var itemGrpMst1 = new ItemGrpMstModel(
-                1,
+                hpId,
                 1,
                 1,
                 20220101,
@@ -792,7 +792,7 @@ public class GetCheckedSpecialItemInteractorTest : BaseUT
             );
 
         var itemGrpMst2 = new ItemGrpMstModel(
-                1,
+                hpId,
                 1,
                 2,
                 20220101,
