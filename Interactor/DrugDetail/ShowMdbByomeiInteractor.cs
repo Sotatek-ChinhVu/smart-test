@@ -20,7 +20,7 @@ public class ShowMdbByomeiInteractor : IShowMdbByomeiInputPort
             {
                 return new ShowMdbByomeiOutputData(string.Empty, ShowMdbByomeiStatus.InvalidLevel);
             }
-            var result = _getCommonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+            var result = _getCommonDrugInf.ShowMdbByomei(inputData.HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
             return new ShowMdbByomeiOutputData(result, ShowMdbByomeiStatus.Successed);
         }
         finally

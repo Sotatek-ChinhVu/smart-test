@@ -7,11 +7,15 @@ namespace Entity.Tenant
     [Table(name: "m01_kinki_cmt")]
     public class M01KinkiCmt : EmrCloneable<M01KinkiCmt>
     {
+        
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// コメントコード
         /// 
         /// </summary>
-        
+
         [Column("cmt_cd", Order = 1)]
         [MaxLength(6)]
         public string CmtCd { get; set; } = string.Empty;

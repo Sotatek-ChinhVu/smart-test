@@ -68,7 +68,7 @@ namespace CalculateService.Futan.DB.Finder
                     StartDate = x.Max(d => d.StartDate)
                 }
             );
-            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack();
+            var kohiPriorities = _tenantDataContext.KohiPriorities.FindListQueryableNoTrack(h => h.HpId == hpId);
 
             //保険番号マスタの取得
             var houbetuMsts = (

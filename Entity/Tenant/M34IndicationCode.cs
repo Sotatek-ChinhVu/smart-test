@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m34_indication_code")]
     public class M34IndicationCode : EmrCloneable<M34IndicationCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 効能効果コード
         /// 
         /// </summary>
-        
+
         [Column("kono_cd", Order = 1)]
         public string KonoCd { get; set; } = string.Empty;
 

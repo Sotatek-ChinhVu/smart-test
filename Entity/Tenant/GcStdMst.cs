@@ -8,36 +8,26 @@ namespace Entity.Tenant
     public class GcStdMst : EmrCloneable<GcStdMst>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 基準値区分
         /// 0:体重 1:身長
         /// </summary>
-        
-        [Column("std_kbn", Order = 2)]
+
+        [Column("std_kbn")]
         public int StdKbn { get; set; }
 
         /// <summary>
         /// 性別
         /// 1:男 2:女
         /// </summary>
-        
-        [Column("sex", Order = 3)]
+
+        [Column("sex")]
         public int Sex { get; set; }
 
         /// <summary>
         /// 位置
         /// 
         /// </summary>
-        
-        [Column("point", Order = 4)]
+        [Column("point")]
         public double Point { get; set; }
 
         /// <summary>

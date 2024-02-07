@@ -354,7 +354,7 @@ namespace Interactor.Insurance
 
         private void IsValidHokenDetail(ref List<ResultValidateInsurance<ValidMainInsuranceStatus>> validateDetails, int hpId, int sinDate, string tokki1Value, string tokki2Value, string tokki3Value, string tokki4Value, string tokki5Value)
         {
-            var tokkiMstBinding = _patientInforRepository.GetListTokki(hpId, sinDate);
+            var tokkiMstBinding = _patientInforRepository.GetListTokki(sinDate);
             var message = "";
             bool _isValidLengthTokki(string tokkiValue)
             {

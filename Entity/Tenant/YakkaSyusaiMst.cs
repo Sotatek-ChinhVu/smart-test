@@ -9,20 +9,11 @@ namespace Entity.Tenant
     public class YakkaSyusaiMst : EmrCloneable<YakkaSyusaiMst>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 薬価基準コード
         /// 
         /// </summary>
 
-        [Column("yakka_cd", Order = 2)]
+        [Column("yakka_cd")]
         [MaxLength(12)]
         public string YakkaCd { get; set; } = string.Empty;
 
@@ -31,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("item_cd", Order = 3)]
+        [Column("item_cd")]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
 
@@ -40,7 +31,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
 
-        [Column("start_date", Order = 4)]
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 

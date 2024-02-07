@@ -15,6 +15,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_001_CheckingError_WhenDrugsWithTheSameEffectOfAllergies()
         {
+            int hpId = 1;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -58,23 +59,23 @@ namespace CloudUnitTest.CommonChecker.Services
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                     RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
 
-            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 1);
+            var isSameComponentChecked = SaveSystemConf(hpId, 2026, 2, 1);
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
 
             var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-            drugAllergy.HpID = 999;
+            drugAllergy.HpID = hpId;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -87,7 +88,7 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
-                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
+                SaveSystemConf(hpId, 2026, 2, isSameComponentChecked);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
@@ -97,6 +98,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_002_CheckingError_WhenNoAllergyMedicineInSpecialNote()
         {
+            int hpId = 999;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -152,7 +154,7 @@ namespace CloudUnitTest.CommonChecker.Services
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -174,7 +176,7 @@ namespace CloudUnitTest.CommonChecker.Services
         public void CheckDrugAllergyChecker_003_GetDrugAllergyByPtId()
         {
             // Setup
-            var hpId = 999;
+            var hpId = 1;
             var ptId = 1231;
             var sinDate = 20230101;
 
@@ -182,13 +184,13 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
 
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, sinDate, ptId);
+            cache.InitCache(hpId, new List<string>() { "620160501" }, sinDate, ptId);
             var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
             try
@@ -214,6 +216,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_004_CheckingError_IsDuplicatedItemCode()
         {
+            int hpId = 1;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -291,23 +294,23 @@ namespace CloudUnitTest.CommonChecker.Services
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                     RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
 
-            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 1);
+            var isSameComponentChecked = SaveSystemConf(hpId, 2026, 2, 1);
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
 
             var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-            drugAllergy.HpID = 999;
+            drugAllergy.HpID = hpId;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
 
             try
@@ -320,7 +323,7 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
-                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
+                SaveSystemConf(hpId, 2026, 2, isSameComponentChecked);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
@@ -330,6 +333,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_005_CheckingError_IsDuplicatedItemCode()
         {
+            int hpId = 1;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -407,22 +411,22 @@ namespace CloudUnitTest.CommonChecker.Services
             var unitCheckerForOrderListResult = new UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                     RealtimeCheckerType.DrugAllergy, odrInfoModel, 20230101, 1231, new(new(), new(), new()), new(), new(), true);
 
-            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 1);
+            var isSameComponentChecked = SaveSystemConf(hpId, 2026, 2, 1);
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
 
             var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-            drugAllergy.HpID = 999;
+            drugAllergy.HpID = hpId;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {
@@ -434,7 +438,7 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
-                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
+                SaveSystemConf(hpId, 2026, 2, isSameComponentChecked);
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);
                 tenantTracking.SaveChanges();
@@ -468,6 +472,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_007_CheckingError_Test_ListDuplicatedItemCode()
         {
+            int hpId = 1;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -547,19 +552,19 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
             tenantTracking.SaveChanges();
 
             var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-            drugAllergy.HpID = 999;
+            drugAllergy.HpID = hpId;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {
@@ -589,6 +594,7 @@ namespace CloudUnitTest.CommonChecker.Services
         [Test]
         public void CheckDrugAllergyChecker_008_CheckingError_Test_IsDuplicatedComponentChecked_Is_True()
         {
+            int hpId = 1;
             var ordInfDetails = new List<OrdInfoDetailModel>()
             {
                 new OrdInfoDetailModel( id: "id1",
@@ -668,25 +674,25 @@ namespace CloudUnitTest.CommonChecker.Services
 
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var ptInfs = CommonCheckerData.ReadPtInf();
-            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug();
+            var ptAlrgyDrugs = CommonCheckerData.ReadPtAlrgyDrug(hpId);
             tenantTracking.PtInfs.AddRange(ptInfs);
             tenantTracking.PtAlrgyDrugs.AddRange(ptAlrgyDrugs);
 
-            var isDuplicatedComponentChecked = SaveSystemConf(1, 2026, 0, 1);
-            var isProDrugChecked = SaveSystemConf(1, 2026, 1, 0);
-            var isDuplicatedClassChecked = SaveSystemConf(1, 2026, 3, 0);
-            var isSameComponentChecked = SaveSystemConf(1, 2026, 2, 0);
+            var isDuplicatedComponentChecked = SaveSystemConf(hpId, 2026, 0, 1);
+            var isProDrugChecked = SaveSystemConf(hpId, 2026, 1, 0);
+            var isDuplicatedClassChecked = SaveSystemConf(hpId, 2026, 3, 0);
+            var isSameComponentChecked = SaveSystemConf(hpId, 2026, 2, 0);
 
             tenantTracking.SaveChanges();
 
             var drugAllergy = new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>();
 
-            drugAllergy.HpID = 999;
+            drugAllergy.HpID = hpId;
             drugAllergy.PtID = 1231;
             drugAllergy.Sinday = 20230101;
             var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
             var cache = new MasterDataCacheService(TenantProvider);
-            cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+            cache.InitCache(drugAllergy.HpID, new List<string>() { "620160501" }, 20230101, 1231);
             drugAllergy.InitFinder(tenantNoTracking, cache);
             try
             {
@@ -699,10 +705,10 @@ namespace CloudUnitTest.CommonChecker.Services
             }
             finally
             {
-                SaveSystemConf(1, 2026, 0, isDuplicatedComponentChecked);
-                SaveSystemConf(1, 2026, 1, isProDrugChecked);
-                SaveSystemConf(1, 2026, 3, isDuplicatedClassChecked);
-                SaveSystemConf(1, 2026, 2, isSameComponentChecked);
+                SaveSystemConf(hpId, 2026, 0, isDuplicatedComponentChecked);
+                SaveSystemConf(hpId, 2026, 1, isProDrugChecked);
+                SaveSystemConf(hpId, 2026, 3, isDuplicatedClassChecked);
+                SaveSystemConf(hpId, 2026, 2, isSameComponentChecked);
 
                 tenantTracking.PtInfs.RemoveRange(ptInfs);
                 tenantTracking.PtAlrgyDrugs.RemoveRange(ptAlrgyDrugs);

@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m56_ex_ingrdt_main")]
     public class M56ExIngrdtMain : EmrCloneable<M56ExIngrdtMain>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 医薬品コード
         /// 
         /// </summary>
-        
+
         [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;

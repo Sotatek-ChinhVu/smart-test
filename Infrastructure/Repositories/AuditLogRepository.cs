@@ -41,7 +41,7 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
 
     public void AddAuditTrailLog(int hpId, int userId, ArgumentModel arg)
     {
-        var eventMsts = GetEventMstModel();
+        var eventMsts = GetEventMstModel(hpId);
 
         if (eventMsts.Any(p => p.EventCd == arg.EventCd && p.AuditTrailing == 1))
         {
@@ -71,7 +71,7 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
 
     public void AddListAuditTrailLog(int hpId, int userId, List<ArgumentModel> args)
     {
-        var eventMsts = GetEventMstModel();
+        var eventMsts = GetEventMstModel(hpId);
 
         foreach (var arg in args)
         {
@@ -103,10 +103,10 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
         
     }
 
-    private List<EventMstModel> GetEventMstModel()
+    private List<EventMstModel> GetEventMstModel(int hpId)
     {
         var eventMsts = NoTrackingDataContext.EventMsts
-                                             .Where(p => p.AuditTrailing == 1)
+                                             .Where(p => p.AuditTrailing == 1 && p.HpId == hpId)
                                              .Select(x => new EventMstModel(
                                                                             x.EventCd ?? string.Empty,
                                                                             x.EventName ?? string.Empty,
@@ -121,5 +121,4 @@ public class AuditLogRepository : RepositoryBase, IAuditLogRepository
     {
         DisposeDataContext();
     }
-
 }

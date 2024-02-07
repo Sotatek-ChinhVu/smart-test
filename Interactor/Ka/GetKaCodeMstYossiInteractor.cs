@@ -17,7 +17,7 @@ public class GetKaCodeMstYossiInteractor : IGetKacodeMstYossiInputPort
     {
         try
         {
-            var departments = _kaMstRepository.GetListKacode();
+            var departments = _kaMstRepository.GetListKacode(inputData.HpId);
             var status = departments.Any() ? GetKacodeMstYossiStatus.Success : GetKacodeMstYossiStatus.NoData;
             return new GetKacodeMstYossiOutputData(status, departments);
         }

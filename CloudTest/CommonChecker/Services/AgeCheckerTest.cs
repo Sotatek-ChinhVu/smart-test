@@ -29,7 +29,7 @@ public class AgeCheckerTest : BaseUT
 
         // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         // Act
@@ -66,7 +66,7 @@ public class AgeCheckerTest : BaseUT
 
         // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620001936" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620001936" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         // Act
@@ -103,7 +103,7 @@ public class AgeCheckerTest : BaseUT
 
         // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         // Act
@@ -140,7 +140,7 @@ public class AgeCheckerTest : BaseUT
 
         // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         // Act
@@ -177,7 +177,7 @@ public class AgeCheckerTest : BaseUT
 
         // Arrange
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realtimcheckerfinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         // Act
@@ -190,6 +190,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_006_TestAgeChecker_HandleCheckOrderList_TestSettingLevelIs0()
     {
+        int hpId = 1;
         //Setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -238,7 +239,7 @@ public class AgeCheckerTest : BaseUT
 
         var cache = new MasterDataCacheService(TenantProvider);
 
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(ageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         ageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -258,6 +259,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_007_TestAgeChecker_HandleCheckOrderList_TestSettingLevelIsMoreThan10()
     {
+        int hpId = 1;
         //Setup
         var ordInfDetails = new List<OrdInfoDetailModel>()
         {
@@ -306,7 +308,7 @@ public class AgeCheckerTest : BaseUT
 
         var cache = new MasterDataCacheService(TenantProvider);
 
-        cache.InitCache(new List<string>() { "620160501" }, 20230101, 1231);
+        cache.InitCache(ageChecker.HpID, new List<string>() { "620160501" }, 20230101, 1231);
         ageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -326,6 +328,7 @@ public class AgeCheckerTest : BaseUT
     [Test]
     public void CheckAge_008_TestAgeChecker_HandleCheckOrderList_Test_CheckedResult_IsNotNull_And_CountMoreThan_0()
     {
+        int hpId = 1;
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -355,7 +358,7 @@ public class AgeCheckerTest : BaseUT
 
         var tenMsts = CommonCheckerData.ReadTenMst("AGE008", "AGE008");
         var m14 = CommonCheckerData.ReadM14AgeCheck();
-        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx("DIS003");
+        var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS003");
         var ptByomei = CommonCheckerData.ReadPtByomei();
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M14AgeCheck.AddRange(m14);
@@ -382,7 +385,7 @@ public class AgeCheckerTest : BaseUT
 
         var cache = new MasterDataCacheService(TenantProvider);
 
-        cache.InitCache(new List<string>() { "6220816AGE" }, 20230101, 1231);
+        cache.InitCache(ageChecker.HpID, new List<string>() { "6220816AGE" }, 20230101, 1231);
         ageChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -421,7 +424,7 @@ public class AgeCheckerTest : BaseUT
 
         // Arrange
         var ageChecker = new AgeChecker<OrdInfoModel, OrdInfoDetailModel>();
-        var unitChecker = new  UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
+        var unitChecker = new UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>(
                                                                 RealtimeCheckerType.Age, odrInfoModel, 20230101, 111);
 
         // Act and Assert

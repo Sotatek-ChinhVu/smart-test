@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,11 @@ using PostgreDataContext;
 namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240206043649_Update_HpId")]
+    partial class UpdateHpId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,10 +78,6 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Emr.DatabaseEntity.KacodeYousikiMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id");
-
                     b.Property<string>("YousikiKaCd")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
@@ -98,6 +97,10 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
+
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
 
                     b.Property<string>("KaName")
                         .IsRequired()
@@ -123,7 +126,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "YousikiKaCd");
+                    b.HasKey("YousikiKaCd");
 
                     b.ToTable("kacode_yousiki_mst");
                 });
@@ -8969,10 +8972,6 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.M38Ingredients", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id");
-
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -8989,7 +8988,11 @@ namespace TenantMigration.Migrations
                         .HasColumnName("sbt")
                         .HasColumnOrder(3);
 
-                    b.HasKey("HpId", "SeibunCd", "SerialNum", "Sbt");
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
+                    b.HasKey("SeibunCd", "SerialNum", "Sbt");
 
                     b.ToTable("m38_ingredients");
                 });

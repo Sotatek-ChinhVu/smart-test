@@ -1548,7 +1548,7 @@ namespace Infrastructure.Repositories
                                                                                         && item.PtId == ptId
                                                                                         && item.HokenId == hokenId);
             if (hoken == null) return false;
-            var kantoku = NoTrackingDataContext.KantokuMsts.FirstOrDefault(item => item.RoudouCd == hoken.RousaiRoudouCd && item.KantokuCd == hoken.RousaiKantokuCd);
+            var kantoku = NoTrackingDataContext.KantokuMsts.FirstOrDefault(item => item.RoudouCd == hoken.RousaiRoudouCd && item.KantokuCd == hoken.RousaiKantokuCd && item.HpId == hpId);
             return kantoku != null;
         }
 
