@@ -165,7 +165,7 @@ public class YousikiController : AuthorizeControllerBase
 
         var ptId = request.Yousiki1Inf.PtId;
         var sinYm = request.Yousiki1Inf.SinYm;
-        int seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(0) ? request.Yousiki1Inf.DataTypeSeqNoDic[0] : request.Yousiki1Inf.SeqNo;
+        int seqNo = GetSeqNo(request.Yousiki1Inf.DataTypeSeqNoDic, 0, request.Yousiki1Inf.CategoryRequests[0].IsDeleted);
         string prefixString;
         string suffixString;
         string fullByomei;
@@ -555,7 +555,7 @@ public class YousikiController : AuthorizeControllerBase
 
         //ConvertTabLivingHabit
         #region 
-        seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(1) ? request.Yousiki1Inf.DataTypeSeqNoDic[1] : request.Yousiki1Inf.SeqNo;
+        seqNo = GetSeqNo(request.Yousiki1Inf.DataTypeSeqNoDic, 1, request.Yousiki1Inf.CategoryRequests[1].IsDeleted);
 
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.LivingHabitRequest.Yousiki1InfDetails ?? new())
         {
@@ -674,7 +674,7 @@ public class YousikiController : AuthorizeControllerBase
         //ConvertTabAtHome
         #region 
 
-        seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(2) ? request.Yousiki1Inf.DataTypeSeqNoDic[2] : request.Yousiki1Inf.SeqNo;
+        seqNo = GetSeqNo(request.Yousiki1Inf.DataTypeSeqNoDic, 2, request.Yousiki1Inf.CategoryRequests[2].IsDeleted);
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.Yousiki1InfDetails ?? new())
         {
             if (yousiki1InfDetailRequest != null)
@@ -1157,7 +1157,7 @@ public class YousikiController : AuthorizeControllerBase
 
         SetYousiki1InfDetailFinalExaminationInfs(finalExaminationInf.MaximumNumberDate);
 
-        
+
 
         var finalExaminationInf2 = request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.FinalExaminationInf2;
         var valueModifierFinalExaminationInf2 = "";
@@ -1268,7 +1268,7 @@ public class YousikiController : AuthorizeControllerBase
         //ConvertTabRehabilitation
         #region
 
-        seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(3) ? request.Yousiki1Inf.DataTypeSeqNoDic[3] : request.Yousiki1Inf.SeqNo;
+        seqNo = GetSeqNo(request.Yousiki1Inf.DataTypeSeqNoDic, 3, request.Yousiki1Inf.CategoryRequests[3].IsDeleted);
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.RehabilitationRequest.Yousiki1InfDetails)
         {
             if (yousiki1InfDetailRequest != null)
@@ -1302,7 +1302,7 @@ public class YousikiController : AuthorizeControllerBase
                                    requestItem.RowNo,
                                    requestItem.Payload,
                                    requestItem.Value,
-                                   requestItem.IsDeleted 
+                                   requestItem.IsDeleted
                                    ));
                 }
             }
@@ -1354,7 +1354,7 @@ public class YousikiController : AuthorizeControllerBase
                                    requestItem.RowNo,
                                    requestItem.Payload,
                                    requestItem.Value,
-                                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0 
+                                   yousiki1InfDetailRequest.IsDeleted ? 1 : 0
                                    ));
                 }
             }
@@ -1453,6 +1453,32 @@ public class YousikiController : AuthorizeControllerBase
     }
 
     #region private function
+    /// <summary>
+    /// Status = 0 => update
+    /// Status = 1 => delete
+    /// Status = 2 => addNew
+    /// </summary>
+    /// <param name="dataTypeSeqNoDic"></param>
+    /// <param name="dataType"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    private int GetSeqNo(Dictionary<int, int> dataTypeSeqNoDic, int dataType, int status)
+    {
+        int seqNo = dataTypeSeqNoDic.ContainsKey(dataType) ? dataTypeSeqNoDic[dataType] : 0;
+        if (status == 2)
+        {
+            if (seqNo <= 0)
+            {
+                seqNo = 1;
+            }
+            else
+            {
+                seqNo = seqNo + 1;
+            }
+        }
+        return seqNo;
+    }
+
     private void UpdateCreateYuIchiFileStatus(CreateYuIchiFileStatus status)
     {
         string result = "\n" + JsonSerializer.Serialize(status);

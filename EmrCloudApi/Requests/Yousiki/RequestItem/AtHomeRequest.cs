@@ -25,7 +25,5 @@
         public CommonForm1Request FinalExaminationInf { get; set; } = new();
 
         public CommonForm1Request FinalExaminationInf2 { get; set; } = new();
-
-        public int SeqNo { get; set; }
     }
 }

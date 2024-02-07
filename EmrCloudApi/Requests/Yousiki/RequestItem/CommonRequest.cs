@@ -9,7 +9,5 @@
         public InputByomeiCommonRequest HospitalizationStatusInf { get; set; } = new();
 
         public InputByomeiCommonRequest FinalExaminationInf { get; set; } = new();
-
-        public int SeqNo { get; set; }
     }
 }
