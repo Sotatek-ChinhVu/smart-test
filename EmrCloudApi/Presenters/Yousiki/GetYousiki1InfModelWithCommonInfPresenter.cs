@@ -12,7 +12,7 @@ public class GetYousiki1InfModelWithCommonInfPresenter : IGetYousiki1InfModelWit
 
     public void Complete(GetYousiki1InfModelWithCommonInfOutputData output)
     {
-        Result.Data = new GetYousiki1InfModelWithCommonInfResponse(output.Yousiki1InfList.Select(item => new Yousiki1InfDto(item)).ToList());
+        Result.Data = new GetYousiki1InfModelWithCommonInfResponse(output.Yousiki1InfList.Select(item => new Yousiki1InfGetListDto(item, new())).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
