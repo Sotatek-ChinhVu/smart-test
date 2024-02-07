@@ -962,7 +962,7 @@ namespace Infrastructure.Repositories
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
                 r.raiinInf.ConfirmationType,
-                r.raiinInf.InfoConsFlg,
+                r.raiinInf.InfoConsFlg ?? string.Empty,
                 r.relatedRsvFrameMst?.RsvFrameName ?? string.Empty,
                 r.relatedUketukeSbtMst?.KbnId ?? CommonConstants.InvalidId,
                 r.raiinInf.UketukeTime ?? string.Empty,
@@ -998,7 +998,6 @@ namespace Infrastructure.Repositories
                 r.ptKohi3?.HokenSbtKbn ?? CommonConstants.InvalidId,
                 r.ptKohi3?.Houbetu ?? string.Empty,
                 r.ptKohi4?.HokenSbtKbn ?? CommonConstants.InvalidId,
-                r.raiinInf.InfoConsFlg ?? string.Empty,
                 r.ptKohi4?.Houbetu ?? string.Empty
             )).ToList();
 

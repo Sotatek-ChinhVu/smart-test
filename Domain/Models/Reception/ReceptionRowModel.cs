@@ -14,7 +14,7 @@ public class ReceptionRowModel
         int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells, int sinDate,
         int hokenPid, int hokenStartDate, int hokenEndDate, int hokenSbtCd, int hokenKbn,
         int kohi1HokenSbtKbn, string kohi1Houbetu, int kohi2HokenSbtKbn, string kohi2Houbetu,
-        int kohi3HokenSbtKbn, string kohi3Houbetu, int kohi4HokenSbtKbn, string kohi4Houbetu, string infoConsFlg,
+        int kohi3HokenSbtKbn, string kohi3Houbetu, int kohi4HokenSbtKbn, string kohi4Houbetu,
         UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
         IsDeleted = isDeleted;
@@ -404,7 +404,4 @@ public class ReceptionRowModel
     }
 
     public int HokenPid { get; private set; }
-
-    public string InfoConsFlg { get; private set; }
-
 }
