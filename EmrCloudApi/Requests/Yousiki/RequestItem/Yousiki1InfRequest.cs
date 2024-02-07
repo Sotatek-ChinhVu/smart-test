@@ -13,6 +13,8 @@
 
         public int IsDeleted { get; set; }
 
+        public Dictionary<int, int> DataTypeSeqNoDic { get; set; } = new();
+
         public List<CategoryRequest> CategoryRequests { get; set; } = new();
 
         public int SeqNo { get; set; }

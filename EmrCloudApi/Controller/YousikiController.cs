@@ -164,7 +164,7 @@ public class YousikiController : AuthorizeControllerBase
 
         var ptId = request.Yousiki1Inf.PtId;
         var sinYm = request.Yousiki1Inf.SinYm;
-        var seqNo = request.Yousiki1Inf.SeqNo;
+        int seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(0) ? request.Yousiki1Inf.DataTypeSeqNoDic[0] : 0;
         string prefixString;
         string suffixString;
         string fullByomei;
@@ -820,6 +820,7 @@ public class YousikiController : AuthorizeControllerBase
 
         //ConvertTabLivingHabit
         #region 
+        seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(1) ? request.Yousiki1Inf.DataTypeSeqNoDic[1] : 0;
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.LivingHabitRequest.Yousiki1InfDetails ?? new())
         {
             result.Add(new Yousiki1InfDetailModel(
@@ -985,6 +986,8 @@ public class YousikiController : AuthorizeControllerBase
 
         //ConvertTabAtHome
         #region 
+
+        seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(2) ? request.Yousiki1Inf.DataTypeSeqNoDic[2] : 0;
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.AtHomeRequest.Yousiki1InfDetails ?? new())
         {
             if (yousiki1InfDetailRequest != null)
@@ -2068,6 +2071,8 @@ public class YousikiController : AuthorizeControllerBase
 
         //ConvertTabRehabilitation
         #region
+
+        seqNo = request.Yousiki1Inf.DataTypeSeqNoDic.ContainsKey(3) ? request.Yousiki1Inf.DataTypeSeqNoDic[3] : 0;
         foreach (var yousiki1InfDetailRequest in request.Yousiki1Inf.TabYousikiRequest.RehabilitationRequest.Yousiki1InfDetails)
         {
             if (yousiki1InfDetailRequest != null)
@@ -2114,7 +2119,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.FirstVisit.RowNo,
                    yousiki1InfDetailRequest.FirstVisit.Payload,
                    yousiki1InfDetailRequest.FirstVisit.Value,
-                   yousiki1InfDetailRequest.FirstVisit.IsDeleted 
+                   yousiki1InfDetailRequest.FirstVisit.IsDeleted
                    ));
             }
 
@@ -2129,7 +2134,7 @@ public class YousikiController : AuthorizeControllerBase
                    yousiki1InfDetailRequest.Referral.RowNo,
                    yousiki1InfDetailRequest.Referral.Payload,
                    yousiki1InfDetailRequest.Referral.Value,
-                   yousiki1InfDetailRequest.Referral.IsDeleted 
+                   yousiki1InfDetailRequest.Referral.IsDeleted
                    ));
             }
 
@@ -2164,7 +2169,7 @@ public class YousikiController : AuthorizeControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   3,
+                   0,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -2389,7 +2394,8 @@ public class YousikiController : AuthorizeControllerBase
             0,
             2,
             fimListValue
-            ));
+            )
+            );
         #endregion
 
         return (result, categories);
