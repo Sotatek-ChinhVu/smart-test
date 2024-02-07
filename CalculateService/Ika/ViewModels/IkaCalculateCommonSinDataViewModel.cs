@@ -250,6 +250,7 @@ namespace CalculateService.Ika.ViewModels
                         // 更新ステータスを削除に設定
                         _sinKouis[index].UpdateState = UpdateStateConst.Delete;
                         _sinKouis[index].IsDeleted = 1;
+                        _sinKouis[index].EfFlg = 0;
 
                         //foreach (SinKouiModel sinKoui in _sinKouis.FindAll(p =>
                         //                                    p.HpId == sinKouiCount.HpId &&
@@ -279,6 +280,7 @@ namespace CalculateService.Ika.ViewModels
                         {
                             sinDtl.UpdateState = UpdateStateConst.Delete;
                             sinDtl.IsDeleted = 1;
+                            sinDtl.EfFlg = 0;
                         }
                     }
                 }
@@ -296,6 +298,7 @@ namespace CalculateService.Ika.ViewModels
                 {
                     sinKoui.UpdateState = UpdateStateConst.Delete;
                     sinKoui.IsDeleted = 1;
+                    sinKoui.EfFlg = 0;
                 }
             }
 
@@ -314,6 +317,7 @@ namespace CalculateService.Ika.ViewModels
                     // 有効な行為が存在しなければDelete
                     _sinRpInfs[i].UpdateState = UpdateStateConst.Delete;
                     _sinRpInfs[i].IsDeleted = 1;
+                    _sinRpInfs[i].EfFlg = 0;
                 }
                 else if (firstDays != null)
                 {
@@ -519,6 +523,8 @@ namespace CalculateService.Ika.ViewModels
             sinRpInfModel.SinId = wrkSinRp.SinId;
             sinRpInfModel.SanteiKbn = wrkSinRp.SanteiKbn;
             sinRpInfModel.CdNo = wrkSinRp.CdNo;
+            sinRpInfModel.EfFlg = wrkSinRp.EfFlg;
+            sinRpInfModel.IsDeleted = wrkSinRp.IsDeleted;
 
             return sinRpInfModel;
         }
@@ -615,7 +621,7 @@ namespace CalculateService.Ika.ViewModels
                 string wrkCdNo = _sinRpInfs.Last().CdNo;
                 _sinRpInfs.Last().CdNo = "";
 
-                List<SinKouiDetailModel> wrkDtls = _sinKouiDetails.FindAll(p => p.RpNo == _sinRpNo && p.IsDeleted == DeleteStatus.None);
+                List<SinKouiDetailModel> wrkDtls = _sinKouiDetails.FindAll(p => p.RpNo == _sinRpNo && (p.IsDeleted == DeleteStatus.None || p.EfFlg == 1));
 
                 if (wrkDtls.Any())
                 {
@@ -818,6 +824,9 @@ namespace CalculateService.Ika.ViewModels
             sinKouiModel.IsNodspPaperRece = wrkSinKoui.IsNodspPaperRece;
             sinKouiModel.InoutKbn = wrkSinKoui.InoutKbn;
             sinKouiModel.CdKbn = wrkSinKoui.CdKbn;
+
+            sinKouiModel.EfFlg = wrkSinKoui.EfFlg;
+            sinKouiModel.IsDeleted = wrkSinKoui.IsDeleted;
 
             return sinKouiModel;
         }
@@ -1054,6 +1063,9 @@ namespace CalculateService.Ika.ViewModels
                 .ThenBy(p => p.CmtCd3)
                 .ThenBy(p => p.CmtOpt3)
                 .ThenBy(p => p.RecId)
+                .ThenBy(p => p.EfFlg)
+                .ThenBy(p => p.IpnFlg)
+                .ThenBy(p => p.EfTen)
                 .ToList();
 
             foreach (SinKouiDetailModel sinDtl in sinDtls)
@@ -1182,6 +1194,9 @@ namespace CalculateService.Ika.ViewModels
             sinKouiDtl.CmtOpt3 = wrkSinDtl.CmtOpt3;
             sinKouiDtl.MinYakka = wrkSinDtl.MinYakka;
             sinKouiDtl.TenZero = wrkSinDtl.TenZero;
+            sinKouiDtl.EfFlg = wrkSinDtl.EfFlg;
+            sinKouiDtl.IpnFlg = wrkSinDtl.IpnFlg;
+            sinKouiDtl.IsDeleted = wrkSinDtl.IsDeleted;
 
             // 点数マスタ取得
             if (wrkSinDtl.TenMst == null)
@@ -1833,6 +1848,9 @@ namespace CalculateService.Ika.ViewModels
             ret = AddStr(ret, MakeData("ccd3", sinDtl.CmtCd3));
             ret = AddStr(ret, MakeData("opt3", sinDtl.CmtOpt3));
             ret = AddStr(ret, MakeData("rid", sinDtl.RecId));
+            ret = AddStr(ret, MakeData("ef", sinDtl.EfFlg));
+            ret = AddStr(ret, MakeData("ip", sinDtl.IpnFlg));
+            ret = AddStr(ret, MakeData("et", sinDtl.EfTen));
 
             if (ret != "")
             {
@@ -1965,12 +1983,12 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="itemCd">診療行為コード</param>
         /// <param name="santeiKbn">算定区分</param>
         /// <returns></returns>
-        public bool CheckSanteiSinday(string itemCd, int santeiKbn = 0)
+        public bool CheckSanteiSinday(string itemCd, int santeiKbn = 0, int hokenId = 0)
         {
             List<string> itemCds = new List<string>();
             itemCds.Add(itemCd);
 
-            return CheckSanteiSinday(itemCds, santeiKbn);
+            return CheckSanteiSinday(itemCds, santeiKbn, hokenId);
         }
 
         /// <summary>
@@ -1979,7 +1997,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="itemCds">診療行為コード（複数指定）</param>
         /// <param name="santeiKbn">算定区分</param>
         /// <returns></returns>
-        public bool CheckSanteiSinday(List<string> itemCds, int santeiKbn = 0)
+        public bool CheckSanteiSinday(List<string> itemCds, int santeiKbn = 0, int hokenId = 0)
         {
             int sinYm = SinDate / 100;
             
@@ -1991,6 +2009,14 @@ namespace CalculateService.Ika.ViewModels
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 //o.SanteiKbn == santeiKbn &&
                 checkSanteiKbn.Contains(o.SanteiKbn) &&
+                (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add) &&
+                o.IsDeleted == DeleteStatus.None
+            );
+            var sinKouis = _sinKouis.FindAll(o =>
+                o.HpId == HpId &&
+                o.PtId == PtId &&
+                o.SinYm == sinYm &&
+                (hokenId == 0 || o.HokenId == hokenId) &&
                 (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add) &&
                 o.IsDeleted == DeleteStatus.None
             );
@@ -2015,6 +2041,9 @@ namespace CalculateService.Ika.ViewModels
                 join sinKouiCount in sinKouiCounts on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinKoui in sinKouis on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
                 join sinRpInf in sinRpInfs on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
                     new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
@@ -2037,7 +2066,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="itemCds">診療行為コード（複数指定）</param>
         /// <param name="santeiKbn">算定区分</param>
         /// <returns></returns>
-        public bool CheckSanteiTerm(List<string> itemCds, int startDate, int endDate, int santeiKbn = 0)
+        public bool CheckSanteiTerm(List<string> itemCds, int startDate, int endDate, int santeiKbn = 0, int hokenId = 0)
         {
             int sinYm = SinDate / 100;
 
@@ -2049,6 +2078,14 @@ namespace CalculateService.Ika.ViewModels
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 //o.SanteiKbn == santeiKbn &&
                 checkSanteiKbn.Contains(o.SanteiKbn) &&
+                (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add) &&
+                o.IsDeleted == DeleteStatus.None
+            );
+            var sinKouis = _sinKouis.FindAll(o =>
+                o.HpId == HpId &&
+                o.PtId == PtId &&
+                o.SinYm == sinYm &&
+                (hokenId == 0 || o.HokenId == hokenId) &&
                 (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add) &&
                 o.IsDeleted == DeleteStatus.None
             );
@@ -2071,6 +2108,9 @@ namespace CalculateService.Ika.ViewModels
 
             var joinQuery = (
                 from sinKouiDetail in sinKouiDetails
+                join sinKoui in sinKouis on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
                 join sinKouiCount in sinKouiCounts on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
@@ -2249,7 +2289,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="itemCds">診療行為コード（複数指定）</param>
         /// <param name="santeiKbn">算定区分</param>
         /// <returns>算定回数</returns>
-        public double SanteiCountTerm(List<string> itemCds, int startDate, int endDate, List<int> santeiKbns = null, List<int> hokenKbns = null)
+        public double SanteiCountTerm(List<string> itemCds, int startDate, int endDate, List<int> santeiKbns = null, List<int> hokenKbns = null, int hokenId = 0)
         {
             const string conFncName = nameof(SanteiCountSinday);
 
@@ -2306,11 +2346,23 @@ namespace CalculateService.Ika.ViewModels
             );
             if (sinRpInfs.Any() == false) { return 0; }
 
+            var sinkouis = _sinKouis.FindAll(o =>
+                o.HpId == HpId &&
+                o.PtId == PtId &&
+                o.SinYm == sinYm &&
+                (hokenId == 0 || o.HokenId == hokenId) &&
+                (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add) &&
+                o.IsDeleted == DeleteStatus.None
+            );
+
             var joinQuery = (
                 from sinKouiDetail in sinKouiDetails
                 join sinKouiCount in sinKouiCounts on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinKoui in sinkouis on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
                 join sinRpInf in sinRpInfs on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
                     new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
@@ -2508,7 +2560,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="itemCds">診療行為コード（複数指定）</param>
         /// <param name="santeiKbn">算定区分</param>
         /// <returns>算定日のリスト</returns>
-        public List<SanteiDaysModel> GetSanteiDaysSinDay(List<string> itemCds, List<int> santeiKbns = null, List<int> hokenKbns = null)
+        public List<SanteiDaysModel> GetSanteiDaysSinDay(List<string> itemCds, List<int> santeiKbns = null, List<int> hokenKbns = null, int hokenId = 0)
         {
             const string conFncName = nameof(GetSanteiDaysSinDay);
 
@@ -2542,6 +2594,14 @@ namespace CalculateService.Ika.ViewModels
                 (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add) &&
                 o.IsDeleted == DeleteStatus.None
             );
+            var sinKouis = _sinKouis.FindAll(o =>
+                o.HpId == HpId &&
+                o.PtId == PtId &&
+                o.SinYm == SinDate / 100 &&
+                (hokenId == 0 || o.HokenId == hokenId) &&
+                (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add) &&
+                o.IsDeleted == DeleteStatus.None
+            );
             var sinKouiCounts = _sinKouiCounts.FindAll(o =>
                 o.HpId == HpId &&
                 o.PtId == PtId &&
@@ -2563,6 +2623,9 @@ namespace CalculateService.Ika.ViewModels
                 join sinKouiCount in sinKouiCounts on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
                     new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinKoui in sinKouis on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
                 join sinRpInf in sinRpInfs on
                     new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
                     new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
@@ -3088,7 +3151,7 @@ namespace CalculateService.Ika.ViewModels
                 o.PtId == PtId &&
                 o.SinYm == sinYm &&
                 o.RaiinNo != RaiinNo &&
-                (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add));
+                (o.UpdateState == UpdateStateConst.None || o.UpdateState == UpdateStateConst.Add || (_calcMode==CalcModeConst.Trial && o.SinDate == SinDate)));
             var sinKouiDetails = _sinKouiDetails.FindAll(p =>
                 p.HpId == HpId &&
                 p.PtId == PtId &&

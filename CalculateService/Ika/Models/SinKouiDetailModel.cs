@@ -539,6 +539,44 @@ namespace CalculateService.Ika.Models
             }
         }
 
+        public int EfFlg
+        {
+            get { return SinKouiDetail.EfFlg; }
+            set
+            {
+                if (SinKouiDetail.EfFlg == value) return;
+                SinKouiDetail.EfFlg = value;
+                //RaisePropertyChanged(() => EfFlg);
+            }
+        }
+        /// <summary>
+        /// EF用点数
+        /// 当該項目の点数。金額項目の場合、10で割ったものを記録
+        /// </summary>
+        public double EfTen
+        {
+            get { return SinKouiDetail.EfTen; }
+            set
+            {
+                if (SinKouiDetail.EfTen == value) return;
+                SinKouiDetail.EfTen = value;
+                //RaisePropertyChanged(() => EfTen);
+            }
+        }
+        /// <summary>
+        /// EF調整済みフラグ
+        /// </summary>
+        public bool EfDone { get; set; } = false;
+        public int IpnFlg
+        {
+            get { return SinKouiDetail.IpnFlg; }
+            set
+            {
+                if (SinKouiDetail.IpnFlg == value) return;
+                SinKouiDetail.IpnFlg = value;
+                //RaisePropertyChanged(() => IpnFlg);
+            }
+        }
         /// <summary>
         /// 更新情報
         ///     0: 変更なし
@@ -787,8 +825,8 @@ namespace CalculateService.Ika.Models
             get
             {
                 double ret = 0;
-                if (TenZero == false)
-                {
+                //if (TenZero == false)
+                //{
                     if (_tenMst != null)
                     {
                         ret = _tenMst.Ten;
@@ -797,7 +835,7 @@ namespace CalculateService.Ika.Models
                     {
                         ret = MinYakka;
                     }
-                }
+                //}
 
                 return ret;
             }
