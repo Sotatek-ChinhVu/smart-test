@@ -11,5 +11,7 @@
         public List<PatientStatusRequest> BarthelIndexs { get; set; } = new();
 
         public List<PatientStatusRequest> Fims { get; set; } = new();
+
+        public int SeqNo { get; set; }
     }
 }

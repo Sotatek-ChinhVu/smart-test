@@ -11,5 +11,7 @@
         public List<AcuteCoronaryHistoryRequest> AcuteCoronaryHistorys { get; set; } = new();
 
         public List<AcuteAorticDissectionHistoryRequest> AcuteAorticHistorys { get; set; } = new();
+
+        public int SeqNo { get; set; }
     }
 }
