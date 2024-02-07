@@ -848,7 +848,7 @@ namespace Infrastructure.Repositories
         {
             using var argon2 = new Argon2id(password);
             // Todo fix get Pepper configuration on staging
-            var preper = "Pepper";
+            var preper = "Sotatek";
             //var preper = _configuration["Pepper"] ?? string.Empty;
             salt = salt.Union(Encoding.UTF8.GetBytes(preper)).ToArray();
             argon2.Salt = salt;
