@@ -2164,7 +2164,7 @@ public class YousikiController : AuthorizeControllerBase
                 result.Add(new Yousiki1InfDetailModel(
                    ptId,
                    sinYm,
-                   0,
+                   3,
                    seqNo,
                    codeNo,
                    rowNo,
@@ -2389,8 +2389,7 @@ public class YousikiController : AuthorizeControllerBase
             0,
             2,
             fimListValue
-            )
-            );
+            ));
         #endregion
 
         return (result, categories);
