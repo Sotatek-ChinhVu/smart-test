@@ -95,6 +95,12 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                 new()))
                                      .ToList();
 
+        var ptIdList = yousiki1InfResultList.Select(item => item.PtId).Distinct().ToList();
+        var allYousiki1InfList = NoTrackingDataContext.Yousiki1Infs.Where(item => item.HpId == hpId
+                                                                                  && (sinYm == 0 || item.SinYm == sinYm)
+                                                                                  && ptIdList.Contains(item.PtId))
+                                                                   .ToList();
+
         var groups = yousiki1InfResultList.GroupBy(x => new { x.PtId, x.SinYm }).ToList();
         foreach (var group in groups)
         {
@@ -106,15 +112,25 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
             }
 
             Dictionary<int, int> statusDic = new();
-            Dictionary<int, int> dataTypeSeqNoDic = new();
 
             foreach (var item in orderGroup)
             {
                 if (!statusDic.ContainsKey(item.DataType))
                 {
                     statusDic.Add(item.DataType, item.Status);
-                    dataTypeSeqNoDic.Add(item.DataType, item.SeqNo);
                 }
+            }
+
+            Dictionary<int, int> dataTypeSeqNoDic = new();
+            for (int i = 0; i <= 3; i++)
+            {
+                var seqNo = allYousiki1InfList.Where(item => item.DataType == i
+                                                             && (status == -1 || item.Status == status)
+                                                             && item.PtId == yousiki.PtId
+                                                             && item.SinYm == yousiki.SinYm)
+                                              .OrderByDescending(item => item.SeqNo)
+                                              .FirstOrDefault()?.SeqNo ?? 0;
+                dataTypeSeqNoDic.Add(i, seqNo);
             }
 
             yousiki.ChangeStatusDic(statusDic, dataTypeSeqNoDic);
