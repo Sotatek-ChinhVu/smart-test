@@ -90,7 +90,7 @@ public class GetCommonDrugInf : IGetCommonDrugInf
     #region ShowProductInf
     public string ShowProductInf(int hpId, int sinDate, string itemCd, int level, string drugName, string yJCode)
     {
-        var drugDetailModel = _drugDetailRepository.GetDataDrugSeletedTree(0, level, drugName, itemCd, yJCode);
+        var drugDetailModel = _drugDetailRepository.GetDataDrugSeletedTree(hpId, 0, level, drugName, itemCd, yJCode);
         var drugMenu = _drugDetailRepository.GetDrugMenu(hpId, sinDate, itemCd).ToList();
         string result = ShowProductInf(drugDetailModel, drugMenu);
         return result;
@@ -420,9 +420,9 @@ public class GetCommonDrugInf : IGetCommonDrugInf
     #endregion
 
     #region ShowKanjaMuke
-    public string ShowKanjaMuke(string itemCd, int level, string drugName, string yJCode)
+    public string ShowKanjaMuke(int hpId, string itemCd, int level, string drugName, string yJCode)
     {
-        var drugDetailModel = _drugDetailRepository.GetDataDrugSeletedTree(1, level, drugName, itemCd, yJCode);
+        var drugDetailModel = _drugDetailRepository.GetDataDrugSeletedTree(hpId, 1, level, drugName, itemCd, yJCode);
         string result = ShowKanjaMuke(drugDetailModel);
         return result;
     }
@@ -596,9 +596,9 @@ public class GetCommonDrugInf : IGetCommonDrugInf
     #endregion
 
     #region ShowMdbByomei
-    public string ShowMdbByomei(string itemCd, int level, string drugName, string yJCode)
+    public string ShowMdbByomei(int hpId, string itemCd, int level, string drugName, string yJCode)
     {
-        var drugDetailModel = _drugDetailRepository.GetDataDrugSeletedTree(2, level, drugName, itemCd, yJCode);
+        var drugDetailModel = _drugDetailRepository.GetDataDrugSeletedTree(hpId, 2, level, drugName, itemCd, yJCode);
         string result = ShowMdbByomei(drugDetailModel);
         return result;
     }

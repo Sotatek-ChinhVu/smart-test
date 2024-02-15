@@ -1,3 +1,4 @@
+using Emr.DatabaseEntity;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,10 +11,13 @@ namespace Entity.Tenant
 	[Table(name: "kantoku_mst")]
     public class KantokuMst : EmrCloneable<KantokuMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 労働局コード	
         /// </summary>
-        
+
         [Column(name: "roudou_cd", Order = 1)]
 		[MaxLength(2)]
         public string RoudouCd { get; set; } = string.Empty;

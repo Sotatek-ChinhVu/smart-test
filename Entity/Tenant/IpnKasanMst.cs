@@ -8,20 +8,11 @@ namespace Entity.Tenant
     public class IpnKasanMst : EmrCloneable<IpnKasanMst>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 一般名コード
         /// 
         /// </summary>
-        
-        [Column("ipn_name_cd", Order = 2)]
+
+        [Column("ipn_name_cd")]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
 
@@ -29,8 +20,8 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        
-        [Column("start_date", Order = 3)]
+
+        [Column("start_date")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
@@ -62,8 +53,8 @@ namespace Entity.Tenant
         /// 連番
         /// 同一一般名コード、開始日内の連番
         /// </summary>
-        
-        [Column("seq_no", Order = 4)]
+
+        [Column("seq_no")]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
 
@@ -119,7 +110,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("update_machine")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

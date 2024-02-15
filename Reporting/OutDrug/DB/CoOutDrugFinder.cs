@@ -198,8 +198,8 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
                 StartDate = x.Max(d => d.StartDate)
             }
         );
-
-        var kohiPriorities = NoTrackingDataContext.KohiPriorities;
+        
+        var kohiPriorities = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId);
         var ptKohis = NoTrackingDataContext.PtKohis.Where(p =>
             p.HpId == hpId &&
             p.PtId == ptId &&
@@ -777,9 +777,9 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
         return NoTrackingDataContext.SingleDoseMsts.Any(s => s.HpId == hpId && s.UnitName == unitName);
     }
 
-    public CoDosageDrugModel GetDosageDrugModel(string yjCode)
+    public CoDosageDrugModel GetDosageDrugModel(int hpId, string yjCode)
     {
-        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(item => item.YjCd == yjCode);
+        var dosageDrug = NoTrackingDataContext.DosageDrugs.FirstOrDefault(item => item.HpId == hpId && item.YjCd == yjCode);
         return new CoDosageDrugModel(dosageDrug ?? new());
 
     }

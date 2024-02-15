@@ -35,7 +35,7 @@ namespace Domain.Models.PatientInfor
 
         bool CheckExistIdList(List<long> ptIds);
 
-        List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
+        List<TokkiMstModel> GetListTokki(int sinDate);
 
         List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo);
 

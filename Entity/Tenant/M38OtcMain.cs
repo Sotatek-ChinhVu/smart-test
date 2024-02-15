@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m38_otc_main")]
     public class M38OtcMain : EmrCloneable<M38OtcMain>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// シリアルナンバー
         /// 管理用通し番号　1~9999999
         /// </summary>
-        
+
         [Column("serial_num", Order = 1)]
         public int SerialNum { get; set; }
 

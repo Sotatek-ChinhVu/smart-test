@@ -6,11 +6,14 @@ namespace Entity.Tenant
     [Table(name: "syouki_kbn_mst")]
     public class SyoukiKbnMst : EmrCloneable<SyoukiKbnMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 症状詳記区分
         /// 
         /// </summary>
-        
+
         [Column("syouki_kbn", Order = 1)]
         public int SyoukiKbn { get; set; }
 

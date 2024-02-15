@@ -32,7 +32,7 @@ namespace Domain.Models.Lock
 
         List<LockModel> GetVisitingLockStatus(int hpId, int userId, long ptId, string functionCode);
 
-        string GetFunctionNameLock(string functionCode);
+        string GetFunctionNameLock(int hpId, string functionCode);
 
         List<ResponseLockModel> GetResponseLockModel(int hpId, long ptId, int sinDate, long raiinNo);
 

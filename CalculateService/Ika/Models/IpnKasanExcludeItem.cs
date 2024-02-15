@@ -16,14 +16,15 @@ namespace CalculateService.Ika.Models
             IpnKasanExcludeItem = ipnKasanExcludeItem;
         }
 
-        /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        public int HpId
-        {
-            get { return IpnKasanExcludeItem.HpId; }
-        }
+        // Removed HpId
+        ///// <summary>
+        ///// 医療機関識別ID
+        ///// 
+        ///// </summary>
+        //public int HpId
+        //{
+        //    get { return IpnKasanExcludeItem.HpId; }
+        //}
 
         /// <summary>
         /// 診療行為コード

@@ -194,7 +194,7 @@ namespace Reporting.AccountingCard.DB
                 }
             );
 
-            var kohiPriorities = NoTrackingDataContext.KohiPriorities.AsQueryable();
+            var kohiPriorities = NoTrackingDataContext.KohiPriorities.Where(k => k.HpId == hpId).AsQueryable();
             var ptKohis = NoTrackingDataContext.PtKohis.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&

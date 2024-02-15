@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m42_contraindi_dis_bc")]
     public class M42ContraindiDisBc : EmrCloneable<M42ContraindiDisBc>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 病態コード
         /// BY で始まり5桁の数字が続く
         /// </summary>
-        
+
         [Column("byotai_cd", Order = 1)]
         [MaxLength(7)]
         public string ByotaiCd { get; set; } = string.Empty;

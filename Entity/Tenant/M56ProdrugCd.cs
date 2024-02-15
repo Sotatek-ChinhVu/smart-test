@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m56_prodrug_cd")]
     public class M56ProdrugCd : EmrCloneable<M56ProdrugCd>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 成分コード
         /// 
         /// </summary>
-        
+
         [Column("seibun_cd", Order = 1)]
         [MaxLength(9)]
         public string SeibunCd { get; set; } = string.Empty;

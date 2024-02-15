@@ -11,7 +11,7 @@ using Infrastructure.Services;
 
 namespace CalculateService.Ika.DB.Finder
 {
-    public class MasterFinder 
+    public class MasterFinder
     {
         private const string ModuleName = ModuleNameConst.EmrCalculateIka;
         private readonly TenantDataContext _tenantDataContext;
@@ -96,7 +96,7 @@ namespace CalculateService.Ika.DB.Finder
         {
             var entities = _tenantDataContext.TenMsts.FindListQueryableNoTrack(p =>
                     p.HpId == hpId &&
-                    itemCds.Contains(p.ItemCd) )
+                    itemCds.Contains(p.ItemCd))
                 .OrderBy(p => p.HpId)
                 .ThenBy(p => p.ItemCd)
                 .ThenByDescending(p => p.StartDate)
@@ -556,7 +556,7 @@ namespace CalculateService.Ika.DB.Finder
             return results;
         }
 
-        private List<int> unitCdls  = new List<int>
+        private List<int> unitCdls = new List<int>
                 {
                         53,121,131,138,141,142,143,144,145,146,147,148,159,997,998,999
                 };
@@ -655,11 +655,9 @@ namespace CalculateService.Ika.DB.Finder
             const string conFncName = nameof(FindRousaiGoseiMst);
 
             var entities = _tenantDataContext.RousaiGoseiMsts.FindListQueryableNoTrack(p =>
-                    p.HpId == hpId &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate)
-                .OrderBy(p => p.HpId)
-                .ThenBy(p => p.GoseiGrp)
+                .OrderBy(p => p.GoseiGrp)
                 .ToList();
 
             List<RousaiGoseiMstModel> results = new List<RousaiGoseiMstModel>();
@@ -707,9 +705,9 @@ namespace CalculateService.Ika.DB.Finder
                 s.PtId == ptId &&
                 s.SinYm == sinYm
                 )
-                .Select(p=>p.ItemCd)
+                .Select(p => p.ItemCd)
                 .Distinct().ToList();
-            if(sinDtls != null)
+            if (sinDtls != null)
             {
                 itemCds.AddRange(sinDtls);
             }
@@ -725,8 +723,8 @@ namespace CalculateService.Ika.DB.Finder
                     densiHoukatuGrp.EndDate >= sinDate &&
                     itemCds.Contains(densiHoukatuGrp.ItemCd) &&
                     densiHoukatuGrp.IsInvalid == 0 &&
-                    //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
-                      itemCds.Contains(densiHoukatu.ItemCd) 
+                      //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
+                      itemCds.Contains(densiHoukatu.ItemCd)
                 orderby
                     densiHoukatu.HoukatuTerm
                 select new
@@ -744,10 +742,10 @@ namespace CalculateService.Ika.DB.Finder
                         data.densiHoukatu
                     )
                 )
-                .OrderBy(p=>p.HoukatuGrpNo)
-                .ThenBy(p=>p.DensiHoukatu.ItemCd)
-                .ThenBy(p=>p.HoukatuTerm)
-                .ThenBy(p=>p.ItemCd)
+                .OrderBy(p => p.HoukatuGrpNo)
+                .ThenBy(p => p.DensiHoukatu.ItemCd)
+                .ThenBy(p => p.HoukatuTerm)
+                .ThenBy(p => p.ItemCd)
                 .ThenByDescending(p => p.DensiHoukatuGrp.UserSetting)
                 .ToList();
 
@@ -757,10 +755,11 @@ namespace CalculateService.Ika.DB.Finder
             int houkatuTerm = 0;
             string itemCd = "";
             string houkatuItemCd = "";
-            
-            entities?.ForEach(entity => {
+
+            entities?.ForEach(entity =>
+            {
                 if (houkatuGrpNo != entity.HoukatuGrpNo ||
-                   houkatuItemCd != entity.DensiHoukatu.ItemCd || 
+                   houkatuItemCd != entity.DensiHoukatu.ItemCd ||
                    houkatuTerm != entity.HoukatuTerm ||
                    itemCd != entity.ItemCd)
                 {
@@ -827,9 +826,9 @@ namespace CalculateService.Ika.DB.Finder
                     densiHoukatuGrp.StartDate <= sinDate &&
                     densiHoukatuGrp.EndDate >= sinDate &&
                     //itemCds.Contains(densiHoukatuGrp.ItemCd) &&
-                    densiHoukatuGrp.IsInvalid == 0 
-                      //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
-                      //itemCds.Contains(densiHoukatu.ItemCd)
+                    densiHoukatuGrp.IsInvalid == 0
+                //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
+                //itemCds.Contains(densiHoukatu.ItemCd)
                 orderby
                     densiHoukatu.HoukatuTerm
                 select new
@@ -851,7 +850,8 @@ namespace CalculateService.Ika.DB.Finder
 
             List<DensiHoukatuMstModel> results = new List<DensiHoukatuMstModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new DensiHoukatuMstModel(entity.DensiHoukatuGrp, entity.DensiHoukatu));
             });
 
@@ -881,8 +881,9 @@ namespace CalculateService.Ika.DB.Finder
                     (excludeMaybe ? d.SpJyoken == 0 : true) &&
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
-                    .Select(p=>
-                        new {
+                    .Select(p =>
+                        new
+                        {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -894,7 +895,8 @@ namespace CalculateService.Ika.DB.Finder
                             TermSbt = 2,
                             TargetKbn = p.TargetKbn,
                             UserSetting = p.UserSetting,
-                            MstSbt = 0});
+                            MstSbt = 0
+                        });
 
             // 1:同月
             var densiHaihanMonth = _tenantDataContext.DensiHaihanMonths.FindListQueryableNoTrack(d =>
@@ -908,7 +910,8 @@ namespace CalculateService.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new {
+                        new
+                        {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -935,7 +938,8 @@ namespace CalculateService.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new {
+                        new
+                        {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -962,7 +966,8 @@ namespace CalculateService.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new {
+                        new
+                        {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -989,7 +994,8 @@ namespace CalculateService.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new {
+                        new
+                        {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -1004,9 +1010,9 @@ namespace CalculateService.Ika.DB.Finder
                             MstSbt = 4
                         });
 
-            var unionQuery = 
+            var unionQuery =
                 densiHaihanDay.Union(densiHaihanMonth).Union(densiHaihanWeek).Union(densiHaihanKarte).Union(densiHaihanCustom)
-                    .OrderBy(p => p.MstSbt)    
+                    .OrderBy(p => p.MstSbt)
                     .ThenBy(p => p.TermSbt)
                     .ThenBy(p => p.TermCnt)
                     .ThenBy(p => p.ItemCd1)
@@ -1024,7 +1030,7 @@ namespace CalculateService.Ika.DB.Finder
 
 
             List<DensiHaihanMstModel> results = new List<DensiHaihanMstModel>();
-            foreach(var union in unionQuery)
+            foreach (var union in unionQuery)
             {
                 if (mstSbt != union.MstSbt ||
                    termSbt != union.TermSbt ||
@@ -1233,7 +1239,7 @@ namespace CalculateService.Ika.DB.Finder
                         {
                             p
                         });
-                        
+
             List<PriorityHaihanMstModel> results = new List<PriorityHaihanMstModel>();
             foreach (var priorityHaihan in priorityHaihans)
             {
@@ -1270,7 +1276,6 @@ namespace CalculateService.Ika.DB.Finder
         public List<IpnKasanExcludeModel> FindIpnKasanExclude(int hpId, int sinDate)
         {
             var entities = _tenantDataContext.ipnKasanExcludes.FindListQueryableNoTrack(p =>
-                    p.HpId == hpId &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate
                     )
@@ -1289,7 +1294,6 @@ namespace CalculateService.Ika.DB.Finder
         public List<IpnKasanExcludeItemModel> FindIpnKasanExcludeItem(int hpId, int sinDate)
         {
             var entities = _tenantDataContext.ipnKasanExcludeItems.FindListQueryableNoTrack(p =>
-                    p.HpId == hpId &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate
                     )
@@ -1315,7 +1319,6 @@ namespace CalculateService.Ika.DB.Finder
         public List<IpnKasanMstModel> FindIpnKasanMst(int hpId, int sinDate, string ipnNameCd)
         {
             var entities = _tenantDataContext.IpnKasanMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.EndDate >= sinDate &&
                 i.IpnNameCd == ipnNameCd &&
@@ -1342,7 +1345,6 @@ namespace CalculateService.Ika.DB.Finder
         public List<IpnKasanMstModel> FindIpnKasanMst(int hpId, int sinDate, List<string> ipnNameCds)
         {
             var entities = _tenantDataContext.IpnKasanMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.EndDate >= sinDate &&
                 ipnNameCds.Contains(i.IpnNameCd) &&
@@ -1372,12 +1374,11 @@ namespace CalculateService.Ika.DB.Finder
         public List<IpnMinYakkaMstModel> FindIpnMinYakkaMst(int hpId, int sinDate, string ipnNameCd)
         {
             var entities = _tenantDataContext.IpnMinYakkaMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.EndDate >= sinDate &&
                 i.IpnNameCd == ipnNameCd &&
                 i.IsDeleted == DeleteStatus.None)
-                .OrderByDescending(p=>p.StartDate)
+                .OrderByDescending(p => p.StartDate)
                 .ToList();
 
             List<IpnMinYakkaMstModel> results = new List<IpnMinYakkaMstModel>();
@@ -1400,7 +1401,6 @@ namespace CalculateService.Ika.DB.Finder
         public List<IpnMinYakkaMstModel> FindIpnMinYakkaMst(int hpId, int sinDate, List<string> ipnNameCd)
         {
             var entities = _tenantDataContext.IpnMinYakkaMsts.FindListQueryableNoTrack(i =>
-                i.HpId == hpId &&
                 i.StartDate <= sinDate &&
                 i.EndDate >= sinDate &&
                 ipnNameCd.Contains(i.IpnNameCd) &&
@@ -1424,7 +1424,7 @@ namespace CalculateService.Ika.DB.Finder
                 p.KaId == kaId &&
                 p.IsDeleted == DeleteStatus.None)
                 .FirstOrDefault();
-            
+
             if (entities == null)
             {
                 return null;
@@ -1472,7 +1472,7 @@ namespace CalculateService.Ika.DB.Finder
                     p.HpId == hpId &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate //&&
-                    //p.CmtSbt > 0
+                                         //p.CmtSbt > 0
                     )
                 .OrderBy(p => p.HpId)
                 .ThenBy(p => p.ItemCd)
@@ -1489,7 +1489,7 @@ namespace CalculateService.Ika.DB.Finder
                 from recedenCmtSelect in recedenCmtSelects
                 join tenMst in tenMsts on
                     new { recedenCmtSelect.HpId, ItemCd = recedenCmtSelect.CommentCd } equals
-                    new { tenMst.HpId, tenMst.ItemCd } 
+                    new { tenMst.HpId, tenMst.ItemCd }
                 select new
                 {
                     recedenCmtSelect,
@@ -1511,7 +1511,7 @@ namespace CalculateService.Ika.DB.Finder
                 {
                     results.Add(
                         new RecedenCmtSelectModel(
-                            entity.recedenCmtSelect, 
+                            entity.recedenCmtSelect,
                             entity.cmtsbt,
                             entity.cmtcol1,
                             entity.cmtcolketa1,

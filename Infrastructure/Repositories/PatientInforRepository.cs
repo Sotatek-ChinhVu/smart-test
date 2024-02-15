@@ -670,12 +670,11 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
-        public List<TokkiMstModel> GetListTokki(int hpId, int sinDate)
+        public List<TokkiMstModel> GetListTokki(int sinDate)
         {
             return NoTrackingDataContext.TokkiMsts
-                    .Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
-                    .OrderBy(entity => entity.HpId)
-                    .ThenBy(entity => entity.TokkiCd)
+                    .Where(entity => entity.StartDate <= sinDate && entity.EndDate >= sinDate)
+                    .OrderBy(entity => entity.TokkiCd)
                     .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName ?? string.Empty))
                     .ToList();
         }

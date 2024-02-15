@@ -26,7 +26,6 @@ namespace CloudUnitTest.CommonChecker.Finder
             {
                 new IpnNameMst() 
                 {
-                    HpId = hpId,
                     StartDate = 20221231,
                     EndDate = 20230102,
                     SeqNo = 999,

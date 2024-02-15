@@ -43,7 +43,7 @@ namespace Infrastructure.Converter
                 var ipnMinYakka = ipnMinYakkaMstQuery.Where(ipnYakka => ipnYakka.IpnNameCd == detail.IpnCd && ipnYakka.StartDate <= detail.SinDate && ipnYakka.EndDate >= detail.SinDate).OrderByDescending(ipnYakka => ipnYakka.EndDate).FirstOrDefault();
                 if (ipnMinYakka != null)
                 {
-                    ipnMinYakkaMstModel = new IpnMinYakkaMstModel(ipnMinYakka.Id, ipnMinYakka.HpId, ipnMinYakka.IpnNameCd,
+                    ipnMinYakkaMstModel = new IpnMinYakkaMstModel(ipnMinYakka.Id, odrInf.HpId, ipnMinYakka.IpnNameCd,
                         ipnMinYakka.StartDate, ipnMinYakka.EndDate, ipnMinYakka.Yakka, ipnMinYakka.SeqNo, ipnMinYakka.IsDeleted, false);
                 }
 

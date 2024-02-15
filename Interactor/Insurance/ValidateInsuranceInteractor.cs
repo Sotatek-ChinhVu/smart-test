@@ -374,7 +374,7 @@ namespace Interactor.Insurance
             // Validate not HokenInf
             if (item.SelectedHokenPattern.HokenKbn == 1 && item.SelectedHokenInf.Houbetu == HokenConstant.HOUBETU_NASHI)
             {
-                var checkIsValidHokenNashi = IsValidHokenNashi(hpId, sinDate, item.SelectedHokenInf.Tokki1, item.SelectedHokenInf.Tokki2, item.SelectedHokenInf.Tokki3, item.SelectedHokenInf.Tokki4, item.SelectedHokenInf.Tokki5, item.SelectedHokenInf.StartDate, item.SelectedHokenInf.EndDate);
+                var checkIsValidHokenNashi = IsValidHokenNashi(sinDate, item.SelectedHokenInf.Tokki1, item.SelectedHokenInf.Tokki2, item.SelectedHokenInf.Tokki3, item.SelectedHokenInf.Tokki4, item.SelectedHokenInf.Tokki5, item.SelectedHokenInf.StartDate, item.SelectedHokenInf.EndDate);
                 if (!checkIsValidHokenNashi.Result)
                 {
                     return checkIsValidHokenNashi;
@@ -385,7 +385,7 @@ namespace Interactor.Insurance
             {
                 return new ValidateInsuranceItem(true, message, ValidateInsuranceStatus.Successed);
             }
-            var checkIsValidHokenDetail = IsValidHokenDetail(hpId, sinDate, item.SelectedHokenInf.Tokki1, item.SelectedHokenInf.Tokki2, item.SelectedHokenInf.Tokki3, item.SelectedHokenInf.Tokki4, item.SelectedHokenInf.Tokki5);
+            var checkIsValidHokenDetail = IsValidHokenDetail(sinDate, item.SelectedHokenInf.Tokki1, item.SelectedHokenInf.Tokki2, item.SelectedHokenInf.Tokki3, item.SelectedHokenInf.Tokki4, item.SelectedHokenInf.Tokki5);
             if (!checkIsValidHokenDetail.Result)
             {
                 return checkIsValidHokenDetail;
@@ -471,9 +471,9 @@ namespace Interactor.Insurance
             return new ValidateInsuranceItem(true, message, ValidateInsuranceStatus.Successed);
         }
 
-        private ValidateInsuranceItem IsValidHokenNashi(int hpId, int sinDate, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int startDate, int endDate)
+        private ValidateInsuranceItem IsValidHokenNashi(int sinDate, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int startDate, int endDate)
         {
-            var checkIsValidHokenDetail = IsValidHokenDetail(hpId, sinDate, tokki1, tokki2, tokki3, tokki4, tokki5);
+            var checkIsValidHokenDetail = IsValidHokenDetail(sinDate, tokki1, tokki2, tokki3, tokki4, tokki5);
             if (!checkIsValidHokenDetail.Result)
             {
                 return checkIsValidHokenDetail;
@@ -500,9 +500,9 @@ namespace Interactor.Insurance
             return new ValidateInsuranceItem(true, message, ValidateInsuranceStatus.Successed);
         }
 
-        private ValidateInsuranceItem IsValidHokenDetail(int hpId, int sinDate, string tokki1Value, string tokki2Value, string tokki3Value, string tokki4Value, string tokki5Value)
+        private ValidateInsuranceItem IsValidHokenDetail(int sinDate, string tokki1Value, string tokki2Value, string tokki3Value, string tokki4Value, string tokki5Value)
         {
-            var tokkiMstBinding = _patientInforRepository.GetListTokki(hpId, sinDate);
+            var tokkiMstBinding = _patientInforRepository.GetListTokki(sinDate);
             var message = "";
             bool _isValidLengthTokki(string tokkiValue)
             {

@@ -7,28 +7,19 @@ namespace Entity.Tenant
     public class SokatuMst : EmrCloneable<SokatuMst>
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// 
-        /// </summary>
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 都道府県番号
         /// 
         /// </summary>
-        
-        [Column("pref_no", Order = 2)]
+
+        [Column("pref_no")]
         public int PrefNo { get; set; }
 
         /// <summary>
         /// 開始年月
         /// 
         /// </summary>
-        
-        [Column("start_ym", Order = 3)]
+
+        [Column("start_ym")]
         public int StartYm { get; set; }
 
         /// <summary>
@@ -55,16 +46,16 @@ namespace Entity.Tenant
         ///                     105:福祉請求書          
         ///                     106:福祉電子媒体請求          
         /// </summary>
-        
-        [Column("report_id", Order = 4)]
+
+        [Column("report_id")]
         public int ReportId { get; set; }
 
         /// <summary>
         /// 帳票枝番
         /// 帳票ID枝番(都道府県ごとに異なる)
         /// </summary>
-        
-        [Column("report_eda_no", Order = 5)]
+
+        [Column("report_eda_no")]
         public int ReportEdaNo { get; set; }
 
         /// <summary>

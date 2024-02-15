@@ -21,23 +21,40 @@ public class KinkiTainCheckerTest : BaseUT
     {
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+
         var tenMsts = CommonCheckerData.ReadTenMst("T1", "");
         var ptId = 1231;
-        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
-        tenantTracking.TenMsts.AddRange(tenMsts);
-        tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
-        tenantTracking.SaveChanges();
-
-        var hpId = 999;
+        var hpId = tenMsts.FirstOrDefault()?.HpId ?? 1;
         var settingLevel = 4;
         var sinDay = 20230101;
+        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
+        tenantTracking.TenMsts.AddRange(tenMsts);
+        tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
         var addedItemCodes = new List<ItemCodeModel>()
         {
             new("6220816T1", "id1")
         };
 
+        //Setup M01_KINKI
+        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == hpId && p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
+        var m01Kinki = new M01Kinki();
+        if (m01 == null)
+        {
+            m01Kinki.HpId = hpId;
+            m01Kinki.ACd = "1190700";
+            m01Kinki.BCd = "1190700";
+            m01Kinki.CmtCd = "D006";
+            m01Kinki.SayokijyoCd = "S2001";
+            m01Kinki.KyodoCd = "";
+            m01Kinki.Kyodo = "3";
+            m01Kinki.DataKbn = "1";
+
+            tenantTracking.M01Kinki.Add(m01Kinki);
+        }
+        tenantTracking.SaveChanges();
+
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -52,6 +69,10 @@ public class KinkiTainCheckerTest : BaseUT
         {
             tenantTracking.TenMsts.RemoveRange(tenMsts);
             tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
+            if (m01 == null)
+            {
+                tenantTracking.M01Kinki.RemoveRange(m01Kinki);
+            }
             tenantTracking.SaveChanges();
         }
     }
@@ -75,7 +96,7 @@ public class KinkiTainCheckerTest : BaseUT
         };
 
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "620160501" }, sinDay, ptId);
+        cache.InitCache(hpId, new List<string>() { "620160501" }, sinDay, ptId);
         var realTimeCheckerFinder = new RealtimeCheckerFinder(TenantProvider.GetNoTrackingDataContext(), cache);
 
         try
@@ -96,6 +117,7 @@ public class KinkiTainCheckerTest : BaseUT
     [Test]
     public void Test_003_HandleCheckOrderList_KinkiTainCheck_WhenExisitingOtherDrug_ExistingM01Kinki()
     {
+        int hpId = 1;
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -123,10 +145,11 @@ public class KinkiTainCheckerTest : BaseUT
         }
 
         //Setup M01_KINKI
-        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
+        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == 1 && p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
         var m01Kinki = new M01Kinki();
         if (m01 == null)
         {
+            m01Kinki.HpId = 1;
             m01Kinki.ACd = "1190700";
             m01Kinki.BCd = "1190700";
             m01Kinki.CmtCd = "D006";
@@ -142,7 +165,7 @@ public class KinkiTainCheckerTest : BaseUT
 
         int ptId = 1233;
         var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
-        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
+        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
         tenantTracking.SaveChanges();
@@ -196,7 +219,7 @@ public class KinkiTainCheckerTest : BaseUT
         kinkiTainChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "6220816T3" }, 20230505, ptId);
+        cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
         kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -212,7 +235,7 @@ public class KinkiTainCheckerTest : BaseUT
             systemConf.Val = temp;
             tenantTracking.TenMsts.RemoveRange(tenMsts);
             tenantTracking.PtOtherDrug.RemoveRange(ptOtherDrugs);
-            if(m01 == null)
+            if (m01 == null)
             {
                 tenantTracking.M01Kinki.RemoveRange(m01Kinki);
             }
@@ -248,6 +271,7 @@ public class KinkiTainCheckerTest : BaseUT
     [Test]
     public void Test_005_HandleCheckOrderList_KinkiTainCheck_Test_Setting_0()
     {
+        int hpId = 1;
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -275,10 +299,11 @@ public class KinkiTainCheckerTest : BaseUT
         }
 
         //Setup M01_KINKI
-        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
+        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == 1 && p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
         var m01Kinki = new M01Kinki();
         if (m01 == null)
         {
+            m01Kinki.HpId = 1;
             m01Kinki.ACd = "1190700";
             m01Kinki.BCd = "1190700";
             m01Kinki.CmtCd = "D006";
@@ -294,7 +319,7 @@ public class KinkiTainCheckerTest : BaseUT
 
         int ptId = 1233;
         var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
-        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
+        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
         tenantTracking.SaveChanges();
@@ -348,7 +373,7 @@ public class KinkiTainCheckerTest : BaseUT
         kinkiTainChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "6220816T3" }, 20230505, ptId);
+        cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
         kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try
@@ -378,6 +403,7 @@ public class KinkiTainCheckerTest : BaseUT
     [Test]
     public void Test_006_HandleCheckOrderList_KinkiTainCheck_Test_Setting_6()
     {
+        int hpId = 1;
         //Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -405,10 +431,11 @@ public class KinkiTainCheckerTest : BaseUT
         }
 
         //Setup M01_KINKI
-        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
+        var m01 = tenantTracking.M01Kinki.FirstOrDefault(p => p.HpId == 1 && p.ACd == "1190700" && p.BCd == "1190700" && p.CmtCd == "D006" && p.SayokijyoCd == "S2001");
         var m01Kinki = new M01Kinki();
         if (m01 == null)
         {
+            m01Kinki.HpId = 1;
             m01Kinki.ACd = "1190700";
             m01Kinki.BCd = "1190700";
             m01Kinki.CmtCd = "D006";
@@ -424,7 +451,7 @@ public class KinkiTainCheckerTest : BaseUT
 
         int ptId = 1233;
         var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
-        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(ptId);
+        var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);
         tenantTracking.SaveChanges();
@@ -478,7 +505,7 @@ public class KinkiTainCheckerTest : BaseUT
         kinkiTainChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
         var cache = new MasterDataCacheService(TenantProvider);
-        cache.InitCache(new List<string>() { "6220816T3" }, 20230505, ptId);
+        cache.InitCache(kinkiTainChecker.HpID, new List<string>() { "6220816T3" }, 20230505, ptId);
         kinkiTainChecker.InitFinder(tenantNoTracking, cache);
 
         try

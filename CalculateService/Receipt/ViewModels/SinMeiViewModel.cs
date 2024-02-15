@@ -2229,7 +2229,7 @@ namespace CalculateService.Receipt.ViewModels
                     {
                         //if (sinData[i].sinDtl.UnitCd == 0)
                         //{
-                        UnitMstModel unitMst = _receMasterFinder.FindUnitMst(_sinDate, sinData[i].SinDtl.UnitName);
+                        UnitMstModel unitMst = _receMasterFinder.FindUnitMst(_hpId, _sinDate, sinData[i].SinDtl.UnitName);
                         if (unitMst.UnitMst != null)
                         {
                             sinMei.UnitCd = unitMst.UnitCd;
