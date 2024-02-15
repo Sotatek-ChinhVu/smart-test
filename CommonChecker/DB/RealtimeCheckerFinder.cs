@@ -2215,6 +2215,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         dosageResultModel.UnitName = itemInfo?.UnitName ?? string.Empty;
                         dosageResultModel.ItemName = itemInfo?.ItemName ?? string.Empty;
                         dosageResultModel.IsFromUserDefined = true;
+                        dosageResultModel.Weight = weight;
+                        dosageResultModel.Height = height;
                         checkedResult.Add(dosageResultModel);
                     }
                 }
@@ -2490,7 +2492,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     }
                 }
 
-                void _additionDosageResult(ref DosageResultModel dosageResult)
+                void _additionDosageResult(ref DosageResultModel dosageResult, double weight, double height)
                 {
                     dosageResult.Id = firstDosageInfo.Id;
                     dosageResult.ItemCd = firstDosageInfo.ItemCd;
@@ -2498,6 +2500,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     dosageResult.CurrentValue = itemInfo.Suryo;
                     dosageResult.UnitName = itemInfo.UnitName;
                     dosageResult.ItemName = itemInfo.ItemName;
+                    dosageResult.Weight = weight;
+                    dosageResult.Height = height;
                 }
                 // Execute checking
                 DosageResultModel? dosageResultModel = null;
@@ -2561,7 +2565,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                     if (dosageResultModel != null)
                     {
-                        _additionDosageResult(ref dosageResultModel);
+                        _additionDosageResult(ref dosageResultModel,  weight, height);
                         checkedResult.Add(dosageResultModel);
                     }
 
@@ -2570,7 +2574,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         dosageResultModel = new DosageResultModel() { LabelChecking = DosageLabelChecking.TermLimit };
                         dosageResultModel.SuggestedValue = GetSuggestedValue(limitByTerm, factor, odrCnv, false);
-                        _additionDosageResult(ref dosageResultModel);
+                        _additionDosageResult(ref dosageResultModel, weight,  height);
                         dosageResultModel.CurrentValue = itemInfo.Suryo * itemInfo.UsageQuantity;
                         checkedResult.Add(dosageResultModel);
                     }
@@ -2591,7 +2595,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                     if (dosageResultModel != null)
                     {
-                        _additionDosageResult(ref dosageResultModel);
+                        _additionDosageResult(ref dosageResultModel, weight, height);
                         checkedResult.Add(dosageResultModel);
                     }
                 }
@@ -2622,7 +2626,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                     if (dosageResultModel != null)
                     {
-                        _additionDosageResult(ref dosageResultModel);
+                        _additionDosageResult(ref dosageResultModel, weight, height);
                         checkedResult.Add(dosageResultModel);
                     }
                 }

@@ -1395,6 +1395,8 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             errorInfoModel.ThridCellContent = itemName;
             errorInfoModel.FourthCellContent = dosage.CurrentValue + dosage.UnitName;
             errorInfoModel.SuggestedContent = "／" + dosage.SuggestedValue + dosage.UnitName;
+            errorInfoModel.Weight = dosage.Weight;
+            errorInfoModel.Height = dosage.Height;
 
             string levelTitle = string.Empty;
             switch (dosage.LabelChecking)
