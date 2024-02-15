@@ -197,7 +197,6 @@ public class YousikiController : AuthorizeControllerBase
             var valueModifierDiagnosticInjurys = "";
             prefixString = "";
             suffixString = "";
-            fullByomei = "";
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
 
             foreach (var value in yousiki1InfDetailRequest.PrefixSuffixList ?? new())
