@@ -188,7 +188,6 @@ public class YousikiController : AuthorizeControllerBase
             var valueModifierDiagnosticInjurys = "";
             prefixString = "";
             suffixString = "";
-            fullByomei = "";
             var isDeleted = yousiki1InfDetailRequest.IsDeleted ? 1 : 0;
             codeNo = "CD00001";
             var rowNo = yousiki1InfDetailRequest.SortNo;
