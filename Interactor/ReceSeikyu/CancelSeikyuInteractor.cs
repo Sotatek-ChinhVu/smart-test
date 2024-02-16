@@ -41,7 +41,7 @@ public class CancelSeikyuInteractor : ICancelSeikyuInputPort
                 receSeikyu.UpdateReceSeikyuModel(seqNo, 1, receSeikyuDuplicate.PreHokenId, receSeikyuDuplicate.Cmt);
                 _receSeikyuRepository.UpdateReceSeikyu(new List<ReceSeikyuModel>() { receSeikyu }, inputData.UserId, inputData.HpId);
             }
-            _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long>() { inputData.PtId }, inputData.SeikyuYm, string.Empty));
+            _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.HpId, new List<long>() { inputData.PtId }, inputData.SeikyuYm, string.Empty));
             return new CancelSeikyuOutputData(CancelSeikyuStatus.Successed);
         }
         finally

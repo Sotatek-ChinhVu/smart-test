@@ -128,7 +128,7 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
         {
             ReceFutanViewModel receFutanViewModel = new ReceFutanViewModel(_tenantProvider, _systemConfigProvider, _emrLogger, null);
 
-            receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, sinYm, string.Empty);
+            receFutanViewModel.ReceFutanCalculateMain(hpId, new List<long> { ptId }, sinYm, string.Empty);
 
             var receSeikyu = CoModelFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
             if (receSeikyu != null)
@@ -138,14 +138,14 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
                     var receInf = CoModelFinder.GetReceInf(hpId, ptId, hokenId, sinYm, receSeikyu.SeikyuYm);
                     if (receInf == null)
                     {
-                        receFutanViewModel.ReceFutanCalculateMain(new List<long> { ptId }, receSeikyu.SeikyuYm, string.Empty);
+                        receFutanViewModel.ReceFutanCalculateMain(hpId, new List<long> { ptId }, receSeikyu.SeikyuYm, string.Empty);
                         HokenId = hokenId;
                         SeikyuYm = receSeikyu.SeikyuYm;
                     }
                 }
                 else
                 {
-                    var receInfModels = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+                    var receInfModels = receFutanViewModel.KaikeiTotalCalculate(hpId, ptId, sinYm);
                     var receFutanKbnModels = receFutanViewModel.ReceFutanKbns;
                     var receInf = receInfModels.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
                     if (receInf != null)
