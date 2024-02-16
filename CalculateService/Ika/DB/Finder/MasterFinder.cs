@@ -611,13 +611,14 @@ namespace CalculateService.Ika.DB.Finder
         /// <summary>
         /// 電子算定回数マスタをすべて取得する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <returns></returns>
-        public List<DensiSanteiKaisuModel> FindAllDensiSanteiKaisu()
+        public List<DensiSanteiKaisuModel> FindAllDensiSanteiKaisu(int hpId)
         {
             const string conFncName = nameof(FindAllDensiSanteiKaisu);
 
             var entities = _tenantDataContext.DensiSanteiKaisus.FindListQueryableNoTrack(p =>
-                    p.HpId == Hardcode.HospitalID &&
+                    p.HpId == hpId &&
                     p.IsInvalid == 0 &&
                     unitCdls.Contains(p.UnitCd))
                 .OrderBy(p => p.HpId)
@@ -630,13 +631,14 @@ namespace CalculateService.Ika.DB.Finder
         /// <summary>
         /// 項目グループマスタをすべて取得する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <returns></returns>
-        public List<ItemGrpMstModel> FindAllItemGrpMst()
+        public List<ItemGrpMstModel> FindAllItemGrpMst(int hpId)
         {
             const string conFncName = nameof(FindAllItemGrpMst);
 
             var entities = _tenantDataContext.itemGrpMsts.FindListQueryableNoTrack(p =>
-                    p.HpId == Hardcode.HospitalID)
+                    p.HpId == hpId)
                 .OrderBy(p => p.HpId)
                 .ThenBy(p => p.ItemGrpCd)
                 .ThenBy(p => p.SeqNo)
@@ -1545,10 +1547,18 @@ namespace CalculateService.Ika.DB.Finder
 
             return entities.Select(p => new KouiHoukatuMstModel(p)).ToList();
         }
-        public TenMstModel FindTenMstBySanteiItemCd(string santeiItemCd, int sinDate)
+
+        /// <summary>
+        /// FindTenMstBySanteiItemCd
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="santeiItemCd"></param>
+        /// <param name="sinDate"></param>
+        /// <returns></returns>
+        public TenMstModel FindTenMstBySanteiItemCd(int hpId, string santeiItemCd, int sinDate)
         {
             var entity = _tenantDataContext.TenMsts.FindListQueryableNoTrack(p =>
-                   p.HpId == Hardcode.HospitalID &&
+                   p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
                    p.SanteiItemCd == santeiItemCd)
@@ -1564,6 +1574,7 @@ namespace CalculateService.Ika.DB.Finder
         /// <summary>
         /// コメント項目を文字列展開する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="sinDate">診療日</param>
         /// <param name="itemCd">診療行為コード</param>
         /// <param name="cmtCol">位置（1文字目を1とした位置）※C#の文字列は0始まりで処理するので注意！</param>
@@ -1573,7 +1584,7 @@ namespace CalculateService.Ika.DB.Finder
         /// <param name="comment">コメント文</param>
         /// <param name="maskEdit"></param>
         /// <returns>展開したコメントを返す</returns>
-        public string GetCommentStr(int sinDate, string itemCd, List<int> cmtCol, List<int> cmtLen, string oldName, string newName, ref string comment, bool maskEdit = false)
+        public string GetCommentStr(int hpId, int sinDate, string itemCd, List<int> cmtCol, List<int> cmtLen, string oldName, string newName, ref string comment, bool maskEdit = false)
         {
             string ret = oldName;
 
@@ -1581,7 +1592,7 @@ namespace CalculateService.Ika.DB.Finder
             {
                 string receName = "";
 
-                TenMstModel tenMst = FindTenMstBySanteiItemCd(CIUtil.ToNarrow(santeiItemCd), sinDate);
+                TenMstModel tenMst = FindTenMstBySanteiItemCd(hpId, CIUtil.ToNarrow(santeiItemCd), sinDate);
 
                 if (tenMst != null)
                 {

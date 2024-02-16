@@ -102,7 +102,7 @@ namespace CalculateService.Ika.ViewModels
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
-        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
+        public IkaCalculateViewModel(int hpId, IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _iFutancalcViewModel = iFutancalcViewModel;
             // 変数初期化
@@ -120,7 +120,7 @@ namespace CalculateService.Ika.ViewModels
 
             // 点数マスタのキャッシュ
             //_cacheTenMst = new List<TenMstModel>();
-            _cacheTenMst = GetDefaultTenMst();
+            _cacheTenMst = GetDefaultTenMst(hpId);
             _messenger = messenger;
             // 電子算定回数マスタのキャッシュ
             //_cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
@@ -254,9 +254,9 @@ namespace CalculateService.Ika.ViewModels
             const string conFncName = nameof(RunCalculate);
 
             // 電子算定回数マスタのキャッシュ
-            _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
+            _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu(hpId);
             // 項目グループマスタのキャッシュ
-            _cacheItemGrpMst = _masterFinder.FindAllItemGrpMst();
+            _cacheItemGrpMst = _masterFinder.FindAllItemGrpMst(hpId);
             // 行為包括マスタのキャッシュ
             _cacheKouiHoukatuMst = _masterFinder.FindKouiHoukatuMst();
 
@@ -418,10 +418,10 @@ namespace CalculateService.Ika.ViewModels
                     else
                     {
                         //計算準備
-                        StartCalculate(calcStatus.HpId, calcStatus.PtId, calcStatus.SinDate, calcStatus.SeikyuUp, calcStatus.CalcMode, preFix);
+                        StartCalculate(hpId, calcStatus.PtId, calcStatus.SinDate, calcStatus.SeikyuUp, calcStatus.CalcMode, preFix);
 
                         //計算処理
-                        bool ret = MainCalculate();
+                        bool ret = MainCalculate(hpId);
 
                         // 点数マスタのキャッシュを受け取り（次回の計算に引き継ぐため）
                         _cacheTenMst = _common.CacheTenMst;
@@ -438,7 +438,7 @@ namespace CalculateService.Ika.ViewModels
                             FutancalcViewModel FutanCalcVM = new FutancalcViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
                             try
                             {
-                                FutanCalcVM.FutanCalculation(_common.ptId, _common.sinDate, argSinKouiCountModels, argSinKouiModels, argSinKouiDetailModels, argSinRpInfModels, calcStatus.SeikyuUp);
+                                FutanCalcVM.FutanCalculation(hpId, _common.ptId, _common.sinDate, argSinKouiCountModels, argSinKouiModels, argSinKouiDetailModels, argSinRpInfModels, calcStatus.SeikyuUp);
                             }
                             catch (Exception e)
                             {
@@ -821,7 +821,8 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// メインの計算ロジック
         /// </summary>
-        public bool MainCalculate()
+        /// <param name="hpId">HospitalID</param>
+        public bool MainCalculate(int hpId)
         {
             const string conFncName = nameof(MainCalculate);
             _emrLogger.WriteLogStart(this, conFncName, "");
@@ -874,13 +875,13 @@ namespace CalculateService.Ika.ViewModels
                             }
 
                             //オーダー情報からワーク情報へ変換
-                            OdrToWrk();
+                            OdrToWrk(hpId);
 
                             ////背反等調整処理
                             if ((_common.syosai != SyosaiConst.Jihi) && _raiinInfModels.Count() > 1)
                             {
                                 // 同日複数来院がある場合は2回チェックする
-                                AdjustWrk(true);
+                                AdjustWrk(hpId,true);
                             }
 
                             ////ワーク情報から算定情報へ変換
@@ -908,7 +909,7 @@ namespace CalculateService.Ika.ViewModels
                             _common.Wrk.wrkSinKouiDetails.Any(p => p.RaiinNo == _common.raiinNo && p.HokenKbn == hokenKbn))
                         {
                             //背反等調整処理
-                            AdjustWrk(false);
+                            AdjustWrk(hpId,false);
                         }
 
                         hokenKbn++;
@@ -990,8 +991,9 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 頻用自動発生項目の点数マスタを取得
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <returns></returns>
-        private List<TenMstModel> GetDefaultTenMst()
+        private List<TenMstModel> GetDefaultTenMst(int hpId)
         {
             List<string> itemCds = new List<string>()
             {
@@ -1080,12 +1082,13 @@ namespace CalculateService.Ika.ViewModels
                 ItemCdConst.CommentFree
             };
 
-            return _masterFinder.FindTenMstByItemCd(Hardcode.HospitalID, itemCds);
+            return _masterFinder.FindTenMstByItemCd(hpId, itemCds);
         }
 
         /// <summary>
         /// 試算処理
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="todayOdrInfs">本日のオーダー内容</param>
         /// <param name="reception">来院情報</param>
         /// <param name="calcFutan">true-負担金計算を行う</param>
@@ -1094,7 +1097,7 @@ namespace CalculateService.Ika.ViewModels
         ///     診療明細情報
         ///     会計情報
         /// </returns>
-        public (List<SinMeiDataModel> sinMeis, List<Futan.Models.KaikeiInfModel> kaikeis, List<CalcLogModel> calcLogs) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
+        public (List<SinMeiDataModel> sinMeis, List<Futan.Models.KaikeiInfModel> kaikeis, List<CalcLogModel> calcLogs) RunTraialCalculate(int hpId, List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
         {
             const string conFncName = nameof(RunTraialCalculate);
 
@@ -1112,7 +1115,7 @@ namespace CalculateService.Ika.ViewModels
                 if (todayOdrInfs.First().SinDate <= 20180331)
                 {
                     CalcLogModel addCalcLog = new CalcLogModel(new CalcLog());
-                    addCalcLog.HpId = Hardcode.HospitalID;
+                    addCalcLog.HpId = hpId;
                     addCalcLog.PtId = todayOdrInfs.First().PtId;
                     addCalcLog.SinDate = todayOdrInfs.First().SinDate;
                     addCalcLog.RaiinNo = todayOdrInfs.First().RaiinNo;
@@ -1132,9 +1135,9 @@ namespace CalculateService.Ika.ViewModels
                 else
                 {
                     // 電子算定回数マスタのキャッシュ
-                    _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
+                    _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu(hpId);
                     // 項目グループマスタのキャッシュ
-                    _cacheItemGrpMst = _masterFinder.FindAllItemGrpMst();
+                    _cacheItemGrpMst = _masterFinder.FindAllItemGrpMst(hpId);
                     // 行為包括マスタのキャッシュ
                     _cacheKouiHoukatuMst = _masterFinder.FindKouiHoukatuMst();
 
@@ -1159,7 +1162,8 @@ namespace CalculateService.Ika.ViewModels
                             FutancalcViewModel FtanCalcVM = new FutancalcViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
                             List<Futan.Models.RaiinInfModel> raiinInfs = new List<Futan.Models.RaiinInfModel>();
                             raiinInfs.Add(new Futan.Models.RaiinInfModel(reception.RaiinInf));
-                            retKaikeiInfModels = FtanCalcVM.TrialFutanCalculation(_common.ptId,
+                            retKaikeiInfModels = FtanCalcVM.TrialFutanCalculation(hpId,
+                                                                                  _common.ptId,
                                                                                   _common.sinDate,
                                                                                   _common.raiinNo,
                                                                                   argSinKouiCountModels,
@@ -1306,7 +1310,7 @@ namespace CalculateService.Ika.ViewModels
                                 }
 
                                 //オーダー情報からワーク情報へ変換
-                                OdrToWrk();
+                                OdrToWrk(hpId);
 
                             }
 
@@ -1322,7 +1326,7 @@ namespace CalculateService.Ika.ViewModels
                                 _common.Wrk.wrkSinKouiDetails.Any(p => p.RaiinNo == _common.raiinNo && p.HokenKbn == hokenKbn))
                             {
                                 //背反等調整処理
-                                AdjustWrk(false);
+                                AdjustWrk(hpId, false);
                             }
 
                             hokenKbn++;
@@ -1387,7 +1391,8 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// オーダーからワークへ変換
         /// </summary>
-        private void OdrToWrk()
+        /// <param name="hpId">HospitalID</param>
+        private void OdrToWrk(int hpId)
         {
             const string conFncName = nameof(OdrToWrk);
 
@@ -1396,44 +1401,44 @@ namespace CalculateService.Ika.ViewModels
             try
             {
                 // 初再診
-                new IkaCalculateOdrToWrkSyosaiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                new IkaCalculateOdrToWrkSyosaiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                 if (_common.syosai != SyosaiConst.Jihi)
                 {
                     // 医学管理
-                    new IkaCalculateOdrToWrkIgakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkIgakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 在宅
-                    new IkaCalculateOdrToWrkZaitakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkZaitakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 検査・病理
-                    new IkaCalculateOdrToWrkKensaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkKensaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 画像
-                    new IkaCalculateOdrToWrkGazoViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkGazoViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 投薬
-                    new IkaCalculateOdrToWrkTouyakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkTouyakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 注射
-                    new IkaCalculateOdrToWrkChusyaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkChusyaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // その他
-                    new IkaCalculateOdrToWrkSonotaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkSonotaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 処置
-                    new IkaCalculateOdrToWrkSyotiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkSyotiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 手術・麻酔
-                    new IkaCalculateOdrToWrkSyujyutuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkSyujyutuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
 
                     // 自費
-                    new IkaCalculateOdrToWrkJihiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkJihiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
                 }
                 else
                 {
                     // 医科計算なし
-                    new IkaCalculateOdrToWrkNoIkaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    new IkaCalculateOdrToWrkNoIkaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate(hpId);
                 }
             }
             catch (Exception e)
@@ -1448,9 +1453,10 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 調整処理
         /// </summary>
-        private void AdjustWrk(bool first)
+        /// <param name="hpId">HospitalID</param>
+        private void AdjustWrk(int hpId, bool first)
         {
-            new IkaCalculateAdjustViewModel(_common, _systemConfigProvider, _emrLogger).Adjust(first);
+            new IkaCalculateAdjustViewModel(_common, _systemConfigProvider, _emrLogger).Adjust(hpId, first);
         }
 
         /// <summary>
@@ -1465,12 +1471,12 @@ namespace CalculateService.Ika.ViewModels
         {
             get
             {
-                if(string.IsNullOrEmpty(_uuid))
+                if (string.IsNullOrEmpty(_uuid))
                 {
                     _uuid = Guid.NewGuid().ToString();
                 }
                 return _uuid;
-            }            
+            }
         }
 
         public void Dispose()

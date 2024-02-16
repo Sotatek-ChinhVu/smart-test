@@ -119,6 +119,7 @@ namespace CalculateService.Futan.ViewModels
         /// <summary>
         /// 負担金計算
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="ptId">患者ID</param>
         /// <param name="sinDate">診療日</param>
         /// <param name="raiinNo">来院番号</param>
@@ -128,6 +129,7 @@ namespace CalculateService.Futan.ViewModels
         /// <param name="sinRpInfs">診療Rp情報(点数計算の結果/当月分)</param>
         /// <param name="seikyuUp">請求情報更新(0:反映しない 1:反映する)</param>
         public void FutanCalculation(
+            int hpId,
             long ptId, int sinDate,
             List<SinKouiCountModel> sinKouiCounts, List<SinKouiModel> sinKouis,
             List<SinKouiDetailModel> sinKouiDetails, List<SinRpInfModel> sinRpInfs,
@@ -135,13 +137,14 @@ namespace CalculateService.Futan.ViewModels
         )
         {
             FutanCalculateMain(
-                ptId, sinDate, default, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, null, seikyuUp
+                hpId, ptId, sinDate, default, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, null, seikyuUp
             );
         }
 
         /// <summary>
         /// 試算（データベースに登録しない）
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="ptId">患者ID</param>
         /// <param name="sinDate">診療日</param>
         /// <param name="raiinNo">来院番号</param>
@@ -150,6 +153,7 @@ namespace CalculateService.Futan.ViewModels
         /// <param name="sinKouiDetails">診療行為詳細(点数計算の結果/当月分)</param>
         /// <param name="sinRpInfs">診療Rp情報(点数計算の結果/当月分)</param>
         public List<KaikeiInfModel> TrialFutanCalculation(
+            int hpId,
             long ptId, int sinDate, long raiinNo,
             List<SinKouiCountModel> sinKouiCounts, List<SinKouiModel> sinKouis,
             List<SinKouiDetailModel> sinKouiDetails, List<SinRpInfModel> sinRpInfs,
@@ -157,7 +161,7 @@ namespace CalculateService.Futan.ViewModels
         )
         {
             FutanCalculateMain(
-                ptId, sinDate, raiinNo, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, raiinInfs, default
+               hpId, ptId, sinDate, raiinNo, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, raiinInfs, default
             );
 
             return KaikeiInfs;
@@ -166,6 +170,7 @@ namespace CalculateService.Futan.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="ptId">患者ID</param>
         /// <param name="sinDate">診療日</param>
         /// <param name="raiinNo">来院番号</param>
@@ -175,6 +180,7 @@ namespace CalculateService.Futan.ViewModels
         /// <param name="sinRpInfs">診療Rp情報(点数計算の結果/当月分)</param>
         /// <param name="seikyuUp">請求情報更新(0:反映しない 1:反映する)</param>
         private void FutanCalculateMain(
+            int hpId,
             long ptId, int sinDate, long raiinNo,
             List<SinKouiCountModel> sinKouiCounts, List<SinKouiModel> sinKouis,
             List<SinKouiDetailModel> sinKouiDetails, List<SinRpInfModel> sinRpInfs,
@@ -191,7 +197,7 @@ namespace CalculateService.Futan.ViewModels
 
             //来院情報の取得
             List<RaiinTensuModel> raiinTensus = _raiinInfFinder.FindRaiinInf(
-                Hardcode.HospitalID, ptId, sinDate, raiinNo,
+                hpId, ptId, sinDate, raiinNo,
                 //sinKouiCountModels, sinKouiModels, sinKouiDetailModels, sinRpInfModels
                 ref sinKouiCounts, ref sinKouis, ref sinKouiDetails, ref sinRpInfs, ref raiinInfs
             );
@@ -202,7 +208,7 @@ namespace CalculateService.Futan.ViewModels
             //会計詳細情報取得（月単位）
             //  ※削除前に当日分も含めて取得する
             KaikeiTotalDetails = _futancalcFinder.FindTotalKaikeiDetail(
-                Hardcode.HospitalID, ptId, sinDate
+                hpId, ptId, sinDate
             );
 
             if (!trialCalc)
@@ -211,7 +217,7 @@ namespace CalculateService.Futan.ViewModels
 
                 //計算結果初期化
                 _clearCommandHandler.ClearCalculate(
-                    Hardcode.HospitalID,
+                    hpId,
                     ptId,
                     sinDate,
                     raiinNos

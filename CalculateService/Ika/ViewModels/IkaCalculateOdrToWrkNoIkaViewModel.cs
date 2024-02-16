@@ -27,33 +27,35 @@ namespace CalculateService.Ika.ViewModels
             ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             _common = common;
-            _systemConfigProvider= systemConfigProvider;
-            _emrLogger= emrLogger;
+            _systemConfigProvider = systemConfigProvider;
+            _emrLogger = emrLogger;
         }
 
         /// <summary>
         /// 計算ロジック
         /// </summary>
-        public void Calculate()
+        /// <param name="hpId">HospitalID</param>
+        public void Calculate(int hpId)
         {
             const string conFncName = nameof(Calculate);
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.Igaku, 999))
             {
                 // 保険
-                CalculateHoken();
+                CalculateHoken(hpId);
             }
 
             _common.Wrk.CommitWrkSinRpInf();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
         /// 保険分を処理する
         /// </summary>
-        private void CalculateHoken()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateHoken(int hpId)
         {
             const string conFncName = nameof(CalculateHoken);
 
@@ -112,7 +114,7 @@ namespace CalculateService.Ika.ViewModels
                                         }
                                     }
                                 }
-                                _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                 if (odrDtl.JihiSbt > 0 && _common.Wrk.wrkSinKouis.Last().JihiSbt <= 0)
                                 {
@@ -164,7 +166,7 @@ namespace CalculateService.Ika.ViewModels
                                             comment += "（" + odrDtl.Suryo.ToString() + odrDtl.UnitName + "）";
                                         }
 
-                                        _common.Wrk.AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentFree, comment);
+                                        _common.Wrk.AppendNewWrkSinKouiDetailCommentRecord(hpId, ItemCdConst.CommentFree, comment);
                                     }
                                 }
                                 commentSkipFlg = true;
@@ -172,7 +174,7 @@ namespace CalculateService.Ika.ViewModels
                             else if (odrDtl.IsYorCommentItem(commentSkipFlg))
                             {
                                 // 薬剤・コメント
-                                _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                 if (odrInf.OdrKouiKbn >= OdrKouiKbnConst.Naifuku && odrInf.OdrKouiKbn <= OdrKouiKbnConst.Gaiyo)
                                 {
@@ -216,7 +218,7 @@ namespace CalculateService.Ika.ViewModels
                             if (odrDtl.IsTorCommentItem(commentSkipFlg))
                             {
                                 // 特材・コメント
-                                _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                 if (odrInf.OdrKouiKbn >= OdrKouiKbnConst.Naifuku && odrInf.OdrKouiKbn <= OdrKouiKbnConst.Gaiyo)
                                 {
@@ -289,7 +291,7 @@ namespace CalculateService.Ika.ViewModels
                 #endregion
 
                 int val = 0;
-                if(dic.TryGetValue(AodrInf.OdrKouiKbn, out val))
+                if (dic.TryGetValue(AodrInf.OdrKouiKbn, out val))
                 {
                     ret = val;
                 }
