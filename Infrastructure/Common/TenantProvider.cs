@@ -42,53 +42,53 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-#if DEBUG
-            var queryString = _httpContextAccessor.HttpContext?.Request?.Path.Value ?? string.Empty + _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
-            if (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV"))
-            {
-                if (!string.IsNullOrEmpty(queryString) && _cache.KeyExists(queryString))
-                {
-                    return _cache.StringGet(queryString).ToString();
-                }
-            }
+//#if DEBUG
+//            var queryString = _httpContextAccessor.HttpContext?.Request?.Path.Value ?? string.Empty + _httpContextAccessor.HttpContext?.Request?.QueryString.Value ?? string.Empty;
+//            if (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV"))
+//            {
+//                if (!string.IsNullOrEmpty(queryString) && _cache.KeyExists(queryString))
+//                {
+//                    return _cache.StringGet(queryString).ToString();
+//                }
+//            }
 
-            string dbSample = _configuration["TenantDb"] ?? string.Empty;
-            string clientDomain = GetDomainFromHeader();
-            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
-            if (string.IsNullOrEmpty(clientDomain))
-            {
-                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-                {
-                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
-                }
-                return dbSample;
-            }
-            var domainList = _configuration.GetSection("DomainList").Path;
-            if (string.IsNullOrEmpty(domainList))
-            {
-                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-                {
-                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
-                }
-                return dbSample;
-            }
-            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
-            if (string.IsNullOrEmpty(clientDomainInConfig))
-            {
-                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-                {
-                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
-                }
-                return dbSample;
-            }
+//            string dbSample = _configuration["TenantDb"] ?? string.Empty;
+//            string clientDomain = GetDomainFromHeader();
+//            clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
+//            if (string.IsNullOrEmpty(clientDomain))
+//            {
+//                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+//                {
+//                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
+//                }
+//                return dbSample;
+//            }
+//            var domainList = _configuration.GetSection("DomainList").Path;
+//            if (string.IsNullOrEmpty(domainList))
+//            {
+//                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+//                {
+//                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
+//                }
+//                return dbSample;
+//            }
+//            var clientDomainInConfig = _configuration[domainList + ":" + clientDomain] ?? string.Empty;
+//            if (string.IsNullOrEmpty(clientDomainInConfig))
+//            {
+//                if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+//                {
+//                    _cache.StringSet(queryString, dbSample, new TimeSpan(0, 0, 0, 10));
+//                }
+//                return dbSample;
+//            }
 
-            if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
-            {
-                _cache.StringSet(queryString, clientDomainInConfig, new TimeSpan(0, 0, 0, 10));
-            }
+//            if (!string.IsNullOrEmpty(queryString) && (queryString.Contains("PdfCreator") || queryString.Contains("ExportCSV") || queryString.Contains("ImportCSV")))
+//            {
+//                _cache.StringSet(queryString, clientDomainInConfig, new TimeSpan(0, 0, 0, 10));
+//            }
 
-            return clientDomainInConfig;
-#else
+//            return clientDomainInConfig;
+//#else
             string clientDomain = GetDomainFromHeader();
             clientDomain = string.IsNullOrEmpty(clientDomain) ? GetDomainFromQueryString() : clientDomain;
             if (string.IsNullOrEmpty(clientDomain))
@@ -116,7 +116,7 @@ namespace Infrastructure.CommonDB
             superAdminNoTrackingDataContext.Dispose();
 
             return tenantDb;
-#endif
+//#endif
         }
 
         public string GetAdminConnectionString()
