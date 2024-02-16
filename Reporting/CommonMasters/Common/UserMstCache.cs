@@ -27,11 +27,18 @@ public class UserMstCache : RepositoryBase, IUserMstCache
         RefreshData();
     }
 
-    public void RefreshData()
+    public void RefreshData(int hpId = 0)
     {
         lock (_threadsafelock)
         {
-            _allOfUserMst = NoTrackingDataContext.UserMsts.Where(p => p.HpId == Session.HospitalID).ToList();
+            if (hpId <= 0)
+            {
+                _allOfUserMst = NoTrackingDataContext.UserMsts.ToList();
+            }
+            else
+            {
+                _allOfUserMst = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId).ToList();
+            }
         }
     }
 
@@ -51,17 +58,17 @@ public class UserMstCache : RepositoryBase, IUserMstCache
         }
     }
 
-    public string GetUserSNameByUserId(int userId, bool fromLastestDb = false)
+    public string GetUserSNameByUserId(int hpId, int userId, bool fromLastestDb = false)
     {
-        UserMst userMst = GetUserMst(userId, 0, fromLastestDb);
+        UserMst userMst = GetUserMst(hpId, userId, 0, fromLastestDb);
         return userMst == null ? string.Empty : userMst.Sname ?? string.Empty;
     }
 
-    public string GetUserSNameIncludedDeleted(int userId, bool fromLastestDb = false)
+    public string GetUserSNameIncludedDeleted(int hpId, int userId, bool fromLastestDb = false)
     {
-        if (fromLastestDb) RefreshData();
+        if (fromLastestDb) RefreshData(hpId);
 
-        UserMst userMst = _allOfUserMst?.FirstOrDefault(p => p.UserId == userId) ?? new();
+        UserMst userMst = _allOfUserMst?.FirstOrDefault(p => p.HpId == hpId && p.UserId == userId) ?? new();
         return userMst == null ? string.Empty : userMst.Sname ?? string.Empty;
     }
 
@@ -72,11 +79,11 @@ public class UserMstCache : RepositoryBase, IUserMstCache
     /// <param name="sinDate"></param>
     /// <param name="fromLastestDb"></param>
     /// <returns></returns>
-    public UserMst GetUserMst(int userId, int sinDate, bool fromLastestDb = false)
+    public UserMst GetUserMst(int hpId, int userId, int sinDate, bool fromLastestDb = false)
     {
         lock (_threadsafelock)
         {
-            if (fromLastestDb) RefreshData();
+            if (fromLastestDb) RefreshData(hpId);
             return _listUserMst.FirstOrDefault(p => p.UserId == userId && (sinDate <= 0 || p.StartDate <= sinDate && p.EndDate >= sinDate)) ?? new();
         }
     }

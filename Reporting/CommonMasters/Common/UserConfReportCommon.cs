@@ -37,11 +37,18 @@ public class UserConfReportCommon : RepositoryBase, IUserConfReportCommon
         InitConfigDefaultValue();
     }
 
-    public void RefreshData()
+    public void RefreshData(int hpId = 0)
     {
         lock (_threadsafelock)
         {
-            _userConfigs = NoTrackingDataContext.UserConfs.Where(p => p.HpId == Session.HospitalID && p.UserId == Session.UserID).ToList();
+            if(hpId <= 0)
+            {
+                _userConfigs = NoTrackingDataContext.UserConfs.Where(p => p.UserId == Session.UserID).ToList();
+            }
+            else
+            {
+                _userConfigs = NoTrackingDataContext.UserConfs.Where(p => p.HpId == hpId && p.UserId == Session.UserID).ToList();
+            }
             ChangedData?.Invoke();
         }
     }
@@ -202,29 +209,29 @@ public class UserConfReportCommon : RepositoryBase, IUserConfReportCommon
         return 0;
     }
 
-    public int GetSettingValue(int groupCd, int grpItemCd = 0, bool fromLastestDb = false, int grpItemEdaNo = 0)
+    public int GetSettingValue(int hpId, int groupCd, int grpItemCd = 0, bool fromLastestDb = false, int grpItemEdaNo = 0)
     {
         lock (_threadsafelock)
         {
             UserConf userConf;
             if (!fromLastestDb)
             {
-                userConf = _userConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.GrpItemEdaNo == grpItemEdaNo) ?? new();
+                userConf = _userConfigs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.GrpItemEdaNo == grpItemEdaNo) ?? new();
             }
             else
             {
                 userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
-                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.GrpItemEdaNo == grpItemEdaNo && p.UserId == Session.UserID) ?? new();
+                    p.HpId == hpId && p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.GrpItemEdaNo == grpItemEdaNo && p.UserId == Session.UserID) ?? new();
             }
             return userConf != null ? userConf.Val : GetDefaultValue(groupCd, grpItemCd);
         }
     }
 
-    public int DisplaySetName() { return GetSettingValue(202, 2); }
+    public int DisplaySetName(int hpId) { return GetSettingValue(hpId, 202, 2); }
 
-    public int DisplayUserInput() { return GetSettingValue(202, 3); }
+    public int DisplayUserInput(int hpId) { return GetSettingValue(hpId, 202, 3); }
 
-    public int DisplayTimeInput() { return GetSettingValue(202, 4); }
+    public int DisplayTimeInput(int hpId) { return GetSettingValue(hpId, 202, 4); }
 
-    public int DisplayDrugPrice() { return GetSettingValue(202, 5); }
+    public int DisplayDrugPrice(int hpId) { return GetSettingValue(hpId, 202, 5); }
 }
