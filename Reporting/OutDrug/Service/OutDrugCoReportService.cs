@@ -218,7 +218,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         string printDataId2 = string.Empty;
 
         int repeatMax = 1;
-        if (_systemConfig.SyohosenHikae() == 1)
+        if (_systemConfig.SyohosenHikae(hpId) == 1)
         {
             // 控えを印刷する場合、2回実行する
             repeatMax = 2;
@@ -425,7 +425,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 }
                 else
                 {
-                    return _systemConfig.SyohosenRefillZero();
+                    return _systemConfig.SyohosenRefillZero(hpId);
                 }
             }
 
@@ -434,9 +434,9 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             {
                 string ret = string.Empty;
 
-                if (_systemConfig.SyohosenFutanRate() != 0)
+                if (_systemConfig.SyohosenFutanRate(hpId) != 0)
                 {
-                    if (_coModel.PrintData?.KohiCount > 0 && _systemConfig.SyohosenFutanRate() == 2)
+                    if (_coModel.PrintData?.KohiCount > 0 && _systemConfig.SyohosenFutanRate(hpId) == 2)
                     {
                         // 公費併用時印字しない設定の場合
                     }
@@ -541,7 +541,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             setFieldDataPerPage.Add("dfRefill", _getRefillCount(_coModel.PrintData?.RefillCount ?? 0));
 
             // リフィル処方でない場合に取り消し線を引くオプション
-            if (_coModel.PrintData?.RefillCount == 0 && _systemConfig.SyohosenRefillStrikeLine() == 1)
+            if (_coModel.PrintData?.RefillCount == 0 && _systemConfig.SyohosenRefillStrikeLine(hpId) == 1)
             {
                 textDeleteLinePerPage.Add("lblRefill", (int)ConDecorateLine.Double);
             }
@@ -641,7 +641,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             // 項目と備考、どちらか印字しきれてないものがある場合、_hasNextPage = true
             _hasNextPage = dataHasNextPage || bikoHasNextPage;
 
-            if (!_hasNextPage && _systemConfig.SyohosenQRKbn() == 1)
+            if (!_hasNextPage && _systemConfig.SyohosenQRKbn(hpId) == 1)
             {
                 // QRを印字する場合
                 //余り行数 = (項目リストの行数 - (データ量 % 項目リストの行数))
@@ -1137,7 +1137,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
         // QRコードのバージョン
         string version = QRVersion.Jahis5;
-        switch (_systemConfig.SyohosenQRVersion())
+        switch (_systemConfig.SyohosenQRVersion(hpId))
         {
             case 1:
                 version = QRVersion.Jahis7;
@@ -1416,7 +1416,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         if (i == 0)
                         {
                             // 健保の場合
-                            if (_systemConfig.SyohosenKouiDivide() == 1)
+                            if (_systemConfig.SyohosenKouiDivide(hpId) == 1)
                             {
                                 // 行為を分けて出力
                                 filteredOdrInfs =
@@ -1451,7 +1451,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         else
                         {
                             // 健保以外の場合
-                            if (_systemConfig.SyohosenKouiDivide() == 1)
+                            if (_systemConfig.SyohosenKouiDivide(hpId) == 1)
                             {
                                 // 行為を分けて出力
                                 filteredOdrInfs =
@@ -1490,7 +1490,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         string accessCd = string.Empty;
 
                         // 電子処方箋対応 
-                        if (_systemConfig.ElectronicPrescriptionLicense() > 0 && i == 0)
+                        if (_systemConfig.ElectronicPrescriptionLicense(hpId) > 0 && i == 0)
                         {
                             List<CoEpsPrescription> filteredEpsPrescriptions = new();
                             if (string.IsNullOrEmpty(ptHoken.HokensyaNo))
@@ -1618,7 +1618,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                             #endregion
 
                             #region 地域包括
-                            if (_systemConfig.SyohosenChiikiHoukatu() == 1)
+                            if (_systemConfig.SyohosenChiikiHoukatu(hpId) == 1)
                             {
                                 #region sub method
                                 void _addBikoSanteiOdrItem(List<string> itemCds, string kigo)
@@ -1962,7 +1962,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                 printData.RpInfs.Add(new CoOutDrugPrintDataRpInf(rpNo, odrInf.KohiFutan));
 
                                 // 臨時処方
-                                if (_systemConfig.SyohosenRinjiKisai() == 1 && odrInf.SyohoSbt == 1)
+                                if (_systemConfig.SyohosenRinjiKisai(hpId) == 1 && odrInf.SyohoSbt == 1)
                                 {
                                     printData.RpInfs.Last().AddDrugInf(ItemTypeConst.NoAstComment, string.Empty, "【臨時処方】", 0, string.Empty);
                                 }
@@ -2047,7 +2047,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                             }
 
                                             yoryo = odrDtl.Suryo;
-                                            if (_systemConfig.SyohosenTani() == 1)
+                                            if (_systemConfig.SyohosenTani(hpId) == 1)
                                             {
                                                 // レセ単位で出力する場合
                                                 if (odrDtl.TermVal > 0)
