@@ -836,9 +836,9 @@ public class ReportService : IReportService
     }
 
     //NameLabel
-    public CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate)
+    public CommonReportingRequestModel GetNameLabelReportingData(int hpId, long ptId, string kanjiName, int sinDate)
     {
-        return _nameLabelService.GetNameLabelReportingData(ptId, kanjiName, sinDate);
+        return _nameLabelService.GetNameLabelReportingData(hpId, ptId, kanjiName, sinDate);
     }
 
     //Sijisen

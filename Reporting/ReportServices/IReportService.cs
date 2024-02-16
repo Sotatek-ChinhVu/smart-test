@@ -19,7 +19,7 @@ namespace Reporting.ReportServices;
 
 public interface IReportService
 {
-    CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate);
+    CommonReportingRequestModel GetNameLabelReportingData(int hpId, long ptId, string kanjiName, int sinDate);
 
     CommonReportingRequestModel GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei);
 
