@@ -102,7 +102,7 @@ namespace CalculateService.Ika.ViewModels
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
-        public IkaCalculateViewModel(int hpId, IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
+        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IMessenger messenger)
         {
             _iFutancalcViewModel = iFutancalcViewModel;
             // 変数初期化
@@ -120,7 +120,7 @@ namespace CalculateService.Ika.ViewModels
 
             // 点数マスタのキャッシュ
             //_cacheTenMst = new List<TenMstModel>();
-            _cacheTenMst = GetDefaultTenMst(hpId);
+            //_cacheTenMst = GetDefaultTenMst(_hpId);
             _messenger = messenger;
             // 電子算定回数マスタのキャッシュ
             //_cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
@@ -252,6 +252,9 @@ namespace CalculateService.Ika.ViewModels
         {
             CalculatedCount = 0;
             const string conFncName = nameof(RunCalculate);
+
+            // 点数マスタのキャッシュ
+            _cacheTenMst = GetDefaultTenMst(hpId);
 
             // 電子算定回数マスタのキャッシュ
             _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu(hpId);
@@ -545,6 +548,9 @@ namespace CalculateService.Ika.ViewModels
 
             preFix = preFix + "MON_";
 
+            // 点数マスタのキャッシュ
+            _cacheTenMst = GetDefaultTenMst(hpId);
+
             //要求登録
             AddCalcStatusMonth(hpId, seikyuYm, ptIds, preFix);
 
@@ -574,6 +580,8 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="seikyuUp"></param>
         public void RunCalculateOne(int hpId, long ptId, int sinDate, int seikyuUp, string preFix)
         {
+            // 点数マスタのキャッシュ
+            _cacheTenMst = GetDefaultTenMst(hpId);
             preFix = preFix + "ONE_";
 
             // 要求登録
@@ -881,7 +889,7 @@ namespace CalculateService.Ika.ViewModels
                             if ((_common.syosai != SyosaiConst.Jihi) && _raiinInfModels.Count() > 1)
                             {
                                 // 同日複数来院がある場合は2回チェックする
-                                AdjustWrk(hpId,true);
+                                AdjustWrk(hpId, true);
                             }
 
                             ////ワーク情報から算定情報へ変換
@@ -909,7 +917,7 @@ namespace CalculateService.Ika.ViewModels
                             _common.Wrk.wrkSinKouiDetails.Any(p => p.RaiinNo == _common.raiinNo && p.HokenKbn == hokenKbn))
                         {
                             //背反等調整処理
-                            AdjustWrk(hpId,false);
+                            AdjustWrk(hpId, false);
                         }
 
                         hokenKbn++;
@@ -1109,6 +1117,9 @@ namespace CalculateService.Ika.ViewModels
             List<SinKouiDetailModel> retSinKouiDetailModels = new List<SinKouiDetailModel>();
             List<SinKouiCountModel> retSinKouiCountModels = new List<SinKouiCountModel>();
             List<CalcLogModel> retCalcLogModels = new List<CalcLogModel>();
+
+            // 点数マスタのキャッシュ
+            _cacheTenMst = GetDefaultTenMst(hpId);
 
             if (todayOdrInfs != null && todayOdrInfs.Any())
             {
