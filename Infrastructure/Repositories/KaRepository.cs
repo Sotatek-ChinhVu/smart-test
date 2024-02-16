@@ -80,7 +80,7 @@ public class KaRepository : RepositoryBase, IKaRepository
 
     public bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels)
     {
-        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
+        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.HpId == hpId && item.IsDeleted != 1).ToList();
         int sortNo = 1;
         List<KaMst> listAddNews = new();
         foreach (var model in kaMstModels)

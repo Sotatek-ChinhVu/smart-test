@@ -44,8 +44,8 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
             }
             var listAccountDueModel = ConvertToListAccountDueModel(inputData.SyunoNyukinInputItems.Where(item => item.IsUpdated).ToList());
             var listRaiinNo = listAccountDueModel.Select(item => item.RaiinNo).ToList();
-            var listSyunoSeikyuDB = _accountDueRepository.GetListSyunoSeikyuModel(listRaiinNo);
-            var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinModel(listRaiinNo);
+            var listSyunoSeikyuDB = _accountDueRepository.GetListSyunoSeikyuModel(inputData.HpId, listRaiinNo);
+            var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinModel(inputData.HpId, listRaiinNo);
             List<ArgumentModel> listTraiLogModels = new();
 
             if (!listAccountDueModel.Any())

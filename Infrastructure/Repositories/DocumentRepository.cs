@@ -71,7 +71,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
                                 .Where(item => item.CategoryCd > 0)
                                 .ToList();
         var listUpdateCd = listUpdateModels.Select(item => item.CategoryCd).ToList();
-        var listDocUpdateDB = TrackingDataContext.DocCategoryMsts.Where(entity => listUpdateCd.Contains(entity.CategoryCd)).ToList();
+        var listDocUpdateDB = TrackingDataContext.DocCategoryMsts.Where(entity => entity.HpId == hpId && listUpdateCd.Contains(entity.CategoryCd)).ToList();
         foreach (var entity in listDocUpdateDB)
         {
             var modelUpdate = listUpdateModels.FirstOrDefault(model => model.CategoryCd == entity.CategoryCd);
@@ -83,7 +83,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
                 entity.SortNo = modelUpdate.SortNo;
             }
         }
-        SortDocCategory();
+        SortDocCategory(hpId);
         return TrackingDataContext.SaveChanges() > 0;
     }
 
@@ -215,7 +215,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         docCategoryDB.IsDeleted = 1;
         docCategoryDB.UpdateDate = CIUtil.GetJapanDateTimeNow();
         docCategoryDB.UpdateId = userId;
-        SortDocCategory();
+        SortDocCategory(hpId);
         return TrackingDataContext.SaveChanges() > 0;
     }
 
@@ -305,10 +305,10 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             );
     }
 
-    private void SortDocCategory()
+    private void SortDocCategory(int hpId)
     {
         var docCategoryList = TrackingDataContext.DocCategoryMsts
-                                                 .Where(item => item.IsDeleted == 0)
+                                                 .Where(item => item.IsDeleted == 0 && item.HpId == hpId)
                                                  .OrderBy(item => item.SortNo)
                                                  .ToList();
         int sortNo = 1;

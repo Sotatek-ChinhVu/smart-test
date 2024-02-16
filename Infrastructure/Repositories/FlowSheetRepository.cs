@@ -351,7 +351,7 @@ namespace Infrastructure.Repositories
             {
                 var raiinListTag = TrackingDataContext.RaiinListTags
                            .OrderByDescending(p => p.UpdateDate)
-                           .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
+                           .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo && p.HpId == hpId);
                 if (raiinListTag is null)
                 {
                     if (inputData.TagNo != -1)
@@ -388,7 +388,7 @@ namespace Infrastructure.Repositories
             {
                 var raiinListCmt = TrackingDataContext.RaiinListCmts
                                .OrderByDescending(p => p.UpdateDate)
-                               .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
+                               .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo && p.HpId == hpId);
 
                 if (raiinListCmt is null)
                 {
