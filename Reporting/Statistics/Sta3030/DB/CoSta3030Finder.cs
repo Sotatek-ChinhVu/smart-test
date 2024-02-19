@@ -39,7 +39,7 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
         #endregion
 
         #region 来院情報
-        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.IsDeleted == DeleteStatus.None && r.Status >= 5);
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.IsDeleted == DeleteStatus.None && r.Status >= 5);
         if (printConf.IsRaiinConf)
         {
             //来院日

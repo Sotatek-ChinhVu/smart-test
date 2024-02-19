@@ -180,7 +180,7 @@ public class ReceiptCoReportService : RepositoryBase, IReceiptCoReportService
             // ReceInf will not be NULL
             if (ReceInf == null)
             {
-                var receInf = listReceInf.FirstOrDefault(item => item.HpId == Session.HospitalID &&
+                var receInf = listReceInf.FirstOrDefault(item => item.HpId == hpId &&
                 item.SeikyuYm == SeikyuYm &&
                 item.PtId == ptId &&
                 item.SinYm == sinYm &&

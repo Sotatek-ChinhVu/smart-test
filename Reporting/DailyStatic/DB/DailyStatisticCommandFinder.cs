@@ -53,6 +53,6 @@ public class DailyStatisticCommandFinder : RepositoryBase, IDailyStatisticComman
                     return new ConfigStatisticModel(staMenu, listConfig);
             }
         }
-        return new();
+        return new(0);
     }
 }

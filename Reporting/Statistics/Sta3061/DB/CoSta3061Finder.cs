@@ -74,7 +74,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
     {
         try
         {
-            IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
+            IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(x => x.HpId == hpId);
             if (printConf.IsSinDate)
             {
                 sinKouiCounts = sinKouiCounts.Where(s =>
@@ -92,9 +92,9 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                 );
             }
 
-            var sinKouis = NoTrackingDataContext.SinKouis;
-            var sinKouiRpInfs = _tenantSinKouiRpInf.SinRpInfs;
-            var ptInfs = _tenantPtInf.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+            var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId);
+            var sinKouiRpInfs = _tenantSinKouiRpInf.SinRpInfs.Where(x => x.HpId == hpId);
+            var ptInfs = _tenantPtInf.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
             var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
@@ -122,8 +122,8 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                 }
             }
             #endregion
-            var raiinInfs = _tenantRaiinInf.RaiinInfs.Where(r => r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
-            var kaikeiInfs = _tenantKaikeiInf.KaikeiInfs;
+            var raiinInfs = _tenantRaiinInf.RaiinInfs.Where(r => r.HpId == hpId && r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
+            var kaikeiInfs = _tenantKaikeiInf.KaikeiInfs.Where(x => x.HpId == hpId);
 
             #region 条件指定
             //診療科
@@ -138,9 +138,9 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
             }
             #endregion
 
-            IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns;
-            IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs;
-            IQueryable<PtKohi> ptKohis = NoTrackingDataContext.PtKohis;
+            IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
+            IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId);
+            IQueryable<PtKohi> ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId);
 
             #region 条件指定(保険種別)
             if (printConf.HokenSbts?.Count >= 1)
@@ -763,7 +763,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
 
     public List<CoKouiTensuModel> GetKouiTensu2(int hpId, CoSta3061PrintConf printConf)
     {
-        IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
+        IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(x => x.HpId == hpId);
         if (printConf.IsSinDate)
         {
             sinKouiCounts = sinKouiCounts.Where(s =>
@@ -781,8 +781,8 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
             );
         }
 
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.IsDeleted == DeleteStatus.None);
-        var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
         #region フィルム
         var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.IsDeleted == DeleteStatus.None);
         if (printConf.IsSinDate)
@@ -836,9 +836,9 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         );
         #endregion
 
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
         ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
-        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         #region 条件指定(患者グループ)
         bool isPtGrp = false;
@@ -865,7 +865,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
             }
         }
         #endregion
-        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
         var kaikeiInfs = NoTrackingDataContext.KaikeiInfs;
         #region 条件指定
         //診療科
@@ -880,9 +880,9 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         }
         #endregion
 
-        IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns;
-        IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs;
-        IQueryable<PtKohi> ptKohis = NoTrackingDataContext.PtKohis;
+        IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
+        IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId);
+        IQueryable<PtKohi> ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId);
 
         #region 条件指定(保険種別)
         if (printConf.HokenSbts?.Count >= 1)
@@ -1033,8 +1033,8 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         );
         #endregion
 
-        IQueryable<KaMst> kaMsts = NoTrackingDataContext.KaMsts;
-        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
+        IQueryable<KaMst> kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
+        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
 
         var sinKouiList = (from sinCount in sinKouiCounts
                            join sinKoui in sinKouis on

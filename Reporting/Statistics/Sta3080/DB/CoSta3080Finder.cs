@@ -30,14 +30,14 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
     public List<CoSeisinDayCareInf> GetSeisinDayCareInfs(int hpId, CoSta3080PrintConf printConf)
     {
 
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && x.IsDelete == DeleteStatus.None);
         if (!printConf.IsTester)
         {
             //テスト患者を除く
             ptInfs = ptInfs.Where(x => x.IsTester == 0);
         }
 
-        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None);
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
         //健保を抽出する
         int[] kenpos = new int[] { 1, 2 };
         ptHokenPatterns = ptHokenPatterns.Where(x => kenpos.Contains(x.HokenKbn));
@@ -94,9 +94,9 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
                               OdrCount = grpOdrJoin.Count()
                           };
 
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.IsDeleted == DeleteStatus.None);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(x => seisinDayCareItems.Contains(x.ItemCd));
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(x => x.HpId == hpId && seisinDayCareItems.Contains(x.ItemCd));
 
         var sinJoins = (
             from sinKoui in sinKouis
