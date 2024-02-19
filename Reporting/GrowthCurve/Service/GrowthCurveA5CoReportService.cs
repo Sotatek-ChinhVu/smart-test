@@ -30,7 +30,7 @@ public class GrowthCurveA5CoReportService : GrowthCurveService, IGrowthCurveA5Co
 
             SetParamByScope(growthCurveConfig.Scope);
             List<GcStdInfModel> gcStdInfCollection = _specialNoteFinder.GetStdPoint(hpId);
-            GetKanInfRst(growthCurveConfig.PtId, growthCurveConfig.BirthDay);
+            GetKanInfRst(hpId, growthCurveConfig.PtId, growthCurveConfig.BirthDay);
             foreach (var item in gcStdInfCollection)
             {
                 AddGcStdInfCollection(item.GcStdMst);
@@ -107,9 +107,9 @@ public class GrowthCurveA5CoReportService : GrowthCurveService, IGrowthCurveA5Co
         DrawKanLine();
     }
 
-    private void GetKanInfRst(long ptId, int birthDay)
+    private void GetKanInfRst(int hpId, long ptId, int birthDay)
     {
-        var kensaInfDetails = _specialNoteFinder.GetKensaInf(ptId, -1, -1, "");
+        var kensaInfDetails = _specialNoteFinder.GetKensaInf(hpId, ptId, -1, -1, "");
         kanWeightPointCollection = new();
         kanHeightPointCollection = new();
 

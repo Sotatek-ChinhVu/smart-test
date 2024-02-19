@@ -31,9 +31,9 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         DisposeDataContext();
     }
 
-    public PathConf GetPathConf(int grpCode)
+    public PathConf GetPathConf(int hpId, int grpCode)
     {
-        var pathConfs = NoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == grpCode);
+        var pathConfs = NoTrackingDataContext.PathConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == grpCode);
         return pathConfs ?? new();
     }
 
@@ -64,7 +64,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         return info;
     }
 
-    public List<OrderInfoModel> GetOrderByRaiinNo(long raiinNo)
+    public List<OrderInfoModel> GetOrderByRaiinNo(int hpId, long raiinNo)
     {
         // multiple threads to speed up performance
         List<OrderInfoModel> listOrderInfo = new();
@@ -72,8 +72,8 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         List<OdrInfDetail> infDetails = new();
         List<OdrInf> odrInfs = new();
 
-        Task taskListOdrInf = Task.Factory.StartNew(() => odrInfs = NoTrackingDataContext.OdrInfs.Where(item => odrKouiKbnFilter.Contains(item.OdrKouiKbn) && item.InoutKbn == 0 && item.RaiinNo == raiinNo && item.IsDeleted == 0).ToList());
-        Task taskListOdrInfDetail = Task.Factory.StartNew(() => infDetails = _tenantOdrInfDetail.OdrInfDetails.Where(item => !(item.ItemCd != null && item.ItemCd.StartsWith("8") && item.ItemCd.Length == 9) && item.RaiinNo == raiinNo).ToList());
+        Task taskListOdrInf = Task.Factory.StartNew(() => odrInfs = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId && odrKouiKbnFilter.Contains(item.OdrKouiKbn) && item.InoutKbn == 0 && item.RaiinNo == raiinNo && item.IsDeleted == 0).ToList());
+        Task taskListOdrInfDetail = Task.Factory.StartNew(() => infDetails = _tenantOdrInfDetail.OdrInfDetails.Where(item => item.HpId == hpId && !(item.ItemCd != null && item.ItemCd.StartsWith("8") && item.ItemCd.Length == 9) && item.RaiinNo == raiinNo).ToList());
         Task.WaitAll(taskListOdrInf, taskListOdrInfDetail);
 
         if (odrInfs != null && odrInfs.Count > 0)
@@ -112,10 +112,10 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         return listOrderInfo;
     }
 
-    public string GetYJCode(string itemCd)
+    public string GetYJCode(int hpId, string itemCd)
     {
         int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
-        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {
             return tenMst.YjCd ?? string.Empty;
@@ -131,11 +131,11 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 
     }
 
-    public TenMstModel GetTenMstModel(string itemCd)
+    public TenMstModel GetTenMstModel(int hpId, string itemCd)
     {
         var tenMstModel = new TenMstModel();
         int sinDate = CIUtil.DateTimeToInt(CIUtil.GetJapanDateTimeNow());
-        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {
             tenMstModel.ItemCD = tenMst.ItemCd;
@@ -153,7 +153,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         var images = NoTrackingDataContext.PiImages.Where(p => p.ItemCd == itemCd).ToList();
         return images;
     }
-    
+
     /// <summary>
     /// Get common data for function GetDrugInfo to speed up performance
     /// </summary>
@@ -172,7 +172,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         List<TenMst> tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId && itemCdList.Contains(item.ItemCd))
                                                                .Distinct()
                                                                .ToList();
-        
+
         var yjCdList = tenMstList.Select(item => item.YjCd).Distinct().ToList();
         List<M34DrugInfoMain> m34DrugInfoMainList = NoTrackingDataContext.M34DrugInfoMains.Where(item => item.HpId == hpId && yjCdList.Contains(item.YjCd)).Distinct().ToList();
 
@@ -343,12 +343,12 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         return systemConf != null ? (int)systemConf.Val : 0;
     }
 
-    public PathPicture GetDefaultPathPicture()
+    public PathPicture GetDefaultPathPicture(int hpId)
     {
         // piczai pichou
         string pathServerDefault = _configuration["PathImageDrugFolder"] ?? string.Empty;
 
-        var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault).ToList();
+        var pathConfDb = NoTrackingDataContext.PathConfs.Where(p => p.HpId == hpId && p.GrpCd == PicImageConstant.GrpCodeDefault || p.GrpCd == PicImageConstant.GrpCodeCustomDefault).ToList();
 
         var pathConfDf = pathConfDb.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
 
