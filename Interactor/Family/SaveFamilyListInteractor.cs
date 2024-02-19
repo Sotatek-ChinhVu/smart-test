@@ -134,7 +134,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         familyPtIdList.AddRange(ptIdList);
         familyPtIdList.Add(input.PtId);
         familyPtIdList = familyPtIdList.Distinct().ToList();
-        if (ptIdList.Any(id => id <= 0) || input.PtId <= 0 || !_patientInforRepository.CheckExistIdList(familyPtIdList))
+        if (ptIdList.Any(id => id <= 0) || input.PtId <= 0 || !_patientInforRepository.CheckExistIdList(input.HpId, familyPtIdList))
         {
             return ValidateFamilyListStatus.InvalidPtIdOrFamilyPtId;
         }
@@ -218,7 +218,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
 
         // validate byomei
         var byomeiCdList = familyRekiList.Select(item => item.ByomeiCd).ToList();
-        var byomeiList = _mstItemRepository.DiseaseSearch(byomeiCdList);
+        var byomeiList = _mstItemRepository.DiseaseSearch(hpId, byomeiCdList);
         foreach (var input in familyRekiList)
         {
             // validate byomeiCd and byomei

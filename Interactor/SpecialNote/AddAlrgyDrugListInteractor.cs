@@ -63,8 +63,8 @@ namespace Interactor.SpecialNote
                         keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.InvalidDuplicate));
                     }
 
-                    var checkPtId = _patientInfoRepository.CheckExistIdList(new List<long> { item.PtId });
-                    var chekTenMst = _mstItemRepository.CheckItemCd(item.ItemCd);
+                    var checkPtId = _patientInfoRepository.CheckExistIdList(inputDatas.HpId, new List<long> { item.PtId });
+                    var chekTenMst = _mstItemRepository.CheckItemCd(inputDatas.HpId, item.ItemCd);
 
                     if (!checkPtId && !keyValuePairs.Any(k => k.Key == count))
                     {

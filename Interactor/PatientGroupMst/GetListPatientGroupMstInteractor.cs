@@ -15,7 +15,7 @@ namespace Interactor.PatientGroupMst
         {
             try
             {
-                return new GetListPatientGroupMstOutputData(_patientGroupMstRepository.GetAll());
+                return new GetListPatientGroupMstOutputData(_patientGroupMstRepository.GetAll(inputData.HpId));
             }
             finally
             {

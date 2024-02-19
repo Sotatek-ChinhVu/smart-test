@@ -39,7 +39,7 @@ namespace Interactor.NextOrder
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidHpId, new(), new(), new(), new());
                 }
-                if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistIdList(new List<long> { inputData.PtId }))
+                if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistIdList(inputData.HpId, new List<long> { inputData.PtId }))
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
                 }
@@ -73,7 +73,7 @@ namespace Interactor.NextOrder
                         rsvkrtNos.AddRange(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.RsvkrtNo));
                         rsvkrtDates.Add(orderInfModel.RsvDate);
                         rsvkrtDates.AddRange(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.RsvDate));
-                        itemCds.AddRange(_mstItemRepository.GetCheckItemCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.ItemCd.Trim()).ToList()));
+                        itemCds.AddRange(_mstItemRepository.GetCheckItemCds(inputData.HpId, orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.ItemCd.Trim()).ToList()));
                         ipnCds.AddRange(_mstItemRepository.GetCheckIpnCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.IpnCd.Trim()).ToList()));
                     }
                     foreach (var byomei in nextOrder.RsvKrtByomeiItems)

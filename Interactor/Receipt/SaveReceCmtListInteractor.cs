@@ -83,7 +83,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
 
     private SaveReceCmtListStatus ValidateInput(SaveReceCmtListInputData inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return SaveReceCmtListStatus.InvalidPtId;
         }
@@ -101,7 +101,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
     private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData)
     {
         var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
-        if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
+        if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(inputData.HpId, listItemCds).Count != listItemCds.Count)
         {
             return SaveReceCmtListStatus.InvalidItemCd;
         }

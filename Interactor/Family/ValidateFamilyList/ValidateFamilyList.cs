@@ -160,14 +160,14 @@ public class ValidateFamilyList : IValidateFamilyList
             familyRekiList.AddRange(familyItem.PtFamilyRekiList);
         }
         // validate FamilyRekiInputItem
-        return ValidateFamilyRekiListInputItem(familyRekiList);
+        return ValidateFamilyRekiListInputItem(hpId, familyRekiList);
     }
 
-    private ValidateFamilyListStatus ValidateFamilyRekiListInputItem(List<FamilyRekiItem> familyRekiList)
+    private ValidateFamilyListStatus ValidateFamilyRekiListInputItem(int hpId, List<FamilyRekiItem> familyRekiList)
     {
         // validate byomei
         var byomeiCdList = familyRekiList.Select(item => item.ByomeiCd).Distinct().ToList();
-        var byomeiList = _mstItemRepository.DiseaseSearch(byomeiCdList);
+        var byomeiList = _mstItemRepository.DiseaseSearch(hpId, byomeiCdList);
         foreach (var input in familyRekiList)
         {
             // validate byomeiCd and byomei

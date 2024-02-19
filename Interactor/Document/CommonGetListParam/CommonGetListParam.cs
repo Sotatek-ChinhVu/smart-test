@@ -53,7 +53,7 @@ public class CommonGetListParam : ICommonGetListParam
         var hpInf = _hpInfRepository.GetHpInf(hpId);
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         var userLogin = _userRepository.GetByUserId(userId, sinDate);
-        var tantoId = _raiinFilterMstRepository.GetTantoId(ptId, sinDate, raiinNo);
+        var tantoId = _raiinFilterMstRepository.GetTantoId(hpId, ptId, sinDate, raiinNo);
         if (ptInf != null)
         {
             docInf = _userRepository.GetByUserId(ptInf.PrimaryDoctor, sinDate);

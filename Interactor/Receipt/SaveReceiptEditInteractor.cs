@@ -75,7 +75,7 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
         {
             return SaveReceiptEditStatus.InvalidSeikyuYm;
         }
-        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long>() { inputData.PtId }))
         {
             return SaveReceiptEditStatus.InvalidPtId;
         }

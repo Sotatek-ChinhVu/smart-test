@@ -335,7 +335,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 return SaveSuperSetDetailStatus.ByomeiCmtMaxlength80;
             }
         }
-        var listByomeiCd = _mstItemRepository.DiseaseSearch(listByomeiCode).Select(item => item.ByomeiCd).ToList();
+        var listByomeiCd = _mstItemRepository.DiseaseSearch(inputData.HpId, listByomeiCode).Select(item => item.ByomeiCd).ToList();
         foreach (var item in inputData.SetByomeiModelInputs.Select(item => item.PrefixSuffixList))
         {
             foreach (var presufCode in item.Select(item => item.Code))

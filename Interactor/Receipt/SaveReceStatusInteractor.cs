@@ -75,7 +75,7 @@ public class SaveReceStatusInteractor : ISaveReceStatusInputPort
 
     private SaveReceStatusStatus ValidateInput(int hpId, ReceStatusItem inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(hpId, new List<long>() { inputData.PtId }))
         {
             return SaveReceStatusStatus.InvalidPtId;
         }

@@ -21,10 +21,10 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public ReceptionModel Get(long raiinNo, bool flag = false)
+        public ReceptionModel Get(int hpId, long raiinNo, bool flag = false)
         {
-            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && (!flag || r.IsDeleted == 0));
-            var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.RaiinNo == raiinNo && (!flag || r.IsDeleted == 0));
+            var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.HpId == hpId && r.RaiinNo == raiinNo);
 
             return new ReceptionModel
                 (
@@ -780,16 +780,16 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool CheckListNo(List<long> raininNos)
+        public bool CheckListNo(int hpId, List<long> raininNos)
         {
-            var check = NoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
+            var check = NoTrackingDataContext.RaiinInfs.Any(r => r.HpId == hpId && raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
             return check;
         }
 
-        public bool CheckExistOfRaiinNos(List<long> raininNos)
+        public bool CheckExistOfRaiinNos(int hpId, List<long> raininNos)
         {
             raininNos = raininNos.Distinct().ToList();
-            var raiinInfCount = NoTrackingDataContext.RaiinInfs.Count(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
+            var raiinInfCount = NoTrackingDataContext.RaiinInfs.Count(r => r.HpId == hpId && raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
             return raininNos.Count == raiinInfCount;
         }
 
@@ -797,27 +797,27 @@ namespace Infrastructure.Repositories
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => (isDeleted == 2 || x.IsDeleted == isDeleted));
-            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && (isDeleted == 2 || x.IsDeleted == isDeleted));
+            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => (isDeleted == 2 || x.IsDelete == isDeleted));
-            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && (isDeleted == 2 || x.IsDelete == isDeleted));
+            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
-            var rsvInfs = NoTrackingDataContext.RsvInfs;
-            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var rsvInfs = NoTrackingDataContext.RsvInfs.Where(i => i.HpId == hpId);
+            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
-            var lockInfs = NoTrackingDataContext.LockInfs.Where(x =>
+            var lockInfs = NoTrackingDataContext.LockInfs.Where(x => x.HpId == hpId &&
                 x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte || x.FunctionCd == FunctionCode.SwitchOrderCode);
             // Uketuke
-            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
             var filteredRaiinInfs = raiinInfs;
@@ -1062,7 +1062,7 @@ namespace Infrastructure.Repositories
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
         {
             var receptionComment = NoTrackingDataContext.RaiinCmtInfs
-                .FirstOrDefault(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
+                .FirstOrDefault(x => x.HpId == hpId && x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
             if (receptionComment is null)
                 return new ReceptionModel();
             return new ReceptionModel(
@@ -1098,7 +1098,7 @@ namespace Infrastructure.Repositories
             var mainDoctor = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
             if (mainDoctor != null)
             {
-                var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+                var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.HpId == hpId && u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
                 if (userMst?.JobCd == 1)
                 {
                     tantoId = mainDoctor.PrimaryDoctor;
@@ -1136,7 +1136,7 @@ namespace Infrastructure.Repositories
             }
 
             // KaId
-            var getKaIdDefault = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == tantoId && u.IsDeleted == 0);
+            var getKaIdDefault = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.HpId == hpId && u.UserId == tantoId && u.IsDeleted == 0);
             if (getKaIdDefault != null)
             {
                 kaId = getKaIdDefault.KaId;
@@ -1146,8 +1146,8 @@ namespace Infrastructure.Repositories
 
         public long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate)
         {
-            var isDoctor = NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
-            var doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1 && p.IsDeleted == DeleteTypes.None).OrderBy(p => p.SortNo).ToList();
+            var isDoctor = NoTrackingDataContext.UserMsts.Any(u => u.HpId == hpId && u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
+            var doctors = NoTrackingDataContext.UserMsts.Where(p => p.HpId == hpId && p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1 && p.IsDeleted == DeleteTypes.None).OrderBy(p => p.SortNo).ToList();
             // if have only 1 doctor in user list
             if (doctors.Count == 1)
             {
@@ -1164,7 +1164,7 @@ namespace Infrastructure.Repositories
 
                 if (mainDoctor != null)
                 {
-                    var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+                    var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.HpId == hpId && u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
                     if (userMst?.JobCd == 1)
                     {
                         return mainDoctor.PrimaryDoctor;
@@ -1262,7 +1262,7 @@ namespace Infrastructure.Repositories
             {
                 var raiinNos = receptions.Select(r => r.Item1);
                 raiinNos = raiinNos.Distinct().ToList();
-                var raiinInfs = TrackingDataContext.RaiinInfs.Where(r => raiinNos.Contains(r.RaiinNo)).ToList();
+                var raiinInfs = TrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && raiinNos.Contains(r.RaiinNo)).ToList();
                 foreach (var raiinInf in raiinInfs)
                 {
                     raiinInf.IsDeleted = DeleteTypes.Deleted;
@@ -1327,7 +1327,7 @@ namespace Infrastructure.Repositories
             var rsvInf = TrackingDataContext.RsvInfs.FirstOrDefault(r => r.HpId == hpId && r.RaiinNo == raiinNo && r.SinDate == sinDate && r.PtId == ptId);
             if (rsvInf != null) TrackingDataContext.RsvInfs.Remove(rsvInf);
 
-            var rsvFrameInf = TrackingDataContext.RsvFrameInfs.FirstOrDefault(r => r.Number == raiinNo);
+            var rsvFrameInf = TrackingDataContext.RsvFrameInfs.FirstOrDefault(r => r.HpId == hpId && r.Number == raiinNo);
             if (rsvFrameInf != null) TrackingDataContext.RsvFrameInfs.Remove(rsvFrameInf);
 
             //delete order

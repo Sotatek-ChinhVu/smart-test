@@ -264,7 +264,7 @@ namespace Interactor.MedicalExamination
             var hokenPids = inputDataList.Select(i => i.HokenPid).Distinct().ToList();
             var checkHokens = _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>());
             object obj = new();
-            for(var index = 0; index < inputDataList.Count; index++)
+            for (var index = 0; index < inputDataList.Count; index++)
             {
                 var item = inputDataList[index];
 
@@ -399,8 +399,8 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
-                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
+                var checkPtId = _patientInforRepository.CheckExistIdList(hpId, new List<long> { ptId });
+                var checkRaiinNo = _receptionRepository.CheckListNo(hpId, new List<long> { raiinNo });
 
                 if (!checkHpId)
                 {

@@ -181,7 +181,7 @@ namespace Infrastructure.Repositories
                              select new
                              {
                                  RaiinkbItem = raiinkbItem,
-                                 TenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.StartDate <= stDate && t.EndDate >= stDate && t.ItemCd == raiinkbItem.ItemCd)
+                                 TenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.StartDate <= stDate && t.EndDate >= stDate && t.ItemCd == raiinkbItem.ItemCd)
                              };
 
             return joinQuerry.AsEnumerable().Select(x => new RaiinListItemModel(x.RaiinkbItem.HpId,

@@ -120,7 +120,7 @@ namespace Interactor.Accounting
             {
                 return SaveAccountingStatus.InvalidUserId;
             }
-            else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
+            else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(inputData.HpId, new List<long> { inputData.PtId }))
             {
                 return SaveAccountingStatus.InvalidPtId;
             }

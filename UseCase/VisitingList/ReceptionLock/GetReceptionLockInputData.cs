@@ -9,14 +9,16 @@ namespace UseCase.VisitingList.ReceptionLock
 {
     public class GetReceptionLockInputData : IInputData<GetReceptionLockOutputData>
     {
-        public GetReceptionLockInputData(long sinDate, long ptId, long raiinNo, string functionCd)
+        public GetReceptionLockInputData(int hpId, long sinDate, long ptId, long raiinNo, string functionCd)
         {
+            HpId = hpId;
             SinDate = sinDate;
             PtId = ptId;
             RaiinNo = raiinNo;
             FunctionCd = functionCd;
         }
 
+        public int HpId { get; set; }
         public long SinDate { get; set; }
         public long PtId { get; set; }
         public long RaiinNo { get; private set; }

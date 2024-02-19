@@ -172,16 +172,17 @@ namespace Interactor.MedicalExamination
 
                 if (check)
                 {
-                    Task.Run(() =>{
-                   _calculateService.RunCalculate(new RecaculationInputDto(
-                            hpId,
-                            ptId,
-                            sinDate,
-                            0,
-                            ""
-                        ));
+                    Task.Run(() =>
+                    {
+                        _calculateService.RunCalculate(new RecaculationInputDto(
+                                 hpId,
+                                 ptId,
+                                 sinDate,
+                                 0,
+                                 ""
+                             ));
                         _calculateService.ReleaseSource();
-                        });
+                    });
 
                     var receptionInfos = _receptionRepository.GetList(hpId, sinDate, raiinNo, ptId, isDeleted: 0);
                     var sameVisitList = _receptionRepository.GetListSameVisit(hpId, ptId, sinDate);
@@ -409,8 +410,8 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
-                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
+                var checkPtId = _patientInforRepository.CheckExistIdList(hpId, new List<long> { ptId });
+                var checkRaiinNo = _receptionRepository.CheckListNo(hpId, new List<long> { raiinNo });
 
                 if (!checkHpId)
                 {
