@@ -91,7 +91,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
         {
             return SaveReceCmtListStatus.InvalidSinYm;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HpId, inputData.HokenId))
         {
             return SaveReceCmtListStatus.InvalidHokenId;
         }

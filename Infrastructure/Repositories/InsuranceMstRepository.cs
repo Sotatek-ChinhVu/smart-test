@@ -750,7 +750,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Where(x => x.Id == 0).Select(x => new ExceptHokensya()
+                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Where(x => x.HpId == hpId && x.Id == 0).Select(x => new ExceptHokensya()
                     {
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,

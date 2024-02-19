@@ -79,7 +79,7 @@ public class SaveReceiptEditInteractor : ISaveReceiptEditInputPort
         {
             return SaveReceiptEditStatus.InvalidPtId;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HpId, inputData.HokenId))
         {
             return SaveReceiptEditStatus.InvalidHokenId;
         }

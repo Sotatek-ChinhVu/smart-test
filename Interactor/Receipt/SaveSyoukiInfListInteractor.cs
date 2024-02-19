@@ -81,7 +81,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
         {
             return SaveSyoukiInfListStatus.InvalidSinYm;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HpId, inputData.HokenId))
         {
             return SaveSyoukiInfListStatus.InvalidHokenId;
         }

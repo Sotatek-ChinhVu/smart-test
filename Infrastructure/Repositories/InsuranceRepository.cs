@@ -415,16 +415,16 @@ namespace Infrastructure.Repositories
             return countPtHokens == hokenPIds.Count;
         }
 
-        public bool CheckExistHokenId(int hokenId)
+        public bool CheckExistHokenId(int hpId, int hokenId)
         {
-            var check = NoTrackingDataContext.PtHokenInfs.Any(h => h.HokenId == hokenId && h.IsDeleted == 0);
+            var check = NoTrackingDataContext.PtHokenInfs.Any(h => h.HpId == hpId && h.HokenId == hokenId && h.IsDeleted == 0);
             return check;
         }
 
-        public bool CheckExistHokenPids(List<int> hokenPids)
+        public bool CheckExistHokenPids(int hpId, List<int> hokenPids)
         {
             hokenPids = hokenPids.Distinct().ToList();
-            var check = NoTrackingDataContext.PtHokenPatterns.Any(x => hokenPids.Contains(x.HokenPid));
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(x => x.HpId == hpId && hokenPids.Contains(x.HokenPid));
             return check;
         }
 
@@ -667,7 +667,7 @@ namespace Infrastructure.Repositories
             var confirmDateList =
                 (
                     from hokenCheck in NoTrackingDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0)
-                    join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
+                    join userMst in NoTrackingDataContext.UserMsts.Where(p => p.HpId == hpId).AsQueryable()
                     on hokenCheck.CheckId equals userMst.UserId
                     select new
                     {
@@ -1184,7 +1184,7 @@ namespace Infrastructure.Repositories
             var confirmDateList =
                 (
                     from hokenCheck in NoTrackingDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0)
-                    join userMst in NoTrackingDataContext.UserMsts.AsQueryable()
+                    join userMst in NoTrackingDataContext.UserMsts.Where(p => p.HpId == hpId).AsQueryable()
                     on hokenCheck.CheckId equals userMst.UserId
                     select new
                     {
@@ -1502,9 +1502,9 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public bool CheckExistHokenPid(int hokenPid)
+        public bool CheckExistHokenPid(int hpId, int hokenPid)
         {
-            var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HokenPid == hokenPid && h.IsDeleted == 0);
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HpId == hpId && h.HokenPid == hokenPid && h.IsDeleted == 0);
             return check;
         }
 
