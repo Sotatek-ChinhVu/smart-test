@@ -254,10 +254,9 @@ namespace Infrastructure.Repositories
 
         public List<(string, string)> GetListColumnName(int hpId)
         {
-            var listRaiinKbnMst = NoTrackingDataContext.RaiinKbnMsts
-              .Where(item => item.HpId == hpId && item.IsDeleted == 0)
-              .OrderBy(item => item.SortNo)
-              .ToDictionary(item => item.GrpName ?? string.Empty, item => item.GrpCd);
+            var listRaiinKbnMst = NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0)
+                                                                    .OrderBy(item => item.SortNo)
+                                                                    .ToDictionary(item => item.GrpName ?? string.Empty, item => item.GrpCd);
 
             var listColumnName = new List<(string, string)>()
             {
@@ -267,10 +266,8 @@ namespace Infrastructure.Repositories
                 new("uketukeTime", "受付時間"), new("sinStartTime", "診察開始"), new("sinEndTime", "診察終了"), new("kaikeiTime", "精算時間"),
                 new("raiinCmt", "来院コメント"), new ("ptComment", "患者コメント"), new ("hokenPatternName", "保険"), new ("tantoId", "担当医"),
                 new ("kaId", "診療科"), new("lastVisitDate", "前回来院"), new ("sname", "主治医"), new ("raiinRemark",
-                "備考"), new("confirmationState", "資格確認状況"), new ("confirmationResult", "資格確認結果")
+                "備考"), new("confirmationState", "資格確認状況"), new ("confirmationResult", "資格確認結果"), new ("infoConsFlg", "閲覧同意")
             };
-
-
 
             if (listRaiinKbnMst != null && listRaiinKbnMst.Count > 0)
             {
@@ -290,7 +287,7 @@ namespace Infrastructure.Repositories
         {
             var result = new List<(int, int, int, int)>();
             var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None);
-            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == hpId);
+            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts;
             var query = from raiinKouiKbn in raiinKouiKbns
                         join kouiKbnMst in kouiKbnMsts
                         on raiinKouiKbn.KouiKbnId equals kouiKbnMst.KouiKbnId
@@ -506,29 +503,32 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (existingEntity is null)
+                    if (kbnInfDto.KbnCd > 0)
                     {
-                        // Insert
-                        TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                        if (existingEntity is null)
                         {
-                            HpId = hpId,
-                            PtId = raiinInf.PtId,
-                            SinDate = raiinInf.SinDate,
-                            RaiinNo = raiinInf.RaiinNo,
-                            GrpId = kbnInfDto.GrpId,
-                            KbnCd = kbnInfDto.KbnCd,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            CreateId = userId
-                        });
-                    }
-                    else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
-                    {
-                        // Update
-                        existingEntity.KbnCd = kbnInfDto.KbnCd;
-                        existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        existingEntity.UpdateId = userId;
+                            // Insert
+                            TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                            {
+                                HpId = hpId,
+                                PtId = raiinInf.PtId,
+                                SinDate = raiinInf.SinDate,
+                                RaiinNo = raiinInf.RaiinNo,
+                                GrpId = kbnInfDto.GrpId,
+                                KbnCd = kbnInfDto.KbnCd,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                CreateId = userId
+                            });
+                        }
+                        else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                        {
+                            // Update
+                            existingEntity.KbnCd = kbnInfDto.KbnCd;
+                            existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            existingEntity.UpdateId = userId;
+                        }
                     }
                 }
             }

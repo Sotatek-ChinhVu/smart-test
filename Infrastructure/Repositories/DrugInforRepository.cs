@@ -24,10 +24,10 @@ namespace Infrastructure.Repositories
                                                                 && item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
 
             ////Join
-            var joinQuery = from m28DrugMst in NoTrackingDataContext.M28DrugMst
+            var joinQuery = from m28DrugMst in NoTrackingDataContext.M28DrugMst.Where(m => m.HpId == hpId)
                             join tenItem in queryItems
                             on m28DrugMst.KikinCd equals tenItem.ItemCd
-                            join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains
+                            join m34DrugInfoMain in NoTrackingDataContext.M34DrugInfoMains.Where(m => m.HpId == hpId)
                             on m28DrugMst.YjCd equals m34DrugInfoMain.YjCd
                             join tekiouByomei in NoTrackingDataContext.TekiouByomeiMsts
                                on tenItem.ItemCd equals tekiouByomei.ItemCd into listtekiouByomeis
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                                 m34DrugInfoMain,
                                 TekiouByomei = listtekiouByomeis.FirstOrDefault()
                             };
-            
+
             // piczai pichou
             string pathServerDefault = _configuration["PathImageDrugFolder"] ?? string.Empty;
 
@@ -92,7 +92,7 @@ namespace Infrastructure.Repositories
 
             var rs = joinQuery.FirstOrDefault();
             var yjCd = rs?.m28DrugMst?.YjCd;
-            var drugInf = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.YjCd == yjCd);
+            var drugInf = NoTrackingDataContext.PiProductInfs.FirstOrDefault(i => i.HpId == hpId && i.YjCd == yjCd);
             if (rs != null)
             {
                 return new DrugInforModel(rs.tenItem != null ? (rs.tenItem.Name ?? string.Empty) : string.Empty,
@@ -389,10 +389,10 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.SinrekiFilterMsts.Count(item => item.HpId == hpId && grpCdList.Contains(item.GrpCd)) == grpCdList.Count;
         }
 
-        public bool CheckExistKouiKbn(int hpId, List<int> kouiKbnIdList)
+        public bool CheckExistKouiKbn(List<int> kouiKbnIdList)
         {
             kouiKbnIdList = kouiKbnIdList.Distinct().ToList();
-            return NoTrackingDataContext.KouiKbnMsts.Count(item => item.HpId == hpId && kouiKbnIdList.Contains(item.KouiKbnId)) == kouiKbnIdList.Count;
+            return NoTrackingDataContext.KouiKbnMsts.Count(item => kouiKbnIdList.Contains(item.KouiKbnId)) == kouiKbnIdList.Count;
         }
 
         public bool CheckExistSinrekiFilterMstKoui(int hpId, List<long> kouiSeqNoList)
@@ -476,10 +476,9 @@ namespace Infrastructure.Repositories
                 .ToList();
         }
 
-        public List<KouiKbnMstModel> GetKouiKbnMstList(int hpId)
+        public List<KouiKbnMstModel> GetKouiKbnMstList()
         {
-            var result = NoTrackingDataContext.KouiKbnMsts.Where(item => item.HpId == hpId)
-                                                          .Select(item => new KouiKbnMstModel(
+            var result = NoTrackingDataContext.KouiKbnMsts.Select(item => new KouiKbnMstModel(
                                                                               item.KouiKbnId,
                                                                               item.KouiKbn1,
                                                                               item.KouiKbn2,

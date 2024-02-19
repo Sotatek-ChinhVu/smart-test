@@ -10,17 +10,10 @@ namespace Entity.Tenant
     public class KouiKbnMst
     {
         /// <summary>
-        /// 医療機関識別ID
-        /// </summary>
-        
-        [Column("hp_id", Order = 1)]
-        public int HpId { get; set; }
-
-        /// <summary>
         /// 行為区分ID
         /// </summary>
-        
-        [Column("koui_kbn_id", Order = 2)]
+
+        [Column("koui_kbn_id")]
         public int KouiKbnId { get; set; }
 
         /// <summary>

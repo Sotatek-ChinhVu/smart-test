@@ -93,7 +93,7 @@ public class UserController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetListUserByCurrentUser)]
-    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser([FromQuery]GetListUserByCurrentUserRequest request)
+    public ActionResult<Response<GetListUserByCurrentUserResponse>> GetListUserByCurrentUser([FromQuery] GetListUserByCurrentUserRequest request)
     {
         var input = new GetListUserByCurrentUserInputData(HpId, UserId, request.ManagerKbn);
         var output = _bus.Handle(input);
@@ -127,7 +127,7 @@ public class UserController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListFunctionPermission)]
     public ActionResult<Response<GetListFunctionPermissionResponse>> GetListFunctionPermission()
     {
-        var input = new GetListFunctionPermissionInputData();
+        var input = new GetListFunctionPermissionInputData(HpId);
         var output = _bus.Handle(input);
         var presenter = new GetListFunctionPermissionPresenter();
         presenter.Complete(output);

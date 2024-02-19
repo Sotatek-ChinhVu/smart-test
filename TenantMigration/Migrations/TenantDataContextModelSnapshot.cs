@@ -24,6 +24,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Emr.DatabaseEntity.KacodeReceYousiki", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ReceKaCd")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
@@ -64,13 +68,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("ReceKaCd", "YousikiKaCd");
+                    b.HasKey("HpId", "ReceKaCd", "YousikiKaCd");
 
                     b.ToTable("kacode_rece_yousiki");
                 });
 
             modelBuilder.Entity("Emr.DatabaseEntity.KacodeYousikiMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YousikiKaCd")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
@@ -90,10 +98,6 @@ namespace TenantMigration.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
-
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id");
 
                     b.Property<string>("KaName")
                         .IsRequired()
@@ -119,7 +123,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("YousikiKaCd");
+                    b.HasKey("HpId", "YousikiKaCd");
 
                     b.ToTable("kacode_yousiki_mst");
                 });
@@ -832,6 +836,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.ByomeiMstAftercare", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ByomeiCd")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
@@ -879,7 +887,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("ByomeiCd", "Byomei", "StartDate");
+                    b.HasKey("HpId", "ByomeiCd", "Byomei", "StartDate");
 
                     b.ToTable("byomei_mst_aftercare");
                 });
@@ -2711,6 +2719,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.DosageDosage", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("DoeiCd")
                         .HasColumnType("text")
                         .HasColumnName("doei_cd")
@@ -3039,13 +3051,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("youkaieki");
 
-                    b.HasKey("DoeiCd", "DoeiSeqNo");
+                    b.HasKey("HpId", "DoeiCd", "DoeiSeqNo");
 
                     b.ToTable("m46_dosage_dosage");
                 });
 
             modelBuilder.Entity("Entity.Tenant.DosageDrug", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("DoeiCd")
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
@@ -3087,7 +3103,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(1)")
                         .HasColumnName("youkaieki_cd");
 
-                    b.HasKey("DoeiCd", "YjCd");
+                    b.HasKey("HpId", "DoeiCd", "YjCd");
 
                     b.ToTable("m46_dosage_drug");
                 });
@@ -3328,6 +3344,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.DrugUnitConv", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
@@ -3373,7 +3393,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("ItemCd", "StartDate");
+                    b.HasKey("HpId", "ItemCd", "StartDate");
 
                     b.ToTable("drug_unit_conv");
                 });
@@ -3809,6 +3829,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.EventMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("EventCd")
                         .HasMaxLength(11)
                         .HasColumnType("character varying(11)")
@@ -3828,7 +3852,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("event_name");
 
-                    b.HasKey("EventCd");
+                    b.HasKey("HpId", "EventCd");
 
                     b.ToTable("event_mst");
                 });
@@ -4118,6 +4142,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.FunctionMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FunctionCd")
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
@@ -4155,7 +4183,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("FunctionCd");
+                    b.HasKey("HpId", "FunctionCd");
 
                     b.HasIndex(new[] { "FunctionCd" }, "function_mst_pkey");
 
@@ -4164,25 +4192,17 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.GcStdMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("StdKbn")
                         .HasColumnType("integer")
-                        .HasColumnName("std_kbn")
-                        .HasColumnOrder(2);
+                        .HasColumnName("std_kbn");
 
                     b.Property<int>("Sex")
                         .HasColumnType("integer")
-                        .HasColumnName("sex")
-                        .HasColumnOrder(3);
+                        .HasColumnName("sex");
 
                     b.Property<double>("Point")
                         .HasColumnType("double precision")
-                        .HasColumnName("point")
-                        .HasColumnOrder(4);
+                        .HasColumnName("point");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -4266,7 +4286,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "StdKbn", "Sex", "Point");
+                    b.HasKey("StdKbn", "Sex", "Point");
 
                     b.ToTable("gc_std_mst");
                 });
@@ -4339,8 +4359,8 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("day_limit_futan");
 
-                    b.Property<int>("EnTen")
-                        .HasColumnType("integer")
+                    b.Property<double>("EnTen")
+                        .HasColumnType("double precision")
                         .HasColumnName("en_ten");
 
                     b.Property<int>("EndDate")
@@ -4821,26 +4841,18 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.IpnKasanExclude", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
-                        .HasColumnName("start_date")
-                        .HasColumnOrder(3);
+                        .HasColumnName("start_date");
 
                     b.Property<string>("IpnNameCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
-                        .HasColumnName("ipn_name_cd")
-                        .HasColumnOrder(2);
+                        .HasColumnName("ipn_name_cd");
 
                     b.Property<int>("SeqNo")
                         .HasColumnType("integer")
-                        .HasColumnName("seq_no")
-                        .HasColumnOrder(4);
+                        .HasColumnName("seq_no");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -4872,30 +4884,23 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "StartDate", "IpnNameCd", "SeqNo");
+                    b.HasKey("StartDate", "IpnNameCd", "SeqNo");
 
-                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "IpnNameCd" }, "ipn_kasan_exclude_idx01");
+                    b.HasIndex(new[] { "StartDate", "EndDate", "IpnNameCd" }, "ipn_kasan_exclude_idx01");
 
                     b.ToTable("ipn_kasan_exclude");
                 });
 
             modelBuilder.Entity("Entity.Tenant.IpnKasanExcludeItem", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
-                        .HasColumnName("start_date")
-                        .HasColumnOrder(3);
+                        .HasColumnName("start_date");
 
                     b.Property<string>("ItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("item_cd")
-                        .HasColumnOrder(2);
+                        .HasColumnName("item_cd");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -4927,35 +4932,27 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "StartDate", "ItemCd");
+                    b.HasKey("StartDate", "ItemCd");
 
-                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "ItemCd" }, "ipn_kasan_exclude_item_idx01");
+                    b.HasIndex(new[] { "StartDate", "EndDate", "ItemCd" }, "ipn_kasan_exclude_item_idx01");
 
                     b.ToTable("ipn_kasan_exclude_item");
                 });
 
             modelBuilder.Entity("Entity.Tenant.IpnKasanMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
-                        .HasColumnName("start_date")
-                        .HasColumnOrder(3);
+                        .HasColumnName("start_date");
 
                     b.Property<string>("IpnNameCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
-                        .HasColumnName("ipn_name_cd")
-                        .HasColumnOrder(2);
+                        .HasColumnName("ipn_name_cd");
 
                     b.Property<int>("SeqNo")
                         .HasColumnType("integer")
-                        .HasColumnName("seq_no")
-                        .HasColumnOrder(4);
+                        .HasColumnName("seq_no");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -4999,36 +4996,28 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "StartDate", "IpnNameCd", "SeqNo");
+                    b.HasKey("StartDate", "IpnNameCd", "SeqNo");
 
                     b.ToTable("ipn_kasan_mst");
                 });
 
             modelBuilder.Entity("Entity.Tenant.IpnMinYakkaMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(2);
-
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .HasColumnOrder(1);
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("IpnNameCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
-                        .HasColumnName("ipn_name_cd")
-                        .HasColumnOrder(3);
+                        .HasColumnName("ipn_name_cd");
 
                     b.Property<int>("SeqNo")
                         .HasColumnType("integer")
-                        .HasColumnName("seq_no")
-                        .HasColumnOrder(4);
+                        .HasColumnName("seq_no");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -5072,37 +5061,29 @@ namespace TenantMigration.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("yakka");
 
-                    b.HasKey("HpId", "Id", "IpnNameCd", "SeqNo");
+                    b.HasKey("Id", "IpnNameCd", "SeqNo");
 
-                    b.HasIndex(new[] { "HpId", "IpnNameCd", "StartDate" }, "ipn_min_yakka_mst_idx01");
+                    b.HasIndex(new[] { "IpnNameCd", "StartDate" }, "ipn_min_yakka_mst_idx01");
 
-                    b.HasIndex(new[] { "HpId", "StartDate", "EndDate", "IpnNameCd" }, "ipn_min_yakka_mst_idx02");
+                    b.HasIndex(new[] { "StartDate", "EndDate", "IpnNameCd" }, "ipn_min_yakka_mst_idx02");
 
                     b.ToTable("ipn_min_yakka_mst");
                 });
 
             modelBuilder.Entity("Entity.Tenant.IpnNameMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<string>("IpnNameCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
-                        .HasColumnName("ipn_name_cd")
-                        .HasColumnOrder(2);
+                        .HasColumnName("ipn_name_cd");
 
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
-                        .HasColumnName("start_date")
-                        .HasColumnOrder(3);
+                        .HasColumnName("start_date");
 
                     b.Property<int>("SeqNo")
                         .HasColumnType("integer")
-                        .HasColumnName("seq_no")
-                        .HasColumnOrder(4);
+                        .HasColumnName("seq_no");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -5143,7 +5124,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "IpnNameCd", "StartDate", "SeqNo");
+                    b.HasKey("IpnNameCd", "StartDate", "SeqNo");
 
                     b.HasIndex(new[] { "IpnNameCd" }, "ipn_name_mst_idx01");
 
@@ -5434,6 +5415,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.KacodeMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ReceKaCd")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
@@ -5475,7 +5460,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("ReceKaCd");
+                    b.HasKey("HpId", "ReceKaCd");
 
                     b.ToTable("kacode_mst");
                 });
@@ -5533,8 +5518,8 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
 
-                    b.Property<int>("EnTen")
-                        .HasColumnType("integer")
+                    b.Property<double>("EnTen")
+                        .HasColumnType("double precision")
                         .HasColumnName("en_ten");
 
                     b.Property<int>("GenmenGaku")
@@ -5887,6 +5872,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("rousai_i_futan");
 
+                    b.Property<int>("RousaiITensu")
+                        .HasColumnType("integer")
+                        .HasColumnName("rousai_i_tensu");
+
                     b.Property<int>("RousaiId")
                         .HasColumnType("integer")
                         .HasColumnName("rousai_id");
@@ -6128,6 +6117,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.KantokuMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("RoudouCd")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
@@ -6154,7 +6147,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update_date");
 
-                    b.HasKey("RoudouCd", "KantokuCd");
+                    b.HasKey("HpId", "RoudouCd", "KantokuCd");
 
                     b.ToTable("kantoku_mst");
                 });
@@ -7373,25 +7366,17 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.KogakuLimit", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("AgeKbn")
                         .HasColumnType("integer")
-                        .HasColumnName("age_kbn")
-                        .HasColumnOrder(2);
+                        .HasColumnName("age_kbn");
 
                     b.Property<int>("KogakuKbn")
                         .HasColumnType("integer")
-                        .HasColumnName("kogaku_kbn")
-                        .HasColumnOrder(3);
+                        .HasColumnName("kogaku_kbn");
 
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
-                        .HasColumnName("start_date")
-                        .HasColumnOrder(4);
+                        .HasColumnName("start_date");
 
                     b.Property<int>("AdjustLimit")
                         .HasColumnType("integer")
@@ -7440,7 +7425,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "AgeKbn", "KogakuKbn", "StartDate");
+                    b.HasKey("AgeKbn", "KogakuKbn", "StartDate");
 
                     b.ToTable("kogaku_limit");
                 });
@@ -7463,6 +7448,10 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(5)")
                         .HasColumnName("priority_no")
                         .HasColumnOrder(3);
+
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -7490,7 +7479,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("PrefNo", "Houbetu", "PriorityNo");
+                    b.HasKey("PrefNo", "Houbetu", "PriorityNo", "HpId");
 
                     b.ToTable("kohi_priority");
                 });
@@ -7584,15 +7573,12 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.KouiKbnMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("KouiKbnId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("koui_kbn_id")
-                        .HasColumnOrder(2);
+                        .HasColumnName("koui_kbn_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("KouiKbnId"));
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -7638,7 +7624,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("sort_no");
 
-                    b.HasKey("HpId", "KouiKbnId");
+                    b.HasKey("KouiKbnId");
 
                     b.ToTable("koui_kbn_mst");
                 });
@@ -8115,18 +8101,26 @@ namespace TenantMigration.Migrations
                         .HasColumnName("cmt_cd")
                         .HasColumnOrder(1);
 
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("Cmt")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("cmt");
 
-                    b.HasKey("CmtCd");
+                    b.HasKey("CmtCd", "HpId");
 
                     b.ToTable("m01_kijyo_cmt");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M01Kinki", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ACd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -8166,13 +8160,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(3)")
                         .HasColumnName("kyodo_cd");
 
-                    b.HasKey("ACd", "BCd", "CmtCd", "SayokijyoCd");
+                    b.HasKey("HpId", "ACd", "BCd", "CmtCd", "SayokijyoCd");
 
                     b.ToTable("m01_kinki");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M01KinkiCmt", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("CmtCd")
                         .HasMaxLength(6)
                         .HasColumnType("character varying(6)")
@@ -8184,13 +8182,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("cmt");
 
-                    b.HasKey("CmtCd");
+                    b.HasKey("HpId", "CmtCd");
 
                     b.ToTable("m01_kinki_cmt");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M10DayLimit", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -8221,13 +8223,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(8)")
                         .HasColumnName("st_date");
 
-                    b.HasKey("YjCd", "SeqNo");
+                    b.HasKey("HpId", "YjCd", "SeqNo");
 
                     b.ToTable("m10_day_limit");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M12FoodAlrgy", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -8261,7 +8267,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("working_mechanism");
 
-                    b.HasKey("YjCd", "FoodKbn", "TenpuLevel");
+                    b.HasKey("HpId", "YjCd", "FoodKbn", "TenpuLevel");
 
                     b.HasIndex(new[] { "KikinCd", "YjCd", "FoodKbn", "TenpuLevel" }, "m12_food_alrgy_idx01");
 
@@ -8270,6 +8276,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.M12FoodAlrgyKbn", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FoodKbn")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
@@ -8282,13 +8292,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("food_name");
 
-                    b.HasKey("FoodKbn");
+                    b.HasKey("HpId", "FoodKbn");
 
                     b.ToTable("m12_food_alrgy_kbn");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M14AgeCheck", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -8342,13 +8356,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("working_mechanism");
 
-                    b.HasKey("YjCd", "AttentionCmtCd");
+                    b.HasKey("HpId", "YjCd", "AttentionCmtCd");
 
                     b.ToTable("m14_age_check");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M14CmtCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("AttentionCmtCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -8360,13 +8378,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("attention_cmt");
 
-                    b.HasKey("AttentionCmtCd");
+                    b.HasKey("HpId", "AttentionCmtCd");
 
                     b.ToTable("m14_cmt_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M28DrugMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -8578,13 +8600,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("yoryo_jyuryo_unit");
 
-                    b.HasKey("YjCd");
+                    b.HasKey("HpId", "YjCd");
 
                     b.ToTable("m28_drug_mst");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34ArCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FukusayoCd")
                         .HasColumnType("text")
                         .HasColumnName("fukusayo_cd")
@@ -8595,13 +8621,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("fukusayo_cmt");
 
-                    b.HasKey("FukusayoCd");
+                    b.HasKey("HpId", "FukusayoCd");
 
                     b.ToTable("m34_ar_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34ArDiscon", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasColumnType("text")
                         .HasColumnName("yj_cd")
@@ -8616,13 +8646,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("fukusayo_cd");
 
-                    b.HasKey("YjCd", "SeqNo");
+                    b.HasKey("HpId", "YjCd", "SeqNo");
 
                     b.ToTable("m34_ar_discon");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34ArDisconCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FukusayoCd")
                         .HasMaxLength(6)
                         .HasColumnType("character varying(6)")
@@ -8634,13 +8668,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("fukusayo_cmt");
 
-                    b.HasKey("FukusayoCd");
+                    b.HasKey("HpId", "FukusayoCd");
 
                     b.ToTable("m34_ar_discon_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34DrugInfoMain", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasColumnType("text")
                         .HasColumnName("yj_cd")
@@ -8672,13 +8710,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("mark");
 
-                    b.HasKey("YjCd");
+                    b.HasKey("HpId", "YjCd");
 
                     b.ToTable("m34_drug_info_main");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34FormCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FormCd")
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)")
@@ -8690,13 +8732,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(80)")
                         .HasColumnName("form");
 
-                    b.HasKey("FormCd");
+                    b.HasKey("HpId", "FormCd");
 
                     b.ToTable("m34_form_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34IndicationCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("KonoCd")
                         .HasColumnType("text")
                         .HasColumnName("kono_cd")
@@ -8712,13 +8758,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("kono_simple_cmt");
 
-                    b.HasKey("KonoCd");
+                    b.HasKey("HpId", "KonoCd");
 
                     b.ToTable("m34_indication_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34InteractionPat", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasColumnType("text")
                         .HasColumnName("yj_cd")
@@ -8733,13 +8783,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("interaction_pat_cd");
 
-                    b.HasKey("YjCd", "SeqNo");
+                    b.HasKey("HpId", "YjCd", "SeqNo");
 
                     b.ToTable("m34_interaction_pat");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34InteractionPatCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("InteractionPatCd")
                         .HasColumnType("text")
                         .HasColumnName("interaction_pat_cd")
@@ -8750,13 +8804,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("interaction_pat_cmt");
 
-                    b.HasKey("InteractionPatCd");
+                    b.HasKey("HpId", "InteractionPatCd");
 
                     b.ToTable("m34_interaction_pat_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34Precaution", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasColumnType("text")
                         .HasColumnName("yj_cd")
@@ -8771,13 +8829,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("precaution_cd");
 
-                    b.HasKey("YjCd", "SeqNo");
+                    b.HasKey("HpId", "YjCd", "SeqNo");
 
                     b.ToTable("m34_precautions");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34PrecautionCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("PrecautionCd")
                         .HasColumnType("text")
                         .HasColumnName("precaution_cd")
@@ -8809,7 +8871,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("sex_cd");
 
-                    b.HasKey("PrecautionCd", "ExtendCd");
+                    b.HasKey("HpId", "PrecautionCd", "ExtendCd");
 
                     b.HasIndex(new[] { "AgeMin", "AgeMax", "SexCd" }, "m34_precaution_code_age_min_idx");
 
@@ -8818,26 +8880,31 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.M34PropertyCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<int>("PropertyCd")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("property_cd")
                         .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PropertyCd"));
 
                     b.Property<string>("Property")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("property");
 
-                    b.HasKey("PropertyCd");
+                    b.HasKey("HpId", "PropertyCd");
 
                     b.ToTable("m34_property_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M34SarSymptomCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FukusayoInitCd")
                         .HasMaxLength(6)
                         .HasColumnType("character varying(6)")
@@ -8848,13 +8915,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("fukusayo_init_cmt");
 
-                    b.HasKey("FukusayoInitCd");
+                    b.HasKey("HpId", "FukusayoInitCd");
 
                     b.ToTable("m34_sar_symptom_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M38ClassCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ClassCd")
                         .HasColumnType("text")
                         .HasColumnName("class_cd")
@@ -8869,13 +8940,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("major_div_cd");
 
-                    b.HasKey("ClassCd");
+                    b.HasKey("HpId", "ClassCd");
 
                     b.ToTable("m38_class_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M38IngCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -8887,13 +8962,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("seibun");
 
-                    b.HasKey("SeibunCd");
+                    b.HasKey("HpId", "SeibunCd");
 
                     b.ToTable("m38_ing_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M38Ingredients", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -8910,13 +8989,17 @@ namespace TenantMigration.Migrations
                         .HasColumnName("sbt")
                         .HasColumnOrder(3);
 
-                    b.HasKey("SeibunCd", "SerialNum", "Sbt");
+                    b.HasKey("HpId", "SeibunCd", "SerialNum", "Sbt");
 
                     b.ToTable("m38_ingredients");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M38MajorDivCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("MajorDivCd")
                         .HasColumnType("text")
                         .HasColumnName("major_div_cd")
@@ -8927,13 +9010,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("major_div_name");
 
-                    b.HasKey("MajorDivCd");
+                    b.HasKey("HpId", "MajorDivCd");
 
                     b.ToTable("m38_major_div_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M38OtcFormCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FormCd")
                         .HasColumnType("text")
                         .HasColumnName("form_cd")
@@ -8944,20 +9031,21 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(80)")
                         .HasColumnName("form");
 
-                    b.HasKey("FormCd");
+                    b.HasKey("HpId", "FormCd");
 
                     b.ToTable("m38_otc_form_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M38OtcMain", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<int>("SerialNum")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("serial_num")
                         .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SerialNum"));
 
                     b.Property<string>("ClassCd")
                         .HasMaxLength(2)
@@ -8999,13 +9087,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(6)")
                         .HasColumnName("yoho_cd");
 
-                    b.HasKey("SerialNum");
+                    b.HasKey("HpId", "SerialNum");
 
                     b.ToTable("m38_otc_main");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M38OtcMakerCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("MakerCd")
                         .HasColumnType("text")
                         .HasColumnName("maker_cd")
@@ -9021,13 +9113,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("maker_name");
 
-                    b.HasKey("MakerCd");
+                    b.HasKey("HpId", "MakerCd");
 
                     b.ToTable("m38_otc_maker_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M41SuppleIndexcode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -9040,13 +9136,17 @@ namespace TenantMigration.Migrations
                         .HasColumnName("index_cd")
                         .HasColumnOrder(2);
 
-                    b.HasKey("SeibunCd", "IndexCd");
+                    b.HasKey("HpId", "SeibunCd", "IndexCd");
 
                     b.ToTable("m41_supple_indexcode");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M41SuppleIndexdef", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -9063,13 +9163,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(1)")
                         .HasColumnName("tokuho_flg");
 
-                    b.HasKey("SeibunCd");
+                    b.HasKey("HpId", "SeibunCd");
 
                     b.ToTable("m41_supple_indexdef");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M41SuppleIngre", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -9081,13 +9185,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("seibun");
 
-                    b.HasKey("SeibunCd");
+                    b.HasKey("HpId", "SeibunCd");
 
                     b.ToTable("m41_supple_ingre");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M42ContraCmt", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("CmtCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -9099,13 +9207,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(400)")
                         .HasColumnName("cmt");
 
-                    b.HasKey("CmtCd");
+                    b.HasKey("HpId", "CmtCd");
 
                     b.ToTable("m42_contra_cmt");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M42ContraindiDisBc", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ByotaiCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -9118,13 +9230,17 @@ namespace TenantMigration.Migrations
                         .HasColumnName("byotai_class_cd")
                         .HasColumnOrder(2);
 
-                    b.HasKey("ByotaiCd", "ByotaiClassCd");
+                    b.HasKey("HpId", "ByotaiCd", "ByotaiClassCd");
 
                     b.ToTable("m42_contraindi_dis_bc");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M42ContraindiDisClass", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ByotaiClassCd")
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)")
@@ -9136,13 +9252,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("byotai");
 
-                    b.HasKey("ByotaiClassCd");
+                    b.HasKey("HpId", "ByotaiClassCd");
 
                     b.ToTable("m42_contraindi_dis_class");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M42ContraindiDisCon", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ByotaiCd")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)")
@@ -9173,13 +9293,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(400)")
                         .HasColumnName("standard_byotai");
 
-                    b.HasKey("ByotaiCd");
+                    b.HasKey("HpId", "ByotaiCd");
 
                     b.ToTable("m42_contraindi_dis_con");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M42ContraindiDrugMainEx", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -9222,13 +9346,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("stage");
 
-                    b.HasKey("YjCd", "TenpuLevel", "ByotaiCd", "CmtCd");
+                    b.HasKey("HpId", "YjCd", "TenpuLevel", "ByotaiCd", "CmtCd");
 
                     b.ToTable("m42_contraindi_drug_main_ex");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56AlrgyDerivatives", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)")
@@ -9247,13 +9375,17 @@ namespace TenantMigration.Migrations
                         .HasColumnName("yj_cd")
                         .HasColumnOrder(1);
 
-                    b.HasKey("SeibunCd", "DrvalrgyCd", "YjCd");
+                    b.HasKey("HpId", "SeibunCd", "DrvalrgyCd", "YjCd");
 
                     b.ToTable("m56_alrgy_derivatives");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56AnalogueCd", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("AnalogueCd")
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)")
@@ -9265,13 +9397,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("analogue_name");
 
-                    b.HasKey("AnalogueCd");
+                    b.HasKey("HpId", "AnalogueCd");
 
                     b.ToTable("m56_analogue_cd");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56DrugClass", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("ClassCd")
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
@@ -9288,13 +9424,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("class_name");
 
-                    b.HasKey("ClassCd");
+                    b.HasKey("HpId", "ClassCd");
 
                     b.ToTable("m56_drug_class");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56DrvalrgyCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("DrvalrgyCd")
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
@@ -9315,13 +9455,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("rank_no");
 
-                    b.HasKey("DrvalrgyCd");
+                    b.HasKey("HpId", "DrvalrgyCd");
 
                     b.ToTable("m56_drvalrgy_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56ExAnalogue", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)")
@@ -9339,13 +9483,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(9)")
                         .HasColumnName("analogue_cd");
 
-                    b.HasKey("SeibunCd", "SeqNo");
+                    b.HasKey("HpId", "SeibunCd", "SeqNo");
 
                     b.ToTable("m56_ex_analogue");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56ExEdIngredients", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -9392,13 +9540,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(1)")
                         .HasColumnName("yokaieki_check");
 
-                    b.HasKey("YjCd", "SeqNo");
+                    b.HasKey("HpId", "YjCd", "SeqNo");
 
                     b.ToTable("m56_ex_ed_ingredients");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56ExIngCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeibunCd")
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)")
@@ -9421,13 +9573,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(6)")
                         .HasColumnName("yoho_cd");
 
-                    b.HasKey("SeibunCd", "SeibunIndexCd");
+                    b.HasKey("HpId", "SeibunCd", "SeibunIndexCd");
 
                     b.ToTable("m56_ex_ing_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56ExIngrdtMain", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -9464,13 +9620,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(1)")
                         .HasColumnName("zensinsayo_flg");
 
-                    b.HasKey("YjCd");
+                    b.HasKey("HpId", "YjCd");
 
                     b.ToTable("m56_ex_ingrdt_main");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56ProdrugCd", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("SeqNo")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
@@ -9488,13 +9648,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(9)")
                         .HasColumnName("kasseitai_cd");
 
-                    b.HasKey("SeqNo", "SeibunCd");
+                    b.HasKey("HpId", "SeqNo", "SeibunCd");
 
                     b.ToTable("m56_prodrug_cd");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56UsageCode", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YohoCd")
                         .HasColumnType("text")
                         .HasColumnName("yoho_cd")
@@ -9505,13 +9669,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("yoho");
 
-                    b.HasKey("YohoCd");
+                    b.HasKey("HpId", "YohoCd");
 
                     b.ToTable("m56_usage_code");
                 });
 
             modelBuilder.Entity("Entity.Tenant.M56YjDrugClass", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("YjCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
@@ -9524,7 +9692,7 @@ namespace TenantMigration.Migrations
                         .HasColumnName("class_cd")
                         .HasColumnOrder(2);
 
-                    b.HasKey("YjCd", "ClassCd");
+                    b.HasKey("HpId", "YjCd", "ClassCd");
 
                     b.ToTable("m56_yj_drug_class");
                 });
@@ -10550,6 +10718,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.PermissionMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("FunctionCd")
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
@@ -10587,7 +10759,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("FunctionCd", "Permission");
+                    b.HasKey("HpId", "FunctionCd", "Permission");
 
                     b.HasIndex(new[] { "FunctionCd", "Permission" }, "permission_mst_pkey");
 
@@ -10596,6 +10768,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.PhysicalAverage", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<int>("JissiYear")
                         .HasColumnType("integer")
                         .HasColumnName("jissi_year")
@@ -10656,28 +10832,21 @@ namespace TenantMigration.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update_date");
 
-                    b.HasKey("JissiYear", "AgeYear", "AgeMonth", "AgeDay");
+                    b.HasKey("HpId", "JissiYear", "AgeYear", "AgeMonth", "AgeDay");
 
                     b.ToTable("physical_average");
                 });
 
             modelBuilder.Entity("Entity.Tenant.PiImage", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("ImageType")
                         .HasColumnType("integer")
-                        .HasColumnName("image_type")
-                        .HasColumnOrder(2);
+                        .HasColumnName("image_type");
 
                     b.Property<string>("ItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("item_cd")
-                        .HasColumnOrder(3);
+                        .HasColumnName("item_cd");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -10710,13 +10879,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "ImageType", "ItemCd");
+                    b.HasKey("ImageType", "ItemCd");
 
                     b.ToTable("pi_image");
                 });
 
             modelBuilder.Entity("Entity.Tenant.PiInf", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("PiId")
                         .HasMaxLength(6)
                         .HasColumnType("character varying(6)")
@@ -10790,13 +10963,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("w_date");
 
-                    b.HasKey("PiId");
+                    b.HasKey("HpId", "PiId");
 
                     b.ToTable("pi_inf");
                 });
 
             modelBuilder.Entity("Entity.Tenant.PiInfDetail", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("PiId")
                         .HasMaxLength(6)
                         .HasColumnType("character varying(6)")
@@ -10828,13 +11005,17 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("text");
 
-                    b.HasKey("PiId", "Branch", "Jpn", "SeqNo");
+                    b.HasKey("HpId", "PiId", "Branch", "Jpn", "SeqNo");
 
                     b.ToTable("pi_inf_detail");
                 });
 
             modelBuilder.Entity("Entity.Tenant.PiProductInf", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("PiIdFull")
                         .HasColumnType("text")
                         .HasColumnName("pi_id_full");
@@ -10966,7 +11147,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("text")
                         .HasColumnName("yj_cd");
 
-                    b.HasKey("PiIdFull", "PiId", "Branch", "Jpn");
+                    b.HasKey("HpId", "PiIdFull", "PiId", "Branch", "Jpn");
 
                     b.ToTable("pi_product_inf");
                 });
@@ -16075,8 +16256,8 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("create_machine");
 
-                    b.Property<int>("EnTen")
-                        .HasColumnType("integer")
+                    b.Property<double>("EnTen")
+                        .HasColumnType("double precision")
                         .HasColumnName("en_ten");
 
                     b.Property<int>("GenmenGaku")
@@ -16558,6 +16739,10 @@ namespace TenantMigration.Migrations
                     b.Property<int>("RousaiIFutan")
                         .HasColumnType("integer")
                         .HasColumnName("rousai_i_futan");
+
+                    b.Property<int>("RousaiITensu")
+                        .HasColumnType("integer")
+                        .HasColumnName("rousai_i_tensu");
 
                     b.Property<int>("RousaiRoFutan")
                         .HasColumnType("integer")
@@ -18103,6 +18288,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.RoudouMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<string>("RoudouCd")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
@@ -18123,44 +18312,34 @@ namespace TenantMigration.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("update_date");
 
-                    b.HasKey("RoudouCd");
+                    b.HasKey("HpId", "RoudouCd");
 
                     b.ToTable("roudou_mst");
                 });
 
             modelBuilder.Entity("Entity.Tenant.RousaiGoseiMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("GoseiGrp")
                         .HasColumnType("integer")
-                        .HasColumnName("gosei_grp")
-                        .HasColumnOrder(2);
+                        .HasColumnName("gosei_grp");
 
                     b.Property<string>("GoseiItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("gosei_item_cd")
-                        .HasColumnOrder(3);
+                        .HasColumnName("gosei_item_cd");
 
                     b.Property<string>("ItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("item_cd")
-                        .HasColumnOrder(4);
+                        .HasColumnName("item_cd");
 
                     b.Property<int>("SisiKbn")
                         .HasColumnType("integer")
-                        .HasColumnName("sisi_kbn")
-                        .HasColumnOrder(5);
+                        .HasColumnName("sisi_kbn");
 
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
-                        .HasColumnName("start_date")
-                        .HasColumnOrder(6);
+                        .HasColumnName("start_date");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -18192,7 +18371,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "GoseiGrp", "GoseiItemCd", "ItemCd", "SisiKbn", "StartDate");
+                    b.HasKey("GoseiGrp", "GoseiItemCd", "ItemCd", "SisiKbn", "StartDate");
 
                     b.ToTable("rousai_gosei_mst");
                 });
@@ -22163,30 +22342,21 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.SokatuMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("PrefNo")
                         .HasColumnType("integer")
-                        .HasColumnName("pref_no")
-                        .HasColumnOrder(2);
+                        .HasColumnName("pref_no");
 
                     b.Property<int>("StartYm")
                         .HasColumnType("integer")
-                        .HasColumnName("start_ym")
-                        .HasColumnOrder(3);
+                        .HasColumnName("start_ym");
 
                     b.Property<int>("ReportEdaNo")
                         .HasColumnType("integer")
-                        .HasColumnName("report_eda_no")
-                        .HasColumnOrder(5);
+                        .HasColumnName("report_eda_no");
 
                     b.Property<int>("ReportId")
                         .HasColumnType("integer")
-                        .HasColumnName("report_id")
-                        .HasColumnOrder(4);
+                        .HasColumnName("report_id");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -22264,7 +22434,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "PrefNo", "StartYm", "ReportEdaNo", "ReportId");
+                    b.HasKey("PrefNo", "StartYm", "ReportEdaNo", "ReportId");
 
                     b.ToTable("sokatu_mst");
                 });
@@ -22395,20 +22565,13 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.StaGrp", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("GrpId")
                         .HasColumnType("integer")
-                        .HasColumnName("grp_id")
-                        .HasColumnOrder(2);
+                        .HasColumnName("grp_id");
 
                     b.Property<int>("ReportId")
                         .HasColumnType("integer")
-                        .HasColumnName("report_id")
-                        .HasColumnOrder(3);
+                        .HasColumnName("report_id");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -22440,7 +22603,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "GrpId", "ReportId");
+                    b.HasKey("GrpId", "ReportId");
 
                     b.ToTable("sta_grp");
                 });
@@ -22517,15 +22680,12 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.StaMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<int>("ReportId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("report_id")
-                        .HasColumnOrder(2);
+                        .HasColumnName("report_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReportId"));
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -22558,7 +22718,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "ReportId");
+                    b.HasKey("ReportId");
 
                     b.ToTable("sta_mst");
                 });
@@ -22780,6 +22940,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.SyoukiKbnMst", b =>
                 {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hp_id");
+
                     b.Property<int>("SyoukiKbn")
                         .HasColumnType("integer")
                         .HasColumnName("syouki_kbn")
@@ -22799,7 +22963,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
-                    b.HasKey("SyoukiKbn", "StartYm");
+                    b.HasKey("HpId", "SyoukiKbn", "StartYm");
 
                     b.ToTable("syouki_kbn_mst");
                 });
@@ -25929,16 +26093,10 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.TokkiMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<string>("TokkiCd")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
-                        .HasColumnName("tokki_cd")
-                        .HasColumnOrder(2);
+                        .HasColumnName("tokki_cd");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -25980,7 +26138,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("HpId", "TokkiCd");
+                    b.HasKey("TokkiCd");
 
                     b.ToTable("tokki_mst");
                 });
@@ -26086,13 +26244,13 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.UnitMst", b =>
                 {
-                    b.Property<int>("UnitCd")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("HpId")
                         .HasColumnType("integer")
-                        .HasColumnName("unit_cd")
-                        .HasColumnOrder(1);
+                        .HasColumnName("hp_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UnitCd"));
+                    b.Property<int>("UnitCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("unit_cd");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -26133,7 +26291,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("update_machine");
 
-                    b.HasKey("UnitCd");
+                    b.HasKey("HpId", "UnitCd");
 
                     b.ToTable("unit_mst");
                 });
@@ -26976,27 +27134,19 @@ namespace TenantMigration.Migrations
 
             modelBuilder.Entity("Entity.Tenant.YakkaSyusaiMst", b =>
                 {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
                     b.Property<string>("YakkaCd")
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
-                        .HasColumnName("yakka_cd")
-                        .HasColumnOrder(2);
+                        .HasColumnName("yakka_cd");
 
                     b.Property<string>("ItemCd")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("item_cd")
-                        .HasColumnOrder(3);
+                        .HasColumnName("item_cd");
 
                     b.Property<int>("StartDate")
                         .HasColumnType("integer")
-                        .HasColumnName("start_date")
-                        .HasColumnOrder(4);
+                        .HasColumnName("start_date");
 
                     b.Property<string>("Biko")
                         .HasMaxLength(255)
@@ -27074,7 +27224,7 @@ namespace TenantMigration.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("yakka");
 
-                    b.HasKey("HpId", "YakkaCd", "ItemCd", "StartDate");
+                    b.HasKey("YakkaCd", "ItemCd", "StartDate");
 
                     b.HasIndex(new[] { "StartDate", "EndDate" }, "yakka_syusai_mst_idx01");
 
@@ -27529,303 +27679,6 @@ namespace TenantMigration.Migrations
                     b.HasKey("HpId", "PtId", "SinYm", "DataType", "SeqNo", "CodeNo", "RowNo", "Payload");
 
                     b.ToTable("yousiki1_inf_detail");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.YoyakuOdrInf", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("pt_id")
-                        .HasColumnOrder(2);
-
-                    b.Property<long>("YoyakuKarteNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("yoyaku_karte_no")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("RpNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("rp_no")
-                        .HasColumnOrder(4);
-
-                    b.Property<long>("RpEdaNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("rp_eda_no")
-                        .HasColumnOrder(5);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_date");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("create_id");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("create_machine");
-
-                    b.Property<int>("DaysCnt")
-                        .HasColumnType("integer")
-                        .HasColumnName("days_cnt");
-
-                    b.Property<int>("InoutKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("inout_kbn");
-
-                    b.Property<int>("IsDeleted")
-                        .HasColumnType("integer")
-                        .HasColumnName("is_deleted");
-
-                    b.Property<int>("OdrKouiKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("odr_koui_kbn");
-
-                    b.Property<string>("RpName")
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("rp_name");
-
-                    b.Property<int>("SanteiKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("santei_kbn");
-
-                    b.Property<int>("SikyuKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("sikyu_kbn");
-
-                    b.Property<int>("SortNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("sort_no");
-
-                    b.Property<int>("SyohoSbt")
-                        .HasColumnType("integer")
-                        .HasColumnName("syoho_sbt");
-
-                    b.Property<int>("TosekiKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("toseki_kbn");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update_date");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("update_id");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("update_machine");
-
-                    b.Property<int>("YoyakuDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("yoyaku_date");
-
-                    b.HasKey("HpId", "PtId", "YoyakuKarteNo", "RpNo", "RpEdaNo");
-
-                    b.ToTable("yoyaku_odr_inf");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.YoyakuOdrInfDetail", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("pt_id")
-                        .HasColumnOrder(2);
-
-                    b.Property<long>("YoyakuKarteNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("yoyaku_karte_no")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("RpNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("rp_no")
-                        .HasColumnOrder(4);
-
-                    b.Property<long>("RpEdaNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("rp_eda_no")
-                        .HasColumnOrder(5);
-
-                    b.Property<long>("RowNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("row_no")
-                        .HasColumnOrder(6);
-
-                    b.Property<string>("Bunkatu")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("bunkatu");
-
-                    b.Property<string>("CmtName")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("cmt_name");
-
-                    b.Property<string>("CmtOpt")
-                        .HasMaxLength(38)
-                        .HasColumnType("character varying(38)")
-                        .HasColumnName("cmt_opt");
-
-                    b.Property<int>("DrugKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("drug_kbn");
-
-                    b.Property<int>("FontColor")
-                        .HasColumnType("integer")
-                        .HasColumnName("font_color");
-
-                    b.Property<string>("IpnCd")
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
-                        .HasColumnName("ipn_cd");
-
-                    b.Property<string>("IpnName")
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("ipn_name");
-
-                    b.Property<int>("IsNodspRece")
-                        .HasColumnType("integer")
-                        .HasColumnName("is_nodsp_rece");
-
-                    b.Property<string>("ItemCd")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("item_cd");
-
-                    b.Property<string>("ItemName")
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("item_name");
-
-                    b.Property<int>("KohatuKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("kohatu_kbn");
-
-                    b.Property<int>("Kokuji1")
-                        .HasColumnType("integer")
-                        .HasColumnName("kokuji1");
-
-                    b.Property<int>("SinKouiKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("sin_koui_kbn");
-
-                    b.Property<double>("Suryo")
-                        .HasColumnType("double precision")
-                        .HasColumnName("suryo");
-
-                    b.Property<int>("SyohoKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("syoho_kbn");
-
-                    b.Property<int>("SyohoLimitKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("syoho_limit_kbn");
-
-                    b.Property<double>("TermVal")
-                        .HasColumnType("double precision")
-                        .HasColumnName("term_val");
-
-                    b.Property<string>("UnitName")
-                        .HasMaxLength(24)
-                        .HasColumnType("character varying(24)")
-                        .HasColumnName("unit_name");
-
-                    b.Property<int>("UnitSbt")
-                        .HasColumnType("integer")
-                        .HasColumnName("unit_sbt");
-
-                    b.Property<int>("YohoKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("yoho_kbn");
-
-                    b.Property<int>("YoyakuDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("yoyaku_date");
-
-                    b.HasKey("HpId", "PtId", "YoyakuKarteNo", "RpNo", "RpEdaNo", "RowNo");
-
-                    b.ToTable("yoyaku_odr_inf_detail");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.YoyakuSbtMst", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hp_id")
-                        .HasColumnOrder(1);
-
-                    b.Property<int>("YoyakuSbt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("yoyaku_sbt")
-                        .HasColumnOrder(2);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("YoyakuSbt"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_date");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("create_id");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("create_machine");
-
-                    b.Property<string>("DefaultCmt")
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("default_cmt");
-
-                    b.Property<int>("IsDeleted")
-                        .HasColumnType("integer")
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("SbtName")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)")
-                        .HasColumnName("sbt_name");
-
-                    b.Property<int>("SortNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("sort_no");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update_date");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("update_id");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("update_machine");
-
-                    b.HasKey("HpId", "YoyakuSbt");
-
-                    b.ToTable("yoyaku_sbt_mst");
                 });
 
             modelBuilder.Entity("Entity.Tenant.ZDocInf", b =>

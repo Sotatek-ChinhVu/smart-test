@@ -65,9 +65,10 @@ public class KaRepository : RepositoryBase, IKaRepository
                .Select(k => ConvertToKaMstModel(k)).ToList();
     }
 
-    public List<KaCodeMstModel> GetListKacode()
+    public List<KaCodeMstModel> GetListKacode(int hpId)
     {
         return NoTrackingDataContext.KacodeMsts
+                .Where(k => k.HpId == hpId)
                .OrderBy(u => u.ReceKaCd)
                .Select(ka => new KaCodeMstModel(
                                  ka.ReceKaCd,
@@ -142,11 +143,11 @@ public class KaRepository : RepositoryBase, IKaRepository
             );
     }
 
-    public List<KaCodeMstModel> GetKacodeMstYossi()
+    public List<KaCodeMstModel> GetKacodeMstYossi(int hpId)
     {
-        var kacodeMsts = NoTrackingDataContext.KacodeMsts.AsQueryable();
+        var kacodeMsts = NoTrackingDataContext.KacodeMsts.Where(k => k.HpId == hpId).AsQueryable();
 
-        var kacodeReceYousikis = NoTrackingDataContext.KacodeReceYousikis.AsQueryable();
+        var kacodeReceYousikis = NoTrackingDataContext.KacodeReceYousikis.Where(k => k.HpId == hpId).AsQueryable();
 
         var query = from kacodeMst in kacodeMsts
                     join kacodeReceYousiki in kacodeReceYousikis
@@ -160,9 +161,9 @@ public class KaRepository : RepositoryBase, IKaRepository
         return query.AsEnumerable().Select(p => new KaCodeMstModel(p.KacodeMst?.ReceKaCd ?? string.Empty, p.KacodeMst?.SortNo ?? 0, p.KacodeMst?.KaName ?? string.Empty, p.KacodeReceYousiki?.YousikiKaCd ?? string.Empty)).OrderBy(p => p.ReceKaCd).ToList();
     }
 
-    public List<KacodeYousikiMstModel> GetKacodeYousikiMst()
+    public List<KacodeYousikiMstModel> GetKacodeYousikiMst(int hpId)
     {
-        var kacodeMsts = NoTrackingDataContext.KacodeYousikiMsts.AsEnumerable().OrderBy(u => u.YousikiKaCd);
+        var kacodeMsts = NoTrackingDataContext.KacodeYousikiMsts.Where(k => k.HpId == hpId).AsEnumerable().OrderBy(u => u.YousikiKaCd);
         return kacodeMsts.Select(p => new KacodeYousikiMstModel(p.YousikiKaCd, p.SortNo, p.KaName)).ToList();
     }
 

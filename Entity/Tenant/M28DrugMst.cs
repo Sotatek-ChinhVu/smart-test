@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m28_drug_mst")]
     public class M28DrugMst : EmrCloneable<M28DrugMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 医薬品コード
         /// 
         /// </summary>
-        
+
         [Column("yj_cd", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;

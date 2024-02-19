@@ -55,7 +55,7 @@ namespace Interactor.SpecialNote
                 }
 
                 var taskSummaryTab = Task<SummaryInfModel>.Factory.StartNew(() => GetSummaryTab(inputData.HpId, inputData.PtId));
-                var taskImportantNoteTab = Task<ImportantNoteModel>.Factory.StartNew(() => GetImportantNoteTab(inputData.PtId));
+                var taskImportantNoteTab = Task<ImportantNoteModel>.Factory.StartNew(() => GetImportantNoteTab(inputData.HpId, inputData.PtId));
                 var taskPatientInfoTab = Task<PatientInfoModel>.Factory.StartNew(() => GetPatientInfoTab(inputData.PtId, inputData.HpId));
                 Task.WaitAll(taskSummaryTab, taskImportantNoteTab, taskPatientInfoTab);
 
@@ -86,10 +86,10 @@ namespace Interactor.SpecialNote
             return _summaryInfRepository.Get(hpId, ptId);
         }
 
-        private ImportantNoteModel GetImportantNoteTab(long ptId)
+        private ImportantNoteModel GetImportantNoteTab(int hpId, long ptId)
         {
             var taskAlrgyElseList = Task<List<PtAlrgyElseModel>>.Factory.StartNew(() => _importantNoteAlrgyElseRepository.GetAlrgyElseList(ptId));
-            var taskAlrgyFoodList = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantAlrgyFoodRepository.GetAlrgyFoodList(ptId));
+            var taskAlrgyFoodList = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantAlrgyFoodRepository.GetAlrgyFoodList(hpId, ptId));
             var taskAlrgyDrugList = Task<List<PtAlrgyDrugModel>>.Factory.StartNew(() => _importantAlrgyDrugRepository.GetAlrgyDrugList(ptId));
 
             var taskOtherDrugList = Task<List<PtOtherDrugModel>>.Factory.StartNew(() => _importantOtherDrugRepository.GetOtherDrugList(ptId));

@@ -42,8 +42,14 @@ namespace Interactor.Accounting
             var isCheckedPrintDetail = (int)_systemConfRepository.GetSettingValue(93002, 0, hpId) == 1;
             if (sumAdjust == 0)
             {
-                isCheckedPrintReceipt = (int)_systemConfRepository.GetSettingValue(93001, 3, hpId) == 1;
-                isCheckedPrintDetail = (int)_systemConfRepository.GetSettingValue(93002, 3, hpId) == 1;
+                if (isCheckedPrintReceipt)
+                {
+                    isCheckedPrintReceipt = (int)_systemConfRepository.GetSettingValue(93001, 3, hpId) == 1;
+                }
+                if (isCheckedPrintDetail)
+                {
+                    isCheckedPrintDetail = (int)_systemConfRepository.GetSettingValue(93002, 3, hpId) == 1;
+                }
             }
             var isRyosyoDetail = _patientInforRepository.IsRyosyoFuyou(hpId, ptId);
             if (isRyosyoDetail)

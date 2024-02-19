@@ -6,17 +6,15 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using UseCase.Yousiki.UpdateYosiki;
 
-namespace Interactor.Yousiki.UpdateYosiki
+namespace Interactor.Yousiki
 {
     public class UpdateYosikiInteractor : RepositoryBase, IUpdateYosikiInputPort
     {
-        private readonly ITenantProvider _tenantProvider;
         private readonly IYousikiRepository _yousikiRepository;
 
         public UpdateYosikiInteractor(IYousikiRepository yousikiRepository, ITenantProvider tenantProvider) : base(tenantProvider)
         {
             _yousikiRepository = yousikiRepository;
-            _tenantProvider = tenantProvider;
         }
         public UpdateYosikiOutputData Handle(UpdateYosikiInputData inputData)
         {
@@ -25,13 +23,13 @@ namespace Interactor.Yousiki.UpdateYosiki
                 if (!inputData.IsTemporarySave)
                 {
                     var validate = ValidationData(inputData.HpId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf);
-                    if (!validate.First().Key)
+                    if (!validate.FirstOrDefault().Key && validate.Count != 0)
                     {
-                        return new UpdateYosikiOutputData(UpdateYosikiStatus.Failed, validate.First().Value);
+                        return new UpdateYosikiOutputData(UpdateYosikiStatus.Failed, validate.FirstOrDefault().Value);
                     }
                 }
 
-                _yousikiRepository.UpdateYosiki(inputData.HpId, inputData.UserId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf, inputData.DataTypes, inputData.IsTemporarySave);
+                _yousikiRepository.UpdateYosiki(inputData.HpId, inputData.UserId, inputData.Yousiki1InfDetails, inputData.Yousiki1Inf, inputData.CategoryModels, inputData.IsTemporarySave);
 
                 return new UpdateYosikiOutputData(UpdateYosikiStatus.Successed, "");
             }
@@ -97,7 +95,7 @@ namespace Interactor.Yousiki.UpdateYosiki
 
             if (smokingTypeModel.Value.AsInteger() > 0)
             {
-                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || (!smokingNumberOfDayModel.Value.Equals("000") && smokingNumberOfDayModel.Value.AsInteger() <= 0))
+                if (string.IsNullOrEmpty(smokingNumberOfDayModel.Value) || !smokingNumberOfDayModel.Value.Equals("000") && smokingNumberOfDayModel.Value.AsInteger() <= 0)
                 {
                     string message = string.Format(ErrorMessage.MessageType_mInp00010, "共通 - 喫煙歴 - 1日の喫煙本数");
                     result.Add(false, message);

@@ -136,7 +136,7 @@ public interface ICoOutDrugFinder : IRepositoryBase
     /// </summary>
     /// <param name="yjCode">YJコード</param>
     /// <returns></returns>
-    public CoDosageDrugModel GetDosageDrugModel(string yjCode);
+    public CoDosageDrugModel GetDosageDrugModel(int hpId, string yjCode);
 
     /// <summary>
     /// 今月オンライン資格確認した保険

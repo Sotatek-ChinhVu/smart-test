@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "m34_drug_info_main")]
     public class M34DrugInfoMain : EmrCloneable<M34DrugInfoMain>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 医薬品コード
         /// 
         /// </summary>
-        
+
         [Column("yj_cd", Order = 1)]
         public string YjCd { get; set; } = string.Empty;
 

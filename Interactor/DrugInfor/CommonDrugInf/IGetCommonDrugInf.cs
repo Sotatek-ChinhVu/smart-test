@@ -8,9 +8,9 @@ public interface IGetCommonDrugInf
 
     string ShowProductInf(int hpId, int sinDate, string itemCd, int level, string drugName, string yJCode);
 
-    string ShowKanjaMuke(string itemCd, int level, string drugName, string yJCode);
+    string ShowKanjaMuke(int hpId, string itemCd, int level, string drugName, string yJCode);
 
-    string ShowMdbByomei(string itemCd, int level, string drugName, string yJCode);
+    string ShowMdbByomei(int hpId, string itemCd, int level, string drugName, string yJCode);
 
     void ReleaseResources();
 }

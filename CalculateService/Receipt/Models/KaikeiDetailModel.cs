@@ -546,7 +546,7 @@ namespace CalculateService.Receipt.Models
         /// 点数単価
         /// PT_HOKEN_INF.EN_TEN
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get { return KaikeiDetail.EnTen; }
             set
@@ -1059,6 +1059,20 @@ namespace CalculateService.Receipt.Models
                 if (KaikeiDetail.Jitunisu == value) return;
                 KaikeiDetail.Jitunisu = value;
                 //RaisePropertyChanged(() => Jitunisu);
+            }
+        }
+
+        /// <summary>
+        /// 労災イ点数
+        /// 
+        /// </summary>
+        public int RousaiITensu
+        {
+            get { return KaikeiDetail.RousaiITensu; }
+            set
+            {
+                if (KaikeiDetail.RousaiITensu == value) return;
+                KaikeiDetail.RousaiITensu = value;
             }
         }
 

@@ -366,8 +366,8 @@ namespace CalculateService.ReceFutan.ViewModels
                     //患者の状態
                     receInf.PtStatus = receInf.IsNinpu == 0 ? string.Empty : String.Format("{0:D3}", receInf.IsNinpu);
 
-                    //自賠負担金額
-                    SetJibaiFutan(receInf);
+                    //労災自賠負担金額
+                    SetRousaiJibaiFutan(receInf);
 
                     //レセ編集情報の設定
                     SetReceInfEdit(receInf);
@@ -644,6 +644,7 @@ namespace CalculateService.ReceFutan.ViewModels
                     );
                 receInf.TotalKogakuLimit = receInf.TotalKogakuLimit == maxVal ? 0 : receInf.TotalKogakuLimit;
 
+                receInf.RousaiITensu += k.RousaiITensu;
                 receInf.RousaiIFutan += k.RousaiIFutan;
                 receInf.RousaiRoFutan += k.RousaiRoFutan;
                 receInf.JibaiITensu += k.JibaiITensu;
@@ -948,6 +949,7 @@ namespace CalculateService.ReceFutan.ViewModels
                     ptFutan: k.Sum(x => x.PtFutan),
                     kogakuOverKbn: k.Max(x => x.KogakuOverKbn),
                     receSbt: k.Max(x => x.ReceSbt),
+                    rousaiITensu: k.Sum(x => x.RousaiITensu),
                     rousaiIFutan: k.Sum(x => x.RousaiIFutan),
                     rousaiRoFutan: k.Sum(x => x.RousaiRoFutan),
                     jibaiITensu: k.Sum(x => x.JibaiITensu),
@@ -1342,7 +1344,7 @@ namespace CalculateService.ReceFutan.ViewModels
                         if (adjustFutan > 0)
                         {
                             //総医療費合計
-                            int totalIryohi = totalTensu * PtHoken.EnTen;
+                            int totalIryohi = (int)Math.Truncate(totalTensu * PtHoken.EnTen);
 
                             if (receInf.IsTokurei == 1)
                             {
@@ -2278,9 +2280,14 @@ namespace CalculateService.ReceFutan.ViewModels
             }
         }
 
-        private void SetJibaiFutan(ReceInfModel receInf)
+        //月合算に対して適用しないと誤差が発生する金額の計算
+        private void SetRousaiJibaiFutan(ReceInfModel receInf)
         {
-            if (receInf.HokenKbn == HokenKbn.Jibai)
+            if (new int[] { HokenKbn.RousaiShort, HokenKbn.RousaiLong, HokenKbn.AfterCare }.Contains(receInf.HokenKbn))
+            {
+                receInf.RousaiIFutan = (int)Math.Truncate(receInf.RousaiITensu * receInf.EnTen);
+            }
+            else if (receInf.HokenKbn == HokenKbn.Jibai)
             {
                 //※加算率は月合算に対して適用しないと誤差が発生する
                 //Ａ（イ×単価×加算率）

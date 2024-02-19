@@ -673,10 +673,10 @@ public class PdfCreatorController : CookieController
                 htmlData = _commonDrugInf.ShowProductInf(inputData.HpId, inputData.SinDate, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
             case TypeHTMLObject.ShowKanjaMuke:
-                htmlData = _commonDrugInf.ShowKanjaMuke(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                htmlData = _commonDrugInf.ShowKanjaMuke(HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
             case TypeHTMLObject.ShowMdbByomei:
-                htmlData = _commonDrugInf.ShowMdbByomei(inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
+                htmlData = _commonDrugInf.ShowMdbByomei(HpId, inputData.ItemCd, inputData.Level, inputData.DrugName, inputData.YJCode);
                 break;
         }
         var outputData = new GetDataPrintDrugInfoOutputData(drugInfo, htmlData, (int)inputData.Type);

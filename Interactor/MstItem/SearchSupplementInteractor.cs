@@ -15,7 +15,7 @@ namespace Interactor.MstItem
         {
             try
             {
-                var supplements = _inputItemRepository.GetListSupplement(inputData.SearchValue);
+                var supplements = _inputItemRepository.GetListSupplement(inputData.HpId, inputData.SearchValue);
                 var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(supplements);
                 var result = new List<SearchSupplementModel>();
                 foreach (var supplementModelItem in supplements)

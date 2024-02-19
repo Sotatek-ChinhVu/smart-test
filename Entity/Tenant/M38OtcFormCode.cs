@@ -10,11 +10,14 @@ namespace Entity.Tenant
     [Table(name: "m38_otc_form_code")]
     public class M38OtcFormCode : EmrCloneable<M38OtcFormCode>
     {
+        [Column(name: "hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// 剤形コード
         /// FMで始まり、4桁の数字が続く
         /// </summary>
-        
+
         [Column(name: "form_cd", Order = 1)]
         public string FormCd { get; set; } = string.Empty;
 

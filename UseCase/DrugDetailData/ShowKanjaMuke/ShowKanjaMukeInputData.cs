@@ -4,8 +4,9 @@ namespace UseCase.DrugDetailData.ShowKanjaMuke
 {
     public class ShowKanjaMukeInputData : IInputData<ShowKanjaMukeOutputData>
     {
-        public ShowKanjaMukeInputData(string itemCd, int level, string drugName, string yJCode)
+        public ShowKanjaMukeInputData(int hpId, string itemCd, int level, string drugName, string yJCode)
         {
+            HpId = hpId;
             ItemCd = itemCd;
             Level = level;
             DrugName = drugName;
@@ -19,5 +20,8 @@ namespace UseCase.DrugDetailData.ShowKanjaMuke
         public string DrugName { get; private set; }
 
         public string YJCode { get; private set; }
+
+        public int HpId { get; private set; }
+
     }
 }

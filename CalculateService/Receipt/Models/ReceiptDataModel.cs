@@ -303,11 +303,11 @@ namespace CalculateService.Receipt.Models
         /// <summary>
         /// 円点レート
         /// </summary>
-        public int EnTen
+        public double EnTen
         {
             get
             {
-                int ret = 0;
+                double ret = 0;
 
                 if (_receInfModel != null && _receInfModel.HokenMst != null)
                 {

@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Yousiki.RequestItem
 {
-    public class UpdateYosiki1InfDetailRequestItem
+    public class Yousiki1InfDetailRequest
     {
         public long PtId { get; set; }
 
@@ -17,5 +17,7 @@
         public int Payload { get; set; }
 
         public string Value { get; set; } = string.Empty;
+
+        public int IsDeleted { get; set; }
     }
 }

@@ -79,7 +79,7 @@ namespace Infrastructure.Repositories
                                         hokenMaster?.ReceSpKbn ?? 0,
                                         string.Empty);
 
-            string? roudou = NoTrackingDataContext.RoudouMsts.FirstOrDefault(u => u.RoudouCd == result.PrefNo.ToString())?.RoudouName;
+            string? roudou = NoTrackingDataContext.RoudouMsts.FirstOrDefault(u => u.HpId == hpId && u.RoudouCd == result.PrefNo.ToString())?.RoudouName;
             if (!string.IsNullOrEmpty(roudou))
                 result.Roudou = "(" + roudou + ")";
 
@@ -121,7 +121,7 @@ namespace Infrastructure.Repositories
             .ThenByDescending(e => e.StartDate)
             .ToList();
 
-            List<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
+            List<RoudouMst> roudouMsts = NoTrackingDataContext.RoudouMsts.Where(item => item.HpId == hpId).ToList();
             entities?.ForEach(entity =>
             {
                 string? prefName = roudouMsts.FirstOrDefault(roudou => roudou.RoudouCd == entity.PrefNo.ToString())?.RoudouName;

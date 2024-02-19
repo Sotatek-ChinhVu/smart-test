@@ -18,8 +18,7 @@ public class SpecialNoteFinder : RepositoryBase, ISpecialNoteFinder
 
     public List<GcStdInfModel> GetStdPoint(int hpId)
     {
-        var list = NoTrackingDataContext.GcStdMsts.Where(item => item.HpId == hpId)
-                                                  .Select(item => new GcStdInfModel(item))
+        var list = NoTrackingDataContext.GcStdMsts.Select(item => new GcStdInfModel(item))
                                                   .ToList();
         return list;
     }

@@ -7,11 +7,14 @@ namespace Entity.Tenant
     [Table(name: "kacode_mst")]
     public class KacodeMst : EmrCloneable<KacodeMst>
     {
+        [Column("hp_id")]
+        public int HpId { get; set; }
+
         /// <summary>
         /// レセ診療科コード
         /// 
         /// </summary>
-        
+
         [Column("rece_ka_cd", Order = 1)]
         [MaxLength(2)]
         public string ReceKaCd { get; set; } = string.Empty;
