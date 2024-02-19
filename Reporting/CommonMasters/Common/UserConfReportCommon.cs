@@ -41,7 +41,7 @@ public class UserConfReportCommon : RepositoryBase, IUserConfReportCommon
     {
         lock (_threadsafelock)
         {
-            if(hpId <= 0)
+            if (hpId <= 0)
             {
                 _userConfigs = NoTrackingDataContext.UserConfs.Where(p => p.UserId == Session.UserID).ToList();
             }
