@@ -11,6 +11,7 @@ using Helper.Common;
 using Domain.Constant;
 using CalculateService.Constants;
 
+
 namespace CalculateService.Receipt.ViewModels
 {
     public class RecedenViewModel : IDisposable
