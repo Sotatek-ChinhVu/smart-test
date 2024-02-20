@@ -44,7 +44,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
         //請求情報
         var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.HpId == hpId && s.NyukinKbn != 0);  //0:未精算を除く
-        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs
+        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId)
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k =>
                 new

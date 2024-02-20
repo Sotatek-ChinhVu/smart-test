@@ -50,7 +50,7 @@ public class CoSta3070Finder : RepositoryBase, ICoSta3070Finder
         #endregion
 
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
-        ptInfs = printConf.IsTester ? ptInfs : ptInfs.Where(p => p.HpId == hpId && p.IsTester != 1);
+        ptInfs = printConf.IsTester ? ptInfs : ptInfs.Where(p => p.IsTester != 1);
 
         var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
         var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId);
