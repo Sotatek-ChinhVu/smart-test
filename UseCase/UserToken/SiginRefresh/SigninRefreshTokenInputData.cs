@@ -10,7 +10,7 @@ namespace UseCase.UserToken.SiginRefresh
             RefreshToken = refreshToken;
             ExpToken = expToken;
         }
-
+         
         public int UserId { get; private set; }
 
         public string RefreshToken { get; private set; }

@@ -4,11 +4,14 @@ namespace UseCase.ColumnSetting.GetColumnSettingByTableNameList;
 
 public class GetColumnSettingByTableNameListInputData : IInputData<GetColumnSettingByTableNameListOutputData>
 {
-    public GetColumnSettingByTableNameListInputData(int userId, List<string> tableNameList)
+    public GetColumnSettingByTableNameListInputData(int hpId, int userId, List<string> tableNameList)
     {
+        HpId = hpId;
         UserId = userId;
         TableNameList = tableNameList;
     }
+
+    public int HpId { get; private set; }
 
     public int UserId { get; private set; }
 
