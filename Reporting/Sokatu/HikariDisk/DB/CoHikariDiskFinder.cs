@@ -27,8 +27,8 @@ public class CoHikariDiskFinder : RepositoryBase, ICoHikariDiskFinder
 
     public List<CoReceInfModel> GetReceInf(int hpId, int seikyuYm, int hokenKbn)
     {
-        var receInfs = NoTrackingDataContext.ReceInfs;
-        var receStatuses = NoTrackingDataContext.ReceStatuses;
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(x => x.HpId == hpId);
+        var receStatuses = NoTrackingDataContext.ReceStatuses.Where(x => x.HpId == hpId); ;
 
         var joinQuery = (
             from receInf in receInfs
