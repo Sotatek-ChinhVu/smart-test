@@ -117,7 +117,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 success = _receptionRepository.UpdateSinStartTime(input.HpId, input.RaiinNo, input.CellValue, input.UserId);
                 return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeSbtId):
-                var uketukeSbt = _uketukeSbtMstRepository.GetByKbnId(int.Parse(input.CellValue));
+                var uketukeSbt = _uketukeSbtMstRepository.GetByKbnId(input.HpId, int.Parse(input.CellValue));
                 if (uketukeSbt is null)
                 {
                     return UpdateReceptionStaticCellStatus.InvalidUketukeSbtId;

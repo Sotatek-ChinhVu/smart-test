@@ -107,12 +107,12 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
                 }
 
-                if (!_userRepository.CheckExistedJobCd(datas.Select(u => u.JobCd).Distinct().ToList()))
+                if (!_userRepository.CheckExistedJobCd(inputData.HpId, datas.Select(u => u.JobCd).Distinct().ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListJobCdNoExist);
                 }
 
-                var upsert = _userRepository.Upsert(datas, inputData.UserId);
+                var upsert = _userRepository.Upsert(inputData.HpId, datas, inputData.UserId);
                 if (!upsert)
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);

@@ -35,9 +35,9 @@ namespace Infrastructure.Repositories
                 RedisConnectorHelper.RedisHost = connection;
             }
         }
-        private IEnumerable<SetKbnMstModel> ReloadCache()
+        private IEnumerable<SetKbnMstModel> ReloadCache(int hpId)
         {
-            var setKbnMstList = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0).Select(s =>
+            var setKbnMstList = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0).Select(s =>
                     new SetKbnMstModel(
                         s.HpId,
                         s.SetKbn,
@@ -68,7 +68,7 @@ namespace Infrastructure.Repositories
             IEnumerable<SetKbnMstModel> setKbnMstList;
             if (!_cache.KeyExists(key))
             {
-                setKbnMstList = ReloadCache();
+                setKbnMstList = ReloadCache(hpId);
             }
             else
             {
@@ -127,7 +127,7 @@ namespace Infrastructure.Repositories
             var check = TrackingDataContext.SaveChanges() > 0;
             if (check)
             {
-                ReloadCache();
+                ReloadCache(hpId);
             }
             return check;
         }

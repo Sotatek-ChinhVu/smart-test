@@ -370,7 +370,7 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
                     staMenu = staMenuTempDb;
 
                     // if item is saveTemp item, remove all staConfig temp
-                    var allStaConfigDeleted = TrackingDataContext.StaConfs.Where(item => item.MenuId == staMenu.MenuId).ToList();
+                    var allStaConfigDeleted = TrackingDataContext.StaConfs.Where(item => item.HpId == hpId && item.MenuId == staMenu.MenuId).ToList();
                     TrackingDataContext.StaConfs.RemoveRange(allStaConfigDeleted);
                     TrackingDataContext.SaveChanges();
                     staMenuConfigDBList = staMenuConfigDBList.Where(menu => !allStaConfigDeleted.Any(config => config.ConfId == menu.ConfId

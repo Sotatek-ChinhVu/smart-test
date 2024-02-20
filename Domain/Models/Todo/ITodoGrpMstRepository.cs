@@ -6,7 +6,7 @@ namespace Domain.Models.Todo
     {
         void Upsert(List<TodoGrpMstModel> upsertTodoGrpMstList, int userId, int hpId);
 
-        bool CheckExistedTodoGrpNo(List<int> todoGrpNos);
+        bool CheckExistedTodoGrpNo(int hpId, List<int> todoGrpNos);
 
         List<TodoGrpMstModel> GetTodoGrpMsts(int hpId);
     }

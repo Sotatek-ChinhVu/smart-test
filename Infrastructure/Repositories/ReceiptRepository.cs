@@ -2894,7 +2894,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 {
                     newReceStatus.Add(new ReceStatus()
                     {
-                        HpId = Session.HospitalID,
+                        HpId = hpId,
                         PtId = receInfo.PtId,
                         SeikyuYm = receInfo.SeikyuYm,
                         SinYm = receInfo.SinYm,

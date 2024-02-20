@@ -13,16 +13,16 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
     {
     }
 
-    public UketukeSbtMstModel GetByKbnId(int kbnId)
+    public UketukeSbtMstModel GetByKbnId(int hpId, int kbnId)
     {
-        var entity = NoTrackingDataContext.UketukeSbtMsts.Where(u => u.KbnId == kbnId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
+        var entity = NoTrackingDataContext.UketukeSbtMsts.Where(u => u.HpId == hpId && u.KbnId == kbnId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
         return entity is null ? new() : ToModel(entity);
     }
 
-    public List<UketukeSbtMstModel> GetList()
+    public List<UketukeSbtMstModel> GetList(int hpId)
     {
         return NoTrackingDataContext.UketukeSbtMsts
-            .Where(u => u.IsDeleted == DeleteTypes.None)
+            .Where(u => u.HpId == hpId && u.IsDeleted == DeleteTypes.None)
             .OrderBy(u => u.SortNo).AsEnumerable()
             .Select(u => ToModel(u)).ToList();
     }
@@ -40,7 +40,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
     {
         foreach (var inputData in upsertUketukeList)
         {
-            var uketukeSbtMsts = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId && x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.HpId == hpId && x.KbnId == inputData.KbnId && x.IsDeleted == DeleteTypes.None);
             if (inputData.IsDeleted == DeleteTypes.Deleted)
             {
                 if (uketukeSbtMsts != null)

@@ -14,7 +14,7 @@ namespace Domain.Models.User
 
         IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds);
 
-        List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly, bool isAll);
+        List<UserMstModel> GetAll(int hpId, int sinDate, bool isDoctorOnly, bool isAll);
 
         int MaxUserId();
 
@@ -26,7 +26,7 @@ namespace Domain.Models.User
 
         bool CheckExistedId(List<long> ids);
 
-        bool Upsert(List<UserMstModel> upsertUserList, int userId);
+        bool Upsert(int hpId, List<UserMstModel> upsertUserList, int userId);
 
         bool CheckExistedUserId(int userId);
 
@@ -36,7 +36,7 @@ namespace Domain.Models.User
 
         bool CheckExistedLoginIdCreate(List<string> loginIds);
 
-        bool CheckExistedJobCd(List<int> jobCds);
+        bool CheckExistedJobCd(int hpId, List<int> jobCds);
 
         bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds);
 
@@ -56,7 +56,7 @@ namespace Domain.Models.User
 
         bool SaveListUserMst(int hpId, List<UserMstModel> users, int currentUser);
 
-        bool GetShowRenkeiCd1ColumnSetting();
+        bool GetShowRenkeiCd1ColumnSetting(int hpId);
 
         bool UserIdIsExistInDb(int userId);
 

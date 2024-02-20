@@ -85,9 +85,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sinDate && ipn.EndDate >= sinDate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
         var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate).ToList();
         var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate).ToList();
-        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
-        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
         var allIpnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(p =>
                    p.StartDate <= sinDate &&
@@ -204,7 +204,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             codeLists.AddRange(GetCodeLists(item));
             codeLists.Add(item.ByomeiCd ?? string.Empty);
         }
-        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
+        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
 
         var listSetByomeiModels = listByomeis.Select(mst => ConvertSetByomeiModel(mst, byomeiMstList)).ToList();
         return listSetByomeiModels;
@@ -341,9 +341,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sindate && ipn.EndDate >= sindate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
         var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.StartDate <= sindate && item.EndDate >= sindate).ToList();
         var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.StartDate <= sindate && item.EndDate >= sindate).ToList();
-        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
-        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.HpId == hpId && item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
         var listUserId = allSetOdrInfs.Select(user => user.CreateId).ToList();
         var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.StartDate <= sindate && ipn.IsDeleted == 0).ToList();
@@ -1170,7 +1170,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         SystemConf? systemConf;
         if (!fromLastestDb)
         {
-            systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
         }
         else
         {

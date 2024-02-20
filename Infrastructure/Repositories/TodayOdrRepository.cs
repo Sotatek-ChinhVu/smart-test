@@ -390,10 +390,10 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         var kouiKbnMst = TrackingDataContext.KouiKbnMsts.ToList();
 
         // Get Raiin List
-        var raiinListMstList = TrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
-        var raiinListDetailList = TrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
-        var raiinListKouiList = TrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
-        var raiinListItemList = TrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
+        var raiinListMstList = TrackingDataContext.RaiinListMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).ToList();
+        var raiinListDetailList = TrackingDataContext.RaiinListDetails.Where(item => item.HpId == hpId && item.IsDeleted == 0).ToList();
+        var raiinListKouiList = TrackingDataContext.RaiinListKouis.Where(item => item.HpId == hpId && item.IsDeleted == 0).ToList();
+        var raiinListItemList = TrackingDataContext.RaiinListItems.Where(item => item.HpId == hpId && item.IsDeleted == 0).ToList();
 
         // Filter GrpId
         // Get all raiin list master contain item and koui
@@ -1133,7 +1133,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         }
 
         var allSanteiGrpDetail = NoTrackingDataContext.SanteiGrpDetails
-                                .Where(s => itemCds.Contains(s.ItemCd))
+                                .Where(s => s.HpId == hpId && itemCds.Contains(s.ItemCd))
                                 .ToList();
         foreach (var addingOrd in addingOdrList)
         {
@@ -1155,7 +1155,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                                      santeiGrpCds.Contains(e.SanteiGrpCd) &&
                                      e.StartDate <= sinDate &&
                                      e.EndDate >= sinDate).ToList();
-            var santeiAutoOrderDetails = NoTrackingDataContext.SanteiAutoOrderDetails.Where(s => santeiGrpCds.Contains(s.SanteiGrpCd)).ToList();
+            var santeiAutoOrderDetails = NoTrackingDataContext.SanteiAutoOrderDetails.Where(s => s.HpId == hpId && santeiGrpCds.Contains(s.SanteiGrpCd)).ToList();
 
             foreach (var santeiGrpDetail in santeiGrpDetails)
             {
@@ -1178,7 +1178,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     double santeiCntInMonth = 0;
                     foreach (var itemCd in autoOdrDetailItemCdList)
                     {
-                        santeiCntInMonth += GetOdrCountInMonth(ptId, sinDate, itemCd);
+                        santeiCntInMonth += GetOdrCountInMonth(hpId, ptId, sinDate, itemCd);
                     }
 
                     double countInCurrentOdr = 0;
@@ -1255,14 +1255,14 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
 
         var tenMstYohos = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDate && t.EndDate >= sinDate && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
 
-        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
-        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
 
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => autoAddItems.Select(i => i.Item3).Contains(t.ItemCd)).ToList();
-        var santeiAutoOdrDetailList = NoTrackingDataContext.SanteiAutoOrderDetails.Where(s => autoAddItems.Select(a => a.Item4).Contains(s.Id)).ToList();
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && autoAddItems.Select(i => i.Item3).Contains(t.ItemCd)).ToList();
+        var santeiAutoOdrDetailList = NoTrackingDataContext.SanteiAutoOrderDetails.Where(s => s.HpId == hpId && autoAddItems.Select(a => a.Item4).Contains(s.Id)).ToList();
 
         foreach (var addingOdr in addingOdrList)
         {
@@ -1471,7 +1471,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         return query.OrderBy(u => u.Yoho.SortNo).AsEnumerable().Select(u => new YohoSetMstModel(u.ItemName, u.YohoKbn, u.Yoho?.SetId ?? 0, u.Yoho?.UserId ?? 0, u.Yoho?.ItemCd ?? string.Empty)).ToList();
     }
 
-    private double GetOdrCountInMonth(long ptId, int sinDate, string itemCd)
+    private double GetOdrCountInMonth(int hpId, long ptId, int sinDate, string itemCd)
     {
         int firstDayOfSinDate = sinDate / 100 * 100 + 1;
         DateTime firstDaySinDateDateTime = CIUtil.IntToDate(firstDayOfSinDate);
@@ -1479,9 +1479,9 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         int lastDayOfPrevMonth = CIUtil.DateTimeToInt(lastDayOfPrevMonthDateTime);
 
         var odrInfQuery = NoTrackingDataContext.OdrInfs
-          .Where(odr => odr.PtId == ptId && odr.SinDate > lastDayOfPrevMonth && odr.SinDate <= sinDate && odr.OdrKouiKbn != 10 && odr.IsDeleted == 0);
+          .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.SinDate > lastDayOfPrevMonth && odr.SinDate <= sinDate && odr.OdrKouiKbn != 10 && odr.IsDeleted == 0);
         var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails
-          .Where(odrDetail => odrDetail.PtId == ptId
+          .Where(odrDetail => odrDetail.HpId == hpId && odrDetail.PtId == ptId
           && odrDetail.SinDate > lastDayOfPrevMonth
           && odrDetail.SinDate <= sinDate
           && odrDetail.ItemCd == itemCd);
@@ -2092,7 +2092,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         var itemCdYohos = listYohoSets?.Select(od => od.ItemCd ?? string.Empty);
 
         var tenMstYohos = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDate && t.EndDate >= sinDate && (sinKouiKbns != null && sinKouiKbns.Contains(t.SinKouiKbn)) && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
         var kensaItemCds = tenMsts.Select(k => k.KensaItemCd).Distinct().ToList();
         var KensaSeqNos = tenMsts.Select(k => k.KensaItemSeqNo).Distinct().ToList();
         var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId && kensaItemCds.Contains(t.KensaItemCd) && KensaSeqNos.Contains(t.KensaItemSeqNo)).ToList();
@@ -2574,7 +2574,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     continue;
                 }
 
-                var santeiGrpDetailList = FindSanteiGrpDetailList(detail.ItemCd);
+                var santeiGrpDetailList = FindSanteiGrpDetailList(hpId, detail.ItemCd);
                 if (santeiGrpDetailList.Count == 0)
                 {
                     continue;
@@ -2590,7 +2590,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
                     // Now, check TermCnt = 1 and TermSbt = 4 and CntType = 2 only. In other case, just ignore
                     if (santeiCntCheck.TermCnt == 1 && santeiCntCheck.TermSbt == 4 && (santeiCntCheck.CntType == 2 || santeiCntCheck.CntType == 3))
                     {
-                        double santeiCntInMonth = GetOdrCountInMonth(ptId, sinDate, detail.ItemCd);
+                        double santeiCntInMonth = GetOdrCountInMonth(hpId, ptId, sinDate, detail.ItemCd);
                         double countInCurrentOdr = 0;
 
                         if (santeiCntCheck.CntType == 2)
@@ -3095,10 +3095,10 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         return result;
     }
 
-    private List<SanteiGrpDetail> FindSanteiGrpDetailList(string itemCd)
+    private List<SanteiGrpDetail> FindSanteiGrpDetailList(int hpId, string itemCd)
     {
         var entities = NoTrackingDataContext.SanteiGrpDetails
-                                .Where(s => s.ItemCd == itemCd);
+                                .Where(s => s.HpId == hpId && s.ItemCd == itemCd);
         return entities.ToList();
     }
 
@@ -3216,7 +3216,7 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
            ipnCds.Contains(i.IpnNameCd)).ToList();
 
         var itemCds = expiredItems.Values.Select(e => e.ItemCd).Distinct().ToList();
-        var tenMstDbs = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && sinDate <= t.EndDate);
+        var tenMstDbs = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && sinDate <= t.EndDate);
         var kensaItemCds = tenMstDbs.Select(t => t.KensaItemCd).Distinct().ToList();
         var kensaItemSeqNos = tenMstDbs.Select(t => t.KensaItemSeqNo).Distinct().ToList();
 
@@ -3230,9 +3230,9 @@ public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
         int autoSetSyohoLimitKohatuDrug = (int)_systemConf.GetSettingValue(2020, 1, hpId);
         int autoSetSyohoKbnSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 0, hpId);
         int autoSetSyohoLimitSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 1, hpId);
-        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
-        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2019 && p.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
         var orderIndex = 0;
         foreach (var order in odrInfItems)

@@ -156,7 +156,7 @@ public class YousikiRepository : RepositoryBase, IYousikiRepository
                                                                                     && item.SeqNo == seqNo
                                                                                     && item.HpId == hpId
                                                                                     && item.IsDeleted == 0);
-        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.PtId == ptId && item.IsDelete == 0);
+        var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId && item.IsDelete == 0);
         if (yousiki1Inf == null || ptInf == null)
         {
             return new();

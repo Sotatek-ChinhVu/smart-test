@@ -300,7 +300,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         {
             return SaveSuperSetDetailStatus.InvalidUserId;
         }
-        else if (!_setMstRepository.CheckExistSetMstBySetCd(inputData.SetCd))
+        else if (!_setMstRepository.CheckExistSetMstBySetCd(inputData.HpId, inputData.SetCd))
         {
             return SaveSuperSetDetailStatus.SetCdNotExist;
         }
