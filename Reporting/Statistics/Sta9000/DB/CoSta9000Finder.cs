@@ -2330,7 +2330,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             #region 新患
             if (raiinConf.IsSinkan == 1)
             {
-                var ptFirstVisits = GetPtFirstVisits();
+                var ptFirstVisits = GetPtFirstVisits(hpId);
 
                 var firstVisitJ = (
                         from raiinInf in raiinInfs
