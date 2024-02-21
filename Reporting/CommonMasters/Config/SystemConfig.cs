@@ -40,7 +40,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
             SystemConf? systemConf = null;
             if (!fromLastestDb)
             {
-                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+                systemConf = _systemConfigs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
             }
             else
             {
@@ -56,7 +56,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
         SystemConf systemConf = new SystemConf();
         if (!fromLastestDb)
         {
-            systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
+            systemConf = _systemConfigs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
         }
         else
         {
@@ -73,7 +73,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
             SystemConf systemConf = new SystemConf();
             if (!fromLastestDb)
             {
-                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
+                systemConf = _systemConfigs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
             }
             else
             {
