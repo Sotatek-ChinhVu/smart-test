@@ -49,12 +49,12 @@ public class CoSta3070Finder : RepositoryBase, ICoSta3070Finder
         raiinInfs = printConf.TantoIds?.Count > 0 ? raiinInfs.Where(r => printConf.TantoIds.Contains(r.TantoId)) : raiinInfs;
         #endregion
 
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
         ptInfs = printConf.IsTester ? ptInfs : ptInfs.Where(p => p.IsTester != 1);
 
-        var kaMsts = NoTrackingDataContext.KaMsts;
-        var userMsts = NoTrackingDataContext.UserMsts;
-        IQueryable<KaikeiInf> kaikeiInfs = NoTrackingDataContext.KaikeiInfs;
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
+        var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId);
+        IQueryable<KaikeiInf> kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId);
 
         #region 条件指定(保険種別)
         if (printConf.HokenSbts?.Count >= 1)

@@ -9,9 +9,7 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta9000.DB;
 using Reporting.Statistics.Sta9000.Mapper;
 using Reporting.Statistics.Sta9000.Models;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Text;
 
 namespace Reporting.Statistics.Sta9000.Service;
 
@@ -1092,7 +1090,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
         if (reportType == 1)
         {
             drugOdrs = _finder.GetDrugOrders(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-            ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+            ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         }
         //患者来院歴一覧用データ取得
         else if (reportType == 3)
@@ -1106,7 +1104,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 ptHokens = _finder.GetPtHokens(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 2:
-                ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 3:
                 raiinInfs = _finder.GetRaiinInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
@@ -1478,7 +1476,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
         if (reportType == 1)
         {
             drugOdrs = _finder.GetDrugOrders(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-            ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+            ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         }
         //患者来院歴一覧用データ取得
         else if (reportType == 3)
@@ -1492,7 +1490,7 @@ public class Sta9000CoReportService : ISta9000CoReportService
                 ptHokens = _finder.GetPtHokens(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 2:
-                ptByomeis = _finder.GetPtByomeis(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+                ptByomeis = _finder.GetPtByomeis(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
                 break;
             case 3:
                 raiinInfs = _finder.GetRaiinInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);

@@ -43,11 +43,11 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
         CoSta9000KensaConf? kensaConf)
     {
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
 
-        var ptFirstVisits = GetPtFirstVisits();
-        var ptLastVisits = NoTrackingDataContext.PtLastVisitDates;
-        var ptCmts = NoTrackingDataContext.PtCmtInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptFirstVisits = GetPtFirstVisits(hpId);
+        var ptLastVisits = NoTrackingDataContext.PtLastVisitDates.Where(x => x.HpId == hpId); ;
+        var ptCmts = NoTrackingDataContext.PtCmtInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         //患者情報 + 初回来院日 + 最終来院日 + 患者コメント
         var joinPtInfs = (
@@ -93,7 +93,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         ptDatas = GetPtInfKensaFilter(hpId, kensaConf, ptDatas);
 
         #region 算定条件（調整額・調整率・自動算定）の取得
-        var ptSanteis = NoTrackingDataContext.PtSanteiConfs;
+        var ptSanteis = NoTrackingDataContext.PtSanteiConfs.Where(x => x.HpId == hpId);
         int nowDate = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
 
         var santeiDatas = (
@@ -111,8 +111,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region 患者グループの取得
-        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs;
-        var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.HpId == hpId); ;
+        var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         var ptGrpDatas = (
             from ptGrpInf in ptGrpInfs
@@ -198,7 +198,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf,
     CoSta9000KensaConf? kensaConf, List<long> ptIds)
     {
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
 
         if (ptIds.Count > 0)
         {
@@ -206,9 +206,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             ptInfs = ptInfs.Where(p => ptIds.Contains(p.PtId));
         }
 
-        var ptFirstVisits = GetPtFirstVisits();
-        var ptLastVisits = NoTrackingDataContext.PtLastVisitDates;
-        var ptCmts = NoTrackingDataContext.PtCmtInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptFirstVisits = GetPtFirstVisits(hpId);
+        var ptLastVisits = NoTrackingDataContext.PtLastVisitDates.Where(x => x.HpId == hpId); ;
+        var ptCmts = NoTrackingDataContext.PtCmtInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         //患者情報 + 初回来院日 + 最終来院日 + 患者コメント
         var joinPtInfs = (
@@ -253,7 +253,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         ptDatas = GetPtInfKensaFilter(hpId, kensaConf, ptDatas);
 
         #region 算定条件（調整額・調整率・自動算定）の取得
-        var ptSanteis = NoTrackingDataContext.PtSanteiConfs;
+        var ptSanteis = NoTrackingDataContext.PtSanteiConfs.Where(x => x.HpId == hpId);
         int nowDate = CIUtil.GetJapanDateTimeNow().ToString("yyyyMMdd").AsInteger();
 
         var santeiDatas = (
@@ -271,8 +271,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region 患者グループの取得
-        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs;
-        var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.HpId == hpId); ;
+        var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         var ptGrpDatas = (
             from ptGrpInf in ptGrpInfs
@@ -369,13 +369,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
 
         //オーダー
-        var odrInfs = NoTrackingDataContext.OdrInfs;
-        var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.DrugKbn > 0);
+        var odrInfs = NoTrackingDataContext.OdrInfs.Where(x => x.HpId == hpId);
+        var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.HpId == hpId && d.DrugKbn > 0);
         //来院情報
-        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
+        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(hpId, raiinConf);
 
         if (sinConf != null)
         {
@@ -470,12 +470,12 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// <summary>
     /// 患者病名の取得
     /// </summary>
-    public List<CoPtByomeiModel> GetPtByomeis(
+    public List<CoPtByomeiModel> GetPtByomeis(int hpId,
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(byomeiConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(hpId, byomeiConf);
 
         //検索病名
         if (isByomeiConf)
@@ -517,8 +517,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hpId, hokenConf);
 
         var ptHokens = (
             from ptInf in ptInfs
@@ -580,23 +580,23 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
-        var raiinCmts = NoTrackingDataContext.RaiinCmtInfs.Where(r => r.IsDelete == DeleteStatus.None && r.CmtKbn == 1);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(hpId, raiinConf);
+        var raiinCmts = NoTrackingDataContext.RaiinCmtInfs.Where(r => r.HpId == hpId && r.IsDelete == DeleteStatus.None && r.CmtKbn == 1);
         var raiinBikos = NoTrackingDataContext.RaiinCmtInfs.Where(r => r.IsDelete == DeleteStatus.None && r.CmtKbn == 9);
 
         //受付種別マスタ
-        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts;
+        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.HpId == hpId);
         //診療科マスタ
-        var kaMsts = NoTrackingDataContext.KaMsts;
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId); ;
         //職員マスタ
-        var userMsts = NoTrackingDataContext.UserMsts;
+        var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId);
 
         //初回来院日
-        var ptFirstVisits = GetPtFirstVisits();
+        var ptFirstVisits = GetPtFirstVisits(hpId);
 
         //保険情報
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hpId, hokenConf);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -675,8 +675,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             .Where(r => r.HpId == hpId && r.IsDeleted == DeleteStatus.None)
             .OrderBy(r => r.GrpCd)
             .ToList();
-        var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(r => r.IsDelete == DeleteStatus.None);
-        var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(r => r.IsDeleted == DeleteStatus.None);
+        var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(r => r.HpId == hpId && r.IsDelete == DeleteStatus.None);
+        var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteStatus.None);
 
         var raiinKbns = (
             from raiinKbnInf in raiinKbnInfs
@@ -726,19 +726,19 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(hpId, raiinConf);
         //受付種別マスタ
-        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts;
+        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.HpId == hpId);
         //診療科マスタ
-        var kaMsts = NoTrackingDataContext.KaMsts;
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
         //職員マスタ
-        var userMsts = NoTrackingDataContext.UserMsts;
+        var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId);
         //オーダー
-        var odrInfs = NoTrackingDataContext.OdrInfs.Where(p => p.IsDeleted == DeleteStatus.None);
-        IQueryable<OdrInfDetail> odrDetails = NoTrackingDataContext.OdrInfDetails;
+        var odrInfs = NoTrackingDataContext.OdrInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        IQueryable<OdrInfDetail> odrDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId);
         //保険情報
-        (var wrkHokenPatterns, var wrkHokenInfs, var wrkKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
+        (var wrkHokenPatterns, var wrkHokenInfs, var wrkKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hpId, hokenConf);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -754,9 +754,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         }
 
         //保険情報
-        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns;
-        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs;
-        var ptKohis = NoTrackingDataContext.PtKohis;
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId);
+        var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId);
 
         if (sinConf != null)
         {
@@ -940,23 +940,23 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
         //対象患者
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         //来院
-        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
+        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(hpId, raiinConf);
         //受付種別マスタ
-        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts;
+        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.HpId == hpId);
         //診療科マスタ
-        var kaMsts = NoTrackingDataContext.KaMsts;
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
         //職員マスタ
-        var userMsts = NoTrackingDataContext.UserMsts;
+        var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId);
         //診療行為
-        var sinCounts = NoTrackingDataContext.SinKouiCounts;
-        var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.IsDeleted == DeleteStatus.None);
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.IsDeleted == DeleteStatus.None && item.InoutKbn != 1);
-        IQueryable<SinKouiDetail> sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.IsDeleted == DeleteStatus.None);
-        var jihiSbtMsts = NoTrackingDataContext.JihiSbtMsts;
+        var sinCounts = NoTrackingDataContext.SinKouiCounts.Where(x => x.HpId == hpId);
+        var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId && item.IsDeleted == DeleteStatus.None && item.InoutKbn != 1);
+        IQueryable<SinKouiDetail> sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var jihiSbtMsts = NoTrackingDataContext.JihiSbtMsts.Where(x => x.HpId == hpId);
         //保険情報
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hpId, hokenConf);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -1088,17 +1088,17 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
         //対象患者
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         //来院
-        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
+        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(hpId, raiinConf);
         //受付種別マスタ
-        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts;
+        var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.HpId == hpId);
         //診療科マスタ
-        var kaMsts = NoTrackingDataContext.KaMsts;
+        var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId);
         //職員マスタ
-        var userMsts = NoTrackingDataContext.UserMsts;
+        var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId);
         //カルテ
-        var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.IsDeleted == DeleteStatus.None);
+        var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.IsDeleted == DeleteStatus.None);
 
         if (karteConf != null)
         {
@@ -1160,7 +1160,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf, CoSta9000KensaConf kensaConf)
     {
         //対象患者
-        var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf).ToList();
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf).ToList();
         //検査
         var kensaInfs = GetKensaInfs(hpId, kensaConf);
 
@@ -1187,13 +1187,13 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// <param name="sinConf">診療情報の抽出条件</param>
     /// <param name="karteConf">カルテ情報の抽出条件</param>
     /// <returns></returns>
-    private IQueryable<PtInf> GetPtInfs(
+    private IQueryable<PtInf> GetPtInfs(int hpId,
         CoSta9000PtConf? ptConf, CoSta9000HokenConf? hokenConf, CoSta9000ByomeiConf? byomeiConf,
         CoSta9000RaiinConf? raiinConf, CoSta9000SinConf? sinConf, CoSta9000KarteConf? karteConf)
     {
         #region 患者情報
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
-        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
+        var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         //テスト患者
         ptInfs = !(ptConf?.IsTester ?? false) ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
@@ -1274,7 +1274,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
         #endregion
         #region 保険情報
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hpId, hokenConf);
 
         var ptHokens = (
             from hokenPattern in ptHokenPatterns
@@ -1338,14 +1338,14 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region 病名情報
-        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(byomeiConf);
+        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(hpId, byomeiConf);
         #endregion
 
         #region 来院情報
         bool isVisitConf = false;
 
-        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(raiinConf);
-        IQueryable<PtLastVisitDate> ptLastVisits = NoTrackingDataContext.PtLastVisitDates;
+        (var raiinInfs, bool isRaiinConf) = GetRaiinInfs(hpId, raiinConf);
+        IQueryable<PtLastVisitDate> ptLastVisits = NoTrackingDataContext.PtLastVisitDates.Where(x => x.HpId == hpId);
 
         if (raiinConf != null && (raiinConf.StartLastVisitDate > 0 || raiinConf.EndLastVisitDate > 0))
         {
@@ -1362,9 +1362,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
 
         #region 診療情報
         //算定
-        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.IsDeleted == DeleteStatus.None && item.InoutKbn != 1);
-        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.IsDeleted == DeleteStatus.None);
+        var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId && item.IsDeleted == DeleteStatus.None && item.InoutKbn != 1);
+        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(x => x.HpId == hpId);
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -1547,8 +1547,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         }
 
         //オーダー
-        var odrInfs = NoTrackingDataContext.OdrInfs.Where(p => p.IsDeleted == DeleteStatus.None);
-        var odrDetails = NoTrackingDataContext.OdrInfDetails;
+        var odrInfs = NoTrackingDataContext.OdrInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -1728,7 +1728,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region カルテ情報
-        var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.IsDeleted == DeleteStatus.None);
+        var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.IsDeleted == DeleteStatus.None);
 
         bool isKarteConf = karteConf != null;
         if (isKarteConf)
@@ -1938,11 +1938,11 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     }
 
     private (IQueryable<PtHokenPattern> ptHokenPatterns, IQueryable<PtHokenInf> ptHokenInfs, IQueryable<PtKohi> ptKohis, bool isHokenConf, bool isKohiConf)
-        GetPtHokenPatterns(CoSta9000HokenConf? hokenConf)
+        GetPtHokenPatterns(int hpId, CoSta9000HokenConf? hokenConf)
     {
-        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p => p.IsDeleted == DeleteStatus.None);
-        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.IsDeleted == DeleteStatus.None);
-        var ptKohis = NoTrackingDataContext.PtKohis.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var ptKohis = NoTrackingDataContext.PtKohis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         if (hokenConf != null && (hokenConf.Houbetu1 != string.Empty || hokenConf.Houbetu2 != string.Empty || hokenConf.Houbetu3 != string.Empty || hokenConf.Houbetu4 != string.Empty))
         {
@@ -2099,9 +2099,9 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     /// <param name="byomeiConf"></param>
     /// <returns></returns>
-    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) GetPtByomeis(CoSta9000ByomeiConf? byomeiConf)
+    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) GetPtByomeis(int hpId, CoSta9000ByomeiConf? byomeiConf)
     {
-        var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.IsDeleted == DeleteStatus.None);
+        var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         bool isByomeiConf = byomeiConf != null;
         if (isByomeiConf)
@@ -2240,10 +2240,10 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     /// <param name="raiinConf"></param>
     /// <returns></returns>
-    private (IQueryable<RaiinInf> raiinInfs, bool isRaiinConf) GetRaiinInfs(CoSta9000RaiinConf? raiinConf)
+    private (IQueryable<RaiinInf> raiinInfs, bool isRaiinConf) GetRaiinInfs(int hpId, CoSta9000RaiinConf? raiinConf)
     {
-        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.IsDeleted == DeleteStatus.None);
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
 
         bool isRaiinConf = false;
         if (raiinConf != null)
@@ -2330,7 +2330,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             #region 新患
             if (raiinConf.IsSinkan == 1)
             {
-                var ptFirstVisits = GetPtFirstVisits();
+                var ptFirstVisits = GetPtFirstVisits(hpId);
 
                 var firstVisitJ = (
                         from raiinInf in raiinInfs
@@ -2365,10 +2365,10 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         {
             #region 標準
             case 0:
-                IQueryable<KensaInf> kensaInfs = NoTrackingDataContext.KensaInfs;
-                IQueryable<KensaInfDetail> kensaDetails = NoTrackingDataContext.KensaInfDetails;
-                var kensaMsts = NoTrackingDataContext.KensaMsts.Where(k => k.IsDelete == DeleteStatus.None);
-                var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+                IQueryable<KensaInf> kensaInfs = NoTrackingDataContext.KensaInfs.Where(x => x.HpId == hpId);
+                IQueryable<KensaInfDetail> kensaDetails = NoTrackingDataContext.KensaInfDetails.Where(x => x.HpId == hpId);
+                var kensaMsts = NoTrackingDataContext.KensaMsts.Where(k => k.HpId == hpId && k.IsDelete == DeleteStatus.None);
+                var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
 
                 if (kensaConf != null)
                 {
@@ -2774,10 +2774,10 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// 初回来院情報取得
     /// </summary>
     /// <returns></returns>
-    private IQueryable<RaiinInf> GetPtFirstVisits()
+    private IQueryable<RaiinInf> GetPtFirstVisits(int hpId)
     {
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
-        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.IsDeleted == DeleteStatus.None && p.Status >= RaiinState.Calculate);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None && p.Status >= RaiinState.Calculate);
 
         //最小の来院日＝初回来院日
         var firstRaiinDates = (

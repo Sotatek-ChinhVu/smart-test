@@ -30,14 +30,14 @@ public class CoSta3041Finder : RepositoryBase, ICoSta3041Finder
     public List<CoKouseisinInf> GetKouseisinInfs(int hpId, CoSta3041PrintConf printConf)
     {
 
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteStatus.None);
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && x.IsDelete == DeleteStatus.None);
         if (!printConf.IsTester)
         {
             //テスト患者を除く
             ptInfs = ptInfs.Where(x => x.IsTester == 0);
         }
 
-        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None);
+        var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
         //健保を抽出する
         int[] kenpos = new int[] { 1, 2 };
         ptHokenPatterns = ptHokenPatterns.Where(x => kenpos.Contains(x.HokenKbn));
@@ -50,11 +50,11 @@ public class CoSta3041Finder : RepositoryBase, ICoSta3041Finder
         odrInfs = odrInfs.Where(x => printConf.FromYm * 100 <= x.SinDate && x.SinDate <= printConf.ToYm * 100 + 31);
         #endregion
 
-        var odrInfDetails = NoTrackingDataContext.OdrInfDetails;
+        var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId);
 
         //向精神薬を抽出する
         int[] kouseisinKbns = new int[] { 1, 2, 3, 4 };
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => kouseisinKbns.Contains(x.KouseisinKbn));
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId && kouseisinKbns.Contains(x.KouseisinKbn));
 
         var odrJoins = (
             from odrInf in odrInfs

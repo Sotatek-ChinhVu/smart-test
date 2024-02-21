@@ -69,10 +69,10 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
         s.SinYm <= printConf.EndSinYm
         );
 
-            var sinKouis = NoTrackingDataContext.SinKouis;
-            var sinKouiRpInfs = _tenantSinKouiRpInf.SinRpInfs;
-            var ptInfs = _tenantPtInf.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
-            ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
+            var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId);
+            var sinKouiRpInfs = _tenantSinKouiRpInf.SinRpInfs.Where(x => x.HpId == hpId);
+            var ptInfs = _tenantPtInf.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
+            ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.HpId == hpId && p.IsTester == 0) : ptInfs;
             var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
             #region 条件指定(患者グループ)
             bool isPtGrp = false;
@@ -97,8 +97,8 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
                 }
             }
             #endregion
-            var raiinInfs = _tenantRaiinInf.RaiinInfs.Where(r => r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
-            var kaikeiInfs = _tenantKaikeiInf.KaikeiInfs;
+            var raiinInfs = _tenantRaiinInf.RaiinInfs.Where(r => r.HpId == hpId && r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
+            var kaikeiInfs = _tenantKaikeiInf.KaikeiInfs.Where(x => x.HpId == hpId);
             #region 条件指定
             //診療科
             if (printConf.KaIds?.Count >= 1)
@@ -112,9 +112,9 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
             }
             #endregion
 
-            IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns;
-            IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs;
-            IQueryable<PtKohi> ptKohis = NoTrackingDataContext.PtKohis;
+            IQueryable<PtHokenPattern> ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId);
+            IQueryable<PtHokenInf> ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId);
+            IQueryable<PtKohi> ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId);
             #region 条件指定(保険種別)
             if (printConf.HokenSbts?.Count >= 1)
             {
