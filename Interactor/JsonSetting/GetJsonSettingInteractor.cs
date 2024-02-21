@@ -18,7 +18,7 @@ public class GetJsonSettingInteractor : IGetJsonSettingInputPort
     {
         try
         {
-            var model = _jsonSettingRepository.Get(input.UserId, input.Key);
+            var model = _jsonSettingRepository.Get(input.HpId, input.UserId, input.Key);
             if (model is null)
             {
                 return new GetJsonSettingOutputData(GetJsonSettingStatus.NotFound, null);

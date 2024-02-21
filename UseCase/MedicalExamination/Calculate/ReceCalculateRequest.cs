@@ -2,12 +2,15 @@
 
 public class ReceCalculateRequest
 {
-    public ReceCalculateRequest(List<long> ptIds, int seikyuYm, string uniqueKey)
+    public ReceCalculateRequest(int hpId, List<long> ptIds, int seikyuYm, string uniqueKey)
     {
+        HpId = hpId;
         PtIds = ptIds;
         SeikyuYm = seikyuYm;
         UniqueKey = uniqueKey;
     }
+
+    public int HpId { get; private set; }
 
     public List<long> PtIds { get; private set; }
 

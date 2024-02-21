@@ -381,11 +381,12 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 点数マスタの内容を元に表示用コメントを取得する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="itemCd">コメントのITEM_CD</param>
         /// <param name="cmtOpt">コメント文</param>
         /// <param name="maskEdit">true: 不足桁をマスク文字で埋める</param>
         /// <returns></returns>
-        public string GetCommentStr(string itemCd, ref string cmtOpt, bool maskEdit = false)
+        public string GetCommentStr(int hpId, string itemCd, ref string cmtOpt, bool maskEdit = false)
         {
             string ret = "";
 
@@ -405,7 +406,7 @@ namespace CalculateService.Ika.ViewModels
                     }
                 }
 
-                return _masterFinder.GetCommentStr(SinDate, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref cmtOpt, maskEdit);
+                return _masterFinder.GetCommentStr(hpId, SinDate, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref cmtOpt, maskEdit);
             }
 
             return ret;
@@ -1050,7 +1051,7 @@ namespace CalculateService.Ika.ViewModels
             List<KouiHoukatuMstModel> masters =
                 _kouiHoukatuMsts.FindAll(p =>
                     p.HpId == _hpId &&
-                    (string.IsNullOrEmpty(itemCd)?true: p.ItemCd == itemCd) &&
+                    (string.IsNullOrEmpty(itemCd) ? true : p.ItemCd == itemCd) &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate &&
                     (p.TargetKbn == 0 || p.TargetKbn == (isRosai ? 2 : 1)) &&
@@ -1064,7 +1065,7 @@ namespace CalculateService.Ika.ViewModels
 
             foreach (KouiHoukatuMstModel master in masters)
             {
-                    results.Add(master);
+                results.Add(master);
             }
             return results;
         }

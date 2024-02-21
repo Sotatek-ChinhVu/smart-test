@@ -57,7 +57,7 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
                                                     };
 
         //精神科デイ・ケアの項目を抽出する
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => seisinDayCareItems.Contains(x.ItemCd));
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId && seisinDayCareItems.Contains(x.ItemCd));
 
         var odrJoins = (
             from odrInf in odrInfs

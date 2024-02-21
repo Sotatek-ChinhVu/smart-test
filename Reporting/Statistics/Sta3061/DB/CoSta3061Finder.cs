@@ -2,13 +2,10 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using PostgreDataContext;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3061.Models;
-using System.Diagnostics;
-using System.Text.Json;
 
 namespace Reporting.Statistics.Sta3061.DB;
 
@@ -74,7 +71,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
     {
         try
         {
-            IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(x => x.HpId == hpId);
+            IQueryable<SinKouiCount> sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
             if (printConf.IsSinDate)
             {
                 sinKouiCounts = sinKouiCounts.Where(s =>
@@ -200,7 +197,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                     s.SinYm <= printConf.EndSinYm
                 );
             }
-            var tenMsts = _tenantSinKouiDetail.TenMsts.Where(t => t.SinKouiKbn == 77);
+            var tenMsts = _tenantSinKouiDetail.TenMsts.Where(t => t.HpId == hpId && t.SinKouiKbn == 77);
 
             var sinKouiFilms = (
                 from sinDetail in sinKouiDetails.AsEnumerable()
@@ -720,7 +717,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
             #region 患者グループの取得
             if (printConf.PtGrpId > 0)
             {
-                var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == DeleteStatus.None);
+                var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
                 var ptGrpDatas = (
                     from ptGrpInf in ptGrpInfs
@@ -784,7 +781,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
         var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
         #region フィルム
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.IsDeleted == DeleteStatus.None);
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
         if (printConf.IsSinDate)
         {
             int startDate = printConf.StartSinDate / 100;
@@ -804,7 +801,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
                 s.SinYm <= printConf.EndSinYm
             );
         }
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.SinKouiKbn == 77);
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.SinKouiKbn == 77);
 
         var sinKouiFilms = (
             from sinDetail in sinKouiDetails.AsEnumerable()
@@ -866,7 +863,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         }
         #endregion
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
-        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs;
+        var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId);
         #region 条件指定
         //診療科
         if (printConf.KaIds?.Count >= 1)
@@ -1362,7 +1359,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         #region 患者グループの取得
         if (printConf.PtGrpId > 0)
         {
-            var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == DeleteStatus.None);
+            var ptGrpItems = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId  && p.IsDeleted == DeleteStatus.None);
 
             var ptGrpDatas = (
                 from ptGrpInf in ptGrpInfs

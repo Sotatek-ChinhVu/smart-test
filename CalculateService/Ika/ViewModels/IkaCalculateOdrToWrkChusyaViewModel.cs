@@ -54,38 +54,39 @@ namespace CalculateService.Ika.ViewModels
         {
             _common = common;
             _systemConfigProvider = systemConfigProvider;
-            _emrLogger= emrLogger;
+            _emrLogger = emrLogger;
         }
 
         /// <summary>
         /// 計算ロジック
         /// </summary>
-        public void Calculate()
+        public void Calculate(int hpId)
         {
             const string conFncName = nameof(Calculate);
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.ChusyaMin, OdrKouiKbnConst.ChusyaMax))
             {
                 // 保険
-                CalculateHoken();
+                CalculateHoken(hpId);
 
                 // 自費
-                CalculateJihi();
+                CalculateJihi(hpId);
             }
 
             _common.Wrk.CommitWrkSinRpInf();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
         /// 保険分を処理する
         /// </summary>
-        private void CalculateHoken()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateHoken(int hpId)
         {
             const string conFncName = nameof(CalculateHoken);
-            
+
             // 通常算定処理
             List<OdrInfModel> filteredOdrInf;
             List<OdrDtlTenModel> filteredOdrDtl;
@@ -99,7 +100,7 @@ namespace CalculateService.Ika.ViewModels
                 if (_common.Odr.ExistOdrDetailByItemCd(Tentekils))
                 {
                     // 点滴手技のオーダーがある場合、専用計算処理へ
-                    Tenteki();
+                    Tenteki(hpId);
                 }
 
                 foreach (OdrInfModel odrInf in filteredOdrInf)
@@ -108,7 +109,7 @@ namespace CalculateService.Ika.ViewModels
                     filteredOdrDtl = _common.Odr.FilterOdrDetailByRpNo(odrInf.RpNo, odrInf.RpEdaNo);
 
                     //if (filteredOdrDtl.Any(p => Tentekils.Contains(p.ItemCd) == true || p.ItemCd == ItemCdConst.ChusyaSyuginasi33) == false)
-                    if(_common.Odr.ExistOdrDetailByItemCd(Tentekils) == false ||
+                    if (_common.Odr.ExistOdrDetailByItemCd(Tentekils) == false ||
                        (filteredOdrDtl.Any(p => Tentekils.Contains(p.ItemCd) == true || p.ItemCd == ItemCdConst.ChusyaSyuginasi33) == false))
                     {
                         // 点滴手技が当来院のオーダーに存在しない or
@@ -119,17 +120,17 @@ namespace CalculateService.Ika.ViewModels
 
                         if (odrInf.OdrKouiKbn == OdrKouiKbnConst.Jyoumyaku || odrInf.OdrKouiKbn == OdrKouiKbnConst.Hikakin)
                         {
-                            if(filteredOdrDtl.Any(p=>p.DrugKbn == 4) == false)
+                            if (filteredOdrDtl.Any(p => p.DrugKbn == 4) == false)
                             {
                                 string itemname = "注射手技";
-                                
+
                                 if (filteredOdrDtl.Any(p => p.Kokuji1 == "1" && (p.SinKouiKbn == OdrKouiKbnConst.Jyoumyaku || p.SinKouiKbn == OdrKouiKbnConst.Hikakin)))
                                 {
                                     itemname =
                                         filteredOdrDtl.First(p => p.Kokuji1 == "1" && (p.SinKouiKbn == OdrKouiKbnConst.Jyoumyaku || p.SinKouiKbn == OdrKouiKbnConst.Hikakin)).ItemName;
 
                                 }
-                                else if(odrInf.OdrKouiKbn == OdrKouiKbnConst.Jyoumyaku)
+                                else if (odrInf.OdrKouiKbn == OdrKouiKbnConst.Jyoumyaku)
                                 {
                                     itemname = "静脈内注射";
                                 }
@@ -181,19 +182,19 @@ namespace CalculateService.Ika.ViewModels
                         bool hikakinOdr = false;
 
                         foreach (OdrDtlTenModel odrDtl in filteredOdrDtl)
-                        {                            
+                        {
                             if (!odrDtl.IsJihi && (odrDtl.IsSorCommentItem(commentSkipFlg) || _common.IsSelectComment(odrDtl.ItemCd)))
                             {
                                 // 診療行為・コメント
 
                                 //commentSkipFlg = false;
 
-                                if(odrDtl.ItemCd == ItemCdConst.ChusyaSyuginasi31)
+                                if (odrDtl.ItemCd == ItemCdConst.ChusyaSyuginasi31)
                                 {
                                     hikakinOdr = true;
                                 }
-                                else if(odrDtl.ItemCd == ItemCdConst.ChusyaSyuginasi32)
-                                {                                    
+                                else if (odrDtl.ItemCd == ItemCdConst.ChusyaSyuginasi32)
+                                {
                                     jyomyakuOdr = true;
                                 }
 
@@ -211,7 +212,7 @@ namespace CalculateService.Ika.ViewModels
                                         //※最初にコメントが入っていると困るのでこういう処理にする
                                         //if (odrDtl.Kokuji2 != "7")
                                         //{
-                                            _common.Wrk.AppendNewWrkSinRpInf(kouiKbn, sinId, odrInf.SanteiKbn);
+                                        _common.Wrk.AppendNewWrkSinRpInf(kouiKbn, sinId, odrInf.SanteiKbn);
                                         //}
                                         _common.Wrk.AppendNewWrkSinKoui(odrInf.HokenPid, odrInf.HokenId, syukeiSaki, cdKbn: _common.GetCdKbn(odrInf.SanteiKbn, "G"));
                                     }
@@ -231,16 +232,16 @@ namespace CalculateService.Ika.ViewModels
                                     if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, odrDtl.Suryo) == 2)
                                     {
                                         // 算定回数マスタのチェックにより算定不可
-                                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
+                                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
                                     }
-                                    else if(_common.CheckAge(odrDtl) == 2)
+                                    else if (_common.CheckAge(odrDtl) == 2)
                                     {
                                         // 年齢チェックにより算定不可
-                                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
+                                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
                                     }
                                     else
                                     {
-                                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                         if (odrDtl.IsKihonKoumoku && odrDtl.ItemCd != ItemCdConst.ChusyaHoumonTenteki && SyugiNasils.Contains(odrDtl.ItemCd) == false)
                                         {
@@ -264,14 +265,14 @@ namespace CalculateService.Ika.ViewModels
                                         _common.AppendNewWrkSinKouiDetailAgeKasan(odrDtl, filteredOdrDtl);
 
                                         // コメント自動追加
-                                        _common.Wrk.AppendNewWrkSinKouiDetailComment(odrDtl, filteredOdrDtl);
+                                        _common.Wrk.AppendNewWrkSinKouiDetailComment(hpId, odrDtl, filteredOdrDtl);
 
                                     }
                                 }
                                 else
                                 {
                                     // コメント
-                                    _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                    _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                                 }
                             }
                             else
@@ -281,7 +282,7 @@ namespace CalculateService.Ika.ViewModels
 
                         }
 
-                        if(jyomyakuOdr)
+                        if (jyomyakuOdr)
                         {
                             // 静脈注射手技なしがオーダーされている場合
                             _common.Wrk.wrkSinRpInfs.Last().SinKouiKbn = ReceKouiKbn.Jyomyaku;
@@ -289,7 +290,7 @@ namespace CalculateService.Ika.ViewModels
                             _common.Wrk.wrkSinKouis.Last().SyukeiSaki = ReceSyukeisaki.ChusyaJyoumyaku;
                             syukeiSaki = ReceSyukeisaki.ChusyaJyoumyaku;
                         }
-                        else if(hikakinOdr)
+                        else if (hikakinOdr)
                         {
                             // 皮下筋肉注射手技なしがオーダーされている場合
                             _common.Wrk.wrkSinRpInfs.Last().SinKouiKbn = ReceKouiKbn.Hikakin;
@@ -298,7 +299,7 @@ namespace CalculateService.Ika.ViewModels
                             syukeiSaki = ReceSyukeisaki.ChusyaHikakin;
                         }
 
-                        if(_common.IsJibaiRosai)
+                        if (_common.IsJibaiRosai)
                         {
                             // 自賠労災準拠の場合、薬剤は別集計
                             syukeiSaki = ReceSyukeisaki.ChusyaYakuzai;
@@ -309,7 +310,7 @@ namespace CalculateService.Ika.ViewModels
                         commentSkipFlg = true;
 
                         _common.Wrk.AppendOrUpdateKoui(odrInf.HokenPid, odrInf.HokenId, syukeiSaki, _common.GetCdKbn(odrInf.SanteiKbn, "G"), ref firstSinryoKoui);
-                        
+
                         //bool SeibutuKasan = false;
                         //bool MayakuKasan = false;
 
@@ -331,20 +332,20 @@ namespace CalculateService.Ika.ViewModels
                                 }
                                 //else
                                 //{
-                                    _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
-                                    //commentSkipFlg = false;
+                                //commentSkipFlg = false;
 
-                                    //// 生物学的製剤加算チェック
-                                    //if (odrDtl.SeibutuKbn == 1)
-                                    //{
-                                    //    SeibutuKasan = true;
-                                    //}
-                                    //// 麻薬チェック
-                                    //if (odrDtl.MadokuKbn == 1)
-                                    //{
-                                    //    MayakuKasan = true;
-                                    //}
+                                //// 生物学的製剤加算チェック
+                                //if (odrDtl.SeibutuKbn == 1)
+                                //{
+                                //    SeibutuKasan = true;
+                                //}
+                                //// 麻薬チェック
+                                //if (odrDtl.MadokuKbn == 1)
+                                //{
+                                //    MayakuKasan = true;
+                                //}
                                 //}
                             }
                             //else
@@ -387,10 +388,10 @@ namespace CalculateService.Ika.ViewModels
                             {
                                 // 選択式コメントは手技で対応しているので読み飛ばす
                             }
-                            else if(odrDtl.IsTItem)
+                            else if (odrDtl.IsTItem)
                             {
                                 // 特材・コメント
-                                _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                 //commentSkipFlg = false;
                             }
@@ -409,7 +410,8 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 点滴の計算
         /// </summary>
-        private void Tenteki()
+        /// <param name="hpId">HospitalID</param>
+        private void Tenteki(int hpId)
         {
             for (int i = 0; i <= 1; i++)
             {
@@ -426,7 +428,7 @@ namespace CalculateService.Ika.ViewModels
                 //tentekiOdrInf = _common.Odr.FilterOdrInfByKouiKbnRangeToday(OdrKouiKbnConst.Tenteki, OdrKouiKbnConst.Tenteki);
 
                 int santeiKbn = 0;
-                if(i == 1)
+                if (i == 1)
                 {
                     santeiKbn = 2;
                 }
@@ -493,7 +495,7 @@ namespace CalculateService.Ika.ViewModels
                         addDummy = 2;
                         excludeComment = true;
 
-                        ret = TentekiCalc(filteredOdrInf, totalSuryo, isNodspRece, addDummy, excludeComment);
+                        ret = TentekiCalc(hpId, filteredOdrInf, totalSuryo, isNodspRece, addDummy, excludeComment);
                     }
 
                     // 今回含め
@@ -607,7 +609,7 @@ namespace CalculateService.Ika.ViewModels
                             }
                         }
 
-                        TentekiCalc(filteredOdrInf, totalSuryo, isNodspRece, addDummy, excludeComment);
+                        TentekiCalc(hpId, filteredOdrInf, totalSuryo, isNodspRece, addDummy, excludeComment);
                     }
                 }
                 else
@@ -617,7 +619,7 @@ namespace CalculateService.Ika.ViewModels
                     excludeComment = false;
 
                     filteredOdrInf = tentekiOdrInf.FindAll(p => p.RaiinNo == _common.raiinNo);
-                    TentekiCalc(filteredOdrInf, totalSuryo, isNodspRece, addDummy, excludeComment);
+                    TentekiCalc(hpId, filteredOdrInf, totalSuryo, isNodspRece, addDummy, excludeComment);
                 }
             }
 
@@ -626,6 +628,7 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 点滴の計算本体
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="filteredOdrInf"></param>
         /// <param name="totalSuryo">薬剤総量</param>
         /// <param name="isNodspRece">
@@ -642,13 +645,13 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="excludeComment">
         ///     true-コメント読み飛ばし
         /// </param>
-        private bool TentekiCalc(List<OdrInfModel> filteredOdrInf, double totalSuryo, int isNodspRece, int addDummy, bool excludeComment)
+        private bool TentekiCalc(int hpId, List<OdrInfModel> filteredOdrInf, double totalSuryo, int isNodspRece, int addDummy, bool excludeComment)
         {
             bool ret = false;
 
             if (filteredOdrInf.Any())
             {
-                
+
                 List<OdrDtlTenModel> filteredOdrDtl;
                 string itemCd = "";
 
@@ -682,7 +685,7 @@ namespace CalculateService.Ika.ViewModels
                     if (filteredOdrDtl.Any(p => Tentekils.Contains(p.ItemCd)))
                     {
                         // 点滴手技料を含むRpの場合
-                        if (TentekiSyugiDtlCalc(filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, itemCd, isNodspRece, excludeComment, ref syugiSantei, ref firstSinryoKoui))
+                        if (TentekiSyugiDtlCalc(hpId, filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, itemCd, isNodspRece, excludeComment, ref syugiSantei, ref firstSinryoKoui))
                         {
                             santei = true;
                             ret = true;
@@ -696,7 +699,7 @@ namespace CalculateService.Ika.ViewModels
 
                 // 薬剤・コメント算定
                 //_AddOrReplaceKoui(firstSinryoKoui, filteredOdrInf.First().HokenPid, filteredOdrInf.First().HokenId, filteredOdrInf.First().SanteiKbn, isNodspRece);
-                
+
                 santei = false;
                 bool firstYakuzai = true;
 
@@ -712,7 +715,7 @@ namespace CalculateService.Ika.ViewModels
                             firstYakuzai = false;
                         }
 
-                        if (TentekiYakuzaiDtlCalc(filteredOdrDtl, true))
+                        if (TentekiYakuzaiDtlCalc(hpId, filteredOdrDtl, true))
                         {
                             santei = true;
                             ret = true;
@@ -742,7 +745,7 @@ namespace CalculateService.Ika.ViewModels
 
                 // 特材・コメント算定
                 //_AddOrReplaceKoui(firstSinryoKoui, filteredOdrInf.First().HokenPid, filteredOdrInf.First().HokenId, filteredOdrInf.First().SanteiKbn, isNodspRece);
-                
+
                 santei = false;
                 foreach (OdrInfModel odrInf in filteredOdrInf)
                 {
@@ -753,7 +756,7 @@ namespace CalculateService.Ika.ViewModels
                     {
                         _AddOrReplaceKoui(firstSinryoKoui, odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn, isNodspRece);
 
-                        if (TentekiTokuzaiDtlCalc(filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, isNodspRece, true, ref firstSinryoKoui))
+                        if (TentekiTokuzaiDtlCalc(hpId, filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, isNodspRece, true, ref firstSinryoKoui))
                         {
                             santei = true;
                             ret = true;
@@ -777,19 +780,19 @@ namespace CalculateService.Ika.ViewModels
                         // 手技料算定（コメント出力なし、薬剤につける）
                         syugiSantei = false;
                         //TentekiSyugiDtlCalc(filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, "", 0, false, ref syugiSantei, ref firstSinryoKoui);
-                        TentekiSyugiDtlCalc(filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, "", 0, true, ref syugiSantei, ref firstSinryoKoui);
+                        TentekiSyugiDtlCalc(hpId, filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, "", 0, true, ref syugiSantei, ref firstSinryoKoui);
 
                         // 薬剤・コメント算定
                         _AddOrReplaceKoui(firstSinryoKoui, odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn, 0);
                         firstSinryoKoui = false;
 
-                        TentekiYakuzaiDtlCalc(filteredOdrDtl, false, false);
+                        TentekiYakuzaiDtlCalc(hpId, filteredOdrDtl, false, false);
 
                         // 特材・コメント算定
                         _AddOrReplaceKoui(firstSinryoKoui, odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn, 0);
                         firstSinryoKoui = false;
 
-                        TentekiTokuzaiDtlCalc(filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, 0, false, ref firstSinryoKoui);
+                        TentekiTokuzaiDtlCalc(hpId, filteredOdrDtl, odrInf.HokenPid, odrInf.HokenId, 0, false, ref firstSinryoKoui);
 
                         // オーダーから削除
                         //_common.Odr.odrDtlls.RemoveAll(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo);
@@ -821,7 +824,7 @@ namespace CalculateService.Ika.ViewModels
             {
                 string syukeiSaki = ReceSyukeisaki.ChusyaSonota;
 
-                if(_common.hokenKbn == HokenSyu.Jibai)
+                if (_common.hokenKbn == HokenSyu.Jibai)
                 {
                     // 自賠の場合、注射薬剤に集計
                     syukeiSaki = ReceSyukeisaki.ChusyaYakuzai;
@@ -843,6 +846,7 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 点滴手技算定
         /// </summary>
+        /// <param name="hpId">HospitalIDparam>
         /// <param name="filteredOdrDtl"></param>
         /// <param name="hokenPid"></param>
         /// <param name="itemCd"></param>
@@ -850,7 +854,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="excludeComment"></param>
         /// <param name="firstSinryoKoui"></param>
         /// <returns></returns>
-        private bool TentekiSyugiDtlCalc(List<OdrDtlTenModel> filteredOdrDtl, int hokenPid, int hokenId, string itemCd, int isNodspRece, bool excludeComment, ref bool syugiSantei, ref bool firstSinryoKoui)
+        private bool TentekiSyugiDtlCalc(int hpId, List<OdrDtlTenModel> filteredOdrDtl, int hokenPid, int hokenId, string itemCd, int isNodspRece, bool excludeComment, ref bool syugiSantei, ref bool firstSinryoKoui)
         {
             bool ret = false;
             bool commentSkipFlg = false;
@@ -905,7 +909,7 @@ namespace CalculateService.Ika.ViewModels
 
                                         syugiSantei = true;
                                     }
-                                    _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                    _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                     if (itemCd != "" && Tentekils.Contains(odrDtl.ItemCd))
                                     {
@@ -926,13 +930,13 @@ namespace CalculateService.Ika.ViewModels
                                     _common.AppendNewWrkSinKouiDetailAgeKasan(odrDtl, filteredOdrDtl);
 
                                     // コメント自動追加
-                                    _common.Wrk.AppendNewWrkSinKouiDetailComment(odrDtl, filteredOdrDtl);
+                                    _common.Wrk.AppendNewWrkSinKouiDetailComment(hpId, odrDtl, filteredOdrDtl);
                                 }
                             }
                         }
                         else
                         {
-                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                         }
 
                         ret = true;
@@ -950,11 +954,12 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 点滴薬剤算定
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="filteredOdrDtl"></param>
         /// <param name="excludeComment"></param>
         /// <returns></returns>
         //private bool TentekiYakuzaiDtlCalc(List<OdrDtlTenModel> filteredOdrDtl, bool excludeComment, ref bool SeibutuKasan, ref bool MayakuKasan, bool commentSkipFlg = true)
-        private bool TentekiYakuzaiDtlCalc(List<OdrDtlTenModel> filteredOdrDtl, bool excludeComment, bool commentSkipFlg = true)
+        private bool TentekiYakuzaiDtlCalc(int hpId, List<OdrDtlTenModel> filteredOdrDtl, bool excludeComment, bool commentSkipFlg = true)
         {
             bool ret = false;
             //bool commentSkipFlg = false;
@@ -980,13 +985,13 @@ namespace CalculateService.Ika.ViewModels
                         //else
                         //{
 
-                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
-                            commentSkipFlg = false;
+                        commentSkipFlg = false;
                         //}
                         ret = true;
                     }
-                    else if(!odrDtl.IsSItem)
+                    else if (!odrDtl.IsSItem)
                     {
                         commentSkipFlg = true;
                     }
@@ -1011,12 +1016,13 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 点滴特材算定
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="filteredOdrDtl"></param>
         /// <param name="hokenId"></param>
         /// <param name="isNodspRece"></param>
         /// <param name="firstSinryoKoui"></param>
         /// <returns></returns>
-        private bool TentekiTokuzaiDtlCalc(List<OdrDtlTenModel> filteredOdrDtl, int hokenPid, int hokenId, int isNodspRece, bool excludeComment, ref bool firstSinryoKoui)
+        private bool TentekiTokuzaiDtlCalc(int hpId, List<OdrDtlTenModel> filteredOdrDtl, int hokenPid, int hokenId, int isNodspRece, bool excludeComment, ref bool firstSinryoKoui)
         {
             bool ret = false;
             //bool commentSkipFlg = false;
@@ -1044,7 +1050,7 @@ namespace CalculateService.Ika.ViewModels
                     if (odrDtl.IsTorCommentItem(commentSkipFlg))
                     {
                         // 特材・コメント
-                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                         commentSkipFlg = false;
 
@@ -1063,11 +1069,13 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 自費算定分を処理する
         /// </summary>
-        private void CalculateJihi()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateJihi(int hpId)
         {
             const string conFncName = nameof(CalculateJihi);
 
             _common.CalculateJihi(
+                hpId,
                 OdrKouiKbnConst.ChusyaMin,
                 OdrKouiKbnConst.ChusyaMax,
                 ReceKouiKbn.ChusyaSonota,

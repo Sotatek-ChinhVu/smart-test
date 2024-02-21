@@ -48,6 +48,7 @@ namespace CalculateUnitTest
         private CalculateService.ReceFutan.Models.ReceInfModel runReceCalculate(FutancalcUT futancalcUT, FutancalcViewModel futanVm, int prefNo,
             int chokiTokki = 0, int receKyufuKisai = 0, int receKyufuKisai2 = 0, double jibaiRousaiRate = 0)
         {
+            int hpId = 1;
             futancalcUT.AddCalcResult(futanVm);
 
             var mockSystemConfigProvider = new Mock<ISystemConfigProvider>();
@@ -59,8 +60,8 @@ namespace CalculateUnitTest
             var mockLogger = new Mock<IEmrLogger>();
             var messenger = new InitMessenger();
 
-            var kogakuLimitModels = new List<CalculateService.ReceFutan.Models.KogakuLimitModel>();            
-            foreach (var kogakuLimit  in futancalcUT.KogakuLimitModels)
+            var kogakuLimitModels = new List<CalculateService.ReceFutan.Models.KogakuLimitModel>();
+            foreach (var kogakuLimit in futancalcUT.KogakuLimitModels)
             {
                 kogakuLimitModels.Add(new CalculateService.ReceFutan.Models.KogakuLimitModel(kogakuLimit.KogakuLimit));
             }
@@ -86,7 +87,7 @@ namespace CalculateUnitTest
 
             //レセ集計
             int seikyuYm = futanVm.RaiinTensu.SinDate / 100;
-            receFutanVm.ReceCalculate(seikyuYm);
+            receFutanVm.ReceCalculate(hpId, seikyuYm);
 
             return receFutanVm.ReceInfs.First();
         }
@@ -5197,7 +5198,7 @@ namespace CalculateUnitTest
             var retReceInf = runReceCalculate(futancalcUT, futanCalcVm, prefNo);
 
             AssertEqualToTensu(retReceInf, 10000, 10000, null, null, null);
-            AssertEqualToKyufu(retReceInf, null, null, null, null);;
+            AssertEqualToKyufu(retReceInf, null, null, null, null); ;
             AssertEqualToFutan(retReceInf, 18000, 2500, null, null, null);
             Assert.That(retReceInf.TokkiContains("29"), Is.True);
             Assert.That(retReceInf.ReceSbt, Is.EqualTo("1128"));
@@ -6247,7 +6248,7 @@ namespace CalculateUnitTest
             //計算
             futancalcUT.RunCalculate(futanVm: futanCalcVm, sinDate: 20210615, tensu: 1950, hokenPid: 1);
             futancalcUT.AssertEqualTo(futanCalcVm.KaikeiDetail, 1950, 13650, 0, 5850, 0, 0, 0, 0, 0);
-            
+
             futancalcUT.RunCalculate(futanVm: futanCalcVm, sinDate: 20210615, tensu: 556, hokenPid: 2, newRaiin: false);
             futancalcUT.AssertEqualTo(futanCalcVm.KaikeiDetail, 556, 3892, 0, 1668, 0, 0, 0, 0, 0);
             Assert.That(futanCalcVm.AdjustDetails.Count, Is.Zero);

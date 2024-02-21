@@ -277,29 +277,31 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 在宅の計算ロジック
         /// </summary>
-        public void Calculate()
+        /// <param name="hpId">HospitalID</param>
+        public void Calculate(int hpId)
         {
             const string conFncName = nameof(Calculate);
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.Zaitaku, OdrKouiKbnConst.Zaitaku))
             {
                 // 保険
-                CalculateHoken();
+                CalculateHoken(hpId);
 
                 // 自費
-                CalculateJihi();
+                CalculateJihi(hpId);
             }
 
             _common.Wrk.CommitWrkSinRpInf();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
         /// 在宅の計算
         /// </summary>
-        private void CalculateHoken()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateHoken(int hpId)
         {
             const string conFncName = nameof(CalculateHoken);
 
@@ -460,16 +462,16 @@ namespace CalculateService.Ika.ViewModels
                                         if (_common.CheckSanteiKaisu(odrDtl.ItemCd, odrDtl.SanteiKbn, odrDtl.HokenId, 0, suryo) == 2)
                                         {
                                             // 算定回数マスタのチェックにより算定不可
-                                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
+                                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
                                         }
                                         else if (_common.CheckAge(odrDtl) == 2)
                                         {
                                             // 年齢チェックにより算定不可
-                                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
+                                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl), isDeleted: DeleteStatus.DeleteFlag);
                                         }
                                         else
                                         {
-                                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                             int retKizamiMin = 0;
 
@@ -519,7 +521,7 @@ namespace CalculateService.Ika.ViewModels
                                                 if (IsOhsinKasanTarget(odrDtl) && existOushinKasan)
                                                 {
                                                     // 往診加算対象項目の場合、手オーダーされている往診加算をくっつけて算定する
-                                                    OusinKasan(odrDtl.Suryo);
+                                                    OusinKasan(hpId, odrDtl.Suryo);
                                                 }
                                             }
 
@@ -546,7 +548,7 @@ namespace CalculateService.Ika.ViewModels
                                             }
 
                                             // コメント自動追加
-                                            _common.Wrk.AppendNewWrkSinKouiDetailComment(odrDtl, filteredOdrDtl);
+                                            _common.Wrk.AppendNewWrkSinKouiDetailComment(hpId, odrDtl, filteredOdrDtl);
 
                                             if (IsWeekCalc(odrDtl.ItemCd))
                                             {
@@ -573,7 +575,7 @@ namespace CalculateService.Ika.ViewModels
                                     }
                                     else if (commentSkipFlg == false || _common.IsSelectComment(odrDtl.ItemCd))
                                     {
-                                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                                     }
                                 }
                             }
@@ -609,7 +611,7 @@ namespace CalculateService.Ika.ViewModels
                             // 当該Rpに数量振替が必要な項目が存在した場合、加算用項目を算定する
                             foreach ((string itemCd, double suryo, int kizamiMin) in suryoFurikaels)
                             {
-                                SuryoFurikae(itemCd, suryo, kizamiMin, odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn, filteredOdrDtl);
+                                SuryoFurikae(hpId, itemCd, suryo, kizamiMin, odrInf.HokenPid, odrInf.HokenId, odrInf.SanteiKbn, filteredOdrDtl);
                             }
                         }
 
@@ -634,7 +636,7 @@ namespace CalculateService.Ika.ViewModels
                             else if (odrDtl.IsYorCommentItem(commentSkipFlg))
                             {
                                 // 薬剤・コメント
-                                _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                 commentSkipFlg = false;
                             }
@@ -659,7 +661,7 @@ namespace CalculateService.Ika.ViewModels
                             else if (odrDtl.IsTorCommentItem(commentSkipFlg))
                             {
                                 // 特材・コメント
-                                _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                                _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                                 commentSkipFlg = false;
                             }
@@ -1001,14 +1003,14 @@ namespace CalculateService.Ika.ViewModels
                     {
                         ret = false;
                     }
-                    else if (new List<int> { 
-                                SyosaiConst.SaisinDenwa, 
-                                SyosaiConst.SaisinDenwa2, 
+                    else if (new List<int> {
+                                SyosaiConst.SaisinDenwa,
+                                SyosaiConst.SaisinDenwa2,
                                 SyosaiConst.SyosinCorona,
-                                SyosaiConst.SyosinJouhou, 
-                                SyosaiConst.Syosin2Jouhou, 
-                                SyosaiConst.SaisinJouhou, 
-                                SyosaiConst.Saisin2Jouhou, 
+                                SyosaiConst.SyosinJouhou,
+                                SyosaiConst.Syosin2Jouhou,
+                                SyosaiConst.SaisinJouhou,
+                                SyosaiConst.Saisin2Jouhou,
                                 SyosaiConst.SaisinDenwaTokurei
                         }.Contains((int)_common.syosai))
                     {
@@ -1471,9 +1473,10 @@ namespace CalculateService.Ika.ViewModels
         /// 往診往復加算２号地域の算定処理
         /// 手オーダーがあれば、往診の後に算定する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="suryo"></param>
         /// <returns></returns>
-        private bool Ousin2Go(double suryo)
+        private bool Ousin2Go(int hpId, double suryo)
         {
             const string conFncName = nameof(Ousin2Go);
 
@@ -1493,7 +1496,7 @@ namespace CalculateService.Ika.ViewModels
                 {
                     foreach (OdrDtlTenModel odrDtl in odrDtls)
                     {
-                        _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                        _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
                         if (odrDtl.ItemCd == ItemCdConst.ZaiOusinOufuku2Go)
                         {
                             _common.Wrk.wrkSinKouiDetails.Last().Suryo = suryo;
@@ -1524,9 +1527,10 @@ namespace CalculateService.Ika.ViewModels
         /// 往診加算の算定処理
         /// 手オーダーがあれば、往診の後に算定する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="suryo"></param>
         /// <returns></returns>
-        private bool OusinKasan(double ousinSuryo)
+        private bool OusinKasan(int hpId, double ousinSuryo)
         {
             const string conFncName = nameof(OusinKasan);
 
@@ -1549,7 +1553,7 @@ namespace CalculateService.Ika.ViewModels
                     {
                         foreach (OdrDtlTenModel odrDtl in odrDtls)
                         {
-                            _common.Wrk.AppendNewWrkSinKouiDetail(odrDtl, _common.Odr.GetOdrCmt(odrDtl));
+                            _common.Wrk.AppendNewWrkSinKouiDetail(hpId, odrDtl, _common.Odr.GetOdrCmt(odrDtl));
 
                             if (odrDtl.ItemCd == tgtItemCd)
                             {
@@ -1595,10 +1599,11 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 数量を数量２に振り替え、数量がきざみ下限を超える場合、加算項目を追加する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="itemCd"></param>
         /// <param name="suryo"></param>
         /// <param name="kizamiMin"></param>
-        private void SuryoFurikae(string itemCd, double suryo, int kizamiMin, int hokenPid, int hokenId, int santeiKbn, List<OdrDtlTenModel> filteredOdrDtls)
+        private void SuryoFurikae(int hpId, string itemCd, double suryo, int kizamiMin, int hokenPid, int hokenId, int santeiKbn, List<OdrDtlTenModel> filteredOdrDtls)
         {
             const string conFncName = nameof(SuryoFurikae);
 
@@ -1633,7 +1638,7 @@ namespace CalculateService.Ika.ViewModels
                             {
                                 if (filteredOdrDtls.Any(p => p.ItemCd == recedenCmtSelect.CommentCd) == false)
                                 {
-                                    _common.Wrk.AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, cmtOpt: CIUtil.ToWide(suryo.ToString()), autoAdd: 1);
+                                    _common.Wrk.AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, cmtOpt: CIUtil.ToWide(suryo.ToString()), autoAdd: 1);
                                 }
                             }
                         }
@@ -1650,11 +1655,13 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// 在宅の自費算定分を処理する
         /// </summary>
-        private void CalculateJihi()
+        /// <param name="hpId">HospitalID</param>
+        private void CalculateJihi(int hpId)
         {
             const string conFncName = nameof(CalculateJihi);
 
             _common.CalculateJihi(
+                hpId,
                 OdrKouiKbnConst.Zaitaku,
                 OdrKouiKbnConst.Zaitaku,
                 ReceKouiKbn.Zaitaku,

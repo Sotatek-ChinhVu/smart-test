@@ -470,7 +470,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// <summary>
     /// 患者病名の取得
     /// </summary>
-    public List<CoPtByomeiModel> GetPtByomeis( int hpId,
+    public List<CoPtByomeiModel> GetPtByomeis(int hpId,
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
@@ -517,7 +517,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000PtConf ptConf, CoSta9000HokenConf hokenConf, CoSta9000ByomeiConf byomeiConf,
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
-        var ptInfs = GetPtInfs( hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
+        var ptInfs = GetPtInfs(hpId, ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
         (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hpId, hokenConf);
 
         var ptHokens = (
@@ -675,8 +675,8 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
             .Where(r => r.HpId == hpId && r.IsDeleted == DeleteStatus.None)
             .OrderBy(r => r.GrpCd)
             .ToList();
-        var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(r => r.IsDelete == DeleteStatus.None);
-        var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(r => r.IsDeleted == DeleteStatus.None);
+        var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(r => r.HpId == hpId && r.IsDelete == DeleteStatus.None);
+        var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(r => r.HpId == hpId && r.IsDeleted == DeleteStatus.None);
 
         var raiinKbns = (
             from raiinKbnInf in raiinKbnInfs
@@ -1728,7 +1728,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region カルテ情報
-        var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.IsDeleted == DeleteStatus.None);
+        var karteInfs = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.IsDeleted == DeleteStatus.None);
 
         bool isKarteConf = karteConf != null;
         if (isKarteConf)

@@ -129,8 +129,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<SystemConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo });
             modelBuilder.Entity<KarteFilterDetail>().HasKey(e => new { e.HpId, e.UserId, e.FilterId, e.FilterItemCd, e.FilterEdaNo });
             modelBuilder.Entity<KarteFilterMst>().HasKey(e => new { e.HpId, e.UserId, e.FilterId });
-            modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.UserId, e.TableName, e.ColumnName });
-            modelBuilder.Entity<JsonSetting>().HasKey(e => new { e.UserId, e.Key });
+            modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.HpId, e.UserId, e.TableName, e.ColumnName });
+            modelBuilder.Entity<JsonSetting>().HasKey(e => new { e.UserId, e.Key, e.HpId });
             modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.YakkaCd, e.ItemCd, e.StartDate });
             modelBuilder.Entity<SetOdrInf>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.Id });
             modelBuilder.Entity<SetOdrInfDetail>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.RowNo });

@@ -98,7 +98,7 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
             }
             #endregion
             var raiinInfs = _tenantRaiinInf.RaiinInfs.Where(r => r.HpId == hpId && r.Status >= 5 && r.IsDeleted == DeleteStatus.None);
-            var kaikeiInfs = _tenantKaikeiInf.KaikeiInfs;
+            var kaikeiInfs = _tenantKaikeiInf.KaikeiInfs.Where(x => x.HpId == hpId);
             #region 条件指定
             //診療科
             if (printConf.KaIds?.Count >= 1)
