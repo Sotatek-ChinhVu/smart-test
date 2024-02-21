@@ -3,7 +3,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Accounting.Model;
 
 namespace Reporting.Accounting.DB;
@@ -78,10 +77,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             (hokenKbn != 1 || new int[] { 1, 2 }.Contains(p.HokenKbn))
         );
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
+            h => h.HpId == hpId && h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -255,10 +254,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             p.PtId == ptId &&
             ((hokenKbn != 1) || new int[] { 1, 2 }.Contains(p.HokenKbn)));
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
+            h => h.HpId == hpId && h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -424,10 +423,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             p.HpId == hpId &&
             (hokenKbn == 1 ? new int[] { 1, 2 }.Contains(p.HokenKbn) : true));
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
+            h => h.HpId == hpId && h.StartDate <= endDate && h.PrefNo == 0 && new int[] { 0, 1, 3, 4, 8, 9 }.Contains(h.HokenSbtKbn)
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(
@@ -782,7 +781,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
             p.HpId == hpId &&
             (hokenKbn != 1 || new int[] { 1, 2 }.Contains(p.HokenKbn)));
 
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
 
         // 来院情報の取得
         var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r =>
@@ -986,10 +985,10 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
 
     public List<CoPtKohiModel> FindPtKohi(int hpId, long ptId, int sinDate, HashSet<int> kohiIds)
     {
-        var hokenMsts = NoTrackingDataContext.HokenMsts;
+        var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
         //診療日基準で保険番号マスタのキー情報を取得
         var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
-            h => h.StartDate <= sinDate
+            h => h.HpId == hpId && h.StartDate <= sinDate
         ).GroupBy(
             x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
         ).Select(

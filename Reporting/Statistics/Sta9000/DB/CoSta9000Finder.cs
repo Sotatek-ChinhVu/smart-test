@@ -2356,12 +2356,12 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         List<CoKensaModel> kensaDatas = new List<CoKensaModel>();
 
         //Planet接続設定
-        string hostname = _systemConfig.PlanetHostName();
-        string database = _systemConfig.PlanetDatabase();
-        string username = _systemConfig.PlanetUserName();
-        string password = _systemConfig.PlanetPassword();
+        string hostname = _systemConfig.PlanetHostName(hpId);
+        string database = _systemConfig.PlanetDatabase(hpId);
+        string username = _systemConfig.PlanetUserName(hpId);
+        string password = _systemConfig.PlanetPassword(hpId);
 
-        switch (_systemConfig.PlanetType())
+        switch (_systemConfig.PlanetType(hpId))
         {
             #region 標準
             case 0:
@@ -2718,7 +2718,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region PtNum -> PtId変換
-        if (kensaDatas.Count >= 1 && _systemConfig.PlanetType() != 0)
+        if (kensaDatas.Count >= 1 && _systemConfig.PlanetType(hpId) != 0)
         {
             List<long> ptNums = kensaDatas.GroupBy(p => p.PtId).Select(p => p.Key).ToList();
 

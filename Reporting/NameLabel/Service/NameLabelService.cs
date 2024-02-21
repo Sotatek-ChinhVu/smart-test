@@ -14,11 +14,11 @@ public class NameLabelService : INameLabelService
         _coNameLabelFinder = coNameLabelFinder;
     }
 
-    public CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate)
+    public CommonReportingRequestModel GetNameLabelReportingData(int hpId, long ptId, string kanjiName, int sinDate)
     {
         try
         {
-            CoNameLabelModel coModel = GetData(ptId, kanjiName, sinDate);
+            CoNameLabelModel coModel = GetData(hpId, ptId, kanjiName, sinDate);
             return new NameLabelMapper(coModel).GetData();
         }
         finally
@@ -27,10 +27,10 @@ public class NameLabelService : INameLabelService
         }
     }
 
-    private CoNameLabelModel GetData(long ptId, string kanjiName, int sinDate)
+    private CoNameLabelModel GetData(int hpId, long ptId, string kanjiName, int sinDate)
     {
         // 患者情報
-        var ptInf = _coNameLabelFinder.FindPtInf(ptId);
+        var ptInf = _coNameLabelFinder.FindPtInf(hpId, ptId);
 
         return new CoNameLabelModel(ptInf, kanjiName, sinDate);
     }
