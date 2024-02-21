@@ -43,15 +43,10 @@ namespace Interactor.SuperAdmin
         {
             try
             {
+                _memoryCache.Remove("test");
+                _awsSdkService.DeleteDataMasterTenant("localhost", "test02", ConfigConstant.PgUserDefault, "1234$", 1);
                 IWebSocketService _webSocketService;
                 _webSocketService = (IWebSocketService)inputData.WebSocketService;
-
-                string pathFileDumpTerminate = _configuration["PathFileDumpTerminate"] ?? string.Empty;
-
-                if (string.IsNullOrEmpty(pathFileDumpTerminate))
-                {
-                    return new TerminateTenantOutputData(false, TerminateTenantStatus.PathFileDumpRestoreNotAvailable);
-                }
 
                 if (inputData.TenantId <= 0)
                 {
@@ -69,15 +64,6 @@ namespace Interactor.SuperAdmin
                     return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
                 }
 
-                if (tenant.Status == ConfigConstant.StatusTenantDictionary()["terminating"])
-                {
-                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsTerminating);
-                }
-
-                if ((tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping || tenant.StatusTenant == ConfigConstant.StatusTenantFailded) && inputData.Type == 1)
-                {
-                    return new TerminateTenantOutputData(false, TerminateTenantStatus.TenantIsNotAvailableToSortTerminate);
-                }
                 _tenantRepository.UpdateStatusTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminating"]);
                 var messenge = tenant.EndSubDomain + $"がシャットダウン中です。";
                 _webSocketService.SendMessageAsync(FunctionCodes.SuperAdmin, new NotificationModel(tenant.TenantId, ConfigConstant.StatusNotiSuccess, ConfigConstant.StatusSuttingDown, messenge));
@@ -86,91 +72,17 @@ namespace Interactor.SuperAdmin
                 {
                     try
                     {
-                        bool skipFinalSnapshot = false;
-                        var listTenantDb = RDSAction.GetListDatabase(tenant.EndPointDb, tenant.UserConnect, tenant.PasswordConnect).Result;
-                        Console.WriteLine($"Start Terminate tenant: {tenant.RdsIdentifier}");
+                        Console.WriteLine($"Start Terminate tenant: {tenant.Hospital}");
 
                         if (tenant.StatusTenant == ConfigConstant.StatusTenantPending || tenant.StatusTenant == ConfigConstant.StatusTenantStopping) // terminate tenant  creating, updating, restoring
                         {
-                            skipFinalSnapshot = true;
                             var tenantInfo = _memoryCache.Get<TenantCacheMemory>(tenant.SubDomain) ?? new TenantCacheMemory();
-
-                            // Cancel task run
+                            // Cancel task run creating, updating, restoring
                             tenantInfo.CancelToken.Cancel();
-
-                            // Delete tmp RDS
-                            if (!string.IsNullOrEmpty(tenantInfo.TmpRdsIdentifier))
-                            {
-                                if (RDSAction.CheckRDSInstanceExists(tenantInfo.TmpRdsIdentifier).Result)
-                                {
-                                    var deleteTmpRDSAction = RDSAction.DeleteRDSInstanceAsync(tenantInfo.TmpRdsIdentifier, skipFinalSnapshot).Result;
-                                }
-                            }
                         }
 
-                        // Backup tenant
-                        if (inputData.Type == 1)
-                        {
-                            // Create folder backup S3
-                            var backupFolderName = @$"bk-{tenant.EndSubDomain}";
-                            _awsSdkService.CreateFolderBackupAsync(ConfigConstant.DestinationBucketName, tenant.EndSubDomain, ConfigConstant.RestoreBucketName, backupFolderName).Wait();
-
-                            // Dump DB backup
-                            var pathFileDump = @$"{pathFileDumpTerminate}{tenant.Db}.sql"; // Path save file sql dump
-                            PostgresSqlAction.PostgreSqlDump(pathFileDump, tenant.EndPointDb, ConfigConstant.PgPostDefault, tenant.Db, ConfigConstant.PgUserDefault, ConfigConstant.PgPasswordDefault).Wait();
-
-                            // check valid file sql dump
-                            if (!System.IO.File.Exists(pathFileDump))
-                            {
-                                throw new Exception("sqldump 存在しません。");
-                            }
-
-                            long length = new System.IO.FileInfo(pathFileDump).Length;
-                            if (length <= 0)
-                            {
-                                throw new Exception("Sqldump が無効です");
-                            }
-
-                            // Upload file sql dump to folder backup S3
-                            _awsSdkService.UploadFileAsync(ConfigConstant.RestoreBucketName, $@"{backupFolderName}/{tenant.Db}", pathFileDump).Wait();
-                        }
-
-                        bool deleteRDSAction = false;
-
-                        // Connect RDS delete TenantDb
-                        if (listTenantDb.Count > 1)
-                        {
-                            if (listTenantDb.Contains(tenant.Db))
-                            {
-                                deleteRDSAction = _awsSdkService.DeleteTenantDb(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect);
-                            }
-                            else
-                            {
-                                deleteRDSAction = true;
-                            }
-                        }
-
-                        // Deleted RDS
-                        else
-                        {
-                            if (RDSAction.CheckRDSInstanceExists(tenant.RdsIdentifier).Result)
-                            {
-                                // Check RDS being used by another tenant
-                                if (_tenantRepositoryRunTask.GetByRdsId(tenant.TenantId, tenant.RdsIdentifier).Count() == 1)
-                                {
-                                    deleteRDSAction = RDSAction.DeleteRDSInstanceAsync(tenant.RdsIdentifier, skipFinalSnapshot).Result;
-                                }
-                                else
-                                {
-                                    deleteRDSAction = true;
-                                }
-                            }
-                            else
-                            {
-                                deleteRDSAction = true;
-                            }
-                        }
-
+                        // Delete data master tenant
+                        var deleteRDSAction = _awsSdkService.DeleteDataMasterTenant(tenant.EndPointDb, tenant.Db, tenant.UserConnect, tenant.PasswordConnect, 1);
                         // Delete DNS
                         bool deleteDNSAction = false;
                         if (Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result) // Check exist DNS
@@ -192,7 +104,7 @@ namespace Interactor.SuperAdmin
                         if (deleteRDSAction && deleteDNSAction && deleteItemCnameAction)
                         {
                             // Check finshed terminate
-                            if (RDSAction.CheckRDSInstanceDeleted(tenant.RdsIdentifier).Result && !Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result)
+                            if (!Route53Action.CheckSubdomainExistence(tenant.SubDomain).Result)
                             {
                                 _tenantRepositoryRunTask.TerminateTenant(inputData.TenantId, ConfigConstant.StatusTenantDictionary()["terminated"]);
                                 // Notification  terminating success
