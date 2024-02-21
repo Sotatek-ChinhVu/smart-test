@@ -59,6 +59,7 @@ namespace EmrCalculateApi.Controllers
         public ActionResult RunTrialCalculate([FromBody] RunTraialCalculateRequest calculateRequest)
         {
             var data = _ikaCalculate.RunTraialCalculate(
+                calculateRequest.HpId,
                 calculateRequest.OrderInfoList,
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
