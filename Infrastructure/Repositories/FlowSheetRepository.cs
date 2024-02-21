@@ -31,11 +31,6 @@ namespace Infrastructure.Repositories
         private readonly string syosaisinKbn = "syosaisinkbn";
         private readonly string comment = "comment";
 
-        private string HolidayMstCacheKey
-        {
-            get => $"{key}-HolidayMstCacheKey";
-        }
-
         private string RaiinListMstCacheKey
         {
             get => $"{key}-RaiinListMstCacheKey";
@@ -272,20 +267,21 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region HolidayMst
-        private List<HolidayDto> ReloadHolidayCache(int hpId)
+        private List<HolidayDto> ReloadHolidayCache(int hpId, string key)
         {
             var holidayModelList = NoTrackingDataContext.HolidayMsts
                 .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
                 .Select(h => new HolidayDto(h.SeqNo, h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
                 .ToList();
             var json = JsonSerializer.Serialize(holidayModelList);
-            _cache.StringSet(HolidayMstCacheKey, json);
+            _cache.StringSet(key, json);
             return holidayModelList;
         }
 
-        private List<HolidayDto> ReadCacheHolidayMst()
+        private List<HolidayDto> ReadCacheHolidayMst(int hpId)
         {
-            var results = _cache.StringGet(HolidayMstCacheKey);
+            var holidayMstCacheKey = $"{key}-HolidayMstCacheKey" + hpId;
+            var results = _cache.StringGet(holidayMstCacheKey);
             var json = results.AsString();
             var datas = !string.IsNullOrEmpty(json) ? JsonSerializer.Deserialize<List<HolidayDto>>(json) : new();
             return datas ?? new();
@@ -324,21 +320,23 @@ namespace Infrastructure.Repositories
             var result = TrackingDataContext.SaveChanges() > 0;
             if (result)
             {
-                ReloadHolidayCache(holiday.HpId);
+                var holidayMstCacheKey = $"{key}-HolidayMstCacheKey" + holiday.HpId;
+                ReloadHolidayCache(holiday.HpId, holidayMstCacheKey);
             }
             return result;
         }
 
         public List<HolidayDto> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
+            var holidayMstCacheKey = $"{key}-HolidayMstCacheKey" + hpId;
             List<HolidayDto> holidayMstList;
-            if (!_cache.KeyExists(HolidayMstCacheKey))
+            if (!_cache.KeyExists(holidayMstCacheKey))
             {
-                holidayMstList = ReloadHolidayCache(hpId);
+                holidayMstList = ReloadHolidayCache(hpId, holidayMstCacheKey);
             }
             else
             {
-                holidayMstList = ReadCacheHolidayMst();
+                holidayMstList = ReadCacheHolidayMst(hpId);
             }
             return holidayMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }

@@ -326,9 +326,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         return result;
     }
 
-    public List<SyunoNyukinModel> GetListSyunoNyukinModel(int hpId,List<long> listRaiinNo)
+    public List<SyunoNyukinModel> GetListSyunoNyukinModel(int hpId, List<long> listRaiinNo)
     {
-        var result = TrackingDataContext.SyunoNyukin.Where(item => listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
+        var result = TrackingDataContext.SyunoNyukin.Where(item => item.HpId == hpId && listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
                                                              .Select(item => new SyunoNyukinModel(
                                                                     item.HpId,
                                                                     item.PtId,

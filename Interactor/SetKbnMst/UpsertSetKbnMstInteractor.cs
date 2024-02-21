@@ -77,7 +77,7 @@ namespace Interactor.SetKbnMst
                     }
                 }
                 var kaIds = inputData.SetKbnMstItems.Where(s => s.KaCd > 0).Select(s => s.KaCd).Distinct().ToList();
-                bool checkkaId = _kaRepository.CheckKaId(kaIds);
+                bool checkkaId = _kaRepository.CheckKaId(kaIds, inputData.HpId);
                 var userIds = inputData.SetKbnMstItems.Where(s => s.DocCd > 0).Select(s => s.DocCd).Distinct().ToList();
                 bool checkUserId = _userRepository.GetDoctorsList(userIds).Count() == inputData.SetKbnMstItems.Where(s => s.DocCd > 0).Distinct().Select(s => s.DocCd).Count();
                 if (!checkkaId)

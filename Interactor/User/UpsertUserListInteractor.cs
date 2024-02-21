@@ -102,7 +102,7 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                 }
 
-                if (!_kaRepository.CheckKaId(datas.Select(u => u.KaId).Distinct().ToList()))
+                if (!_kaRepository.CheckKaId(datas.Select(u => u.KaId).Distinct().ToList(), inputData.HpId))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
                 }

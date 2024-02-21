@@ -64,7 +64,7 @@ namespace Infrastructure.Repositories
         {
             var groupMstList = NoTrackingDataContext.PtGrpNameMsts.Where(p => p.HpId == hpId && p.IsDeleted == 0).ToList();
             var groupDetailList = NoTrackingDataContext.PtGrpItems.Where(p => p.HpId == hpId && p.IsDeleted == 0).ToList();
-            var dataPtGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId).ToList();
+            var dataPtGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.PtId == ptId).ToList();
             return dataPtGrpInfs.Select(x => ConvertToGroupInfModel(hpId, ptId, x, groupMstList, groupDetailList)).ToList();
         }
 

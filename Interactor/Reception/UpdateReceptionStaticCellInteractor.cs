@@ -133,7 +133,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 success = _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tanto.UserId, input.UserId);
                 return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.KaId):
-                var ka = _kaMstRepository.GetByKaId(int.Parse(input.CellValue));
+                var ka = _kaMstRepository.GetByKaId(input.HpId, int.Parse(input.CellValue));
                 if (ka is null)
                 {
                     return UpdateReceptionStaticCellStatus.InvalidKaId;

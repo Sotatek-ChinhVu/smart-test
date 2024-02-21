@@ -58,7 +58,7 @@ public class GetOutDrugOrderListInteractor : IGetOutDrugOrderListInputPort
 
     private List<RaiinInfToPrintModel> FormatRaiinInfWithReceInfParam(GetOutDrugOrderListInputData inputData)
     {
-        var kaMstList = _kaMstRepository.GetList(DeleteTypes.None);
+        var kaMstList = _kaMstRepository.GetList(inputData.HpId, DeleteTypes.None);
         var userMstList = _userRepository.GetAll(inputData.HpId, inputData.SinDate, true, false);
         List<RaiinInfToPrintModel> listSource = new();
         int intStartDate = inputData.FromDate;

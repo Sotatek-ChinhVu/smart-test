@@ -366,7 +366,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.KaId > 0)
             {
-                var checkHokenId = _kaRepository.CheckKaId(inputDatas.KaId);
+                var checkHokenId = _kaRepository.CheckKaId(inputDatas.HpId, inputDatas.KaId);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist;
