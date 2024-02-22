@@ -56,7 +56,7 @@ namespace Reporting.Statistics.Sta2021.DB
 
             var sinKouis = NoTrackingDataContext.SinKouis.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
             var sinKouiRpInfs = NoTrackingDataContext.SinRpInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None);
-            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR" && s.IsDeleted == DeleteStatus.None);
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && !s.ItemCd.StartsWith("@8") && !s.ItemCd.StartsWith("@9") && s.ItemCd != "XNOODR" && s.IsDeleted == DeleteStatus.None);
             var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;

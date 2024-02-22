@@ -177,13 +177,14 @@ namespace CalculateService.Ika.ViewModels
 
         /// <summary>
         /// 包括背反処理
+        /// <param name="hpId">HospitalID</param>
         /// <param name="first">true - 初回チェック（可能性はなし、ログ展開なし）</param>
         /// </summary>
-        public void Adjust(bool first)
+        public void Adjust(int hpId, bool first)
         {
             const string conFncName = nameof(Adjust);
 
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             // 注加算チェック
             TyuKasan();
@@ -223,7 +224,7 @@ namespace CalculateService.Ika.ViewModels
 
             // 労災電子化加算
             RousaiDensika();
-            
+
             // 削除をワークに反映(IS_DELETED)
             WrkDelete();
 
@@ -239,7 +240,7 @@ namespace CalculateService.Ika.ViewModels
                 Saiketu();
 
                 // 最後に検査まるめの処理を行う
-                Marume();
+                Marume(hpId);
 
                 // 逓減項目チェック
                 Teigen();
@@ -320,7 +321,8 @@ namespace CalculateService.Ika.ViewModels
                             new { rpNo = wrkDtlDel.RpNo, seqNo = wrkDtlDel.SeqNo, rowNo = wrkDtlDel.RowNo } into subs
                         from sub in subs.DefaultIfEmpty()
                         select
-                            new {
+                            new
+                            {
                                 wrkDtl,
                                 sub
                             }
@@ -535,7 +537,7 @@ namespace CalculateService.Ika.ViewModels
                     bool checkDone = false;
 
                     List<int> checkSanteiKbnsLocal = new List<int>();
-                    
+
                     if (_common.Wrk.GetSanteiKbn(wrkDtl.RaiinNo, wrkDtl.RpNo) == SanteiKbnConst.Jihi)
                     {
                         // 自費分点の場合は自費分点だけ
@@ -545,7 +547,7 @@ namespace CalculateService.Ika.ViewModels
                     {
                         checkSanteiKbnsLocal.AddRange(checkSanteiKbn);
 
-                        if(wrkDtl.HokenKbn == HokenKbn.Jihi && checkSanteiKbnsLocal.Any(p=>p == HokenKbn.Jihi) == false)
+                        if (wrkDtl.HokenKbn == HokenKbn.Jihi && checkSanteiKbnsLocal.Any(p => p == HokenKbn.Jihi) == false)
                         {
                             // 自費保険の場合、自費算定の項目もチェック
                             checkSanteiKbnsLocal.Add(SanteiKbnConst.Jihi);
@@ -871,7 +873,7 @@ namespace CalculateService.Ika.ViewModels
 
             List<KouiHoukatuMstModel> filteredKoiuHoukatuMst = _common.Mst.FindKouiHoukatuMst(_common.sinDate, _common.IsRosai);
 
-            foreach(KouiHoukatuMstModel kouiHoukatuMst in filteredKoiuHoukatuMst)
+            foreach (KouiHoukatuMstModel kouiHoukatuMst in filteredKoiuHoukatuMst)
             {
                 // 他の項目を削除する項目のリスト
                 List<string> checkItemCds =
@@ -906,7 +908,7 @@ namespace CalculateService.Ika.ViewModels
         {
             const string conFncName = nameof(Haihan);
 
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             // 電子点数表背反マスタ
             List<DensiHaihanMstModel> densiHaihans = new List<DensiHaihanMstModel>();
@@ -962,7 +964,7 @@ namespace CalculateService.Ika.ViewModels
                     bool checkDone = false;
 
                     List<int> checkSanteiKbnsLocal = new List<int>();
-                    
+
                     if (_common.Wrk.GetSanteiKbn(wrkDtl.RaiinNo, wrkDtl.RpNo) == SanteiKbnConst.Jihi)
                     {
                         // 自費分点の場合は自費分点だけ
@@ -1940,7 +1942,7 @@ namespace CalculateService.Ika.ViewModels
 
             TokusyuJibaiBunsyo();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
@@ -2841,7 +2843,7 @@ namespace CalculateService.Ika.ViewModels
                     ItemCdConst.ZaiHoumon2ro,
                 };
 
-            if(_systemConfigProvider.GetHoumonKangoSaisinHokatu() == 0)
+            if (_systemConfigProvider.GetHoumonKangoSaisinHokatu() == 0)
             {
                 checkItemCds.AddRange(
                     new List<string>
@@ -2997,7 +2999,7 @@ namespace CalculateService.Ika.ViewModels
                 ItemCdConst.TouyakuSyohoNaifuku,    // 処方料（７種類以上内服薬）
                 ItemCdConst.TouyakuSyohoKouseiChoki,    // 処方料（向精神薬長期処方）
             };
-            
+
             List<string> TokusyoInnai = new List<string>
             {
                 ItemCdConst.TouyakuTokuSyo1Syoho,        // 特定疾患処方管理加算１（処方料）
@@ -3058,7 +3060,7 @@ namespace CalculateService.Ika.ViewModels
             // 先に算定されたものだけ残す
             // 同日に算定された場合、初診、再診、医学管理、在宅、精神の優先順位で算定する
             for (int i = 0; i < 5; i++)
-            { 
+            {
                 switch (i)
                 {
                     case 0:
@@ -3076,7 +3078,7 @@ namespace CalculateService.Ika.ViewModels
                         // 精神算定不可
                         delItemCds =
                             new List<string>
-                            { 
+                            {
                                 ItemCdConst.SonotaKansenKojo
                             };
                         break;
@@ -3099,7 +3101,7 @@ namespace CalculateService.Ika.ViewModels
                                 ItemCdConst.ZaitakuKansenKojo
                             };
                         break;
-                    case 2: 
+                    case 2:
                         // 医学管理
                         // 他の項目を削除する項目のリスト
                         checkItemCds =
@@ -3491,7 +3493,7 @@ namespace CalculateService.Ika.ViewModels
                                 _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(_common.Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo)));
                         foreach (WrkSinKouiDetailModel tgtWrkDtl in tgtWrkDtls)
                         {
-                            if(_common.Wrk.ExistWrkSinKouiDetailDel(tgtWrkDtl) == false)
+                            if (_common.Wrk.ExistWrkSinKouiDetailDel(tgtWrkDtl) == false)
                             {
                                 // 初診関連項目を算定している場合、算定不可
                                 endDate = 99999999;
@@ -3513,7 +3515,7 @@ namespace CalculateService.Ika.ViewModels
                                     isWarning = 1;
                                 }
 
-                                if(isWarning == 0)
+                                if (isWarning == 0)
                                 {
                                     _common.Wrk.AppendNewWrkSinKouiDetailDel
                                     (hokenKbn: wrkDtl.HokenKbn,
@@ -3560,7 +3562,7 @@ namespace CalculateService.Ika.ViewModels
                                     }
                                 }
                             }
-                        }                        
+                        }
                     }
                 }
             }
@@ -3574,8 +3576,8 @@ namespace CalculateService.Ika.ViewModels
                     _common.Wrk.wrkSinKouiDetails.FindAll(p =>
                         p.RaiinNo == _common.raiinNo &&
                         p.HokenKbn == _common.hokenKbn &&
-                        (p.TenMst != null && 
-                            (new string[] { "ZZ0", "ZZ1" }.Contains(p.TenMst.SyukeiSaki) || 
+                        (p.TenMst != null &&
+                            (new string[] { "ZZ0", "ZZ1" }.Contains(p.TenMst.SyukeiSaki) ||
                             (p.TenMst.SyukeiSaki == "A18" && string.IsNullOrEmpty(p.ItemCd) == false && p.ItemCd.StartsWith("S")))));
 
                 // 削除対象の項目リストを生成する
@@ -3735,7 +3737,7 @@ namespace CalculateService.Ika.ViewModels
                             santeiKbns.RemoveAll(p => p == SanteiKbnConst.Jihi);
                         }
                     }
-                    
+
                     //if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                     //         p.RaiinNo == wrkDtl.RaiinNo &&
                     //         p.RpNo == wrkDtl.RpNo &&
@@ -3787,7 +3789,7 @@ namespace CalculateService.Ika.ViewModels
                                 santeiKbns.AddRange(CalcUtils.GetCheckSanteiKbns(wrkDtl.HokenKbn, _systemConfigProvider.GetHokensyuHandling()));
                                 santeiKbns.RemoveAll(p => p == SanteiKbnConst.Jihi);
                             }
-                            
+
                             if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                      p.RpNo == wrkDtl.RpNo && p.SeqNo == wrkDtl.SeqNo && p.RowNo == wrkDtl.RowNo &&
                                      p.ItemCd == wrkDtl.ItemCd && p.IsWarning == 0) == false)
@@ -3841,7 +3843,7 @@ namespace CalculateService.Ika.ViewModels
                     // 同月チェック
                     //List<SanteiDaysModel> santeiDays = _common.GetSanteiDays(_common.SinFirstDateOfMonth, _common.sinDate, checkItemCds);
                     List<SanteiDaysModel> santeiDays = _common.GetSanteiDaysSinYmWithHokenKbn(checkItemCds);
-                    
+
                     if (checkTerm == 1)
                     {
                         // 診療日のみ
@@ -4892,7 +4894,7 @@ namespace CalculateService.Ika.ViewModels
                 {
                     wrkDtl.IsDeleted = DeleteStatus.DeleteFlag;
 
-                    if(_common.Wrk.wrkSinKouiDetailDels.Any(p =>
+                    if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                             p.RaiinNo == wrkDtl.RaiinNo &&
                             p.HokenKbn == wrkDtl.HokenKbn &&
                             p.RpNo == wrkDtl.RpNo &&
@@ -5106,10 +5108,10 @@ namespace CalculateService.Ika.ViewModels
                                     foreach (WrkSinKouiDetailModel wrkDtlGrpItem in wrkDtlGrpItems)
                                     {
                                         wrkDtlGrpItem.IsDeleted = DeleteStatus.DeleteFlag;
-                                        
+
                                         // 元の項目が医学管理等の項目のみに削除される場合は付随する項目も同様とみなす
                                         wrkDtlGrpItem.EfFlg = wrkDtl.EfFlg;
-                                        
+
                                         if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                                     p.RpNo == wrkDtlGrpItem.RpNo && p.SeqNo == wrkDtlGrpItem.SeqNo && p.RowNo == wrkDtlGrpItem.RowNo &&
                                                     p.ItemCd == wrkDtlGrpItem.ItemCd && p.IsWarning == 0))
@@ -5163,7 +5165,7 @@ namespace CalculateService.Ika.ViewModels
 
                                         // 元の項目が医学管理等の項目のみに削除される場合は付随する項目も同様とみなす
                                         wrkDtlGrpItem.EfFlg = wrkDtl.EfFlg;
-                                        
+
                                         if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                                                     p.RpNo == wrkDtlGrpItem.RpNo && p.SeqNo == wrkDtlGrpItem.SeqNo && p.RowNo == wrkDtlGrpItem.RowNo &&
                                                     p.ItemCd == wrkDtlGrpItem.ItemCd && p.IsWarning == 0))
@@ -5417,7 +5419,7 @@ namespace CalculateService.Ika.ViewModels
                         foreach (WrkSinKouiModel wrkKoui in _common.Wrk.wrkSinKouis.FindAll(p =>
                             p.RaiinNo == wrkRp.RaiinNo &&
                             p.HokenKbn == wrkRp.HokenKbn &&
-                            p.RpNo == wrkRp.RpNo ))
+                            p.RpNo == wrkRp.RpNo))
                         {
                             wrkKoui.EfFlg = 1;
                             wrkKoui.IsDeleted = 1;
@@ -5466,7 +5468,7 @@ namespace CalculateService.Ika.ViewModels
                                 p.RecId != "CO" &&
                                 !(p.RecId == "SI" && new string[] { "7", "9" }.Contains(p.Kokuji1)) &&
                                 p.BuiKbn == 0 &&
-                                p.IsDeleted == DeleteStatus.None) == false                            
+                                p.IsDeleted == DeleteStatus.None) == false
                            )
                         {
                             // 同一Rpに、コメント以外 and 加算項目以外 and 部位以外 の項目がない
@@ -5753,7 +5755,7 @@ namespace CalculateService.Ika.ViewModels
                 if (_systemConfigProvider.GetHoukatuHaihanSPJyokenLogputMode() == 0)
                 {
                     wrkDtlDells =
-                        wrkDtlDells.FindAll(p => !(new int[] { 0, 1, 2, 4 }.Contains(p.DelSbt) && (new int[] { 1,3 }.Contains(p.IsWarning))));
+                        wrkDtlDells.FindAll(p => !(new int[] { 0, 1, 2, 4 }.Contains(p.DelSbt) && (new int[] { 1, 3 }.Contains(p.IsWarning))));
                 }
 
                 List<(string itemCd, string delItemcd, int delSbt, int isWarning, int termCnt, int termSbt, int isAutoAdd, int hokenId, List<string> delItemCds)> logData =
@@ -6240,18 +6242,18 @@ namespace CalculateService.Ika.ViewModels
             }
         }
 
-        private void Marume()
+        private void Marume(int hpId)
         {
             if (_common.hokenKbn == HokenSyu.Kenpo && _common.syosaiHokenKbn == HokenKbn.Kokho)
             {
                 // 国保
                 if (_systemConfigProvider.GetKensaMarumeBuntenKokuho() == 1)
                 {
-                    MarumeBuntenDevide();
+                    MarumeBuntenDevide(hpId);
                 }
                 else
                 {
-                    MarumeBuntenBundle();
+                    MarumeBuntenBundle(hpId);
                 }
             }
             else
@@ -6259,19 +6261,21 @@ namespace CalculateService.Ika.ViewModels
                 // 国保以外
                 if (_systemConfigProvider.GetKensaMarumeBuntenSyaho() == 1)
                 {
-                    MarumeBuntenDevide();
+                    MarumeBuntenDevide(hpId);
                 }
                 else
                 {
-                    MarumeBuntenBundle();
+                    MarumeBuntenBundle(hpId);
                 }
             }
         }
+
         /// <summary>
         /// 項目数による検査まるめ処理
         /// HOKATU_KENSA が 1,2,3,5,6,7,9,10,12 のもの
         /// </summary>
-        private void MarumeBuntenBundle()
+        /// <param name="hpId">HospitalID</param>
+        private void MarumeBuntenBundle(int hpId)
         {
             #region local method
             // base - minusをして、<0の場合は0を返す
@@ -6446,16 +6450,18 @@ namespace CalculateService.Ika.ViewModels
 
                     if (marume)
                     {
-                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(commentRpNo, commentSeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(totalCount.ToString()) + "項目）", fmtKbn: 0);
+                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(hpId, commentRpNo, commentSeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(totalCount.ToString()) + "項目）", fmtKbn: 0);
                     }
                 }
             }
         }
+
         /// <summary>
         /// 項目数による検査まるめ処理
         /// HOKATU_KENSA が 1,2,3,5,6,7,9,10,12 のもの
         /// </summary>
-        private void MarumeBuntenDevide()
+        /// <param name="hpId">HospitalID</param>
+        private void MarumeBuntenDevide(int hpId)
         {
             // まるめ検査項目取得
             List<(List<OdrDtlTenModel> odrDtls, int minIndex, int itemCnt)> marumels = new List<(List<OdrDtlTenModel>, int, int)>();
@@ -6523,7 +6529,7 @@ namespace CalculateService.Ika.ViewModels
                         }
 
                         _common.Wrk.InsertNewWrkSinKouiDetail(wrkKoui.RpNo, wrkKoui.SeqNo, itemCd, autoAdd: 1, isNodspRece: 1, isNodspRyosyu: 1);
-                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(wrkKoui.RpNo, wrkKoui.SeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(findCount.ToString()) + "項目）", fmtKbn: 1);
+                        _common.Wrk.InsertNewWrkSinKouiDetailCommentRecord(hpId, wrkKoui.RpNo, wrkKoui.SeqNo, ItemCdConst.CommentFree, "（" + CIUtil.ToWide(findCount.ToString()) + "項目）", fmtKbn: 1);
                     }
 
                 }
@@ -6841,7 +6847,7 @@ namespace CalculateService.Ika.ViewModels
                 {
                     bool santei = false;
 
-                    if (_common.calcMode == CalcModeConst.Trial || 
+                    if (_common.calcMode == CalcModeConst.Trial ||
                         _common.Wrk.ExistWrkSinKouiDetailByItemCdRpNo(
                             rosaiDensikals, wrkDtl.RpNo, false, true, false, null, null, _common.Wrk.GetWrkKouiHokenId(wrkDtl.RpNo, wrkDtl.SeqNo)) == false)
                     {
@@ -6894,20 +6900,20 @@ namespace CalculateService.Ika.ViewModels
         private void RevertWrkDtlDel(string delItemCd, int[] termSbt, int[] existTermSbt = null)
         {
             // 削除される項目が削除していた項目があれば、削除しておく
-            if(existTermSbt == null)
+            if (existTermSbt == null)
             {
                 existTermSbt = new int[] { 0, 1, 2, 3, 4, 5, 6, 9 };
             }
 
-            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => 
+            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p =>
                 p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt)) && p.DelSbt != DelSbtConst.NoLog))
             {
-                foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p => 
-                    p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && 
+                foreach (var dtl in _common.Wrk.wrkSinKouiDetails.FindAll(p =>
+                    p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo &&
                     p.ItemCd == del.ItemCd && p.IsDeleted == DeleteStatus.DeleteFlag))
                 {
                     // 削除されていた項目を復旧していく
-                    
+
                     if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
                         p.RaiinNo == del.RaiinNo && p.RpNo == del.RpNo && p.SeqNo == del.SeqNo && p.RowNo == del.RowNo && p.ItemCd == del.ItemCd &&
                         !(p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt)) && p.IsDeleted == DeleteStatus.DeleteFlag)) == false)
@@ -6917,7 +6923,7 @@ namespace CalculateService.Ika.ViewModels
                         dtl.EfFlg = 0;
 
                         // 行為の復旧
-                        foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p => 
+                        foreach (var koui in _common.Wrk.wrkSinKouis.FindAll(p =>
                             p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.SeqNo == dtl.SeqNo && p.IsDeleted == DeleteStatus.DeleteFlag))
                         {
                             koui.IsDeleted = 0;
@@ -6925,7 +6931,7 @@ namespace CalculateService.Ika.ViewModels
                         }
 
                         // Rpの復旧
-                        foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p => 
+                        foreach (var rp in _common.Wrk.wrkSinRpInfs.FindAll(p =>
                             p.RaiinNo == dtl.RaiinNo && p.RpNo == dtl.RpNo && p.IsDeleted == DeleteStatus.DeleteFlag))
                         {
                             rp.IsDeleted = 0;
@@ -6936,11 +6942,11 @@ namespace CalculateService.Ika.ViewModels
             }
 
             // 他の項目を削除するリストから削除（DelSbtがNoLogのものを除く）
-            _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p => 
+            _common.Wrk.wrkSinKouiDetailDels.RemoveAll(p =>
                 p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt)) && p.DelSbt != DelSbtConst.NoLog);
 
             // 他の項目を削除するリストを更新
-            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p => 
+            foreach (var del in _common.Wrk.wrkSinKouiDetailDels.FindAll(p =>
                 p.DelItemCd == delItemCd && p.TermCnt == 1 && (termSbt.Contains(p.TermSbt) || existTermSbt.Contains(p.ExistTermSbt))))
             {
                 del.IsDeleted = DeleteStatus.DeleteFlag;

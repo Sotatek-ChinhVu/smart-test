@@ -5,6 +5,9 @@ namespace Entity.Tenant;
 [Table("column_setting")]
 public class ColumnSetting
 {
+    [Column("hp_id")]
+    public int HpId { get; set; }
+
     [Column("user_id")]
     public int UserId { get; set; }
 

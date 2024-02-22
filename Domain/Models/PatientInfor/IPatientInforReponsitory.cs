@@ -33,7 +33,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting);
 
-        bool CheckExistIdList(List<long> ptIds);
+        bool CheckExistIdList(int hpId, List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int sinDate);
 
@@ -70,7 +70,7 @@ namespace Domain.Models.PatientInfor
 
         long IsPatientExist(int hpId, long ptNum);
 
-        int GetCountRaiinAlreadyPaidOfPatientByDate(int fromDate, int toDate, long ptId, int raiintStatus);
+        int GetCountRaiinAlreadyPaidOfPatientByDate(int hpId, int fromDate, int toDate, long ptId, int raiintStatus);
 
         List<PatientInforModel> FindSamePatient(int hpId, string kanjiName, int sex, int birthDay);
 

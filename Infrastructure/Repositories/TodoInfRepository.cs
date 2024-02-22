@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             var todoInfs = new List<TodoInf>();
             foreach (var input in upsertTodoList)
             {
-                var todoInf = TrackingDataContext.TodoInfs.FirstOrDefault(x => x.TodoNo == input.TodoNo && x.TodoEdaNo == input.TodoEdaNo && x.PtId == input.PtId && x.IsDeleted == DeleteTypes.None);
+                var todoInf = TrackingDataContext.TodoInfs.FirstOrDefault(x => x.HpId == hpId && x.TodoNo == input.TodoNo && x.TodoEdaNo == input.TodoEdaNo && x.PtId == input.PtId && x.IsDeleted == DeleteTypes.None);
                 if (todoInf != null)
                 {
                     if (input.IsDeleted == DeleteTypes.Deleted)
@@ -100,10 +100,10 @@ namespace Infrastructure.Repositories
         /// </summary>
         /// <param name="inputs"></param>
         /// <returns></returns>
-        public bool CheckExist(List<Tuple<int, int, long>> inputs)
+        public bool CheckExist(int hpId, List<Tuple<int, int, long>> inputs)
         {
             inputs = inputs.Distinct().ToList();
-            var countptIds = NoTrackingDataContext.TodoInfs.AsEnumerable().Count(t => inputs.Any(i => i.Item1 == t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
+            var countptIds = NoTrackingDataContext.TodoInfs.AsEnumerable().Count(t => t.HpId == hpId && inputs.Any(i => i.Item1 == t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
             return inputs.Count == countptIds;
         }
 

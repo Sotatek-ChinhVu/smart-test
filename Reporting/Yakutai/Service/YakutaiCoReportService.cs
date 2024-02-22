@@ -193,7 +193,7 @@ namespace Reporting.Yakutai.Service
 
                             if (!string.IsNullOrEmpty(odrDtl.UnitName))
                             {
-                                if (coModel.IsOnceAmount && _systemConfig.YakutaiOnceAmount() == 1)
+                                if (coModel.IsOnceAmount && _systemConfig.YakutaiOnceAmount(_hpId) == 1)
                                 {
                                     // 1回量に換算（小数2桁まで)
                                     addPrintOutData.Last().Suuryo = (Math.Floor(odrDtl.SuryoDsp / coModel.CnvToOnceValue * coModel.OnceValue * 100) / 100).ToString();
@@ -433,7 +433,7 @@ namespace Reporting.Yakutai.Service
                         if (coModel.YohoTani != "調剤")
                         {
                             // "調剤" の場合は出さない
-                            if ((coModel.IsOnceAmount && _systemConfig.YakutaiOnceAmount() == 1) || coModel.IsFukuyojiIppo)
+                            if ((coModel.IsOnceAmount && _systemConfig.YakutaiOnceAmount(_hpId) == 1) || coModel.IsFukuyojiIppo)
                             {
                                 // 1回量に換算する場合
                                 SetFieldData("dfIkkairyo", "１回に");
@@ -586,8 +586,8 @@ namespace Reporting.Yakutai.Service
                     0,0,0,0,0
                 };
 
-                bool ippo = !string.IsNullOrEmpty(_systemConfig.YakutaiFukuyojiIppokaItemCd()) &&
-                    odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.ItemCd == _systemConfig.YakutaiFukuyojiIppokaItemCd());
+                bool ippo = !string.IsNullOrEmpty(_systemConfig.YakutaiFukuyojiIppokaItemCd(_hpId)) &&
+                    odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.ItemCd == _systemConfig.YakutaiFukuyojiIppokaItemCd(_hpId));
 
                 // 用法の服用時設定を確認
                 if (ippo && odrInfDtls.Any(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo && p.YohoKbn == 1))
@@ -675,7 +675,7 @@ namespace Reporting.Yakutai.Service
                             {
                                 odrInfDtl.Delete = true;
 
-                                if (odrInfDtl.ItemCd != _systemConfig.YakutaiFukuyojiIppokaItemCd())
+                                if (odrInfDtl.ItemCd != _systemConfig.YakutaiFukuyojiIppokaItemCd(_hpId))
                                 {
                                     string itemCd = odrInfDtl.ItemCd;
                                     string itemName = odrInfDtl.ItemName;
@@ -852,7 +852,7 @@ namespace Reporting.Yakutai.Service
 
                         foreach (CoOdrInfDetailModel yohoOdrInfDtl in yohoOdrInfDtls)
                         {
-                            if (_systemConfig.YakutaiPrintUnit() == 1 && yohoOdrInfDtl.IsIppoYoho == false)
+                            if (_systemConfig.YakutaiPrintUnit(_hpId) == 1 && yohoOdrInfDtl.IsIppoYoho == false)
                             {
                                 //Rp毎に印刷する
                                 key += $"({yohoOdrInfDtl.RpNo},{yohoOdrInfDtl.ItemCd},{yohoOdrInfDtl.ItemName},{yohoOdrInfDtl.Suryo})";
@@ -1016,33 +1016,33 @@ namespace Reporting.Yakutai.Service
             }
             #endregion
 
-            if (_systemConfig.YakutaiPaperSize() == 1)
+            if (_systemConfig.YakutaiPaperSize(_hpId) == 1)
             {
                 if (yakutaiModel.DrugKbnCd == OdrKouiKbnConst.Naifuku)
                 {
                     // 内服
                     _choiceSetting(
-                        _systemConfig.YakutaiNaifukuPaperSmallMinValue(), _systemConfig.YakutaiNaifukuPaperSmallPrinter(), YAKUTAI_NAIFUKU_SMALL_FORM_FILE_NAME,
-                        _systemConfig.YakutaiNaifukuPaperNormalMinValue(), _systemConfig.YakutaiNaifukuPaperNormalPrinter(), YAKUTAI_NAIFUKU_NORMAL_FORM_FILE_NAME,
-                        _systemConfig.YakutaiNaifukuPaperBigMinValue(), _systemConfig.YakutaiNaifukuPaperBigPrinter(), YAKUTAI_NAIFUKU_BIG_FORM_FILE_NAME
+                        _systemConfig.YakutaiNaifukuPaperSmallMinValue(_hpId), _systemConfig.YakutaiNaifukuPaperSmallPrinter(_hpId), YAKUTAI_NAIFUKU_SMALL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiNaifukuPaperNormalMinValue(_hpId), _systemConfig.YakutaiNaifukuPaperNormalPrinter(_hpId), YAKUTAI_NAIFUKU_NORMAL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiNaifukuPaperBigMinValue(_hpId), _systemConfig.YakutaiNaifukuPaperBigPrinter(_hpId), YAKUTAI_NAIFUKU_BIG_FORM_FILE_NAME
                         );
                 }
                 else if (yakutaiModel.DrugKbnCd == OdrKouiKbnConst.Tonpuku)
                 {
                     // 頓服
                     _choiceSetting(
-                        _systemConfig.YakutaiTonpukuPaperSmallMinValue(), _systemConfig.YakutaiTonpukuPaperSmallPrinter(), YAKUTAI_TONPUKU_SMALL_FORM_FILE_NAME,
-                        _systemConfig.YakutaiTonpukuPaperNormalMinValue(), _systemConfig.YakutaiTonpukuPaperNormalPrinter(), YAKUTAI_TONPUKU_NORMAL_FORM_FILE_NAME,
-                        _systemConfig.YakutaiTonpukuPaperBigMinValue(), _systemConfig.YakutaiTonpukuPaperBigPrinter(), YAKUTAI_TONPUKU_BIG_FORM_FILE_NAME
+                        _systemConfig.YakutaiTonpukuPaperSmallMinValue(_hpId), _systemConfig.YakutaiTonpukuPaperSmallPrinter(_hpId), YAKUTAI_TONPUKU_SMALL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiTonpukuPaperNormalMinValue(_hpId), _systemConfig.YakutaiTonpukuPaperNormalPrinter(_hpId), YAKUTAI_TONPUKU_NORMAL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiTonpukuPaperBigMinValue(_hpId), _systemConfig.YakutaiTonpukuPaperBigPrinter(_hpId), YAKUTAI_TONPUKU_BIG_FORM_FILE_NAME
                         );
                 }
                 else if (yakutaiModel.DrugKbnCd == OdrKouiKbnConst.Gaiyo || yakutaiModel.DrugKbnCd == OdrKouiKbnConst.JikoCyu)
                 {
                     // 外用
                     _choiceSetting(
-                        _systemConfig.YakutaiGaiyoPaperSmallMinValue(), _systemConfig.YakutaiGaiyoPaperSmallPrinter(), YAKUTAI_GAIYO_SMALL_FORM_FILE_NAME,
-                        _systemConfig.YakutaiGaiyoPaperNormalMinValue(), _systemConfig.YakutaiGaiyoPaperNormalPrinter(), YAKUTAI_GAIYO_NORMAL_FORM_FILE_NAME,
-                        _systemConfig.YakutaiGaiyoPaperBigMinValue(), _systemConfig.YakutaiGaiyoPaperBigPrinter(), YAKUTAI_GAIYO_BIG_FORM_FILE_NAME
+                        _systemConfig.YakutaiGaiyoPaperSmallMinValue(_hpId), _systemConfig.YakutaiGaiyoPaperSmallPrinter(_hpId), YAKUTAI_GAIYO_SMALL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiGaiyoPaperNormalMinValue(_hpId), _systemConfig.YakutaiGaiyoPaperNormalPrinter(_hpId), YAKUTAI_GAIYO_NORMAL_FORM_FILE_NAME,
+                        _systemConfig.YakutaiGaiyoPaperBigMinValue(_hpId), _systemConfig.YakutaiGaiyoPaperBigPrinter(_hpId), YAKUTAI_GAIYO_BIG_FORM_FILE_NAME
                         );
                 }
             }

@@ -47,7 +47,7 @@ public class SortDocCategoryInteractor : ISortDocCategoryInputPort
         {
             return SortDocCategoryStatus.InvalidHpId;
         }
-        else if (!_userRepository.CheckExistedUserId(inputData.UserId))
+        else if (!_userRepository.CheckExistedUserId(inputData.HpId, inputData.UserId))
         {
             return SortDocCategoryStatus.InvalidUserId;
         }

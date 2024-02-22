@@ -34,7 +34,7 @@ namespace CalculateService.Receipt.ViewModels
 
         public SinMeiDataSet
             (ReceSinRpInfModel sinRp, ReceSinKouiModel sinKoui, ReceSinKouiDetailModel sinDtl, int count,
-             int day1, int day2, int day3, int day4, int day5, int day6, int day7, int day8, int day9, int day10, 
+             int day1, int day2, int day3, int day4, int day5, int day6, int day7, int day8, int day9, int day10,
              int day11, int day12, int day13, int day14, int day15, int day16, int day17, int day18, int day19, int day20,
              int day21, int day22, int day23, int day24, int day25, int day26, int day27, int day28, int day29, int day30,
              int day31,
@@ -420,7 +420,7 @@ namespace CalculateService.Receipt.ViewModels
                 List<SinKouiDetailModel> sinKouiDetailModels = _santeiFinder.FindSinKouiDetailDataNoTrack(hpId, ptId, sinDate, raiinNos);
                 List<SinKouiCountModel> sinKouiCountModels = _santeiFinder.FindSinKouiCountDataNoTrack(hpId, ptId, sinDate);
 
-                if(excludeComment)
+                if (excludeComment)
                 {
                     // コメント除く
                     sinKouiDetailModels = sinKouiDetailModels.FindAll(p => p.RecId != "CO");
@@ -598,7 +598,7 @@ namespace CalculateService.Receipt.ViewModels
 
                 string tokki = "";
                 int hokenId2 = 0;
-                if(receInfs != null && receInfs.Any())
+                if (receInfs != null && receInfs.Any())
                 {
                     tokki = receInfs.First().Tokki;
                     hokenId2 = receInfs.First().HokenId2;
@@ -639,8 +639,8 @@ namespace CalculateService.Receipt.ViewModels
         /// <param name="sinKouiDetailModels"></param>
         /// <param name="sinKouiCountModels"></param>
         public SinMeiViewModel(
-            int mode, bool includeOutDrg, int hpId, long ptId, int sinYm, int seikyuYm, 
-            ReceInfModel receInf, List<ReceFutanKbnModel> receFutanKbns, PtInfModel ptInf, string tokki, 
+            int mode, bool includeOutDrg, int hpId, long ptId, int sinYm, int seikyuYm,
+            ReceInfModel receInf, List<ReceFutanKbnModel> receFutanKbns, PtInfModel ptInf, string tokki,
             List<SinRpInfModel> sinRpInfModels, List<SinKouiModel> sinKouiModels, List<SinKouiDetailModel> sinKouiDetailModels, List<SinKouiCountModel> sinKouiCountModels,
             ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
@@ -670,7 +670,7 @@ namespace CalculateService.Receipt.ViewModels
                 //throw;
             }
         }
-        
+
         /// <summary>
         /// 診療明細データ管理クラス（アフターケア用）（算定情報を取得するタイプ）
         /// </summary>
@@ -749,8 +749,8 @@ namespace CalculateService.Receipt.ViewModels
         /// <param name="sinKouiDetailModels"></param>
         /// <param name="sinKouiCountModels"></param>
         public SinMeiViewModel(
-            int mode, bool includeOutDrg, int hpId, long ptId, int sinDate, List<long> raiinNos, 
-            ReceInfModel receInf, PtInfModel ptInf, string tokki, 
+            int mode, bool includeOutDrg, int hpId, long ptId, int sinDate, List<long> raiinNos,
+            ReceInfModel receInf, PtInfModel ptInf, string tokki,
             List<SinRpInfModel> sinRpInfModels, List<SinKouiModel> sinKouiModels, List<SinKouiDetailModel> sinKouiDetailModels, List<SinKouiCountModel> sinKouiCountModels,
             ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
@@ -803,7 +803,7 @@ namespace CalculateService.Receipt.ViewModels
         /// <param name="kaikeiInfs">会計情報リスト</param>
         public SinMeiViewModel(
             int mode, bool includeOutDrg, int hpId, long ptId, int sinDate, List<long> raiinNos,
-            List<SinRpInfModel> sinRpInfModels, List<SinKouiModel> sinKouiModels, List<SinKouiCountModel> sinKouiCountModels, List<SinKouiDetailModel> sinKouiDetailModels, 
+            List<SinRpInfModel> sinRpInfModels, List<SinKouiModel> sinKouiModels, List<SinKouiCountModel> sinKouiCountModels, List<SinKouiDetailModel> sinKouiDetailModels,
             List<Futan.Models.KaikeiInfModel> kaikeiInfs,
             ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
@@ -867,7 +867,7 @@ namespace CalculateService.Receipt.ViewModels
             int hokenId = 0, int hokenId2 = 0, string tokki = "")
         {
             const string conFncName = nameof(MakeSinMei);
-            _emrLogger.WriteLogStart( this, conFncName, string.Format("ptId:{0} sinDate:{1}", ptId, sinDate));
+            _emrLogger.WriteLogStart(this, conFncName, string.Format("ptId:{0} sinDate:{1}", ptId, sinDate));
 
             if (sinRpInfModels.Any())
             {
@@ -917,7 +917,7 @@ namespace CalculateService.Receipt.ViewModels
                     }
                 }
 
-                if(new int[] { SinMeiMode.Receden, SinMeiMode.PaperRece, SinMeiMode.ReceCheck, SinMeiMode.AfterCare, SinMeiMode.RecedenAfter}.Contains(mode))
+                if (new int[] { SinMeiMode.Receden, SinMeiMode.PaperRece, SinMeiMode.ReceCheck, SinMeiMode.AfterCare, SinMeiMode.RecedenAfter }.Contains(mode))
                 {
                     // レセコメント、保険情報の取得
                     //_emrLogger.WriteLogMsg( this, conFncName, "rececmt hokeninf");
@@ -953,7 +953,7 @@ namespace CalculateService.Receipt.ViewModels
 
                 // 検査まるめ
                 //_emrLogger.WriteLogMsg( this, conFncName, "edit kensa");
-                if (!(new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter}).Contains(mode))
+                if (!(new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter }).Contains(mode))
                 {
                     // 検査まるめ項目の項目名を連結する
                     EditKensaMarume(ref filteredSinRpInfs, ref filteredSinKouis, ref filteredSinDtls);
@@ -1117,7 +1117,7 @@ namespace CalculateService.Receipt.ViewModels
                             sinKouiGroups.Key.RpNo,
                             sinKouiGroups.Key.SeqNo,
                             Count = sinKouiGroups.Sum(p => p.Count),
-                            AdjCount = sinKouiGroups.Sum(p=>p.AdjCount)
+                            AdjCount = sinKouiGroups.Sum(p => p.AdjCount)
                         }
 
 
@@ -1259,20 +1259,67 @@ namespace CalculateService.Receipt.ViewModels
                             j.sinKoui,
                             j.sinDtl,
                             Count = sinKouiCount.AdjCount,
-                            Day1 = Day1Join != null ? Day1Join.Count : 0, Day2 = Day2Join != null ? Day2Join.Count : 0, Day3 = Day3Join != null ? Day3Join.Count : 0,
-                            Day4 = Day4Join != null ? Day4Join.Count : 0, Day5 = Day5Join != null ? Day5Join.Count : 0, Day6 = Day6Join != null ? Day6Join.Count : 0,
-                            Day7 = Day7Join != null ? Day7Join.Count : 0, Day8 = Day8Join != null ? Day8Join.Count : 0, Day9 = Day9Join != null ? Day9Join.Count : 0,
-                            Day10 = Day10Join != null ? Day10Join.Count : 0, Day11 = Day11Join != null ? Day11Join.Count : 0, Day12 = Day12Join != null ? Day12Join.Count : 0,
-                            Day13 = Day13Join != null ? Day13Join.Count : 0, Day14 = Day14Join != null ? Day14Join.Count : 0, Day15 = Day15Join != null ? Day15Join.Count : 0,
-                            Day16 = Day16Join != null ? Day16Join.Count : 0, Day17 = Day17Join != null ? Day17Join.Count : 0, Day18 = Day18Join != null ? Day18Join.Count : 0,
-                            Day19 = Day19Join != null ? Day19Join.Count : 0, Day20 = Day20Join != null ? Day20Join.Count : 0, Day21 = Day21Join != null ? Day21Join.Count : 0,
-                            Day22 = Day22Join != null ? Day22Join.Count : 0, Day23 = Day23Join != null ? Day23Join.Count : 0, Day24 = Day24Join != null ? Day24Join.Count : 0,
-                            Day25 = Day25Join != null ? Day25Join.Count : 0, Day26 = Day26Join != null ? Day26Join.Count : 0, Day27 = Day27Join != null ? Day27Join.Count : 0,
-                            Day28 = Day28Join != null ? Day28Join.Count : 0, Day29 = Day29Join != null ? Day29Join.Count : 0, Day30 = Day30Join != null ? Day30Join.Count : 0,
+                            Day1 = Day1Join != null ? Day1Join.Count : 0,
+                            Day2 = Day2Join != null ? Day2Join.Count : 0,
+                            Day3 = Day3Join != null ? Day3Join.Count : 0,
+                            Day4 = Day4Join != null ? Day4Join.Count : 0,
+                            Day5 = Day5Join != null ? Day5Join.Count : 0,
+                            Day6 = Day6Join != null ? Day6Join.Count : 0,
+                            Day7 = Day7Join != null ? Day7Join.Count : 0,
+                            Day8 = Day8Join != null ? Day8Join.Count : 0,
+                            Day9 = Day9Join != null ? Day9Join.Count : 0,
+                            Day10 = Day10Join != null ? Day10Join.Count : 0,
+                            Day11 = Day11Join != null ? Day11Join.Count : 0,
+                            Day12 = Day12Join != null ? Day12Join.Count : 0,
+                            Day13 = Day13Join != null ? Day13Join.Count : 0,
+                            Day14 = Day14Join != null ? Day14Join.Count : 0,
+                            Day15 = Day15Join != null ? Day15Join.Count : 0,
+                            Day16 = Day16Join != null ? Day16Join.Count : 0,
+                            Day17 = Day17Join != null ? Day17Join.Count : 0,
+                            Day18 = Day18Join != null ? Day18Join.Count : 0,
+                            Day19 = Day19Join != null ? Day19Join.Count : 0,
+                            Day20 = Day20Join != null ? Day20Join.Count : 0,
+                            Day21 = Day21Join != null ? Day21Join.Count : 0,
+                            Day22 = Day22Join != null ? Day22Join.Count : 0,
+                            Day23 = Day23Join != null ? Day23Join.Count : 0,
+                            Day24 = Day24Join != null ? Day24Join.Count : 0,
+                            Day25 = Day25Join != null ? Day25Join.Count : 0,
+                            Day26 = Day26Join != null ? Day26Join.Count : 0,
+                            Day27 = Day27Join != null ? Day27Join.Count : 0,
+                            Day28 = Day28Join != null ? Day28Join.Count : 0,
+                            Day29 = Day29Join != null ? Day29Join.Count : 0,
+                            Day30 = Day30Join != null ? Day30Join.Count : 0,
                             Day31 = Day31Join != null ? Day31Join.Count : 0,
-                            Day1Add = 0, Day2Add = 0, Day3Add = 0, Day4Add = 0, Day5Add = 0, Day6Add = 0, Day7Add = 0, Day8Add = 0, Day9Add = 0, Day10Add = 0,
-                            Day11Add = 0, Day12Add = 0, Day13Add = 0, Day14Add = 0, Day15Add = 0, Day16Add = 0, Day17Add = 0, Day18Add = 0, Day19Add = 0, Day20Add = 0,
-                            Day21Add = 0, Day22Add = 0, Day23Add = 0, Day24Add = 0, Day25Add = 0, Day26Add = 0, Day27Add = 0, Day28Add = 0, Day29Add = 0, Day30Add = 0,
+                            Day1Add = 0,
+                            Day2Add = 0,
+                            Day3Add = 0,
+                            Day4Add = 0,
+                            Day5Add = 0,
+                            Day6Add = 0,
+                            Day7Add = 0,
+                            Day8Add = 0,
+                            Day9Add = 0,
+                            Day10Add = 0,
+                            Day11Add = 0,
+                            Day12Add = 0,
+                            Day13Add = 0,
+                            Day14Add = 0,
+                            Day15Add = 0,
+                            Day16Add = 0,
+                            Day17Add = 0,
+                            Day18Add = 0,
+                            Day19Add = 0,
+                            Day20Add = 0,
+                            Day21Add = 0,
+                            Day22Add = 0,
+                            Day23Add = 0,
+                            Day24Add = 0,
+                            Day25Add = 0,
+                            Day26Add = 0,
+                            Day27Add = 0,
+                            Day28Add = 0,
+                            Day29Add = 0,
+                            Day30Add = 0,
                             Day31Add = 0
                         }
                     );
@@ -1290,13 +1337,67 @@ namespace CalculateService.Receipt.ViewModels
                                 j.sinKoui,
                                 j.sinDtl,
                                 sinKouiCount.Count,
-                                Day1 = 0, Day2 = 0, Day3 = 0, Day4 = 0, Day5 = 0, Day6 = 0, Day7 = 0, Day8 = 0, Day9 = 0, Day10 = 0,
-                                Day11 = 0, Day12 = 0, Day13 = 0, Day14 = 0, Day15 = 0, Day16 = 0, Day17 = 0, Day18 = 0, Day19 = 0, Day20 = 0,
-                                Day21 = 0, Day22 = 0, Day23 = 0, Day24 = 0, Day25 = 0, Day26 = 0, Day27 = 0, Day28 = 0, Day29 = 0, Day30 = 0,
+                                Day1 = 0,
+                                Day2 = 0,
+                                Day3 = 0,
+                                Day4 = 0,
+                                Day5 = 0,
+                                Day6 = 0,
+                                Day7 = 0,
+                                Day8 = 0,
+                                Day9 = 0,
+                                Day10 = 0,
+                                Day11 = 0,
+                                Day12 = 0,
+                                Day13 = 0,
+                                Day14 = 0,
+                                Day15 = 0,
+                                Day16 = 0,
+                                Day17 = 0,
+                                Day18 = 0,
+                                Day19 = 0,
+                                Day20 = 0,
+                                Day21 = 0,
+                                Day22 = 0,
+                                Day23 = 0,
+                                Day24 = 0,
+                                Day25 = 0,
+                                Day26 = 0,
+                                Day27 = 0,
+                                Day28 = 0,
+                                Day29 = 0,
+                                Day30 = 0,
                                 Day31 = 0,
-                                Day1Add = 0, Day2Add = 0, Day3Add = 0, Day4Add = 0, Day5Add = 0, Day6Add = 0, Day7Add = 0, Day8Add = 0, Day9Add = 0, Day10Add = 0,
-                                Day11Add = 0, Day12Add = 0, Day13Add = 0, Day14Add = 0, Day15Add = 0, Day16Add = 0, Day17Add = 0, Day18Add = 0, Day19Add = 0, Day20Add = 0,
-                                Day21Add = 0, Day22Add = 0, Day23Add = 0, Day24Add = 0, Day25Add = 0, Day26Add = 0, Day27Add = 0, Day28Add = 0, Day29Add = 0, Day30Add = 0,
+                                Day1Add = 0,
+                                Day2Add = 0,
+                                Day3Add = 0,
+                                Day4Add = 0,
+                                Day5Add = 0,
+                                Day6Add = 0,
+                                Day7Add = 0,
+                                Day8Add = 0,
+                                Day9Add = 0,
+                                Day10Add = 0,
+                                Day11Add = 0,
+                                Day12Add = 0,
+                                Day13Add = 0,
+                                Day14Add = 0,
+                                Day15Add = 0,
+                                Day16Add = 0,
+                                Day17Add = 0,
+                                Day18Add = 0,
+                                Day19Add = 0,
+                                Day20Add = 0,
+                                Day21Add = 0,
+                                Day22Add = 0,
+                                Day23Add = 0,
+                                Day24Add = 0,
+                                Day25Add = 0,
+                                Day26Add = 0,
+                                Day27Add = 0,
+                                Day28Add = 0,
+                                Day29Add = 0,
+                                Day30Add = 0,
                                 Day31Add = 0
                             }
                         );
@@ -1464,7 +1565,7 @@ namespace CalculateService.Receipt.ViewModels
                 int zeiRate = 0;
                 int keigenRate = 0;
                 _systemGenerationConfs = _mstFinder.FindSystemGenerationConf(_hpId, sinDate, 3001);
-                if(_systemGenerationConfs.Any(p => p.GrpEdaNo == 0))
+                if (_systemGenerationConfs.Any(p => p.GrpEdaNo == 0))
                 {
                     zeiRate = _systemGenerationConfs.Find(p => p.GrpEdaNo == 0).Val;
                 }
@@ -1499,7 +1600,7 @@ namespace CalculateService.Receipt.ViewModels
                     List<SinMeiDataModel> appendSinMeis = new List<SinMeiDataModel>();
 
                     // 低所得
-                    if(mode == SinMeiMode.PaperRece)
+                    if (mode == SinMeiMode.PaperRece)
                     {
                         if (_receInfs != null && _receInfs.Any())
                         {
@@ -1517,7 +1618,7 @@ namespace CalculateService.Receipt.ViewModels
                                         cmt = "低所得Ⅱ";
                                     }
                                 }
-                                else if(_receInfs.First().KogakuKbn == 5)
+                                else if (_receInfs.First().KogakuKbn == 5)
                                 {
                                     if (_prefCd == 26)
                                     {
@@ -1546,7 +1647,7 @@ namespace CalculateService.Receipt.ViewModels
                     }
 
                     // 自動発生分の確認
-                    if (new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter}.Contains(mode))
+                    if (new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter }.Contains(mode))
                     {
                         #region 不詳、災１、災２
                         string cmt = "";
@@ -1589,7 +1690,7 @@ namespace CalculateService.Receipt.ViewModels
                         #endregion
                     }
 
-                    if (new int[] { SinMeiMode.Receden , SinMeiMode.PaperRece , SinMeiMode.ReceCheck , SinMeiMode.AfterCare, SinMeiMode.RecedenAfter }.Contains(mode))
+                    if (new int[] { SinMeiMode.Receden, SinMeiMode.PaperRece, SinMeiMode.ReceCheck, SinMeiMode.AfterCare, SinMeiMode.RecedenAfter }.Contains(mode))
                     {
                         // 妊婦加算（RECE_INF.PT_STATUSをチェックし、"001"のコードがあれば、妊婦。なお、RECE_INF.PT_STATUSは3桁コードを結合したもの）
                         #region 妊婦
@@ -1666,7 +1767,7 @@ namespace CalculateService.Receipt.ViewModels
 
                         if (_receInfs.First().HokenKbn == 1 &&
                             _systemConfigProvider.GetNaraFukusiReceCmt() == 1 &&
-                            naraFukusiReceCmtStartDate >0 &&
+                            naraFukusiReceCmtStartDate > 0 &&
                             naraFukusiReceCmtStartDate <= (sinDate / 100))
                         {
                             AppendNaraFukusiReceCmt(new List<string> { "71", "81", "91" }, ItemCdConst.CommentFree, "奈良県福祉医療", cmtHokenId, ref appendSinMeis);
@@ -1679,7 +1780,7 @@ namespace CalculateService.Receipt.ViewModels
                         #region 和歌山
                         // 和歌山(30)
 
-                        if (new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter}.Contains(mode))
+                        if (new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter }.Contains(mode))
                         {
                             AppendWakayamaFukusiReceCmt(new List<int> { 1, 3 }, ItemCdConst.CommentFree, "低１", cmtHokenId, ref appendSinMeis);
                             AppendWakayamaFukusiReceCmt(new List<int> { 2, 4 }, ItemCdConst.CommentFree, "低２", cmtHokenId, ref appendSinMeis);
@@ -1739,7 +1840,7 @@ namespace CalculateService.Receipt.ViewModels
 
                 for (int i = 0; i < sinData.Count; i++)
                 {
-                    if (new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter}.Contains(mode))
+                    if (new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter }.Contains(mode))
                     {
                         // レセ電の場合、（精）と（減）は先頭の１つだけ出力し、あとは出力しない
                         if (sinData[i].SinDtl.ItemCd == ItemCdConst.TouyakuYakuGenKousei)
@@ -1765,9 +1866,9 @@ namespace CalculateService.Receipt.ViewModels
                             {
                                 tazaiGen = true;
                             }
-                        }                        
+                        }
                     }
-                    if (new int[] { SinMeiMode.Ryosyu, SinMeiMode.Kaikei}.Contains(mode))
+                    if (new int[] { SinMeiMode.Ryosyu, SinMeiMode.Kaikei }.Contains(mode))
                     {
                         if (new string[] {
                                 ItemCdConst.CommentJissiRekkyoDummy,
@@ -1822,8 +1923,8 @@ namespace CalculateService.Receipt.ViewModels
                                     }
                                 }
 
-                                string itemName = _mstFinder.GetCommentStr(firstDateOfSinYm, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref retCommentData, false);
-                                                                
+                                string itemName = _mstFinder.GetCommentStr(hpId, firstDateOfSinYm, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref retCommentData, false);
+
                                 addSinmei = MakeReceCmtRecord(cmtRecord.ItemCd, itemName, cmtRecord.CmtData, sinData[i].SinRp.SinId, sinData[i].SinKoui.HokenPid);
 
                                 #region RpNo, SeqNo, RowNo
@@ -1864,7 +1965,7 @@ namespace CalculateService.Receipt.ViewModels
                                 addSinmei.SinSeqNo = sinData[i].SinKoui.SeqNo;
 
                                 setFutanKbn(ref addSinmei, _getHokenPidforSetFutankbn(sinData[i]));
-                                
+
                                 addSinmei.EnTenKbn = sinData[i].SinKoui.EntenKbn;
                                 addSinmei.Count = sinData[i].Count;
                                 SetCommentInf(ref addSinmei, sinData[i]);
@@ -1890,7 +1991,7 @@ namespace CalculateService.Receipt.ViewModels
                             }
                             continue;
                         }
-                        else if(commentExist)
+                        else if (commentExist)
                         {
                             // 自身が最終行だった場合の処理
                             SetLastKbnExclusion(i, sinData);
@@ -1970,12 +2071,12 @@ namespace CalculateService.Receipt.ViewModels
                     // SIN_ID
                     if (rowNo == 1)
                     {
-                        if(sinData[i].SinKoui.EntenKbn == 0 && tenFirst)
+                        if (sinData[i].SinKoui.EntenKbn == 0 && tenFirst)
                         {
                             sinMei.SinId = sinData[i].SinRp.SinId;
                             tenFirst = false;
                         }
-                        else if(sinData[i].SinKoui.EntenKbn == 1 && enFirst)
+                        else if (sinData[i].SinKoui.EntenKbn == 1 && enFirst)
                         {
                             sinMei.SinId = sinData[i].SinRp.SinId;
                             enFirst = false;
@@ -1995,10 +2096,10 @@ namespace CalculateService.Receipt.ViewModels
                             sinMei.SinId = sinData[i].SinRp.SinId;
                         }
 
-                        if(!(new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter}.Contains(mode)))
+                        if (!(new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter }.Contains(mode)))
                         {
                             // レセ電以外の時、手術も麻酔も50にする
-                            if(sinMei.SinId > 50 && sinMei.SinId < 60)
+                            if (sinMei.SinId > 50 && sinMei.SinId < 60)
                             {
                                 sinMei.SinId = 50;
                             }
@@ -2138,12 +2239,12 @@ namespace CalculateService.Receipt.ViewModels
                     sinMei.Count = sinData[i].Count;
 
                     if (mode == SinMeiMode.ReceTensuAfter)
-                    { 
+                    {
                         // アフターケアの点数欄データ取得時は、SIN_KOUIのCOUNTとTENCOL_COUNTとTOTAL_TENを算定回数情報のデータで更新しておく
                         if (sinData[i].SinKoui != null)
                         {
                             sinData[i].SinKoui.Count = sinData[i].Count;
-                            if(sinData[i].SinKoui.TenColCount > 0)
+                            if (sinData[i].SinKoui.TenColCount > 0)
                             {
                                 sinData[i].SinKoui.TenColCount = sinData[i].Count;
                             }
@@ -2205,7 +2306,7 @@ namespace CalculateService.Receipt.ViewModels
                     sinMei.TaxRate = 0;
                     if (sinData[i].SinKoui.SanteiKbn == SanteiKbnConst.Jihi)
                     {
-                        switch(sinMei.KazeiKbn)
+                        switch (sinMei.KazeiKbn)
                         {
                             case 0: // 非課税
                                 break;
@@ -2255,7 +2356,7 @@ namespace CalculateService.Receipt.ViewModels
 
                     // PRICE(TO専用)
                     sinMei.Price = 0;
-                                        
+
                     if (sinMei.RecId == "TO")
                     {
                         double tenId = sinMei.TenId;
@@ -2269,7 +2370,7 @@ namespace CalculateService.Receipt.ViewModels
                         {
                             sinMei.Price = sinData[i].SinDtl.TenMst?.Ten ?? 0;
                         }
-                    }                    
+                    }
 
                     // TOKUZAI_NAME(TO専用)
                     sinMei.TokuzaiName = "";
@@ -2505,7 +2606,7 @@ namespace CalculateService.Receipt.ViewModels
                         ItemCdConst.Syosin2Jouhou
                     };
 
-                var syosinKouis = sinData.FindAll(p => syosinls.Contains(p.SinDtl.ItemCd)).Select(p=>p.SinKoui);
+                var syosinKouis = sinData.FindAll(p => syosinls.Contains(p.SinDtl.ItemCd)).Select(p => p.SinKoui);
                 foreach (var syosinKoui in syosinKouis)
                 {
                     if (sinKouiCountModels.Any(p => p.RpNo == syosinKoui.RpNo && p.SeqNo == syosinKoui.SeqNo))
@@ -2542,7 +2643,7 @@ namespace CalculateService.Receipt.ViewModels
                     _lastSinDate = sinKouiCountModels.Max(p => p.SinDate);
                 }
 
-                _emrLogger.WriteLogEnd( this, conFncName, "");
+                _emrLogger.WriteLogEnd(this, conFncName, "");
 
                 // SetFutanKbnの引数用のhokenPidを取得する
                 int _getHokenPidforSetFutankbn(SinMeiDataSet targetSinData)
@@ -2568,13 +2669,13 @@ namespace CalculateService.Receipt.ViewModels
                                 sinData.First(p => p.SinDtl.ItemCd == ItemCdConst.SaisinDojitu && p.SinRp.RpNo != targetSinData.SinRp.RpNo).SinKoui.HokenPid;
                         }
                     }
-                    else if (targetSinData.SinDtl.ItemCd == ItemCdConst.CommentDenwaSaisin )
+                    else if (targetSinData.SinDtl.ItemCd == ItemCdConst.CommentDenwaSaisin)
                     {
                         if (sinData.Any(p => new List<string> { ItemCdConst.SaisinDenwa, ItemCdConst.SaisinDenwa2 }.Contains(p.SinDtl.ItemCd)
                             && p.SinRp.RpNo != targetSinData.SinRp.RpNo))
                         {
                             ret =
-                                sinData.First(p => new List<string> { ItemCdConst.SaisinDenwa, ItemCdConst.SaisinDenwa2 }.Contains(p.SinDtl.ItemCd) 
+                                sinData.First(p => new List<string> { ItemCdConst.SaisinDenwa, ItemCdConst.SaisinDenwa2 }.Contains(p.SinDtl.ItemCd)
                                 && p.SinRp.RpNo != targetSinData.SinRp.RpNo).SinKoui.HokenPid;
                         }
                     }
@@ -2586,7 +2687,7 @@ namespace CalculateService.Receipt.ViewModels
                                 sinData.First(p => p.SinDtl.ItemCd == ItemCdConst.SaisinDenwaDojitu && p.SinRp.RpNo != targetSinData.SinRp.RpNo).SinKoui.HokenPid;
                         }
                     }
-                    
+
                     return ret;
                 }
             }
@@ -2642,7 +2743,7 @@ namespace CalculateService.Receipt.ViewModels
 
                 //if (mode == SinMeiMode.Receden)
                 //{
-                    retSinMei.FutanKbn = GetFutanKbn(hokenPid, mode);
+                retSinMei.FutanKbn = GetFutanKbn(hokenPid, mode);
                 //}
                 //else
                 //{
@@ -2673,16 +2774,16 @@ namespace CalculateService.Receipt.ViewModels
                     retSinMei.ItemName = cmt;
 
                     // COMMENT_DATA
-                    if(itemCd.StartsWith("850"))
+                    if (itemCd.StartsWith("850"))
                     {
                         if (cmtData.Length < 7)
                         {
                             cmtData = cmtData.PadRight(7, '０');
                         }
                     }
-                    else if(itemCd.StartsWith("852"))
+                    else if (itemCd.StartsWith("852"))
                     {
-                        if(cmtData.Length < 5)
+                        if (cmtData.Length < 5)
                         {
                             cmtData = cmtData.PadLeft(5, '０');
                         }
@@ -2696,7 +2797,7 @@ namespace CalculateService.Receipt.ViewModels
             // 奈良県社保＋福祉のレセコメント追加
             void AppendNaraFukusiReceCmt(List<string> checkHoubetu, string itemCd, string cmt, int hokenPid, ref List<SinMeiDataModel> appendSinMeis)
             {
-                if(_ptHokenPatternModels.Any(p=>
+                if (_ptHokenPatternModels.Any(p =>
                         (p.HokenId == _receInfs.First().HokenId || p.HokenId == _receInfs.First().HokenId2) &&
                      (checkHoubetu.Contains(p.Kohi1Houbetu) ||
                      checkHoubetu.Contains(p.Kohi2Houbetu) ||
@@ -2813,7 +2914,7 @@ namespace CalculateService.Receipt.ViewModels
                 // 点数が0でも、点数回数を表示するかどうか
                 sinMei.DspZeroTenKai = sinData.SinKoui.DspZeroTenkai;
 
-                if(sinMei.RecId == "CO" && _systemConfigProvider.GetReceiptCommentTenCount() == 1)
+                if (sinMei.RecId == "CO" && _systemConfigProvider.GetReceiptCommentTenCount() == 1)
                 {
                     sinMei.DspZeroTenKai = true;
                 }
@@ -2837,7 +2938,7 @@ namespace CalculateService.Receipt.ViewModels
             // 日付情報をセット
             void SetDays(ref SinMeiDataModel sinMei, SinMeiDataSet sinData)
             {
-                if (sinMei.LastRowKbn == 1 || new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter}.Contains(mode))
+                if (sinMei.LastRowKbn == 1 || new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter }.Contains(mode))
                 {
                     if (!(new int[] { SinMeiMode.Kaikei, SinMeiMode.Ryosyu, SinMeiMode.AccountingCard }.Contains(mode)))
                     {
@@ -3234,9 +3335,9 @@ namespace CalculateService.Receipt.ViewModels
             {
                 ret = _receFutanKbnModels?.FirstOrDefault(p => p.HokenPid == hokenPid).FutanKbnCd ?? "";
             }
-            else if(mode == SinMeiMode.Receden)
+            else if (mode == SinMeiMode.Receden)
             {
-                _emrLogger.WriteLogMsg( this, nameof(GetFutanKbn), string.Format("負担区分が取得できません。ptId:{0}, sinYM:{1}, hokenPid:{2}", _ptId, _sinDate / 100, hokenPid));
+                _emrLogger.WriteLogMsg(this, nameof(GetFutanKbn), string.Format("負担区分が取得できません。ptId:{0}, sinYM:{1}, hokenPid:{2}", _ptId, _sinDate / 100, hokenPid));
             }
             return ret;
         }
@@ -3339,7 +3440,7 @@ namespace CalculateService.Receipt.ViewModels
         {
             List<ReceSinRpInfModel> ret = new List<ReceSinRpInfModel>();
 
-            if(new int[] { SinMeiMode.Receden, SinMeiMode.ReceCheck, SinMeiMode.ReceTensu, SinMeiMode.ReceTensuRousai, SinMeiMode.ReceTensuAfter, SinMeiMode.RecedenAfter }.Contains(mode))
+            if (new int[] { SinMeiMode.Receden, SinMeiMode.ReceCheck, SinMeiMode.ReceTensu, SinMeiMode.ReceTensuRousai, SinMeiMode.ReceTensuAfter, SinMeiMode.RecedenAfter }.Contains(mode))
             {
                 // レセプト電算
                 sinRpInfModels.FindAll(p =>
@@ -3347,9 +3448,9 @@ namespace CalculateService.Receipt.ViewModels
                     p.SanteiKbn == SanteiKbnConst.Santei &&
                     p.SinId < 90
                     ).ForEach(p => ret.Add(new ReceSinRpInfModel(p)));
-                    
+
             }
-            else if (new int[] { SinMeiMode.PaperRece , SinMeiMode.AfterCare }.Contains(mode))
+            else if (new int[] { SinMeiMode.PaperRece, SinMeiMode.AfterCare }.Contains(mode))
             {
                 // 紙レセプト
                 sinRpInfModels.FindAll(p =>
@@ -3359,7 +3460,7 @@ namespace CalculateService.Receipt.ViewModels
                     ).ForEach(p => ret.Add(new ReceSinRpInfModel(p)));
 
             }
-            else if (new int[] { SinMeiMode.Kaikei, SinMeiMode.Ryosyu, SinMeiMode.AccountingCard}.Contains(mode))
+            else if (new int[] { SinMeiMode.Kaikei, SinMeiMode.Ryosyu, SinMeiMode.AccountingCard }.Contains(mode))
             {
                 // 領収証・会計カード
                 sinRpInfModels.FindAll(p =>
@@ -3435,7 +3536,7 @@ namespace CalculateService.Receipt.ViewModels
         {
             List<ReceSinKouiModel> ret = new List<ReceSinKouiModel>();
 
-            if (new int[] { SinMeiMode.Receden , SinMeiMode.ReceTensu, SinMeiMode.ReceTensuRousai, SinMeiMode.RecedenAfter }.Contains(mode))
+            if (new int[] { SinMeiMode.Receden, SinMeiMode.ReceTensu, SinMeiMode.ReceTensuRousai, SinMeiMode.RecedenAfter }.Contains(mode))
             {
                 // レセプト電算
                 sinKouiModels.FindAll(p =>
@@ -3447,18 +3548,18 @@ namespace CalculateService.Receipt.ViewModels
                         (p.HokenId == (hokenId == 0 ? p.HokenId : hokenId) || p.HokenId == hokenId2) &&
                         p.IsDeleted == DeleteStatus.None
                     ).ForEach(p => ret.Add(new ReceSinKouiModel(p, null)));
-                    
+
 
             }
-            if (new int[] {  SinMeiMode.ReceTensuAfter }.Contains(mode))
+            if (new int[] { SinMeiMode.ReceTensuAfter }.Contains(mode))
             {
                 // アフターケア（点数欄用）
                 var groupSinKouiCount = (
                     from sinKouiCount in sinKouiCountModels
                     group sinKouiCount by
                         new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo } into sinKouiGroups
-                                    //from sinKouiGroup in sinKouiGroups.DefaultIfEmpty()
-                                    select new
+                    //from sinKouiGroup in sinKouiGroups.DefaultIfEmpty()
+                    select new
                     {
                         sinKouiGroups.Key.HpId,
                         sinKouiGroups.Key.PtId,
@@ -3474,10 +3575,10 @@ namespace CalculateService.Receipt.ViewModels
                     from sinKoui in sinKouiModels
                     join sinRpInf in sinRpInfModels on
                         new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo } equals
-                        new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo } 
+                        new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
                     join sinKouiCount in groupSinKouiCount on
                         new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo } equals
-                        new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo } 
+                        new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
                     where
                     (
                         (
@@ -3556,8 +3657,8 @@ namespace CalculateService.Receipt.ViewModels
                     from sinKouiCount in sinKouiCountModels
                     group sinKouiCount by
                         new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo } into sinKouiGroups
-                        //from sinKouiGroup in sinKouiGroups.DefaultIfEmpty()
-                        select new
+                    //from sinKouiGroup in sinKouiGroups.DefaultIfEmpty()
+                    select new
                     {
                         sinKouiGroups.Key.HpId,
                         sinKouiGroups.Key.PtId,
@@ -3575,10 +3676,10 @@ namespace CalculateService.Receipt.ViewModels
                     from sinKoui in sinKouiModels
                     join sinRpInf in sinRpInfModels on
                         new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo } equals
-                        new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo } 
+                        new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
                     join sinKouiCount in groupSinKouiCount on
-                        new {sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo} equals
-                        new {sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo} 
+                        new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo } equals
+                        new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
                     where
                     (
                         (sinKoui.InoutKbn == 0 || sinKoui.InoutKbn == (includeOutDrg == true ? 1 : 0)) &&
@@ -3693,7 +3794,7 @@ namespace CalculateService.Receipt.ViewModels
         {
             List<ReceSinKouiDetailModel> ret = new List<ReceSinKouiDetailModel>();
 
-            if (new int[] { SinMeiMode.Receden, SinMeiMode.ReceTensu , SinMeiMode.ReceTensuRousai , SinMeiMode.ReceTensuAfter, SinMeiMode.RecedenAfter }.Contains(mode))
+            if (new int[] { SinMeiMode.Receden, SinMeiMode.ReceTensu, SinMeiMode.ReceTensuRousai, SinMeiMode.ReceTensuAfter, SinMeiMode.RecedenAfter }.Contains(mode))
             {
                 // レセプト電算
 
@@ -3703,13 +3804,13 @@ namespace CalculateService.Receipt.ViewModels
                             p.IsNodspRece != 1 ||
                             p.FmtKbn == FmtKbnConst.ZaiCyosei
                         ) &&
-                        (!(new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter}.Contains(mode)) || p.IsNodspRece != 2) &&
+                        (!(new int[] { SinMeiMode.Receden, SinMeiMode.RecedenAfter }.Contains(mode)) || p.IsNodspRece != 2) &&
                         p.IsDeleted == DeleteStatus.None
-                    ).ForEach(p=>ret.Add(new ReceSinKouiDetailModel(p)));
+                    ).ForEach(p => ret.Add(new ReceSinKouiDetailModel(p)));
 
 
             }
-            else if (new int[] { SinMeiMode.PaperRece , SinMeiMode.AfterCare }.Contains(mode))
+            else if (new int[] { SinMeiMode.PaperRece, SinMeiMode.AfterCare }.Contains(mode))
             {
                 // 紙レセプト
 
@@ -3843,14 +3944,14 @@ namespace CalculateService.Receipt.ViewModels
         {
             List<ReceSinKouiCountModel> ret = new List<ReceSinKouiCountModel>();
 
-            if (new int[] { SinMeiMode.Kaikei, SinMeiMode.Ryosyu, SinMeiMode.AfterCare , SinMeiMode.ReceTensuAfter, SinMeiMode.RecedenAfter }.Contains(mode))
+            if (new int[] { SinMeiMode.Kaikei, SinMeiMode.Ryosyu, SinMeiMode.AfterCare, SinMeiMode.ReceTensuAfter, SinMeiMode.RecedenAfter }.Contains(mode))
             {
                 // 領収証モードの場合
                 sinKouiCountModels.FindAll(p =>
                     raiinNos.Contains(p.RaiinNo) &&
                     (p.UpdateState == UpdateStateConst.None || p.UpdateState == UpdateStateConst.Add)
                     ).ForEach(p => ret.Add(new ReceSinKouiCountModel(p)));
-                  
+
             }
             else
             {
@@ -3910,7 +4011,7 @@ namespace CalculateService.Receipt.ViewModels
             const int conDone = 2;
 
             // 在宅調整項目を抽出
-            List<int> hokenPids = filteredSinKouis.GroupBy(p => p.HokenPid).Select(p=>p.Key).ToList();
+            List<int> hokenPids = filteredSinKouis.GroupBy(p => p.HokenPid).Select(p => p.Key).ToList();
 
             if (hokenPids != null && hokenPids.Any())
             {
@@ -4143,7 +4244,7 @@ namespace CalculateService.Receipt.ViewModels
                                             filteredSinKouiCounts.RemoveAll(p => p.RpNo == key.rpNo && p.SeqNo == key.seqNo);
                                         }
                                         // 調整項目削除
-                                        filteredSinDtls.RemoveAll(p =>p.RpNo == key.rpNo && p.SeqNo == key.seqNo && p.ItemCd == zaiItems[i] && p.FmtKbn == FmtKbnConst.ZaiCyosei);
+                                        filteredSinDtls.RemoveAll(p => p.RpNo == key.rpNo && p.SeqNo == key.seqNo && p.ItemCd == zaiItems[i] && p.FmtKbn == FmtKbnConst.ZaiCyosei);
                                     }
 
 
@@ -4247,7 +4348,7 @@ namespace CalculateService.Receipt.ViewModels
                             //{
                             //    break;
                             //}
-                            
+
                             if (first == conExist && last == conExist)
                             {
                                 zaiCmt.Suryo = 3;
@@ -4522,7 +4623,7 @@ namespace CalculateService.Receipt.ViewModels
         private void EditSameRpNoSI(ref List<ReceSinRpInfModel> filteredSinRpInfs, ref List<ReceSinKouiModel> filteredSinKouis, ref List<ReceSinKouiDetailModel> filteredSinDtls)
         {
             // 同一RpNo, SeqNo内のDtlに"SI"レコードが存在する場合、行為のRecIdを"SI"に設定する
-            foreach(ReceSinKouiModel sinKoui in filteredSinKouis)
+            foreach (ReceSinKouiModel sinKoui in filteredSinKouis)
             {
                 if (sinKoui.RecId != "SI")
                 {
@@ -4558,7 +4659,7 @@ namespace CalculateService.Receipt.ViewModels
             }
 
 
-            foreach(ReceSinRpInfModel sinRp in filteredSinRpInfs)
+            foreach (ReceSinRpInfModel sinRp in filteredSinRpInfs)
             {
                 List<ReceSinKouiModel> sinKouis = filteredSinKouis.FindAll(p => p.RpNo == sinRp.RpNo && p.RecId == "SI");
 
@@ -4627,15 +4728,15 @@ namespace CalculateService.Receipt.ViewModels
 
             if (filteredSinKouis.Any(p => targetSyukeisaki.Contains(p.SyukeiSaki)))
             {
-                List<int> rpNos = 
-                    filteredSinKouis.FindAll(p=>
+                List<int> rpNos =
+                    filteredSinKouis.FindAll(p =>
                         //(p.SyukeiSaki == ReceSyukeisaki.EnSaisin || p.SyukeiSaki == ReceSyukeisaki.EnSyosin))
                         targetSyukeisaki.Contains(p.SyukeiSaki))
                     .GroupBy(p => p.RpNo)
-                    .Select(p=>p.Key)
+                    .Select(p => p.Key)
                     .ToList();
 
-                foreach(int rpNo in rpNos)
+                foreach (int rpNo in rpNos)
                 {
                     List<ReceSinKouiModel> sinKouis = filteredSinKouis.FindAll(p => p.RpNo == rpNo);
 
@@ -4667,7 +4768,7 @@ namespace CalculateService.Receipt.ViewModels
 
                             if (sinKoui.HokenPid == pid)
                             {
-                                if (sinKoui.EntenKbn == 0 || (new int[]{ SinMeiMode.Kaikei, SinMeiMode.Ryosyu }.Contains(mode)))
+                                if (sinKoui.EntenKbn == 0 || (new int[] { SinMeiMode.Kaikei, SinMeiMode.Ryosyu }.Contains(mode)))
                                 {
                                     totalKouiTen += sinKoui.Ten;
                                 }
@@ -4694,7 +4795,7 @@ namespace CalculateService.Receipt.ViewModels
                         sinKouis.First().Ten = totalKouiTen;
                         sinKouis.First().Kingaku = totalKingaku;
 
-                        if(totalKouiTen>0 && totalKingaku>0)
+                        if (totalKouiTen > 0 && totalKingaku > 0)
                         {
                             // 円点混在
                             sinKouis.First().EntenKbn = 2;
@@ -4755,7 +4856,7 @@ namespace CalculateService.Receipt.ViewModels
             }
 
             // SIN_RP_INF.KOUI_DATAを設定する（点滴除く）
-            foreach (ReceSinRpInfModel sinRpInf in filteredSinRpInfs.FindAll(p=>!(p.SinId == 33 && p.SinKouiKbn == 330)))
+            foreach (ReceSinRpInfModel sinRpInf in filteredSinRpInfs.FindAll(p => !(p.SinId == 33 && p.SinKouiKbn == 330)))
             {
                 string ret = "";
                 string tmpStr = "";
@@ -4805,7 +4906,7 @@ namespace CalculateService.Receipt.ViewModels
                     // 削除予定Rpではない場合
 
                     // このRpと同じ行為データをもつRpを探す
-                    List<ReceSinRpInfModel> sameSinRps = 
+                    List<ReceSinRpInfModel> sameSinRps =
                         filteredSinRpInfs.FindAll(p => p.RpNo != sinRp.RpNo && p.KouiData == sinRp.KouiData);
 
                     if (sameSinRps.Any())
@@ -4912,7 +5013,7 @@ namespace CalculateService.Receipt.ViewModels
             if (sinData.SinDtl.ItemCd == ItemCdConst.CommentJissiRekkyoDummy)
             {
                 // 実施日列挙
-                (string jissiDaysComment, string prevJissiDaysComment, string nextJissiDaysComment, HashSet<int>days) =
+                (string jissiDaysComment, string prevJissiDaysComment, string nextJissiDaysComment, HashSet<int> days) =
                     GetJissiDaysComment(sinKouiCountModels, sinKouiDetailModels, sinData);
 
                 if (jissiDaysComment != "")
@@ -4996,7 +5097,7 @@ namespace CalculateService.Receipt.ViewModels
                     }
                 }
 
-                retItemName = _mstFinder.GetCommentStr(firstDateOfSinYm, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref retCommentData, false);
+                retItemName = _mstFinder.GetCommentStr(_hpId, firstDateOfSinYm, tenMst.ItemCd, cmtCol, cmtLen, tenMst.Name, tenMst.Name, ref retCommentData, false);
 
                 //retItemName = tenMst.GetCommentStr(ref retCommentData);
 
@@ -5020,14 +5121,14 @@ namespace CalculateService.Receipt.ViewModels
                 retItemName = sinData.SinDtl.ItemName;
                 retCommentData = retItemName;
             }
-            else if(sinData.SinDtl.ItemCd.StartsWith("W"))
+            else if (sinData.SinDtl.ItemCd.StartsWith("W"))
             {
                 // 特処コメント
                 retItemCd = ItemCdConst.CommentFree;
                 retItemName = sinData.SinDtl.ItemName;
                 retCommentData = retItemName;
             }
-            else if(sinData.SinDtl.TenMst != null && sinData.SinDtl.TenMst.SanteiItemCd == ItemCdConst.NoSantei)
+            else if (sinData.SinDtl.TenMst != null && sinData.SinDtl.TenMst.SanteiItemCd == ItemCdConst.NoSantei)
             {
                 // 算定診療行為コード未設定
                 retItemCd = ItemCdConst.CommentFree;
@@ -5042,14 +5143,14 @@ namespace CalculateService.Receipt.ViewModels
             {
                 retItemCd = sinData.SinDtl.ItemCd;
                 retItemName = sinData.SinDtl.ItemName;
-                if(mode == SinMeiMode.Ryosyu && string.IsNullOrEmpty(sinData.SinDtl.RyosyuName) == false)
+                if (mode == SinMeiMode.Ryosyu && string.IsNullOrEmpty(sinData.SinDtl.RyosyuName) == false)
                 {
                     retItemName = sinData.SinDtl.RyosyuName;
                 }
                 retCommentData = sinData.SinDtl.CmtOpt;
-                if(sinData.SinDtl.ItemCd.StartsWith("850"))
+                if (sinData.SinDtl.ItemCd.StartsWith("850"))
                 {
-                    if(retCommentData.Length < 7)
+                    if (retCommentData.Length < 7)
                     {
                         retCommentData = retCommentData.PadRight(7, '０');
                     }
@@ -5101,7 +5202,7 @@ namespace CalculateService.Receipt.ViewModels
             if (RecedenCmtSelects.Any(p => p.ItemCd == sinData.SinDtl.CmtOpt))
             {
 
-                if (sinData.SinDtl.ItemCd == ItemCdConst.CommentJissiRekkyoDummy && 
+                if (sinData.SinDtl.ItemCd == ItemCdConst.CommentJissiRekkyoDummy &&
                     RecedenCmtSelects.Any(p => p.ItemCd == sinData.SinDtl.CmtOpt && p.CmtSbt == CmtSbtConst.JissiBi))
                 {
                     // 実施日列挙
@@ -5157,6 +5258,7 @@ namespace CalculateService.Receipt.ViewModels
                                     new CmtRecordData(
                                         recedenCmtSelect.CommentCd,
                                         _mstFinder.GetCommentStr(
+                                            _hpId,
                                             firstDateOfSinYm, recedenCmtSelect.CommentCd,
                                             recedenCmtSelect.CmtCols,
                                             recedenCmtSelect.CmtColKetas,
@@ -5234,6 +5336,7 @@ namespace CalculateService.Receipt.ViewModels
                                         new CmtRecordData(
                                             recedenCmtSelect.CommentCd,
                                             _mstFinder.GetCommentStr(
+                                                _hpId,
                                                 firstDateOfSinYm, recedenCmtSelect.CommentCd,
                                                 recedenCmtSelect.CmtCols,
                                                 recedenCmtSelect.CmtColKetas,
@@ -5308,6 +5411,7 @@ namespace CalculateService.Receipt.ViewModels
                                     new CmtRecordData(
                                         recedenCmtSelect.CommentCd,
                                         _mstFinder.GetCommentStr(
+                                            _hpId,
                                             firstDateOfSinYm, recedenCmtSelect.CommentCd,
                                             recedenCmtSelect.CmtCols,
                                             recedenCmtSelect.CmtColKetas,
@@ -5410,7 +5514,7 @@ namespace CalculateService.Receipt.ViewModels
             }
 
             // マージされたRpの分
-            foreach((int rpno, int seqno) in sinData.SinKoui.MergeKeyNos)
+            foreach ((int rpno, int seqno) in sinData.SinKoui.MergeKeyNos)
             {
                 jissiDays = sinKouiCountModels.FindAll(p =>
                     p.RpNo == rpno &&
@@ -5561,7 +5665,7 @@ namespace CalculateService.Receipt.ViewModels
             }
             return uqJissiDays.Count();
         }
-    
+
         public List<SinMeiDataModel> SinMei
         {
             get { return sinMeis; }
@@ -5656,7 +5760,7 @@ namespace CalculateService.Receipt.ViewModels
             string GetStringZeroIgnore(int val)
             {
                 string s = "";
-                if(val != 0)
+                if (val != 0)
                 {
                     s = val.ToString();
                 }

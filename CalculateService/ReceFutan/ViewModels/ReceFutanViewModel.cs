@@ -87,9 +87,12 @@ namespace CalculateService.ReceFutan.ViewModels
         /// <summary>
         /// レセプト集計処理
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="ptIds">患者ID(null:未指定)</param>
         /// <param name="seikyuYm">請求年月</param>
+        /// <param name="uniqueKey">uniqueKey</param>
         public void ReceFutanCalculateMain(
+            int hpId,
             List<long> ptIds, int seikyuYm, string uniqueKey
         )
         {
@@ -102,19 +105,19 @@ namespace CalculateService.ReceFutan.ViewModels
                 kaikeiCalculate = false;
 
                 //都道府県番号
-                HpPrefCd = _receFutanFinder.FindHpPrefCd(Hardcode.HospitalID, seikyuYm);
+                HpPrefCd = _receFutanFinder.FindHpPrefCd(hpId, seikyuYm);
 
                 //レセデータ初期化
-                _clearCommandHandler.ClearCalculate(Hardcode.HospitalID, ptIds, seikyuYm);
+                _clearCommandHandler.ClearCalculate(hpId, ptIds, seikyuYm);
 
                 //レセ対象の会計データ取得
-                KaikeiDetails = _receFutanFinder.FindKaikeiDetail(Hardcode.HospitalID, ptIds, seikyuYm);
+                KaikeiDetails = _receFutanFinder.FindKaikeiDetail(hpId, ptIds, seikyuYm);
 
                 //レセ編集情報の取得
-                ReceInfEdits = _receFutanFinder.FindReceInfEdit(Hardcode.HospitalID, ptIds, seikyuYm);
+                ReceInfEdits = _receFutanFinder.FindReceInfEdit(hpId, ptIds, seikyuYm);
 
                 //レセデータ集計
-                ReceCalculate(seikyuYm);
+                ReceCalculate(hpId, seikyuYm);
 
                 if (IsStopCalc || CancellationToken.IsCancellationRequested)
                 {
@@ -154,9 +157,10 @@ namespace CalculateService.ReceFutan.ViewModels
         /// <summary>
         /// 会計情報の月集計
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="ptId">患者ID</param>
         /// <param name="sinYm">診療年月</param>
-        public List<ReceInfModel> KaikeiTotalCalculate(long ptId, int sinYm)
+        public List<ReceInfModel> KaikeiTotalCalculate(int hpId, long ptId, int sinYm)
         {
             const string conFncName = nameof(KaikeiTotalCalculate);
             try
@@ -166,13 +170,13 @@ namespace CalculateService.ReceFutan.ViewModels
                 kaikeiCalculate = true;
 
                 //都道府県番号
-                HpPrefCd = _receFutanFinder.FindHpPrefCd(Hardcode.HospitalID, sinYm);
+                HpPrefCd = _receFutanFinder.FindHpPrefCd(hpId, sinYm);
 
                 //レセ対象の会計データ取得
-                KaikeiDetails = _kaikeiFinder.FindKaikeiDetail(Hardcode.HospitalID, ptId, sinYm);
+                KaikeiDetails = _kaikeiFinder.FindKaikeiDetail(hpId, ptId, sinYm);
 
                 //レセデータ集計
-                ReceCalculate(sinYm);
+                ReceCalculate(hpId, sinYm);
 
                 _emrLogger.WriteLogEnd(this, conFncName, $"ptId:{ptId} sinYm:{sinYm}");
 
@@ -210,7 +214,7 @@ namespace CalculateService.ReceFutan.ViewModels
 
         public delegate void AfterCalcItem();
 
-        public void ReceCalculate(int seikyuYm)
+        public void ReceCalculate(int hpId, int seikyuYm)
         {
             const string conFncName = nameof(ReceCalculate);
 
@@ -355,7 +359,7 @@ namespace CalculateService.ReceFutan.ViewModels
                     SetTokki(receInf);
 
                     //単独併用判断
-                    SetKohiKisai(receInf);
+                    SetKohiKisai(hpId, receInf);
 
                     //高額療養費の発生有無により一部負担金の記載を調整
                     SetKogakuOverIchibuFutan(receInf);
@@ -1979,14 +1983,14 @@ namespace CalculateService.ReceFutan.ViewModels
         }
 
         //単独併用判断
-        private void SetKohiKisai(ReceInfModel receInf)
+        private void SetKohiKisai(int hpId, ReceInfModel receInf)
         {
             if (receInf.ReceSbt.Length < 4) return;
 
-            receInf.Kohi1ReceKisai = getReceKisai(1, receInf.Kohi1Id);
-            receInf.Kohi2ReceKisai = getReceKisai(2, receInf.Kohi2Id);
-            receInf.Kohi3ReceKisai = getReceKisai(3, receInf.Kohi3Id);
-            receInf.Kohi4ReceKisai = getReceKisai(4, receInf.Kohi4Id);
+            receInf.Kohi1ReceKisai = getReceKisai(hpId, 1, receInf.Kohi1Id);
+            receInf.Kohi2ReceKisai = getReceKisai(hpId, 2, receInf.Kohi2Id);
+            receInf.Kohi3ReceKisai = getReceKisai(hpId, 3, receInf.Kohi3Id);
+            receInf.Kohi4ReceKisai = getReceKisai(hpId, 4, receInf.Kohi4Id);
 
             int wrkSbt = Convert.ToInt32(receInf.Kohi1ReceKisai) + Convert.ToInt32(receInf.Kohi2ReceKisai) +
                 Convert.ToInt32(receInf.Kohi3ReceKisai) + Convert.ToInt32(receInf.Kohi4ReceKisai);
@@ -2030,7 +2034,7 @@ namespace CalculateService.ReceFutan.ViewModels
             }
 
 
-            bool getReceKisai(int kohiNo, int kohiId)
+            bool getReceKisai(int hpId, int kohiNo, int kohiId)
             {
                 if (kohiId == 0) return false;
 
@@ -2054,7 +2058,7 @@ namespace CalculateService.ReceFutan.ViewModels
                             break;
                     }
 
-                    if (!_sinKouiFinder.IsSinKouiReceKisai(Hardcode.HospitalID, receInf.PtId, receInf.SinYm, receInf.HokenId, receInf.HokenId2, kohiId))
+                    if (!_sinKouiFinder.IsSinKouiReceKisai(hpId, receInf.PtId, receInf.SinYm, receInf.HokenId, receInf.HokenId2, kohiId))
                     {
                         //当該公費を使用していて、レセに記録する診療行為がない場合は未記載
                         return false;

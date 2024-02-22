@@ -39,7 +39,7 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
         #endregion
 
         #region 来院情報
-        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.IsDeleted == DeleteStatus.None && r.Status >= 5);
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.IsDeleted == DeleteStatus.None && r.Status >= 5);
         if (printConf.IsRaiinConf)
         {
             //来院日
@@ -60,8 +60,8 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
         if (printConf.IsSinConf)
         {
             #region オーダー情報
-            var odrInfs = NoTrackingDataContext.OdrInfs.Where(p => p.IsDeleted == DeleteStatus.None);
-            var odrDetails = NoTrackingDataContext.OdrInfDetails;
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+            var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId);
 
             var sinJoins = (
             from odrInf in odrInfs
@@ -87,9 +87,9 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
             #region 算定情報
             if (printConf.SanteiOrder == 0)
             {
-                var sinKouiCounts = NoTrackingDataContext.SinKouiCounts;
-                var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.IsDeleted == DeleteStatus.None);
-                var sinKouiDetails = NoTrackingDataContext.SinKouiDetails;
+                var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(x => x.HpId == hpId);
+                var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
+                var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(x => x.HpId == hpId);
 
                 sinJoins = (
                     from sinCount in sinKouiCounts
@@ -207,8 +207,8 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
         #endregion
 
         #region 結合
-        var lastVisits = NoTrackingDataContext.PtLastVisitDates;
-        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.IsDeleted == DeleteStatus.None);
+        var lastVisits = NoTrackingDataContext.PtLastVisitDates.Where(x => x.HpId == hpId);
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteStatus.None);
 
         var joinQuery =
             from ptInfJoin in ptInfJoins

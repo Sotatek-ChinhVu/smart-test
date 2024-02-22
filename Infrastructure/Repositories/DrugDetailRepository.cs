@@ -139,7 +139,7 @@ namespace Infrastructure.Repositories
 
                     //FukuInf
                     var fukuInf = GetFukuModels(hpId, m34DrugInfMainRepo);
-                    
+
                     //Syoki
                     var syokiInf = GetSyokiModel(hpId, m34DrugInfMainRepo);
 
@@ -154,7 +154,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     // MdbByomei
-                    var mdbByomei = GetTenMstByomeiModels(itemCd);
+                    var mdbByomei = GetTenMstByomeiModels(hpId, itemCd);
 
                     return new DrugDetailModel(0, 0, "", new SyohinModel(), new List<DrugMenuItemModel>(), new List<DrugMenuItemModel>(), 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 1, mdbByomei);
                 }
@@ -183,7 +183,7 @@ namespace Infrastructure.Repositories
             }
             return new DrugDetailModel();
         }
-        
+
         private YakuModel? GetYakuModel(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
             var m34FormCodeRepo = NoTrackingDataContext.M34FormCodes.Where(m => m.HpId == hpId).AsQueryable();
@@ -220,7 +220,7 @@ namespace Infrastructure.Repositories
                                                                     m.FukusayoCmt)).FirstOrDefault();
             return model;
         }
-        
+
         private List<FukuModel> GetFukuModels(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
             var m34ArDisconCodeRepo = NoTrackingDataContext.M34ArDisconCodes.Where(m => m.HpId == hpId).AsQueryable();
@@ -256,7 +256,7 @@ namespace Infrastructure.Repositories
 
             return model;
         }
-        
+
         private List<SougoModel> GetSougoModels(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
             var m34InteractionPatCodeRepo = NoTrackingDataContext.M34InteractionPatCodes.Where(m => m.HpId == hpId).AsQueryable();
@@ -271,7 +271,7 @@ namespace Infrastructure.Repositories
             return models;
 
         }
-        
+
         private List<ChuiModel> GetChuiModels(int hpId, IQueryable<M34DrugInfoMain> m34DrugInfMainRepo)
         {
             var m34PrecautionRepo = NoTrackingDataContext.M34Precautions.Where(m => m.HpId == hpId).AsQueryable();
@@ -309,10 +309,10 @@ namespace Infrastructure.Repositories
             return models;
         }
 
-        private List<TenMstByomeiModel> GetTenMstByomeiModels(string itemCd)
+        private List<TenMstByomeiModel> GetTenMstByomeiModels(int hpId, string itemCd)
         {
-            var tekioByomeiMsts = NoTrackingDataContext.TekiouByomeiMsts.Where(t => t.ItemCd == itemCd && t.IsInvalid == 0).AsQueryable();
-            var byomeiMsts = NoTrackingDataContext.ByomeiMsts.AsQueryable();
+            var tekioByomeiMsts = NoTrackingDataContext.TekiouByomeiMsts.Where(t => t.HpId == hpId && t.ItemCd == itemCd && t.IsInvalid == 0).AsQueryable();
+            var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(i => i.HpId == hpId).AsQueryable();
             var joinQuery = from tekioByomei in tekioByomeiMsts
                             join byomeiMst in byomeiMsts
                             on tekioByomei.ByomeiCd equals byomeiMst.ByomeiCd

@@ -367,6 +367,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             {
                 var raiinInfKaIdTantoIds = NoTrackingDataContext.RaiinInfs.Where(item => (item.SinDate >= fromDay || item.SinDate >= minSinYM)
                                                                                       && item.SinDate <= toDay
+                                                                                      && item.HpId == hpId
                                                                                       && item.IsDeleted == 0
                                                                                       && item.KaId == searchModel.KaId
                                                                                       && item.TantoId == searchModel.DoctorId
@@ -398,6 +399,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     {
                         var raiinInfKaIds = NoTrackingDataContext.RaiinInfs.Where(item => (item.SinDate >= fromDay || item.SinDate >= minSinYM)
                                                                                            && item.SinDate <= toDay
+                                                                                           && item.HpId == hpId
                                                                                            && item.IsDeleted == 0
                                                                                            && item.KaId == searchModel.KaId
                                                                                            && item.Status >= RaiinState.Calculate
@@ -428,6 +430,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     {
                         var raiinInfTantoIds = NoTrackingDataContext.RaiinInfs.Where(item => (item.SinDate >= fromDay || item.SinDate >= minSinYM)
                                                                                        && item.SinDate <= toDay
+                                                                                       && item.HpId == hpId
                                                                                        && item.IsDeleted == 0
                                                                                        && searchModel.DoctorId == item.TantoId
                                                                                        && listSinYm.Contains(item.SinDate / 100)
@@ -483,7 +486,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             // グループ
             if (searchModel.GroupSearchModels.Any(item => !string.IsNullOrEmpty(item.Value)))
             {
-                var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(ptGrpInf => ptGrpInf.IsDeleted == 0
+                var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(ptGrpInf => ptGrpInf.HpId == hpId && ptGrpInf.IsDeleted == 0
                                                                                   && listPtIds.Contains(ptGrpInf.PtId))
                                                                .ToList();
 
@@ -495,6 +498,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     }
                     listPtIds = NoTrackingDataContext.PtGrpInfs.Where(ptGr => ptGr.GroupId == group.Key
                                                                               && ptGr.GroupCode == group.Value
+                                                                              && ptGr.HpId == hpId
                                                                               && ptGr.IsDeleted == 0
                                                                               && listPtIds.Contains(ptGr.PtId))
                                                                .Select(item => item.PtId)
@@ -2882,7 +2886,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                          p.IsDeleted == DeleteTypes.None)
                                 .OrderByDescending(u => u.CreateDate).ThenByDescending(u => u.UpdateDate).FirstOrDefault();
 
-            bool hasError = TrackingDataContext.ReceCheckErrs.Any(p => p.SinYm == receInfo.SinYm && p.PtId == receInfo.PtId && p.HokenId == receInfo.HokenId);
+            bool hasError = TrackingDataContext.ReceCheckErrs.Any(p => p.HpId == hpId && p.SinYm == receInfo.SinYm && p.PtId == receInfo.PtId && p.HokenId == receInfo.HokenId);
 
             if (receStatus == null)
             {
@@ -2890,7 +2894,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 {
                     newReceStatus.Add(new ReceStatus()
                     {
-                        HpId = Session.HospitalID,
+                        HpId = hpId,
                         PtId = receInfo.PtId,
                         SeikyuYm = receInfo.SeikyuYm,
                         SinYm = receInfo.SinYm,
@@ -3605,9 +3609,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return query.AsEnumerable().Select(x => new ReceInfForCheckErrSwapHokenModel(x.PtId, x.PtNum, x.SinYm, x.HokenId)).ToList();
     }
 
-    public bool HasErrorCheck(int sinYm, long ptId, int hokenId)
+    public bool HasErrorCheck(int hpId, int sinYm, long ptId, int hokenId)
     {
-        return NoTrackingDataContext.ReceCheckErrs.Any(p => p.SinYm == sinYm && p.PtId == ptId && p.HokenId == hokenId);
+        return NoTrackingDataContext.ReceCheckErrs.Any(p => p.HpId == hpId && p.SinYm == sinYm && p.PtId == ptId && p.HokenId == hokenId);
     }
 
     public bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId)

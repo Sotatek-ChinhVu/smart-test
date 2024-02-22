@@ -5,6 +5,9 @@ namespace Entity.Tenant;
 [Table("json_setting")]
 public class JsonSetting
 {
+    [Column("hp_id")]
+    public int HpId { get; set; }
+
     [Column("user_id")]
     public int UserId { get; set; }
 

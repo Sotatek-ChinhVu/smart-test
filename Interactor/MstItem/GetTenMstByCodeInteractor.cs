@@ -19,7 +19,7 @@ namespace Interactor.MstItem
                 if (string.IsNullOrEmpty(inputData.ItemCd))
                     return new GetTenMstByCodeOutputData(null, GetTenMstByCodeStatus.InvalidItemCd);
 
-                var data = _mstItemRepository.GetTenMstByCode(inputData.ItemCd, inputData.SetKbn, inputData.SinDate);
+                var data = _mstItemRepository.GetTenMstByCode(inputData.HpId, inputData.ItemCd, inputData.SetKbn, inputData.SinDate);
 
                 if (data == null)
                     return new GetTenMstByCodeOutputData(null, GetTenMstByCodeStatus.NoData);

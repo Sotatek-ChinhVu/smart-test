@@ -23,16 +23,16 @@ namespace Interactor.MstItem
                 if (inputData.UserId < 0)
                     return new DeleteOrRecoverTenMstOutputData(DeleteOrRecoverTenMstStatus.InvalidUserId, string.Empty);
 
-                if(inputData.Mode == DeleteOrRecoverTenMstMode.Delete && !inputData.ConfirmDeleteIfModeIsDeleted)
+                if (inputData.Mode == DeleteOrRecoverTenMstMode.Delete && !inputData.ConfirmDeleteIfModeIsDeleted)
                 {
-                    if(_mstItemRepository.IsTenMstItemCdUsed(inputData.HpId, inputData.ItemCd))
+                    if (_mstItemRepository.IsTenMstItemCdUsed(inputData.HpId, inputData.ItemCd))
                     {
                         string msg = string.Format("'{0}'は、既に使用されている項目です。", inputData.SelectedTenMstModelName) + Environment.NewLine + "削除しますか？";
                         return new DeleteOrRecoverTenMstOutputData(DeleteOrRecoverTenMstStatus.RequiredConfirmDelete, msg);
                     }
                 }
 
-                bool result = _mstItemRepository.SaveDeleteOrRecoverTenMstOrigin(inputData.Mode ,inputData.ItemCd, inputData.UserId, inputData.TenMsts);
+                bool result = _mstItemRepository.SaveDeleteOrRecoverTenMstOrigin(inputData.HpId, inputData.Mode, inputData.ItemCd, inputData.UserId, inputData.TenMsts);
 
                 if (result)
                     return new DeleteOrRecoverTenMstOutputData(DeleteOrRecoverTenMstStatus.Successful, string.Empty);

@@ -19,16 +19,16 @@ namespace Interactor.PtGroupMst
                 if (inputData.HpId <= 0)
                     return new CheckAllowDeleteGroupMstOutputData(CheckAllowDeleteGroupMstStatus.InvalidHpId);
 
-                if(inputData.CheckAllowDeleteGroupName)
+                if (inputData.CheckAllowDeleteGroupName)
                 {
-                    if(_groupNameMstRepository.IsInUseGroupName(inputData.GroupId, inputData.GroupCode))
+                    if (_groupNameMstRepository.IsInUseGroupName(inputData.HpId, inputData.GroupId, inputData.GroupCode))
                     {
                         return new CheckAllowDeleteGroupMstOutputData(CheckAllowDeleteGroupMstStatus.NotAllowDelete);
                     }
                 }
                 else
                 {
-                    if (_groupNameMstRepository.IsInUseGroupItem(inputData.GroupId, inputData.GroupCode))
+                    if (_groupNameMstRepository.IsInUseGroupItem(inputData.HpId, inputData.GroupId, inputData.GroupCode))
                     {
                         return new CheckAllowDeleteGroupMstOutputData(CheckAllowDeleteGroupMstStatus.NotAllowDelete);
                     }

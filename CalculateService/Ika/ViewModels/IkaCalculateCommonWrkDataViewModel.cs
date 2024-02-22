@@ -63,7 +63,7 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="hpId"></param>
         /// <param name="ptId"></param>
         /// <param name="sinDate"></param>
-        public IkaCalculateCommonWrkDataViewModel(SanteiFinder santeiFinder, IkaCalculateCommonMasterViewModel tenMstCommon, PtInfModel ptInf, int hpId, long ptId, int sinDate, 
+        public IkaCalculateCommonWrkDataViewModel(SanteiFinder santeiFinder, IkaCalculateCommonMasterViewModel tenMstCommon, PtInfModel ptInf, int hpId, long ptId, int sinDate,
             ISystemConfigProvider systemConfigProvider)
         {
             _santeiFinder = santeiFinder;
@@ -533,7 +533,7 @@ namespace CalculateService.Ika.ViewModels
                 retKoui.WeekCalcAppendDays.Add(weekCalcAppendDay);
             }
             retKoui.OdrRpNo = wrkKoui.OdrRpNo;
-        
+
             return retKoui;
         }
         /// <summary>
@@ -872,6 +872,7 @@ namespace CalculateService.Ika.ViewModels
         /// ワーク診療行為詳細の1レコード分のデータを返す
         /// オーダー詳細の内容を元に生成
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="odrDtl">オーダー詳細</param>
         /// <param name="itemCd">診療行為コード</param>
         /// <param name="autoAdd">1:自動追加</param>
@@ -880,7 +881,8 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="itemSbt">項目種別</param>
         /// <returns>ワーク診療行為詳細の1レコード分のデータ</returns>
         public WrkSinKouiDetailModel GetWrkSinKouiDetail
-            (OdrDtlTenModel odrDtl, List<OdrInfCmtModel> odrCmts, int autoAdd = 0, double suryo2 = 0, int fmtKbn = 0, int itemSbt = -1,
+            (int hpId,
+            OdrDtlTenModel odrDtl, List<OdrInfCmtModel> odrCmts, int autoAdd = 0, double suryo2 = 0, int fmtKbn = 0, int itemSbt = -1,
             int isNodspRece = -1, int isNodspPaperRece = -1, int isNodspRyosyu = -1, int isDeleted = 0, string baseItemCd = "", int baseSeqNo = 0)
         {
             WrkSinKouiDetailModel wrkSinKouiDetailModel = new WrkSinKouiDetailModel(new WrkSinKouiDetail());
@@ -891,7 +893,7 @@ namespace CalculateService.Ika.ViewModels
                 wrkSinKouiDetailModel.TenMst = odrDtl.TenMst;
             }
 
-            wrkSinKouiDetailModel.HpId = _hpId;
+            wrkSinKouiDetailModel.HpId = hpId;
             wrkSinKouiDetailModel.PtId = _ptId;
             wrkSinKouiDetailModel.SinDate = _sinDate;
             wrkSinKouiDetailModel.RaiinNo = _raiinNo;
@@ -992,7 +994,7 @@ namespace CalculateService.Ika.ViewModels
                         // 電子媒体保存撮影
                         cmtOpt = wrkSinKouiDetailModel.Suryo.ToString();
                     }
-                    cmt = _tenMstCommon.GetCommentStr(odrDtl.ItemCd, ref cmtOpt);
+                    cmt = _tenMstCommon.GetCommentStr(hpId, odrDtl.ItemCd, ref cmtOpt);
                     wrkSinKouiDetailModel.ItemName = cmt;
                     wrkSinKouiDetailModel.CmtOpt = cmtOpt;
                 }
@@ -1110,7 +1112,7 @@ namespace CalculateService.Ika.ViewModels
             foreach (OdrInfCmtModel odrCmt in odrCmts.OrderBy(p => p.SortNo))
             {
                 retCmtOpt = odrCmt.CmtOpt;
-                retCmt = _tenMstCommon.GetCommentStr(odrCmt.CmtCd, ref retCmtOpt);
+                retCmt = _tenMstCommon.GetCommentStr(hpId, odrCmt.CmtCd, ref retCmtOpt);
 
                 wrkSinKouiDetailModel.AddComment(retCmt, odrCmt.CmtCd, retCmtOpt);
             }
@@ -1174,8 +1176,8 @@ namespace CalculateService.Ika.ViewModels
             retDtl.IpnFlg = wrkDtl.IpnFlg;
             retDtl.BaseItemCd = wrkDtl.BaseItemCd;
             retDtl.BaseSeqNo = wrkDtl.BaseSeqNo;
-            List < TenMstModel > tenMstModel = _tenMstCommon.GetTenMst(wrkDtl.ItemCd);
-                        
+            List<TenMstModel> tenMstModel = _tenMstCommon.GetTenMst(wrkDtl.ItemCd);
+
             if (tenMstModel.Any())
             {
                 retDtl.TenMst = tenMstModel.First();
@@ -1234,6 +1236,7 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// ワーク診療行為詳細（コメント）を生成する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="itemCd">診療行為コード</param>
         /// <param name="cmtOpt">コメント分</param>
         /// <param name="autoAdd">自動発生項目　1:自動発生項目</param>
@@ -1245,7 +1248,8 @@ namespace CalculateService.Ika.ViewModels
         /// <param name="isNodspPaperRece">紙レセ非表示区分　1:非表示</param>
         /// <param name="isNodspRyosyu">領収証非表示区分　1:非表示</param>
         public WrkSinKouiDetailModel GetWrkSinKouiDetailCommentRecord
-            (string itemCd, string cmtOpt, int autoAdd = 0, int fmtKbn = 0,
+            (int hpId,
+             string itemCd, string cmtOpt, int autoAdd = 0, int fmtKbn = 0,
              int isNodspRece = -1, int isNodspPaperRece = -1, int isNodspRyosyu = -1,
              string baseItemCd = "", int baseSeqNo = 0)
         {
@@ -1254,7 +1258,7 @@ namespace CalculateService.Ika.ViewModels
 
             retCmtOpt = cmtOpt;
 
-            retCmt = _tenMstCommon.GetCommentStr(itemCd, ref retCmtOpt);
+            retCmt = _tenMstCommon.GetCommentStr(hpId, itemCd, ref retCmtOpt);
 
             return GetWrkSinKouiDetail
                      (itemCd, autoAdd, itemName: retCmt, cmtOpt: retCmtOpt, fmtKbn: fmtKbn, itemSbt: 1,
@@ -1510,13 +1514,14 @@ namespace CalculateService.Ika.ViewModels
         /// ワーク診療行為詳細を生成し、追加する
         /// オーダー詳細の内容を元に生成
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="odrDtl">オーダー詳細</param>
         /// <param name="itemCd">診療行為コード</param>
         /// <param name="autoAdd">1:自動追加</param>
         /// <param name="suryo2">数量２</param>
         /// <param name="fmtKbn">書式区分</param>
         /// <param name="itemSbt">項目種別</param>
-        public void AppendNewWrkSinKouiDetail(
+        public void AppendNewWrkSinKouiDetail(int hpId,
             OdrDtlTenModel odrDtl, List<OdrInfCmtModel> odrCmts, int autoAdd = 0, double suryo2 = 0, int fmtKbn = 0, int itemSbt = -1, int isDeleted = 0,
             int isNodspRece = -1, int isNodspPaperRece = -1, int isNodspRyosyu = -1, string baseItemCd = "", int baseSeqNo = 0)
         {
@@ -1526,7 +1531,7 @@ namespace CalculateService.Ika.ViewModels
                 fmtKbn = 20;
             }
             AppendWrkSinKouiDetail(
-                GetWrkSinKouiDetail(
+                GetWrkSinKouiDetail(hpId,
                     odrDtl: odrDtl, odrCmts: odrCmts, autoAdd: autoAdd, suryo2: suryo2, fmtKbn: fmtKbn, itemSbt: itemSbt,
                     isNodspRece: isNodspRece, isNodspPaperRece: isNodspPaperRece, isNodspRyosyu: isNodspRyosyu, isDeleted: isDeleted, baseItemCd: baseItemCd, baseSeqNo: baseSeqNo));
         }
@@ -1979,9 +1984,12 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// オーダー詳細から当該項目に設定されているコメントを追加する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="odrDtl"></param>
-        public void AppendNewWrkSinKouiDetailComment(OdrDtlTenModel odrDtl, List<OdrDtlTenModel> odrDtls)
+        /// <param name="odrDtls"></param>
+        public void AppendNewWrkSinKouiDetailComment(int hpId, OdrDtlTenModel odrDtl, List<OdrDtlTenModel> odrDtls)
         {
+            _hpId = hpId;
             int retDate = 0;
             int syokaiDate = 0;
             string comment;
@@ -2016,7 +2024,7 @@ namespace CalculateService.Ika.ViewModels
                         (_systemConfigProvider.GetCalcAutoComment() == 1 && odrDtl.OdrKouiKbn >= 80 && odrDtl.OdrKouiKbn <= 89))
                     {
                         RecedenCmtSelectModel recedenCmtSelect = _tenMstCommon.FindRecedenCmtSelect(odrDtl.ItemCd, CmtSbtConst.Syokai);
-                        
+
                         if (recedenCmtSelect == null)
                         {
                             recedenCmtSelect = _tenMstCommon.FindRecedenCmtSelect(odrDtl.ItemCd, CmtSbtConst.Hassyo);
@@ -2040,7 +2048,7 @@ namespace CalculateService.Ika.ViewModels
                                 if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                                 {
                                     string cmtOpt = CIUtil.ToWide(CIUtil.SDateToWDate(syokaiFirst.KisanDate).ToString());
-                                    AppendNewWrkSinKouiDetailCommentRecord(itemCd: itemCd, cmtOpt: cmtOpt, baseItemCd: odrDtl.ItemCd);
+                                    AppendNewWrkSinKouiDetailCommentRecord(hpId, itemCd: itemCd, cmtOpt: cmtOpt, baseItemCd: odrDtl.ItemCd);
                                     addSanteiComment = true;
                                 }
                             }
@@ -2050,7 +2058,7 @@ namespace CalculateService.Ika.ViewModels
                             string itemCd = ItemCdConst.CommentFree;
                             string cmtOpt = "初回算定　" + CIUtil.ToWide(CIUtil.SDateToShowWDate2(syokaiFirst.KisanDate).Replace(" ", ""));
 
-                            AppendNewWrkSinKouiDetailCommentRecord(itemCd: itemCd, cmtOpt: cmtOpt, baseItemCd: odrDtl.ItemCd);
+                            AppendNewWrkSinKouiDetailCommentRecord(hpId, itemCd: itemCd, cmtOpt: cmtOpt, baseItemCd: odrDtl.ItemCd);
                             addSanteiComment = true;
                         }
                     }
@@ -2219,7 +2227,7 @@ namespace CalculateService.Ika.ViewModels
 
                             if (itemCd != "")
                             {
-                                AppendNewWrkSinKouiDetailCommentRecord(itemCd: itemCd, cmtOpt: cmtOpt, baseItemCd: odrDtl.ItemCd);
+                                AppendNewWrkSinKouiDetailCommentRecord(hpId, itemCd: itemCd, cmtOpt: cmtOpt, baseItemCd: odrDtl.ItemCd);
                                 addSanteiComment = true;
                             }
                         }
@@ -2263,6 +2271,7 @@ namespace CalculateService.Ika.ViewModels
                         if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                         {
                             AppendNewWrkSinKouiDetailCommentRecord(
+                            hpId,
                             itemCd: recedenCmtSelect.CommentCd,
                             cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()),
                             autoAdd: 1,
@@ -2279,6 +2288,7 @@ namespace CalculateService.Ika.ViewModels
                             itemCd = ItemCdConst.CommentSyouniCounselingReiwa;
                         }
                         AppendNewWrkSinKouiDetailCommentRecord(
+                            hpId,
                             itemCd: itemCd,
                             cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString().Substring(1, 6)),
                             autoAdd: 1,
@@ -2301,6 +2311,7 @@ namespace CalculateService.Ika.ViewModels
                         if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                         {
                             AppendNewWrkSinKouiDetailCommentRecord(
+                            hpId,
                             itemCd: recedenCmtSelect.CommentCd,
                             cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()),
                             autoAdd: 1,
@@ -2319,12 +2330,12 @@ namespace CalculateService.Ika.ViewModels
                     //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                     {
-                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString()), autoAdd: 1);
+                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString()), autoAdd: 1);
                     }
                 }
                 else
                 {
-                    AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentSyokaiSantei, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString().Substring(3, 4)), autoAdd: 1);
+                    AppendNewWrkSinKouiDetailCommentRecord(hpId, ItemCdConst.CommentSyokaiSantei, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString().Substring(3, 4)), autoAdd: 1);
                 }
             }
             else if (new string[] { ItemCdConst.IgakuNico2_4, ItemCdConst.IgakuNico5, ItemCdConst.IgakuNico5Rinsyojyo, ItemCdConst.IgakuNico2_4Tusin }.Contains(odrDtl.ItemCd))
@@ -2340,12 +2351,13 @@ namespace CalculateService.Ika.ViewModels
                         //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                         if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                         {
-                            AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
+                            AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
                         }
                     }
                     else
                     {
                         AppendNewWrkSinKouiDetailCommentRecord(
+                            hpId,
                             itemCd: ItemCdConst.CommentSyokaiSantei,
                             cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString().Substring(3, 4)),
                             autoAdd: 1,
@@ -2363,12 +2375,12 @@ namespace CalculateService.Ika.ViewModels
                     //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                     {
-                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString()), autoAdd: 1);
+                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString()), autoAdd: 1);
                     }
                 }
                 else
                 {
-                    AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentSyokaiSantei, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString().Substring(3, 4)), autoAdd: 1);
+                    AppendNewWrkSinKouiDetailCommentRecord(hpId, ItemCdConst.CommentSyokaiSantei, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString().Substring(3, 4)), autoAdd: 1);
                 }
             }
             else if (odrDtl.ItemCd == ItemCdConst.IgakuJyudoZensoku2_6)
@@ -2384,7 +2396,7 @@ namespace CalculateService.Ika.ViewModels
                         //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                         if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                         {
-                            AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
+                            AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
                         }
                     }
                     //else
@@ -2407,12 +2419,12 @@ namespace CalculateService.Ika.ViewModels
                     //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                     {
-                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString()), autoAdd: 1);
+                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString()), autoAdd: 1);
                     }
                 }
                 else
                 {
-                    AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentSyokaiSantei, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString().Substring(3, 4)), autoAdd: 1);
+                    AppendNewWrkSinKouiDetailCommentRecord(hpId, ItemCdConst.CommentSyokaiSantei, CIUtil.ToWide(CIUtil.SDateToWDate(_sinDate).ToString().Substring(3, 4)), autoAdd: 1);
                 }
             }
             else if (odrDtl.ItemCd == ItemCdConst.IgakuBienMeneki2)
@@ -2428,12 +2440,13 @@ namespace CalculateService.Ika.ViewModels
                         //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                         if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                         {
-                            AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
+                            AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
                         }
                     }
                     else
                     {
                         AppendNewWrkSinKouiDetailCommentRecord(
+                            hpId,
                             itemCd: ItemCdConst.CommentSyokaiSantei,
                             cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString().Substring(3, 4)),
                             autoAdd: 1,
@@ -2458,12 +2471,13 @@ namespace CalculateService.Ika.ViewModels
                     //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                     {
-                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
+                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
                     }
                 }
                 else
                 {
                     AppendNewWrkSinKouiDetailCommentRecord(
+                        hpId,
                         itemCd: ItemCdConst.CommentSyokaiSantei,
                         cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString().Substring(3, 4)),
                         autoAdd: 1,
@@ -2487,12 +2501,13 @@ namespace CalculateService.Ika.ViewModels
                     //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                     {
-                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
+                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
                     }
                 }
                 else
                 {
                     AppendNewWrkSinKouiDetailCommentRecord(
+                        hpId,
                         itemCd: ItemCdConst.CommentSyokaiSantei,
                         cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString().Substring(3, 4)),
                         autoAdd: 1,
@@ -2516,12 +2531,13 @@ namespace CalculateService.Ika.ViewModels
                     //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                     {
-                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
+                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString()), autoAdd: 1);
                     }
                 }
                 else
                 {
                     AppendNewWrkSinKouiDetailCommentRecord(
+                        hpId,
                         itemCd: ItemCdConst.CommentSyokaiSantei,
                         cmtOpt: CIUtil.ToWide(CIUtil.SDateToWDate(retDate).ToString().Substring(3, 4)),
                         autoAdd: 1,
@@ -2543,12 +2559,13 @@ namespace CalculateService.Ika.ViewModels
                                 {
                                     string cmtOpt = _getCmtOptDate(recedenCmtSelect.CommentCd, _sinDate);
 
-                                    AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
+                                    AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
                                 }
                             }
                             else
                             {
                                 AppendNewWrkSinKouiDetailCommentRecord(
+                                hpId,
                                 itemCd: ItemCdConst.CommentFree,
                                 cmtOpt: CIUtil.SDateToShowWDate2(_sinDate).Replace(" ", "") + "実施",
                                 autoAdd: 1,
@@ -2569,13 +2586,14 @@ namespace CalculateService.Ika.ViewModels
                                 {
                                     string cmtOpt = _getCmtOptDate(recedenCmtSelect.CommentCd, retDate);
 
-                                    AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
+                                    AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
                                 }
                             }
                             else
                             {
                                 //AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentZenkaiJissi, CIUtil.ToWide((retDate % 10000).ToString()), autoAdd: 1);
                                 AppendNewWrkSinKouiDetailCommentRecord(
+                                    hpId,
                                     itemCd: ItemCdConst.CommentFree,
                                     cmtOpt: "前回実施　" + CIUtil.ToWide(CIUtil.SDateToShowWDate2(retDate).Replace(" ", "")),
                                     autoAdd: 1,
@@ -2623,7 +2641,7 @@ namespace CalculateService.Ika.ViewModels
                                 {
                                     if (syokaiDate == _sinDate)
                                     {
-                                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, "", autoAdd: 1);
+                                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, "", autoAdd: 1);
                                     }
                                 }
                             }
@@ -2635,13 +2653,14 @@ namespace CalculateService.Ika.ViewModels
                                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                                     {
                                         string cmtOpt = _getCmtOptDate(recedenCmtSelect.CommentCd, syokaiDate);
-                                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
+                                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
                                     }
                                 }
                                 else
                                 {
                                     //AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentSyokaiJissi, CIUtil.ToWide((retDate % 10000).ToString()), autoAdd: 1);
                                     AppendNewWrkSinKouiDetailCommentRecord(
+                                    hpId,
                                     itemCd: ItemCdConst.CommentFree,
                                     cmtOpt: "初回実施　" + CIUtil.ToWide(CIUtil.SDateToShowWDate2(syokaiDate).Replace(" ", "")),
                                     autoAdd: 1,
@@ -2691,13 +2710,14 @@ namespace CalculateService.Ika.ViewModels
                                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelectZenkai) == false)
                                     {
                                         string cmtOpt = _getCmtOptDate(recedenCmtSelectZenkai.CommentCd, retDate);
-                                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelectZenkai.CommentCd, cmtOpt, autoAdd: 1);
+                                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelectZenkai.CommentCd, cmtOpt, autoAdd: 1);
                                     }
                                 }
                                 else
                                 {
                                     //AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentZenkaiJissi, CIUtil.ToWide((retDate % 10000).ToString()), autoAdd: 1);
                                     AppendNewWrkSinKouiDetailCommentRecord(
+                                    hpId,
                                     itemCd: ItemCdConst.CommentFree,
                                     cmtOpt: "前回実施　" + CIUtil.ToWide(CIUtil.SDateToShowWDate2(retDate).Replace(" ", "")),
                                     autoAdd: 1,
@@ -2723,13 +2743,13 @@ namespace CalculateService.Ika.ViewModels
                                             if (syokaiDate == _sinDate)
                                             {
                                                 // 820の場合、本当に初回の場合のみ出力
-                                                AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelectSyokai.CommentCd, "", autoAdd: 1);
+                                                AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelectSyokai.CommentCd, "", autoAdd: 1);
                                             }
                                         }
                                         else
                                         {
                                             string cmtOpt = _getCmtOptDate(recedenCmtSelectSyokai.CommentCd, syokaiDate);
-                                            AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelectSyokai.CommentCd, cmtOpt, autoAdd: 1);
+                                            AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelectSyokai.CommentCd, cmtOpt, autoAdd: 1);
                                         }
                                     }
                                 }
@@ -2737,6 +2757,7 @@ namespace CalculateService.Ika.ViewModels
                                 {
                                     //AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentSyokaiJissi, CIUtil.ToWide((_sinDate % 10000).ToString()), autoAdd: 1);
                                     AppendNewWrkSinKouiDetailCommentRecord(
+                                    hpId,
                                     itemCd: ItemCdConst.CommentFree,
                                     cmtOpt: "初回実施　" + CIUtil.ToWide(CIUtil.SDateToShowWDate2(syokaiDate).Replace(" ", "")),
                                     autoAdd: 1,
@@ -2791,7 +2812,7 @@ namespace CalculateService.Ika.ViewModels
                                 {
                                     if (syokaiDate == _sinDate)
                                     {
-                                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, "", autoAdd: 1);
+                                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, "", autoAdd: 1);
                                     }
                                 }
                             }
@@ -2803,13 +2824,14 @@ namespace CalculateService.Ika.ViewModels
                                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                                     {
                                         string cmtOpt = _getCmtOptDate(recedenCmtSelect.CommentCd, syokaiDate);
-                                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
+                                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
                                     }
                                 }
                                 else
                                 {
                                     //AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentSyokaiJissi, CIUtil.ToWide((retDate % 10000).ToString()), autoAdd: 1);
                                     AppendNewWrkSinKouiDetailCommentRecord(
+                                    hpId,
                                     itemCd: ItemCdConst.CommentFree,
                                     cmtOpt: "初回算定　" + CIUtil.ToWide(CIUtil.SDateToShowWDate2(syokaiDate).Replace(" ", "")),
                                     autoAdd: 1,
@@ -2950,13 +2972,14 @@ namespace CalculateService.Ika.ViewModels
                                     if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                                     {
                                         string cmtOpt = _getCmtOptDate(recedenCmtSelect.CommentCd, retDate);
-                                        AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
+                                        AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
                                     }
                                 }
                                 else
                                 {
                                     //AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentZenkaiJissi, CIUtil.ToWide((retDate % 10000).ToString()), autoAdd: 1);
                                     AppendNewWrkSinKouiDetailCommentRecord(
+                                    hpId,
                                     itemCd: ItemCdConst.CommentFree,
                                     cmtOpt: string.Format("({0}：前回実施 {1})", odrDtl.ReceName, CIUtil.ToWide(CIUtil.SDateToShowWDate2(retDate).Replace(" ", ""))),
                                     autoAdd: 1,
@@ -2982,13 +3005,13 @@ namespace CalculateService.Ika.ViewModels
                                             if (syokaiDate == _sinDate)
                                             {
                                                 // 820の場合、本当に初回の場合のみ出力
-                                                AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, "", autoAdd: 1);
+                                                AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, "", autoAdd: 1);
                                             }
                                         }
                                         else
                                         {
                                             string cmtOpt = _getCmtOptDate(recedenCmtSelect.CommentCd, syokaiDate);
-                                            AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
+                                            AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, cmtOpt, autoAdd: 1);
                                         }
                                     }
                                 }
@@ -2996,6 +3019,7 @@ namespace CalculateService.Ika.ViewModels
                                 {
                                     //AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentSyokaiJissi, CIUtil.ToWide((_sinDate % 10000).ToString()), autoAdd: 1);
                                     AppendNewWrkSinKouiDetailCommentRecord(
+                                    hpId,
                                     itemCd: ItemCdConst.CommentFree,
                                     cmtOpt: string.Format("({0}：初回実施 {1})", odrDtl.ReceName, CIUtil.ToWide(CIUtil.SDateToShowWDate2(syokaiDate).Replace(" ", ""))),
                                     autoAdd: 1,
@@ -3014,7 +3038,7 @@ namespace CalculateService.Ika.ViewModels
                                 //if (_existsItemCd(recedenCmtSelect.CommentCd) == false)
                                 if (ChkOdrRecedenCmtSelect(odrDtl, odrDtls, recedenCmtSelect) == false)
                                 {
-                                    AppendNewWrkSinKouiDetailCommentRecord(recedenCmtSelect.CommentCd, CIUtil.ToWide(odrDtl.Suryo.ToString()), autoAdd: 1);
+                                    AppendNewWrkSinKouiDetailCommentRecord(hpId, recedenCmtSelect.CommentCd, CIUtil.ToWide(odrDtl.Suryo.ToString()), autoAdd: 1);
                                 }
                             }
                         }
@@ -3073,7 +3097,7 @@ namespace CalculateService.Ika.ViewModels
                         {
                             if (ChkOdrRecedenCmtSelectCmtOpt(odrDtl, odrDtls, recedenCmtSelect, cmtOpt) == false)
                             {
-                                AppendNewWrkSinKouiDetailCommentRecord(itemCd, cmtOpt);
+                                AppendNewWrkSinKouiDetailCommentRecord(hpId, itemCd, cmtOpt);
                             }
                         }
                     }
@@ -3090,7 +3114,7 @@ namespace CalculateService.Ika.ViewModels
 
                             if (cmtOpt != "")
                             {
-                                AppendNewWrkSinKouiDetailCommentRecord(itemCd, cmtOpt);
+                                AppendNewWrkSinKouiDetailCommentRecord(hpId, itemCd, cmtOpt);
                             }
                         }
                         else
@@ -3108,7 +3132,7 @@ namespace CalculateService.Ika.ViewModels
 
                                 retCmtOpt = cmtOpt;
 
-                                retCmt = _tenMstCommon.GetCommentStr(itemCd, ref retCmtOpt);
+                                retCmt = _tenMstCommon.GetCommentStr(hpId, itemCd, ref retCmtOpt);
 
                                 wrkSinKouiDetails.Last().ItemName += retCmt;
                                 wrkSinKouiDetails.Last().CmtOpt += retCmtOpt;
@@ -3122,7 +3146,7 @@ namespace CalculateService.Ika.ViewModels
                 {
                     itemCd = ItemCdConst.CommentFree;
                     cmtOpt = AsanteiInfDtl.Comment;
-                    AppendNewWrkSinKouiDetailCommentRecord(itemCd, cmtOpt);
+                    AppendNewWrkSinKouiDetailCommentRecord(hpId, itemCd, cmtOpt);
                 }
             }
 
@@ -3148,27 +3172,29 @@ namespace CalculateService.Ika.ViewModels
         /// <summary>
         /// ワーク診療行為詳細（コメント）を生成し、追加する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="itemCd">診療行為コード</param>
         /// <param name="cmtOpt">コメント文</param>
         /// <param name="autoAdd">1:自動発生</param>
         /// <param name="fmtKbn">書式区分</param>
-        public void AppendNewWrkSinKouiDetailCommentRecord(string itemCd, string cmtOpt, int autoAdd = 1, int fmtKbn = 0, string baseItemCd = "", int isnodspRyosyu = -1, int baseSeqNo = 0)
+        public void AppendNewWrkSinKouiDetailCommentRecord(int hpId, string itemCd, string cmtOpt, int autoAdd = 1, int fmtKbn = 0, string baseItemCd = "", int isnodspRyosyu = -1, int baseSeqNo = 0)
         {
-            AppendWrkSinKouiDetail(GetWrkSinKouiDetailCommentRecord(itemCd: itemCd, cmtOpt: cmtOpt, autoAdd: autoAdd, fmtKbn: fmtKbn, baseItemCd: baseItemCd, isNodspRyosyu: isnodspRyosyu, baseSeqNo: baseSeqNo));
+            AppendWrkSinKouiDetail(GetWrkSinKouiDetailCommentRecord(hpId, itemCd: itemCd, cmtOpt: cmtOpt, autoAdd: autoAdd, fmtKbn: fmtKbn, baseItemCd: baseItemCd, isNodspRyosyu: isnodspRyosyu, baseSeqNo: baseSeqNo));
         }
 
         /// <summary>
         /// ワーク診療行為詳細（コメント）を生成し、指定のRpに追加する
         /// </summary>
+        /// <param name="hpId">HospitalID</param>
         /// <param name="rpNo">追加先RpNo</param>
         /// <param name="seqNo">追加先SeqNo</param>
         /// <param name="itemCd">診療行為コード</param>
         /// <param name="cmtOpt">コメント文</param>
         /// <param name="autoAdd">1:自動発生</param>
         /// <param name="fmtKbn">書式区分</param>
-        public void InsertNewWrkSinKouiDetailCommentRecord(int rpNo, int seqNo, string itemCd, string cmtOpt, int autoAdd = 1, int fmtKbn = 0)
+        public void InsertNewWrkSinKouiDetailCommentRecord(int hpId, int rpNo, int seqNo, string itemCd, string cmtOpt, int autoAdd = 1, int fmtKbn = 0)
         {
-            InsertWrkSinKouiDetail(rpNo, seqNo, GetWrkSinKouiDetailCommentRecord(itemCd, cmtOpt, autoAdd, fmtKbn));
+            InsertWrkSinKouiDetail(rpNo, seqNo, GetWrkSinKouiDetailCommentRecord(hpId, itemCd, cmtOpt, autoAdd, fmtKbn));
         }
 
         /// <summary>
@@ -3653,9 +3679,9 @@ namespace CalculateService.Ika.ViewModels
             wrkDtlDel.IsAutoAdd = isAutoAdd;
 
             // EFファイル用に、解釈番号を取得
-            List<TenMstModel> tenMsts =_tenMstCommon.GetTenMst(wrkDtlDel.DelItemCd);
+            List<TenMstModel> tenMsts = _tenMstCommon.GetTenMst(wrkDtlDel.DelItemCd);
 
-            if(tenMsts != null && tenMsts.Any())
+            if (tenMsts != null && tenMsts.Any())
             {
                 wrkDtlDel.CdKbn = tenMsts.First().CdKbn;
                 wrkDtlDel.CdKbnno = tenMsts.First().CdKbnno;
@@ -4258,7 +4284,7 @@ namespace CalculateService.Ika.ViewModels
         {
             int ret = 0;
 
-            if(_wrkSinKouis.Any(p=>
+            if (_wrkSinKouis.Any(p =>
                 p.HpId == HpId &&
                 p.PtId == PtId &&
                 p.SinDate == SinDate &&

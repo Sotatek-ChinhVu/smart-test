@@ -499,7 +499,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     private bool SaveListSanteiInfAction(int hpId, int userId, long ptId, List<SanteiInfModel> listSanteiInfModels)
     {
         var listSanteiInfId = listSanteiInfModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
-        var listSanteiInfDb = TrackingDataContext.SanteiInfs.Where(item => listSanteiInfId.Contains(item.Id)).ToList();
+        var listSanteiInfDb = TrackingDataContext.SanteiInfs.Where(item => item.HpId == hpId && listSanteiInfId.Contains(item.Id)).ToList();
         List<SanteiInfDetailModel> listSanteiInfDetailUpdates = new();
         foreach (var model in listSanteiInfModels)
         {
@@ -552,7 +552,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     public bool SaveListSanteiInfDetail(int hpId, int userId, long ptId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
     {
         var listSanteiInfDetailItemCd = listSanteiInfDetailModels.Select(item => item.ItemCd).Distinct().ToList();
-        var listSanteiInfDetailDb = TrackingDataContext.SanteiInfDetails.Where(item => item.ItemCd != null
+        var listSanteiInfDetailDb = TrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId && item.ItemCd != null
                                                                                        && listSanteiInfDetailItemCd.Contains(item.ItemCd)
                                                                                        && item.IsDeleted == 0)
                                                                         .ToList();

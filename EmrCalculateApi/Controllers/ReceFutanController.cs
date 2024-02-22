@@ -25,7 +25,7 @@ namespace EmrCalculateApi.Controllers
         private CancellationToken? _cancellationToken;
 
         public ReceFutanController(
-            IReceFutanViewModel receFutanCalculate, 
+            IReceFutanViewModel receFutanCalculate,
             IWebSocketService webSocketService,
             IMessenger messenger)
         {
@@ -44,6 +44,7 @@ namespace EmrCalculateApi.Controllers
                 _messenger.Register<StopCalcStatus>(this, StopCalculation);
 
                 _receFutanCalculate.ReceFutanCalculateMain(
+                                   calculateRequest.HpId,
                                    calculateRequest.PtIds,
                                    calculateRequest.SeikyuYm,
                                    calculateRequest.UniqueKey);
@@ -68,7 +69,7 @@ namespace EmrCalculateApi.Controllers
         [HttpPost("GetListReceInf")]
         public ActionResult<GetListReceInfResponse> GetListReceInf([FromBody] GetListReceInfRequest request)
         {
-            var response = _receFutanCalculate.KaikeiTotalCalculate(request.PtId, request.SinYm);
+            var response = _receFutanCalculate.KaikeiTotalCalculate(request.HpId, request.PtId, request.SinYm);
             _receFutanCalculate.Dispose();
             return new ActionResult<GetListReceInfResponse>(new GetListReceInfResponse(response));
         }

@@ -200,8 +200,8 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                         ptHokenInf.JibaiHokenTel
                     };
 
-        var rosaiReceden = _systemConfig.RosaiReceden();
-        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm();
+        var rosaiReceden = _systemConfig.RosaiReceden(hpId);
+        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm(hpId);
         result = query.AsEnumerable().Select(
                 data => new ReceiptListModel(data.ReceInf, rosaiReceden, rosaiRecedenTerm)
                 {
@@ -521,8 +521,8 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
         #endregion
 
         #region Convert to list model
-        var rosaiReceden = _systemConfig.RosaiReceden();
-        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm();
+        var rosaiReceden = _systemConfig.RosaiReceden(hpId);
+        string rosaiRecedenTerm = _systemConfig.RosaiRecedenTerm(hpId);
 
         var receInfAll = query.Select(
         data => new ReceiptListModel(

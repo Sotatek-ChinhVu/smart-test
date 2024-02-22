@@ -2,8 +2,8 @@
 
 public interface IUserConfReportCommon
 {
-    int DisplaySetName();
-    int DisplayUserInput();
-    int DisplayTimeInput();
-    int DisplayDrugPrice();
+    int DisplaySetName(int hpId);
+    int DisplayUserInput(int hpId);
+    int DisplayTimeInput(int hpId);
+    int DisplayDrugPrice(int hpId);
 }

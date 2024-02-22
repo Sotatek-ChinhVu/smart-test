@@ -48,7 +48,7 @@ public class CreateDataKensaIraiRenkeiInteractor : ICreateDataKensaIraiRenkeiInp
 
     private CreateDataKensaIraiRenkeiStatus ValidateInput(CreateDataKensaIraiRenkeiInputData inputData)
     {
-        if (!_patientInforRepository.CheckExistIdList(inputData.KensaIraiList.Select(item => item.PtId).Distinct().ToList()))
+        if (!_patientInforRepository.CheckExistIdList(inputData.HpId, inputData.KensaIraiList.Select(item => item.PtId).Distinct().ToList()))
         {
             return CreateDataKensaIraiRenkeiStatus.InvalidPtId;
         }

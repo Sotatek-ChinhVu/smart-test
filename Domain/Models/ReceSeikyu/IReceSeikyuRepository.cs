@@ -16,7 +16,7 @@ namespace Domain.Models.ReceSeikyu
 
         bool UpdateReceSeikyu(List<ReceSeikyuModel> receSeikyuList, int userId, int hpId);
 
-        void EntryDeleteHenJiyuu(long ptId, int sinYm, int preHokenId, int userId);
+        void EntryDeleteHenJiyuu(int hpId, long ptId, int sinYm, int preHokenId, int userId);
 
         bool SaveReceSeiKyu(int hpId, int userId, List<ReceSeikyuModel> data);
 
