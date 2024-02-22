@@ -798,6 +798,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
             var yjCd = "UT271026";
+            int hpId = 1;
 
             var tenMsts = CommonCheckerData.ReadTenMst(string.Empty, string.Empty);
 
@@ -810,7 +811,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindItemName(yjCd, 20230505);
+                var result = realtimcheckerfinder.FindItemName(hpId, yjCd, 20230505);
 
                 // Assert
                 Assert.AreEqual("UNITTEST", result);
@@ -825,6 +826,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_016_TEST_FindItemNameDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -840,7 +842,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindItemNameDic(yjCds, 20230505);
+                var result = realtimcheckerfinder.FindItemNameDic(hpId, yjCds, 20230505);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);
@@ -855,6 +857,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_017_TEST_FindItemNameByItemCode()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -870,7 +873,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindItemNameByItemCode(itemCd, 20230505);
+                var result = realtimcheckerfinder.FindItemNameByItemCode(hpId, itemCd, 20230505);
 
                 // Assert
                 Assert.AreEqual("UNITTEST", result);
@@ -885,6 +888,7 @@ namespace CloudUnitTest.CommonChecker.Finder
         [Test]
         public void TC_018_TEST_FindItemNameByItemCodeDic()
         {
+            int hpId = 1;
             //Setup Data Test
             var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
@@ -900,7 +904,7 @@ namespace CloudUnitTest.CommonChecker.Finder
             try
             {
                 // Act
-                var result = realtimcheckerfinder.FindItemNameByItemCodeDic(yjCds, 20230505);
+                var result = realtimcheckerfinder.FindItemNameByItemCodeDic(hpId, yjCds, 20230505);
 
                 // Assert
                 Assert.AreEqual(3, result.Count);

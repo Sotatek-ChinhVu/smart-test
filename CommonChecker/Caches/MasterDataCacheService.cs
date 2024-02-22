@@ -3,7 +3,9 @@ using CommonCheckers;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using PostgreDataContext;
 
 namespace CommonChecker.Caches
 {
@@ -21,20 +23,25 @@ namespace CommonChecker.Caches
         private readonly List<DosageDrug> _dosageDrugList = new List<DosageDrug>();
         private readonly List<DosageMst> _dosageMstList = new List<DosageMst>();
         private readonly List<DosageDosage> _dosageDosageList = new List<DosageDosage>();
-        private readonly SystemConfig _systemConfig;
+        private SystemConfig _systemConfig;
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
 
         private PtInf? _ptInf;
         private int _sinday;
+        private int _hpId = 1;
 
         public MasterDataCacheService(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _systemConfig = new SystemConfig(tenantProvider.GetNoTrackingDataContext());
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _systemConfig = new SystemConfig(_hpId, tenantProvider.GetNoTrackingDataContext());
         }
 
         public void InitCache(int hpId, List<string> itemCodeList, int sinday, long ptId)
         {
+            _systemConfig = new SystemConfig(_hpId, _tenantNoTrackingDataContext);
+            _hpId = hpId;
             _sinday = sinday;
-            _ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId && p.IsDelete == 0);
+            _ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete == 0);
             AddCacheList(hpId, itemCodeList);
         }
 
@@ -47,7 +54,7 @@ namespace CommonChecker.Caches
 
             _itemCodeCacheList.AddRange(itemCodeList);
 
-            var tenMstList = NoTrackingDataContext.TenMsts.Where(t => itemCodeList.Contains(t.ItemCd) && t.IsDeleted == 0 && t.StartDate <= _sinday && _sinday <= t.EndDate).ToList();
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(t => itemCodeList.Contains(t.ItemCd) && t.IsDeleted == 0 && t.StartDate <= _sinday && _sinday <= t.EndDate && t.HpId == hpId).ToList();
             _tenMstCacheList.AddRange(tenMstList);
 
             var yjCodeList = tenMstList.Select(t => t.YjCd).Distinct().ToList();
@@ -72,7 +79,7 @@ namespace CommonChecker.Caches
 
             #region Cache for kinki
 
-            _kinkiMstList.AddRange(NoTrackingDataContext.KinkiMsts.Where(k => k.IsDeleted == 0 &&
+            _kinkiMstList.AddRange(NoTrackingDataContext.KinkiMsts.Where(k => k.HpId == hpId && k.IsDeleted == 0 &&
                                                                             k.BCd != null &&
                                                                             (
                                                                                  itemCodeList.Contains(k.ACd) ||
@@ -87,7 +94,7 @@ namespace CommonChecker.Caches
             var doeiCdList = dosageDrugListTemp.Select(d => d.DoeiCd).ToList();
 
             _dosageDrugList.AddRange(dosageDrugListTemp);
-            _dosageMstList.AddRange(NoTrackingDataContext.DosageMsts.Where(d => d.IsDeleted == 0 && itemCodeList.Contains(d.ItemCd)).ToList());
+            _dosageMstList.AddRange(NoTrackingDataContext.DosageMsts.Where(d => d.HpId == hpId && d.IsDeleted == 0 && itemCodeList.Contains(d.ItemCd)).ToList());
             _dosageDosageList.AddRange(NoTrackingDataContext.DosageDosages.Where(d => d.HpId == hpId && string.IsNullOrEmpty(d.KyugenCd) && 
                                                                                       d.DosageCheckFlg == "1" &&
                                                                                       doeiCdList.Contains(d.DoeiCd)).ToList());

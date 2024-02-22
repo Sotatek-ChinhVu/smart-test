@@ -6,9 +6,9 @@ namespace CommonChecker.DB
     {
         bool IsNoMasterData(int hpId);
 
-        string FindItemName(string yjCd, int sinday);
+        string FindItemName(int hpId, string yjCd, int sinday);
 
-        Dictionary<string, string> FindItemNameDic(List<string> yjCdList, int sinday);
+        Dictionary<string, string> FindItemNameDic(int hpId, List<string> yjCdList, int sinday);
 
         string FindComponentName(int hpId, string conponentCode);
 
@@ -22,9 +22,9 @@ namespace CommonChecker.DB
 
         Dictionary<string, string> FindDrvalrgyNameDic(int hpId, List<string> drvalrgyCodeList);
 
-        string FindItemNameByItemCode(string itemCd, int sinday);
+        string FindItemNameByItemCode(int hpId, string itemCd, int sinday);
 
-        Dictionary<string, string> FindItemNameByItemCodeDic(List<string> itemCdList, int sinday);
+        Dictionary<string, string> FindItemNameByItemCodeDic(int hpId, List<string> itemCdList, int sinday);
 
         string FindFoodName(int hpId, string foodCode);
 
