@@ -1749,7 +1749,7 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.SaveChanges();
 
                         // Delete by all detail
-                        string queryDelete = "DELETE FROM \"public\".\"raiin_list_inf\" WHERE FALSE";
+                        string queryDelete = "DELETE FROM \"public\".\"raiin_list_inf\" WHERE FALSE AND \"hp_id\" = " + hpId + " ";
                         StringBuilder queryStringBuilder = new();
                         queryStringBuilder.Append(queryDelete);
                         detailDeletedList.AddRange(detailDeleteds);
