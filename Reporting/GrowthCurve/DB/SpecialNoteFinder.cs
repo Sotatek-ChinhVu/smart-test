@@ -25,21 +25,21 @@ public class SpecialNoteFinder : RepositoryBase, ISpecialNoteFinder
 
     public List<KensaInfDetail> GetKensaInf(int hpId, long ptId, int fromDate, int toDate, string itemCD)
     {
-        var kensaInfDetailCollection = NoTrackingDataContext.KensaInfDetails.Where(item => item.PtId == ptId && (item.KensaItemCd ?? string.Empty).StartsWith("V") && item.IsDeleted == 0);
+        var kensaInfDetailCollection = NoTrackingDataContext.KensaInfDetails.Where(item => item.HpId == hpId && item.PtId == ptId && (item.KensaItemCd ?? string.Empty).StartsWith("V") && item.IsDeleted == 0);
 
         if (itemCD != "")
         {
-            kensaInfDetailCollection = kensaInfDetailCollection.Where(item => item.HpId == hpId && item.KensaItemCd == itemCD);
+            kensaInfDetailCollection = kensaInfDetailCollection.Where(item => item.KensaItemCd == itemCD);
         }
 
         if (fromDate >= 0)
         {
-            kensaInfDetailCollection = kensaInfDetailCollection.Where(item => item.HpId == hpId && item.IraiDate >= fromDate);
+            kensaInfDetailCollection = kensaInfDetailCollection.Where(item => item.IraiDate >= fromDate);
         }
 
         if (toDate >= 0)
         {
-            kensaInfDetailCollection = kensaInfDetailCollection.Where(item => item.HpId == hpId && item.IraiDate <= toDate);
+            kensaInfDetailCollection = kensaInfDetailCollection.Where(item => item.IraiDate <= toDate);
         }
         var kensaInfDetailList = kensaInfDetailCollection.ToList();
         return kensaInfDetailList.GroupBy(item => new { item.KensaItemCd, item.IraiDate })
