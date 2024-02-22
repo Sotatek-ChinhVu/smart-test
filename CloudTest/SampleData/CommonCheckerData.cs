@@ -8,7 +8,7 @@ namespace CloudUnitTest.SampleData
 {
     public static class CommonCheckerData
     {
-        public static List<PtByomei> ReadPtByomei()
+        public static List<PtByomei> ReadPtByomei(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -39,7 +39,6 @@ namespace CloudUnitTest.SampleData
                             switch (columnName)
                             {
                                 case "A":
-                                    int.TryParse(text, out int hpId);
                                     ptByomei.HpId = hpId;
                                     break;
                                 case "B":
@@ -210,7 +209,7 @@ namespace CloudUnitTest.SampleData
             return ptByomeis;
         }
 
-        public static List<TenMst> ReadTenMst(string itemCd, string yjCd)
+        public static List<TenMst> ReadTenMst( string itemCd, string yjCd, int hpId = 999)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -240,7 +239,6 @@ namespace CloudUnitTest.SampleData
                             switch (columnName)
                             {
                                 case "A":
-                                    int.TryParse(text, out int hpId);
                                     tenMst.HpId = hpId;
                                     break;
                                 case "B":
@@ -954,7 +952,7 @@ namespace CloudUnitTest.SampleData
             return ptAlrgyDrugs;
         }
 
-        public static List<KinkiMst> ReadKinkiMst(string key)
+        public static List<KinkiMst> ReadKinkiMst(string key, int hpId = 1)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -984,7 +982,6 @@ namespace CloudUnitTest.SampleData
                             switch (columnName)
                             {
                                 case "A":
-                                    int.TryParse(text, out int hpId);
                                     kinkiMst.HpId = hpId;
                                     break;
                                 case "B":
@@ -1851,7 +1848,7 @@ namespace CloudUnitTest.SampleData
             return m14AgeCheck;
         }
 
-        public static List<PtKioReki> ReadPtKioReki()
+        public static List<PtKioReki> ReadPtKioReki(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1881,7 +1878,6 @@ namespace CloudUnitTest.SampleData
                             switch (columnName)
                             {
                                 case "A":
-                                    int.TryParse(text, out int hpId);
                                     ptkioReki.HpId = hpId;
                                     break;
                                 case "B":
@@ -1930,7 +1926,7 @@ namespace CloudUnitTest.SampleData
             return ptKioRekis;
         }
 
-        public static List<PtFamilyReki> ReadPtFamilyReki()
+        public static List<PtFamilyReki> ReadPtFamilyReki(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -1960,7 +1956,6 @@ namespace CloudUnitTest.SampleData
                             switch (columnName)
                             {
                                 case "B":
-                                    int.TryParse(text, out int hpId);
                                     ptFamilyReki.HpId = hpId;
                                     break;
                                 case "C":
@@ -2009,7 +2004,7 @@ namespace CloudUnitTest.SampleData
             return ptFamilyRekis;
         }
 
-        public static List<PtFamily> ReadPtFamily()
+        public static List<PtFamily> ReadPtFamily(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2043,7 +2038,6 @@ namespace CloudUnitTest.SampleData
                                     ptFamily.FamilyId = familyId;
                                     break;
                                 case "B":
-                                    int.TryParse(text, out int hpId);
                                     ptFamily.HpId = hpId;
                                     break;
                                 case "C":
@@ -2546,7 +2540,7 @@ namespace CloudUnitTest.SampleData
             return m56s;
         }
 
-        public static List<DosageMst> READ_DOSAGE_MST()
+        public static List<DosageMst> READ_DOSAGE_MST(int hpId)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -2576,7 +2570,7 @@ namespace CloudUnitTest.SampleData
                             switch (columnName)
                             {
                                 case "B":
-                                    dosageMst.HpId = text.AsInteger();
+                                    dosageMst.HpId = hpId;
                                     break;
                                 case "C":
                                     dosageMst.ItemCd = text;

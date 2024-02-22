@@ -122,7 +122,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenMsts = CommonCheckerData.ReadTenMst("DIS002", "DIS002");
         var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS002");
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS002");
-        var ptByomei = CommonCheckerData.ReadPtByomei();
+        var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
         tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
@@ -196,7 +196,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenMsts = CommonCheckerData.ReadTenMst("DIS003", "DIS003");
         var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS003");
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS003");
-        var ptByomei = CommonCheckerData.ReadPtByomei();
+        var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
         tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
@@ -278,7 +278,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //DiseaseLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = -1;
         if (systemConf != null)
@@ -289,7 +289,7 @@ public class DiseaseCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -302,10 +302,10 @@ public class DiseaseCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var tenMsts = CommonCheckerData.ReadTenMst("DIS005", "DIS005");
+        var tenMsts = CommonCheckerData.ReadTenMst("DIS005", "DIS005", hpId);
         var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS005");
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS005");
-        var ptByomei = CommonCheckerData.ReadPtByomei();
+        var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
         tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
@@ -366,7 +366,7 @@ public class DiseaseCheckerTest : BaseUT
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //DiseaseLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 2);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 2);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 5;
         if (systemConf != null)
@@ -377,7 +377,7 @@ public class DiseaseCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -390,10 +390,10 @@ public class DiseaseCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var tenMsts = CommonCheckerData.ReadTenMst("DIS006", "DIS006");
+        var tenMsts = CommonCheckerData.ReadTenMst("DIS006", "DIS006",hpId);
         var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS006");
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS006");
-        var ptByomei = CommonCheckerData.ReadPtByomei();
+        var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
         tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
@@ -478,11 +478,11 @@ public class DiseaseCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var tenMsts = CommonCheckerData.ReadTenMst("DIS007", "DIS007");
+        var tenMsts = CommonCheckerData.ReadTenMst("DIS007", "DIS007", hpId);
         var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS007");
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS007");
-        var ptByomei = CommonCheckerData.ReadPtByomei();
-        var ptKioReki = CommonCheckerData.ReadPtKioReki();
+        var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
+        var ptKioReki = CommonCheckerData.ReadPtKioReki(hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
         tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);
@@ -569,12 +569,12 @@ public class DiseaseCheckerTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
-        var tenMsts = CommonCheckerData.ReadTenMst("DIS008", "DIS008");
+        var tenMsts = CommonCheckerData.ReadTenMst("DIS008", "DIS008", hpId);
         var m42DisCon = CommonCheckerData.ReadM42ContaindiDisCon(hpId, "DIS008");
         var m42DrugMainEx = CommonCheckerData.ReadM42ContaindiDrugMainEx(hpId, "DIS008");
-        var ptByomei = CommonCheckerData.ReadPtByomei();
-        var ptFamilyReki = CommonCheckerData.ReadPtFamilyReki();
-        var ptFamilies = CommonCheckerData.ReadPtFamily();
+        var ptByomei = CommonCheckerData.ReadPtByomei(hpId);
+        var ptFamilyReki = CommonCheckerData.ReadPtFamilyReki(hpId);
+        var ptFamilies = CommonCheckerData.ReadPtFamily(hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.M42ContraindiDisCon.AddRange(m42DisCon);
         tenantTracking.M42ContraindiDrugMainEx.AddRange(m42DrugMainEx);

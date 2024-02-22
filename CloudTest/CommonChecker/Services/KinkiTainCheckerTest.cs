@@ -164,7 +164,7 @@ public class KinkiTainCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         int ptId = 1233;
-        var tenMsts = CommonCheckerData.ReadTenMst("T3", "");
+        var tenMsts = CommonCheckerData.ReadTenMst("T3", "", hpId);
         var ptOtherDrugs = CommonCheckerData.ReadPtOtherDrug(hpId, ptId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.PtOtherDrug.AddRange(ptOtherDrugs);

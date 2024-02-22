@@ -22,13 +22,13 @@ public class KinkiUserCheckerTest : BaseUT
         int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
-        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01");
+        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01", hpId);
+        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01", hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.KinkiMsts.AddRange(kinkiMsts);
 
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -38,7 +38,7 @@ public class KinkiUserCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -52,7 +52,7 @@ public class KinkiUserCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var kinkiUserChecker = new KinkiUserChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiUserChecker.HpID = 999;
+        kinkiUserChecker.HpID = hpId;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
@@ -164,13 +164,13 @@ public class KinkiUserCheckerTest : BaseUT
         int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
-        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01");
+        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01", hpId);
+        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01", hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.KinkiMsts.AddRange(kinkiMsts);
 
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -180,7 +180,7 @@ public class KinkiUserCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -194,7 +194,7 @@ public class KinkiUserCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var kinkiUserChecker = new KinkiUserChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiUserChecker.HpID = 999;
+        kinkiUserChecker.HpID = hpId;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
@@ -308,7 +308,7 @@ public class KinkiUserCheckerTest : BaseUT
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
 
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         int settingLevel = 6;
         if (systemConf != null)
@@ -319,7 +319,7 @@ public class KinkiUserCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 2,
                 CreateDate = DateTime.UtcNow,
@@ -331,14 +331,14 @@ public class KinkiUserCheckerTest : BaseUT
             tenantTracking.SystemConfs.Add(systemConf);
         }
 
-        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
-        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01");
+        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01", hpId);
+        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01", hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.KinkiMsts.AddRange(kinkiMsts);
         tenantTracking.SaveChanges();
 
         var kinkiUserChecker = new KinkiUserChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiUserChecker.HpID = 999;
+        kinkiUserChecker.HpID = hpId;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
@@ -447,15 +447,15 @@ public class KinkiUserCheckerTest : BaseUT
     [Test]
     public void Test_004_CheckKinkiUser_Finder_CurrentCodeConstantACd_AddedCodeConstantBCd()
     {
+        var hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01");
-        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01");
+        var tenMsts = CommonCheckerData.ReadTenMst("K01", "K01", hpId);
+        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K01", hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.KinkiMsts.AddRange(kinkiMsts);
         tenantTracking.SaveChanges();
 
-        var hpId = 999;
         var ptId = 1231;
         var settingLevel = 4;
         var sinDay = 20230101;
@@ -813,13 +813,13 @@ public class KinkiUserCheckerTest : BaseUT
         int hpId = 999;
         ///Setup
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var tenMsts = CommonCheckerData.ReadTenMst("K08", "K08");
-        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K08");
+        var tenMsts = CommonCheckerData.ReadTenMst("K08", "K08", hpId);
+        var kinkiMsts = CommonCheckerData.ReadKinkiMst("K08", hpId);
         tenantTracking.TenMsts.AddRange(tenMsts);
         tenantTracking.KinkiMsts.AddRange(kinkiMsts);
 
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -829,7 +829,7 @@ public class KinkiUserCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -843,7 +843,7 @@ public class KinkiUserCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var kinkiUserChecker = new KinkiUserChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiUserChecker.HpID = 999;
+        kinkiUserChecker.HpID = hpId;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
@@ -965,7 +965,7 @@ public class KinkiUserCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         //KinkiLevelSetting
-        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1 && p.GrpCd == 2027 && p.GrpEdaNo == 1);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == 2027 && p.GrpEdaNo == 1);
         var temp = systemConf?.Val ?? 0;
         if (systemConf != null)
         {
@@ -975,7 +975,7 @@ public class KinkiUserCheckerTest : BaseUT
         {
             systemConf = new SystemConf
             {
-                HpId = 1,
+                HpId = hpId,
                 GrpCd = 2027,
                 GrpEdaNo = 1,
                 CreateDate = DateTime.UtcNow,
@@ -989,7 +989,7 @@ public class KinkiUserCheckerTest : BaseUT
         tenantTracking.SaveChanges();
 
         var kinkiUserChecker = new KinkiUserChecker<OrdInfoModel, OrdInfoDetailModel>();
-        kinkiUserChecker.HpID = 999;
+        kinkiUserChecker.HpID = hpId;
         kinkiUserChecker.PtID = 111;
         kinkiUserChecker.Sinday = 20230101;
         var tenantNoTracking = TenantProvider.GetNoTrackingDataContext();
