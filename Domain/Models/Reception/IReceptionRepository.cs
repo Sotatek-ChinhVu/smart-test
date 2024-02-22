@@ -42,7 +42,7 @@ namespace Domain.Models.Reception
 
         int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate);
 
-        ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
+        ReceptionModel GetDataDefaultReception(int hpId, long ptId, int sinDate, int defaultSettingDoctor);
 
         int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode);
 
