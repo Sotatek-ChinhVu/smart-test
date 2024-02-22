@@ -108,6 +108,7 @@ namespace AWSSDK.Services
                         }
 
                         Console.WriteLine($"Data master: {tennantDB} deleted successfully.");
+                        return true;
                     }
                     catch (Exception ex)
                     {
